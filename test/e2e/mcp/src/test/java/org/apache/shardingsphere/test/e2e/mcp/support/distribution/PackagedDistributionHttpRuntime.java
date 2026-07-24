@@ -24,7 +24,10 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpIn
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,17 +39,11 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
     
     private static final long STARTUP_POLL_INTERVAL_MILLIS = 250L;
     
-    private final PreparedPackagedDistribution distribution;
+    private static final String ENDPOINT_MARKER = "endpoint=";
     
     private final PackagedDistributionProcessSupport processSupport;
     
-    /**
-     * Construct HTTP runtime support for a prepared packaged distribution.
-     *
-     * @param distribution prepared packaged distribution
-     */
     public PackagedDistributionHttpRuntime(final PreparedPackagedDistribution distribution) {
-        this.distribution = distribution;
         processSupport = new PackagedDistributionProcessSupport(distribution, "mcp-packaged-http-e2e");
     }
     
@@ -72,7 +69,11 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
         if (!processSupport.isAlive()) {
             return ReadinessResult.failed(null);
         }
-        MCPHttpInteractionClient result = new MCPHttpInteractionClient(distribution.getEndpointUri(), HttpClient.newHttpClient());
+        Optional<URI> endpointUri = findEndpointUri(processSupport.getOutputMessages());
+        if (endpointUri.isEmpty()) {
+            return ReadinessResult.retry(new IllegalStateException("Packaged MCP HTTP endpoint has not been reported yet."));
+        }
+        MCPHttpInteractionClient result = new MCPHttpInteractionClient(endpointUri.get(), HttpClient.newHttpClient());
         try {
             result.open();
             return ReadinessResult.ready(result);
@@ -93,5 +94,25 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
         } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
         }
+    }
+    
+    static Optional<URI> findEndpointUri(final Collection<String> outputMessages) {
+        for (String each : outputMessages) {
+            int startIndex = each.indexOf(ENDPOINT_MARKER);
+            if (startIndex < 0) {
+                continue;
+            }
+            startIndex += ENDPOINT_MARKER.length();
+            int endIndex = each.indexOf(',', startIndex);
+            String candidate = each.substring(startIndex, endIndex < 0 ? each.length() : endIndex).trim();
+            try {
+                URI result = URI.create(candidate);
+                if ("http".equalsIgnoreCase(result.getScheme()) && null != result.getHost() && result.getPort() > 0) {
+                    return Optional.of(result);
+                }
+            } catch (final IllegalArgumentException ignored) {
+            }
+        }
+        return Optional.empty();
     }
 }

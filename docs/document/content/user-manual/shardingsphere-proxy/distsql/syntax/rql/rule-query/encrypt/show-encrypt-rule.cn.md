@@ -13,7 +13,7 @@ weight = 1
 {{% tab name="语法" %}}
 ```sql
 ShowEncryptRule::=
-  'SHOW' 'ENCRYPT' ('RULES' | 'TABLE' 'RULE' ruleName) ('FROM' databaseName)?
+  'SHOW' 'ENCRYPT' ('RULES' | 'TABLE'? 'RULE' ruleName) ('FROM' databaseName)?
 
 ruleName ::=
   identifier
@@ -122,4 +122,3 @@ mysql> SHOW ENCRYPT TABLE RULE t_encrypt;
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
-

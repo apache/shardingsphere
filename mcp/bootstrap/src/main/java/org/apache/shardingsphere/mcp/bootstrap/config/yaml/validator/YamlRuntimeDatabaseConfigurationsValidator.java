@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator;
 
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfigurationProperties;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -27,53 +27,65 @@ import java.util.Map.Entry;
 /**
  * YAML runtime database configurations validator.
  */
-public final class YamlRuntimeDatabaseConfigurationsValidator implements ConstraintValidator<ValidYamlRuntimeDatabaseConfigurations, Map<String, Map<String, Object>>> {
+public final class YamlRuntimeDatabaseConfigurationsValidator implements ConstraintValidator<ValidYamlRuntimeDatabaseConfigurations, Map<String, YamlRuntimeDatabaseConfiguration>> {
     
     @Override
-    public boolean isValid(final Map<String, Map<String, Object>> value, final ConstraintValidatorContext context) {
+    public boolean isValid(final Map<String, YamlRuntimeDatabaseConfiguration> value, final ConstraintValidatorContext context) {
         if (null == value) {
             return true;
         }
         boolean result = true;
-        for (Entry<String, Map<String, Object>> entry : value.entrySet()) {
+        for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : value.entrySet()) {
             result = validateRuntimeDatabase(entry, context) && result;
         }
         return result;
     }
     
-    private boolean validateRuntimeDatabase(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
+    private boolean validateRuntimeDatabase(final Entry<String, YamlRuntimeDatabaseConfiguration> databaseEntry, final ConstraintValidatorContext context) {
+        if (isPlaceholder(databaseEntry.getKey())) {
+            addViolation(context, String.format("contains placeholder database name `%s`", databaseEntry.getKey()));
+            return false;
+        }
         if (null == databaseEntry.getValue()) {
             addViolation(context, String.format("contains null configuration for database `%s`", databaseEntry.getKey()));
             return false;
         }
-        return validateSupportedProperties(databaseEntry, context) && validateRequiredProperties(databaseEntry, context);
+        return validateNoPlaceholders(databaseEntry, context);
     }
     
-    private boolean validateSupportedProperties(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
-        boolean result = true;
-        for (String each : databaseEntry.getValue().keySet()) {
-            if (!YamlRuntimeDatabaseConfigurationProperties.SUPPORTED_PROPERTIES.contains(each)) {
-                addViolation(context, String.format("contains unsupported property `%s` for database `%s`", each, databaseEntry.getKey()));
-                result = false;
-            }
-        }
-        return result;
+    private boolean validateNoPlaceholders(final Entry<String, YamlRuntimeDatabaseConfiguration> databaseEntry, final ConstraintValidatorContext context) {
+        YamlRuntimeDatabaseConfiguration config = databaseEntry.getValue();
+        boolean result = validateNoPlaceholder(databaseEntry.getKey(), "jdbcUrl", config.getJdbcUrl(), context);
+        result = validateNoPlaceholder(databaseEntry.getKey(), "username", config.getUsername(), context) && result;
+        result = validateNoPlaceholder(databaseEntry.getKey(), "driverClassName", config.getDriverClassName(), context) && result;
+        return validateNoPasswordPlaceholder(databaseEntry.getKey(), config.getPassword(), context) && result;
     }
     
-    private boolean validateRequiredProperties(final Entry<String, Map<String, Object>> databaseEntry, final ConstraintValidatorContext context) {
-        boolean result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DATABASE_TYPE, context);
-        result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.JDBC_URL, context) && result;
-        result = validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.USERNAME, context) && result;
-        return validateRequiredText(databaseEntry, YamlRuntimeDatabaseConfigurationProperties.DRIVER_CLASS_NAME, context) && result;
-    }
-    
-    private boolean validateRequiredText(final Entry<String, Map<String, Object>> databaseEntry, final String key, final ConstraintValidatorContext context) {
-        Object value = databaseEntry.getValue().get(key);
-        if (null != value && !value.toString().isBlank()) {
+    private boolean validateNoPlaceholder(final String databaseName, final String propertyName, final String value, final ConstraintValidatorContext context) {
+        if (null == value || !isPlaceholder(value)) {
             return true;
         }
-        addViolation(context, String.format("contains database `%s` property `%s` is required", databaseEntry.getKey(), key));
+        addViolation(context, String.format("contains placeholder database `%s` property `%s`", databaseName, propertyName));
         return false;
+    }
+    
+    private boolean validateNoPasswordPlaceholder(final String databaseName, final String value, final ConstraintValidatorContext context) {
+        if (null == value || !isStandalonePlaceholder(value)) {
+            return true;
+        }
+        addViolation(context, String.format("contains placeholder database `%s` property `password`", databaseName));
+        return false;
+    }
+    
+    private boolean isPlaceholder(final String value) {
+        String actualValue = value.trim();
+        int startIndex = actualValue.indexOf('<');
+        return startIndex >= 0 && actualValue.indexOf('>', startIndex + 1) > startIndex + 1;
+    }
+    
+    private boolean isStandalonePlaceholder(final String value) {
+        String actualValue = value.trim();
+        return actualValue.startsWith("<") && actualValue.endsWith(">") && actualValue.length() > 2;
     }
     
     private void addViolation(final ConstraintValidatorContext context, final String message) {

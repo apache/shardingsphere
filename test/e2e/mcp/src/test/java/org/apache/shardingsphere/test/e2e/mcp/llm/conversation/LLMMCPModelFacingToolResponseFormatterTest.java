@@ -19,10 +19,12 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -47,6 +49,22 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     }
     
     @Test
+    void assertFormatWithResourceTemplates() {
+        Map<String, Object> actual = format(Map.of("resourceTemplates", List.of(Map.of(
+                "uriTemplate", "shardingsphere://databases/{database}",
+                "name", "logical-database",
+                "title", "Logical Database",
+                "description", "Long model-facing description.",
+                "mimeType", "application/json",
+                "_meta", Map.of("org.apache.shardingsphere/resource-kind", "detail")))));
+        assertThat(actual, is(Map.of("resourceTemplates", List.of(Map.of(
+                "uriTemplate", "shardingsphere://databases/{database}",
+                "name", "logical-database",
+                "title", "Logical Database",
+                "mimeType", "application/json")))));
+    }
+    
+    @Test
     void assertFormatWithCompactItems() {
         Map<String, Object> actual = format(Map.of("items", List.of(
                 Map.of("database", "logic_db", "schema", "public", "ignored", "value"),
@@ -64,9 +82,67 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     }
     
     @Test
+    void assertFormatWithCompactListItems() {
+        Map<String, Object> actual = format(Map.of("response_mode", MCPResponseMode.LIST, "items", createVerboseItems(6)));
+        assertThat(actual, is(Map.of("response_mode", MCPResponseMode.LIST, "items", createCompactItems(5))));
+    }
+    
+    @Test
+    void assertFormatWithCompleteSearchItems() {
+        Map<String, Object> actual = format(Map.of(
+                "response_mode", MCPResponseMode.SEARCH,
+                "items", createVerboseItems(100),
+                "count", 100,
+                "truncated", false));
+        assertThat(actual, is(Map.of(
+                "response_mode", MCPResponseMode.SEARCH,
+                "items", createCompactItems(100),
+                "count", 100,
+                "truncated", false)));
+    }
+    
+    @Test
+    void assertFormatWithPaginatedSearchItems() {
+        Map<String, Object> nextAction = Map.of(
+                "order", 1,
+                "type", "tool_call",
+                "title", "Call database_gateway_search_metadata",
+                "tool_name", "database_gateway_search_metadata",
+                "arguments", Map.of("database", "logic_db", "object_types", List.of("table"), "limit", 100, "offset", 100),
+                "reason", "Read the next deterministically ordered metadata search page.");
+        Map<String, Object> actual = format(Map.of(
+                "response_mode", MCPResponseMode.SEARCH,
+                "items", createVerboseItems(100),
+                "count", 100,
+                "total_match_count", 101,
+                "truncated", true,
+                "next_actions", List.of(nextAction)));
+        assertThat(actual, is(Map.of(
+                "response_mode", MCPResponseMode.SEARCH,
+                "items", createCompactItems(100),
+                "count", 100,
+                "total_match_count", 101,
+                "truncated", true,
+                "next_actions", List.of(nextAction))));
+    }
+    
+    @Test
     void assertFormatWithPrompts() {
         Map<String, Object> actual = format(Map.of("prompts", List.of(Map.of("name", "inspect_metadata"), Map.of("description", "ignored"))));
         assertThat(actual, is(Map.of("prompts", List.of("inspect_metadata"))));
+    }
+    
+    @Test
+    void assertFormatWithTools() {
+        Map<String, Object> actual = format(Map.of("tools", List.of(Map.of(
+                "name", "database_gateway_execute_query",
+                "title", "Execute Query SQL",
+                "description", "Long model-facing description.",
+                "inputSchema", Map.of("type", "object"),
+                "outputSchema", Map.of("type", "object")))));
+        assertThat(actual, is(Map.of("tools", List.of(Map.of(
+                "name", "database_gateway_execute_query",
+                "title", "Execute Query SQL")))));
     }
     
     @Test
@@ -78,14 +154,38 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     @Test
     void assertFormatWithArtifactSummaries() {
         Map<String, Object> actual = format(Map.of(
-                "manual_artifacts", List.of(Map.of(
-                        "ddl_artifacts", List.of("a", "b"),
-                        "index_plan", List.of("c"),
-                        "distsql_artifacts", List.of("d", "e", "f"))),
-                "exported_artifacts", List.of(Map.of("ddl_artifacts", List.of("g")))));
+                "manual_artifact_package", Map.of("distsql_artifacts", List.of("d", "e", "f")),
+                "exported_artifacts", List.of(Map.of("distsql_artifacts", List.of("g")))));
         assertThat(actual, is(Map.of(
-                "manual_artifacts", List.of(Map.of("ddl_artifact_count", 2, "index_plan_count", 1, "distsql_artifact_count", 3)),
-                "exported_artifacts", List.of(Map.of("ddl_artifact_count", 1)))));
+                "manual_artifact_package", Map.of("distsql_artifact_count", 3),
+                "exported_artifacts", List.of(Map.of("distsql_artifact_count", 1)))));
+    }
+    
+    @Test
+    void assertFormatWithModelCriticalFields() {
+        Map<String, Object> actual = format(Map.ofEntries(
+                Map.entry("summary", "Read logical databases first."),
+                Map.entry("resources_to_read", List.of(Map.of("uri", "shardingsphere://capabilities"))),
+                Map.entry("resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("self_resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("parent_resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas"))),
+                Map.entry("manual_artifact_summary", "Review DistSQL."),
+                Map.entry("empty_state", Map.of("state", "no_match")),
+                Map.entry("recovery_guidance", "Read metadata before retrying."),
+                Map.entry("remediation", "Fix the mismatch."),
+                Map.entry("ignored", "value")));
+        assertThat(actual, is(Map.ofEntries(
+                Map.entry("summary", "Read logical databases first."),
+                Map.entry("resources_to_read", List.of(Map.of("uri", "shardingsphere://capabilities"))),
+                Map.entry("resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("self_resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("parent_resource", Map.of("uri", "shardingsphere://databases")),
+                Map.entry("next_resources", List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas"))),
+                Map.entry("manual_artifact_summary", "Review DistSQL."),
+                Map.entry("empty_state", Map.of("state", "no_match")),
+                Map.entry("recovery_guidance", "Read metadata before retrying."),
+                Map.entry("remediation", "Fix the mismatch."))));
     }
     
     @Test
@@ -99,12 +199,20 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                         "recovery_category", "missing_context",
                         "model_action", "retry",
                         "suggested_arguments", Map.of("database", "logic_db"),
+                        "resources_to_read", List.of(Map.of("uri", "shardingsphere://databases")),
+                        "recovery_guidance", "Read metadata.",
+                        "remediation", "Fix the request.",
                         "ignored", "value")));
         assertThat(actual, is(Map.of(
                 "next_actions", List.of(
-                        Map.of("type", "tool_call", "title", "Execute", "reason", "approved"),
                         Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases")),
-                "recovery", Map.of("recovery_category", "missing_context", "model_action", "retry", "suggested_arguments", Map.of("database", "logic_db")))));
+                "recovery", Map.of(
+                        "recovery_category", "missing_context",
+                        "model_action", "retry",
+                        "suggested_arguments", Map.of("database", "logic_db"),
+                        "resources_to_read", List.of(Map.of("uri", "shardingsphere://databases")),
+                        "recovery_guidance", "Read metadata.",
+                        "remediation", "Fix the request."))));
     }
     
     @Test
@@ -115,5 +223,13 @@ class LLMMCPModelFacingToolResponseFormatterTest {
     private Map<String, Object> format(final Map<String, Object> value) {
         return JsonUtils.fromJsonString(LLMMCPModelFacingToolResponseFormatter.format(value), new TypeReference<>() {
         });
+    }
+    
+    private List<Map<String, Object>> createVerboseItems(final int count) {
+        return IntStream.range(0, count).mapToObj(each -> Map.<String, Object>of("name", "item_" + each, "ignored", "value")).toList();
+    }
+    
+    private List<Map<String, Object>> createCompactItems(final int count) {
+        return IntStream.range(0, count).mapToObj(each -> Map.<String, Object>of("name", "item_" + each)).toList();
     }
 }

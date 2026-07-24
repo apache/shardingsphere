@@ -290,7 +290,7 @@ class PostgreSQLComDescribeExecutorTest {
     @Test
     void assertDescribePreparedStatementInsertWithCaseInsensitiveColumns() throws SQLException {
         when(packet.getType()).thenReturn('S');
-        final String statementId = "S_2";
+        String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
         String sql = "INSERT INTO t_order (iD, k, c, PaD) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
@@ -320,7 +320,7 @@ class PostgreSQLComDescribeExecutorTest {
     @Test
     void assertDescribePreparedStatementInsertWithUndefinedColumns() {
         when(packet.getType()).thenReturn('S');
-        final String statementId = "S_2";
+        String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
         String sql = "INSERT INTO t_order (undefined_column, k, c, pad) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
@@ -551,6 +551,7 @@ class PostgreSQLComDescribeExecutorTest {
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getName()).thenReturn("public");
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public")).thenReturn(schema);
         Collection<ShardingSphereColumn> columns = Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
@@ -594,6 +595,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getName()).thenReturn("public");
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
         when(database.getDefaultSchemaName()).thenReturn("public");

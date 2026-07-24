@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
 
 /**
  * Encrypt rule handler.
  */
-public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class EncryptRuleHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -45,8 +45,8 @@ public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseH
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue("table")),
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
+        return new MCPItemsPayload(ruleInspectionService.queryEncryptRules(requestContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue("table")),
                 MCPResourceNavigationPayloadBuilder.create(
                         MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables, EncryptFeatureDefinition.RULES_RESOURCE_URI));
     }

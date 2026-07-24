@@ -26,11 +26,13 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.MySQLDatabaseMetaData;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -67,13 +69,19 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public DialectSchemaOption getSchemaOption() {
+        return delegate.getSchemaOption();
+    }
+    
+    @Override
     public DialectConnectionOption getConnectionOption() {
         return delegate.getConnectionOption();
     }
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, true, false, true, Connection.TRANSACTION_REPEATABLE_READ, false, false, Collections.singleton("org.mariadb.jdbc.MariaDbDataSource"));
+        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, true, false, true, false, false,
+                Collections.singleton("org.mariadb.jdbc.MariaDbDataSource"));
     }
     
     @Override
@@ -84,6 +92,11 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public Optional<DialectGeneratedKeyOption> getGeneratedKeyOption() {
         return delegate.getGeneratedKeyOption();
+    }
+    
+    @Override
+    public Optional<DialectSequenceOption> getSequenceOption() {
+        return Optional.of(new DialectSequenceOption("SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'"));
     }
     
     @Override

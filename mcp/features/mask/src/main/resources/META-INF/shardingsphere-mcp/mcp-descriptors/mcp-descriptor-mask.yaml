@@ -26,6 +26,7 @@ resources:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: mask
       relatedTools:
         - database_gateway_plan_mask_rule
@@ -33,7 +34,7 @@ resourceTemplates:
   - uriTemplate: shardingsphere://features/mask/databases/{database}/rules
     name: mask-rules
     title: Mask Rules
-    description: "List mask table rules for one ShardingSphere logical database. Read this before altering or validating mask configuration."
+    description: "List mask table rules for one ShardingSphere logical database. Read this before planning or validating mask configuration."
     mimeType: application/json
     shardingSphereMetadata:
       uriVariables:
@@ -43,6 +44,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: mask
       relatedTools:
         - database_gateway_plan_mask_rule
@@ -65,6 +67,7 @@ resourceTemplates:
           required: true
           scope: logical-table
       resourceKind: list
+      objectScope: rule
       feature: mask
       relatedTools:
         - database_gateway_plan_mask_rule
@@ -98,7 +101,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a mask plan."
+        description: "Existing current-session workflow plan identifier used only to continue a mask plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -120,7 +123,12 @@ completionTargets:
   - referenceType: prompt
     reference: plan_mask_rule
     arguments:
+      - database
+      - schema
+      - table
+      - column
       - algorithm_type
+      - plan_id
     maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/mask/algorithms
@@ -170,7 +178,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Optional existing workflow plan identifier used to continue or revise a previous mask plan."
+          description: "Existing workflow plan identifier used only to continue the same mask.rule workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the target table."
@@ -188,7 +196,6 @@ tools:
           description: "Mask rule lifecycle operation requested by the user."
           enum:
             - create
-            - alter
             - drop
         natural_language_intent:
           type: string
@@ -214,21 +221,12 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          description: "Optional user-selected mask algorithm fields."
-          properties:
-            algorithm_type:
-              type: string
-              description: "Primary mask algorithm type override."
-          required: []
-          additionalProperties: false
         algorithm_type:
           type: string
-          description: "Primary mask algorithm type override; equivalent to user_overrides.algorithm_type."
+          description: "Primary mask algorithm type override."
         primary_algorithm_properties:
           type: object
-          description: "Plugin-defined primary mask algorithm properties. Accepted keys depend on the selected algorithm descriptor returned in planning output."
+          description: "Plugin-defined primary mask algorithm properties. Values may be strings or protected placeholder objects with secret_ref and optional label; placeholders require manual execution outside MCP."
           additionalProperties: true
       required: []
       additionalProperties: false
@@ -241,6 +239,9 @@ tools:
           enum:
             - planning
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow planning summary."
         plan_id:
           type: string
           description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
@@ -271,7 +272,6 @@ tools:
               description: "Fallback interaction selected by the server."
               enum:
                 - structured_fallback
-                - url_fallback
         fallback_reason:
           type: string
           description: "Machine-readable reason explaining why the planner returned structured fallback instead of automatic form continuation."
@@ -313,9 +313,24 @@ tools:
         intent_inference:
           type: object
           description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+        argument_provenance:
+          type: object
+          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
+        secret_reference_summary:
+          type: object
+          description: "Safe summary of protected algorithm-property placeholders. It never contains raw secret_ref identifiers or real sensitive values."
+        proxy_topology_hint:
+          type: object
+          description: "Proxy metadata view expected by this workflow and safe recovery guidance when runtime metadata looks inconsistent."
+        distsql_artifacts:
+          type: array
+          description: "Masked rule DistSQL artifacts generated for review before applying the workflow."
+        masked_property_preview:
+          type: object
+          description: "Mask-specific preview of algorithm properties with secret values masked before returning them to MCP clients."
         next_actions:
           type: array
           description: "Ordered model-facing recommendations for the next call or user question."
@@ -349,8 +364,17 @@ tools:
         resources_to_read:
           type: array
           description: "Typed resources the model should read when more rule or algorithm context is useful."
+      required:
+        - response_mode
+        - plan_id
+        - workflow_kind
+        - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       examples:
         - response_mode: planning
+          summary: Workflow plan `mask-rule-20260505-001` for mask.rule is ready for preview.
           plan_id: mask-rule-20260505-001
           status: planned
           workflow_kind: mask.rule
@@ -380,7 +404,9 @@ tools:
               type: tool_call
               title: Call database_gateway_apply_workflow
               tool_name: database_gateway_apply_workflow
-              arguments: {}
+              arguments:
+                plan_id: mask-rule-20260505-001
+                execution_mode: preview
               reason: Preview generated mask rule DistSQL artifacts.
     annotations:
       title: Plan Mask Rule
@@ -392,6 +418,10 @@ tools:
       workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: mask.rule
+      org.apache.shardingsphere/artifact-categories:
+        - rule_distsql
+      org.apache.shardingsphere/side-effect-scope:
+        - rule-metadata
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/mask/algorithms
         - "shardingsphere://features/mask/databases/{database}/rules"

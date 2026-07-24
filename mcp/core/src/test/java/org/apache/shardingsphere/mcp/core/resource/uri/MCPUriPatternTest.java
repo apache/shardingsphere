@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.resource.uri;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,19 +43,13 @@ class MCPUriPatternTest {
     
     @Test
     void assertParse() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("shardingsphere://capabilities");
+        Optional<MCPResourceURIVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("shardingsphere://capabilities");
         assertTrue(actual.isPresent());
     }
     
     @Test
-    void assertGetVariableNames() {
-        MCPUriPattern actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}");
-        assertThat(actual.getVariableNames(), is(List.of("database", "schema", "table", "column")));
-    }
-    
-    @Test
     void assertParseWithVariables() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern(
+        Optional<MCPResourceURIVariables> actual = new MCPUriPattern(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}")
                 .parse("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id");
         assertTrue(actual.isPresent());
@@ -68,7 +61,7 @@ class MCPUriPatternTest {
     
     @Test
     void assertParseWithEncodedVariables() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}")
+        Optional<MCPResourceURIVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}")
                 .parse("shardingsphere://databases/logic_db/schemas/public/tables/orders%20archive%2F2026+raw%3F");
         assertTrue(actual.isPresent());
         assertThat(actual.orElseThrow().getValue("table"), is("orders archive/2026+raw?"));
@@ -76,25 +69,25 @@ class MCPUriPatternTest {
     
     @Test
     void assertParseWithMalformedPercentEncoding() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}").parse("shardingsphere://databases/logic%ZZdb");
+        Optional<MCPResourceURIVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}").parse("shardingsphere://databases/logic%ZZdb");
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertParseWithUnexpandedTemplateVariable() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}").parse("shardingsphere://databases/{database}");
+        Optional<MCPResourceURIVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}").parse("shardingsphere://databases/{database}");
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertParseWithInvalidUri() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("unsupported://capabilities");
+        Optional<MCPResourceURIVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("unsupported://capabilities");
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertIsOverlaps() {
-        boolean actual = new MCPUriPattern("shardingsphere://databases/{database}").isOverlaps(new MCPUriPattern("shardingsphere://databases/default_db"));
+        boolean actual = new MCPUriPattern("shardingsphere://databases/{database}").overlaps(new MCPUriPattern("shardingsphere://databases/default_db"));
         assertTrue(actual);
     }
     
@@ -104,8 +97,13 @@ class MCPUriPatternTest {
     }
     
     @Test
+    void assertCreateWithEmbeddedVariable() {
+        assertThrows(IllegalArgumentException.class, () -> new MCPUriPattern("shardingsphere://databases/prefix-{database}"));
+    }
+    
+    @Test
     void assertGetVariableWithMissingVariable() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("shardingsphere://capabilities");
+        Optional<MCPResourceURIVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("shardingsphere://capabilities");
         assertThrows(IllegalArgumentException.class, () -> actual.orElseThrow().getValue("database"));
     }
 }

@@ -47,10 +47,7 @@ public final class HttpTransportConfigurationValidator implements ConstraintVali
             addViolation(context, "endpointPath", "must be a single absolute path without query or fragment");
             return false;
         }
-        if (!isValidSessionAttributionSource(value.getSessionAttributionSource(), context)) {
-            return false;
-        }
-        return true;
+        return isValidSessionAttributionSource(value.getSessionAttributionSource(), context);
     }
     
     private boolean isValidBindHost(final String value) {

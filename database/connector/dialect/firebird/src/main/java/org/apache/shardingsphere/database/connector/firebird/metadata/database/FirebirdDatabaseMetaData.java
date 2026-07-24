@@ -23,13 +23,15 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.firebird.metadata.database.option.FirebirdFunctionOption;
 import org.apache.shardingsphere.database.connector.firebird.metadata.database.option.FirebirdSchemaOption;
 
-import java.sql.Connection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Database metadata of Firebird.
@@ -58,7 +60,8 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, true, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, true, Collections.singleton("org.firebirdsql.ds.FBXADataSource"));
+        return new DialectTransactionOption(false, DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION, false, false, true, false, true,
+                Collections.singleton("org.firebirdsql.ds.FBXADataSource"));
     }
     
     @Override
@@ -69,6 +72,11 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectFunctionOption getFunctionOption() {
         return new FirebirdFunctionOption();
+    }
+    
+    @Override
+    public Optional<DialectSequenceOption> getSequenceOption() {
+        return Optional.of(new DialectSequenceOption("SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0"));
     }
     
     @Override

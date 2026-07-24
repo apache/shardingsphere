@@ -19,10 +19,13 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Model-facing MCP next action extractor.
@@ -39,11 +42,43 @@ public final class LLMMCPNextActions {
     public static List<Map<?, ?>> getNextActions(final Map<String, Object> structuredContent) {
         List<Map<?, ?>> result = new LinkedList<>();
         appendActions(result, structuredContent.get("next_actions"));
-        Object recovery = structuredContent.get("recovery");
-        if (recovery instanceof Map) {
-            appendActions(result, ((Map<?, ?>) recovery).get("next_actions"));
-        }
         return result;
+    }
+    
+    /**
+     * Judge whether the latest trace record has an immediate machine action.
+     *
+     * @param interactionTrace interaction trace
+     * @return whether an immediate machine action is pending
+     */
+    static boolean hasPendingImmediateNextAction(final List<MCPInteractionTraceRecord> interactionTrace) {
+        return !interactionTrace.isEmpty() && !findImmediateNextActionName(interactionTrace.getLast()).isEmpty();
+    }
+    
+    /**
+     * Find the immediate machine action name.
+     *
+     * @param traceRecord interaction trace record
+     * @return immediate machine action name
+     */
+    static String findImmediateNextActionName(final MCPInteractionTraceRecord traceRecord) {
+        for (Map<?, ?> each : getNextActions(traceRecord.getStructuredContent())) {
+            String result = findMachineNextActionName(each);
+            if (!result.isEmpty()) {
+                return result;
+            }
+        }
+        return "";
+    }
+    
+    /**
+     * Judge whether the latest trace record recommends side-effect execution.
+     *
+     * @param interactionTrace interaction trace
+     * @return whether side-effect execution is recommended
+     */
+    static boolean hasSideEffectExecutionNextAction(final List<MCPInteractionTraceRecord> interactionTrace) {
+        return !interactionTrace.isEmpty() && getNextActions(interactionTrace.getLast().getStructuredContent()).stream().anyMatch(LLMMCPSideEffectNextAction::isExecutionAction);
     }
     
     private static void appendActions(final List<Map<?, ?>> actions, final Object value) {
@@ -55,5 +90,19 @@ public final class LLMMCPNextActions {
                 actions.add((Map<?, ?>) each);
             }
         }
+    }
+    
+    private static String findMachineNextActionName(final Map<?, ?> action) {
+        if (LLMMCPSideEffectNextAction.isExecutionAction(action)) {
+            return "";
+        }
+        String actionType = Objects.toString(action.get("type"), "").trim();
+        if ("resource_read".equals(actionType) && !Objects.toString(action.get("resource_uri"), "").trim().isEmpty()) {
+            return MCPInteractionActionNames.READ_RESOURCE;
+        }
+        if ("tool_call".equals(actionType)) {
+            return Objects.toString(action.get("tool_name"), "").trim();
+        }
+        return "completion".equals(actionType) ? MCPInteractionActionNames.COMPLETE : "";
     }
 }

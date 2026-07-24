@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WorkflowLifecycleUtilsTest {
     
     @Test
-    void assertIsOwnedBySessionWithBlankSnapshotSession() {
+    void assertIsNotOwnedBySessionWithBlankSnapshotSession() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        assertTrue(WorkflowLifecycleUtils.isOwnedBySession("session-1", snapshot));
+        assertFalse(WorkflowLifecycleUtils.isOwnedBySession("session-1", snapshot));
     }
     
     @Test
@@ -54,20 +54,6 @@ class WorkflowLifecycleUtilsTest {
     @Test
     void assertResolveCurrentStepWithoutInteractionPlan() {
         assertThat(WorkflowLifecycleUtils.resolveCurrentStep(new WorkflowContextSnapshot()), is(""));
-    }
-    
-    @Test
-    void assertResolveOperationType() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.setOperationType("drop");
-        snapshot.setClarifiedIntent(clarifiedIntent);
-        assertThat(WorkflowLifecycleUtils.resolveOperationType(snapshot), is("drop"));
-    }
-    
-    @Test
-    void assertResolveOperationTypeWithoutClarifiedIntent() {
-        assertThat(WorkflowLifecycleUtils.resolveOperationType(new WorkflowContextSnapshot()), is(""));
     }
     
     @Test

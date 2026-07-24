@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.test.e2e.env.container.storage.type;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.Ports;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -129,8 +131,8 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
     
     private String getURL() {
         return option.getCreateOption().getDefaultDatabaseName(majorVersion)
-                .map(optional -> option.getConnectOption().getURL("localhost", getFirstMappedPort(), optional))
-                .orElseGet(() -> option.getConnectOption().getURL("localhost", getFirstMappedPort()));
+                .map(optional -> option.getConnectOption().getURL("localhost", getMappedPort(), optional))
+                .orElseGet(() -> option.getConnectOption().getURL("localhost", getMappedPort()));
     }
     
     @SneakyThrows(SQLException.class)
@@ -140,7 +142,7 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
             return;
         }
         try (
-                Connection connection = createConnection(option.getConnectOption(), option.getConnectOption().getURL("localhost", getFirstMappedPort()),
+                Connection connection = createConnection(option.getConnectOption(), option.getConnectOption().getURL("localhost", getMappedPort()),
                         option.getCreateOption().getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""),
                         option.getCreateOption().getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))) {
             for (String each : new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(majorVersion, scenario).keySet()) {
@@ -165,7 +167,7 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
     }
     
     private Map<String, DataSource> createAccessDataSources(final Collection<String> databaseNames) {
-        return databaseNames.stream().distinct().collect(Collectors.toMap(Function.identity(), this::createAccessDataSource));
+        return databaseNames.stream().distinct().collect(Collectors.toMap(Function.identity(), this::createAccessDataSource, (previous, current) -> previous, LinkedHashMap::new));
     }
     
     /**
@@ -213,7 +215,10 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
      * @return mapped database container port
      */
     public int getMappedPort() {
-        return getMappedPort(getExposedPort());
+        int exposedPort = getExposedPort();
+        Ports.Binding[] bindings = getCurrentContainerInfo().getNetworkSettings().getPorts().getBindings().get(ExposedPort.tcp(exposedPort));
+        Preconditions.checkNotNull(bindings, "Database port (%s) is not mapped", exposedPort);
+        return Integer.parseInt(bindings[0].getHostPortSpec());
     }
     
     @Override

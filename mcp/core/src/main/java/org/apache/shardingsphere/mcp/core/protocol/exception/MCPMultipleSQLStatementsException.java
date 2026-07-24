@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.protocol.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 
 /**
  * Exception for multiple SQL statements in one MCP SQL request.

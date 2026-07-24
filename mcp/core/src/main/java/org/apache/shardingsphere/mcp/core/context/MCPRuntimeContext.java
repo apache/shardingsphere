@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.context;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
+import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionStore;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
@@ -33,15 +35,26 @@ public final class MCPRuntimeContext {
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
     
-    private final String activeTransport;
+    private final MCPTransportType activeTransport;
     
-    private final WorkflowSessionContext workflowSessionContext;
+    @Getter(AccessLevel.NONE)
+    private final InMemoryWorkflowSessionStore workflowSessionStore;
     
-    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final String activeTransport) {
+    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final MCPTransportType activeTransport) {
         this.sessionManager = sessionManager;
         this.databaseCapabilityProvider = databaseCapabilityProvider;
         this.activeTransport = activeTransport;
-        workflowSessionContext = new InMemoryWorkflowSessionContext();
-        sessionManager.addSessionCloseListener(workflowSessionContext::removeBySessionId);
+        workflowSessionStore = new InMemoryWorkflowSessionStore();
+        sessionManager.addSessionCloseListener(workflowSessionStore::removeSession);
+    }
+    
+    /**
+     * Get workflow session context.
+     *
+     * @param sessionId session identifier
+     * @return session-bound workflow context
+     */
+    public WorkflowSessionContext getWorkflowSessionContext(final String sessionId) {
+        return workflowSessionStore.getSessionContext(sessionId);
     }
 }

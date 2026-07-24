@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Readwrite-splitting MCP feature definition.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingFeatureDefinition {
     
     public static final String PLAN_RULE_TOOL_NAME = "database_gateway_plan_readwrite_splitting_rule";
@@ -64,6 +67,6 @@ public final class ReadwriteSplittingFeatureDefinition {
     
     public static final String LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI = "shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins";
     
-    private ReadwriteSplittingFeatureDefinition() {
-    }
+    public static final String STORAGE_UNITS_RESOURCE_URI = "shardingsphere://databases/{database}/storage-units";
+    
 }

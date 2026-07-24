@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
@@ -36,15 +35,15 @@ import java.util.Map;
 /**
  * Tool handler for encrypt workflow planning.
  */
-public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
+public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private final EncryptWorkflowPlanningService planningService = new EncryptWorkflowPlanningService();
     
     private final EncryptAlgorithmPropertyTemplateService propertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -53,64 +52,39 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
-        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getMetadataQueryFacade(),
-                workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(new EncryptWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
+        EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, arguments,
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getMetadataQueryFacade(),
+                requestContext.getQueryFacade(), request);
+        return new MCPMapPayload(new EncryptWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     
     private void bindFeatureArguments(final EncryptWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        String allowIndexDDL = workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ALLOW_INDEX_DDL);
-        if (!allowIndexDDL.isEmpty()) {
-            request.getOptions().setAllowIndexDDL(workflowPlanningArguments.getBooleanArgument(WorkflowFieldNames.ALLOW_INDEX_DDL, true));
-        }
         request.setAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ALGORITHM_TYPE));
         request.getOptions().setAssistedQueryAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ASSISTED_QUERY_ALGORITHM_TYPE));
         request.getOptions().setLikeQueryAlgorithmType(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.LIKE_QUERY_ALGORITHM_TYPE));
         request.getOptions().setCipherColumnName(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.CIPHER_COLUMN_NAME));
         request.getOptions().setAssistedQueryColumnName(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ASSISTED_QUERY_COLUMN_NAME));
         request.getOptions().setLikeQueryColumnName(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.LIKE_QUERY_COLUMN_NAME));
-        request.getPrimaryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument(WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES));
-        request.getOptions().getAssistedQueryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument(WorkflowFieldNames.ASSISTED_QUERY_ALGORITHM_PROPERTIES));
-        request.getOptions().getLikeQueryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument(WorkflowFieldNames.LIKE_QUERY_ALGORITHM_PROPERTIES));
+        request.getPrimaryAlgorithmProperties().putAll(
+                workflowPlanningArguments.getAlgorithmPropertyMapArgument(WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES, EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY));
+        request.getPrimaryAlgorithmSecretReferences().putAll(workflowPlanningArguments.getSecretReferenceMapArgument(WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES));
+        request.getOptions().getAssistedQueryAlgorithmProperties().putAll(workflowPlanningArguments.getAlgorithmPropertyMapArgument(
+                WorkflowFieldNames.ASSISTED_QUERY_ALGORITHM_PROPERTIES, EncryptFeatureDefinition.ALGORITHM_ROLE_ASSISTED_QUERY));
+        request.getOptions().getAssistedQueryAlgorithmSecretReferences().putAll(workflowPlanningArguments.getSecretReferenceMapArgument(WorkflowFieldNames.ASSISTED_QUERY_ALGORITHM_PROPERTIES));
+        request.getOptions().getLikeQueryAlgorithmProperties().putAll(workflowPlanningArguments.getAlgorithmPropertyMapArgument(
+                WorkflowFieldNames.LIKE_QUERY_ALGORITHM_PROPERTIES, EncryptFeatureDefinition.ALGORITHM_ROLE_LIKE_QUERY));
+        request.getOptions().getLikeQueryAlgorithmSecretReferences().putAll(workflowPlanningArguments.getSecretReferenceMapArgument(WorkflowFieldNames.LIKE_QUERY_ALGORITHM_PROPERTIES));
     }
     
     private void applyStructuredIntentEvidence(final EncryptWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        request.getOptions().setRequiresDecrypt(getNullableBoolean(structuredIntentEvidence, WorkflowFieldNames.REQUIRES_DECRYPT));
-        request.getOptions().setRequiresEqualityFilter(getNullableBoolean(structuredIntentEvidence, WorkflowFieldNames.REQUIRES_EQUALITY_FILTER));
-        request.getOptions().setRequiresLikeQuery(getNullableBoolean(structuredIntentEvidence, WorkflowFieldNames.REQUIRES_LIKE_QUERY));
+        request.getOptions().setRequiresDecrypt((Boolean) structuredIntentEvidence.get(WorkflowFieldNames.REQUIRES_DECRYPT));
+        request.getOptions().setRequiresEqualityFilter((Boolean) structuredIntentEvidence.get(WorkflowFieldNames.REQUIRES_EQUALITY_FILTER));
+        request.getOptions().setRequiresLikeQuery((Boolean) structuredIntentEvidence.get(WorkflowFieldNames.REQUIRES_LIKE_QUERY));
         Object fieldSemantics = structuredIntentEvidence.get(WorkflowFieldNames.FIELD_SEMANTICS);
         if (null != fieldSemantics) {
-            request.setFieldSemantics(String.valueOf(fieldSemantics).trim());
+            request.setFieldSemantics(((String) fieldSemantics).trim());
         }
-    }
-    
-    private void applyUserOverrides(final EncryptWorkflowRequest request, final Map<String, Object> userOverrides) {
-        request.setAlgorithmType(resolveOverrideValue(request.getAlgorithmType(), userOverrides.get(WorkflowFieldNames.ALGORITHM_TYPE)));
-        request.getOptions().setAssistedQueryAlgorithmType(resolveOverrideValue(
-                request.getOptions().getAssistedQueryAlgorithmType(), userOverrides.get(WorkflowFieldNames.ASSISTED_QUERY_ALGORITHM_TYPE)));
-        request.getOptions().setLikeQueryAlgorithmType(resolveOverrideValue(request.getOptions().getLikeQueryAlgorithmType(), userOverrides.get(WorkflowFieldNames.LIKE_QUERY_ALGORITHM_TYPE)));
-        request.getOptions().setCipherColumnName(resolveOverrideValue(request.getOptions().getCipherColumnName(), userOverrides.get(WorkflowFieldNames.CIPHER_COLUMN_NAME)));
-        request.getOptions().setAssistedQueryColumnName(resolveOverrideValue(
-                request.getOptions().getAssistedQueryColumnName(), userOverrides.get(WorkflowFieldNames.ASSISTED_QUERY_COLUMN_NAME)));
-        request.getOptions().setLikeQueryColumnName(resolveOverrideValue(request.getOptions().getLikeQueryColumnName(), userOverrides.get(WorkflowFieldNames.LIKE_QUERY_COLUMN_NAME)));
-    }
-    
-    private Boolean getNullableBoolean(final Map<String, Object> source, final String fieldName) {
-        if (!source.containsKey(fieldName) || null == source.get(fieldName)) {
-            return null;
-        }
-        Object rawValue = source.get(fieldName);
-        return rawValue instanceof Boolean ? (Boolean) rawValue : Boolean.parseBoolean(String.valueOf(rawValue).trim());
-    }
-    
-    private String resolveOverrideValue(final String currentValue, final Object rawValue) {
-        if (null == rawValue) {
-            return currentValue;
-        }
-        String actualValue = String.valueOf(rawValue).trim();
-        return actualValue.isEmpty() ? currentValue : actualValue;
     }
 }

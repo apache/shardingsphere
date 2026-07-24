@@ -21,7 +21,6 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,21 +73,20 @@ class MySQLComStmtExecutePacketTest {
     
     @Test
     void assertReadParametersWithSignedInteger() throws SQLException {
-        byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00};
-        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
-        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
-        List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0), Collections.emptyList()), is(Collections.<Object>singletonList(1)));
-    }
-    
-    @Test
-    void assertReadParametersWithUnsignedInteger() throws SQLException {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        int unsignedFlag = MySQLColumnDefinitionFlag.UNSIGNED.getValue();
-        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(unsignedFlag), Collections.emptyList()), is(Collections.<Object>singletonList(4294967295L)));
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.emptyList()), is(Collections.<Object>singletonList(-1)));
+    }
+    
+    @Test
+    void assertReadParametersWithUnsignedInteger() throws SQLException {
+        byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, (byte) 0x80, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
+        List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.emptyList()), is(Collections.<Object>singletonList(4294967295L)));
     }
     
     @Test
@@ -97,8 +95,7 @@ class MySQLComStmtExecutePacketTest {
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        List<Integer> parameterFlags = Collections.singletonList(0);
-        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), parameterFlags, Collections.emptyList()), is(Collections.singletonList(null)));
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.emptyList()), is(Collections.singletonList(null)));
     }
     
     @Test
@@ -107,7 +104,36 @@ class MySQLComStmtExecutePacketTest {
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        assertThat(actual.readParameters(parameterTypes, Collections.singleton(0), Collections.emptyList(), Collections.emptyList()), is(Collections.singletonList(null)));
+        assertThat(actual.readParameters(parameterTypes, Collections.singleton(0), Collections.emptyList()), is(Collections.singletonList(null)));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("stringParameterTypesBoundToBlobColumnsArguments")
+    void assertReadParametersWithStringTypeBoundToBlobColumn(final String name, final MySQLBinaryColumnType parameterType,
+                                                             final MySQLBinaryColumnType parameterColumnType) throws SQLException {
+        byte[] data = createPacketData(parameterType, new byte[]{(byte) 0xac, (byte) 0xed, (byte) 0xff});
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
+        List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
+        Object actualValue = actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(parameterColumnType)).get(0);
+        assertTrue(actualValue instanceof byte[]);
+        assertArrayEquals(new byte[]{(byte) 0xac, (byte) 0xed, (byte) 0xff}, (byte[]) actualValue);
+    }
+    
+    private static Stream<Arguments> stringParameterTypesBoundToBlobColumnsArguments() {
+        return Stream.of(
+                Arguments.of("string-parameter-bound-to-tiny-blob-column", MySQLBinaryColumnType.STRING, MySQLBinaryColumnType.TINY_BLOB),
+                Arguments.of("string-parameter-bound-to-blob-column", MySQLBinaryColumnType.STRING, MySQLBinaryColumnType.BLOB),
+                Arguments.of("string-parameter-bound-to-medium-blob-column", MySQLBinaryColumnType.STRING, MySQLBinaryColumnType.MEDIUM_BLOB),
+                Arguments.of("string-parameter-bound-to-long-blob-column", MySQLBinaryColumnType.STRING, MySQLBinaryColumnType.LONG_BLOB),
+                Arguments.of("var-string-parameter-bound-to-tiny-blob-column", MySQLBinaryColumnType.VAR_STRING, MySQLBinaryColumnType.TINY_BLOB),
+                Arguments.of("var-string-parameter-bound-to-blob-column", MySQLBinaryColumnType.VAR_STRING, MySQLBinaryColumnType.BLOB),
+                Arguments.of("var-string-parameter-bound-to-medium-blob-column", MySQLBinaryColumnType.VAR_STRING, MySQLBinaryColumnType.MEDIUM_BLOB),
+                Arguments.of("var-string-parameter-bound-to-long-blob-column", MySQLBinaryColumnType.VAR_STRING, MySQLBinaryColumnType.LONG_BLOB),
+                Arguments.of("varchar-parameter-bound-to-tiny-blob-column", MySQLBinaryColumnType.VARCHAR, MySQLBinaryColumnType.TINY_BLOB),
+                Arguments.of("varchar-parameter-bound-to-blob-column", MySQLBinaryColumnType.VARCHAR, MySQLBinaryColumnType.BLOB),
+                Arguments.of("varchar-parameter-bound-to-medium-blob-column", MySQLBinaryColumnType.VARCHAR, MySQLBinaryColumnType.MEDIUM_BLOB),
+                Arguments.of("varchar-parameter-bound-to-long-blob-column", MySQLBinaryColumnType.VARCHAR, MySQLBinaryColumnType.LONG_BLOB));
     }
     
     @DisplayName("assertReadParametersWithStringDecoding")
@@ -115,12 +141,11 @@ class MySQLComStmtExecutePacketTest {
     @MethodSource("stringDecodingArguments")
     void assertReadParametersWithStringDecoding(final String name, final MySQLBinaryColumnType parameterType,
                                                 final List<MySQLBinaryColumnType> parameterColumnTypes, final boolean expectedString) throws SQLException {
-        byte[] data = createPacketData(parameterType);
+        byte[] data = createPacketData(parameterType, new byte[]{0x61});
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
-        List<Integer> parameterFlags = Collections.singletonList(0);
-        Object actualValue = actual.readParameters(parameterTypes, Collections.emptySet(), parameterFlags, parameterColumnTypes).get(0);
+        Object actualValue = actual.readParameters(parameterTypes, Collections.emptySet(), parameterColumnTypes).get(0);
         assertThat(actualValue instanceof String, is(expectedString));
         if (expectedString) {
             assertThat(actualValue, is("a"));
@@ -134,7 +159,6 @@ class MySQLComStmtExecutePacketTest {
                 Arguments.of("string-column", MySQLBinaryColumnType.STRING, Collections.singletonList(MySQLBinaryColumnType.STRING), true),
                 Arguments.of("var-string-column", MySQLBinaryColumnType.STRING, Collections.singletonList(MySQLBinaryColumnType.VAR_STRING), true),
                 Arguments.of("varchar-column", MySQLBinaryColumnType.STRING, Collections.singletonList(MySQLBinaryColumnType.VARCHAR), true),
-                Arguments.of("blob-column", MySQLBinaryColumnType.STRING, Collections.singletonList(MySQLBinaryColumnType.BLOB), false),
                 Arguments.of("missing-column-type", MySQLBinaryColumnType.STRING, Collections.emptyList(), false),
                 Arguments.of("blob-parameter-type", MySQLBinaryColumnType.BLOB, Collections.singletonList(MySQLBinaryColumnType.VAR_STRING), false));
     }
@@ -146,7 +170,7 @@ class MySQLComStmtExecutePacketTest {
                 Arguments.of("statement-id-256", new byte[]{0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00}, 256, 0));
     }
     
-    private byte[] createPacketData(final MySQLBinaryColumnType parameterType) {
+    private byte[] createPacketData(final MySQLBinaryColumnType parameterType, final byte[] value) {
         List<Byte> result = new ArrayList<>();
         byte[] fixedPrefix = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01};
         for (byte each : fixedPrefix) {
@@ -154,8 +178,10 @@ class MySQLComStmtExecutePacketTest {
         }
         result.add((byte) parameterType.getValue());
         result.add((byte) 0x00);
-        result.add((byte) 0x01);
-        result.add((byte) 0x61);
+        result.add((byte) value.length);
+        for (byte each : value) {
+            result.add(each);
+        }
         byte[] bytes = new byte[result.size()];
         for (int i = 0; i < result.size(); i++) {
             bytes[i] = result.get(i);

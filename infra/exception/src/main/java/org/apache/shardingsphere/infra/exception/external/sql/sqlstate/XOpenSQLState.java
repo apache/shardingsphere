@@ -63,6 +63,8 @@ public enum XOpenSQLState implements SQLState {
     
     NOT_FOUND("42S02"),
     
+    COLUMN_NOT_FOUND("42S22"),
+    
     CHECK_OPTION_VIOLATION("44000"),
     
     INVALID_COLUMN_NUMBER("HV008"),

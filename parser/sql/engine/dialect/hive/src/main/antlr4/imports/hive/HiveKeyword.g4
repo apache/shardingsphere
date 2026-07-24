@@ -191,6 +191,10 @@ BTREE
     : B T R E E
     ;
 
+BUCKET
+    : B U C K E T
+    ;
+
 BUCKETS
     : B U C K E T S
     ;
@@ -313,6 +317,10 @@ COLUMN
 
 COLUMNS
     : C O L U M N S
+    ;
+
+CLUSTER
+    : C L U S T E R
     ;
 
 COLUMN_FORMAT
@@ -1095,6 +1103,10 @@ INTEGER
     : I N T E G E R
     ;
 
+INTERSECT
+    : I N T E R S E C T
+    ;
+
 INTERVAL
     : I N T E R V A L
     ;
@@ -1819,6 +1831,10 @@ PASSWORD_LOCK_TIME
     : P A S S W O R D UL_ L O C K UL_ T I M E
     ;
 
+PERCENT
+    : P E R C E N T
+    ;
+
 PATH
     : P A T H
     ;
@@ -2171,6 +2187,10 @@ REUSE
     : R E U S E
     ;
 
+RECORDREADER
+    : R E C O R D R E A D E R
+    ;
+
 REVERSE
     : R E V E R S E
     ;
@@ -2201,6 +2221,10 @@ ROLLBACK
 
 ROLLUP
     : R O L L U P
+    ;
+
+REDUCE
+    : R E D U C E
     ;
 
 ROTATE
@@ -2289,6 +2313,10 @@ SECURITY
 
 SELECT
     : S E L E C T
+    ;
+
+SEMI
+    : S E M I
     ;
 
 SENSITIVE
@@ -2701,6 +2729,14 @@ SOURCE_PUBLIC_KEY_PATH
 
 TABLE
     : T A B L E
+    ;
+
+TABLESAMPLE
+    : T A B L E S A M P L E
+    ;
+
+TRANSFORM
+    : T R A N S F O R M
     ;
 
 TABLES
@@ -3226,6 +3262,10 @@ SORTED
     : S O R T E D
     ;
 
+SORT
+    : S O R T
+    ;
+
 SKEWED
     : S K E W E D
     ;
@@ -3238,12 +3278,20 @@ SERDEPROPERTIES
     : S E R D E P R O P E R T I E S
     ;
 
+SETS
+    : S E T S
+    ;
+
 TBLPROPERTIES
     : T B L P R O P E R T I E S
     ;
 
 DELIMITED
     : D E L I M I T E D
+    ;
+
+DISTRIBUTE
+    : D I S T R I B U T E
     ;
 
 COLLECTION
@@ -3580,4 +3628,8 @@ ORPHAN_FILES
 
 OLDER
     : O L D E R
+    ;
+
+CHERRY_PICK
+    : C H E R R Y '-' P I C K
     ;

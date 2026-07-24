@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
@@ -33,26 +32,17 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBin
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 /**
  * Tool handler for default shadow algorithm workflow planning.
  */
-public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
+public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
-    private final ShadowWorkflowPlanningService planningService;
-    
-    public PlanDefaultShadowAlgorithmToolHandler() {
-        planningService = new ShadowWorkflowPlanningService();
-    }
-    
-    PlanDefaultShadowAlgorithmToolHandler(final ShadowWorkflowPlanningService planningService) {
-        this.planningService = planningService;
-    }
+    private final ShadowWorkflowPlanningService planningService = new ShadowWorkflowPlanningService();
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -61,40 +51,21 @@ public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandl
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        ShadowDefaultAlgorithmWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowDefaultAlgorithmWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
-        WorkflowContextSnapshot snapshot = planningService.planDefaultAlgorithm(
-                workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
+        ShadowDefaultAlgorithmWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowDefaultAlgorithmWorkflowRequest::new, arguments,
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        WorkflowContextSnapshot snapshot = planningService.planDefaultAlgorithm(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final ShadowDefaultAlgorithmWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
+        workflowPlanningArguments.applyStringArgument(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument(ShadowFeatureDefinition.ALGORITHM_PROPERTIES_FIELD));
     }
     
     private void applyStructuredIntentEvidence(final ShadowDefaultAlgorithmWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
         applyMapField(structuredIntentEvidence, request);
-    }
-    
-    private void applyUserOverrides(final ShadowDefaultAlgorithmWorkflowRequest request, final Map<String, Object> userOverrides) {
-        applyStructuredIntentEvidence(request, userOverrides);
-    }
-    
-    private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
-        Object value = values.get(fieldName);
-        if (null != value) {
-            consumer.accept(String.valueOf(value));
-        }
-    }
-    
-    private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        final String value = workflowPlanningArguments.getStringArgument(fieldName);
-        if (!value.isEmpty()) {
-            consumer.accept(value);
-        }
     }
     
     private void applyMapField(final Map<String, Object> values, final ShadowDefaultAlgorithmWorkflowRequest request) {

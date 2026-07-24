@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
@@ -40,7 +41,7 @@ public final class ShadowInspectionService {
      * @return shadow rule rows
      */
     public List<Map<String, Object>> queryRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -52,7 +53,7 @@ public final class ShadowInspectionService {
      * @return shadow rule rows
      */
     public List<Map<String, Object>> queryRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW RULE %s FROM %s",
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW RULE %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(ruleName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
@@ -64,7 +65,7 @@ public final class ShadowInspectionService {
      * @return shadow table rule rows
      */
     public List<Map<String, Object>> queryTableRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW TABLE RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW TABLE RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -76,7 +77,7 @@ public final class ShadowInspectionService {
      * @return shadow table rule rows
      */
     public List<Map<String, Object>> queryTableRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW TABLE RULE %s FROM %s",
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW TABLE RULE %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
@@ -88,7 +89,7 @@ public final class ShadowInspectionService {
      * @return configured shadow algorithm rows
      */
     public List<Map<String, Object>> queryAlgorithms(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHADOW ALGORITHMS FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHADOW ALGORITHMS FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -99,7 +100,7 @@ public final class ShadowInspectionService {
      * @return default shadow algorithm rows
      */
     public List<Map<String, Object>> queryDefaultAlgorithm(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW DEFAULT SHADOW ALGORITHM FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW DEFAULT SHADOW ALGORITHM FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -110,25 +111,26 @@ public final class ShadowInspectionService {
      * @return count rows
      */
     public List<Map<String, Object>> queryRuleCount(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("COUNT SHADOW RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("COUNT SHADOW RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
      * Query shadow algorithm plugin catalog.
      *
      * @param queryFacade query facade
-     * @return shadow algorithm plugin rows with built-in property guidance
+     * @return shadow algorithm plugin query result with built-in property guidance
      */
-    public List<Map<String, Object>> queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        return queryAlgorithmRows(queryFacade).stream().map(this::appendPropertyGuidance).toList();
+    public WorkflowQueryResult queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
+        WorkflowQueryResult result = queryAlgorithmRows(queryFacade);
+        return new WorkflowQueryResult(result.getRows().stream().map(this::appendPropertyGuidance).toList(), result.isAvailabilityConfirmed());
     }
     
-    private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
+    private WorkflowQueryResult queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
         try {
-            return queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS");
+            return WorkflowQueryResult.confirmed(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS"));
         } catch (final MCPQueryFailedException ex) {
             if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return List.of(Map.of("type", "SQL_HINT"), Map.of("type", "REGEX_MATCH"), Map.of("type", "VALUE_MATCH"));
+                return WorkflowQueryResult.fallback(List.of(Map.of("type", "SQL_HINT"), Map.of("type", "REGEX_MATCH"), Map.of("type", "VALUE_MATCH")));
             }
             throw ex;
         }

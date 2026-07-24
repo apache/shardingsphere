@@ -17,23 +17,23 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
-import org.apache.shardingsphere.mcp.support.database.response.MCPDatabaseCapabilityResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.support.database.payload.MCPDatabaseCapabilityPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 
 /**
  * Handler for database capabilities resource URI.
  */
-public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private static final String URI_PATTERN = "shardingsphere://databases/{database}/capabilities";
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -42,9 +42,9 @@ public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCP
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        var databaseCapabilityProvider = databaseContext.getCapabilityFacade();
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
+        var databaseCapabilityProvider = requestContext.getCapabilityFacade();
         String databaseName = uriVariables.getValue("database");
-        return databaseCapabilityProvider.provide(databaseName).<MCPResponse>map(MCPDatabaseCapabilityResponse::new).orElseThrow(DatabaseCapabilityNotFoundException::new);
+        return databaseCapabilityProvider.provide(databaseName).<MCPSuccessPayload>map(MCPDatabaseCapabilityPayload::new).orElseThrow(DatabaseCapabilityNotFoundException::new);
     }
 }

@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.readwritesplitting.completion.ReadwriteSplittingLoadBalanceAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingRuleWorkflowValidationService;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingStatusWorkflowValidationService;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -47,12 +50,19 @@ class ReadwriteSplittingMCPHandlerProviderTest {
                 ReadwriteSplittingFeatureDefinition.RULE_STATUS_RESOURCE_URI,
                 ReadwriteSplittingFeatureDefinition.RULE_COUNT_RESOURCE_URI,
                 ReadwriteSplittingFeatureDefinition.LOAD_BALANCE_ALGORITHM_PLUGINS_RESOURCE_URI));
+        assertTrue(actual.stream().allMatch(each -> MCPFeatureRequestContext.class.equals(each.getContextType())));
     }
     
     @Test
     void assertGetToolHandlers() {
         List<String> actual = new ReadwriteSplittingMCPHandlerProvider().getToolHandlers().stream().map(MCPToolHandler::getToolName).toList();
         assertThat(actual, is(List.of(ReadwriteSplittingFeatureDefinition.PLAN_RULE_TOOL_NAME, ReadwriteSplittingFeatureDefinition.PLAN_STATUS_TOOL_NAME)));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        MCPCompletionHandler<?> actual = new ReadwriteSplittingMCPHandlerProvider().getCompletionHandlers().iterator().next();
+        assertThat(actual, isA(ReadwriteSplittingLoadBalanceAlgorithmCompletionHandler.class));
     }
     
     @Test

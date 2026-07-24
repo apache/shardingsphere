@@ -50,15 +50,18 @@ public final class LLMUsabilityReportWriter {
         appendSummaryItem(result, "overallScore", scorecard.getOverallScore());
         appendSummaryItem(result, "fullScore", scorecard.isFullScore());
         appendSummaryItem(result, "taskSuccessRate", scorecard.getTaskSuccessRate());
-        appendSummaryItem(result, "naturalTaskSuccessRate", scorecard.getNaturalTaskSuccessRate());
-        appendSummaryItem(result, "protocolContractSuccessRate", scorecard.getProtocolContractSuccessRate());
+        appendApplicableRate(result, "naturalTaskSuccessRate", scorecard.getNaturalTaskSuccessRate(), scorecard.getNaturalTaskSampleCount());
+        appendSummaryItem(result, "naturalTaskSampleCount", scorecard.getNaturalTaskSampleCount());
+        appendApplicableRate(result, "protocolContractSuccessRate", scorecard.getProtocolContractSuccessRate(), scorecard.getProtocolContractSampleCount());
+        appendSummaryItem(result, "protocolContractSampleCount", scorecard.getProtocolContractSampleCount());
         appendSummaryItem(result, "firstCorrectActionRate", scorecard.getFirstCorrectActionRate());
         appendSummaryItem(result, "invalidCallRate", scorecard.getInvalidCallRate());
         appendSummaryItem(result, "averageRoundTrips", scorecard.getAverageRoundTrips());
-        appendSummaryItem(result, "queryAnswerFidelity", scorecard.getQueryAnswerFidelity());
         appendSummaryItem(result, "boundaryConfusionRate", scorecard.getBoundaryConfusionRate());
-        appendSummaryItem(result, "resourceHitRate", scorecard.getResourceHitRate());
-        appendSummaryItem(result, "recoveryRate", scorecard.getRecoveryRate());
+        appendApplicableRate(result, "resourceHitRate", scorecard.getResourceHitRate(), scorecard.getResourceHitSampleCount());
+        appendSummaryItem(result, "resourceHitSampleCount", scorecard.getResourceHitSampleCount());
+        appendApplicableRate(result, "recoveryRate", scorecard.getRecoveryRate(), scorecard.getRecoverySampleCount());
+        appendSummaryItem(result, "recoverySampleCount", scorecard.getRecoverySampleCount());
         appendSummaryItem(result, "nextActionFollowRate", scorecard.getNextActionFollowRate());
         appendSummaryItem(result, "approvalViolationRate", scorecard.getApprovalViolationRate());
         appendSummaryItem(result, "nativeToolCallRate", scorecard.getNativeToolCallRate());
@@ -72,6 +75,10 @@ public final class LLMUsabilityReportWriter {
     
     private void appendSummaryItem(final StringBuilder report, final String name, final Object value) {
         report.append("- ").append(name).append(": ").append(value).append(System.lineSeparator());
+    }
+    
+    private void appendApplicableRate(final StringBuilder report, final String name, final double value, final int sampleCount) {
+        appendSummaryItem(report, name, 0 == sampleCount ? "n/a" : value);
     }
     
     private void appendScenarioResult(final StringBuilder report, final LLMUsabilityScenarioResult scenarioResult) {

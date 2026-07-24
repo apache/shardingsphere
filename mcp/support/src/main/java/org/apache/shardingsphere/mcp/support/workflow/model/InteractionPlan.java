@@ -62,8 +62,8 @@ public final class InteractionPlan {
         result.setPlanId(planId);
         result.setSummary(summary);
         result.setCurrentStep(WorkflowLifecycle.STEP_INTAKING);
-        result.setDeliveryMode(resolveMode(request.getDeliveryMode(), "all-at-once"));
-        result.setExecutionMode(resolveMode(request.getExecutionMode(), "review-then-execute"));
+        result.setDeliveryMode(resolveMode(request.getDeliveryMode(), WorkflowLifecycle.DELIVERY_MODE_ALL_AT_ONCE));
+        result.setExecutionMode(resolveMode(request.getExecutionMode(), WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE));
         result.getSteps().addAll(steps);
         result.getValidationStrategy().put("layers", validationLayers);
         return result;

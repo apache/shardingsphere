@@ -18,65 +18,66 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Session attribution resolver.
  */
 @Getter
+@AllArgsConstructor
 public final class SessionAttributionResolver {
     
     private final SessionAttributionSourceConfiguration config;
     
-    public SessionAttributionResolver(final SessionAttributionSourceConfiguration config) {
-        this.config = config;
-    }
-    
     /**
-     * Resolve session attribution from HTTP request.
+     * Resolve session identity from HTTP request.
      *
      * @param request HTTP request
-     * @return session attribution
+     * @param sessionId session identifier
+     * @return session identity
      */
-    public Optional<MCPSessionAttribution> resolve(final HttpServletRequest request) {
+    public MCPSessionIdentity resolve(final HttpServletRequest request, final String sessionId) {
         if (!isEnabled()) {
-            return Optional.empty();
+            return new MCPSessionIdentity(sessionId, "", "", Map.of());
         }
         String subject = getHeaderValue(request, config.getSubjectHeader());
         if (subject.isEmpty()) {
-            return Optional.empty();
+            return new MCPSessionIdentity(sessionId, "", "", Map.of());
         }
-        return Optional.of(new MCPSessionAttribution(subject, getHeaderValue(request, config.getSourceHeader()),
-                resolveAttributes(Collections.list(request.getHeaderNames()), name -> getHeaderValue(request, name))));
+        Enumeration<String> headerNames = request.getHeaderNames();
+        return new MCPSessionIdentity(sessionId, subject, getHeaderValue(request, config.getSourceHeader()),
+                resolveAttributes(null == headerNames ? List.of() : Collections.list(headerNames), name -> getHeaderValue(request, name)));
     }
     
     /**
-     * Resolve session attribution from header map.
+     * Resolve session identity from header map.
      *
      * @param headers headers
-     * @return session attribution
+     * @param sessionId session identifier
+     * @return session identity
      */
-    public Optional<MCPSessionAttribution> resolve(final Map<String, List<String>> headers) {
+    public MCPSessionIdentity resolve(final Map<String, List<String>> headers, final String sessionId) {
         if (!isEnabled()) {
-            return Optional.empty();
+            return new MCPSessionIdentity(sessionId, "", "", Map.of());
         }
         String subject = getHeaderValue(headers, config.getSubjectHeader());
         if (subject.isEmpty()) {
-            return Optional.empty();
+            return new MCPSessionIdentity(sessionId, "", "", Map.of());
         }
-        return Optional.of(new MCPSessionAttribution(subject, getHeaderValue(headers, config.getSourceHeader()),
-                resolveAttributes(headers.keySet(), name -> getHeaderValue(headers, name))));
+        return new MCPSessionIdentity(sessionId, subject, getHeaderValue(headers, config.getSourceHeader()),
+                resolveAttributes(headers.keySet(), name -> getHeaderValue(headers, name)));
     }
     
     /**

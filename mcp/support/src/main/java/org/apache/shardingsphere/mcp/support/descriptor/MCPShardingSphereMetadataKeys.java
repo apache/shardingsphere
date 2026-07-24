@@ -37,15 +37,9 @@ public final class MCPShardingSphereMetadataKeys {
     
     public static final String FEATURE = PREFIX + "feature";
     
-    public static final String RUNTIME_VISIBILITY = PREFIX + "runtime-visibility";
-    
     public static final String URI_VARIABLES = PREFIX + "uri-variables";
     
     public static final String RELATED_TOOLS = PREFIX + "related-tools";
-    
-    public static final String FOLLOW_UP_TOOLS = PREFIX + "follow-up-tools";
-    
-    public static final String REJECTED_STATEMENT_CLASSES = PREFIX + "rejected-statement-classes";
     
     public static final String WORKFLOW_KIND = PREFIX + "workflow-kind";
     
@@ -87,11 +81,9 @@ public final class MCPShardingSphereMetadataKeys {
     
     public static final String CONTEXT_ARGUMENTS = PREFIX + "context-arguments";
     
+    public static final String REQUIRED_CONTEXT_ARGUMENTS = PREFIX + "required-context-arguments";
+    
     public static final String CANDIDATE_COUNT = PREFIX + "candidate-count";
-    
-    public static final String MATCHED_CANDIDATE_COUNT = PREFIX + "matched-candidate-count";
-    
-    public static final String RETURNED_CANDIDATE_COUNT = PREFIX + "returned-candidate-count";
     
     public static final String MISSING_CONTEXT_ARGUMENTS = PREFIX + "missing-context-arguments";
     

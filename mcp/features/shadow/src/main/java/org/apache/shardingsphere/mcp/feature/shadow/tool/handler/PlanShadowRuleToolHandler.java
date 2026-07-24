@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
@@ -33,26 +32,17 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBin
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 /**
  * Tool handler for shadow rule workflow planning.
  */
-public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
+public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
-    private final ShadowWorkflowPlanningService planningService;
-    
-    public PlanShadowRuleToolHandler() {
-        planningService = new ShadowWorkflowPlanningService();
-    }
-    
-    PlanShadowRuleToolHandler(final ShadowWorkflowPlanningService planningService) {
-        this.planningService = planningService;
-    }
+    private final ShadowWorkflowPlanningService planningService = new ShadowWorkflowPlanningService();
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -61,48 +51,29 @@ public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPWorkfl
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        ShadowRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowRuleWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
-        WorkflowContextSnapshot snapshot = planningService.planRule(
-                workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
+        ShadowRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowRuleWorkflowRequest::new, arguments,
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        WorkflowContextSnapshot snapshot = planningService.planRule(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final ShadowRuleWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, ShadowFeatureDefinition.RULE_FIELD, request::setRuleName);
-        applyStringArgument(workflowPlanningArguments, ShadowFeatureDefinition.SOURCE_STORAGE_UNIT_FIELD, request::setSourceStorageUnit);
-        applyStringArgument(workflowPlanningArguments, ShadowFeatureDefinition.SHADOW_STORAGE_UNIT_FIELD, request::setShadowStorageUnit);
-        applyStringArgument(workflowPlanningArguments, ShadowFeatureDefinition.TABLE_FIELD, request::setTableName);
-        applyStringArgument(workflowPlanningArguments, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
+        workflowPlanningArguments.applyStringArgument(ShadowFeatureDefinition.RULE_FIELD, request::setRuleName);
+        workflowPlanningArguments.applyStringArgument(ShadowFeatureDefinition.SOURCE_STORAGE_UNIT_FIELD, request::setSourceStorageUnit);
+        workflowPlanningArguments.applyStringArgument(ShadowFeatureDefinition.SHADOW_STORAGE_UNIT_FIELD, request::setShadowStorageUnit);
+        workflowPlanningArguments.applyStringArgument(ShadowFeatureDefinition.TABLE_FIELD, request::setTableName);
+        workflowPlanningArguments.applyStringArgument(ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument(ShadowFeatureDefinition.ALGORITHM_PROPERTIES_FIELD));
     }
     
     private void applyStructuredIntentEvidence(final ShadowRuleWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.RULE_FIELD, request::setRuleName);
-        applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.SOURCE_STORAGE_UNIT_FIELD, request::setSourceStorageUnit);
-        applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.SHADOW_STORAGE_UNIT_FIELD, request::setShadowStorageUnit);
-        applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.TABLE_FIELD, request::setTableName);
-        applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.RULE_FIELD, request::setRuleName);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.SOURCE_STORAGE_UNIT_FIELD, request::setSourceStorageUnit);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.SHADOW_STORAGE_UNIT_FIELD, request::setShadowStorageUnit);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.TABLE_FIELD, request::setTableName);
+        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
         applyMapField(structuredIntentEvidence, request);
-    }
-    
-    private void applyUserOverrides(final ShadowRuleWorkflowRequest request, final Map<String, Object> userOverrides) {
-        applyStructuredIntentEvidence(request, userOverrides);
-    }
-    
-    private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
-        Object value = values.get(fieldName);
-        if (null != value) {
-            consumer.accept(String.valueOf(value));
-        }
-    }
-    
-    private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        final String value = workflowPlanningArguments.getStringArgument(fieldName);
-        if (!value.isEmpty()) {
-            consumer.accept(value);
-        }
     }
     
     private void applyMapField(final Map<String, Object> values, final ShadowRuleWorkflowRequest request) {

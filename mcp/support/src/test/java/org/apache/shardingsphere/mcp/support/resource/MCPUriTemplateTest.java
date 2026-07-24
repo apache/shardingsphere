@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.resource;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,6 +26,9 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPUriTemplateTest {
     
@@ -38,14 +41,35 @@ class MCPUriTemplateTest {
     @Test
     void assertExpandIfComplete() {
         Optional<String> actualUri = new MCPUriTemplate("shardingsphere://databases/{database}/schemas/{schema}")
-                .expandIfComplete(new MCPUriVariables(Map.of("database", "logic_db", "schema", "public")));
+                .expandIfComplete(new MCPResourceURIVariables(Map.of("database", "logic_db", "schema", "public")));
         assertThat(actualUri, is(Optional.of("shardingsphere://databases/logic_db/schemas/public")));
     }
     
     @Test
     void assertExpandIfCompleteWithMissingVariable() {
         Optional<String> actualUri = new MCPUriTemplate("shardingsphere://databases/{database}/schemas/{schema}")
-                .expandIfComplete(new MCPUriVariables(Map.of("database", "logic_db")));
+                .expandIfComplete(new MCPResourceURIVariables(Map.of("database", "logic_db")));
         assertThat(actualUri, is(Optional.empty()));
+    }
+    
+    @Test
+    void assertParse() {
+        Optional<MCPResourceURIVariables> actual = new MCPUriTemplate("shardingsphere://databases/{database}").parse("shardingsphere://databases/logic%20db");
+        assertThat(actual.orElseThrow().getValue("database"), is("logic db"));
+    }
+    
+    @Test
+    void assertParseWithUnexpandedVariable() {
+        assertFalse(new MCPUriTemplate("shardingsphere://databases/{database}").parse("shardingsphere://databases/{database}").isPresent());
+    }
+    
+    @Test
+    void assertOverlaps() {
+        assertTrue(new MCPUriTemplate("shardingsphere://databases/{database}").overlaps(new MCPUriTemplate("shardingsphere://databases/logic_db")));
+    }
+    
+    @Test
+    void assertCreateWithEmbeddedVariable() {
+        assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate("shardingsphere://databases/prefix-{database}"));
     }
 }

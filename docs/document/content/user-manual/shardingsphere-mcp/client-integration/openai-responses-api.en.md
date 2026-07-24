@@ -9,7 +9,7 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 - Use this page when a backend service, agent platform, or custom application needs to call ShardingSphere-MCP through the OpenAI API.
 - Use this integration when the model should import ShardingSphere-MCP tools on demand and constrain them with `allowed_tools`, `require_approval`, or OAuth parameters.
-- After integration, the model can inspect logic databases, inspect table structures, run controlled read-only queries, or call `database_gateway_validate_proxy_connectivity` for preflight validation against configured runtime databases.
+- After integration, the model can inspect logic databases, inspect table structures, run controlled read-only queries, or call `database_gateway_validate_runtime_database` for preflight validation against configured runtime databases.
 
 ## Prerequisites
 
@@ -29,6 +29,8 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 Pass ShardingSphere-MCP as an `mcp` tool in the `tools` array of a Responses API request. A minimal example is:
 
 ```python
+import os
+
 from openai import OpenAI
 
 client = OpenAI()
@@ -39,16 +41,18 @@ response = client.responses.create(
         {
             "type": "mcp",
             "server_label": "shardingsphere",
-            "server_url": "https://example.com/mcp",
+            "server_url": os.environ["SHARDINGSPHERE_MCP_REMOTE_URL"],
             "allowed_tools": [
                 "database_gateway_search_metadata",
-                "database_gateway_validate_proxy_connectivity",
+                "database_gateway_validate_runtime_database",
             ],
         }
     ],
     input="Use ShardingSphere-MCP to inspect the tables in the logic database.",
 )
 ```
+
+Set `SHARDINGSPHERE_MCP_REMOTE_URL` to the secured remote endpoint published by the trusted gateway before running the request.
 
 Pay attention to these fields:
 
@@ -69,9 +73,9 @@ Recognition succeeds when:
 Invocation succeeds when:
 
 - Start with a minimal validation request such as:
-  - Show the tables in `<logic-database>`.
+  - Show the tables in `logic_db`.
   - Show columns and indexes for the `orders` table.
-  - Call `database_gateway_validate_proxy_connectivity` for a configured runtime database.
+  - Call `database_gateway_validate_runtime_database` for a configured runtime database.
 - When `mcp_list_tools`, approval flow events, or final query results appear as expected, the integration is working.
 
 If the integration fails, check these items first:

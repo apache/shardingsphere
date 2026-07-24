@@ -9,7 +9,7 @@ In traditional database software development, automatic primary key generation i
 
 After data sharding, it is a very tricky problem to generate global unique primary keys from different data nodes. Self-incrementing keys between different actual tables within the same logical table generate duplicate primary keys because they are not mutually perceived. 
 
-Although collisions can be avoided by constraining the initial value and step size of self-incrementing primary keys, additional O&M rules must to be introduced, making the solution lack completeness and scalability. 
+Although collisions can be avoided by constraining the initial value and step size of self-incrementing primary keys, additional O&M rules must be introduced, making the solution lack completeness and scalability. 
 
 There are many third-party solutions that can perfectly solve this problem, such as UUID, which relies on specific algorithms to generate non-duplicate keys, or by introducing primary key generation services. 
 

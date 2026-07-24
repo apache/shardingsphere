@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFeatureData;
 
 import java.util.LinkedHashMap;
@@ -31,17 +30,12 @@ import java.util.Map;
  * Encrypt workflow state.
  */
 @Getter
+@NoArgsConstructor
 public final class EncryptWorkflowState implements WorkflowFeatureData {
     
     private final List<Map<String, Object>> beforeRules = new LinkedList<>();
     
     private final List<Map<String, Object>> expectedRules = new LinkedList<>();
-    
-    @Setter
-    private DerivedColumnPlan derivedColumnPlan;
-    
-    public EncryptWorkflowState() {
-    }
     
     public EncryptWorkflowState(final List<Map<String, Object>> beforeRules, final List<Map<String, Object>> expectedRules) {
         this.beforeRules.addAll(copyRules(beforeRules));
@@ -55,26 +49,7 @@ public final class EncryptWorkflowState implements WorkflowFeatureData {
     
     @Override
     public EncryptWorkflowState copy() {
-        EncryptWorkflowState result = new EncryptWorkflowState(beforeRules, expectedRules);
-        result.setDerivedColumnPlan(copyDerivedColumnPlan());
-        return result;
-    }
-    
-    private DerivedColumnPlan copyDerivedColumnPlan() {
-        if (null == derivedColumnPlan) {
-            return null;
-        }
-        DerivedColumnPlan result = new DerivedColumnPlan();
-        result.setLogicalColumn(derivedColumnPlan.getLogicalColumn());
-        result.setCipherColumnName(derivedColumnPlan.getCipherColumnName());
-        result.setAssistedQueryColumnName(derivedColumnPlan.getAssistedQueryColumnName());
-        result.setLikeQueryColumnName(derivedColumnPlan.getLikeQueryColumnName());
-        result.setCipherColumnRequired(derivedColumnPlan.isCipherColumnRequired());
-        result.setAssistedQueryColumnRequired(derivedColumnPlan.isAssistedQueryColumnRequired());
-        result.setLikeQueryColumnRequired(derivedColumnPlan.isLikeQueryColumnRequired());
-        result.setDataTypeStrategy(derivedColumnPlan.getDataTypeStrategy());
-        derivedColumnPlan.getNameCollisions().forEach(each -> result.getNameCollisions().add(new LinkedHashMap<>(each)));
-        return result;
+        return new EncryptWorkflowState(beforeRules, expectedRules);
     }
     
     private List<Map<String, Object>> copyRules(final List<Map<String, Object>> rules) {

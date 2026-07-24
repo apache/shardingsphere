@@ -28,9 +28,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 @FunctionalInterface
 public interface MCPWorkflowApplySynchronizationHandler {
     
-    MCPWorkflowApplySynchronizationHandler NO_OP = (snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId) -> {
-    };
-    
     /**
      * Synchronize workflow state after apply execution.
      *

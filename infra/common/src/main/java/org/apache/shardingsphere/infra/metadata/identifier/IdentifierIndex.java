@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.AmbiguousIdentifierException;
@@ -31,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -40,6 +43,7 @@ import java.util.Optional;
  * @param <T> metadata object type
  */
 @Slf4j
+@RequiredArgsConstructor
 public final class IdentifierIndex<T> {
     
     private final DatabaseIdentifierContext databaseIdentifierContext;
@@ -47,11 +51,6 @@ public final class IdentifierIndex<T> {
     private final IdentifierScope identifierScope;
     
     private volatile Snapshot<T> snapshot = Snapshot.empty();
-    
-    public IdentifierIndex(final DatabaseIdentifierContext databaseIdentifierContext, final IdentifierScope identifierScope) {
-        this.databaseIdentifierContext = databaseIdentifierContext;
-        this.identifierScope = identifierScope;
-    }
     
     /**
      * Rebuild identifier index by actual names.
@@ -61,12 +60,12 @@ public final class IdentifierIndex<T> {
     public synchronized void rebuild(final Map<String, T> values) {
         Map<String, T> newExactValues = new LinkedHashMap<>(values.size(), 1F);
         Map<String, Collection<String>> newNormalizedIdentifiers = new LinkedHashMap<>(values.size(), 1F);
-        IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
         for (Entry<String, T> entry : values.entrySet()) {
             newExactValues.put(entry.getKey(), entry.getValue());
-            addNormalizedIdentifier(newNormalizedIdentifiers, rule, entry.getKey());
+            addNormalizedIdentifier(newNormalizedIdentifiers, policy, entry.getKey());
         }
-        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, rule);
+        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, policy);
     }
     
     /**
@@ -97,13 +96,13 @@ public final class IdentifierIndex<T> {
         Snapshot<T> currentSnapshot = snapshot;
         Map<String, T> newExactValues = new LinkedHashMap<>(currentSnapshot.getExactValues());
         Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifierNames());
-        IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
         if (newExactValues.containsKey(name)) {
-            removeNormalizedIdentifier(newNormalizedIdentifiers, rule, name);
+            removeNormalizedIdentifier(newNormalizedIdentifiers, policy, name);
         }
         newExactValues.put(name, value);
-        addNormalizedIdentifier(newNormalizedIdentifiers, rule, name);
-        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, rule);
+        addNormalizedIdentifier(newNormalizedIdentifiers, policy, name);
+        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, policy);
     }
     
     /**
@@ -119,10 +118,10 @@ public final class IdentifierIndex<T> {
         }
         Map<String, T> newExactValues = new LinkedHashMap<>(currentSnapshot.getExactValues());
         Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifierNames());
-        IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
         T result = newExactValues.remove(name);
-        removeNormalizedIdentifier(newNormalizedIdentifiers, rule, name);
-        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, rule);
+        removeNormalizedIdentifier(newNormalizedIdentifiers, policy, name);
+        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, policy);
         return result;
     }
     
@@ -161,13 +160,12 @@ public final class IdentifierIndex<T> {
      * @return matched metadata object
      */
     public T get(final String identifier) {
-        Objects.requireNonNull(identifier, "identifier cannot be null.");
         Snapshot<T> currentSnapshot = snapshot;
-        IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
-        if (LookupMode.EXACT == rule.getLookupMode(QuoteCharacter.NONE)) {
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
+        if (LookupMode.EXACT == policy.getLookupMode(QuoteCharacter.NONE)) {
             return currentSnapshot.getExactValues().get(identifier);
         }
-        return getByNormalizedIdentifier(currentSnapshot, rule, identifier);
+        return getByNormalizedIdentifier(currentSnapshot, policy, identifier);
     }
     
     /**
@@ -177,19 +175,18 @@ public final class IdentifierIndex<T> {
      * @return matched metadata object
      */
     public Optional<T> find(final IdentifierValue identifierValue) {
-        Objects.requireNonNull(identifierValue, "identifierValue cannot be null.");
         Snapshot<T> currentSnapshot = snapshot;
-        IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
-        if (LookupMode.EXACT == rule.getLookupMode(identifierValue.getQuoteCharacter())) {
+        IdentifierCasePolicy policy = databaseIdentifierContext.getMetaDataPolicy(identifierScope);
+        if (LookupMode.EXACT == policy.getLookupMode(identifierValue.getQuoteCharacter())) {
             return Optional.ofNullable(currentSnapshot.getExactValues().get(identifierValue.getValue()));
         }
         return QuoteCharacter.NONE == identifierValue.getQuoteCharacter()
-                ? Optional.ofNullable(getByNormalizedIdentifier(currentSnapshot, rule, identifierValue.getValue()))
-                : findByQuotedNormalizedIdentifier(currentSnapshot, rule, identifierValue);
+                ? Optional.ofNullable(getByNormalizedIdentifier(currentSnapshot, policy, identifierValue.getValue()))
+                : findByQuotedNormalizedIdentifier(currentSnapshot, policy, identifierValue);
     }
     
-    private T getByNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCaseRule rule, final String identifier) {
-        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(rule.normalize(identifier));
+    private T getByNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCasePolicy policy, final String identifier) {
+        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(policy.normalizeForLookup(identifier));
         if (null == normalizedBucket) {
             return null;
         }
@@ -210,20 +207,20 @@ public final class IdentifierIndex<T> {
         throw new AmbiguousIdentifierException(identifier, normalizedBucket.getUnquotedIdentifiers());
     }
     
-    private Optional<T> findByQuotedNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCaseRule rule, final IdentifierValue identifierValue) {
-        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(rule.normalize(identifierValue.getValue()));
+    private Optional<T> findByQuotedNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCasePolicy policy, final IdentifierValue identifierValue) {
+        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(policy.normalizeForLookup(identifierValue.getValue()));
         if (null == normalizedBucket) {
             return Optional.empty();
         }
         if (normalizedBucket.hasSingleIdentifier()) {
-            return rule.matches(normalizedBucket.getSingleIdentifier(), identifierValue.getValue(), identifierValue.getQuoteCharacter())
+            return policy.matches(normalizedBucket.getSingleIdentifier(), identifierValue.getValue(), identifierValue.getQuoteCharacter())
                     ? Optional.ofNullable(normalizedBucket.getSingleValue())
                     : Optional.empty();
         }
         String matchedIdentifier = null;
         Collection<String> ambiguousIdentifiers = null;
         for (String each : normalizedBucket.getIdentifiers()) {
-            if (!rule.matches(each, identifierValue.getValue(), identifierValue.getQuoteCharacter())) {
+            if (!policy.matches(each, identifierValue.getValue(), identifierValue.getQuoteCharacter())) {
                 continue;
             }
             if (null == matchedIdentifier) {
@@ -257,13 +254,13 @@ public final class IdentifierIndex<T> {
         return exactValues.get(identifierValue);
     }
     
-    private void addNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCaseRule rule, final String name) {
-        String normalizedName = rule.normalize(name);
+    private void addNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCasePolicy policy, final String name) {
+        String normalizedName = policy.normalizeForLookup(name);
         values.computeIfAbsent(normalizedName, key -> new LinkedList<>()).add(name);
     }
     
-    private void removeNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCaseRule rule, final String name) {
-        String normalizedName = rule.normalize(name);
+    private void removeNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCasePolicy policy, final String name) {
+        String normalizedName = policy.normalizeForLookup(name);
         Collection<String> candidateIdentifiers = values.get(normalizedName);
         if (null == candidateIdentifiers) {
             return;
@@ -282,19 +279,19 @@ public final class IdentifierIndex<T> {
         return result;
     }
     
-    private Snapshot<T> createSnapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifiers, final IdentifierCaseRule rule) {
+    private Snapshot<T> createSnapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifiers, final IdentifierCasePolicy policy) {
         Map<String, Collection<String>> immutableNormalizedIdentifiers = new LinkedHashMap<>(normalizedIdentifiers.size(), 1F);
         Map<String, NormalizedBucket<T>> normalizedBuckets = new LinkedHashMap<>(normalizedIdentifiers.size(), 1F);
         for (Entry<String, Collection<String>> entry : normalizedIdentifiers.entrySet()) {
             Collection<String> identifiers = Collections.unmodifiableCollection(new LinkedList<>(entry.getValue()));
             immutableNormalizedIdentifiers.put(entry.getKey(), identifiers);
-            normalizedBuckets.put(entry.getKey(), createNormalizedBucket(exactValues, identifiers, rule));
+            normalizedBuckets.put(entry.getKey(), createNormalizedBucket(exactValues, identifiers, policy));
         }
         return new Snapshot<>(Collections.unmodifiableMap(new LinkedHashMap<>(exactValues)),
                 Collections.unmodifiableMap(immutableNormalizedIdentifiers), Collections.unmodifiableMap(normalizedBuckets));
     }
     
-    private NormalizedBucket<T> createNormalizedBucket(final Map<String, T> exactValues, final Collection<String> identifiers, final IdentifierCaseRule rule) {
+    private NormalizedBucket<T> createNormalizedBucket(final Map<String, T> exactValues, final Collection<String> identifiers, final IdentifierCasePolicy policy) {
         String singleIdentifier = null;
         T singleValue = null;
         if (1 == identifiers.size()) {
@@ -305,7 +302,7 @@ public final class IdentifierIndex<T> {
         T singleUnquotedValue = null;
         Collection<String> unquotedIdentifiers = null;
         for (String each : identifiers) {
-            if (!rule.matches(each, each, QuoteCharacter.NONE)) {
+            if (!policy.matches(each, each, QuoteCharacter.NONE)) {
                 continue;
             }
             if (null == singleUnquotedIdentifier) {
@@ -328,6 +325,8 @@ public final class IdentifierIndex<T> {
         return snapshot.getExactValues().toString();
     }
     
+    @Getter(AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class Snapshot<T> {
         
         private static final Snapshot<?> EMPTY = new Snapshot<>(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
@@ -338,68 +337,34 @@ public final class IdentifierIndex<T> {
         
         private final Map<String, NormalizedBucket<T>> normalizedBuckets;
         
-        private Snapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifierNames, final Map<String, NormalizedBucket<T>> normalizedBuckets) {
-            this.exactValues = exactValues;
-            this.normalizedIdentifierNames = normalizedIdentifierNames;
-            this.normalizedBuckets = normalizedBuckets;
-        }
-        
         @SuppressWarnings("unchecked")
         private static <T> Snapshot<T> empty() {
             return (Snapshot<T>) EMPTY;
         }
-        
-        private Map<String, T> getExactValues() {
-            return exactValues;
-        }
-        
-        private Map<String, Collection<String>> getNormalizedIdentifierNames() {
-            return normalizedIdentifierNames;
-        }
-        
-        private Map<String, NormalizedBucket<T>> getNormalizedBuckets() {
-            return normalizedBuckets;
-        }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class NormalizedBucket<T> {
         
+        @Getter(AccessLevel.PRIVATE)
         private final String singleIdentifier;
         
+        @Getter(AccessLevel.PRIVATE)
         private final T singleValue;
         
+        @Getter(AccessLevel.PRIVATE)
         private final Collection<String> identifiers;
         
         private final String singleUnquotedIdentifier;
         
+        @Getter(AccessLevel.PRIVATE)
         private final T singleUnquotedValue;
         
+        @Getter(AccessLevel.PRIVATE)
         private final Collection<String> unquotedIdentifiers;
-        
-        private NormalizedBucket(final String singleIdentifier, final T singleValue, final Collection<String> identifiers,
-                                 final String singleUnquotedIdentifier, final T singleUnquotedValue, final Collection<String> unquotedIdentifiers) {
-            this.singleIdentifier = singleIdentifier;
-            this.singleValue = singleValue;
-            this.identifiers = identifiers;
-            this.singleUnquotedIdentifier = singleUnquotedIdentifier;
-            this.singleUnquotedValue = singleUnquotedValue;
-            this.unquotedIdentifiers = unquotedIdentifiers;
-        }
         
         private boolean hasSingleIdentifier() {
             return null != singleIdentifier;
-        }
-        
-        private String getSingleIdentifier() {
-            return singleIdentifier;
-        }
-        
-        private T getSingleValue() {
-            return singleValue;
-        }
-        
-        private Collection<String> getIdentifiers() {
-            return identifiers;
         }
         
         private boolean hasUnquotedIdentifier() {
@@ -408,14 +373,6 @@ public final class IdentifierIndex<T> {
         
         private boolean hasSingleUnquotedIdentifier() {
             return null == unquotedIdentifiers && null != singleUnquotedIdentifier;
-        }
-        
-        private T getSingleUnquotedValue() {
-            return singleUnquotedValue;
-        }
-        
-        private Collection<String> getUnquotedIdentifiers() {
-            return unquotedIdentifiers;
         }
     }
 }

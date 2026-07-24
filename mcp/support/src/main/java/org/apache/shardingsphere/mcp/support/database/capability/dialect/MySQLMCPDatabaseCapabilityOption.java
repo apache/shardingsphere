@@ -17,23 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.mcp.support.database.capability.DatabaseVersionUtil;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
 /**
  * MCP database capability option for MySQL.
  */
-public final class MySQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class MySQLMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public MySQLMCPDatabaseCapabilityOption() {
-        super("MySQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, false);
+    @Override
+    public boolean isExplainSupported() {
+        return true;
     }
     
     @Override
-    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);
+    public String getType() {
+        return "MySQL";
     }
 }

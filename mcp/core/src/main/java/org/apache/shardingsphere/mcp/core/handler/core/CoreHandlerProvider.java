@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.mcp.core.handler.core;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.core.completion.handler.MetadataCompletionHandler;
+import org.apache.shardingsphere.mcp.core.completion.handler.WorkflowPlanIdCompletionHandler;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Core MCP handler provider.
@@ -36,5 +40,10 @@ public final class CoreHandlerProvider implements MCPHandlerProvider {
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
         return CoreToolHandlers.createHandlers();
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of(new MetadataCompletionHandler(), new WorkflowPlanIdCompletionHandler());
     }
 }

@@ -13,7 +13,7 @@ The `CREATE MASK RULE` syntax is used to create a mask rule.
 {{% tab name="Grammar" %}}
 ```sql
 CreateMaskRule ::=
-  'CREATE' 'MASK' 'RULE' ifNotExists? maskRuleDefinition (',' maskRuleDefinition)*
+  'CREATE' 'MASK' 'TABLE'? 'RULE' ifNotExists? maskRuleDefinition (',' maskRuleDefinition)*
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
@@ -28,7 +28,7 @@ maskAlgorithmDefinition ::=
   'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 ruleName ::=
   identifier
@@ -55,7 +55,7 @@ value ::=
 
 - `algorithmType` specifies the data masking algorithm type. For more details, please refer to [Data Masking Algorithm](/en/user-manual/common-config/builtin-algorithm/mask/);
 - Duplicate `ruleName` will not be created;
-- `ifNotExists` clause is used for avoid `Duplicate mask rule` error.
+- `ifNotExists` clause is used to avoid `Duplicate mask rule` error.
 
 ### Example
 
@@ -81,7 +81,7 @@ COLUMNS(
 
 ### Reserved words
 
-`CREATE`, `MASK`, `RULE`, `COLUMNS`, `NAME`, `TYPE`
+`CREATE`, `MASK`, `TABLE`, `RULE`, `COLUMNS`, `NAME`, `TYPE`
 
 ### Related links
 

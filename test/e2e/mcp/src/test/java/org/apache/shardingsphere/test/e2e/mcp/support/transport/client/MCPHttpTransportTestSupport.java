@@ -21,8 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -30,8 +35,6 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPHttpTransportTestSupport {
-    
-    public static final String PROTOCOL_VERSION = MCPInteractionProtocolSupport.PROTOCOL_VERSION;
     
     private static final String CONTENT_TYPE = "application/json";
     
@@ -64,35 +67,105 @@ public final class MCPHttpTransportTestSupport {
     }
     
     /**
-     * Create initialize request parameters.
+     * Create session headers.
      *
-     * @param clientName MCP client name
-     * @return initialize request parameters
+     * @param sessionId MCP session identifier
+     * @param protocolVersion MCP protocol version
+     * @return session headers
      */
-    public static Map<String, Object> createInitializeRequestParams(final String clientName) {
-        return MCPInteractionProtocolSupport.createInitializeRequestParams(clientName);
+    public static Map<String, String> createSessionHeaders(final String sessionId, final String protocolVersion) {
+        Map<String, String> result = new LinkedHashMap<>(2, 1F);
+        result.put("MCP-Session-Id", sessionId);
+        result.put("MCP-Protocol-Version", protocolVersion);
+        return result;
     }
     
     /**
-     * Create a JSON-RPC request body.
+     * Send a DELETE request.
      *
+     * @param httpClient HTTP client
+     * @param endpointUri MCP endpoint URI
+     * @param headers request headers
+     * @return HTTP response
+     * @throws IOException I/O exception
+     * @throws InterruptedException interrupted exception
+     */
+    public static HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final URI endpointUri, final Map<String, String> headers) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpointUri).DELETE();
+        applyHeaders(requestBuilder, headers);
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+    }
+    
+    /**
+     * Send a raw POST request.
+     *
+     * @param httpClient HTTP client
+     * @param endpointUri MCP endpoint URI
+     * @param headers request headers
+     * @param requestBody request body
+     * @return HTTP response
+     * @throws IOException I/O exception
+     * @throws InterruptedException interrupted exception
+     */
+    public static HttpResponse<String> sendRawPostRequest(final HttpClient httpClient, final URI endpointUri, final Map<String, String> headers,
+                                                          final String requestBody) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = createJsonRequestBuilder(endpointUri).POST(HttpRequest.BodyPublishers.ofString(requestBody));
+        applyHeaders(requestBuilder, headers);
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+    }
+    
+    /**
+     * Open an event stream.
+     *
+     * @param httpClient HTTP client
+     * @param endpointUri MCP endpoint URI
+     * @param headers request headers
+     * @return HTTP response
+     * @throws IOException I/O exception
+     * @throws InterruptedException interrupted exception
+     */
+    public static HttpResponse<String> openEventStream(final HttpClient httpClient, final URI endpointUri, final Map<String, String> headers) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpointUri).GET();
+        applyHeaders(requestBuilder, headers);
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+    }
+    
+    /**
+     * Open an event stream without waiting for the whole response body.
+     *
+     * @param httpClient HTTP client
+     * @param endpointUri MCP endpoint URI
+     * @param headers request headers
+     * @return HTTP response
+     * @throws IOException I/O exception
+     * @throws InterruptedException interrupted exception
+     */
+    public static HttpResponse<InputStream> openEventStreamInputStream(final HttpClient httpClient, final URI endpointUri,
+                                                                       final Map<String, String> headers) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpointUri).GET();
+        applyHeaders(requestBuilder, headers);
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
+    }
+    
+    /**
+     * Send a JSON-RPC request.
+     *
+     * @param httpClient HTTP client
+     * @param endpointUri MCP endpoint URI
+     * @param headers request headers
      * @param requestId request id
      * @param method method name
      * @param params request parameters
-     * @return JSON-RPC request body
+     * @return HTTP response
+     * @throws IOException I/O exception
+     * @throws InterruptedException interrupted exception
      */
-    public static String createJsonRpcRequestBody(final String requestId, final String method, final Map<String, Object> params) {
-        return MCPInteractionProtocolSupport.createJsonRpcRequestBody(requestId, method, params);
+    public static HttpResponse<String> sendJsonRpcRequest(final HttpClient httpClient, final URI endpointUri, final Map<String, String> headers, final String requestId,
+                                                          final String method, final Map<String, Object> params) throws IOException, InterruptedException {
+        return sendRawPostRequest(httpClient, endpointUri, headers, MCPInteractionProtocolSupport.createJsonRpcRequestBody(requestId, method, params));
     }
     
-    /**
-     * Create a JSON-RPC notification body.
-     *
-     * @param method notification method
-     * @param params notification parameters
-     * @return JSON notification body
-     */
-    public static String createJsonRpcNotificationBody(final String method, final Map<String, Object> params) {
-        return MCPInteractionProtocolSupport.createJsonRpcNotificationBody(method, params);
+    private static void applyHeaders(final HttpRequest.Builder requestBuilder, final Map<String, String> headers) {
+        headers.forEach(requestBuilder::setHeader);
     }
 }

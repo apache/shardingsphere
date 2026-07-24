@@ -79,9 +79,4 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
     public boolean isBinaryDataType(final int sqlType, final String dataTypeName) {
         return delegate.isBinaryDataType(sqlType, dataTypeName) || "BYTEA".equalsIgnoreCase(dataTypeName);
     }
-    
-    @Override
-    public boolean isTextType(final String type) {
-        return delegate.isTextType(type);
-    }
 }

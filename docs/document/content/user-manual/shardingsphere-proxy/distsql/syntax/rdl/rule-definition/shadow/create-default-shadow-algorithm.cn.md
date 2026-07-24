@@ -19,13 +19,13 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefiinition ')'
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
     
 algorithmType ::=
   string
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string

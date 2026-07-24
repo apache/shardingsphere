@@ -13,7 +13,7 @@ APM (application performance monitoring) is to monitor and diagnose the performa
 Apache ShardingSphere is not responsible for gathering, storing and demonstrating APM data, but provides the necessary information for the APM. In other words, Apache ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocols or plug-ins. Tracing is to obtain the tracking information of SQL parsing and SQL execution. Apache ShardingSphere provides support for OpenTelemetry, SkyWalking by default. It also supports users to develop customized components through plug-in.
 
 - Use OpenTelemetry
-OpenTelemetry was merged by OpenTracing and OpenCencus in 2019. In this way, you only need to fill in the appropriate configuration in the agent configuration file according to [OpenTelemetry SDK Autoconfigure Guide](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure). Data can be exported to Jaeger, Zipkin.
+OpenTelemetry was merged by OpenTracing and OpenCensus in 2019. In this way, you only need to fill in the appropriate configuration in the agent configuration file according to [OpenTelemetry SDK Autoconfigure Guide](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure). Data can be exported to Jaeger, Zipkin.
 
 - Use SkyWalking
 Enable the SkyWalking plug-in in configuration file and need to configure the SkyWalking apm-toolkit.

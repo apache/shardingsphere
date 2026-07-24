@@ -17,19 +17,21 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 
-import java.sql.SQLSyntaxErrorException;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.List;
+import java.util.Map;
 
 /**
  * DistSQL query utilities for workflow planning.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowDistSQLQueryUtils {
-    
-    private WorkflowDistSQLQueryUtils() {
-    }
     
     /**
      * Judge whether a query failed because the current backend cannot parse ShardingSphere DistSQL.
@@ -38,22 +40,26 @@ public final class WorkflowDistSQLQueryUtils {
      * @return whether the backend does not support DistSQL syntax
      */
     public static boolean isUnsupportedDistSQLQueryFailure(final MCPQueryFailedException ex) {
-        return hasSyntaxErrorCause(ex) || hasUnsupportedDistSQLMessage(ex);
+        return MCPJDBCErrorCategory.SYNTAX == MCPJDBCExceptionClassifier.classify(ex);
     }
     
-    private static boolean hasSyntaxErrorCause(final Throwable throwable) {
-        Throwable current = throwable;
-        while (null != current) {
-            if (current instanceof SQLSyntaxErrorException) {
-                return true;
+    /**
+     * Query DistSQL rule rows, returning an empty list when the current backend does not support the rule DistSQL syntax.
+     *
+     * @param queryFacade query facade
+     * @param databaseName database name
+     * @param sql DistSQL to execute
+     * @return queried rows
+     */
+    public static List<Map<String, Object>> queryRuleRows(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String sql) {
+        try {
+            return queryFacade.query(databaseName, sql);
+        } catch (final MCPQueryFailedException ex) {
+            if (isUnsupportedDistSQLQueryFailure(ex)) {
+                return List.of();
             }
-            current = current.getCause();
+            throw ex;
         }
-        return false;
     }
     
-    private static boolean hasUnsupportedDistSQLMessage(final MCPQueryFailedException ex) {
-        String message = Objects.toString(ex.getMessage(), "").toLowerCase(Locale.ENGLISH);
-        return message.contains("syntax") && (message.contains("distsql") || message.contains(" rule") || message.contains("algorithm plugins"));
-    }
 }

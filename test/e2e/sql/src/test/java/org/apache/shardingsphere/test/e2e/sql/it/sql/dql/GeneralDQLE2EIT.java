@@ -26,6 +26,8 @@ import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.sql.it.SQLE2EITContext;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -42,17 +44,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SQLE2EITSettings(SQLCommandType.DQL)
 class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
+    @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteQuery(final AssertionTestParameter testParam) throws SQLException, IOException, JAXBException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        init(testParam, context);
-        assertExecuteQuery(testParam, context);
+        executeDQL(context, () -> {
+            init(testParam, context);
+            assertExecuteQuery(testParam, context);
+        });
     }
     
     private void assertExecuteQuery(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {
@@ -143,17 +144,16 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
+    @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        init(testParam, context);
-        assertExecute(testParam, context);
+        executeDQL(context, () -> {
+            init(testParam, context);
+            assertExecute(testParam, context);
+        });
     }
     
     private void assertExecute(final AssertionTestParameter testParam, final SQLE2EITContext context) throws SQLException {

@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -30,18 +29,8 @@ import static org.hamcrest.Matchers.is;
 class PluginFixtureStatusResourceHandlerTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new PluginFixtureStatusResourceHandler().getContextType(), is(MCPServiceHandlerContext.class));
-    }
-    
-    @Test
-    void assertGetResourceUriTemplate() {
-        assertThat(new PluginFixtureStatusResourceHandler().getResourceUriTemplate(), is("shardingsphere://features/test-fixture/status"));
-    }
-    
-    @Test
     void assertHandle() {
-        assertThat(new PluginFixtureStatusResourceHandler().handle(null, new MCPUriVariables(Map.of())).toPayload(),
+        assertThat(new PluginFixtureStatusResourceHandler().handle(null, new MCPResourceURIVariables(Map.of())).toPayload(),
                 is(Map.of("items", List.of(Map.of("feature", "test-fixture", "status", "ready")))));
     }
 }

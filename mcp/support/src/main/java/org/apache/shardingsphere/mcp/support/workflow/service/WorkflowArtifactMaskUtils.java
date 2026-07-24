@@ -22,11 +22,13 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,7 +64,7 @@ public final class WorkflowArtifactMaskUtils {
      * @return masked SQL text
      */
     public static String maskSensitiveSql(final String sql, final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
-        String result = sql;
+        String result = WorkflowSecretReferenceUtils.replacePlaceholdersWithManualPlaceholders(sql, propertySource);
         for (String each : collectSecretValues(propertySource, propertyRequirements)) {
             if (each.isEmpty()) {
                 continue;
@@ -82,7 +84,40 @@ public final class WorkflowArtifactMaskUtils {
      */
     public static Map<String, String> maskPropertyMap(final Map<String, String> properties, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         Map<String, String> result = new LinkedHashMap<>(properties.size(), 1F);
-        properties.forEach((key, value) -> result.put(key, isSecretProperty(propertyRequirements, key) ? "******" : value));
+        properties.forEach((key, value) -> result.put(key, isSecretProperty(propertyRequirements, key) || isSecretReferencePlaceholder(value) ? "******" : value));
+        return result;
+    }
+    
+    /**
+     * Mask sensitive property values.
+     *
+     * @param properties property values
+     * @param propertyRequirements property requirements
+     * @param propertySource workflow property source
+     * @param algorithmRole algorithm role
+     * @return masked property values
+     */
+    public static Map<String, String> maskPropertyMap(final Map<String, String> properties, final List<AlgorithmPropertyRequirement> propertyRequirements,
+                                                      final WorkflowPropertySource propertySource, final String algorithmRole) {
+        Map<String, String> result = new LinkedHashMap<>(properties.size(), 1F);
+        properties.forEach((key, value) -> result.put(key, isSecretProperty(propertyRequirements, key) || isSecretReferenceProperty(propertySource, algorithmRole, key)
+                || isSecretReferencePlaceholder(value) ? "******" : value));
+        return result;
+    }
+    
+    /**
+     * Create secret reference summary payload.
+     *
+     * @param propertySource workflow property source
+     * @return secret reference summary payload
+     */
+    public static Map<String, Object> createSecretReferenceSummary(final WorkflowPropertySource propertySource) {
+        List<Map<String, Object>> references = WorkflowSecretReferenceUtils.createSafeSummaries(propertySource);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("required", !references.isEmpty());
+        result.put("reference_count", references.size());
+        result.put("value_handling", "manual_execution");
+        result.put("references", references);
         return result;
     }
     
@@ -93,15 +128,7 @@ public final class WorkflowArtifactMaskUtils {
         result.put("marker", "******");
         result.put("redacted_properties", redactedProperties);
         result.put("redacted_count", redactedProperties.size());
-        result.put("redaction_summary", createRedactionSummary(redactedProperties));
-        return result;
-    }
-    
-    private static Map<String, Object> createRedactionSummary(final List<String> redactedProperties) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("categories", redactedProperties.stream().map(WorkflowArtifactMaskUtils::createRedactedCategory).distinct().toList());
-        result.put("marker", "******");
-        result.put("redacted_count", redactedProperties.size());
         return result;
     }
     
@@ -121,6 +148,8 @@ public final class WorkflowArtifactMaskUtils {
                 result.add(value.trim());
             }
         }
+        propertySource.getSecretReferences().forEach((algorithmRole, references) -> references.keySet().forEach(
+                propertyKey -> result.add(SecretReferenceValue.createPlaceholder(algorithmRole, propertyKey))));
         return result;
     }
     
@@ -135,6 +164,8 @@ public final class WorkflowArtifactMaskUtils {
                 result.add(each.getAlgorithmRole() + "." + each.getPropertyKey());
             }
         }
+        propertySource.getSecretReferences().forEach((algorithmRole, references) -> references.keySet().forEach(
+                propertyKey -> result.add(algorithmRole + "." + propertyKey)));
         return result;
     }
     
@@ -148,9 +179,17 @@ public final class WorkflowArtifactMaskUtils {
                 return true;
             }
         }
-        String actualPropertyKey = propertyKey.toLowerCase();
+        String actualPropertyKey = propertyKey.toLowerCase(Locale.ENGLISH);
         return actualPropertyKey.contains("password") || actualPropertyKey.contains("secret") || actualPropertyKey.contains("token")
                 || "key".equals(actualPropertyKey) || actualPropertyKey.contains("-key") || actualPropertyKey.contains("key-")
                 || actualPropertyKey.contains("_key") || actualPropertyKey.contains("key_");
+    }
+    
+    private static boolean isSecretReferencePlaceholder(final String value) {
+        return null != value && value.startsWith("secret_reference:");
+    }
+    
+    private static boolean isSecretReferenceProperty(final WorkflowPropertySource propertySource, final String algorithmRole, final String propertyKey) {
+        return null != propertySource && propertySource.getSecretReferences(algorithmRole).containsKey(propertyKey);
     }
 }

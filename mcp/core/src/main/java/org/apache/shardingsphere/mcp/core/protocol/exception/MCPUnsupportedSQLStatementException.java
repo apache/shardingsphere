@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.protocol.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 
 /**
  * Exception for unsupported SQL statements.
@@ -28,5 +28,9 @@ public final class MCPUnsupportedSQLStatementException extends MCPUnsupportedExc
     
     public MCPUnsupportedSQLStatementException() {
         super("Statement is not supported by the MCP contract.");
+    }
+    
+    public MCPUnsupportedSQLStatementException(final RuntimeException cause) {
+        super("Statement is not supported by the MCP contract.", cause);
     }
 }

@@ -33,8 +33,6 @@ execute
     | showComputeNodes
     | showComputeNodeInfo
     | showComputeNodeMode
-    | labelComputeNode
-    | unlabelComputeNode
     | alterComputeNode
     | showLogicalTables
     | refreshDatabaseMetadata

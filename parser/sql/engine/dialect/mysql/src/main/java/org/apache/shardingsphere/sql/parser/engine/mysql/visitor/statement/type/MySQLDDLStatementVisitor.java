@@ -284,6 +284,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .ifNotExists(null != ctx.ifNotExists())
+                .temporary(null != ctx.TEMPORARY())
                 .likeTable(null == ctx.createLikeClause() ? null : (SimpleTableSegment) visit(ctx.createLikeClause()))
                 .createTableOption(null == ctx.createTableOptions() ? null : (CreateTableOptionSegment) visit(ctx.createTableOptions()))
                 .columnDefinitions(columnDefinitions)
@@ -690,7 +691,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue(), null != ctx.ifExists(), false);
+        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue(), null != ctx.ifExists(), null != ctx.TEMPORARY(), false);
     }
     
     @Override

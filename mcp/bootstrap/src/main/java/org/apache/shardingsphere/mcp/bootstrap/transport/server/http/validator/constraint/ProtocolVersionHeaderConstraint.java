@@ -18,21 +18,20 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
-import io.modelcontextprotocol.spec.HttpHeaders;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 
 /**
  * Protocol version header constraint.
  */
-public final class ProtocolVersionHeaderConstraint implements SessionRequiredTransportHeaderConstraint {
+public final class ProtocolVersionHeaderConstraint {
     
-    @Override
-    public String getConstraintKey() {
-        return HttpHeaders.PROTOCOL_VERSION;
-    }
-    
-    @Override
+    /**
+     * Validate the MCP protocol version header value.
+     *
+     * @param value protocol version header value
+     * @throws ServerTransportSecurityException when the protocol version is missing or unsupported
+     */
     public void validate(final String value) throws ServerTransportSecurityException {
         ShardingSpherePreconditions.checkNotEmpty(value, () -> new ServerTransportSecurityException(400, "MCP-Protocol-Version header is required."));
         ShardingSpherePreconditions.checkState(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS.contains(value), () -> createUnsupportedProtocolVersionException(value));

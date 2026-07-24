@@ -40,7 +40,7 @@ public final class FirebirdMetaDataLoader implements DialectMetaDataLoader {
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaData = new LinkedList<>();
         for (String each : material.getActualTableNames()) {
-            TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
+            TableMetaDataLoader.loadNormalized(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
         }
         loadBlobColumns(material);
         loadNonFixedLengthColumnSizes(material);

@@ -27,4 +27,3 @@ org.apache.shardingsphere.sharding.rule.changed.DefaultTableShardingStrategyChan
 org.apache.shardingsphere.sharding.rule.changed.DefaultKeyGenerateStrategyChangedProcessor
 org.apache.shardingsphere.sharding.rule.changed.DefaultShardingAuditorStrategyChangedProcessor
 org.apache.shardingsphere.sharding.rule.changed.DefaultShardingColumnChangedProcessor
-org.apache.shardingsphere.sharding.rule.changed.ShardingCacheChangedProcessor

@@ -26,6 +26,8 @@ import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.sql.it.SQLE2EITContext;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -43,88 +45,66 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SQLE2EITSettings(SQLCommandType.DQL)
 class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
+    @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteQueryWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        init(testParam, context);
-        // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
-        if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
-            return;
-        }
-        if (isUseXMLAsExpectedDataset()) {
-            assertExecuteQueryWithXMLExpected(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        } else {
-            assertExecuteQueryWithExpectedDataSource(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        }
+        executeDQL(context, () -> assertExecuteQueryWithResultSetTypes(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
+    @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteQueryWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        init(testParam, context);
-        // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
-        if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
-            return;
-        }
-        if (isUseXMLAsExpectedDataset()) {
-            assertExecuteQueryWithXMLExpected(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-        } else {
-            assertExecuteQueryWithExpectedDataSource(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
-                    ResultSet.HOLD_CURSORS_OVER_COMMIT);
-        }
+        executeDQL(context, () -> assertExecuteQueryWithResultSetTypes(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT));
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
+    @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        init(testParam, context);
-        // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
-        if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
-            return;
-        }
-        if (isUseXMLAsExpectedDataset()) {
-            assertExecuteWithXMLExpected(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        } else {
-            assertExecuteWithExpectedDataSource(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        }
+        executeDQL(context, () -> assertExecuteWithResultSetTypes(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
+    @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
+        executeDQL(context, () -> assertExecuteWithResultSetTypes(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT));
+    }
+    
+    private void assertExecuteQueryWithResultSetTypes(final AssertionTestParameter testParam, final SQLE2EITContext context,
+                                                      final int... resultSetTypes) throws IOException, JAXBException, SQLException {
         init(testParam, context);
         // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
         if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
             return;
         }
         if (isUseXMLAsExpectedDataset()) {
-            assertExecuteWithXMLExpected(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+            assertExecuteQueryWithXMLExpected(testParam, context, resultSetTypes);
         } else {
-            assertExecuteWithExpectedDataSource(testParam, context, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+            assertExecuteQueryWithExpectedDataSource(testParam, context, resultSetTypes);
+        }
+    }
+    
+    private void assertExecuteWithResultSetTypes(final AssertionTestParameter testParam, final SQLE2EITContext context, final int... resultSetTypes) throws IOException, JAXBException, SQLException {
+        init(testParam, context);
+        // TODO fix e2e test blocked exception with PostgreSQL or openGauss in #23643
+        if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
+            return;
+        }
+        if (isUseXMLAsExpectedDataset()) {
+            assertExecuteWithXMLExpected(testParam, context, resultSetTypes);
+        } else {
+            assertExecuteWithExpectedDataSource(testParam, context, resultSetTypes);
         }
     }
     

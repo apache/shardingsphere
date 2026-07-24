@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * Alias segment.
  */
@@ -34,4 +37,6 @@ public final class AliasSegment implements SQLSegment {
     private final int stopIndex;
     
     private final IdentifierValue identifier;
+    
+    private final Collection<IdentifierValue> columnAliases = new LinkedList<>();
 }

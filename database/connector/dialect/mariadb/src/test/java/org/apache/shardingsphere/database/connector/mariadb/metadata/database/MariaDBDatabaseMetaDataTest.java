@@ -24,6 +24,10 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -31,7 +35,6 @@ import org.apache.shardingsphere.database.connector.mysql.metadata.database.opti
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
@@ -72,6 +75,12 @@ class MariaDBDatabaseMetaDataTest {
     }
     
     @Test
+    void assertGetSchemaOption() {
+        DialectSchemaOption actual = metaData.getSchemaOption();
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.DATABASE_AS_SCHEMA));
+    }
+    
+    @Test
     void assertGetConnectionOption() {
         DialectConnectionOption actual = metaData.getConnectionOption();
         assertTrue(actual.isInstanceConnectionAvailable());
@@ -82,11 +91,10 @@ class MariaDBDatabaseMetaDataTest {
     void assertGetTransactionOption() {
         DialectTransactionOption actual = metaData.getTransactionOption();
         assertFalse(actual.isSupportGlobalCSN());
-        assertFalse(actual.isDDLNeedImplicitCommit());
+        assertThat(actual.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertTrue(actual.isSupportAutoCommitInNestedTransaction());
         assertFalse(actual.isSupportDDLInXATransaction());
         assertTrue(actual.isSupportMetaDataRefreshInTransaction());
-        assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_REPEATABLE_READ));
         assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
@@ -105,6 +113,12 @@ class MariaDBDatabaseMetaDataTest {
         Optional<DialectGeneratedKeyOption> actual = metaData.getGeneratedKeyOption();
         assertTrue(actual.isPresent());
         assertThat(actual.map(DialectGeneratedKeyOption::getColumnName).orElse(""), is("GENERATED_KEY"));
+    }
+    
+    @Test
+    void assertGetSequenceOption() {
+        assertThat(metaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuerySQL).orElse(""),
+                is("SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'"));
     }
     
     @Test

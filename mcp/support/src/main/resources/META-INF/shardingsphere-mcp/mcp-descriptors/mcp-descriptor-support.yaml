@@ -66,7 +66,7 @@ prompts:
         - "Ask the user to choose an object when search results remain ambiguous after metadata lookup."
   - name: safe_sql_execution
     title: Safe SQL Execution
-    description: "Guide the model to choose database_gateway_execute_query for classifier-approved query SQL and database_gateway_execute_update preview before side effects."
+    description: "Guide the model to choose database_gateway_execute_query for parser-approved query SQL and database_gateway_execute_update preview before side effects."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/safe-sql-execution.md
     arguments:
@@ -93,7 +93,7 @@ prompts:
         - "Stop after database_gateway_execute_update preview unless execution is still intended."
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask before database_gateway_execute_update execution when the previewed side effects are ambiguous."
-        - "Ask when the SQL intent cannot be classified as classifier-approved query SQL or side-effecting SQL."
+        - "Ask when the SQL intent cannot be classified as parser-approved query SQL or side-effecting SQL."
   - name: recover_workflow
     title: Recover Workflow
     description: "Guide the model to recover a failed or stale ShardingSphere workflow by checking the current-session plan_id and re-planning when the plan is unavailable."
@@ -114,11 +114,23 @@ prompts:
         - database_gateway_validate_workflow
         - database_gateway_plan_encrypt_rule
         - database_gateway_plan_mask_rule
+        - database_gateway_plan_broadcast_rule
+        - database_gateway_plan_readwrite_splitting_rule
+        - database_gateway_plan_readwrite_splitting_status
+        - database_gateway_plan_shadow_rule
+        - database_gateway_plan_default_shadow_algorithm
+        - database_gateway_plan_shadow_algorithm_cleanup
+        - database_gateway_plan_sharding_table_rule
+        - database_gateway_plan_sharding_table_reference_rule
+        - database_gateway_plan_sharding_default_strategy
+        - database_gateway_plan_sharding_key_generator
+        - database_gateway_plan_sharding_key_generate_strategy
+        - database_gateway_plan_sharding_rule_component_cleanup
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_validate_workflow confirms the current plan or after a replacement plan is created."
         - "Stop when the plan_id is unavailable and the matching planning tool needs fresh user inputs."
       org.apache.shardingsphere/ask-user-conditions:
-        - "Ask which workflow kind to re-plan when the failure summary does not identify encrypt or mask."
+        - "Ask which workflow kind to re-plan when the failure summary or recovery payload does not identify the matching planning tool."
         - "Ask before applying recovered artifacts that would change runtime state."
 
 completionTargets:
@@ -128,12 +140,20 @@ completionTargets:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: prompt
     reference: safe_sql_execution
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: prompt
     reference: recover_workflow
     arguments:
@@ -184,10 +204,8 @@ tools:
           description: "Required when execution_mode=review-then-execute. Pass only user-reviewed preview_artifacts.approval_step values; an empty or omitted list does not approve artifacts."
           items:
             type: string
-            description: "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql."
+            description: "Allowed workflow artifact step: rule_distsql."
             enum:
-              - ddl
-              - index_ddl
               - rule_distsql
       required:
         - plan_id
@@ -198,12 +216,16 @@ tools:
       properties:
         response_mode:
           type: string
-          description: "Stable response mode marker: preview, executed, manual_only, or terminal."
+          description: "Stable response mode marker: preview, executed, manual_only, recovery, or terminal."
           enum:
             - preview
             - executed
             - manual_only
+            - recovery
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow apply summary."
         plan_id:
           type: string
           description: "Workflow plan identifier that was applied."
@@ -213,6 +235,13 @@ tools:
         status:
           type: string
           description: "Apply status such as preview, completed, failed, or awaiting-manual-execution."
+        category:
+          type: string
+          description: "Recovery category when response_mode=recovery, including manual execution required for sensitive placeholders."
+          enum:
+            - secret_reference_malformed
+            - secret_reference_missing
+            - secret_reference_manual_execution_required
         issues:
           type: array
           description: "Workflow issues reported while checking or applying artifacts."
@@ -242,28 +271,19 @@ tools:
                 description: "Issue-specific details."
         step_results:
           type: array
-          description: "Per-artifact execution, skipped, or failed results."
+          description: "Per-artifact execution or failure results."
           items:
             type: object
             properties:
               artifact_type:
                 type: string
-                description: "Artifact type such as add-column, create-index, or rule-dist-sql."
+                description: "Rule DistSQL artifact type."
               status:
                 type: string
                 description: "Artifact execution status."
               sql:
                 type: string
                 description: "Artifact SQL or DistSQL."
-        executed_ddl:
-          type: array
-          description: "DDL statements executed by the server."
-        executed_distsql:
-          type: array
-          description: "DistSQL statements executed by the server."
-        applied_artifacts:
-          type: array
-          description: "Artifacts or steps executed by the server."
         preview_artifacts:
           type: array
           description: "Artifacts that would be applied when execution_mode=preview."
@@ -281,31 +301,22 @@ tools:
                 description: "Artifact SQL or DistSQL that would be applied."
               side_effect_scope:
                 type: string
-                description: "Side-effect scope such as physical-structure or rule-metadata."
+                description: "Rule-metadata side-effect scope."
         review_focus:
           type: object
           description: "Compact preview review focus: artifact categories, side-effect scope, and manual-only mode."
         would_apply:
           type: boolean
           description: "False when execution_mode=preview, proving workflow artifacts were not applied."
-        review_summary:
-          type: string
-          description: "Preview-only natural-language summary that confirms workflow artifacts were not applied."
-        skipped_artifacts:
-          type: array
-          description: "Artifacts intentionally skipped by policy or approved_steps."
-        manual_artifacts:
-          type: array
-          description: "Artifacts returned for manual execution."
         manual_artifact_package:
           type: object
-          description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated DDL, DistSQL, index plan, and algorithm properties needed for operator execution."
+          description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated rule DistSQL needed for operator execution."
         manual_artifact_summary:
           type: object
           description: "Manual-only compact artifact summary with counts, external execution requirement, confirmation gate, and validation arguments to use after manual execution."
-        manual_follow_up:
+        secret_reference_summary:
           type: object
-          description: "Manual-only confirmation contract; database_gateway_validate_workflow is blocked until manual_artifacts_executed is confirmed, while independent query checks remain allowed."
+          description: "Safe summary returned for sensitive placeholders. It contains role/property labels, manual placeholders, and counts only, never raw secret_ref identifiers or real sensitive values."
         argument_provenance:
           type: object
           description: "Source of reusable apply arguments, such as server_generated or server_defaulted."
@@ -333,6 +344,9 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take the action."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
               required_inputs:
                 type: array
                 description: "User inputs required when type is ask_user."
@@ -341,14 +355,11 @@ tools:
                 description: "Action order values that must complete before this action."
       examples:
         - response_mode: preview
+          summary: Previewed 0 workflow artifacts. Nothing has been applied.
           plan_id: encrypt-rule-20260505-001
           execution_mode: preview
-          applied_artifacts: []
           preview_artifacts: []
           would_apply: false
-          skipped_artifacts: []
-          manual_artifacts: []
-          review_summary: Previewed 0 workflow artifacts. Nothing has been applied.
           next_actions:
             - order: 1
               type: terminal
@@ -360,12 +371,6 @@ tools:
       destructiveHint: true
       idempotentHint: false
       openWorldHint: true
-    runtime:
-      workflowRole: apply
-      sideEffectScope:
-        - rule-metadata
-        - physical-structure
-        - physical-data
     meta:
       org.apache.shardingsphere/follow-up-tools:
         - database_gateway_validate_workflow
@@ -392,6 +397,9 @@ tools:
           enum:
             - validation
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow validation summary."
         plan_id:
           type: string
           description: "Workflow plan identifier that was validated."
@@ -436,7 +444,7 @@ tools:
             properties:
               layer:
                 type: string
-                description: "Validation layer such as ddl, rule, logical_metadata, or sql_executability."
+                description: "Validation layer such as rule, logical_metadata, or sql_executability."
               status:
                 type: string
                 description: "Validation section status."
@@ -503,6 +511,7 @@ tools:
                 description: "Action order values that must complete before this action."
       examples:
         - response_mode: validation
+          summary: Workflow validation passed for plan `encrypt-rule-20260505-001`.
           plan_id: encrypt-rule-20260505-001
           status: passed
           sections: []
@@ -519,8 +528,6 @@ tools:
       destructiveHint: false
       idempotentHint: true
       openWorldHint: true
-    runtime:
-      workflowRole: validate
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_apply_workflow

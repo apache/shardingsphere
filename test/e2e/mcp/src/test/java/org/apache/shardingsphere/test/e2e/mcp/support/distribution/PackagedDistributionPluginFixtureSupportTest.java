@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
+import org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin.PluginFixtureHandlerProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -29,6 +31,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
@@ -63,10 +66,12 @@ class PackagedDistributionPluginFixtureSupportTest {
             assertTrue(actualDescriptorDirectory.isDirectory());
             assertNotNull(jarFile.getJarEntry("META-INF/services/org.apache.shardingsphere.mcp.api.MCPHandlerProvider"));
             assertNotNull(jarFile.getJarEntry("org/apache/shardingsphere/test/e2e/mcp/support/fixture/plugin/PluginFixtureHandlerProvider.class"));
+            assertTrue(ServiceLoader.load(MCPHandlerProvider.class, classLoader).stream().anyMatch(each -> PluginFixtureHandlerProvider.class.equals(each.type())));
             assertThat(descriptorResources.toList(), hasItem(DESCRIPTOR_ENTRY));
             try {
                 currentThread.setContextClassLoader(classLoader);
-                assertThat(MCPDescriptorCatalogLoader.load().getToolDescriptors().stream().map(MCPToolDescriptor::getName).toList(), hasItem("fixture_ping"));
+                assertThat(MCPDescriptorCatalogLoader.load().getProtocolDescriptors().getToolDescriptors().stream()
+                        .map(MCPToolDescriptor::getName).toList(), hasItem("fixture_ping"));
             } finally {
                 currentThread.setContextClassLoader(originalClassLoader);
             }

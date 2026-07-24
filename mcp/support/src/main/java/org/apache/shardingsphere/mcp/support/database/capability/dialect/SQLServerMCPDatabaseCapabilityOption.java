@@ -17,17 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
 /**
  * MCP database capability option for SQLServer.
  */
-public final class SQLServerMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class SQLServerMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public SQLServerMCPDatabaseCapabilityOption() {
-        super("SQLServer", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
+    @Override
+    public boolean isExplainSupported() {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "SQLServer";
     }
 }

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -29,12 +27,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@EnabledIf("isEnabled")
-class HttpTransportSessionLifecycleE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
+class HttpTransportSessionLifecycleE2ETest extends AbstractHttpProtocolOnlyE2ETest {
     
     @Test
     void assertRejectOpenStreamAfterDelete() throws IOException, InterruptedException {
@@ -73,7 +66,7 @@ class HttpTransportSessionLifecycleE2ETest extends AbstractHttpProgrammaticRunti
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> firstDelete = sendDeleteRequest(httpClient, createSessionHeaders(sessionId));
-        HttpResponse<String> secondDelete = sendDeleteRequest(httpClient, createSessionHeaders(sessionId));
+        HttpResponse<String> secondDelete = sendDeleteRequest(httpClient, Map.of("MCP-Session-Id", sessionId));
         assertThat(firstDelete.statusCode(), is(200));
         assertThat(secondDelete.statusCode(), is(404));
     }

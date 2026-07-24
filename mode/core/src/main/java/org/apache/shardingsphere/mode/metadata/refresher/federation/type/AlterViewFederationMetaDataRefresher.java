@@ -38,12 +38,12 @@ public final class AlterViewFederationMetaDataRefresher implements FederationMet
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService,
                         final DatabaseType databaseType, final ShardingSphereDatabase database, final String schemaName, final AlterViewStatement sqlStatement) {
-        String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType);
+        String viewName = TableRefreshUtils.getViewLoadCandidateName(database, sqlStatement.getView().getTableName().getIdentifier());
         Optional<SimpleTableSegment> renameView = sqlStatement.getRenameView();
         Collection<ShardingSphereView> alteredViews = new LinkedList<>();
         Collection<String> droppedViews = new LinkedList<>();
         if (renameView.isPresent()) {
-            String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
+            String renameViewName = TableRefreshUtils.getViewLoadCandidateName(database, renameView.get().getTableName().getIdentifier());
             String originalView = database.getSchema(schemaName).getView(viewName).getViewDefinition();
             alteredViews.add(new ShardingSphereView(renameViewName, originalView));
             droppedViews.add(viewName);

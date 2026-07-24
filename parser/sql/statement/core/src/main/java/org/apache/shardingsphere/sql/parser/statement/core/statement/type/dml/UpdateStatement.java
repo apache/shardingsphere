@@ -65,12 +65,15 @@ public final class UpdateStatement extends DMLStatement {
     
     private final OutputSegment output;
     
+    private final boolean targetTableIsFromAlias;
+    
     private final SQLStatementAttributes attributes;
     
     @Builder
     private UpdateStatement(final DatabaseType databaseType, final TableSegment table, final SetAssignmentSegment setAssignment, final WhereSegment where,
                             final OrderBySegment orderBy, final LimitSegment limit, final TableSegment from, final WhereSegment deleteWhere, final WithSegment with,
-                            final ReturningSegment returning, final WithTableHintSegment withTableHint, final OptionHintSegment optionHint, final OutputSegment output) {
+                            final ReturningSegment returning, final WithTableHintSegment withTableHint, final OptionHintSegment optionHint, final OutputSegment output,
+                            final boolean targetTableIsFromAlias) {
         super(databaseType);
         this.table = table;
         this.setAssignment = setAssignment;
@@ -84,6 +87,7 @@ public final class UpdateStatement extends DMLStatement {
         this.withTableHint = withTableHint;
         this.optionHint = optionHint;
         this.output = output;
+        this.targetTableIsFromAlias = targetTableIsFromAlias;
         attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
     

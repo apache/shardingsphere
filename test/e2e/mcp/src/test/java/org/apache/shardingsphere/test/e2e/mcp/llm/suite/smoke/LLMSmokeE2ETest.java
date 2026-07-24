@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.smoke;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
@@ -33,6 +32,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -47,7 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("llm-e2e")
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String DATABASE_NAME = "logic_db";
@@ -86,17 +87,17 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         }
     }
     
-    @AfterEach
+    @AfterAll
     void closeRuntimeFixture() {
         if (null != currentRuntimeFixture) {
             currentRuntimeFixture.close();
             currentRuntimeFixture = null;
         }
-        currentTransport = null;
     }
     
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
+    @AfterEach
+    void clearCurrentTransport() {
+        currentTransport = null;
     }
     
     static Stream<Arguments> getTestCases() {

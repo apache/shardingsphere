@@ -96,13 +96,10 @@ public abstract class TransactionBaseE2EIT {
         return JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertTransaction(final TransactionTestParameter testParam) throws SQLException {
-        if (null == testParam) {
-            return;
-        }
         try (TransactionContainerComposer containerComposer = new TransactionContainerComposer(testParam)) {
             try {
                 callTestCases(testParam, containerComposer);
@@ -345,13 +342,7 @@ public abstract class TransactionBaseE2EIT {
         }
         
         private Collection<TransactionTestParameter> getTransactionTestParameters(final Class<? extends TransactionBaseE2EIT> testCaseClass) {
-            TransactionTestCaseRegistry registry = TRANSACTION_ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
-            Collection<TransactionTestParameter> result = getTestParameters(registry);
-            // TODO zhangcheng make sure the test cases should not empty
-            if (result.isEmpty()) {
-                result.add(null);
-            }
-            return result;
+            return getTestParameters(TRANSACTION_ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName()));
         }
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry) {

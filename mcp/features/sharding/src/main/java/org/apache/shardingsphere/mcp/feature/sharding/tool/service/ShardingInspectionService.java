@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
@@ -36,28 +37,30 @@ public final class ShardingInspectionService {
      * Query DistSQL-visible sharding algorithm plugins.
      *
      * @param queryFacade feature query facade
-     * @return sharding algorithm plugin rows
+     * @return sharding algorithm plugin query result
      */
-    public List<Map<String, Object>> queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        return queryPluginRows(queryFacade, "SHOW SHARDING ALGORITHM PLUGINS", getShardingAlgorithmPluginRows()).stream().map(this::appendShardingAlgorithmGuidance).toList();
+    public WorkflowQueryResult queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
+        WorkflowQueryResult result = queryPluginRows(queryFacade, "SHOW SHARDING ALGORITHM PLUGINS", getShardingAlgorithmPluginRows());
+        return new WorkflowQueryResult(result.getRows().stream().map(this::appendShardingAlgorithmGuidance).toList(), result.isAvailabilityConfirmed());
     }
     
     /**
      * Query DistSQL-visible key generate algorithm plugins.
      *
      * @param queryFacade feature query facade
-     * @return key generate algorithm plugin rows
+     * @return key generate algorithm plugin query result
      */
-    public List<Map<String, Object>> queryKeyGenerateAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        return queryPluginRows(queryFacade, "SHOW KEY GENERATE ALGORITHM PLUGINS", getKeyGenerateAlgorithmPluginRows()).stream().map(this::appendKeyGeneratorGuidance).toList();
+    public WorkflowQueryResult queryKeyGenerateAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
+        WorkflowQueryResult result = queryPluginRows(queryFacade, "SHOW KEY GENERATE ALGORITHM PLUGINS", getKeyGenerateAlgorithmPluginRows());
+        return new WorkflowQueryResult(result.getRows().stream().map(this::appendKeyGeneratorGuidance).toList(), result.isAvailabilityConfirmed());
     }
     
-    private List<Map<String, Object>> queryPluginRows(final MCPFeatureQueryFacade queryFacade, final String sql, final List<Map<String, Object>> fallbackRows) {
+    private WorkflowQueryResult queryPluginRows(final MCPFeatureQueryFacade queryFacade, final String sql, final List<Map<String, Object>> fallbackRows) {
         try {
-            return queryFacade.queryWithAnyDatabase(sql);
+            return WorkflowQueryResult.confirmed(queryFacade.queryWithAnyDatabase(sql));
         } catch (final MCPQueryFailedException ex) {
             if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return fallbackRows;
+                return WorkflowQueryResult.fallback(fallbackRows);
             }
             throw ex;
         }
@@ -89,7 +92,7 @@ public final class ShardingInspectionService {
      * @return sharding algorithm rows
      */
     public List<Map<String, Object>> queryAlgorithms(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING ALGORITHMS FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING ALGORITHMS FROM %s", format(databaseName)));
     }
     
     /**
@@ -100,7 +103,7 @@ public final class ShardingInspectionService {
      * @return sharding table rule rows
      */
     public List<Map<String, Object>> queryTableRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING TABLE RULES FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING TABLE RULES FROM %s", format(databaseName)));
     }
     
     /**
@@ -112,7 +115,7 @@ public final class ShardingInspectionService {
      * @return sharding table rule rows
      */
     public List<Map<String, Object>> queryTableRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING TABLE RULE %s FROM %s", format(tableName), format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING TABLE RULE %s FROM %s", format(tableName), format(databaseName)));
     }
     
     /**
@@ -123,7 +126,7 @@ public final class ShardingInspectionService {
      * @return sharding table node rows
      */
     public List<Map<String, Object>> queryTableNodes(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING TABLE NODES FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING TABLE NODES FROM %s", format(databaseName)));
     }
     
     /**
@@ -135,7 +138,7 @@ public final class ShardingInspectionService {
      * @return sharding table node rows
      */
     public List<Map<String, Object>> queryTableNode(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING TABLE NODES %s FROM %s", format(tableName), format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING TABLE NODES %s FROM %s", format(tableName), format(databaseName)));
     }
     
     /**
@@ -146,7 +149,7 @@ public final class ShardingInspectionService {
      * @return table reference rule rows
      */
     public List<Map<String, Object>> queryTableReferenceRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING TABLE REFERENCE RULES FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING TABLE REFERENCE RULES FROM %s", format(databaseName)));
     }
     
     /**
@@ -158,7 +161,7 @@ public final class ShardingInspectionService {
      * @return table reference rule rows
      */
     public List<Map<String, Object>> queryTableReferenceRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING TABLE REFERENCE RULE %s FROM %s", format(ruleName), format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING TABLE REFERENCE RULE %s FROM %s", format(ruleName), format(databaseName)));
     }
     
     /**
@@ -169,7 +172,7 @@ public final class ShardingInspectionService {
      * @return default sharding strategy rows
      */
     public List<Map<String, Object>> queryDefaultStrategy(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW DEFAULT SHARDING STRATEGY FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW DEFAULT SHARDING STRATEGY FROM %s", format(databaseName)));
     }
     
     /**
@@ -180,7 +183,7 @@ public final class ShardingInspectionService {
      * @return key generator rows
      */
     public List<Map<String, Object>> queryKeyGenerators(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING KEY GENERATORS FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING KEY GENERATORS FROM %s", format(databaseName)));
     }
     
     /**
@@ -192,7 +195,7 @@ public final class ShardingInspectionService {
      * @return key generator rows
      */
     public List<Map<String, Object>> queryKeyGenerator(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String keyGeneratorName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING KEY GENERATOR %s FROM %s", format(keyGeneratorName), format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING KEY GENERATOR %s FROM %s", format(keyGeneratorName), format(databaseName)));
     }
     
     /**
@@ -203,7 +206,7 @@ public final class ShardingInspectionService {
      * @return key generate strategy rows
      */
     public List<Map<String, Object>> queryKeyGenerateStrategies(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING KEY GENERATE STRATEGIES FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING KEY GENERATE STRATEGIES FROM %s", format(databaseName)));
     }
     
     /**
@@ -215,7 +218,7 @@ public final class ShardingInspectionService {
      * @return key generate strategy rows
      */
     public List<Map<String, Object>> queryKeyGenerateStrategy(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String strategyName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING KEY GENERATE STRATEGY %s FROM %s", format(strategyName), format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING KEY GENERATE STRATEGY %s FROM %s", format(strategyName), format(databaseName)));
     }
     
     /**
@@ -226,7 +229,7 @@ public final class ShardingInspectionService {
      * @return auditor rows
      */
     public List<Map<String, Object>> queryAuditors(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING AUDITORS FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING AUDITORS FROM %s", format(databaseName)));
     }
     
     /**
@@ -237,7 +240,7 @@ public final class ShardingInspectionService {
      * @return unused sharding algorithm rows
      */
     public List<Map<String, Object>> queryUnusedAlgorithms(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW UNUSED SHARDING ALGORITHMS FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW UNUSED SHARDING ALGORITHMS FROM %s", format(databaseName)));
     }
     
     /**
@@ -248,7 +251,7 @@ public final class ShardingInspectionService {
      * @return unused sharding key generator rows
      */
     public List<Map<String, Object>> queryUnusedKeyGenerators(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW UNUSED SHARDING KEY GENERATORS FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW UNUSED SHARDING KEY GENERATORS FROM %s", format(databaseName)));
     }
     
     /**
@@ -259,7 +262,7 @@ public final class ShardingInspectionService {
      * @return unused sharding auditor rows
      */
     public List<Map<String, Object>> queryUnusedAuditors(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW UNUSED SHARDING AUDITORS FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW UNUSED SHARDING AUDITORS FROM %s", format(databaseName)));
     }
     
     /**
@@ -271,7 +274,7 @@ public final class ShardingInspectionService {
      * @return table rule rows
      */
     public List<Map<String, Object>> queryTableRulesUsedAlgorithm(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String algorithmName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING TABLE RULES USED ALGORITHM %s FROM %s", format(algorithmName), format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING TABLE RULES USED ALGORITHM %s FROM %s", format(algorithmName), format(databaseName)));
     }
     
     /**
@@ -283,7 +286,7 @@ public final class ShardingInspectionService {
      * @return table rule rows
      */
     public List<Map<String, Object>> queryTableRulesUsedKeyGenerator(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String keyGeneratorName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING TABLE RULES USED KEY GENERATOR %s FROM %s", format(keyGeneratorName), format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING TABLE RULES USED KEY GENERATOR %s FROM %s", format(keyGeneratorName), format(databaseName)));
     }
     
     /**
@@ -295,7 +298,7 @@ public final class ShardingInspectionService {
      * @return table rule rows
      */
     public List<Map<String, Object>> queryTableRulesUsedAuditor(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String auditorName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW SHARDING TABLE RULES USED AUDITOR %s FROM %s", format(auditorName), format(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW SHARDING TABLE RULES USED AUDITOR %s FROM %s", format(auditorName), format(databaseName)));
     }
     
     /**
@@ -306,7 +309,7 @@ public final class ShardingInspectionService {
      * @return rule count rows
      */
     public List<Map<String, Object>> queryRuleCount(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("COUNT SHARDING RULE FROM %s", format(databaseName)));
+        return queryFacade.query(databaseName, String.format("COUNT SHARDING RULE FROM %s", format(databaseName)));
     }
     
     private String format(final String value) {

@@ -37,5 +37,7 @@ public final class BroadcastFeatureDefinition {
     
     public static final String RULES_RESOURCE_URI = "shardingsphere://features/broadcast/databases/{database}/rules";
     
+    public static final String TABLE_RULE_RESOURCE_URI = "shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule";
+    
     public static final String RULE_COUNT_RESOURCE_URI = "shardingsphere://features/broadcast/databases/{database}/rule-count";
 }

@@ -13,8 +13,8 @@ Use this mode to inspect ShardingSphere logical database structure, read rule st
 
 Available tasks include:
 
-- Inspecting logical databases, schemas, tables, views, columns, indexes, and sequences.
-- Searching metadata objects such as tables, views, columns, and indexes.
+- Inspecting logical databases, schemas, tables, views, columns, indexes, sequences, storage units, and single table mappings.
+- Searching metadata objects such as tables, views, columns, indexes, and storage units.
 - Running read-only SQL queries.
 - Previewing SQL that may change data, metadata, or rules.
 - Planning, reviewing, applying, and validating official DistSQL-only rule changes for data encryption, data masking, broadcast, readwrite-splitting, shadow, and sharding.
@@ -48,11 +48,14 @@ Usage boundaries:
 | Task | Natural language example | Connection target | User focus |
 | --- | --- | --- | --- |
 | List accessible databases | "List the databases that can be accessed." | Proxy or direct database connection | Confirm that database names match the configuration. |
-| Inspect schemas or namespaces | "Show schemas in `<database-name>`." | Proxy or direct database connection | For multi-schema databases, confirm the target schema first. |
-| Inspect tables or views | "List tables and views in `<schema-name>`." | Proxy or direct database connection | Proxy connections show logical objects. |
-| Inspect columns | "Show columns and column types for `<table-name>`." | Proxy or direct database connection | Column types follow metadata visible from the connection target. |
-| Inspect indexes | "Show indexes for `<table-name>`." | Proxy or direct database connection | With Proxy connections, index information may differ from the full physical database structure. |
-| Inspect sequences | "List sequences in `<schema-name>`." | Proxy or direct database connection | Available only when the connection target exposes sequence metadata. |
+| Inspect schemas or namespaces | "Show schemas in `logic_db`." | Proxy or direct database connection | For multi-schema databases, confirm the target schema first. |
+| Inspect tables or views | "List tables and views in `public`." | Proxy or direct database connection | Proxy connections show logical objects. |
+| Inspect columns | "Show columns and column types for `orders`." | Proxy or direct database connection | Column types follow metadata visible from the connection target. |
+| Inspect indexes | "Show indexes for `orders`." | Proxy or direct database connection | With Proxy connections, index information may differ from the full physical database structure. |
+| Inspect sequences | "List sequences in `public`." | Proxy or direct database connection | Available only when the connection target exposes sequence metadata. |
+| Inspect storage units | "List storage units in `logic_db`." | Proxy only | Backed by `SHOW STORAGE UNITS FROM logic_db`; sensitive connection properties are redacted or omitted. |
+| Inspect storage unit usage | "Which rules use storage unit `write_ds`?" | Proxy only | Backed by `SHOW RULES USED STORAGE UNIT write_ds FROM logic_db`. |
+| Inspect single tables | "Which storage unit contains single table `t_user`?" | Proxy only | Backed by `SHOW SINGLE TABLE` and `SHOW SINGLE TABLES`; use the default single table storage unit resource for new single tables. |
 
 ## Metadata Search
 
@@ -60,6 +63,7 @@ Usage boundaries:
 | --- | --- | --- | --- |
 | Search objects by name | "Find tables whose names contain `order`." | Proxy or direct database connection | Useful when the full object name is unknown. |
 | Search by object type | "Find tables and views whose names contain `user`." | Proxy or direct database connection | Narrow the search to tables, views, columns, or other object types. |
+| Search storage units | "Find storage units whose names contain `write`." | Proxy only | Uses `database_gateway_search_metadata` with `object_types=["storage_unit"]`. |
 | Continue from search results | "Open the `orders` table found earlier and show columns and indexes." | Proxy or direct database connection | Search results can provide context for follow-up natural-language tasks. |
 
 ## Queries and Ordinary SQL Changes
@@ -77,6 +81,8 @@ Usage boundaries:
 - A single query can request at most 5000 rows. If the result is truncated, narrow the predicate, reduce the projection, or request fewer rows.
 - A query timeout can be requested by the task, up to 300000 milliseconds. When omitted, the Server default behavior is used.
 - Each MCP session has a tool-call quota. When the quota is exhausted, close the current session and create a new MCP session.
+- Console-style metadata SQL such as `SHOW STORAGE UNITS` and `SHOW SINGLE TABLES` remains blocked by `database_gateway_execute_query`.
+  Use the corresponding MCP resources or recovery hints instead of raw `SHOW` passthrough.
 
 ## ShardingSphere Rule Changes
 

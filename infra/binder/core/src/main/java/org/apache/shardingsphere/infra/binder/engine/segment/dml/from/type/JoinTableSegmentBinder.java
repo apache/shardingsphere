@@ -38,6 +38,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -164,6 +166,12 @@ public final class JoinTableSegmentBinder {
             result.addAll(((JoinTableSegment) tableSegment).getDerivedJoinTableProjectionSegments());
         } else if (tableSegment instanceof SubqueryTableSegment) {
             result.addAll(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, tableSegment.getAliasName().orElse("")));
+        } else if (tableSegment instanceof FunctionTableSegment) {
+            result.addAll(getProjectionSegmentsByTableAliasOrName(tableBinderContexts,
+                    tableSegment.getAliasName().orElseGet(() -> ((FunctionTableSegment) tableSegment).getTableFunction().getText())));
+        } else if (tableSegment instanceof CollectionTableSegment) {
+            result.addAll(getProjectionSegmentsByTableAliasOrName(tableBinderContexts,
+                    tableSegment.getAliasName().orElseGet(() -> ((CollectionTableSegment) tableSegment).getExpressionSegment().getText())));
         }
         return result;
     }

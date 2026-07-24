@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -69,7 +70,8 @@ public final class DatabaseRulesBuilder {
             if (null != configChecker) {
                 configChecker.check(databaseName, entry.getKey(), resourceMetaData.getDataSourceMap(), result);
             }
-            result.add(entry.getValue().build(entry.getKey(), databaseName, protocolType, resourceMetaData, result, computeNodeInstanceContext));
+            DatabaseRule rule = entry.getValue().build(entry.getKey(), databaseName, protocolType, resourceMetaData, result, computeNodeInstanceContext);
+            result.add(rule);
         }
         return result;
     }

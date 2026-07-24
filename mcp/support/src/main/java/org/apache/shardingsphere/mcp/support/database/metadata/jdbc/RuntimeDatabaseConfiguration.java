@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,10 +32,8 @@ import java.util.Properties;
  * Runtime database configuration for one logical database binding.
  */
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public final class RuntimeDatabaseConfiguration {
-    
-    private final String databaseType;
     
     private final String jdbcUrl;
     
@@ -62,7 +62,15 @@ public final class RuntimeDatabaseConfiguration {
         try {
             return props.isEmpty() ? DriverManager.getConnection(jdbcUrl) : DriverManager.getConnection(jdbcUrl, props);
         } catch (final SQLException ex) {
-            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
+            throw createConnectionFailedException(databaseName, ex);
+        }
+    }
+    
+    private RuntimeDatabaseConnectionException createConnectionFailedException(final String databaseName, final SQLException cause) {
+        try {
+            return RuntimeDatabaseConnectionException.connectionFailed(databaseName, DatabaseTypeFactory.get(Objects.toString(jdbcUrl, "")).getType(), cause);
+        } catch (final UnsupportedStorageTypeException ignored) {
+            return RuntimeDatabaseConnectionException.connectionFailed(databaseName, cause);
         }
     }
     

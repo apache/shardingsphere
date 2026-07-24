@@ -20,8 +20,11 @@ resources:
     title: Readwrite-Splitting Load-Balance Algorithm Plugins
     description: "List load-balance algorithm plugins visible from the current ShardingSphere runtime and include built-in property guidance for common algorithms."
     mimeType: application/json
+    meta:
+      org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -39,6 +42,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -78,6 +82,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_status
@@ -100,6 +105,7 @@ resourceTemplates:
           required: true
           scope: logical-rule
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_status
@@ -117,6 +123,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -156,6 +163,10 @@ prompts:
         title: Load Balancer Type
         description: "Optional load-balance algorithm type."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Existing current-session workflow plan identifier used only to continue a readwrite-splitting rule plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -172,7 +183,7 @@ prompts:
         - "Ask before applying generated readwrite-splitting rule DistSQL that changes runtime state."
   - name: plan_readwrite_splitting_status
     title: Plan Readwrite-Splitting Status
-    description: "Guide the model to plan a readwrite-splitting storage-unit enable or disable workflow by reading current status first."
+    description: "Guide the model to plan a Cluster-mode readwrite-splitting storage-unit enable or disable workflow by reading current status first."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-readwrite-splitting-status.md
     arguments:
@@ -192,6 +203,10 @@ prompts:
         title: Target Status
         description: "Target status: enable or disable."
         required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Existing current-session workflow plan identifier used only to continue a readwrite-splitting status plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+        required: false
     meta:
       org.apache.shardingsphere/related-tools:
         - database_gateway_plan_readwrite_splitting_status
@@ -203,6 +218,7 @@ prompts:
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_readwrite_splitting_status returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing inputs instead of guessing storage unit status."
+        - "Stop and report the Cluster-mode requirement after a failed plan returns WF-MODE-002; do not call apply or repeat the planning tool."
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask when database, rule name, read storage unit, or target status is unclear."
         - "Ask before applying generated readwrite-splitting status DistSQL that changes runtime state."
@@ -210,7 +226,17 @@ completionTargets:
   - referenceType: prompt
     reference: plan_readwrite_splitting_rule
     arguments:
+      - database
+      - write_storage_unit
       - load_balancer_type
+      - plan_id
+    maxValues: 50
+  - referenceType: prompt
+    reference: plan_readwrite_splitting_status
+    arguments:
+      - database
+      - storage_unit
+      - plan_id
     maxValues: 50
 resourceNavigation:
   - from: shardingsphere://features/readwrite-splitting/databases/{database}/rules
@@ -248,7 +274,8 @@ resourceNavigation:
   - from: shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins
     to: database_gateway_plan_readwrite_splitting_rule
     requiredArguments: []
-    carriedArguments: []
+    carriedArguments:
+      - load_balancer_type
     description: "Choose an available load-balance algorithm before planning create or alter."
   - from: database_gateway_plan_readwrite_splitting_rule
     to: shardingsphere://workflows/{plan_id}
@@ -257,6 +284,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning readwrite-splitting rule changes."
+  - from: database_gateway_plan_readwrite_splitting_rule
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed readwrite-splitting rule workflow after user approval."
   - from: database_gateway_plan_readwrite_splitting_status
     to: shardingsphere://workflows/{plan_id}
     requiredArguments:
@@ -264,6 +298,13 @@ resourceNavigation:
     carriedArguments:
       - plan_id
     description: "Read the persisted workflow plan after planning readwrite-splitting status changes."
+  - from: database_gateway_plan_readwrite_splitting_status
+    to: database_gateway_apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Apply the reviewed readwrite-splitting status workflow after user approval."
 tools:
   - name: database_gateway_plan_readwrite_splitting_rule
     title: Plan Readwrite-Splitting Rule
@@ -275,7 +316,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Optional existing workflow plan identifier used to continue or revise a previous readwrite-splitting plan."
+          description: "Existing workflow plan identifier used only to continue the same readwrite.rule workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the readwrite-splitting rule."
@@ -328,6 +369,11 @@ tools:
             load_balancer_type:
               type: string
               description: "Inferred load-balance algorithm type."
+            load_balancer_properties:
+              type: object
+              description: "Inferred load-balance algorithm properties."
+              additionalProperties:
+                type: string
           required: []
           additionalProperties: false
         delivery_mode:
@@ -342,27 +388,6 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          description: "Optional user-selected readwrite-splitting rule fields."
-          properties:
-            rule:
-              type: string
-              description: "Rule name override."
-            write_storage_unit:
-              type: string
-              description: "Write storage unit override."
-            read_storage_units:
-              type: string
-              description: "Read storage units override."
-            transactional_read_query_strategy:
-              type: string
-              description: "Transactional read query strategy override."
-            load_balancer_type:
-              type: string
-              description: "Load-balance algorithm type override."
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema: &workflowPlanOutputSchema
@@ -374,6 +399,9 @@ tools:
           enum:
             - planning
             - terminal
+        summary:
+          type: string
+          description: "Short model-facing workflow planning summary."
         plan_id:
           type: string
           description: "Workflow plan identifier for database_gateway_apply_workflow and database_gateway_validate_workflow."
@@ -389,6 +417,48 @@ tools:
         clarification_questions:
           type: array
           description: "Structured questions for missing workflow inputs."
+        elicitation_support:
+          type: object
+          description: "Evaluated MCP elicitation capability and the selected interaction path when automatic form continuation cannot be used."
+        fallback_reason:
+          type: string
+          description: "Machine-readable reason explaining why the planner returned structured fallback instead of automatic form continuation."
+        issues:
+          type: array
+          description: "Warnings, conflicts, and validation issues found during planning."
+        global_steps:
+          type: array
+          description: "Workflow review and execution steps."
+        current_step:
+          type: string
+          description: "Current workflow step."
+        algorithm_recommendations:
+          type: array
+          description: "Recommended readwrite-splitting algorithms and ranking reasons."
+        property_requirements:
+          type: array
+          description: "Required and optional algorithm properties for selected readwrite-splitting algorithms."
+        validation_strategy:
+          type: object
+          description: "Validation strategy generated by the planner."
+        delivery_mode:
+          type: string
+          description: "Planner delivery mode used for user interaction."
+        execution_mode:
+          type: string
+          description: "Preferred later apply mode captured by the plan."
+        intent_inference:
+          type: object
+          description: "Resolved intent fields, inferred values, unresolved fields, and reasoning notes."
+        argument_provenance:
+          type: object
+          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
+        review_focus:
+          type: object
+          description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
+        proxy_topology_hint:
+          type: object
+          description: "Proxy metadata view expected by this workflow and safe recovery guidance when runtime metadata looks inconsistent."
         resources_to_read:
           type: array
           description: "Resources the model should read before retrying or validating the plan."
@@ -425,9 +495,6 @@ tools:
         distsql_artifacts:
           type: array
           description: "Generated readwrite-splitting rule DistSQL artifacts for review."
-        manual_artifact_package:
-          type: object
-          description: "Manual-only artifact package returned when execution_mode=manual-only."
       required:
         - response_mode
         - plan_id
@@ -439,6 +506,7 @@ tools:
       additionalProperties: true
       examples:
         - response_mode: planning
+          summary: Workflow plan `readwrite-rule-20260606-001` for readwrite.rule is ready for preview.
           plan_id: readwrite-rule-20260606-001
           status: planned
           workflow_kind: readwrite.rule
@@ -462,7 +530,7 @@ tools:
           distsql_artifacts:
             - operation_type: create
               artifact_type: rule_distsql
-              sql: CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=ds_write, READ_STORAGE_UNITS(ds_read_0), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')
+              sql: CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`ds_write`, READ_STORAGE_UNITS(`ds_read_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')
           next_actions:
             - order: 1
               type: tool_call
@@ -477,7 +545,9 @@ tools:
       readOnlyHint: false
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
+    runtime:
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: readwrite.rule
       org.apache.shardingsphere/artifact-categories:
@@ -488,17 +558,21 @@ tools:
         - shardingsphere://features/readwrite-splitting/databases/{database}/rules
         - shardingsphere://features/readwrite-splitting/databases/{database}/rule-count
         - shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
   - name: database_gateway_plan_readwrite_splitting_status
     title: Plan Readwrite-Splitting Status
     description: >-
-      Plan a ShardingSphere readwrite-splitting read storage-unit enable or disable workflow. This tool creates reviewable status DistSQL artifacts
-      but does not execute them; use database_gateway_apply_workflow only after user review.
+      Plan a ShardingSphere readwrite-splitting read storage-unit enable or disable workflow. The current Proxy must run in Cluster mode;
+      otherwise this tool returns a failed plan without DistSQL artifacts. It does not execute generated artifacts;
+      use database_gateway_apply_workflow only after user review.
     inputSchema:
       type: object
       properties:
         plan_id:
           type: string
-          description: "Optional existing workflow plan identifier used to continue or revise a previous readwrite-splitting status plan."
+          description: "Existing workflow plan identifier used only to continue the same readwrite.status workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the readwrite-splitting rule."
@@ -511,12 +585,6 @@ tools:
         target_status:
           type: string
           description: "Target status operation."
-          enum:
-            - enable
-            - disable
-        operation_type:
-          type: string
-          description: "Alias for target_status when user intent is expressed as an operation."
           enum:
             - enable
             - disable
@@ -550,27 +618,13 @@ tools:
           enum:
             - review-then-execute
             - manual-only
-        user_overrides:
-          type: object
-          description: "Optional user-selected readwrite-splitting status fields."
-          properties:
-            rule:
-              type: string
-              description: "Rule name override."
-            storage_unit:
-              type: string
-              description: "Read storage unit override."
-            target_status:
-              type: string
-              description: "Target status override."
-          required: []
-          additionalProperties: false
       required: []
       additionalProperties: false
     outputSchema:
       <<: *workflowPlanOutputSchema
       examples:
         - response_mode: planning
+          summary: Workflow plan `readwrite-status-20260606-001` for readwrite.status is ready for preview.
           plan_id: readwrite-status-20260606-001
           status: planned
           workflow_kind: readwrite.status
@@ -592,9 +646,9 @@ tools:
               reason: Inspect current readwrite-splitting status before planning changes.
               source_field: resources_to_read
           distsql_artifacts:
-            - operation_type: enable
+            - target_status: enable
               artifact_type: rule_distsql
-              sql: ALTER READWRITE_SPLITTING RULE readwrite_ds ENABLE ds_read_0 FROM logic_db
+              sql: ALTER READWRITE_SPLITTING RULE `readwrite_ds` ENABLE `ds_read_0` FROM `logic_db`
           next_actions:
             - order: 1
               type: tool_call
@@ -609,7 +663,9 @@ tools:
       readOnlyHint: false
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
+    runtime:
+      workflowRole: plan
     meta:
       org.apache.shardingsphere/workflow-kind: readwrite.status
       org.apache.shardingsphere/artifact-categories:
@@ -619,3 +675,6 @@ tools:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/readwrite-splitting/databases/{database}/status
         - shardingsphere://features/readwrite-splitting/databases/{database}/rules/{rule}/status
+      org.apache.shardingsphere/follow-up-tools:
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow

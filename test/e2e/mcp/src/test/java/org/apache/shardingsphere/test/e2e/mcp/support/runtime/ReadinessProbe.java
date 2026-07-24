@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.function.LongSupplier;
@@ -37,13 +38,6 @@ public final class ReadinessProbe {
     
     private final Sleeper sleeper;
     
-    /**
-     * Construct readiness retry probe.
-     *
-     * @param timeoutMillis timeout milliseconds
-     * @param initialIntervalMillis initial retry interval milliseconds
-     * @param maxIntervalMillis maximum retry interval milliseconds
-     */
     public ReadinessProbe(final long timeoutMillis, final long initialIntervalMillis, final long maxIntervalMillis) {
         this(timeoutMillis, initialIntervalMillis, maxIntervalMillis, System::currentTimeMillis, Thread::sleep);
     }
@@ -169,6 +163,7 @@ public final class ReadinessProbe {
      * @param <T> ready value type
      */
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
     public static final class ReadinessResult<T> {
         
         private final T value;
@@ -210,22 +205,6 @@ public final class ReadinessProbe {
          */
         public static <T> ReadinessResult<T> failed(final Exception failure) {
             return new ReadinessResult<>(null, failure, false, true);
-        }
-        
-        private T getValue() {
-            return value;
-        }
-        
-        private Exception getFailure() {
-            return failure;
-        }
-        
-        private boolean isReady() {
-            return ready;
-        }
-        
-        private boolean isFailed() {
-            return failed;
         }
     }
 }

@@ -26,7 +26,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   ds_1:
     url: jdbc:mysql://mysql.distsql_rdl.host:3306/rdl_ds_1?useSSL=false&characterEncoding=utf-8
@@ -36,7 +36,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
   ds_2:
     url: jdbc:mysql://mysql.distsql_rdl.host:3306/rdl_ds_2?useSSL=false&characterEncoding=utf-8
@@ -46,7 +46,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 8
     minPoolSize: 2
 
 rules:

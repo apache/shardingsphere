@@ -32,7 +32,7 @@ weight = 9
 | *名称*         | *数据类型* | *说明*  |
 |--------------|--------|-------|
 | first-n      | int    | 前 n 位 |
-| last-m       | int    | 后 n 位 |
+| last-m       | int    | 后 m 位 |
 | replace-char | String | 替换字符  |
 
 #### 保留自 X 至 Y 脱敏算法
@@ -56,7 +56,7 @@ weight = 9
 | *名称*         | *数据类型* | *说明*  |
 |--------------|--------|-------|
 | first-n      | int    | 前 n 位 |
-| last-m       | int    | 后 n 位 |
+| last-m       | int    | 后 m 位 |
 | replace-char | String | 替换字符  |
 
 #### 遮盖自 X 至 Y 脱敏算法
@@ -106,7 +106,7 @@ weight = 9
 | uppercase-letter-codes | String | 大写字母码表（以英文逗号分隔，默认值：A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z） |
 | lowercase-letter-codes | String | 小写字母码表（以英文逗号分隔，默认值：a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z） |
 | digital-codes          | String | 数字码表（以英文逗号分隔，默认值：0,1,2,3,4,5,6,7,8,9）                                   |
-| special-codes          | String | 特殊字符码表（以英文逗号分隔，默认值：~,!,@,#,$,%,^,&,*,:,&lt;,&gt;,&#166;）                |
+| special-codes          | String | 特殊字符码表（以英文逗号分隔，默认值：~,!,@,#,$,%,^,&,*,:,&lt;,&gt;,&#124;）                |
 
 ## 操作步骤
 1. 在脱敏规则中配置脱敏算法；

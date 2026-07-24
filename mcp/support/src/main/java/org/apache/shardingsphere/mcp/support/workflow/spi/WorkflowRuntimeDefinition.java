@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.spi;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Workflow runtime definition.
  */
-@RequiredArgsConstructor
 @Getter
+@AllArgsConstructor
 public final class WorkflowRuntimeDefinition {
     
     private final WorkflowKind workflowKind;
@@ -34,13 +34,20 @@ public final class WorkflowRuntimeDefinition {
     
     private final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler;
     
+    private final MCPWorkflowApplyArtifactValidator applyArtifactValidator;
+    
     /**
      * Create workflow runtime definition with one handler for validation and apply synchronization.
+     * If the handler also implements {@link MCPWorkflowApplyArtifactValidator}, it validates apply artifacts; otherwise no additional artifact validation is performed.
      *
      * @param workflowKind workflow kind
      * @param runtimeHandler workflow runtime handler
      */
     public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowRuntimeHandler runtimeHandler) {
-        this(workflowKind, runtimeHandler, runtimeHandler);
+        this(workflowKind, runtimeHandler, runtimeHandler, createApplyArtifactValidator(runtimeHandler));
+    }
+    
+    private static MCPWorkflowApplyArtifactValidator createApplyArtifactValidator(final MCPWorkflowRuntimeHandler runtimeHandler) {
+        return runtimeHandler instanceof MCPWorkflowApplyArtifactValidator ? (MCPWorkflowApplyArtifactValidator) runtimeHandler : MCPWorkflowApplyArtifactValidator.NO_OP;
     }
 }

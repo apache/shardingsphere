@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
  * HTTP transport configuration.
  */
 @Getter
+@AllArgsConstructor
 public final class HttpTransportConfiguration {
     
     private final String bindHost;
@@ -37,10 +39,4 @@ public final class HttpTransportConfiguration {
         this(bindHost, port, endpointPath, null);
     }
     
-    public HttpTransportConfiguration(final String bindHost, final int port, final String endpointPath, final SessionAttributionSourceConfiguration sessionAttributionSource) {
-        this.bindHost = bindHost;
-        this.port = port;
-        this.endpointPath = endpointPath;
-        this.sessionAttributionSource = sessionAttributionSource;
-    }
 }

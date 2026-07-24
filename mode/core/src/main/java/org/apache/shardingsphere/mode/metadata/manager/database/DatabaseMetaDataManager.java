@@ -99,8 +99,9 @@ public final class DatabaseMetaDataManager {
         if (!database.containsSchema(schemaName)) {
             return;
         }
+        ShardingSphereSchema schema = database.getSchema(schemaName);
         database.dropSchema(schemaName);
-        if (database.getSchema(schemaName).getAllTables().stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each.getName(), database))) {
+        if (schema.getAllTables().stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each.getName(), database))) {
             database.reloadRules();
         }
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));

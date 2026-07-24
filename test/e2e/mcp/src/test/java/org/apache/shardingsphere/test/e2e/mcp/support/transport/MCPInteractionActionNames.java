@@ -26,7 +26,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPInteractionActionNames {
     
+    public static final String LIST_TOOLS = "mcp_list_tools";
+    
     public static final String LIST_RESOURCES = "mcp_list_resources";
+    
+    public static final String LIST_RESOURCE_TEMPLATES = "mcp_list_resource_templates";
     
     public static final String READ_RESOURCE = "mcp_read_resource";
     
@@ -36,7 +40,11 @@ public final class MCPInteractionActionNames {
     
     public static final String COMPLETE = "mcp_complete";
     
+    public static final String TOOL_LIST_KIND = "tool_list";
+    
     public static final String RESOURCE_LIST_KIND = "resource_list";
+    
+    public static final String RESOURCE_TEMPLATE_LIST_KIND = "resource_template_list";
     
     public static final String RESOURCE_READ_KIND = "resource_read";
     

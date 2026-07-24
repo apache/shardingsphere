@@ -35,11 +35,50 @@ class LLMUsabilityReportWriterTest {
     
     @Test
     void assertWriteScorecardSummary() throws IOException {
-        LLMUsabilityScenarioResult scenarioResult = new LLMUsabilityScenarioResult("scenario-1", LLMUsabilityDimension.TOOL, "mysql",
-                List.of("natural-task"), false, "wrong_tool", "Expected database_gateway_execute_query.", false, 1, 3, false, false, 0.0D, true,
-                false, false, false, true, List.of());
-        LLMUsabilityScorecard scorecard = new LLMUsabilityScorecard("suite-1", "run-1", 75.0D, false, 0.0D, 0.0D, 1.0D, 0.0D,
-                0.33D, 3.0D, 0.0D, 1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, List.of(scenarioResult));
+        LLMUsabilityScenarioResult scenarioResult = LLMUsabilityScenarioResult.builder()
+                .scenarioId("scenario-1")
+                .dimension(LLMUsabilityDimension.TOOL)
+                .runtimeKind("mysql")
+                .tags(List.of("natural-task"))
+                .success(false)
+                .failureType("wrong_tool")
+                .message("Expected database_gateway_execute_query.")
+                .firstCorrectAction(false)
+                .invalidCallCount(1)
+                .roundTripCount(3)
+                .resourceHit(false)
+                .recoveredAfterError(false)
+                .boundaryConfusion(true)
+                .nextActionFollowed(false)
+                .approvalViolation(false)
+                .nativeToolCallCoverage(false)
+                .harnessRecoveryUsed(true)
+                .interactionTrace(List.of())
+                .build();
+        LLMUsabilityScorecard scorecard = LLMUsabilityScorecard.builder()
+                .suiteId("suite-1")
+                .runId("run-1")
+                .overallScore(75.0D)
+                .fullScore(false)
+                .taskSuccessRate(0.0D)
+                .naturalTaskSuccessRate(0.0D)
+                .naturalTaskSampleCount(1)
+                .protocolContractSuccessRate(1.0D)
+                .protocolContractSampleCount(0)
+                .firstCorrectActionRate(0.0D)
+                .invalidCallRate(0.33D)
+                .averageRoundTrips(3.0D)
+                .boundaryConfusionRate(1.0D)
+                .resourceHitRate(0.0D)
+                .resourceHitSampleCount(0)
+                .recoveryRate(0.0D)
+                .recoverySampleCount(0)
+                .nextActionFollowRate(0.0D)
+                .approvalViolationRate(0.0D)
+                .nativeToolCallRate(0.0D)
+                .harnessRecoveryRate(1.0D)
+                .scenarioResults(List.of(scenarioResult))
+                .build();
         new LLMUsabilityReportWriter().writeScorecard(tempDir, scorecard);
         assertThat(Files.readString(tempDir.resolve("summary.md")), is(createExpectedSummary()));
     }
@@ -53,14 +92,17 @@ class LLMUsabilityReportWriterTest {
                 + "- fullScore: false" + lineSeparator
                 + "- taskSuccessRate: 0.0" + lineSeparator
                 + "- naturalTaskSuccessRate: 0.0" + lineSeparator
-                + "- protocolContractSuccessRate: 1.0" + lineSeparator
+                + "- naturalTaskSampleCount: 1" + lineSeparator
+                + "- protocolContractSuccessRate: n/a" + lineSeparator
+                + "- protocolContractSampleCount: 0" + lineSeparator
                 + "- firstCorrectActionRate: 0.0" + lineSeparator
                 + "- invalidCallRate: 0.33" + lineSeparator
                 + "- averageRoundTrips: 3.0" + lineSeparator
-                + "- queryAnswerFidelity: 0.0" + lineSeparator
                 + "- boundaryConfusionRate: 1.0" + lineSeparator
-                + "- resourceHitRate: 0.0" + lineSeparator
-                + "- recoveryRate: 0.0" + lineSeparator
+                + "- resourceHitRate: n/a" + lineSeparator
+                + "- resourceHitSampleCount: 0" + lineSeparator
+                + "- recoveryRate: n/a" + lineSeparator
+                + "- recoverySampleCount: 0" + lineSeparator
                 + "- nextActionFollowRate: 0.0" + lineSeparator
                 + "- approvalViolationRate: 0.0" + lineSeparator
                 + "- nativeToolCallRate: 0.0" + lineSeparator

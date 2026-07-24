@@ -17,14 +17,25 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
+import java.util.List;
+import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class WorkflowDistSQLQueryUtilsTest {
     
@@ -36,14 +47,39 @@ class WorkflowDistSQLQueryUtilsTest {
     }
     
     @Test
-    void assertIsUnsupportedDistSQLQueryFailureWithDistSQLMessage() {
+    void assertIsUnsupportedDistSQLQueryFailureWithoutJDBCEvidence() {
         MCPQueryFailedException actualException = new MCPQueryFailedException("DistSQL syntax is unsupported by this runtime backend.");
-        assertTrue(WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(actualException));
+        assertFalse(WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(actualException));
     }
     
     @Test
     void assertIsUnsupportedDistSQLQueryFailureWithConnectionFailure() {
         MCPQueryFailedException actualException = new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused."));
         assertFalse(WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(actualException));
+    }
+    
+    @Test
+    void assertQueryRuleRows() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        List<Map<String, Object>> expected = List.of(Map.of("name", "orders"));
+        when(queryFacade.query("logic_db", "SHOW MASK RULES")).thenReturn(expected);
+        assertThat(WorkflowDistSQLQueryUtils.queryRuleRows(queryFacade, "logic_db", "SHOW MASK RULES"), is(expected));
+    }
+    
+    @Test
+    void assertQueryRuleRowsWithUnsupportedDistSQL() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "SHOW MASK RULES")).thenThrow(
+                new MCPDatabaseQueryFailedException(MCPJDBCErrorCategory.SYNTAX, new SQLException("syntax error", "42601")));
+        assertTrue(WorkflowDistSQLQueryUtils.queryRuleRows(queryFacade, "logic_db", "SHOW MASK RULES").isEmpty());
+    }
+    
+    @Test
+    void assertQueryRuleRowsWithConnectionFailure() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        MCPQueryFailedException expected = new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused."));
+        when(queryFacade.query("logic_db", "SHOW MASK RULES")).thenThrow(expected);
+        MCPQueryFailedException actual = assertThrows(MCPQueryFailedException.class, () -> WorkflowDistSQLQueryUtils.queryRuleRows(queryFacade, "logic_db", "SHOW MASK RULES"));
+        assertThat(actual, sameInstance(expected));
     }
 }

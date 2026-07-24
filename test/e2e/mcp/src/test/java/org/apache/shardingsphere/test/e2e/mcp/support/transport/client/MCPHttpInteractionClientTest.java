@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.SSLContext;
@@ -85,6 +87,15 @@ class MCPHttpInteractionClientTest {
         httpClient.addResponse(200, Map.of(), "{\"result\":{}}");
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new MCPHttpInteractionClient(ENDPOINT_URI, httpClient).open());
         assertThat(actual.getMessage(), is("MCP initialize response does not contain MCP-Session-Id header."));
+    }
+    
+    @Test
+    void assertOpenWithInvalidNotificationResponse() {
+        FakeHttpClient httpClient = new FakeHttpClient();
+        httpClient.addResponse(200, Map.of("MCP-Session-Id", List.of("session")), "{\"result\":{}}");
+        httpClient.addResponse(202, Map.of(), "{}");
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> new MCPHttpInteractionClient(ENDPOINT_URI, httpClient).open());
+        assertThat(actual.getMessage(), is("MCP notification response body must be empty."));
     }
     
     @Test
@@ -194,6 +205,7 @@ class MCPHttpInteractionClientTest {
     private record QueuedResponse(int statusCode, Map<String, List<String>> headers, String body) {
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class StringHttpResponse implements HttpResponse<String> {
         
         private final HttpRequest request;
@@ -203,13 +215,6 @@ class MCPHttpInteractionClientTest {
         private final Map<String, List<String>> rawHeaders;
         
         private final String body;
-        
-        private StringHttpResponse(final HttpRequest request, final int statusCode, final Map<String, List<String>> rawHeaders, final String body) {
-            this.request = request;
-            this.statusCode = statusCode;
-            this.rawHeaders = rawHeaders;
-            this.body = body;
-        }
         
         @Override
         public int statusCode() {

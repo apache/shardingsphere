@@ -392,32 +392,30 @@
         "typeReached": "com.arjuna.common.util.propertyservice.FileLocator"
       },
       "glob": "jbossts-properties.xml"
-    }
-  ],
-  "bundles": [
+    },
     {
       "condition": {
         "typeReached": "com.arjuna.common.logging.commonI18NLogger_$logger"
       },
-      "name": "com.arjuna.common.logging.commonI18NLogger_$logger"
+      "bundle": "com.arjuna.common.logging.commonI18NLogger_$logger"
     },
     {
       "condition": {
         "typeReached": "com.arjuna.ats.jta.logging.jtaI18NLogger_$logger"
       },
-      "name": "com.arjuna.ats.jta.logging.jtaI18NLogger_$logger"
+      "bundle": "com.arjuna.ats.jta.logging.jtaI18NLogger_$logger"
     },
     {
       "condition": {
         "typeReached": "com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger"
       },
-      "name": "com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger"
+      "bundle": "com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger"
     },
     {
       "condition": {
         "typeReached": "com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger"
       },
-      "name": "com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger"
+      "bundle": "com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger"
     }
   ]
 }

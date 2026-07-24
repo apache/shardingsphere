@@ -64,7 +64,7 @@ public final class RecordTableInventoryCheckCalculatedResult implements TableInv
             log.warn("RecordSingleTableInventoryCalculatedResult type not match, o.className={}.", o.getClass().getName());
             return false;
         }
-        final RecordTableInventoryCheckCalculatedResult that = (RecordTableInventoryCheckCalculatedResult) o;
+        RecordTableInventoryCheckCalculatedResult that = (RecordTableInventoryCheckCalculatedResult) o;
         EqualsBuilder equalsBuilder = new EqualsBuilder();
         if (recordsCount != that.recordsCount || !DataConsistencyCheckUtils.isMatched(equalsBuilder, maxUniqueKeyValue, that.maxUniqueKeyValue)) {
             log.warn("Record count or max unique key value not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}, value1.class={}, value2.class={}.",

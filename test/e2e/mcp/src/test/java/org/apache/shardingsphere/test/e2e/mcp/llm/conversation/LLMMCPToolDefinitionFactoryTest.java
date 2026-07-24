@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.junit.jupiter.api.Test;
@@ -46,14 +46,18 @@ class LLMMCPToolDefinitionFactoryTest {
     @Test
     void assertProtocolBridgeToolDefinitionsKeepBridgeSchemas() {
         List<String> bridgeToolNames = List.of(
+                MCPInteractionActionNames.LIST_TOOLS,
                 MCPInteractionActionNames.LIST_RESOURCES,
+                MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
                 MCPInteractionActionNames.READ_RESOURCE,
                 MCPInteractionActionNames.LIST_PROMPTS,
                 MCPInteractionActionNames.GET_PROMPT,
                 MCPInteractionActionNames.COMPLETE);
         List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().create(bridgeToolNames);
         assertThat(getToolNames(actual), is(bridgeToolNames));
+        assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_TOOLS)));
         assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_RESOURCES)));
+        assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES)));
         assertReadResourceBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.READ_RESOURCE)));
         assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_PROMPTS)));
         assertGetPromptBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.GET_PROMPT)));
@@ -61,9 +65,61 @@ class LLMMCPToolDefinitionFactoryTest {
     }
     
     @Test
+    void assertRemoteToolDefinitionsUseAdvertisedSchemas() {
+        Map<String, Object> remoteSchema = Map.of("type", "object", "description", "remote-marker", "properties", Map.of());
+        List<Map<String, Object>> advertisedTools = List.of(
+                Map.of("name", "read_only_tool", "description", "Remote tool definition.", "inputSchema", remoteSchema),
+                Map.of("name", "write_tool", "description", "Excluded tool definition.", "inputSchema", Map.of("type", "object")));
+        List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().createFromRemote(
+                advertisedTools, List.of("read_only_tool"), List.of(MCPInteractionActionNames.LIST_RESOURCES));
+        assertThat(getToolNames(actual), is(List.of(MCPInteractionActionNames.LIST_RESOURCES, "read_only_tool")));
+        assertThat(getFunction(findTool(actual, "read_only_tool")).get("description"), is("Remote tool definition."));
+        assertThat(getParameters(findTool(actual, "read_only_tool")), is(remoteSchema));
+    }
+    
+    @Test
+    void assertReadOnlyRemoteToolDefinitionsUseAdvertisedAnnotations() {
+        List<Map<String, Object>> advertisedTools = List.of(
+                createAdvertisedTool("read_only_tool", true),
+                createAdvertisedTool("write_tool", false));
+        List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().createReadOnlyFromRemote(
+                advertisedTools, List.of(MCPInteractionActionNames.READ_RESOURCE));
+        assertThat(getToolNames(actual), is(List.of(MCPInteractionActionNames.READ_RESOURCE, "read_only_tool")));
+    }
+    
+    @Test
+    void assertCreateReadOnlyFromRemoteWithoutReadOnlyTool() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> new LLMMCPToolDefinitionFactory().createReadOnlyFromRemote(List.of(createAdvertisedTool("write_tool", false)), List.of()));
+        assertThat(actual.getMessage(), is("MCP runtime did not advertise any read-only tools."));
+    }
+    
+    @Test
+    void assertCreateFromRemoteWithMissingRequiredTool() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> new LLMMCPToolDefinitionFactory().createFromRemote(List.of(), List.of("read_only_tool"), List.of()));
+        assertThat(actual.getMessage(), is("MCP runtime did not advertise required read-only tools: [read_only_tool]"));
+    }
+    
+    @Test
+    void assertCreateFromRemoteWithoutInputSchema() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> new LLMMCPToolDefinitionFactory().createFromRemote(List.of(Map.of("name", "read_only_tool")), List.of("read_only_tool"), List.of()));
+        assertThat(actual.getMessage(), is("MCP runtime advertised tool without inputSchema: read_only_tool"));
+    }
+    
+    @Test
     void assertCreateWithUnsupportedToolDescriptor() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPToolDefinitionFactory().create(List.of("unsupported_tool")));
         assertThat(actual.getMessage(), is("Unsupported tool descriptor: unsupported_tool"));
+    }
+    
+    private Map<String, Object> createAdvertisedTool(final String toolName, final boolean readOnly) {
+        return Map.of(
+                "name", toolName,
+                "description", "Remote tool definition.",
+                "inputSchema", Map.of("type", "object", "properties", Map.of()),
+                "annotations", Map.of("readOnlyHint", readOnly));
     }
     
     private void assertOfficialToolDefinition(final Map<?, ?> toolDefinition, final MCPToolDescriptor toolDescriptor) {
@@ -98,7 +154,7 @@ class LLMMCPToolDefinitionFactoryTest {
     
     private void assertCompleteBridgeSchema(final Map<?, ?> parameters) {
         assertThat(parameters.get("type"), is("object"));
-        Map<?, ?> reference = getField(parameters, "reference");
+        Map<?, ?> reference = getField(parameters, "ref");
         assertThat(reference.get("type"), is("object"));
         assertThat(getFieldType(reference, "type"), is("string"));
         assertThat(((Map<?, ?>) getProperties(reference).get("type")).get("enum"), is(List.of("ref/prompt", "ref/resource")));
@@ -106,10 +162,16 @@ class LLMMCPToolDefinitionFactoryTest {
         assertThat(getFieldType(reference, "uri"), is("string"));
         assertThat(reference.get("required"), is(List.of("type")));
         assertFalse((Boolean) reference.get("additionalProperties"));
-        assertThat(getFieldType(parameters, "argument_name"), is("string"));
-        assertThat(getFieldType(parameters, "argument_value"), is("string"));
-        assertThat(getFieldType(parameters, "context_arguments"), is("object"));
-        assertThat(parameters.get("required"), is(List.of("reference", "argument_name")));
+        Map<?, ?> argument = getField(parameters, "argument");
+        assertThat(getFieldType(argument, "name"), is("string"));
+        assertThat(getFieldType(argument, "value"), is("string"));
+        assertThat(argument.get("required"), is(List.of("name")));
+        assertFalse((Boolean) argument.get("additionalProperties"));
+        Map<?, ?> context = getField(parameters, "context");
+        assertThat(getFieldType(context, "arguments"), is("object"));
+        assertThat(context.get("required"), is(List.of("arguments")));
+        assertFalse((Boolean) context.get("additionalProperties"));
+        assertThat(parameters.get("required"), is(List.of("ref", "argument")));
         assertFalse((Boolean) parameters.get("additionalProperties"));
     }
     

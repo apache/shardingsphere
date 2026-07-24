@@ -7,10 +7,10 @@ chapter = true
 ## 背景信息
 
 对于 `org.apache.shardingsphere.driver.ShardingSphereDriver` 的驱动类，
-通过实现 `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader` 的 SPI，
-可允许从多种来源和 File System 获取并解析为 ShardingSphere 的 YAML 配置文件。
+`org.apache.shardingsphere.infra.url.spi.ShardingSphereLocalFileURLLoader` SPI 用于从类路径、绝对路径等本地来源加载 YAML 配置文件，
+`org.apache.shardingsphere.infra.url.spi.ShardingSphereModeConfigurationURLLoader` SPI 用于从治理中心加载模式配置。
 如无特定声明，以下实现均采用 YAML 1.1 作为 YAML 的编写规范，
-这并不阻止 `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader` 的自定义实现从 XML 或 JSON 等文件手动转化为 YAML。
+这并不阻止 `org.apache.shardingsphere.infra.url.spi.ShardingSphereLocalFileURLLoader` 的自定义实现从 XML 或 JSON 等文件手动转化为 YAML。
 
 在解析并加载 YAML 文件为 ShardingSphere 的元数据后，
 会再次通过[模式配置](/cn/user-manual/shardingsphere-jdbc/java-api/mode)的相关配置决定下一步行为。讨论两种情况，
@@ -48,8 +48,8 @@ chapter = true
 
 ## JDBC URL 参数
 
-对于 `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader` 的实现，并非所有的 JDBC URL 参数都必须被解析，
-这涉及到如何实现 `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader.load()`。
+对于 `org.apache.shardingsphere.infra.url.spi.ShardingSphereLocalFileURLLoader` 和 `org.apache.shardingsphere.infra.url.spi.ShardingSphereModeConfigurationURLLoader` 的实现，并非所有的 JDBC URL 参数都必须被解析。
+具体支持的参数取决于各加载器的 `load()` 实现。
 
 ### placeholder-type
 

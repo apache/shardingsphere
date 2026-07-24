@@ -17,29 +17,30 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
+import javax.sql.DataSource;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * MCP JDBC database profile loader.
  */
 public final class MCPJdbcDatabaseProfileLoader {
-    
-    private static final String DORIS_VERSION_COMMENT_QUERY = "SELECT @@version_comment";
-    
-    private static final String MARIADB_VERSION_QUERY = "SELECT VERSION()";
     
     /**
      * Load runtime database profiles.
@@ -61,128 +62,104 @@ public final class MCPJdbcDatabaseProfileLoader {
      * @param databaseName database name
      * @param runtimeDatabaseConfig runtime database configuration
      * @return runtime database profile
-     * @throws RuntimeDatabaseConnectionException when runtime database connection or configuration fails
-     * @throws RuntimeDatabaseConnectionException when profile metadata loading fails
+     * @throws RuntimeDatabaseConnectionException when runtime database profile loading fails
      */
     public RuntimeDatabaseProfile load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
+        DatabaseType databaseType;
+        String databaseVersion;
+        TransactionCapability transactionCapability;
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            String databaseType = resolveActualDatabaseType(databaseName, runtimeDatabaseConfig.getDatabaseType(), connection, databaseMetaData);
-            String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-            return new RuntimeDatabaseProfile(databaseName, databaseType, databaseVersion);
+            databaseType = loadDatabaseType(databaseName, databaseMetaData);
+            databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
+            transactionCapability = loadTransactionCapability(databaseMetaData);
         } catch (final SQLException ex) {
             throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
         }
+        return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion, transactionCapability,
+                createIdentifierContext(databaseName, databaseType, runtimeDatabaseConfig));
     }
     
-    private String resolveActualDatabaseType(final String databaseName, final String configuredDatabaseType,
-                                             final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
-        String actualDatabaseType = determineActualDatabaseType(databaseName, databaseMetaData);
-        String configuredType = Objects.toString(configuredDatabaseType, "").trim();
-        if (configuredType.isEmpty()) {
-            return actualDatabaseType;
+    private TransactionCapability loadTransactionCapability(final DatabaseMetaData databaseMetaData) throws SQLException {
+        if (!databaseMetaData.supportsTransactions()) {
+            return TransactionCapability.NONE;
         }
-        String expectedDatabaseType = normalizeDatabaseType(configuredType);
-        Optional<String> compatibleBranchDatabaseType = resolveCompatibleBranchDatabaseType(connection, expectedDatabaseType, actualDatabaseType);
-        if (compatibleBranchDatabaseType.isPresent()) {
-            return compatibleBranchDatabaseType.get();
-        }
-        if (!expectedDatabaseType.equalsIgnoreCase(actualDatabaseType)) {
-            throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName, new IllegalStateException(String.format(
-                    "Configured databaseType `%s` does not match actual database type `%s` for database `%s`.", configuredType, actualDatabaseType, databaseName)));
-        }
-        return actualDatabaseType;
+        return databaseMetaData.supportsSavepoints() ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
     }
     
-    private String normalizeDatabaseType(final String databaseType) {
-        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType).map(MCPDatabaseCapabilityOption::getType).orElse(databaseType);
+    private DatabaseIdentifierContext createIdentifierContext(final String databaseName, final DatabaseType databaseType,
+                                                              final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
+        return DatabaseIdentifierContextFactory.create(databaseType, new RuntimeDatabaseDataSource(databaseName, runtimeDatabaseConfig));
     }
     
-    private String determineActualDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
-        String productName = Objects.toString(databaseMetaData.getDatabaseProductName(), "").trim();
-        String jdbcUrl = Objects.toString(databaseMetaData.getURL(), "").trim();
-        Optional<String> result = resolveDatabaseTypeFromProductName(productName, jdbcUrl);
-        if (result.isEmpty()) {
-            result = resolveDatabaseTypeFromJdbcUrl(jdbcUrl);
+    private DatabaseType loadDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
+        try {
+            return DatabaseTypeFactory.get(databaseMetaData);
+        } catch (final ShardingSphereExternalException ex) {
+            throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName, ex);
         }
-        if (result.isEmpty()) {
-            throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName,
-                    new IllegalStateException(String.format("Actual database type cannot be determined for database `%s`.", databaseName)));
-        }
-        return result.get();
     }
     
-    private Optional<String> resolveDatabaseTypeFromProductName(final String productName, final String jdbcUrl) {
-        if (!productName.isEmpty()) {
-            if (productName.toUpperCase(Locale.ENGLISH).contains("POSTGRESQL")) {
-                return Optional.of(jdbcUrl.toLowerCase(Locale.ENGLISH).startsWith("jdbc:opengauss:") ? "openGauss" : "PostgreSQL");
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("SQL SERVER")) {
-                return Optional.of("SQLServer");
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("MARIADB")) {
-                return Optional.of("MariaDB");
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("MYSQL")) {
-                return Optional.of("MySQL");
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("ORACLE")) {
-                return Optional.of("Oracle");
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("FIREBIRD")) {
-                return Optional.of("Firebird");
+    @RequiredArgsConstructor
+    private static final class RuntimeDatabaseDataSource implements DataSource {
+        
+        private final String databaseName;
+        
+        private final RuntimeDatabaseConfiguration runtimeDatabaseConfig;
+        
+        @Override
+        public Connection getConnection() throws SQLException {
+            try {
+                return runtimeDatabaseConfig.openConnection(databaseName);
+            } catch (final RuntimeDatabaseConnectionException ex) {
+                if (ex.getCause() instanceof SQLException cause) {
+                    throw cause;
+                }
+                throw new SQLException(ex);
             }
         }
-        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, productName).map(MCPDatabaseCapabilityOption::getType);
-    }
-    
-    private Optional<String> resolveDatabaseTypeFromJdbcUrl(final String jdbcUrl) {
-        String actualJdbcUrl = jdbcUrl.toLowerCase(Locale.ENGLISH);
-        if (actualJdbcUrl.startsWith("jdbc:opengauss:")) {
-            return Optional.of("openGauss");
+        
+        @Override
+        public Connection getConnection(final String username, final String password) throws SQLException {
+            throw new SQLFeatureNotSupportedException();
         }
-        if (actualJdbcUrl.startsWith("jdbc:postgresql:")) {
-            return Optional.of("PostgreSQL");
+        
+        @Override
+        public PrintWriter getLogWriter() throws SQLException {
+            throw new SQLFeatureNotSupportedException();
         }
-        if (actualJdbcUrl.startsWith("jdbc:sqlserver:")) {
-            return Optional.of("SQLServer");
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) throws SQLException {
+            throw new SQLFeatureNotSupportedException();
         }
-        if (actualJdbcUrl.startsWith("jdbc:mariadb:")) {
-            return Optional.of("MariaDB");
+        
+        @Override
+        public void setLoginTimeout(final int seconds) throws SQLException {
+            throw new SQLFeatureNotSupportedException();
         }
-        if (actualJdbcUrl.startsWith("jdbc:mysql:")) {
-            return Optional.of("MySQL");
+        
+        @Override
+        public int getLoginTimeout() throws SQLException {
+            throw new SQLFeatureNotSupportedException();
         }
-        if (actualJdbcUrl.startsWith("jdbc:oracle:")) {
-            return Optional.of("Oracle");
+        
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            throw new SQLFeatureNotSupportedException();
         }
-        if (actualJdbcUrl.startsWith("jdbc:firebirdsql:")) {
-            return Optional.of("Firebird");
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) throws SQLException {
+            if (iface.isInstance(this)) {
+                return iface.cast(this);
+            }
+            throw new SQLException(String.format("Unable to unwrap runtime database data source to `%s`.", iface.getName()));
         }
-        return Optional.empty();
-    }
-    
-    private Optional<String> resolveCompatibleBranchDatabaseType(final Connection connection, final String configuredDatabaseType,
-                                                                 final String actualDatabaseType) throws SQLException {
-        if (!"MYSQL".equalsIgnoreCase(actualDatabaseType)) {
-            return Optional.empty();
-        }
-        if ("DORIS".equalsIgnoreCase(configuredDatabaseType) && isBranchDatabase(connection, DORIS_VERSION_COMMENT_QUERY, "DORIS")) {
-            return Optional.of("Doris");
-        }
-        if ("MARIADB".equalsIgnoreCase(configuredDatabaseType) && isBranchDatabase(connection, MARIADB_VERSION_QUERY, "MARIADB")) {
-            return Optional.of("MariaDB");
-        }
-        return Optional.empty();
-    }
-    
-    private boolean isBranchDatabase(final Connection connection, final String query, final String expectedMarker) throws SQLException {
-        return executeScalarQuery(connection, query).toUpperCase(Locale.ENGLISH).contains(expectedMarker);
-    }
-    
-    private String executeScalarQuery(final Connection connection, final String query) throws SQLException {
-        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
-            return resultSet.next() ? Objects.toString(resultSet.getString(1), "").trim() : "";
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return iface.isInstance(this);
         }
     }
 }

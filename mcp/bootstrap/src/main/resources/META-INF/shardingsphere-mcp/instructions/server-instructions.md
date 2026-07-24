@@ -19,9 +19,11 @@ Apache ShardingSphere MCP.
 
 Use MCP list methods (`tools/list`, `resources/list`, `resources/templates/list`, `prompts/list`) to discover the protocol surface.
 
-Use `completion/complete` for supported argument values. Read `shardingsphere://capabilities` when ShardingSphere domain capability guidance, workflow guidance, or side-effect notes are needed.
+Use `completion/complete` for supported argument values. Read `shardingsphere://guidance` when ShardingSphere domain capability guidance, workflow guidance, or side-effect notes are needed.
 
-Use `database_gateway_execute_query` only for classifier-approved `SELECT` or `EXPLAIN ANALYZE`.
+Use `database_gateway_execute_query` only for parser-approved `SELECT`.
+Use `database_gateway_execute_explain_query` for execution-plan diagnostics.
 Use `database_gateway_execute_update` with `execution_mode=preview` before side effects.
+Treat `database_gateway_execute_update` preview as database-aware validation and classification, not as a database dry run.
 
-Continue from `next_actions` or `recovery.next_actions` instead of guessing hidden tools or arguments.
+Continue from top-level `next_actions` instead of guessing hidden tools or arguments.

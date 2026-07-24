@@ -34,8 +34,8 @@ final class MaskWorkflowToolResponseBuilder {
     private final MaskAlgorithmPropertyTemplateService propertyTemplateService;
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
-        WorkflowPropertySource propertySource = getPropertySource(snapshot);
-        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, propertySource);
+        WorkflowPropertySource propertySource = snapshot.getRequest();
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, propertySource);
         result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
         return result;
     }
@@ -50,7 +50,4 @@ final class MaskWorkflowToolResponseBuilder {
                 : snapshot.getPropertyRequirements().stream().filter(each -> "primary".equals(each.getAlgorithmRole())).toList();
     }
     
-    private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getRequest();
-    }
 }

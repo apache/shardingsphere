@@ -29,12 +29,13 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleDataTypeOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleFunctionOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleSchemaOption;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -42,6 +43,8 @@ import java.util.Optional;
  * Database meta data of Oracle.
  */
 public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
+    
+    private static final int INDEX_NAME_MAX_LENGTH = 30;
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -70,7 +73,7 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectIndexOption getIndexOption() {
-        return new DialectIndexOption(true);
+        return new DialectIndexOption(true, INDEX_NAME_MAX_LENGTH);
     }
     
     @Override
@@ -80,7 +83,8 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource"));
+        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, true, false, false,
+                Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource"));
     }
     
     @Override
@@ -90,12 +94,17 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public Optional<DialectAlterTableOption> getAlterTableOption() {
-        return Optional.of(new DialectAlterTableOption(true, true, true, new DialectAddColumnOption("ADD", "")));
+        return Optional.of(new DialectAlterTableOption(true, true, true, new DialectAddColumnOption("")));
     }
     
     @Override
     public DialectFunctionOption getFunctionOption() {
         return new OracleFunctionOption();
+    }
+    
+    @Override
+    public Optional<DialectSequenceOption> getSequenceOption() {
+        return Optional.of(new DialectSequenceOption("SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES"));
     }
     
     @Override

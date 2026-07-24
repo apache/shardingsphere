@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow;
 
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.shadow.completion.ShadowAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.resource.handler.ShadowResourceHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.handler.PlanDefaultShadowAlgorithmToolHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.handler.PlanShadowAlgorithmCleanupToolHandler;
@@ -34,7 +35,7 @@ import java.util.List;
 /**
  * Shadow MCP handler provider.
  */
-public final class ShadowMCPHandlerProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
+public final class ShadowMCPHandlerProvider implements MCPWorkflowDefinitionProvider {
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
@@ -55,8 +56,13 @@ public final class ShadowMCPHandlerProvider implements MCPHandlerProvider, MCPWo
     }
     
     @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of(new ShadowAlgorithmCompletionHandler());
+    }
+    
+    @Override
     public Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
-        final ShadowWorkflowValidationService validationService = new ShadowWorkflowValidationService();
+        ShadowWorkflowValidationService validationService = new ShadowWorkflowValidationService();
         return List.of(
                 new WorkflowRuntimeDefinition(ShadowFeatureDefinition.RULE_WORKFLOW_KIND, validationService),
                 new WorkflowRuntimeDefinition(ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND, validationService),

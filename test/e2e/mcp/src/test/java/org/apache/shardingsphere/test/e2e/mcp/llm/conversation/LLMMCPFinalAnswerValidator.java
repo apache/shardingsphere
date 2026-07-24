@@ -61,7 +61,7 @@ final class LLMMCPFinalAnswerValidator {
         if (!createComparableInteractionSequence(interactionTrace).equals(collapseConsecutiveActionNames(actualAnswer.getInteractionSequence()))) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer interactionSequence does not match the observed interaction trace.");
         }
-        return LLME2EAssertionReport.isSuccess("LLM MCP interaction passed.");
+        return LLME2EAssertionReport.success("LLM MCP interaction passed.");
     }
     
     private List<String> createComparableInteractionSequence(final List<MCPInteractionTraceRecord> interactionTrace) {

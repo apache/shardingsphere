@@ -221,18 +221,18 @@ class OracleMetaDataLoaderTest {
     }
     
     private String getTableMetaDataSQL(final int majorVersion, final int minorVersion) {
-        if (majorVersion >= 12 && minorVersion >= 2) {
+        if (majorVersion > 12 || majorVersion == 12 && minorVersion >= 2) {
             return ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION;
         }
-        if (majorVersion >= 12 && minorVersion == 1) {
+        if (majorVersion == 12 && minorVersion == 1) {
             return ALL_TAB_COLUMNS_SQL_WITH_IDENTITY;
         }
         return ALL_TAB_COLUMNS_SQL_WITHOUT_IDENTITY_AND_COLLATION;
     }
     
     private ColumnMetaData getExpectedFirstColumnMetaData(final int majorVersion, final int minorVersion, final boolean withPrimaryKey) {
-        boolean generated = majorVersion >= 12 && minorVersion >= 1;
-        boolean caseSensitive = majorVersion >= 12 && minorVersion >= 2;
+        boolean generated = majorVersion > 12 || majorVersion == 12 && minorVersion >= 1;
+        boolean caseSensitive = majorVersion > 12 || majorVersion == 12 && minorVersion >= 2;
         return new ColumnMetaData("id", Types.NUMERIC, withPrimaryKey, generated, caseSensitive, true, false, false);
     }
     
@@ -276,6 +276,7 @@ class OracleMetaDataLoaderTest {
                 Arguments.of("major12Minor2WithPrimaryKey", 12, 2, true, false),
                 Arguments.of("major12Minor1WithPrimaryKey", 12, 1, true, false),
                 Arguments.of("major11Minor2WithPrimaryKey", 11, 2, true, false),
+                Arguments.of("major19Minor0WithPrimaryKey", 19, 0, true, false),
                 Arguments.of("major12Minor2WithPrimaryKeyAndNullCollation", 12, 2, true, true));
     }
 }

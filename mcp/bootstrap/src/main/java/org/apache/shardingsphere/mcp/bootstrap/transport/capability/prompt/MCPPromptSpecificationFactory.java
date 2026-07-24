@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.capability.prompt;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncPromptSpecification;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPPromptTemplateBinding;
@@ -38,11 +38,7 @@ import java.util.Optional;
  */
 public final class MCPPromptSpecificationFactory {
     
-    private final Collection<MCPPromptDescriptor> promptDescriptors;
-    
-    public MCPPromptSpecificationFactory() {
-        promptDescriptors = MCPDescriptorCatalogIndex.getPromptDescriptors();
-    }
+    private final Collection<MCPPromptDescriptor> promptDescriptors = MCPDescriptorCatalogIndex.getPromptDescriptors();
     
     /**
      * Create MCP prompt specifications.

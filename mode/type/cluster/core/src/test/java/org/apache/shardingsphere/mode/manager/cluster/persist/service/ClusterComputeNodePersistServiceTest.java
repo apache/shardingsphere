@@ -63,11 +63,9 @@ class ClusterComputeNodePersistServiceTest {
     @Test
     void assertRegisterOnline() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance_id", 3307));
-        computeNodeInstance.getLabels().add("test");
         computeNodePersistService.registerOnline(computeNodeInstance);
         verify(repository).persistEphemeral(eq("/nodes/compute_nodes/online/proxy/foo_instance_id"), anyString());
         verify(repository).persistEphemeral("/nodes/compute_nodes/status/foo_instance_id", InstanceState.OK.name());
-        verify(repository).persistEphemeral("/nodes/compute_nodes/labels/foo_instance_id", YamlEngine.marshal(Collections.singletonList("test")));
     }
     
     @Test
@@ -108,13 +106,6 @@ class ClusterComputeNodePersistServiceTest {
         doThrow(new ClusterRepositoryPersistException(new RuntimeException("connection lost")))
                 .when(repository).persistEphemeral("/nodes/compute_nodes/status/foo_instance_id", InstanceState.OK.name());
         assertThrows(ClusterRepositoryPersistException.class, () -> computeNodePersistService.updateState("foo_instance_id", InstanceState.OK));
-    }
-    
-    @Test
-    void assertPersistLabels() {
-        String instanceId = new ProxyInstanceMetaData("foo_instance_id", 3307).getId();
-        computeNodePersistService.persistLabels(instanceId, Collections.singletonList("test"));
-        verify(repository).persistEphemeral("/nodes/compute_nodes/labels/foo_instance_id", YamlEngine.marshal(Collections.singletonList("test")));
     }
     
     @Test

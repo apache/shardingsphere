@@ -19,10 +19,26 @@ name: 'Download E2E Artifacts'
 description: 'Download and restore E2E build artifacts including Maven repository and Docker image'
 
 inputs:
+  artifact-name:
+    description: 'Downloaded artifact name'
+    required: false
+    default: 'build-outputs'
+  artifact-dir:
+    description: 'Directory used to download packaged artifacts'
+    required: false
+    default: '/tmp/e2e-build-artifacts'
+  restore-maven-repository:
+    description: 'Whether to restore the ShardingSphere Maven repository output'
+    required: false
+    default: 'true'
   load-docker-image:
     description: 'Whether to load the Docker image after download'
     required: false
     default: 'true'
+  docker-image-archives:
+    description: 'Docker image archive file names to load from artifact-dir, one per line'
+    required: false
+    default: 'apache-shardingsphere-proxy-test.tar'
 
 runs:
   using: composite
@@ -30,15 +46,24 @@ runs:
     - name: Download Build Artifacts
       uses: actions/download-artifact@v8
       with:
-        name: build-outputs
-        path: /tmp/
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.artifact-dir }}
     - name: Restore shardingsphere Maven Repository
+      if: inputs.restore-maven-repository == 'true'
       shell: bash
       run: |
         mkdir -p ~/.m2/repository
-        tar -xzf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository
-    - name: Load E2E Image
+        tar -xzf "${{ inputs.artifact-dir }}/maven-repo-output.tar.gz" -C ~/.m2/repository
+    - name: Load E2E Images
       if: inputs.load-docker-image == 'true'
       shell: bash
+      env:
+        E2E_DOCKER_IMAGE_ARCHIVES: ${{ inputs.docker-image-archives }}
       run: |
-        docker load -i /tmp/apache-shardingsphere-proxy-test.tar
+        set -euo pipefail
+        while IFS= read -r each; do
+          if [[ -z "${each}" ]]; then
+            continue
+          fi
+          docker load -i "${{ inputs.artifact-dir }}/${each}"
+        done <<< "${E2E_DOCKER_IMAGE_ARCHIVES}"

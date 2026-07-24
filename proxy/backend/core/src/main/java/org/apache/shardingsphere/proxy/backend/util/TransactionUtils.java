@@ -55,27 +55,6 @@ public final class TransactionUtils {
     }
     
     /**
-     * Get the value of type TransactionIsolationLevel according to int.
-     *
-     * @param isolationLevel value of type int
-     * @return isolation level
-     */
-    public static TransactionIsolationLevel getTransactionIsolationLevel(final int isolationLevel) {
-        switch (isolationLevel) {
-            case Connection.TRANSACTION_READ_UNCOMMITTED:
-                return TransactionIsolationLevel.READ_UNCOMMITTED;
-            case Connection.TRANSACTION_READ_COMMITTED:
-                return TransactionIsolationLevel.READ_COMMITTED;
-            case Connection.TRANSACTION_REPEATABLE_READ:
-                return TransactionIsolationLevel.REPEATABLE_READ;
-            case Connection.TRANSACTION_SERIALIZABLE:
-                return TransactionIsolationLevel.SERIALIZABLE;
-            default:
-                return TransactionIsolationLevel.NONE;
-        }
-    }
-    
-    /**
      * Get transaction type.
      *
      * @param transactionContext transaction context

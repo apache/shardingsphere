@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mcp.support.database.capability;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,7 +39,7 @@ public final class MCPDatabaseCapabilityProvider implements MCPFeatureCapability
     private final Map<String, MCPDatabaseCapability> databaseCapabilities;
     
     public MCPDatabaseCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        databaseProfiles = new LinkedHashMap<>(new MCPJdbcDatabaseProfileLoader().load(runtimeDatabases));
+        databaseProfiles = new MCPJdbcDatabaseProfileLoader().load(runtimeDatabases);
         databaseCapabilities = createDatabaseCapabilities(databaseProfiles);
     }
     
@@ -62,7 +62,7 @@ public final class MCPDatabaseCapabilityProvider implements MCPFeatureCapability
         Map<String, MCPDatabaseCapability> result = new LinkedHashMap<>(databaseProfiles.size(), 1F);
         for (RuntimeDatabaseProfile each : databaseProfiles.values()) {
             TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, each.getDatabaseType())
-                    .ifPresent(optional -> result.put(each.getDatabase(), new MCPDatabaseCapability(each.getDatabase(), each.getDatabaseVersion(), optional)));
+                    .ifPresent(option -> result.put(each.getDatabase(), new MCPDatabaseCapability(each, option)));
         }
         return result;
     }

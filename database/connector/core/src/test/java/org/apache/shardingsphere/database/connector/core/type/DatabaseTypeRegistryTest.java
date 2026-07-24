@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -110,7 +111,7 @@ class DatabaseTypeRegistryTest {
         
         private FixtureDialectDatabaseMetaData(final IdentifierPatternType identifierPatternType, final String defaultSchema) {
             this.identifierPatternType = identifierPatternType;
-            schemaOption = new DefaultSchemaOption(false, defaultSchema);
+            schemaOption = new DefaultSchemaOption(false, defaultSchema, DialectSchemaSemantics.NATIVE_SCHEMA);
         }
         
         @Override

@@ -16,13 +16,19 @@ AlterShardingTableRule ::=
   'ALTER' 'SHARDING' 'TABLE' 'RULE' (tableRuleDefinition | autoTableRuleDefinition) (',' (tableRuleDefinition | autoTableRuleDefinition))*
 
 tableRuleDefinition ::= 
-  ruleName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+  ruleName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' auditStrategyDefinition)? ')'
 
 autoTableRuleDefinition ::=
-  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' auditStrategyDefinition)? ')'
 
 strategyDefinition ::=
-  'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
+  'TYPE' '=' 'NONE'
+  | 'TYPE' '=' 'STANDARD' ',' 'SHARDING_COLUMN' '=' columnName ',' shardingAlgorithm
+  | 'TYPE' '=' 'COMPLEX' ',' 'SHARDING_COLUMNS' '=' columnName ',' columnName (',' columnName)* ',' shardingAlgorithm
+  | 'TYPE' '=' 'HINT' ',' shardingAlgorithm
+
+shardingAlgorithm ::=
+  'SHARDING_ALGORITHM' '(' algorithmDefinition ')'
 
 keyGenerateStrategyDefinition ::= 
   'COLUMN' '=' columnName ',' keyGenerateAlgorithmDefinition
@@ -32,13 +38,16 @@ keyGenerateAlgorithmDefinition ::=
   | 'GENERATOR' '=' keyGeneratorName
 
 auditStrategyDefinition ::= 
-  'AUDIT_STRATEGY' '(' algorithmDefinition (',' algorithmDefinition)* ')'
+  'AUDIT_STRATEGY' '(' algorithmDefinition (',' algorithmDefinition)* ',' 'ALLOW_HINT_DISABLE' '=' boolean ')'
+
+boolean ::=
+  'TRUE' | 'FALSE'
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)?')'
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string
@@ -61,9 +70,6 @@ columnName ::=
 keyGeneratorName ::=
   identifier
 
-strategyType ::=
-  string
-
 algorithmType ::=
   string
 ```
@@ -80,8 +86,7 @@ algorithmType ::=
 - 当使用标准分片时：
     - `DATANODES` 只能使用已经添加到当前逻辑库的资源，且只能使用 INLINE 表达式指定需要的资源；
     - `DATABASE_STRATEGY`、`TABLE_STRATEGY` 表示分库和分表策略，均为可选项，未配置时使用默认策略；
-    - `strategyDefinition` 中属性 `TYPE` 用于指定[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/#自定义类分片算法)的类型，目前仅支持 `STANDARD`
-      、`COMPLEX`。使用 `COMPLEX` 时需要用 `SHARDING_COLUMNS` 指定多个分片键。
+    - `strategyDefinition` 中的 `TYPE` 用于指定策略类型，支持 `STANDARD`、`COMPLEX`、`HINT` 和 `NONE`。使用 `COMPLEX` 时需要用 `SHARDING_COLUMNS` 指定多个分片键。
 - 当使用自动分片时：
     - `STORAGE_UNITS` 只能使用已经添加到当前逻辑库的资源，可通过枚举或 INLINE 表达式指定需要的资源；
     - 只能使用自动分片算法，可参考[自动分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/#自动分片算法)。
@@ -94,7 +99,7 @@ algorithmType ::=
     - 使用 `TYPE(NAME=..., PROPERTIES(...))` 内联定义主键生成算法；
     - 使用 `GENERATOR=keyGeneratorName` 引用已经存在的独立 `SHARDING KEY GENERATOR`；
 - `AUDIT_STRATEGY`
-  用于指定分配审计生成策略，为可选项，关于分片审计生成策略可参考[分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)。
+  用于指定分片审计策略，为可选项，关于分片审计策略可参考[分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)。
 
 ### 示例
 
@@ -134,7 +139,7 @@ AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 
 ### 保留字
 
-`ALTER`、`SHARDING`、`TABLE`、`RULE`、`DATANODES`、`DATABASE_STRATEGY`、`TABLE_STRATEGY`、`KEY_GENERATE_STRATEGY`、`STORAGE_UNITS`、`SHARDING_COLUMN`、`TYPE`、`SHARDING_COLUMN`、`GENERATOR`、`SHARDING_ALGORITHM`、`COLUMN`、`NAME`、`PROPERTIES`、`AUDIT_STRATEGY`、`AUDITORS`、`ALLOW_HINT_DISABLE`
+`ALTER`、`SHARDING`、`TABLE`、`RULE`、`DATANODES`、`DATABASE_STRATEGY`、`TABLE_STRATEGY`、`KEY_GENERATE_STRATEGY`、`STORAGE_UNITS`、`SHARDING_COLUMN`、`SHARDING_COLUMNS`、`TYPE`、`GENERATOR`、`SHARDING_ALGORITHM`、`COLUMN`、`NAME`、`PROPERTIES`、`AUDIT_STRATEGY`、`ALLOW_HINT_DISABLE`、`TRUE`、`FALSE`
 
 ### 相关链接
 

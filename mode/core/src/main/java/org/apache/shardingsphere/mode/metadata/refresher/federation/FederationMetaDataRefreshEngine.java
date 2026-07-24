@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.federation;
 
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -34,15 +35,12 @@ import java.util.Optional;
 /**
  * Federation meta data refresh engine.
  */
+@AllArgsConstructor
 public final class FederationMetaDataRefreshEngine {
     
     private static final Collection<Class<?>> SUPPORTED_REFRESH_TYPES = new HashSet<>(Arrays.asList(CreateViewStatement.class, AlterViewStatement.class, DropViewStatement.class));
     
     private final SQLStatementContext sqlStatementContext;
-    
-    public FederationMetaDataRefreshEngine(final SQLStatementContext sqlStatementContext) {
-        this.sqlStatementContext = sqlStatementContext;
-    }
     
     /**
      * Whether to need refresh meta data.
@@ -66,7 +64,7 @@ public final class FederationMetaDataRefreshEngine {
             return;
         }
         refresher.get().refresh(metaDataManagerPersistService, sqlStatementContext.getSqlStatement().getDatabaseType(),
-                database, SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement());
+                database, SchemaRefreshUtils.getActualSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement());
     }
     
     @SuppressWarnings("rawtypes")

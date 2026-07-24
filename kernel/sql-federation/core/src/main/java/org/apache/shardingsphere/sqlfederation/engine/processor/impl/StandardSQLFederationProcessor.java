@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sqlfederation.engine.processor.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
-import org.apache.calcite.adapter.enumerable.EnumerableRel;
 import org.apache.calcite.adapter.enumerable.EnumerableRel.Prefer;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.plan.Convention;
@@ -134,7 +132,6 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         }
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ResultSet executePlan(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> queryCallback,
                                  final SQLFederationExecutionPlan executionPlan, final SQLFederationRelConverter converter, final SQLFederationContext federationContext, final SchemaPlus schemaPlus) {

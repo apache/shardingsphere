@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -32,10 +31,8 @@ import java.util.function.Supplier;
 /**
  * Workflow request binder.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowRequestBinder {
-    
-    private WorkflowRequestBinder() {
-    }
     
     /**
      * Bind workflow planning request from MCP arguments.
@@ -44,24 +41,17 @@ public final class WorkflowRequestBinder {
      * @param arguments raw MCP arguments
      * @param featureArgumentBinder feature-specific argument binder
      * @param structuredIntentBinder structured intent binder
-     * @param userOverrideBinder user override binder
      * @param <T> request type
      * @return bound workflow request
      */
     public static <T extends WorkflowRequest> T bindPlanningRequest(final Supplier<T> requestSupplier, final Map<String, Object> arguments,
                                                                     final BiConsumer<T, WorkflowPlanningArguments> featureArgumentBinder,
-                                                                    final BiConsumer<T, Map<String, Object>> structuredIntentBinder,
-                                                                    final BiConsumer<T, Map<String, Object>> userOverrideBinder) {
+                                                                    final BiConsumer<T, Map<String, Object>> structuredIntentBinder) {
         WorkflowPlanningArguments workflowPlanningArguments = new WorkflowPlanningArguments(arguments);
         T result = requestSupplier.get();
         bindCommonPlanningFields(result, workflowPlanningArguments);
-        applyObjectMap(arguments.get(WorkflowFieldNames.STRUCTURED_INTENT_EVIDENCE), actualValue -> structuredIntentBinder.accept(result, actualValue));
+        applyObjectMap(arguments.get(WorkflowFieldNames.STRUCTURED_INTENT_EVIDENCE), WorkflowFieldNames.STRUCTURED_INTENT_EVIDENCE, actualValue -> structuredIntentBinder.accept(result, actualValue));
         featureArgumentBinder.accept(result, workflowPlanningArguments);
-        Map<String, Object> userOverrides = getObjectMap(arguments.get(WorkflowFieldNames.USER_OVERRIDES));
-        validateUserOverrideConflicts(arguments, userOverrides);
-        if (!userOverrides.isEmpty()) {
-            userOverrideBinder.accept(result, userOverrides);
-        }
         return result;
     }
     
@@ -71,18 +61,30 @@ public final class WorkflowRequestBinder {
      * @param arguments raw MCP arguments
      * @param featureArgumentBinder feature-specific argument binder
      * @param structuredIntentBinder structured intent binder
-     * @param userOverrideBinder user override binder
      * @return bound workflow request
      */
     public static WorkflowRequest bindPlanningRequest(final Map<String, Object> arguments,
                                                       final BiConsumer<WorkflowRequest, WorkflowPlanningArguments> featureArgumentBinder,
-                                                      final BiConsumer<WorkflowRequest, Map<String, Object>> structuredIntentBinder,
-                                                      final BiConsumer<WorkflowRequest, Map<String, Object>> userOverrideBinder) {
-        return bindPlanningRequest(WorkflowRequest::new, arguments, featureArgumentBinder, structuredIntentBinder, userOverrideBinder);
+                                                      final BiConsumer<WorkflowRequest, Map<String, Object>> structuredIntentBinder) {
+        return bindPlanningRequest(WorkflowRequest::new, arguments, featureArgumentBinder, structuredIntentBinder);
+    }
+    
+    /**
+     * Apply a present structured intent string field without changing its representation.
+     *
+     * @param values structured intent values
+     * @param fieldName field name
+     * @param consumer field consumer
+     */
+    public static void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
+        Object value = values.get(fieldName);
+        if (null != value) {
+            consumer.accept(String.valueOf(value));
+        }
     }
     
     private static void bindCommonPlanningFields(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        request.setPlanId(normalizePlanId(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.PLAN_ID)));
+        request.setPlanId(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         request.setDatabase(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.DATABASE));
         request.setSchema(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.SCHEMA));
         request.setTable(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.TABLE));
@@ -93,48 +95,22 @@ public final class WorkflowRequestBinder {
         request.setExecutionMode(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.EXECUTION_MODE));
     }
     
-    private static String normalizePlanId(final String planId) {
-        String result = planId.trim();
-        return WorkflowFieldNames.PLAN_ID.equals(result) || "{plan_id}".equals(result) || "<plan_id>".equals(result) ? "" : result;
-    }
-    
-    private static void applyObjectMap(final Object rawValue, final Consumer<Map<String, Object>> consumer) {
-        Map<String, Object> actualValue = getObjectMap(rawValue);
+    private static void applyObjectMap(final Object rawValue, final String name, final Consumer<Map<String, Object>> consumer) {
+        Map<String, Object> actualValue = getObjectMap(rawValue, name);
         if (!actualValue.isEmpty()) {
             consumer.accept(actualValue);
         }
     }
     
     @SuppressWarnings("unchecked")
-    private static Map<String, Object> getObjectMap(final Object rawValue) {
-        return rawValue instanceof Map ? (Map<String, Object>) rawValue : Map.of();
+    private static Map<String, Object> getObjectMap(final Object rawValue, final String name) {
+        if (null == rawValue) {
+            return Map.of();
+        }
+        if (rawValue instanceof Map) {
+            return (Map<String, Object>) rawValue;
+        }
+        throw new MCPInvalidRequestException(String.format("%s must be an object.", name));
     }
     
-    private static void validateUserOverrideConflicts(final Map<String, Object> arguments, final Map<String, Object> userOverrides) {
-        if (userOverrides.isEmpty()) {
-            return;
-        }
-        List<String> conflicts = new LinkedList<>();
-        for (Entry<String, Object> entry : userOverrides.entrySet()) {
-            addUserOverrideConflict(conflicts, arguments, entry);
-        }
-        if (!conflicts.isEmpty()) {
-            throw new WorkflowArgumentConflictException(conflicts);
-        }
-    }
-    
-    private static void addUserOverrideConflict(final Collection<String> conflicts, final Map<String, Object> arguments, final Entry<String, Object> userOverride) {
-        if (!arguments.containsKey(userOverride.getKey())) {
-            return;
-        }
-        String actualValue = normalizeComparableValue(arguments.get(userOverride.getKey()));
-        String overrideValue = normalizeComparableValue(userOverride.getValue());
-        if (!actualValue.isEmpty() && !overrideValue.isEmpty() && !actualValue.equals(overrideValue)) {
-            conflicts.add(String.format("%s conflicts with %s.%s", userOverride.getKey(), WorkflowFieldNames.USER_OVERRIDES, userOverride.getKey()));
-        }
-    }
-    
-    private static String normalizeComparableValue(final Object value) {
-        return null == value ? "" : String.valueOf(value).trim();
-    }
 }

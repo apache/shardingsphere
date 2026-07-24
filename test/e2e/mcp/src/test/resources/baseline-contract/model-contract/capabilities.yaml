@@ -16,926 +16,107 @@
 #
 
 response_mode: catalog
-model_first_summary:
-  official_discovery_methods: {tools: tools/list, resources: resources/list, resource_templates: resources/templates/list,
-    prompts: prompts/list}
-  argument_completion_method: completion/complete
-  catalog_resource_role: shardingsphere://capabilities complements MCP list methods
-    with ShardingSphere domain capability guidance, workflow guidance, and side-effect
-    notes.
-  optional_catalog_resource: shardingsphere://capabilities
-  metadata_rule: {first_resource: 'shardingsphere://databases', search_tool: database_gateway_search_metadata,
-    detail_rule: Read the returned resource.uri when the list or search response points
-      to a detail resource.}
-  preflight_rule: {tool: database_gateway_validate_proxy_connectivity, input_rule: Pass
-      only a configured runtime database name., secret_rule: Connection details stay
-      in administrator runtime configuration and are not tool arguments.}
-  sql_tool_selection:
-    read_only: {tool: database_gateway_execute_query, statement_rule: Use for one
-        SELECT or EXPLAIN ANALYZE statement.}
-    side_effecting: {tool: database_gateway_execute_update, first_mode: preview, execute_requires: execution_mode=execute}
-  side_effect_rule: Preview side effects first; execute only when the requested side
-    effect is still intended.
-  workflow_rule:
-    planning_tools: [database_gateway_plan_broadcast_rule, database_gateway_plan_encrypt_rule,
-      database_gateway_plan_mask_rule, database_gateway_plan_readwrite_splitting_rule,
-      database_gateway_plan_readwrite_splitting_status, database_gateway_plan_shadow_rule,
-      database_gateway_plan_default_shadow_algorithm, database_gateway_plan_shadow_algorithm_cleanup,
-      database_gateway_plan_sharding_table_rule, database_gateway_plan_sharding_table_reference_rule,
-      database_gateway_plan_sharding_default_strategy, database_gateway_plan_sharding_key_generator,
-      database_gateway_plan_sharding_key_generate_strategy, database_gateway_plan_sharding_rule_component_cleanup]
-    preview_tool: {tool: database_gateway_apply_workflow, execution_mode: preview}
-    execute_tool: {tool: database_gateway_apply_workflow, execution_mode: review-then-execute,
-      execute_requires: execution_mode=review-then-execute and explicit approved_steps
-        copied from preview_artifacts.approval_step}
-    validate_tool: database_gateway_validate_workflow
-  completion_rule: Use MCP completion for missing database, schema, table, column,
-    index, or sequence values before guessing identifiers.
-  recovery_rule: Follow structured recovery.next_actions before inventing a replacement
-    call.
-model_contract:
-  public_surface_source: 'MCP list methods expose the protocol surface: tools/list,
-    resources/list, resources/templates/list, prompts/list.'
-  official_discovery_methods: {tools: tools/list, resources: resources/list, resource_templates: resources/templates/list,
-    prompts: prompts/list}
-  argument_completion_method: completion/complete
-  optional_catalog_resource: shardingsphere://capabilities
-  metadata_first_resource: shardingsphere://databases
-  preflight_rule: Use database_gateway_validate_proxy_connectivity with a configured
-    database name before onboarding or troubleshooting runtime connectivity.
-  sql_tool_selection: {read_only: Use database_gateway_execute_query for one classifier-approved
-      SELECT or EXPLAIN ANALYZE statement., side_effecting: Use database_gateway_execute_update
-      with execution_mode=preview before execution.}
-  workflow_session_rule: Reuse the current-session plan_id returned by a planning
-    tool; re-plan when the plan is unavailable.
-  side_effect_rule: Preview before side effects and continue only when the requested
-    side effect is still intended.
-  next_action_rule: 'Use canonical next_actions fields: type, tool_name, resource_uri,
-    and arguments.'
-  detail_resource_rule: Read each resource payload_contract before assuming detail
-    fields.
-  recovery_rule: When a call fails with recovery.next_actions, follow those structured
-    actions before inventing a new call.
-surface_summary:
-  official_discovery_methods: {tools: tools/list, resources: resources/list, resource_templates: resources/templates/list,
-    prompts: prompts/list}
-  argument_completion_method: completion/complete
-  optional_catalog_resource: shardingsphere://capabilities
-  metadata_resource: shardingsphere://databases
-  metadata_search_tool: database_gateway_search_metadata
-  preflight_validation_tool: database_gateway_validate_proxy_connectivity
-  read_only_sql_tool: database_gateway_execute_query
-  side_effect_sql_tool: database_gateway_execute_update
-  workflow_tools: [database_gateway_apply_workflow, database_gateway_validate_workflow]
-  side_effect_rule: Preview first and continue only when the requested side effect
-    is still intended.
-  completion_rule: Use local completion hints on fields, prompts, and resources before
-    guessing identifiers.
-field_naming_contract:
-  official_discovery_methods: [tools/list, resources/list, resources/templates/list,
-    prompts/list]
-  argument_completion_method: completion/complete
-  catalog_fields: [supportedResources, supportedTools, resourceTemplates, completionTargets,
-    resourceNavigation, protocolAvailability]
-  payload_fields: ShardingSphere-owned structured payload fields use snake_case.
-  descriptor_fields: Descriptor-derived MCP schema fields keep the protocol or JSON
-    Schema field names required by MCP clients.
-  alias_rule: Do not assume camelCase and snake_case variants are aliases unless the
-    same descriptor explicitly documents both.
-  cleanup_rule: Prefer one canonical ShardingSphere payload field over parallel compatibility
-    aliases.
-next_action_contract:
-- type: resource_read
-  required_fields: [order, type, title, resource_uri]
-  optional_fields: [reason, depends_on]
-  description: Read an MCP resource before choosing another call.
-- type: tool_call
-  required_fields: [order, type, title, tool_name, arguments]
-  optional_fields: [reason, depends_on]
-  description: Call another MCP tool with server-suggested arguments.
-- type: completion
-  required_fields: [order, type, title, reference_type, reference, argument_name,
-    context_arguments]
-  optional_fields: [argument_prefix, missing_context_arguments, resume_target_type,
-    resume_target, resume_arguments, reason, depends_on]
-  description: Use MCP completion for one argument before retrying.
-- type: ask_user
-  required_fields: [order, type, title, question]
-  optional_fields: [required_inputs, reason, depends_on]
-  description: Ask the user for missing input.
-- type: terminal
-  required_fields: [order, type, title]
-  optional_fields: [reason, depends_on]
-  description: Stop the current MCP flow and report the result.
-common_flows:
-- flow_id: inspect_metadata
-  steps: [resources/list, resources/templates/list, 'read_resource shardingsphere://databases',
-    call_tool database_gateway_search_metadata, read_resource returned resource.uri]
-  stop_condition: Stop when the requested metadata detail resource is read.
-  referenced_tools: [database_gateway_search_metadata]
-  referenced_resources: ['shardingsphere://databases']
-- flow_id: validate_runtime_database
-  steps: ['read_resource shardingsphere://databases', call_tool database_gateway_validate_proxy_connectivity]
-  stop_condition: Stop after the configured runtime database reports ready or returns
-    structured recovery guidance.
-  referenced_tools: [database_gateway_validate_proxy_connectivity]
-  referenced_resources: ['shardingsphere://databases']
-- flow_id: read_only_sql
-  steps: ['read_resource shardingsphere://databases/{database}/capabilities', call_tool
-      database_gateway_execute_query]
-  stop_condition: Use one SELECT or EXPLAIN ANALYZE statement and stop after the result
-    is reported.
-  referenced_tools: [database_gateway_execute_query]
-  referenced_resources: ['shardingsphere://databases/{database}/capabilities']
-- flow_id: side_effecting_sql
-  steps: [call_tool database_gateway_execute_update execution_mode=preview, call_tool
-      database_gateway_execute_update execution_mode=execute]
-  stop_condition: Execute only after reviewing the previewed SQL and side-effect scope.
-  referenced_tools: [database_gateway_execute_update]
-  referenced_resources: &id001 []
-- flow_id: workflow_plan_apply_validate
-  steps: [call_tool descriptor-backed feature planning tool, call_tool database_gateway_apply_workflow
-      execution_mode=preview, call_tool database_gateway_apply_workflow execution_mode=review-then-execute
-      approved_steps=<preview_artifacts.approval_step>, call_tool database_gateway_validate_workflow]
-  stop_condition: Reuse the same current-session plan_id and stop after validation
-    succeeds.
-  referenced_tools: [database_gateway_apply_workflow, database_gateway_validate_workflow]
-  referenced_resources: *id001
-- flow_id: recover_from_error
-  steps: [follow recovery.next_actions, prefer official list discovery methods when
-      surface information is needed, 'read_resource shardingsphere://capabilities
-      only when the server suggests the catalog resource', ask_user only when uncertain]
-  stop_condition: Do not invent replacement calls while structured recovery actions
-    are present.
-  referenced_tools: *id001
-  referenced_resources: ['shardingsphere://capabilities']
-protocolAvailability: {resources: true, resourceTemplates: true, tools: true, toolAnnotations: true,
-  toolOutputSchemas: true, prompts: true, completions: true, resourceNavigation: true}
-fingerprints: {algorithm: sha256, descriptorCatalog: 20e22dc1490af50d39f00aeb1d5fb35c298773096268b70adc898d7f31800d06,
-  promptSet: 63e5b9cb3fada77bc332fd0f958c390d66b538944bdc4ba75501cac5106cd3f3, resourceNavigation: 64bf1a1ca4856b55a21b09922aa8df6e7bb7f043faa38977680d1a1e3c060bae,
-  modelFacingSchemas: 424743fa39de1312cfc2c19748d2da2773638c31596b747334468b3f130b1067}
-resources:
-- uri: shardingsphere://capabilities
-  name: server-capability-catalog
-  _meta: {org.apache.shardingsphere/resource-kind: capability-catalog}
-- uri: shardingsphere://runtime
-  name: runtime-status
-  _meta: {org.apache.shardingsphere/resource-kind: detail}
-- uri: shardingsphere://databases
-  name: logical-databases
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_search_metadata, database_gateway_execute_query]
-- uri: shardingsphere://features/encrypt/algorithms
-  name: encrypt-algorithms
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule]
-- uri: shardingsphere://features/mask/algorithms
-  name: mask-algorithms
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_mask_rule]
-- uri: shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins
-  name: readwrite-splitting-load-balance-algorithm-plugins
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_readwrite_splitting_rule]
-- uri: shardingsphere://features/shadow/algorithm-plugins
-  name: shadow-algorithm-plugins
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_shadow_rule, database_gateway_plan_default_shadow_algorithm]
-- uri: shardingsphere://features/sharding/algorithm-plugins
-  name: sharding-algorithm-plugins
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_table_rule,
-      database_gateway_plan_sharding_default_strategy]
-- uri: shardingsphere://features/sharding/key-generate-algorithm-plugins
-  name: sharding-key-generate-algorithm-plugins
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_key_generator,
-      database_gateway_plan_sharding_key_generate_strategy]
-resourceTemplates:
-- uriTemplate: shardingsphere://features/broadcast/databases/{database}/rules
-  name: broadcast-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_broadcast_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/broadcast/databases/{database}/rule-count
-  name: broadcast-rule-count
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_broadcast_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://databases/{database}
-  name: logical-database-detail
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://databases/{database}/capabilities
-  name: database-capabilities
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/related-tools: [database_gateway_execute_query, database_gateway_execute_update]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas
-  name: schemas
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}
-  name: schema-detail
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences
-  name: sequences
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
-  name: sequence-detail
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-    - {name: sequence, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables
-  name: tables
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
-      database_gateway_plan_mask_rule]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
-  name: table-detail
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
-      database_gateway_plan_mask_rule]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-    - {name: table, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
-  name: table-columns
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
-      database_gateway_plan_mask_rule]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-    - {name: table, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
-  name: table-column-detail
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
-      database_gateway_plan_mask_rule]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-    - {name: table, required: true}
-    - {name: column, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
-  name: table-indexes
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-    - {name: table, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
-  name: table-index-detail
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-    - {name: table, required: true}
-    - {name: index, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views
-  name: views
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}
-  name: view-detail
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-    - {name: view, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns
-  name: view-columns
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-    - {name: view, required: true}
-- uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}
-  name: view-column-detail
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: schema, required: true}
-    - {name: view, required: true}
-    - {name: column, required: true}
-- uriTemplate: shardingsphere://features/encrypt/databases/{database}/rules
-  name: encrypt-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
-  name: encrypt-table-rule
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_encrypt_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: table, required: true}
-- uriTemplate: shardingsphere://features/mask/databases/{database}/rules
-  name: mask-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_mask_rule, database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/mask/databases/{database}/tables/{table}/rules
-  name: mask-table-rule
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_mask_rule, database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: table, required: true}
-- uriTemplate: shardingsphere://features/readwrite-splitting/databases/{database}/rules
-  name: readwrite-splitting-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_readwrite_splitting_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/readwrite-splitting/databases/{database}/rules/{rule}
-  name: readwrite-splitting-rule
-  _meta:
-    org.apache.shardingsphere/resource-kind: rule
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_readwrite_splitting_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: rule, required: true}
-- uriTemplate: shardingsphere://features/readwrite-splitting/databases/{database}/status
-  name: readwrite-splitting-status
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_readwrite_splitting_status,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/readwrite-splitting/databases/{database}/rules/{rule}/status
-  name: readwrite-splitting-rule-status
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_readwrite_splitting_status,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: rule, required: true}
-- uriTemplate: shardingsphere://features/readwrite-splitting/databases/{database}/rule-count
-  name: readwrite-splitting-rule-count
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_readwrite_splitting_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/shadow/databases/{database}/rules
-  name: shadow-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_shadow_rule, database_gateway_plan_shadow_algorithm_cleanup,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/shadow/databases/{database}/rules/{rule}
-  name: shadow-rule
-  _meta:
-    org.apache.shardingsphere/resource-kind: rule
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_shadow_rule, database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: rule, required: true}
-- uriTemplate: shardingsphere://features/shadow/databases/{database}/table-rules
-  name: shadow-table-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_shadow_rule, database_gateway_plan_shadow_algorithm_cleanup,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/shadow/databases/{database}/tables/{table}/rules
-  name: shadow-table-rule
-  _meta:
-    org.apache.shardingsphere/resource-kind: rule
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_shadow_rule, database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: table, required: true}
-- uriTemplate: shardingsphere://features/shadow/databases/{database}/algorithms
-  name: shadow-algorithms
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_default_shadow_algorithm,
-      database_gateway_plan_shadow_algorithm_cleanup, database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/shadow/databases/{database}/default-algorithm
-  name: default-shadow-algorithm
-  _meta:
-    org.apache.shardingsphere/resource-kind: rule
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_default_shadow_algorithm,
-      database_gateway_plan_shadow_algorithm_cleanup, database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/shadow/databases/{database}/rule-count
-  name: shadow-rule-count
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_shadow_rule, database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/algorithms
-  name: sharding-algorithms
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_table_rule,
-      database_gateway_plan_sharding_default_strategy, database_gateway_plan_sharding_rule_component_cleanup,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/table-rules
-  name: sharding-table-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_table_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule
-  name: sharding-table-rule
-  _meta:
-    org.apache.shardingsphere/resource-kind: rule
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_table_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: table, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/table-nodes
-  name: sharding-table-nodes
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_table_rule]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes
-  name: sharding-table-node
-  _meta:
-    org.apache.shardingsphere/resource-kind: rule
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_table_rule]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: table, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/table-reference-rules
-  name: sharding-table-reference-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_table_reference_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}
-  name: sharding-table-reference-rule
-  _meta:
-    org.apache.shardingsphere/resource-kind: rule
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_table_reference_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: rule, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/default-strategy
-  name: sharding-default-strategy
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_default_strategy,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generators
-  name: sharding-key-generators
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_key_generator,
-      database_gateway_plan_sharding_key_generate_strategy, database_gateway_plan_sharding_rule_component_cleanup]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}
-  name: sharding-key-generator
-  _meta:
-    org.apache.shardingsphere/resource-kind: rule
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_key_generator,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: keyGenerator, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generate-strategies
-  name: sharding-key-generate-strategies
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_key_generate_strategy,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generate-strategies/{strategy}
-  name: sharding-key-generate-strategy
-  _meta:
-    org.apache.shardingsphere/resource-kind: rule
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_key_generate_strategy,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: strategy, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/auditors
-  name: sharding-auditors
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_rule_component_cleanup]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/unused-algorithms
-  name: unused-sharding-algorithms
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_rule_component_cleanup]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/unused-key-generators
-  name: unused-sharding-key-generators
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_rule_component_cleanup]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/unused-auditors
-  name: unused-sharding-auditors
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_rule_component_cleanup]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/algorithms/{algorithm}/table-rules
-  name: sharding-algorithm-used-table-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_rule_component_cleanup]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: algorithm, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}/table-rules
-  name: sharding-key-generator-used-table-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_rule_component_cleanup]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: keyGenerator, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/auditors/{auditor}/table-rules
-  name: sharding-auditor-used-table-rules
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_rule_component_cleanup]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-    - {name: auditor, required: true}
-- uriTemplate: shardingsphere://features/sharding/databases/{database}/rule-count
-  name: sharding-rule-count
-  _meta:
-    org.apache.shardingsphere/resource-kind: list
-    org.apache.shardingsphere/related-tools: [database_gateway_plan_sharding_table_rule,
-      database_gateway_validate_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: database, required: true}
-- uriTemplate: shardingsphere://workflows/{plan_id}
-  name: workflow-plan
-  _meta:
-    org.apache.shardingsphere/resource-kind: detail
-    org.apache.shardingsphere/related-tools: [database_gateway_validate_workflow,
-      database_gateway_apply_workflow]
-    org.apache.shardingsphere/uri-variables:
-    - {name: plan_id, required: true}
-tools:
-- name: database_gateway_plan_broadcast_rule
-  annotations: {title: Plan Broadcast Rule, readOnlyHint: false, destructiveHint: false,
-    idempotentHint: false, openWorldHint: false}
-- name: database_gateway_search_metadata
-  annotations: {title: Search Metadata, readOnlyHint: true, destructiveHint: false,
-    idempotentHint: true, openWorldHint: true}
-- name: database_gateway_validate_proxy_connectivity
-  annotations: {title: Validate Proxy Connectivity, readOnlyHint: true, destructiveHint: false,
-    idempotentHint: true, openWorldHint: true}
-- name: database_gateway_execute_query
-  annotations: {title: Execute Query SQL, readOnlyHint: true, destructiveHint: false,
-    idempotentHint: true, openWorldHint: true}
-- name: database_gateway_execute_update
-  annotations: {title: Execute Update SQL, readOnlyHint: false, destructiveHint: true,
-    idempotentHint: false, openWorldHint: true}
-- name: database_gateway_plan_encrypt_rule
-  annotations: {title: Plan Encrypt Rule, readOnlyHint: false, destructiveHint: false,
-    idempotentHint: false, openWorldHint: true}
-- name: database_gateway_plan_mask_rule
-  annotations: {title: Plan Mask Rule, readOnlyHint: false, destructiveHint: false,
-    idempotentHint: false, openWorldHint: true}
-- name: database_gateway_plan_readwrite_splitting_rule
-  annotations: {title: Plan Readwrite-Splitting Rule, readOnlyHint: false, destructiveHint: false,
-    idempotentHint: false, openWorldHint: false}
-- name: database_gateway_plan_readwrite_splitting_status
-  annotations: {title: Plan Readwrite-Splitting Status, readOnlyHint: false, destructiveHint: false,
-    idempotentHint: false, openWorldHint: false}
-- name: database_gateway_plan_shadow_rule
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
-- name: database_gateway_plan_default_shadow_algorithm
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
-- name: database_gateway_plan_shadow_algorithm_cleanup
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
-- name: database_gateway_plan_sharding_table_rule
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
-- name: database_gateway_plan_sharding_table_reference_rule
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
-- name: database_gateway_plan_sharding_default_strategy
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
-- name: database_gateway_plan_sharding_key_generator
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
-- name: database_gateway_plan_sharding_key_generate_strategy
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
-- name: database_gateway_plan_sharding_rule_component_cleanup
-  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false,
-    openWorldHint: false}
-- name: database_gateway_apply_workflow
-  annotations: {title: Apply Workflow, readOnlyHint: false, destructiveHint: true,
-    idempotentHint: false, openWorldHint: true}
-- name: database_gateway_validate_workflow
-  annotations: {title: Validate Workflow, readOnlyHint: true, destructiveHint: false,
-    idempotentHint: true, openWorldHint: true}
-prompts:
-- name: inspect_metadata
-  title: Inspect Metadata
-  arguments:
-  - {name: database, required: false}
-  - {name: schema, required: false}
-  - {name: query, required: false}
-- name: plan_broadcast_rule
-  title: Plan Broadcast Rule
-  arguments:
-  - {name: database, required: false}
-  - {name: table, required: false}
-  - {name: tables, required: false}
-  - {name: operation_type, required: false}
-  - {name: plan_id, required: false}
-- name: plan_default_shadow_algorithm
-  title: Plan Default Shadow Algorithm
-  arguments:
-  - {name: database, required: false}
-  - {name: operation_type, required: false}
-  - {name: algorithm_type, required: false}
-- name: plan_encrypt_rule
-  title: Plan Encrypt Rule
-  arguments:
-  - {name: database, required: false}
-  - {name: schema, required: false}
-  - {name: table, required: false}
-  - {name: column, required: false}
-  - {name: algorithm_type, required: false}
-  - {name: assisted_query_algorithm_type, required: false}
-  - {name: like_query_algorithm_type, required: false}
-  - {name: plan_id, required: false}
-- name: plan_mask_rule
-  title: Plan Mask Rule
-  arguments:
-  - {name: database, required: false}
-  - {name: schema, required: false}
-  - {name: table, required: false}
-  - {name: column, required: false}
-  - {name: algorithm_type, required: false}
-  - {name: plan_id, required: false}
-- name: plan_readwrite_splitting_rule
-  title: Plan Readwrite-Splitting Rule
-  arguments:
-  - {name: database, required: false}
-  - {name: rule, required: false}
-  - {name: operation_type, required: false}
-  - {name: write_storage_unit, required: false}
-  - {name: read_storage_units, required: false}
-  - {name: transactional_read_query_strategy, required: false}
-  - {name: load_balancer_type, required: false}
-- name: plan_readwrite_splitting_status
-  title: Plan Readwrite-Splitting Status
-  arguments:
-  - {name: database, required: false}
-  - {name: rule, required: false}
-  - {name: storage_unit, required: false}
-  - {name: target_status, required: false}
-- name: plan_shadow_algorithm_cleanup
-  title: Plan Shadow Algorithm Cleanup
-  arguments:
-  - {name: database, required: false}
-  - {name: algorithm_name, required: false}
-- name: plan_shadow_rule
-  title: Plan Shadow Rule
-  arguments:
-  - {name: database, required: false}
-  - {name: rule, required: false}
-  - {name: operation_type, required: false}
-  - {name: source_storage_unit, required: false}
-  - {name: shadow_storage_unit, required: false}
-  - {name: table, required: false}
-  - {name: algorithm_type, required: false}
-- name: plan_sharding_default_strategy
-  title: Plan Sharding Default Strategy
-  arguments:
-  - {name: database, required: false}
-  - {name: operation_type, required: false}
-  - {name: algorithm_type, required: false}
-- name: plan_sharding_key_generate_strategy
-  title: Plan Sharding Key Generate Strategy
-  arguments:
-  - {name: database, required: false}
-  - {name: operation_type, required: false}
-  - {name: key_generator_type, required: false}
-- name: plan_sharding_key_generator
-  title: Plan Sharding Key Generator
-  arguments:
-  - {name: database, required: false}
-  - {name: operation_type, required: false}
-  - {name: key_generator_type, required: false}
-- name: plan_sharding_rule_component_cleanup
-  title: Plan Sharding Rule Component Cleanup
-  arguments:
-  - {name: database, required: false}
-  - {name: operation_type, required: false}
-- name: plan_sharding_table_reference_rule
-  title: Plan Sharding Table Reference Rule
-  arguments:
-  - {name: database, required: false}
-  - {name: operation_type, required: false}
-- name: plan_sharding_table_rule
-  title: Plan Sharding Table Rule
-  arguments:
-  - {name: database, required: false}
-  - {name: operation_type, required: false}
-  - {name: algorithm_type, required: false}
-- name: recover_workflow
-  title: Recover Workflow
-  arguments:
-  - {name: plan_id, required: false}
-  - {name: failure_summary, required: false}
-- name: safe_sql_execution
-  title: Safe SQL Execution
-  arguments:
-  - {name: database, required: true}
-  - {name: schema, required: false}
-  - {name: sql_intent, required: true}
-completionTargets:
-- referenceType: resource
-  reference: shardingsphere://databases/{database}
-  arguments: [database]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas
-  arguments: [database]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas/{schema}
-  arguments: [database, schema]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas/{schema}/tables
-  arguments: [database, schema]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
-  arguments: [database, schema, table]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
-  arguments: [database, schema, table]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
-  arguments: [database, schema, table, column]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
-  arguments: [database, schema, table]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
-  arguments: [database, schema, table, index]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas/{schema}/sequences
-  arguments: [database, schema]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
-  arguments: [database, schema, sequence]
-  maxValues: 50
-- referenceType: prompt
-  reference: plan_encrypt_rule
-  arguments: [algorithm_type, assisted_query_algorithm_type, like_query_algorithm_type]
-  maxValues: 50
-- referenceType: prompt
-  reference: plan_mask_rule
-  arguments: [algorithm_type]
-  maxValues: 50
-- referenceType: prompt
-  reference: plan_readwrite_splitting_rule
-  arguments: [load_balancer_type]
-  maxValues: 50
-- referenceType: prompt
-  reference: plan_shadow_rule
-  arguments: [algorithm_type]
-  maxValues: 50
-- referenceType: prompt
-  reference: plan_default_shadow_algorithm
-  arguments: [algorithm_type]
-  maxValues: 50
-- referenceType: prompt
-  reference: plan_sharding_table_rule
-  arguments: [algorithm_type]
-  maxValues: 50
-- referenceType: prompt
-  reference: plan_sharding_default_strategy
-  arguments: [algorithm_type]
-  maxValues: 50
-- referenceType: prompt
-  reference: plan_sharding_key_generator
-  arguments: [key_generator_type]
-  maxValues: 50
-- referenceType: prompt
-  reference: plan_sharding_key_generate_strategy
-  arguments: [key_generator_type]
-  maxValues: 50
-- referenceType: prompt
-  reference: inspect_metadata
-  arguments: [database, schema]
-  maxValues: 50
-- referenceType: prompt
-  reference: safe_sql_execution
-  arguments: [database, schema]
-  maxValues: 50
-- referenceType: prompt
-  reference: recover_workflow
-  arguments: [plan_id]
-  maxValues: 50
-- referenceType: resource
-  reference: shardingsphere://workflows/{plan_id}
-  arguments: [plan_id]
-  maxValues: 50
+supportedStatementClasses: [DCL, DDL, DML, EXPLAIN, QUERY, SAVEPOINT, TRANSACTION_CONTROL]
+completionTargets: ['prompt:inspect_metadata:[database, schema]', 'prompt:plan_broadcast_rule:[database,
+    table, plan_id]', 'prompt:plan_default_shadow_algorithm:[database, algorithm_type,
+    plan_id]', 'prompt:plan_encrypt_rule:[database, schema, table, column, algorithm_type,
+    assisted_query_algorithm_type, like_query_algorithm_type, plan_id]', 'prompt:plan_mask_rule:[database,
+    schema, table, column, algorithm_type, plan_id]', 'prompt:plan_readwrite_splitting_rule:[database,
+    write_storage_unit, load_balancer_type, plan_id]', 'prompt:plan_readwrite_splitting_status:[database,
+    storage_unit, plan_id]', 'prompt:plan_shadow_algorithm_cleanup:[database, plan_id]',
+  'prompt:plan_shadow_rule:[database, source_storage_unit, shadow_storage_unit, table,
+    algorithm_type, plan_id]', 'prompt:plan_sharding_default_strategy:[database, algorithm_type,
+    plan_id]', 'prompt:plan_sharding_key_generate_strategy:[database, key_generator_type,
+    plan_id]', 'prompt:plan_sharding_key_generator:[database, key_generator_type,
+    plan_id]', 'prompt:plan_sharding_rule_component_cleanup:[database, plan_id]',
+  'prompt:plan_sharding_table_reference_rule:[database, plan_id]', 'prompt:plan_sharding_table_rule:[database,
+    algorithm_type, plan_id]', 'prompt:recover_workflow:[plan_id]', 'prompt:safe_sql_execution:[database,
+    schema]', 'resource:shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}:[database,
+    schema, sequence]', 'resource:shardingsphere://databases/{database}/schemas/{schema}/sequences:[database,
+    schema]', 'resource:shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}:[database,
+    schema, table, column]', 'resource:shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns:[database,
+    schema, table]', 'resource:shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}:[database,
+    schema, table, index]', 'resource:shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes:[database,
+    schema, table]', 'resource:shardingsphere://databases/{database}/schemas/{schema}/tables/{table}:[database,
+    schema, table]', 'resource:shardingsphere://databases/{database}/schemas/{schema}/tables:[database,
+    schema]', 'resource:shardingsphere://databases/{database}/schemas/{schema}:[database,
+    schema]', 'resource:shardingsphere://databases/{database}/schemas:[database]',
+  'resource:shardingsphere://databases/{database}/single-table/default-storage-unit:[database]',
+  'resource:shardingsphere://databases/{database}/single-tables/{table}:[database,
+    table]', 'resource:shardingsphere://databases/{database}/single-tables:[database]',
+  'resource:shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules:[database,
+    storageUnit]', 'resource:shardingsphere://databases/{database}/storage-units/{storageUnit}:[database,
+    storageUnit]', 'resource:shardingsphere://databases/{database}/storage-units:[database]',
+  'resource:shardingsphere://databases/{database}:[database]', 'resource:shardingsphere://workflows/{plan_id}:[plan_id]']
+resourceNavigation: [database_gateway_apply_workflow->database_gateway_validate_workflow,
+  database_gateway_plan_broadcast_rule->database_gateway_apply_workflow, 'database_gateway_plan_broadcast_rule->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_default_shadow_algorithm->database_gateway_apply_workflow,
+  'database_gateway_plan_default_shadow_algorithm->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_encrypt_rule->database_gateway_apply_workflow, 'database_gateway_plan_encrypt_rule->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_mask_rule->database_gateway_apply_workflow, 'database_gateway_plan_mask_rule->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_readwrite_splitting_rule->database_gateway_apply_workflow,
+  'database_gateway_plan_readwrite_splitting_rule->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_readwrite_splitting_status->database_gateway_apply_workflow,
+  'database_gateway_plan_readwrite_splitting_status->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_shadow_algorithm_cleanup->database_gateway_apply_workflow,
+  'database_gateway_plan_shadow_algorithm_cleanup->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_shadow_rule->database_gateway_apply_workflow, 'database_gateway_plan_shadow_rule->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_sharding_default_strategy->database_gateway_apply_workflow,
+  'database_gateway_plan_sharding_default_strategy->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_sharding_key_generate_strategy->database_gateway_apply_workflow,
+  'database_gateway_plan_sharding_key_generate_strategy->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_sharding_key_generator->database_gateway_apply_workflow, 'database_gateway_plan_sharding_key_generator->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_sharding_rule_component_cleanup->database_gateway_apply_workflow,
+  'database_gateway_plan_sharding_rule_component_cleanup->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_sharding_table_reference_rule->database_gateway_apply_workflow,
+  'database_gateway_plan_sharding_table_reference_rule->shardingsphere://workflows/{plan_id}',
+  database_gateway_plan_sharding_table_rule->database_gateway_apply_workflow, 'database_gateway_plan_sharding_table_rule->shardingsphere://workflows/{plan_id}',
+  recover_workflow->database_gateway_validate_workflow, 'shardingsphere://capabilities->database_gateway_search_metadata',
+  'shardingsphere://capabilities->shardingsphere://databases', 'shardingsphere://capabilities->shardingsphere://guidance',
+  'shardingsphere://capabilities->shardingsphere://runtime', 'shardingsphere://databases/{database}->shardingsphere://databases/{database}/schemas',
+  'shardingsphere://databases/{database}->shardingsphere://databases/{database}/single-table/default-storage-unit',
+  'shardingsphere://databases/{database}->shardingsphere://databases/{database}/single-tables',
+  'shardingsphere://databases/{database}->shardingsphere://databases/{database}/storage-units',
+  'shardingsphere://databases/{database}/schemas/{schema}->shardingsphere://databases/{database}/schemas/{schema}/sequences',
+  'shardingsphere://databases/{database}/schemas/{schema}->shardingsphere://databases/{database}/schemas/{schema}/tables',
+  'shardingsphere://databases/{database}/schemas/{schema}->shardingsphere://databases/{database}/schemas/{schema}/views',
+  'shardingsphere://databases/{database}/schemas/{schema}/tables/{table}->shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns',
+  'shardingsphere://databases/{database}/schemas/{schema}/tables/{table}->shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes',
+  'shardingsphere://databases/{database}/schemas/{schema}/views/{view}->shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns',
+  'shardingsphere://databases/{database}/storage-units/{storageUnit}->shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules',
+  'shardingsphere://features/broadcast/databases/{database}/rule-count->shardingsphere://features/broadcast/databases/{database}/rules',
+  'shardingsphere://features/broadcast/databases/{database}/rules->database_gateway_plan_broadcast_rule',
+  'shardingsphere://features/broadcast/databases/{database}/tables/{table}/rule->database_gateway_plan_broadcast_rule',
+  'shardingsphere://features/encrypt/algorithms->database_gateway_plan_encrypt_rule',
+  'shardingsphere://features/encrypt/databases/{database}/rules->database_gateway_plan_encrypt_rule',
+  'shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules->database_gateway_plan_encrypt_rule',
+  'shardingsphere://features/mask/algorithms->database_gateway_plan_mask_rule', 'shardingsphere://features/mask/databases/{database}/rules->database_gateway_plan_mask_rule',
+  'shardingsphere://features/mask/databases/{database}/tables/{table}/rules->database_gateway_plan_mask_rule',
+  'shardingsphere://features/readwrite-splitting/databases/{database}/rules->database_gateway_plan_readwrite_splitting_rule',
+  'shardingsphere://features/readwrite-splitting/databases/{database}/rules/{rule}->database_gateway_plan_readwrite_splitting_rule',
+  'shardingsphere://features/readwrite-splitting/databases/{database}/rules/{rule}/status->database_gateway_plan_readwrite_splitting_status',
+  'shardingsphere://features/readwrite-splitting/databases/{database}/status->database_gateway_plan_readwrite_splitting_status',
+  'shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins->database_gateway_plan_readwrite_splitting_rule',
+  'shardingsphere://features/shadow/algorithm-plugins->database_gateway_plan_default_shadow_algorithm',
+  'shardingsphere://features/shadow/algorithm-plugins->database_gateway_plan_shadow_rule',
+  'shardingsphere://features/shadow/databases/{database}/algorithms->database_gateway_plan_shadow_algorithm_cleanup',
+  'shardingsphere://features/shadow/databases/{database}/default-algorithm->database_gateway_plan_default_shadow_algorithm',
+  'shardingsphere://features/shadow/databases/{database}/rules->database_gateway_plan_shadow_rule',
+  'shardingsphere://features/shadow/databases/{database}/table-rules->database_gateway_plan_shadow_rule',
+  'shardingsphere://features/sharding/algorithm-plugins->database_gateway_plan_sharding_default_strategy',
+  'shardingsphere://features/sharding/algorithm-plugins->database_gateway_plan_sharding_table_rule',
+  'shardingsphere://features/sharding/databases/{database}/default-strategy->database_gateway_plan_sharding_default_strategy',
+  'shardingsphere://features/sharding/databases/{database}/key-generate-strategies->database_gateway_plan_sharding_key_generate_strategy',
+  'shardingsphere://features/sharding/databases/{database}/key-generate-strategies/{strategy}->database_gateway_plan_sharding_key_generate_strategy',
+  'shardingsphere://features/sharding/databases/{database}/key-generators->database_gateway_plan_sharding_key_generator',
+  'shardingsphere://features/sharding/databases/{database}/key-generators/{keyGenerator}->database_gateway_plan_sharding_key_generator',
+  'shardingsphere://features/sharding/databases/{database}/table-reference-rules->database_gateway_plan_sharding_table_reference_rule',
+  'shardingsphere://features/sharding/databases/{database}/table-reference-rules/{rule}->database_gateway_plan_sharding_table_reference_rule',
+  'shardingsphere://features/sharding/databases/{database}/table-rules->database_gateway_plan_sharding_table_rule',
+  'shardingsphere://features/sharding/databases/{database}/tables/{table}/nodes->database_gateway_plan_sharding_table_rule',
+  'shardingsphere://features/sharding/databases/{database}/tables/{table}/table-rule->database_gateway_plan_sharding_table_rule',
+  'shardingsphere://features/sharding/databases/{database}/unused-algorithms->database_gateway_plan_sharding_rule_component_cleanup',
+  'shardingsphere://features/sharding/databases/{database}/unused-auditors->database_gateway_plan_sharding_rule_component_cleanup',
+  'shardingsphere://features/sharding/databases/{database}/unused-key-generators->database_gateway_plan_sharding_rule_component_cleanup',
+  'shardingsphere://features/sharding/key-generate-algorithm-plugins->database_gateway_plan_sharding_key_generate_strategy',
+  'shardingsphere://features/sharding/key-generate-algorithm-plugins->database_gateway_plan_sharding_key_generator']

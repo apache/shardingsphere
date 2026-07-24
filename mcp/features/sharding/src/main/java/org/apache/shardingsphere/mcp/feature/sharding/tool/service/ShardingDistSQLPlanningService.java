@@ -42,11 +42,9 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planTableRule(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP SHARDING TABLE RULE %s", format(request.getTable())));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING TABLE RULE %s", format(request.getTable())));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s SHARDING TABLE RULE %s(%s)",
-                command, format(request.getTable()), createTableRuleBody(request)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, String.format("CREATE SHARDING TABLE RULE %s(%s)", format(request.getTable()), createTableRuleBody(request)));
     }
     
     /**
@@ -58,11 +56,10 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planTableReferenceRule(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP SHARDING TABLE REFERENCE RULE %s", format(request.getRuleName())));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING TABLE REFERENCE RULE %s", format(request.getRuleName())));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s SHARDING TABLE REFERENCE RULE %s(%s)",
-                command, format(request.getRuleName()), joinIdentifiers(request.getReferenceTables())));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE,
+                String.format("CREATE SHARDING TABLE REFERENCE RULE %s(%s)", format(request.getRuleName()), joinIdentifiers(request.getReferenceTables())));
     }
     
     /**
@@ -74,11 +71,10 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planDefaultStrategy(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP DEFAULT SHARDING %s STRATEGY", request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH)));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP DEFAULT SHARDING %s STRATEGY", request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH)));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s DEFAULT SHARDING %s STRATEGY (%s)",
-                command, request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH), createShardingStrategy(request)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, String.format("CREATE DEFAULT SHARDING %s STRATEGY (%s)",
+                request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH), createShardingStrategy(request)));
     }
     
     /**
@@ -90,11 +86,10 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planKeyGenerator(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP SHARDING KEY GENERATOR %s", format(request.getKeyGeneratorName())));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING KEY GENERATOR %s", format(request.getKeyGeneratorName())));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s SHARDING KEY GENERATOR %s(%s)",
-                command, format(request.getKeyGeneratorName()), createKeyGeneratorFragment(request)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE,
+                String.format("CREATE SHARDING KEY GENERATOR %s(%s)", format(request.getKeyGeneratorName()), createKeyGeneratorFragment(request)));
     }
     
     /**
@@ -106,11 +101,10 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planKeyGenerateStrategy(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP SHARDING KEY GENERATE STRATEGY %s", format(request.getKeyGenerateStrategyName())));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING KEY GENERATE STRATEGY %s", format(request.getKeyGenerateStrategyName())));
         }
-        String command = "alter".equalsIgnoreCase(operationType) ? "ALTER" : "CREATE";
-        return new RuleArtifact(command.toLowerCase(Locale.ENGLISH), String.format("%s SHARDING KEY GENERATE STRATEGY %s(%s)",
-                command, format(request.getKeyGenerateStrategyName()), createKeyGenerateStrategyBody(request)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, String.format("CREATE SHARDING KEY GENERATE STRATEGY %s(%s)",
+                format(request.getKeyGenerateStrategyName()), createKeyGenerateStrategyBody(request)));
     }
     
     /**
@@ -122,13 +116,13 @@ public final class ShardingDistSQLPlanningService {
     public RuleArtifact planComponentCleanup(final ShardingWorkflowRequest request) {
         switch (normalizeComponentType(request.getComponentType())) {
             case "algorithm":
-                return new RuleArtifact("drop", String.format("DROP SHARDING ALGORITHM %s", format(request.getComponentName())));
+                return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING ALGORITHM %s", format(request.getComponentName())));
             case "key-generator":
-                return new RuleArtifact("drop", String.format("DROP SHARDING KEY GENERATOR %s", format(request.getComponentName())));
+                return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING KEY GENERATOR %s", format(request.getComponentName())));
             case "auditor":
-                return new RuleArtifact("drop", String.format("DROP SHARDING AUDITOR %s", format(request.getComponentName())));
+                return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING AUDITOR %s", format(request.getComponentName())));
             default:
-                return new RuleArtifact("drop", "");
+                return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, "");
         }
     }
     
@@ -191,8 +185,7 @@ public final class ShardingDistSQLPlanningService {
     }
     
     private String createKeyGeneratorFragment(final ShardingWorkflowRequest request) {
-        String keyGeneratorType = request.getKeyGeneratorType().isEmpty() ? request.getAlgorithmType() : request.getKeyGeneratorType();
-        return createAlgorithmFragment(keyGeneratorType, request.getKeyGeneratorProperties());
+        return createAlgorithmFragment(request.getKeyGeneratorType(), request.getKeyGeneratorProperties());
     }
     
     private String createAlgorithmFragment(final String algorithmType, final Map<String, String> properties) {
@@ -227,6 +220,6 @@ public final class ShardingDistSQLPlanningService {
     }
     
     private String format(final String value) {
-        return WorkflowSQLUtils.formatDistSQLIdentifier(value);
+        return WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(value);
     }
 }

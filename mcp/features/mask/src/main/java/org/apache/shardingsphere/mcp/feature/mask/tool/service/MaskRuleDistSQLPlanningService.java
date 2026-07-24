@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
@@ -36,7 +37,7 @@ public final class MaskRuleDistSQLPlanningService {
      */
     public RuleArtifact planMaskRule(final WorkflowRequest request) {
         validateMaskIdentifiers(request);
-        return new RuleArtifact("create", createMaskRuleSql("CREATE MASK RULE", request.getTable(), List.of(createTargetMaskColumnSegment(request))));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, createMaskRuleSql("CREATE MASK RULE", request.getTable(), List.of(createTargetMaskColumnSegment(request))));
     }
     
     /**
@@ -47,7 +48,7 @@ public final class MaskRuleDistSQLPlanningService {
      */
     public RuleArtifact planMaskDropRule(final WorkflowRequest request) {
         validateMaskIdentifiers(request);
-        return new RuleArtifact("drop", String.format("DROP MASK RULE %s", WorkflowSQLUtils.formatDistSQLIdentifier(request.getTable())));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP MASK RULE %s", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getTable())));
     }
     
     private void validateMaskIdentifiers(final WorkflowRequest request) {
@@ -56,13 +57,13 @@ public final class MaskRuleDistSQLPlanningService {
     }
     
     private String createTargetMaskColumnSegment(final WorkflowRequest request) {
-        return String.format("(NAME=%s, %s)", WorkflowSQLUtils.formatDistSQLIdentifier(request.getColumn()),
+        return String.format("(NAME=%s, %s)", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(request.getColumn()),
                 WorkflowSQLUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties()));
     }
     
     private String createMaskRuleSql(final String prefix, final String tableName, final List<String> columnSegments) {
         WorkflowSQLUtils.checkSupportedIdentifier("table", tableName);
-        return String.format("%s %s (%sCOLUMNS(%s%s%s))", prefix, WorkflowSQLUtils.formatDistSQLIdentifier(tableName), System.lineSeparator(), System.lineSeparator(),
+        return String.format("%s %s (%sCOLUMNS(%s%s%s))", prefix, WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(tableName), System.lineSeparator(), System.lineSeparator(),
                 String.join(", " + System.lineSeparator(), columnSegments), System.lineSeparator());
     }
 }

@@ -36,7 +36,7 @@ class ShardingSphereURLLoadEngineTest {
     
     @Test
     void assertLoadContent() {
-        final String lineSeparator = System.lineSeparator();
+        String lineSeparator = System.lineSeparator();
         String content = "foo_driver_fixture_db=2" + lineSeparator + "storage_unit_count=2" + lineSeparator;
         ShardingSphereLocalFileURLLoader urlLoader = mock(ShardingSphereLocalFileURLLoader.class);
         when(urlLoader.load(any(), any())).thenReturn(content);

@@ -5960,6 +5960,10 @@ SERVERERROR
     :S E R V E R E R R O R
     ;
 
+SERIALLY_REUSABLE
+    :S E R I A L L Y UL_ R E U S A B L E
+    ;
+
 SESSIONS_PER_USER
     :S E S S I O N S UL_ P E R UL_ U S E R
     ;

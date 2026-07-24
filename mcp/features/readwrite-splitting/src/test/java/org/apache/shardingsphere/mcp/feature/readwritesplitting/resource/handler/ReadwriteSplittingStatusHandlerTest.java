@@ -1,0 +1,57 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
+
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class ReadwriteSplittingStatusHandlerTest {
+    
+    @Test
+    void assertHandle() {
+        try (MockedConstruction<ReadwriteSplittingInspectionService> mocked = mockConstruction(ReadwriteSplittingInspectionService.class)) {
+            ReadwriteSplittingStatusHandler handler = new ReadwriteSplittingStatusHandler();
+            ReadwriteSplittingInspectionService inspectionService = mocked.constructed().getFirst();
+            MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+            when(requestContext.getQueryFacade()).thenReturn(queryFacade);
+            when(inspectionService.queryStatuses(queryFacade, "logic_db")).thenReturn(List.of(Map.of("storage_unit", "read_ds_0")));
+            MCPSuccessPayload actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of("database", "logic_db")));
+            verify(inspectionService).queryStatuses(queryFacade, "logic_db");
+            assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/readwrite-splitting/databases/logic_db/status"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));
+        }
+    }
+}

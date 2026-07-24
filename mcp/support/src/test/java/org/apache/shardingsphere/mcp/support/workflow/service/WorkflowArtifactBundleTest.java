@@ -17,43 +17,67 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
-import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowArtifactBundleTest {
     
     @Test
     void assertToExecutableArtifacts() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE t ADD COLUMN c_cipher VARCHAR(32)", 1));
-        snapshot.getIndexPlans().add(new IndexPlan("idx_t_c_cipher", "c_cipher", "lookup", "CREATE INDEX idx_t_c_cipher ON t(c_cipher)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t"));
-        List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot).toExecutableArtifacts();
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0).approvalStep(), is(WorkflowArtifactPayloadUtils.STEP_DDL));
-        assertThat(actual.get(1).artifactType(), is(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX));
-        assertTrue(actual.get(2).ruleDistSql());
+        List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot).toExecutableArtifacts(role -> Map.of(), List.of());
+        assertThat(actual, is(List.of(new WorkflowArtifactBundle.ExecutableWorkflowArtifact("CREATE ENCRYPT RULE t", "CREATE ENCRYPT RULE t"))));
     }
     
     @Test
-    void assertToRuleExecutableArtifacts() {
+    void assertToExecutableArtifactsWithMaskedDisplaySql() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE t ADD COLUMN c_cipher VARCHAR(32)", 1));
-        snapshot.getIndexPlans().add(new IndexPlan("idx_t_c_cipher", "c_cipher", "lookup", "CREATE INDEX idx_t_c_cipher ON t(c_cipher)"));
-        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t"));
-        List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot).toRuleExecutableArtifacts();
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='primary-secret'))"));
+        List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot)
+                .toExecutableArtifacts(createPropertySource(), List.of(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "primary", "")));
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).approvalStep(), is(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL));
-        assertThat(actual.get(0).artifactType(), is(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL));
-        assertTrue(actual.get(0).ruleDistSql());
+        assertThat(actual.getFirst().sql(), is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='primary-secret'))"));
+        assertThat(actual.getFirst().displaySql(), is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='******'))"));
+    }
+    
+    @Test
+    void assertToRuleExecutableArtifactsKeepsSecretReferenceSqlSeparateFromDisplaySql() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='secret_reference:primary.aes-key-value'))"));
+        List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot)
+                .toExecutableArtifacts(createSecretReferencePropertySource(), List.of());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.getFirst().sql(), is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='secret_reference:primary.aes-key-value'))"));
+        assertThat(actual.getFirst().displaySql(), is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>'))"));
+    }
+    
+    private WorkflowPropertySource createPropertySource() {
+        return algorithmRole -> "primary".equals(algorithmRole) ? Map.of("aes-key-value", "primary-secret") : Map.of();
+    }
+    
+    private WorkflowPropertySource createSecretReferencePropertySource() {
+        return new WorkflowPropertySource() {
+            
+            @Override
+            public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+                return "primary".equals(algorithmRole) ? Map.of("aes-key-value", "secret_reference:primary.aes-key-value") : Map.of();
+            }
+            
+            @Override
+            public Map<String, Map<String, SecretReferenceValue>> getSecretReferences() {
+                return Map.of("primary", Map.of("aes-key-value", SecretReferenceValue.create()));
+            }
+        };
     }
 }

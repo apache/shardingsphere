@@ -148,7 +148,7 @@ public final class ReflectionUtils {
      */
     public static <T> Optional<T> getFieldValueByGetMethod(final Object target, final String fieldName) {
         String getterName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
-        final Optional<Method> method = findMethod(target.getClass(), getterName);
+        Optional<Method> method = findMethod(target.getClass(), getterName);
         if (method.isPresent()) {
             T value = invokeMethod(method.get(), target);
             return Optional.ofNullable(value);

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe.ReadinessResult;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
@@ -25,18 +26,21 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPIntera
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.ServerSocket;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.OptionalInt;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Docker image HTTP runtime support for MCP distribution E2E tests.
  */
+@RequiredArgsConstructor
 public final class DockerImageHttpRuntime implements AutoCloseable {
     
     private static final String CONTAINER_CONFIG_FILE = "/tmp/shardingsphere-mcp-e2e.yaml";
@@ -44,6 +48,8 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
     private static final long STARTUP_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(30L);
     
     private static final long STARTUP_POLL_INTERVAL_MILLIS = 250L;
+    
+    private static final long PORT_QUERY_TIMEOUT_SECONDS = 5L;
     
     private final String imageName;
     
@@ -57,10 +63,7 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
     
     private int httpPort;
     
-    public DockerImageHttpRuntime(final String imageName, final Path configFile) {
-        this.imageName = imageName;
-        this.configFile = configFile;
-    }
+    private String containerName;
     
     /**
      * Open an HTTP interaction client after the Docker image becomes ready.
@@ -94,6 +97,8 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
         } finally {
             process = null;
             outputCollector = null;
+            httpPort = 0;
+            containerName = null;
             outputMessages.clear();
         }
     }
@@ -102,21 +107,25 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
         if (null != process) {
             return;
         }
-        httpPort = allocatePort();
-        process = new ProcessBuilder(createDockerCommand(httpPort)).redirectErrorStream(true).start();
-        outputCollector = startOutputCollector(process);
-    }
-    
-    private List<String> createDockerCommand(final int httpPort) {
-        return List.of("docker", "run", "--rm", "--add-host=host.docker.internal:host-gateway", "-p",
-                "127.0.0.1:" + httpPort + ":18088", "-v", configFile.toAbsolutePath().normalize() + ":" + CONTAINER_CONFIG_FILE + ":ro", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=http", "-e",
-                "SHARDINGSPHERE_MCP_CONFIG=" + CONTAINER_CONFIG_FILE, imageName);
-    }
-    
-    private int allocatePort() throws IOException {
-        try (ServerSocket serverSocket = new ServerSocket(0)) {
-            return serverSocket.getLocalPort();
+        containerName = "shardingsphere-mcp-e2e-" + UUID.randomUUID();
+        try {
+            process = new ProcessBuilder(createDockerCommand(imageName, configFile, containerName)).redirectErrorStream(true).start();
+            outputCollector = startOutputCollector(process);
+        } catch (final IOException ex) {
+            containerName = null;
+            throw ex;
         }
+    }
+    
+    static List<String> createDockerCommand(final String imageName, final Path configFile, final String containerName) {
+        List<String> result = new LinkedList<>(List.of("docker", "run", "--rm", "--name", containerName,
+                "--add-host=host.docker.internal:host-gateway", "-p", "127.0.0.1::18088", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=http"));
+        if (null != configFile) {
+            result.addAll(List.of("-v", configFile.toAbsolutePath().normalize() + ":" + CONTAINER_CONFIG_FILE + ":ro", "-e",
+                    "SHARDINGSPHERE_MCP_CONFIG=" + CONTAINER_CONFIG_FILE));
+        }
+        result.add(imageName);
+        return result;
     }
     
     private Thread startOutputCollector(final Process process) {
@@ -140,6 +149,16 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
         if (!process.isAlive()) {
             return ReadinessResult.failed(null);
         }
+        if (0 == httpPort) {
+            try {
+                httpPort = queryPublishedPort();
+            } catch (final IOException ex) {
+                return ReadinessResult.retry(new IllegalStateException("Docker MCP HTTP published port is not available yet.", ex));
+            }
+            if (0 == httpPort) {
+                return ReadinessResult.retry(new IllegalStateException("Docker MCP HTTP published port has not been assigned yet."));
+            }
+        }
         MCPHttpInteractionClient result = new MCPHttpInteractionClient(URI.create("http://127.0.0.1:" + httpPort + "/mcp"), HttpClient.newHttpClient());
         try {
             result.open();
@@ -148,6 +167,37 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
             closeInteractionClientQuietly(result);
             return ReadinessResult.retry(new IllegalStateException("Docker MCP HTTP distribution is not ready yet.", ex));
         }
+    }
+    
+    private int queryPublishedPort() throws IOException, InterruptedException {
+        Process portQuery = new ProcessBuilder("docker", "port", containerName, "18088/tcp").redirectErrorStream(true).start();
+        try {
+            if (!portQuery.waitFor(PORT_QUERY_TIMEOUT_SECONDS, TimeUnit.SECONDS) || 0 != portQuery.exitValue()) {
+                return 0;
+            }
+            return parsePublishedPort(new String(portQuery.getInputStream().readAllBytes(), StandardCharsets.UTF_8)).orElse(0);
+        } finally {
+            if (portQuery.isAlive()) {
+                portQuery.destroyForcibly();
+            }
+        }
+    }
+    
+    static OptionalInt parsePublishedPort(final String output) {
+        for (String each : output.lines().toList()) {
+            int separatorIndex = each.lastIndexOf(':');
+            if (separatorIndex < 0 || separatorIndex == each.length() - 1) {
+                continue;
+            }
+            try {
+                int result = Integer.parseInt(each.substring(separatorIndex + 1).trim());
+                if (result > 0 && result <= 65535) {
+                    return OptionalInt.of(result);
+                }
+            } catch (final NumberFormatException ignored) {
+            }
+        }
+        return OptionalInt.empty();
     }
     
     private IllegalStateException createStartupFailure(final Exception cause, final int ignoredAttemptCount, final long ignoredElapsedMillis) {

@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.mcp.support.security;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
@@ -25,11 +28,16 @@ import java.util.Map;
 /**
  * MCP runtime protection policy.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPRuntimeProtectionPolicy {
     
     public static final int DEFAULT_MAX_TOOL_CALLS_PER_SESSION = 10000;
     
     public static final String MAX_TOOL_CALLS_PER_SESSION_PROPERTY = "shardingsphere.mcp.maxToolCallsPerSession";
+    
+    public static final int DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE = 600;
+    
+    public static final String MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY = "shardingsphere.mcp.maxCompletionRequestsPerMinute";
     
     public static final int DEFAULT_MAX_ROWS = 100;
     
@@ -39,17 +47,38 @@ public final class MCPRuntimeProtectionPolicy {
     
     public static final int MAX_TIMEOUT_MILLISECONDS = 300000;
     
-    private MCPRuntimeProtectionPolicy() {
-    }
-    
     /**
      * Get maximum tool calls per MCP session.
      *
      * @return maximum tool calls per MCP session
      */
     public static int getMaxToolCallsPerSession() {
-        Integer configuredValue = Integer.getInteger(MAX_TOOL_CALLS_PER_SESSION_PROPERTY, DEFAULT_MAX_TOOL_CALLS_PER_SESSION);
-        return configuredValue > 0 ? configuredValue : DEFAULT_MAX_TOOL_CALLS_PER_SESSION;
+        return getPositiveIntegerProperty(MAX_TOOL_CALLS_PER_SESSION_PROPERTY, DEFAULT_MAX_TOOL_CALLS_PER_SESSION);
+    }
+    
+    /**
+     * Get maximum completion requests per minute for one MCP session.
+     *
+     * @return maximum completion requests per minute
+     */
+    public static int getMaxCompletionRequestsPerMinute() {
+        return getPositiveIntegerProperty(MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY, DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE);
+    }
+    
+    private static int getPositiveIntegerProperty(final String propertyName, final int defaultValue) {
+        String configuredValue = System.getProperty(propertyName);
+        if (null == configuredValue) {
+            return defaultValue;
+        }
+        int result;
+        try {
+            result = Integer.parseInt(configuredValue);
+        } catch (final NumberFormatException ex) {
+            throw new IllegalArgumentException(String.format("System property `%s` must be a positive integer, but was `%s`.", propertyName, configuredValue), ex);
+        }
+        ShardingSpherePreconditions.checkState(result > 0,
+                () -> new IllegalArgumentException(String.format("System property `%s` must be a positive integer, but was `%s`.", propertyName, configuredValue)));
+        return result;
     }
     
     /**
@@ -72,9 +101,20 @@ public final class MCPRuntimeProtectionPolicy {
      * @return runtime protection payload
      */
     public static Map<String, Object> createRuntimeProtectionPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("tool_call_limit", createToolCallLimitPayload());
+        result.put("completion_rate_limit", createCompletionRateLimitPayload());
         result.put("sql_execution_limits", createSQLExecutionLimitsPayload());
+        return result;
+    }
+    
+    private static Map<String, Object> createCompletionRateLimitPayload() {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("scope", "session");
+        result.put("window_seconds", 60);
+        result.put("max_requests", getMaxCompletionRequestsPerMinute());
+        result.put("property", MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY);
+        result.put(MCPPayloadFieldNames.RECOVERY, "Retry after the current completion rate-limit window ends.");
         return result;
     }
     
@@ -91,7 +131,8 @@ public final class MCPRuntimeProtectionPolicy {
         result.put("maximum_value", MAX_ROWS_LIMIT);
         result.put("applied_field", "applied_max_rows");
         result.put("truncation_field", "truncated");
-        result.put(MCPPayloadFieldNames.RECOVERY, "Retry with a narrower SELECT, stronger WHERE clause, or smaller projection when rows are truncated.");
+        result.put(MCPPayloadFieldNames.RECOVERY, "For read-only queries, retry with a narrower SELECT, stronger WHERE clause, or smaller projection. "
+                + "If rows came from a side-effecting statement, do not replay that statement automatically; use a separate read-only query when more data is needed.");
         return result;
     }
     

@@ -45,8 +45,8 @@ public final class AgentBuilderFactory {
      * @param isEnhancedForProxy is enhanced for proxy
      * @return created agent builder
      */
-    public static AgentBuilder create(final Map<String, PluginConfiguration> pluginConfigs,
-                                      final Collection<JarFile> pluginJars, final Map<String, AdvisorConfiguration> advisorConfigs, final boolean isEnhancedForProxy) {
+    public static AgentBuilder create(final Map<String, PluginConfiguration> pluginConfigs, final Collection<JarFile> pluginJars, final Map<String, AdvisorConfiguration> advisorConfigs,
+                                      final boolean isEnhancedForProxy) {
         return new AgentBuilder.Default()
                 .with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())

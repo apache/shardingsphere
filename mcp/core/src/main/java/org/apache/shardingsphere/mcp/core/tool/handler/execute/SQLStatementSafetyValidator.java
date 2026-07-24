@@ -21,9 +21,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPLockingReadStatementException;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementSafetyValidator {
@@ -47,16 +55,44 @@ final class SQLStatementSafetyValidator {
         }
     }
     
-    void checkStructuredStatement(final SupportedMCPStatement statementClass, final SQLStatementStructure statementStructure) {
-        checkSideEffectingSelectInto(statementStructure);
-        checkLockingRead(statementClass, scanner.tokenize(statementStructure.mainSql()));
-        for (SQLCommonTableExpression each : statementStructure.commonTableExpressions()) {
-            checkStructuredStatement(resolveCommonTableExpressionStatementClass(each.statementStructure()), each.statementStructure());
+    void checkParsedStatement(final SQLStatement sqlStatement, final String sql) {
+        if (sqlStatement instanceof SelectStatement || findWithSegment(sqlStatement).isPresent()) {
+            checkLockingRead(scanner.tokenize(sql));
         }
+        checkParsedStatementTree(sqlStatement);
     }
     
-    private SupportedMCPStatement resolveCommonTableExpressionStatementClass(final SQLStatementStructure statementStructure) {
-        return "SELECT".equals(statementStructure.statementType()) && !statementStructure.containsDataModifyingCommonTableExpression() ? SupportedMCPStatement.QUERY : SupportedMCPStatement.DML;
+    private void checkParsedStatementTree(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            SelectStatement selectStatement = (SelectStatement) sqlStatement;
+            if (selectStatement.getInto().isPresent() || selectStatement.getOutfile().isPresent()) {
+                throw new MCPBannedSQLStatementException();
+            }
+            if (selectStatement.getLock().isPresent()) {
+                throw new MCPLockingReadStatementException();
+            }
+        }
+        findWithSegment(sqlStatement).ifPresent(with -> {
+            for (CommonTableExpressionSegment each : with.getCommonTableExpressions()) {
+                checkParsedStatementTree(each.getSubquery().getSelect());
+            }
+        });
+    }
+    
+    private Optional<WithSegment> findWithSegment(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return ((SelectStatement) sqlStatement).getWith();
+        }
+        if (sqlStatement instanceof InsertStatement) {
+            return ((InsertStatement) sqlStatement).getWith();
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            return ((UpdateStatement) sqlStatement).getWith();
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return ((DeleteStatement) sqlStatement).getWith();
+        }
+        return sqlStatement instanceof MergeStatement ? ((MergeStatement) sqlStatement).getWith() : Optional.empty();
     }
     
     private boolean isBannedCommand(final String upperSql, final String sql) {
@@ -65,7 +101,7 @@ final class SQLStatementSafetyValidator {
                 || upperSql.startsWith("COPY ")
                 || upperSql.startsWith("LOAD ")
                 || upperSql.startsWith("CALL ")
-                || scanner.containsMySQLExecutableComment(sql)
+                || scanner.containsExecutableComment(sql)
                 || scanner.containsUserVariableAssignment(sql)
                 || containsBannedDialectPattern(scanner.tokenize(sql));
     }
@@ -169,43 +205,12 @@ final class SQLStatementSafetyValidator {
         return true;
     }
     
-    private void checkLockingRead(final SupportedMCPStatement statementClass, final List<SQLStatementToken> tokens) {
-        if (SupportedMCPStatement.QUERY == statementClass && containsLockingReadClause(tokens)) {
-            throw new MCPLockingReadStatementException();
-        }
-    }
-    
-    private void checkSideEffectingSelectInto(final SQLStatementStructure statementStructure) {
-        if ("SELECT".equals(statementStructure.statementType()) && containsTopLevelKeyword(scanner.tokenize(statementStructure.mainSql()), "INTO")) {
-            throw new MCPBannedSQLStatementException();
-        }
-    }
-    
-    private boolean containsLockingReadClause(final List<SQLStatementToken> tokens) {
+    private void checkLockingRead(final List<SQLStatementToken> tokens) {
         for (int index = 0; index < tokens.size(); index++) {
             if (containsLockingReadForClause(tokens, index) || containsLockInShareModeClause(tokens, index)) {
-                return true;
+                throw new MCPLockingReadStatementException();
             }
         }
-        return false;
-    }
-    
-    private boolean containsTopLevelKeyword(final List<SQLStatementToken> tokens, final String keyword) {
-        int parenthesesDepth = 0;
-        for (SQLStatementToken each : tokens) {
-            if ("(".equals(each.text())) {
-                parenthesesDepth++;
-                continue;
-            }
-            if (")".equals(each.text())) {
-                parenthesesDepth--;
-                continue;
-            }
-            if (0 == parenthesesDepth && scanner.isKeyword(each, keyword)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private boolean containsLockingReadForClause(final List<SQLStatementToken> tokens, final int index) {
@@ -227,14 +232,20 @@ final class SQLStatementSafetyValidator {
     }
     
     private String extractStatementType(final String upperSql) {
-        if (upperSql.startsWith("START TRANSACTION")) {
-            return "START TRANSACTION";
+        if (upperSql.startsWith("SHOW RULES USED STORAGE UNIT")) {
+            return "SHOW RULES USED STORAGE UNIT";
         }
-        if (upperSql.startsWith("ROLLBACK TO SAVEPOINT")) {
-            return "ROLLBACK TO SAVEPOINT";
+        if (upperSql.startsWith("SHOW STORAGE UNITS")) {
+            return "SHOW STORAGE UNITS";
         }
-        if (upperSql.startsWith("RELEASE SAVEPOINT")) {
-            return "RELEASE SAVEPOINT";
+        if (upperSql.startsWith("SHOW DEFAULT SINGLE TABLE STORAGE UNIT")) {
+            return "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
+        }
+        if (upperSql.startsWith("SHOW SINGLE TABLES")) {
+            return "SHOW SINGLE TABLES";
+        }
+        if (upperSql.startsWith("SHOW SINGLE TABLE")) {
+            return "SHOW SINGLE TABLE";
         }
         return upperSql.split("\\s+")[0];
     }

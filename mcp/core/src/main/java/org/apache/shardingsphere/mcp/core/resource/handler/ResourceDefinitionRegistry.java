@@ -21,14 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
+import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
@@ -61,11 +61,11 @@ public final class ResourceDefinitionRegistry {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
-            String uriOrTemplate = each.getResourceUriTemplate();
-            ShardingSpherePreconditions.checkState(null != uriOrTemplate && !uriOrTemplate.isBlank(),
-                    () -> new IllegalArgumentException(String.format("Resource URI or URI template is required for `%s`.", each.getClass().getName())));
-            MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
-            result.put(new MCPUriPattern(uriOrTemplate), each);
+            String uriTemplate = each.getResourceUriTemplate();
+            ShardingSpherePreconditions.checkState(null != uriTemplate && !uriTemplate.isBlank(),
+                    () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
+            MCPRequestContextTypes.validateContextType(each.getContextType(), each.getClass());
+            result.put(new MCPUriPattern(uriTemplate), each);
         }
         return result;
     }
@@ -84,7 +84,7 @@ public final class ResourceDefinitionRegistry {
             Entry<MCPUriPattern, MCPResourceHandler<?>> current = entries.get(i);
             for (int j = i + 1; j < entries.size(); j++) {
                 Entry<MCPUriPattern, MCPResourceHandler<?>> other = entries.get(j);
-                ShardingSpherePreconditions.checkState(!current.getKey().isOverlaps(other.getKey()), () -> new IllegalArgumentException(
+                ShardingSpherePreconditions.checkState(!current.getKey().overlaps(other.getKey()), () -> new IllegalArgumentException(
                         String.format("Overlapping resource URI templates `%s` with `%s` and `%s`.",
                                 current.getKey().getPattern(), current.getValue().getClass().getName(), other.getValue().getClass().getName())));
             }
@@ -118,35 +118,27 @@ public final class ResourceDefinitionRegistry {
     /**
      * Dispatch resource URI to registered resource.
      *
-     * @param requestScope request scope
+     * @param requestContext request context
      * @param resourceUri resource URI
-     * @return handled response
+     * @return handled payload
      */
-    public static Optional<MCPResponse> dispatch(final MCPRequestScope requestScope, final String resourceUri) {
+    public static Optional<MCPSuccessPayload> dispatch(final MCPFeatureRuntimeRequestContext requestContext, final String resourceUri) {
         for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
-            Optional<MCPUriVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
+            Optional<MCPResourceURIVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
-                return Optional.of(dispatch(requestScope, each, matchedUriVariables.get()));
+                return Optional.of(dispatch(requestContext, each, matchedUriVariables.get()));
             }
         }
         return Optional.empty();
     }
     
-    private static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceDefinition resourceDefinition, final MCPUriVariables uriVariables) {
-        return dispatch(requestScope, resourceDefinition.getHandler(), uriVariables);
+    private static MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceDefinition resourceDefinition, final MCPResourceURIVariables uriVariables) {
+        return dispatch(requestContext, resourceDefinition.getHandler(), uriVariables);
     }
     
-    private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
-        return resourceHandler.handle(resourceHandler.getContextType().cast(requestScope), uriVariables);
-    }
-    
-    /**
-     * Get supported resources.
-     *
-     * @return supported resources
-     */
-    public static Collection<String> getSupportedResources() {
-        return REGISTERED_RESOURCE_DEFINITIONS.stream().map(each -> each.getUriPattern().getPattern()).toList();
+    private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceHandler<T> resourceHandler,
+                                                                            final MCPResourceURIVariables uriVariables) {
+        return resourceHandler.handle(resourceHandler.getContextType().cast(requestContext), uriVariables);
     }
     
     /**

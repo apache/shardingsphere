@@ -43,7 +43,6 @@ public final class MySQLComStmtPrepareOKPacket extends MySQLPacket {
     protected void write(final MySQLPacketPayload payload) {
         payload.writeInt1(STATUS);
         payload.writeInt4(statementId);
-        // TODO Column Definition Block should be added in future when the meta data of the columns is cached.
         payload.writeInt2(columnCount);
         payload.writeInt2(parameterCount);
         payload.writeReserved(1);

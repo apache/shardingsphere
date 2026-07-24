@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -34,88 +35,28 @@ class MCPDescriptorCatalogPayloadBuilderTest {
     
     @Test
     @SuppressWarnings("unchecked")
-    void assertBuildCatalogMetadataContractPayload() {
-        List<MCPResourceDescriptor> resourceDescriptors = List.of(
-                createResourceDescriptor("shardingsphere://capabilities", MCPResourceAnnotations.EMPTY),
-                createResourceDescriptor("shardingsphere://databases", MCPResourceAnnotations.EMPTY));
-        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(
-                createCatalog(resourceDescriptors, List.of(createToolDescriptor(new MCPToolAnnotations(null, false, true, false, true)))),
-                List.of("shardingsphere://capabilities"), List.of("database_gateway_test_tool"), List.of("SelectStatement"));
-        Map<String, Object> actualModelFirstSummary = (Map<String, Object>) payload.get("model_first_summary");
-        assertThat((Map<String, Object>) actualModelFirstSummary.get("official_discovery_methods"), is(createOfficialDiscoveryMethods()));
-        assertThat(actualModelFirstSummary.get("argument_completion_method"), is("completion/complete"));
-        assertThat(actualModelFirstSummary.get("optional_catalog_resource"), is("shardingsphere://capabilities"));
-        assertFalse(actualModelFirstSummary.containsKey("safe_first_resource"));
-        Map<String, Object> actualFieldNamingContract = (Map<String, Object>) payload.get("field_naming_contract");
-        assertThat((List<String>) actualFieldNamingContract.get("official_discovery_methods"), is(createOfficialDiscoveryMethodNames()));
-        assertThat(actualFieldNamingContract.get("argument_completion_method"), is("completion/complete"));
-        assertThat((List<String>) actualFieldNamingContract.get("catalog_fields"), is(List.of(
-                "supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability")));
-        assertFalse(payload.containsKey("protocol_fields"));
-    }
-    
-    @Test
-    @SuppressWarnings("unchecked")
-    void assertBuildResourceAnnotationsPayload() {
-        MCPResourceDescriptor emptyAnnotationsResource = createResourceDescriptor("shardingsphere://empty", MCPResourceAnnotations.EMPTY);
-        MCPResourceAnnotations priorityZeroAnnotations = new MCPResourceAnnotations(List.of("assistant"), 0D, null);
-        MCPResourceDescriptor priorityZeroResource = createResourceDescriptor("shardingsphere://priority-zero", priorityZeroAnnotations);
-        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(createCatalog(List.of(emptyAnnotationsResource, priorityZeroResource), List.of()), List.of(), List.of(), List.of());
-        List<Map<String, Object>> actualResources = (List<Map<String, Object>>) payload.get("resources");
-        assertFalse(actualResources.get(0).containsKey("annotations"));
-        assertThat((Map<String, Object>) actualResources.get(1).get("annotations"), is(Map.of("audience", List.of("assistant"), "priority", 0D)));
-    }
-    
-    @Test
-    @SuppressWarnings("unchecked")
-    void assertBuildResourceMetaPayload() {
-        Map<String, Object> meta = Map.of(MCPShardingSphereMetadataKeys.RESOURCE_KIND, "detail");
-        MCPResourceDescriptor resource = createResourceDescriptor("shardingsphere://runtime", MCPResourceAnnotations.EMPTY, meta);
-        MCPResourceDescriptor resourceTemplate = createResourceDescriptor("shardingsphere://databases/{database}", MCPResourceAnnotations.EMPTY, meta);
-        MCPDescriptorCatalog catalog = new MCPDescriptorCatalog(List.of(resource), List.of(resourceTemplate), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
-        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of(), List.of(), List.of());
-        Map<String, Object> actualResource = ((List<Map<String, Object>>) payload.get("resources")).get(0);
-        Map<String, Object> actualResourceTemplate = ((List<Map<String, Object>>) payload.get("resourceTemplates")).get(0);
-        assertFalse(actualResource.containsKey("meta"));
-        assertFalse(actualResourceTemplate.containsKey("meta"));
-        assertThat((Map<String, Object>) actualResource.get("_meta"), is(meta));
-        assertThat((Map<String, Object>) actualResourceTemplate.get("_meta"), is(meta));
-    }
-    
-    @Test
-    @SuppressWarnings("unchecked")
-    void assertBuildToolAnnotationsPayload() {
-        MCPToolDescriptor toolDescriptor = createToolDescriptor(new MCPToolAnnotations(null, false, true, false, true));
-        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(createCatalog(List.of(), List.of(toolDescriptor)), List.of(), List.of(), List.of());
-        List<Map<String, Object>> actualTools = (List<Map<String, Object>>) payload.get("tools");
-        assertThat((Map<String, Object>) actualTools.get(0).get("annotations"), is(Map.of(
-                "readOnlyHint", false,
-                "destructiveHint", true,
-                "idempotentHint", false,
-                "openWorldHint", true)));
-    }
-    
-    private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPToolDescriptor> toolDescriptors) {
-        return new MCPDescriptorCatalog(resourceDescriptors, List.of(), List.of(), toolDescriptors, List.of(), List.of(), List.of(), List.of(), List.of());
-    }
-    
-    private MCPResourceDescriptor createResourceDescriptor(final String uri, final MCPResourceAnnotations annotations) {
-        return createResourceDescriptor(uri, annotations, Map.of());
-    }
-    
-    private MCPResourceDescriptor createResourceDescriptor(final String uri, final MCPResourceAnnotations annotations, final Map<String, Object> meta) {
-        return new MCPResourceDescriptor(uri, "test-resource", "Test Resource", "Read a test resource.", "application/json", annotations, meta);
-    }
-    
-    private MCPToolDescriptor createToolDescriptor(final MCPToolAnnotations annotations) {
-        return new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.", Map.of(), Map.of(), annotations, Map.of());
-    }
-    
-    private Map<String, Object> createOfficialDiscoveryMethods() {
-        return Map.of("tools", "tools/list", "resources", "resources/list", "resource_templates", "resources/templates/list", "prompts", "prompts/list");
-    }
-    
-    private List<String> createOfficialDiscoveryMethodNames() {
-        return List.of("tools/list", "resources/list", "resources/templates/list", "prompts/list");
+    void assertBuildShardingSphereCapabilityPayload() {
+        MCPResourceDescriptor resourceTemplate = new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read a database.",
+                "application/json", MCPResourceAnnotations.EMPTY, Map.of());
+        MCPToolDescriptor tool = new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.", Map.of(), Map.of(), null, Map.of());
+        MCPCompletionTargetDescriptor completionTarget = new MCPCompletionTargetDescriptor("resource_template", resourceTemplate.getUriTemplate(), List.of("database"), 50,
+                Map.of(MCPShardingSphereMetadataKeys.REQUIRED_CONTEXT_ARGUMENTS, Map.of("database", List.of())));
+        MCPResourceNavigationDescriptor navigation = new MCPResourceNavigationDescriptor(resourceTemplate.getUriTemplate(), tool.getName(), List.of("database"), List.of("database"),
+                "Call the test tool after reading the database.");
+        MCPDescriptorCatalog catalog = new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(List.of(), List.of(resourceTemplate), List.of(tool), List.of()),
+                new MCPShardingSphereDescriptorCatalog(List.of(), List.of(), List.of(completionTarget), List.of(navigation), List.of()));
+        Map<String, Object> actual = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of("SelectStatement"));
+        assertThat(actual.keySet(), is(Set.of("response_mode", "supportedStatementClasses", "completionTargets", "resourceNavigation")));
+        assertThat(actual.get("response_mode"), is("catalog"));
+        assertThat(actual.get("supportedStatementClasses"), is(List.of("SelectStatement")));
+        Map<String, Object> actualCompletionTarget = ((List<Map<String, Object>>) actual.get("completionTargets")).getFirst();
+        assertThat(actualCompletionTarget.get("reference"), is(resourceTemplate.getUriTemplate()));
+        assertThat(actualCompletionTarget.get("meta"), is(completionTarget.getMeta()));
+        Map<String, Object> actualNavigation = ((List<Map<String, Object>>) actual.get("resourceNavigation")).getFirst();
+        assertThat(actualNavigation.get("from_type"), is("resource_template"));
+        assertThat(actualNavigation.get("to_type"), is("tool"));
+        assertFalse(actual.containsKey("resources"));
+        assertFalse(actual.containsKey("tools"));
+        assertFalse(actual.containsKey("protocolAvailability"));
     }
 }

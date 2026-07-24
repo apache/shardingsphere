@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Workflow MCP field names.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowFieldNames {
     
     public static final String ALGORITHM_TYPE = "algorithm_type";
     
-    public static final String ALLOW_INDEX_DDL = "allow_index_ddl";
+    public static final String APPROVED_STEPS = "approved_steps";
     
     public static final String ASSISTED_QUERY_ALGORITHM_PROPERTIES = "assisted_query_algorithm_properties";
     
@@ -70,8 +74,4 @@ public final class WorkflowFieldNames {
     
     public static final String TABLE = "table";
     
-    public static final String USER_OVERRIDES = "user_overrides";
-    
-    private WorkflowFieldNames() {
-    }
 }

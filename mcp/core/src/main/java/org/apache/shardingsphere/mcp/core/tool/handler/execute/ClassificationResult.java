@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -40,47 +41,35 @@ public final class ClassificationResult {
     
     private final Collection<String> referencedObjectNames;
     
+    @Getter(AccessLevel.NONE)
+    private final Collection<SQLStatementObjectName> referencedObjects;
+    
     private final String savepointName;
     
-    private final Optional<SupportedMCPStatement> analyzedStatementClass;
+    private final boolean ruleDistSQL;
     
-    /**
-     * Create statement classification result.
-     *
-     * @param statementClass statement class
-     * @param statementType statement type
-     * @param normalizedSql normalized SQL
-     * @param targetObjectName target object name
-     * @param savepointName savepoint name
-     */
-    public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName) {
-        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, null);
-    }
-    
-    /**
-     * Create statement classification result with the inner statement class analyzed by EXPLAIN ANALYZE.
-     *
-     * @param statementClass statement class
-     * @param statementType statement type
-     * @param normalizedSql normalized SQL
-     * @param targetObjectName target object name
-     * @param savepointName savepoint name
-     * @param analyzedStatementClass inner statement class analyzed by EXPLAIN ANALYZE
-     */
-    public ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
-                                final SupportedMCPStatement analyzedStatementClass) {
-        this(statementClass, statementType, normalizedSql, targetObjectName, savepointName, analyzedStatementClass, targetObjectName.isEmpty() ? List.of() : List.of(targetObjectName));
-    }
-    
-    ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String targetObjectName, final String savepointName,
-                         final SupportedMCPStatement analyzedStatementClass, final Collection<String> referencedObjectNames) {
+    ClassificationResult(final SupportedMCPStatement statementClass, final String statementType, final String normalizedSql, final String savepointName,
+                         final Collection<SQLStatementObjectName> referencedObjects, final boolean ruleDistSQL) {
         this.statementClass = statementClass;
         this.statementType = statementType;
         this.normalizedSql = normalizedSql;
-        this.targetObjectName = targetObjectName;
-        this.referencedObjectNames = referencedObjectNames;
+        targetObjectName = referencedObjects.isEmpty() ? "" : referencedObjects.iterator().next().getObjectName();
+        referencedObjectNames = createReferencedObjectNames(referencedObjects);
+        this.referencedObjects = referencedObjects;
         this.savepointName = savepointName;
-        this.analyzedStatementClass = Optional.ofNullable(analyzedStatementClass);
+        this.ruleDistSQL = ruleDistSQL;
+    }
+    
+    private Collection<String> createReferencedObjectNames(final Collection<SQLStatementObjectName> referencedObjects) {
+        Collection<String> result = new LinkedHashSet<>(referencedObjects.size(), 1F);
+        for (SQLStatementObjectName each : referencedObjects) {
+            result.add(each.getObjectName());
+        }
+        return result;
+    }
+    
+    Collection<SQLStatementObjectName> getReferencedObjects() {
+        return referencedObjects;
     }
     
     /**
@@ -101,7 +90,21 @@ public final class ClassificationResult {
         return savepointName.isEmpty() ? Optional.empty() : Optional.of(savepointName);
     }
     
-    String getTraceStatementMarker() {
-        return SupportedMCPStatement.TRANSACTION_CONTROL == statementClass || SupportedMCPStatement.SAVEPOINT == statementClass ? statementType : statementClass.name();
+    /**
+     * Get model-facing side-effect scope.
+     *
+     * @return side-effect scope
+     */
+    public String getSideEffectScope() {
+        if (isRuleDistSQL()) {
+            return "rule-metadata";
+        }
+        return switch (statementClass) {
+            case DML -> "physical-data";
+            case DDL -> "physical-structure";
+            case DCL -> "privilege-metadata";
+            case TRANSACTION_CONTROL, SAVEPOINT -> "transaction-state";
+            default -> "unknown-side-effect";
+        };
     }
 }

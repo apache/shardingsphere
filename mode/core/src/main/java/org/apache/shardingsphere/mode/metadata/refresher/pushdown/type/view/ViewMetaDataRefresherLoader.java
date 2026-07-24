@@ -54,14 +54,14 @@ public final class ViewMetaDataRefresherLoader {
      */
     public ShardingSphereTable loadCreatedView(final ShardingSphereDatabase database, final String logicDataSourceName,
                                                final String schemaName, final IdentifierValue viewIdentifierValue, final ConfigurationProperties props) throws SQLException {
-        String candidateViewName = TableRefreshUtils.getViewLoadCandidateName(database, viewIdentifierValue, props);
+        String candidateViewName = TableRefreshUtils.getViewLoadCandidateName(database, viewIdentifierValue);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         boolean singleTable = TableRefreshUtils.isSingleTable(candidateViewName, database);
         if (singleTable) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, candidateViewName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName,
-                database.getIdentifierContext());
+                database.getIdentifierContext(), database.getAllSchemas());
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(candidateViewName), database.getProtocolType(), material);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(candidateViewName));
         Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual view metadata '%s' failed.", candidateViewName);
@@ -89,14 +89,14 @@ public final class ViewMetaDataRefresherLoader {
      */
     public ShardingSphereSchema loadAlteredView(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName,
                                                 final IdentifierValue viewIdentifierValue, final String viewDefinition, final ConfigurationProperties props) throws SQLException {
-        String candidateViewName = TableRefreshUtils.getViewLoadCandidateName(database, viewIdentifierValue, props);
+        String candidateViewName = TableRefreshUtils.getViewLoadCandidateName(database, viewIdentifierValue);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         boolean singleTable = TableRefreshUtils.isSingleTable(candidateViewName, database);
         if (singleTable) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, candidateViewName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName,
-                database.getIdentifierContext());
+                database.getIdentifierContext(), database.getAllSchemas());
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(candidateViewName), database.getProtocolType(), material);
         Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(candidateViewName));
         ShardingSphereSchema result = new ShardingSphereSchema(schemaName, database.getProtocolType());

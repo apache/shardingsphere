@@ -12,14 +12,29 @@ weight = 3
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-RegisterStorageUnit ::=
+RegisterMigrationSourceStorageUnit ::=
   'REGISTER' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
-  StorageUnitName '('  'URL' '=' url ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
+  storageUnitName '(' (simpleSource | urlSource) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)? ')'
 
 storageUnitName ::=
   identifier
+
+simpleSource ::=
+  'HOST' '=' hostname ',' 'PORT' '=' port ',' 'DB' '=' dbName
+
+urlSource ::=
+  'URL' '=' url
+
+hostname ::=
+  string
+
+port ::=
+  int
+
+dbName ::=
+  string
 
 url ::=
   string
@@ -31,7 +46,7 @@ password ::=
   string
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' ( key  '=' value ) ( ',' key  '=' value )* ')'
+  'PROPERTIES' '(' (key '=' value (',' key '=' value)*)? ')'
 
 key ::=
   string
@@ -53,7 +68,7 @@ value ::=
 - `storageUnitName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头；
 - `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致，`value` 支持 int 和 String 类型；
 - 当 `password` 包含特殊字符时，建议使用 string 形式；例如 `password@123`的 string 形式为 `"password@123"`；
-- 数据迁移源存储单元暂时仅支持使用 `URL` 注册，暂时不支持使用 `HOST` 和 `PORT`。
+- 数据迁移源存储单元支持使用 `URL` 注册，也支持使用 `HOST`、`PORT` 和 `DB` 注册。
 
 ### 示例
 
@@ -62,6 +77,18 @@ value ::=
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
+    USER="root",
+    PASSWORD="123456"
+);
+```
+
+- 使用主机、端口和数据库名注册数据迁移源存储单元
+
+```sql
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="migration_ds_0",
     USER="root",
     PASSWORD="123456"
 );
@@ -80,7 +107,7 @@ REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
 
 ### 保留字
 
-`REGISTER`、`MIGRATION`、`SOURCE`、`STORAGE`、`UNIT`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`
+`REGISTER`、`MIGRATION`、`SOURCE`、`STORAGE`、`UNIT`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`、`HOST`、`PORT`、`DB`
 
 ### 相关链接
 

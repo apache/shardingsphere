@@ -65,7 +65,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.po
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CherryPickDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.TableRollbackDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -93,6 +96,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -148,6 +153,29 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
                 throw new IllegalArgumentException("[CLUSTERED INTO n BUCKETS] and [ORDER BY col_list] clauses can only be used with REBALANCE compaction");
             }
         }
+        if (null != ctx.cherryPickClause()) {
+            int numberStartIndex = ctx.cherryPickClause().NUMBER_().getSymbol().getStartIndex();
+            int numberStopIndex = ctx.cherryPickClause().NUMBER_().getSymbol().getStopIndex();
+            LiteralExpressionSegment snapshotId = new LiteralExpressionSegment(numberStartIndex, numberStopIndex,
+                    new NumberLiteralValue(ctx.cherryPickClause().NUMBER_().getText()).getValue());
+            result.cherryPickDefinition(new CherryPickDefinitionSegment(ctx.cherryPickClause().EXECUTE().getSymbol().getStartIndex(), numberStopIndex, snapshotId));
+        }
+        if (null != ctx.tableRollback()) {
+            int startIndex = ctx.tableRollback().EXECUTE().getSymbol().getStartIndex();
+            if (null != ctx.tableRollback().string_()) {
+                int stringStartIndex = ctx.tableRollback().string_().getStart().getStartIndex();
+                int stringStopIndex = ctx.tableRollback().string_().getStop().getStopIndex();
+                LiteralExpressionSegment timestamp = new LiteralExpressionSegment(stringStartIndex, stringStopIndex,
+                        new StringLiteralValue(ctx.tableRollback().string_().getText()).getValue());
+                result.tableRollbackDefinition(new TableRollbackDefinitionSegment(startIndex, stringStopIndex, timestamp, null));
+            } else {
+                int numberStartIndex = ctx.tableRollback().NUMBER_().getSymbol().getStartIndex();
+                int numberStopIndex = ctx.tableRollback().NUMBER_().getSymbol().getStopIndex();
+                LiteralExpressionSegment snapshotId = new LiteralExpressionSegment(numberStartIndex, numberStopIndex,
+                        new NumberLiteralValue(ctx.tableRollback().NUMBER_().getText()).getValue());
+                result.tableRollbackDefinition(new TableRollbackDefinitionSegment(startIndex, numberStopIndex, null, snapshotId));
+            }
+        }
         return result.build();
     }
     
@@ -187,12 +215,21 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
                 }
             }
         }
+        SelectStatement selectStatement = null;
+        if (null != ctx.select()) {
+            HiveDMLStatementVisitor dmlVisitor = new HiveDMLStatementVisitor(getDatabaseType());
+            ASTNode selectNode = dmlVisitor.visit(ctx.select());
+            if (selectNode instanceof SelectStatement) {
+                selectStatement = (SelectStatement) selectNode;
+            }
+        }
         return CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.createTableCommonClause().tableNameWithDb()))
                 .ifNotExists(null != ctx.createTableCommonClause().ifNotExists())
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
+                .selectStatement(selectStatement)
                 .build();
     }
     

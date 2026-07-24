@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -58,6 +59,16 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
+    void assertResolveResourceKind() {
+        assertThat(MCPDescriptorCatalogIndex.resolveResourceKind("shardingsphere://workflows/plan-1"), is("workflow-plan"));
+    }
+    
+    @Test
+    void assertResolveUnknownResourceKind() {
+        assertThat(MCPDescriptorCatalogIndex.resolveResourceKind("shardingsphere://unknown"), is("resource"));
+    }
+    
+    @Test
     void assertGetToolDescriptors() {
         Collection<MCPToolDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getToolDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "database_gateway_apply_workflow".equals(each.getName())));
@@ -87,14 +98,41 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
-    void assertFindToolRuntimeDescriptor() {
-        assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("database_gateway_apply_workflow")
-                .filter(optional -> "apply".equals(optional.getWorkflowRole()) && optional.getSideEffectScope().contains("rule-metadata")).isPresent());
+    void assertFindToolRuntimeDescriptorWithoutRuntimeMetadata() {
+        assertFalse(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("database_gateway_validate_workflow").isPresent());
     }
     
     @Test
     void assertFindToolRuntimeDescriptorWithUnknownTool() {
         assertFalse(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("unknown_tool").isPresent());
+    }
+    
+    @Test
+    void assertFindPlanningToolNameByWorkflowKind() {
+        assertThat(MCPDescriptorCatalogIndex.findPlanningToolNameByWorkflowKind("encrypt.rule").orElseThrow(), is("database_gateway_plan_encrypt_rule"));
+    }
+    
+    @Test
+    void assertFindPlanningToolNameByUnknownWorkflowKind() {
+        assertFalse(MCPDescriptorCatalogIndex.findPlanningToolNameByWorkflowKind("unknown.rule").isPresent());
+    }
+    
+    @Test
+    void assertFindWorkflowKindsByGenericPromptCompletionTarget() {
+        MCPCompletionTargetDescriptor descriptor = new MCPCompletionTargetDescriptor("prompt", "recover_workflow", List.of("plan_id"), 50, Map.of());
+        assertTrue(MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(descriptor).isEmpty());
+    }
+    
+    @Test
+    void assertFindWorkflowKindsByPlanningPromptCompletionTarget() {
+        MCPCompletionTargetDescriptor descriptor = new MCPCompletionTargetDescriptor("prompt", "configure_encryption", List.of("database"), 50, Map.of());
+        assertThat(MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(descriptor), is(List.of("encrypt.rule")));
+    }
+    
+    @Test
+    void assertFindWorkflowKindsByResourceCompletionTarget() {
+        MCPCompletionTargetDescriptor descriptor = new MCPCompletionTargetDescriptor("resource", "shardingsphere://workflows/{plan_id}", List.of("plan_id"), 50, Map.of());
+        assertTrue(MCPDescriptorCatalogIndex.findWorkflowKindsByCompletionTarget(descriptor).isEmpty());
     }
     
     @Test
@@ -127,14 +165,20 @@ class MCPDescriptorCatalogIndexTest {
     
     @Test
     void assertCreateCapabilityPayload() {
-        Map<String, Object> actual = MCPDescriptorCatalogIndex.createCapabilityPayload(List.of("shardingsphere://workflows/{plan_id}"), List.of("database_gateway_apply_workflow"), List.of("SELECT"));
-        assertThat(actual.get("supportedResources"), is(List.of("shardingsphere://workflows/{plan_id}")));
-        assertThat(actual.get("supportedTools"), is(List.of("database_gateway_apply_workflow")));
+        Map<String, Object> actual = MCPDescriptorCatalogIndex.createCapabilityPayload(List.of("SELECT"));
         assertThat(actual.get("supportedStatementClasses"), is(List.of("SELECT")));
+        assertTrue(actual.containsKey("completionTargets"));
+        assertTrue(actual.containsKey("resourceNavigation"));
+        assertFalse(actual.containsKey("resources"));
+        assertFalse(actual.containsKey("tools"));
+        assertFalse(actual.containsKey("fingerprints"));
     }
     
     @Test
-    void assertGetDescriptorCatalogFingerprint() {
-        assertFalse(MCPDescriptorCatalogIndex.getDescriptorCatalogFingerprint().isEmpty());
+    void assertCreateGuidancePayload() {
+        Map<String, Object> actual = MCPDescriptorCatalogIndex.createGuidancePayload();
+        assertThat(actual.get("response_mode"), is("guidance"));
+        assertTrue(actual.containsKey("discovery"));
+        assertTrue(actual.containsKey("model_contract"));
     }
 }

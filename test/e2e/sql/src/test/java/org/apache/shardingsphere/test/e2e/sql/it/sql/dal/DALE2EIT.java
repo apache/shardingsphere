@@ -58,14 +58,10 @@ class DALE2EIT implements SQLE2EIT {
     
     private SQLE2EEnvironmentEngine environmentEngine;
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws SQLException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         assertExecute(context);
     }

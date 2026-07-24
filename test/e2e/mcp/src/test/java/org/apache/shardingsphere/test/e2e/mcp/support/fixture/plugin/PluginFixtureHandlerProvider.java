@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,5 +38,10 @@ public final class PluginFixtureHandlerProvider implements MCPHandlerProvider {
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
         return List.of(new PluginFixtureStatusResourceHandler());
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of();
     }
 }

@@ -18,22 +18,18 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 
 /**
  * Metadata introspection SQL statement exception.
  */
 @Getter
-public final class MetadataIntrospectionSQLStatementException extends IllegalArgumentException {
+public final class MetadataIntrospectionSQLStatementException extends MCPInvalidRequestException {
     
     private static final long serialVersionUID = -1603782806267446414L;
     
     private final String statementType;
     
-    /**
-     * Create a metadata introspection SQL statement exception.
-     *
-     * @param statementType statement type
-     */
     public MetadataIntrospectionSQLStatementException(final String statementType) {
         super("Metadata introspection SQL should use MCP metadata resources.");
         this.statementType = statementType;

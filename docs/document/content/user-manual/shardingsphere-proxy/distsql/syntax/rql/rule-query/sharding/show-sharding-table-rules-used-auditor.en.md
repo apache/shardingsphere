@@ -41,7 +41,7 @@ databaseName ::=
 
 ### Example
 
-- Query sharding table rules for the specified sharding auditor in spicified logical database
+- Query sharding table rules for the specified sharding auditor in specified logical database
 
 ```sql
 SHOW SHARDING TABLE RULES USED AUDITOR sharding_key_required_auditor FROM sharding_db;

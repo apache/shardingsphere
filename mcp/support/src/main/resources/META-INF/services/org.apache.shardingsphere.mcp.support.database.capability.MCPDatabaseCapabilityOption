@@ -22,7 +22,6 @@ org.apache.shardingsphere.mcp.support.database.capability.dialect.SQLServerMCPDa
 org.apache.shardingsphere.mcp.support.database.capability.dialect.MariaDBMCPDatabaseCapabilityOption
 org.apache.shardingsphere.mcp.support.database.capability.dialect.OracleMCPDatabaseCapabilityOption
 org.apache.shardingsphere.mcp.support.database.capability.dialect.ClickHouseMCPDatabaseCapabilityOption
-org.apache.shardingsphere.mcp.support.database.capability.dialect.DorisMCPDatabaseCapabilityOption
 org.apache.shardingsphere.mcp.support.database.capability.dialect.HiveMCPDatabaseCapabilityOption
 org.apache.shardingsphere.mcp.support.database.capability.dialect.PrestoMCPDatabaseCapabilityOption
 org.apache.shardingsphere.mcp.support.database.capability.dialect.FirebirdMCPDatabaseCapabilityOption

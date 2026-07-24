@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatCom
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
-import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,6 +36,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -56,7 +56,7 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(2);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"),
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response"));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(Map.of("error_code", "tool_failed"));
@@ -64,7 +64,7 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("missing_required_tool_coverage"));
-        verify(getLLMChatClient(), times(2)).complete(anyList(), anyList(), eq("required"), eq(false));
+        verify(getLLMChatClient(), times(2)).complete(anyList(), anyList(), eq("auto"), eq(false));
     }
     
     @Test
@@ -72,17 +72,16 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(3);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
-                new LLMChatCompletion("not-json", List.of(), "invalid-final-response-1"),
-                new LLMChatCompletion("still-not-json", List.of(), "invalid-final-response-2"));
+                new LLMChatCompletion("not-json", List.of(), "invalid-final-response"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("invalid_final_json"));
-        assertThat(actual.getRawModelOutputs(), is(List.of("tool-call-response", "invalid-final-response-1", "invalid-final-response-2")));
+        assertThat(actual.getRawModelOutputs(), is(List.of("tool-call-response", "invalid-final-response")));
         verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).close();
     }
@@ -92,13 +91,14 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenThrow(new IOException("boom"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("mcp_runtime_unavailable"));
+        assertThat(actual.getAssertionReport().getMessage(), is("MCP action `database_gateway_execute_query` failed: boom"));
     }
     
     @Test
@@ -110,19 +110,60 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("mcp_runtime_unavailable"));
+        assertThat(actual.getAssertionReport().getMessage(), is("MCP runtime failed to initialize."));
         verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).close();
+    }
+    
+    @Test
+    void assertRunWithMcpRuntimeInitializationFailure() throws IOException, InterruptedException {
+        doThrow(new IllegalStateException("Failed to initialize MCP session.")).when(getMCPInteractionClient()).open();
+        
+        LLME2EArtifactBundle actual = createRunner(1).run(createScenario(List.of("database_gateway_execute_query")));
+        
+        assertThat(actual.getAssertionReport().getFailureType(), is("mcp_runtime_unavailable"));
+        assertThat(actual.getAssertionReport().getMessage(), is("MCP runtime failed to initialize."));
+    }
+    
+    @Test
+    void assertRunWithInterruptedMcpOpen() throws IOException, InterruptedException {
+        doThrow(new InterruptedException("boom")).when(getMCPInteractionClient()).open();
+        try {
+            LLME2EArtifactBundle actual = createRunner(1).run(createScenario(List.of("database_gateway_execute_query")));
+            
+            assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
+            assertTrue(Thread.currentThread().isInterrupted());
+        } finally {
+            Thread.interrupted();
+        }
+    }
+    
+    @Test
+    void assertRunWithInterruptedMcpAction() throws IOException, InterruptedException {
+        Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
+                createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
+        when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenThrow(new InterruptedException("boom"));
+        try {
+            LLME2EArtifactBundle actual = createRunner(1).run(createScenario(List.of("database_gateway_execute_query")));
+            
+            assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
+            assertTrue(Thread.currentThread().isInterrupted());
+        } finally {
+            Thread.interrupted();
+        }
     }
     
     @Test
     void assertRunWithModelRequestIOException() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenThrow(new IOException("http 500"));
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenThrow(new IOException("http 500"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
+        assertThat(actual.getAssertionReport().getMessage(), is("Model service request failed: http 500"));
         verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).close();
     }
@@ -131,7 +172,7 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     void assertRunWithInterruptedConversation() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenThrow(new InterruptedException("boom"));
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenThrow(new InterruptedException("boom"));
         try {
             LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
             
@@ -146,20 +187,28 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     void assertRunWithModelServiceUnavailable() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        doThrow(new IllegalStateException("Model service is not ready for `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`.")).when(getLLMChatClient()).waitUntilReady();
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenThrow(
+                new IllegalStateException("Model service is not ready for `ggml-org/Qwen3-1.7B-GGUF:Q4_K_M`."));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
-        verify(getMCPInteractionClient(), never()).open();
+        verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient()).close();
+    }
+    
+    @Test
+    void assertRunClassifiesModelFailureBySource() throws IOException, InterruptedException {
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenThrow(new IllegalStateException("MCP-shaped model failure."));
+        LLME2EArtifactBundle actual = createRunner(1).run(createScenario(List.of("database_gateway_execute_query")));
+        assertThat(actual.getAssertionReport().getFailureType(), is("model_service_unavailable"));
     }
     
     @Test
     void assertRunIgnoresCloseIOException() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response"));
         doThrow(new IOException("close failed")).when(getMCPInteractionClient()).close();
         
@@ -173,7 +222,7 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     void assertRunRestoresInterruptOnCloseFailure() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response"));
         doThrow(new InterruptedException("close interrupted")).when(getMCPInteractionClient()).close();
         try {
@@ -190,7 +239,7 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     void assertRunWithUnexpectedTool() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 new LLMChatCompletion("", List.of(new LLMToolCall("tool-1", "unsupported_tool", "{}")), "tool-call-response"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
@@ -206,13 +255,13 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     void assertRunWithInvalidToolArgumentsJson() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 new LLMChatCompletion("", List.of(new LLMToolCall("tool-1", "database_gateway_execute_query", "{invalid")), "tool-call-response"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("invalid_tool_arguments"));
-        assertThat(actual.getInteractionTrace().get(0).getTargetName(), is("database_gateway_execute_query"));
+        assertThat(actual.getInteractionTrace().getFirst().getTargetName(), is("database_gateway_execute_query"));
         verify(getMCPInteractionClient()).open();
         verify(getMCPInteractionClient(), never()).call(anyString(), anyMap());
         verify(getMCPInteractionClient()).close();
@@ -222,37 +271,21 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     void assertRunWithEmptyResourceUri() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.READ_RESOURCE));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", MCPInteractionActionNames.READ_RESOURCE, Map.of("uri", "   "), "tool-call-response"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("invalid_tool_arguments"));
-        assertThat(actual.getInteractionTrace().get(0).getActionKind(), is(MCPInteractionActionNames.RESOURCE_READ_KIND));
+        assertThat(actual.getInteractionTrace().getFirst().getActionKind(), is(MCPInteractionActionNames.RESOURCE_READ_KIND));
         verify(getMCPInteractionClient(), never()).readResource(anyString());
-    }
-    
-    @Test
-    void assertRunWithUnsafeSqlAttempted() throws IOException, InterruptedException {
-        LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
-        LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "database_gateway_execute_query",
-                        Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "sql", "UPDATE orders SET status = 'DONE'"),
-                        "tool-call-response"));
-        
-        LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
-        
-        assertThat(actual.getAssertionReport().getFailureType(), is("unsafe_sql_attempted"));
-        assertThat(actual.getInteractionTrace().get(0).getTargetName(), is("database_gateway_execute_query"));
-        verify(getMCPInteractionClient(), never()).call(anyString(), anyMap());
     }
     
     @Test
     void assertRunWithUnsafeExecuteUpdateAttempted() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_update"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", "database_gateway_execute_update",
                         Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "sql", "UPDATE orders SET status = 'DONE'", "execution_mode", "execute"),
                         "tool-call-response"));
@@ -260,7 +293,7 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("unsafe_sql_execution_attempted"));
-        assertThat(actual.getInteractionTrace().get(0).getTargetName(), is("database_gateway_execute_update"));
+        assertThat(actual.getInteractionTrace().getFirst().getTargetName(), is("database_gateway_execute_update"));
         verify(getMCPInteractionClient(), never()).call(anyString(), anyMap());
     }
     
@@ -268,13 +301,13 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
     void assertRunWithUnsafeWorkflowExecutionAttempted() throws IOException, InterruptedException {
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_apply_workflow"));
         LLMMCPConversationRunner actualRunner = createRunner(1);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", "database_gateway_apply_workflow", Map.of("plan_id", "plan-1", "execution_mode", "review-then-execute"), "tool-call-response"));
         
         LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), is("unsafe_workflow_execution_attempted"));
-        assertThat(actual.getInteractionTrace().get(0).getTargetName(), is("database_gateway_apply_workflow"));
+        assertThat(actual.getInteractionTrace().getFirst().getTargetName(), is("database_gateway_apply_workflow"));
         verify(getMCPInteractionClient(), never()).call(anyString(), anyMap());
     }
     
@@ -284,7 +317,7 @@ class LLMMCPConversationRunnerFailureTest extends AbstractLLMMCPConversationRunn
         LLME2EScenario actualScenario = createScenario(List.of("database_gateway_execute_query"));
         LLMMCPConversationRunner actualRunner = createRunner(2);
         Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
-        when(getLLMChatClient().complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
+        when(getLLMChatClient().complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
                 createToolCallCompletion("tool-1", "database_gateway_execute_query", executeQueryArguments, "tool-call-response"));
         when(getMCPInteractionClient().call("database_gateway_execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(getLLMChatClient().complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(

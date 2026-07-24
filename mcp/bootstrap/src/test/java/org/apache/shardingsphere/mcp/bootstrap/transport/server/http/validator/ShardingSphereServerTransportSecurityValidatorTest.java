@@ -17,58 +17,127 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 
-import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.spec.HttpHeaders;
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.OriginHeaderConstraint;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.ProtocolVersionHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class ShardingSphereServerTransportSecurityValidatorTest {
     
     @Test
-    void assertValidateHeadersWithMatchedSessionAttribution() {
+    void assertValidateHeadersWithMatchedSessionIdentity() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
-        sessionManager.createSession("session-1");
-        sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("subject", "gateway", Map.of()));
-        ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(),
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "subject", "gateway", Map.of()));
+        ShardingSphereServerTransportSecurityValidator actual = createValidator(sessionManager,
                 new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
         assertDoesNotThrow(() -> actual.validateHeaders(Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("subject"),
                 "X-Test-Source", List.of("gateway"))));
     }
     
     @Test
-    void assertValidateHeadersWithMismatchedSessionAttribution() {
+    void assertValidateHeadersWithMismatchedSessionIdentity() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
-        sessionManager.createSession("session-1");
-        sessionManager.bindSessionAttribution("session-1", new MCPSessionAttribution("subject", "gateway", Map.of()));
-        ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(),
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "subject", "gateway", Map.of()));
+        ShardingSphereServerTransportSecurityValidator actual = createValidator(sessionManager,
                 new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
-        ServerTransportSecurityException exception = assertThrows(ServerTransportSecurityException.class, () -> actual.validateHeaders(
+        MCPTransportSecurityException exception = assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(
                 Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("other"), "X-Test-Source", List.of("gateway"))));
-        assertThat(exception.getMessage(), is("Session attribution does not match existing binding for session `session-1`."));
+        assertThat(exception.getStatusCode(), is(400));
+        assertThat(exception.getMessage(), is("Session attribution does not match this MCP session."));
+        assertThat(exception.getCategory(), is("session_attribution_mismatch"));
     }
     
     @Test
-    void assertValidateHeadersWithUnboundSessionAttribution() {
+    void assertValidateHeadersWithChangedSource() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
-        sessionManager.createSession("session-1");
-        ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(),
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "subject", "gateway", Map.of()));
+        ShardingSphereServerTransportSecurityValidator actual = createValidator(sessionManager,
                 new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
-        ServerTransportSecurityException exception = assertThrows(ServerTransportSecurityException.class, () -> actual.validateHeaders(
-                Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"))));
+        assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"),
+                "X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("other"))));
+    }
+    
+    @Test
+    void assertValidateHeadersWithMissingSubject() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "subject", "gateway", Map.of()));
+        ShardingSphereServerTransportSecurityValidator actual = createValidator(sessionManager,
+                new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
+        MCPTransportSecurityException exception = assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(
+                Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Source", List.of("gateway"))));
         assertThat(exception.getStatusCode(), is(400));
-        assertThat(exception.getMessage(), is("Session attribution is not bound for session `session-1`."));
-        assertThat(sessionManager.findSessionAttribution("session-1"), is(Optional.empty()));
+        assertThat(exception.getMessage(), is("Session attribution does not match this MCP session."));
+        assertThat(exception.getCategory(), is("session_attribution_mismatch"));
+    }
+    
+    @Test
+    void assertValidateHeadersWithChangedAttributes() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "subject", "gateway", Map.of("region", "ap-south")));
+        ShardingSphereServerTransportSecurityValidator actual = createValidator(sessionManager,
+                new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
+        assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"),
+                "X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"), "X-Test-Attr-Region", List.of("eu-west"))));
+    }
+    
+    @Test
+    void assertValidateHeadersWithSubjectAddedToUnattributedSession() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
+        ShardingSphereServerTransportSecurityValidator actual = createValidator(sessionManager,
+                new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
+        assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(
+                Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"))));
+    }
+    
+    @Test
+    void assertValidateHeadersWithMissingSession() {
+        ShardingSphereServerTransportSecurityValidator actual = createValidator(new MCPSessionManager(Map.of()),
+                new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
+        assertDoesNotThrow(() -> actual.validateHeaders(
+                Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), "X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"))));
+    }
+    
+    @Test
+    void assertValidateHeadersWithUnknownSessionSkipsProtocolValidation() {
+        ProtocolVersionHeaderConstraint protocolVersionHeaderConstraint = mock(ProtocolVersionHeaderConstraint.class);
+        ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(new MCPSessionManager(Map.of()),
+                mock(OriginHeaderConstraint.class), protocolVersionHeaderConstraint, new SessionAttributionResolver(null));
+        assertDoesNotThrow(() -> actual.validateHeaders(Map.of(HttpHeaders.MCP_SESSION_ID, List.of("session-1"), HttpHeaders.PROTOCOL_VERSION, List.of("version"))));
+        verifyNoInteractions(protocolVersionHeaderConstraint);
+    }
+    
+    @Test
+    void assertValidateOriginBeforeSessionIdentity() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "subject", "gateway", Map.of()));
+        ShardingSphereServerTransportSecurityValidator actual = new ShardingSphereServerTransportSecurityValidator(sessionManager, new OriginHeaderConstraint(true),
+                mock(ProtocolVersionHeaderConstraint.class),
+                new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-")));
+        MCPTransportSecurityException exception = assertThrows(MCPTransportSecurityException.class, () -> actual.validateHeaders(Map.of(
+                "Origin", List.of("https://example.com"), HttpHeaders.MCP_SESSION_ID, List.of("session-1"),
+                "X-Test-Subject", List.of("other"), "X-Test-Source", List.of("gateway"))));
+        assertThat(exception.getStatusCode(), is(403));
+        assertThat(exception.getCategory(), is(MCPTransportSecurityException.CATEGORY_ORIGIN_NOT_ALLOWED));
+    }
+    
+    private ShardingSphereServerTransportSecurityValidator createValidator(final MCPSessionManager sessionManager,
+                                                                           final SessionAttributionResolver sessionAttributionResolver) {
+        return new ShardingSphereServerTransportSecurityValidator(sessionManager, mock(OriginHeaderConstraint.class), mock(ProtocolVersionHeaderConstraint.class),
+                sessionAttributionResolver);
     }
 }

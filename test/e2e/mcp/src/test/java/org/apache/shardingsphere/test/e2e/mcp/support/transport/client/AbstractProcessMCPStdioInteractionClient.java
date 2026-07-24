@@ -121,11 +121,11 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
                     + MCPInteractionPayloads.getJsonRpcErrorPayload(initializePayload).get("message")
                     + ".");
         }
-        Map<String, Object> initializeResult = MCPInteractionPayloads.getJsonRpcResult(initializePayload);
+        Map<String, Object> initializeResult = MCPInteractionPayloads.getRequiredJsonRpcResult(initializePayload);
         if (!MCPInteractionProtocolSupport.PROTOCOL_VERSION.equals(initializeResult.get("protocolVersion"))) {
             throw createRuntimeFailureException("Unexpected STDIO MCP protocol version: " + initializeResult + ".");
         }
-        notifyServer("notifications/initialized", Map.of());
+        sendNotification("notifications/initialized", Map.of());
     }
     
     private Thread startStdErrorCollector(final Process process, final List<String> stdErrorMessages) {
@@ -145,7 +145,8 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
         }
     }
     
-    private void notifyServer(final String method, final Map<String, Object> params) throws IOException {
+    @Override
+    protected final void sendNotification(final String method, final Map<String, Object> params) throws IOException {
         writeJsonRpcMessage(MCPInteractionProtocolSupport.createJsonRpcNotification(method, params));
     }
     

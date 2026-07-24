@@ -61,7 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.sql.SQLException;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * COM_STMT_PREPARE command executor for MySQL.
@@ -87,7 +86,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
         int statementId = MySQLStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext(), new CopyOnWriteArrayList<>());
+        MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         return createPackets(sqlStatementContext, statementId, serverPreparedStatement);
     }
@@ -132,7 +131,6 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         MySQLColumnDefinition41Packet defaultColumnPacket = null;
         Collection<ParameterMarkerSegment> parameterMarkerSegments = sqlStatementContext.getSqlStatement().getParameterMarkers();
         Collection<MySQLPacket> result = new ArrayList<>(parameterMarkerSegments.size());
-        Collection<Integer> paramColumnDefinitionFlags = new ArrayList<>(parameterMarkerSegments.size());
         Collection<MySQLBinaryColumnType> parameterColumnTypes = new ArrayList<>(parameterMarkerSegments.size());
         for (int index = 0; index < parameterMarkerSegments.size(); index++) {
             ShardingSphereColumn column = null;
@@ -143,18 +141,15 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
                 int columnDefinitionFlag = calculateColumnDefinitionFlag(column);
                 result.add(createMySQLColumnDefinition41PacketByCache(characterSet, columnPacketCache, column, columnDefinitionFlag));
                 MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(column.getDataType());
-                paramColumnDefinitionFlags.add(columnDefinitionFlag);
                 parameterColumnTypes.add(columnType);
             } else {
                 if (null == defaultColumnPacket) {
                     defaultColumnPacket = createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING);
                 }
                 result.add(defaultColumnPacket);
-                paramColumnDefinitionFlags.add(0);
                 parameterColumnTypes.add(MySQLBinaryColumnType.NULL);
             }
         }
-        serverPreparedStatement.getParameterColumnDefinitionFlags().addAll(paramColumnDefinitionFlags);
         serverPreparedStatement.getParameterColumnTypes().addAll(parameterColumnTypes);
         return result;
     }

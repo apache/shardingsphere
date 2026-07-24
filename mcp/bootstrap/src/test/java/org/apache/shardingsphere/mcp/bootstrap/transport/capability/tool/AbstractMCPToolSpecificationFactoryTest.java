@@ -17,19 +17,26 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import io.modelcontextprotocol.spec.McpSchema.TextContent;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.mockito.MockedStatic;
@@ -50,7 +57,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -110,16 +116,34 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     }
     
     protected void mockToolDispatch(final MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry, final MCPToolDefinition toolDefinition,
-                                    final Map<String, Object> arguments, final MCPResponse response) {
-        mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq(toolDefinition), eq("session-id"), eq(arguments)))
+                                    final Map<String, Object> arguments, final MCPSuccessPayload response) {
+        mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), eq(arguments)))
                 .thenReturn(response);
     }
     
-    protected MCPRuntimeContext createRuntimeContext(final String activeTransport) {
-        MCPRuntimeContext result = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
-        when(result.getActiveTransport()).thenReturn(activeTransport);
+    protected MCPRuntimeContext createRuntimeContext(final MCPTransportType activeTransport) {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession(new MCPSessionIdentity("session-id", "", "", Map.of()));
+        return new MCPRuntimeContext(sessionManager, mock(MCPDatabaseCapabilityProvider.class), activeTransport);
+    }
+    
+    protected SyncToolSpecification createToolSpecification(final MCPTransportType activeTransport) {
+        return createToolSpecification(createRuntimeContext(activeTransport));
+    }
+    
+    protected SyncToolSpecification createToolSpecification(final MCPRuntimeContext runtimeContext) {
+        return new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().getFirst();
+    }
+    
+    protected McpSyncServerExchange createExchange() {
+        McpSyncServerExchange result = mock(McpSyncServerExchange.class);
+        when(result.sessionId()).thenReturn("session-id");
         return result;
+    }
+    
+    protected CallToolResult callTool(final SyncToolSpecification toolSpecification, final McpSyncServerExchange exchange, final String toolName,
+                                      final Map<String, Object> arguments) {
+        return toolSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, arguments));
     }
     
     protected void assertStructuredFallback(final CallToolResult actual, final String expectedReason, final boolean expectedFormMode, final boolean expectedUrlMode,
@@ -154,16 +178,16 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         return (Map<String, Object>) actual.structuredContent();
     }
     
-    protected CallToolResult createCallToolResult(final String toolName, final MCPResponse response) {
+    protected Map<String, Object> getTextContentPayload(final CallToolResult actual) {
+        return JsonUtils.fromJsonString(((TextContent) actual.content().getFirst()).text(), new TypeReference<>() {
+        });
+    }
+    
+    protected CallToolResult createCallToolResult(final String toolName, final MCPSuccessPayload response) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema(toolName));
             mockToolDispatch(mockedToolDefinitionRegistry, toolDefinition, Map.of(), response);
-            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
-            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
-            McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
-            when(exchange.sessionId()).thenReturn("session-id");
-            return actualSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, Map.of()));
+            return callTool(createToolSpecification(createRuntimeContext(MCPTransportType.HTTP)), createExchange(), toolName, Map.of());
         }
     }
     
@@ -223,7 +247,8 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         properties.put("object_types", Map.of("type", "array", "description", "Optional object-type filter.",
                 "items", Map.of("type", "string", "description", "Object type.", "enum", List.of("TABLE", "VIEW"))));
         return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", createInputSchema(properties, List.of("query")),
-                Map.of("type", "object"), new MCPToolAnnotations("Search Metadata", true, false, true, true),
+                Map.of("type", "object"), MCPToolAnnotations.builder()
+                        .title("Search Metadata").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
                 Map.of(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, List.of("shardingsphere://databases")));
     }
     
@@ -233,22 +258,33 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     
     protected MCPToolDescriptor createToolDescriptorWithoutOutputSchema(final String toolName) {
         return new MCPToolDescriptor(toolName, "Fixture Tool", "Run a fixture tool.", createInputSchema(Map.of(), List.of()), Collections.emptyMap(),
-                new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
+                MCPToolAnnotations.builder()
+                        .title("Fixture Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     protected MCPToolDescriptor createStrictToolDescriptor(final String toolName) {
         return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", createInputSchema(Map.of(), List.of()),
                 Map.of("type", "object", "properties", Map.of("status", Map.of("type", "string")), "required", List.of("status")),
-                new MCPToolAnnotations("Search Metadata", true, false, true, true), Collections.emptyMap());
+                MCPToolAnnotations.builder()
+                        .title("Search Metadata").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     protected MCPToolDescriptor createPlanningToolDescriptor(final String toolName) {
+        return createPlanningToolDescriptor(toolName, Collections.emptyMap());
+    }
+    
+    protected MCPToolDescriptor createPlanningToolDescriptor(final String toolName, final Map<String, Object> additionalProperties) {
         Map<String, Object> properties = new LinkedHashMap<>(2, 1F);
         properties.put("custom_properties", Map.of("type", "object", "description", "Custom properties.", "additionalProperties", true));
         properties.put("intent", Map.of("type", "object", "description", "Intent.", "properties",
                 Map.of("requires_review", Map.of("type", "boolean", "description", "Requires review.")), "required", List.of(), "additionalProperties", false));
+        properties.putAll(additionalProperties);
         return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
-                Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true), Collections.emptyMap());
+                Map.of("type", "object"), MCPToolAnnotations.builder()
+                        .title("Plan Custom Rule").readOnlyHint(false).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     protected MCPToolDescriptor createAmbiguousPlanningToolDescriptor(final String toolName) {
@@ -262,7 +298,9 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
         properties.put("intent", objectProperty);
         properties.put("review_policy", objectProperty);
         return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", createInputSchema(properties, List.of()),
-                Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true), Collections.emptyMap());
+                Map.of("type", "object"), MCPToolAnnotations.builder()
+                        .title("Plan Custom Rule").readOnlyHint(false).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     protected Map<String, Object> createInputSchema(final Map<String, Object> properties, final List<String> required) {

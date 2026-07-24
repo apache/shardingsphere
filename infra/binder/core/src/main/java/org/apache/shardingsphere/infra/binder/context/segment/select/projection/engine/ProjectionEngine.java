@@ -116,7 +116,10 @@ public final class ProjectionEngine {
         return new ExpressionProjection(projectionSegment, projectionSegment.getAlias().orElse(null), databaseType);
     }
     
-    private AggregationDistinctProjection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
+    private Projection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
+        if (projectionSegment.getWindow().isPresent()) {
+            return createExpressionProjection(projectionSegment);
+        }
         IdentifierValue alias =
                 projectionSegment.getAlias().orElseGet(() -> new IdentifierValue(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++)));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
@@ -128,7 +131,10 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private AggregationProjection createProjection(final AggregationProjectionSegment projectionSegment) {
+    private Projection createProjection(final AggregationProjectionSegment projectionSegment) {
+        if (projectionSegment.getWindow().isPresent()) {
+            return createExpressionProjection(projectionSegment);
+        }
         AggregationProjection result =
                 new AggregationProjection(projectionSegment.getType(), projectionSegment, projectionSegment.getAlias().orElse(null), databaseType,
                         projectionSegment.getSeparator().orElse(null));
@@ -137,6 +143,12 @@ public final class ProjectionEngine {
             // TODO replace avg to constant, avoid calculate useless avg
         }
         return result;
+    }
+    
+    private ExpressionProjection createExpressionProjection(final AggregationProjectionSegment projectionSegment) {
+        ExpressionProjectionSegment expressionSegment =
+                new ExpressionProjectionSegment(projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getExpression(), projectionSegment);
+        return new ExpressionProjection(expressionSegment, projectionSegment.getAlias().orElse(null), databaseType);
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {

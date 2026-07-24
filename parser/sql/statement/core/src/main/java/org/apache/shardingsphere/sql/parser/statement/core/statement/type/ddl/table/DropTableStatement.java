@@ -36,14 +36,21 @@ public final class DropTableStatement extends DDLStatement {
     
     private final boolean ifExists;
     
+    private final boolean temporary;
+    
     private final boolean containsCascade;
     
     private final SQLStatementAttributes attributes;
     
     public DropTableStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables, final boolean ifExists, final boolean containsCascade) {
+        this(databaseType, tables, ifExists, false, containsCascade);
+    }
+    
+    public DropTableStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables, final boolean ifExists, final boolean temporary, final boolean containsCascade) {
         super(databaseType);
         this.tables = tables;
         this.ifExists = ifExists;
+        this.temporary = temporary;
         this.containsCascade = containsCascade;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }

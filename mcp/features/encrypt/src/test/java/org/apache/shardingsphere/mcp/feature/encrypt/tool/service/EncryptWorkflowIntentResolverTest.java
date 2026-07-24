@@ -33,13 +33,13 @@ class EncryptWorkflowIntentResolverTest {
     @Test
     void assertResolveUsesExplicitArgumentsWithoutInference() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
-        request.setOperationType("alter");
+        request.setOperationType("create");
         request.setFieldSemantics("email");
         request.getOptions().setRequiresDecrypt(true);
         request.getOptions().setRequiresEqualityFilter(false);
         request.getOptions().setRequiresLikeQuery(false);
         ClarifiedIntent actual = new EncryptWorkflowIntentResolver().resolve(request);
-        assertThat(actual.getOperationType(), is("alter"));
+        assertThat(actual.getOperationType(), is("create"));
         assertThat(actual.getFieldSemantics(), is("email"));
         assertThat(actual.getInferredValues(), is(Map.of()));
         assertThat(actual.getUnresolvedFields(), is(List.of()));

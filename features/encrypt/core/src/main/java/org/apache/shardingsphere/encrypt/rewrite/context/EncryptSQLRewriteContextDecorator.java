@@ -59,13 +59,19 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
             Collection<ParameterRewriter> parameterRewriters = new ParameterRewritersBuilder(sqlStatementContext).build(rewritersRegistry);
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
-        SQLTokenGeneratorBuilder sqlTokenGeneratorBuilder = createSQLTokenGeneratorBuilder(rule, sqlRewriteContext, sqlStatementContext, encryptConditions);
+        SQLTokenGeneratorBuilder sqlTokenGeneratorBuilder =
+                createSQLTokenGeneratorBuilder(rule, sqlRewriteContext, sqlStatementContext, encryptConditions);
         sqlRewriteContext.addSQLTokenGenerators(sqlTokenGeneratorBuilder.getSQLTokenGenerators());
     }
     
     private boolean containsEncryptTable(final EncryptRule rule, final SQLStatementContext sqlStatementContext) {
+        return containsEncryptTableInCurrentContext(rule, sqlStatementContext);
+    }
+    
+    private boolean containsEncryptTableInCurrentContext(final EncryptRule rule, final SQLStatementContext sqlStatementContext) {
         for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
-            if (rule.findEncryptTable(each.getTableName().getIdentifier().getValue()).isPresent()) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            if (rule.findEncryptTable(tableName).isPresent()) {
                 return true;
             }
         }

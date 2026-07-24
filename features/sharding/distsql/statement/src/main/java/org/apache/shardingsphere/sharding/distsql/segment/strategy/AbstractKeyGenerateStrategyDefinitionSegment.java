@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.segment.strategy;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
@@ -25,16 +27,12 @@ import java.util.Optional;
 /**
  * Abstract key generate strategy definition segment.
  */
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractKeyGenerateStrategyDefinitionSegment implements DistSQLSegment {
     
     private final String keyGeneratorName;
     
     private final AlgorithmSegment algorithmSegment;
-    
-    protected AbstractKeyGenerateStrategyDefinitionSegment(final String keyGeneratorName, final AlgorithmSegment algorithmSegment) {
-        this.keyGeneratorName = keyGeneratorName;
-        this.algorithmSegment = algorithmSegment;
-    }
     
     /**
      * Get key generator name.

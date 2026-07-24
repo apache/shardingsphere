@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
@@ -42,7 +42,7 @@ public final class MCPResourceNavigationPayloadBuilder {
      * @param uriVariables URI variables
      * @return navigation payload
      */
-    public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
+    public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPResourceURIVariables uriVariables) {
         return create(descriptor, uriVariables, "");
     }
     
@@ -54,31 +54,19 @@ public final class MCPResourceNavigationPayloadBuilder {
      * @param parentUriTemplate public parent URI template
      * @return navigation payload
      */
-    public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables, final String parentUriTemplate) {
+    public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPResourceURIVariables uriVariables, final String parentUriTemplate) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
-        new MCPUriTemplate(descriptor.getUriTemplate()).expandIfComplete(uriVariables).ifPresent(optional -> result.put("self_uri", optional));
-        Optional<String> parentUri = new MCPUriTemplate(parentUriTemplate).expandIfComplete(uriVariables);
-        parentUri.filter(optional -> !optional.isEmpty()).ifPresent(optional -> result.put(MCPPayloadFieldNames.PARENT_RESOURCE, createParentResourceHint(optional)));
+        new MCPUriTemplate(descriptor.getUriTemplate()).expandIfComplete(uriVariables)
+                .ifPresent(optional -> result.put(MCPPayloadFieldNames.SELF_RESOURCE, MCPResourceHintUtils.create(optional, MCPDescriptorCatalogIndex.resolveResourceKind(optional), "inspect_self",
+                        "Read this resource.", MCPPayloadFieldNames.SELF_RESOURCE)));
+        if (!parentUriTemplate.isEmpty()) {
+            Optional<String> parentUri = new MCPUriTemplate(parentUriTemplate).expandIfComplete(uriVariables);
+            parentUri.ifPresent(optional -> result.put(MCPPayloadFieldNames.PARENT_RESOURCE, createParentResourceHint(optional)));
+        }
         return result;
     }
     
     private static Map<String, Object> createParentResourceHint(final String uri) {
-        return MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_parent", "Read the parent resource.", MCPPayloadFieldNames.PARENT_RESOURCE);
-    }
-    
-    private static String resolveResourceKind(final String uri) {
-        if (uri.contains("/rules")) {
-            return "rule";
-        }
-        if (uri.contains("/algorithms")) {
-            return "algorithm";
-        }
-        if (uri.contains("/columns")) {
-            return "column";
-        }
-        if (uri.contains("/indexes")) {
-            return "index";
-        }
-        return "resource";
+        return MCPResourceHintUtils.create(uri, MCPDescriptorCatalogIndex.resolveResourceKind(uri), "inspect_parent", "Read the parent resource.", MCPPayloadFieldNames.PARENT_RESOURCE);
     }
 }

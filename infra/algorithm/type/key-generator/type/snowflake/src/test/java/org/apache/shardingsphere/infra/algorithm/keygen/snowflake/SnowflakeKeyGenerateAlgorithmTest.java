@@ -52,6 +52,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 class SnowflakeKeyGenerateAlgorithmTest {
     
     private static final long DEFAULT_SEQUENCE_BITS = 12L;
@@ -59,6 +62,14 @@ class SnowflakeKeyGenerateAlgorithmTest {
     private static final int DEFAULT_KEY_AMOUNT = 10;
     
     private static final ComputeNodeInstanceContext INSTANCE;
+    
+    @Test
+    void assertEpochShouldBeTimezoneIndependent() {
+        // The EPOCH is supposed to represent 2016-11-01 00:00:00 UTC.
+        // It MUST equal the UTC-based value regardless of system timezone.
+        long expectedUtcEpoch = LocalDateTime.of(2016, 11, 1, 0, 0, 0).toInstant(ZoneOffset.UTC).toEpochMilli();
+        assertThat(SnowflakeKeyGenerateAlgorithm.EPOCH, is(expectedUtcEpoch));
+    }
     
     static {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);

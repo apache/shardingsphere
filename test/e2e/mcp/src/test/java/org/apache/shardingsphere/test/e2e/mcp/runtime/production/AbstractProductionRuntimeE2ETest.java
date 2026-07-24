@@ -26,15 +26,15 @@ import java.util.Map;
 abstract class AbstractProductionRuntimeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.castToList(payload.get("items"));
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "items");
     }
     
     protected final List<Map<String, Object>> getResources(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.castToList(payload.get("resources"));
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "resources");
     }
     
     protected final List<Map<String, Object>> getResourceTemplates(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.castToList(payload.get("resourceTemplates"));
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "resourceTemplates");
     }
     
     protected final List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {

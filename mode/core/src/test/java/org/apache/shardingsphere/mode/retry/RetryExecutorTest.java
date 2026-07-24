@@ -23,6 +23,8 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import java.time.Duration;
 
 class RetryExecutorTest {
     
@@ -47,5 +49,12 @@ class RetryExecutorTest {
                 return ++currentCount > 10;
             }
         }, null));
+    }
+    
+    @Test
+    void assertExecuteZeroTimeoutShouldNotSleep() {
+        assertTimeoutPreemptively(Duration.ofMillis(200), () -> {
+            assertFalse(new RetryExecutor(0L, 5000L).execute(value -> false, null));
+        });
     }
 }

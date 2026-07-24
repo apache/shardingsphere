@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarker
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.TemporalLiteralExpressionSegment;
 
 /**
  * Insert column token for encrypt.
@@ -48,6 +49,9 @@ public abstract class EncryptInsertColumnToken extends SQLToken {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             ParameterMarkerExpressionSegment segment = (ParameterMarkerExpressionSegment) expressionSegment;
             return ParameterMarkerType.QUESTION == segment.getParameterMarkerType() ? "?" : "$" + (segment.getParameterMarkerIndex() + 1);
+        }
+        if (expressionSegment instanceof TemporalLiteralExpressionSegment) {
+            return expressionSegment.getText();
         }
         if (expressionSegment instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();

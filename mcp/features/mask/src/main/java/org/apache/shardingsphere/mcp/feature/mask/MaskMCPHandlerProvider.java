@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.mask;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.mask.completion.MaskAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskAlgorithmsHandler;
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRuleHandler;
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRulesHandler;
@@ -28,24 +29,27 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValid
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Mask MCP mask provider.
  */
-public final class MaskMCPHandlerProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
+public final class MaskMCPHandlerProvider implements MCPWorkflowDefinitionProvider {
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
-        return Arrays.asList(new MaskAlgorithmsHandler(), new MaskRulesHandler(), new MaskRuleHandler());
+        return List.of(new MaskAlgorithmsHandler(), new MaskRulesHandler(), new MaskRuleHandler());
     }
     
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
-        return Collections.singleton(new PlanMaskRuleToolHandler());
+        return List.of(new PlanMaskRuleToolHandler());
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of(new MaskAlgorithmCompletionHandler());
     }
     
     @Override

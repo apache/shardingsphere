@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ class MaskRuleDistSQLPlanningServiceTest {
     void assertPlanMaskRuleWithCreate() {
         RuleArtifact actual = service.planMaskRule(createRequest("create"));
         assertThat(actual.getOperationType(), is("create"));
-        assertTrue(actual.getSql().startsWith("CREATE MASK RULE orders"));
+        assertTrue(actual.getSql().startsWith("CREATE MASK RULE `orders`"));
         assertTrue(actual.getSql().contains("TYPE(NAME='mask_from_x_to_y'"));
     }
     
@@ -65,7 +65,17 @@ class MaskRuleDistSQLPlanningServiceTest {
         request.setTable("key");
         RuleArtifact actual = service.planMaskRule(request);
         assertTrue(actual.getSql().startsWith("CREATE MASK RULE `key`"));
-        assertTrue(actual.getSql().contains("NAME=phone"));
+        assertTrue(actual.getSql().contains("NAME=`phone`"));
+    }
+    
+    @Test
+    void assertPlanMaskRuleFormatsReservedColumnIdentifier() {
+        WorkflowRequest request = createRequest("create");
+        request.setTable("table");
+        request.setColumn("from");
+        RuleArtifact actual = service.planMaskRule(request);
+        assertTrue(actual.getSql().startsWith("CREATE MASK RULE `table`"));
+        assertTrue(actual.getSql().contains("NAME=`from`"));
     }
     
     @Test
@@ -79,7 +89,7 @@ class MaskRuleDistSQLPlanningServiceTest {
     void assertPlanMaskDropRuleWithoutRemainingColumns() {
         RuleArtifact actual = service.planMaskDropRule(createRequest("drop"));
         assertThat(actual.getOperationType(), is("drop"));
-        assertThat(actual.getSql(), is("DROP MASK RULE orders"));
+        assertThat(actual.getSql(), is("DROP MASK RULE `orders`"));
     }
     
     private WorkflowRequest createRequest(final String operationType) {

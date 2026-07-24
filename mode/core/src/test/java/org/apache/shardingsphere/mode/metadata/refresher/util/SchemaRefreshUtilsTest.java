@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.util;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -43,48 +46,32 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class SchemaRefreshUtilsTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
-    void assertGetSchemaNameWithSchemaFromContext() {
-        assertThat(SchemaRefreshUtils.getSchemaName(createDatabase(), createSQLStatementContextWithSchema("Foo_Schema")), is("foo_schema"));
-    }
-    
-    @Test
-    void assertGetSchemaNameWithDefaultSchema() {
-        assertThat(SchemaRefreshUtils.getSchemaName(createDatabase(), createSQLStatementContextWithoutSchema()), is("foo_db"));
-    }
-    
-    @Test
-    void assertGetActualSchemaNameWithSensitiveProps() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), Collections.singletonList(new ShardingSphereSchema("Foo_Schema", databaseType)), new ConfigurationProperties(new Properties()));
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        assertThat(SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue("Foo_Schema", QuoteCharacter.QUOTE), new ConfigurationProperties(props)), is("Foo_Schema"));
-    }
-    
-    @Test
     void assertGetActualSchemaNameWithInsensitiveProps() {
-        assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabase(), new IdentifierValue("Foo_Schema"), new ConfigurationProperties(new Properties())), is("foo_schema"));
-    }
-    
-    @Test
-    void assertGetActualSchemaNameWithQuotedSchemaFromContext() {
-        Properties props = new Properties();
-        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
-        assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabaseWithSchema("Foo_Schema"), createSQLStatementContextWithSchema(new IdentifierValue("Foo_Schema", QuoteCharacter.QUOTE)),
-                new ConfigurationProperties(props)), is("Foo_Schema"));
+        assertThat(SchemaRefreshUtils.getActualSchemaName(createDatabase(), new IdentifierValue("Foo_Schema")), is("foo_schema"));
     }
     
     @Test
     void assertGetActualSchemaNames() {
         List<IdentifierValue> schemaIdentifiers = Arrays.asList(new IdentifierValue("Foo_Schema"), new IdentifierValue("bar_schema"), new IdentifierValue("new_schema"));
-        assertThat(SchemaRefreshUtils.getActualSchemaNames(createDatabaseWithSchema("foo_schema", "bar_schema"), schemaIdentifiers, new ConfigurationProperties(new Properties())),
+        assertThat(SchemaRefreshUtils.getActualSchemaNames(createDatabaseWithSchema("foo_schema", "bar_schema"), schemaIdentifiers),
                 is(Arrays.asList("foo_schema", "bar_schema", "new_schema")));
+    }
+    
+    @Test
+    void assertGetActualSchemaNameUsesProtocolPolicyWhenMissing() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newUpperCasePolicySet(),
+                IdentifierCasePolicyFactory.newSensitivePolicySet(), IdentifierCasePolicyFactory.newInsensitivePolicySet(), false));
+        when(database.getAllSchemas()).thenReturn(Collections.emptyList());
+        assertThat(SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue("Foo_Schema")), is("FOO_SCHEMA"));
     }
     
     private ShardingSphereDatabase createDatabase() {
@@ -116,16 +103,12 @@ class SchemaRefreshUtilsTest {
         return new FixtureSQLStatementContext(sqlStatement, tablesContext);
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class FixtureSQLStatementContext implements SQLStatementContext {
         
         private final SQLStatement sqlStatement;
         
         private final TablesContext tablesContext;
-        
-        private FixtureSQLStatementContext(final SQLStatement sqlStatement, final TablesContext tablesContext) {
-            this.sqlStatement = sqlStatement;
-            this.tablesContext = tablesContext;
-        }
         
         @Override
         public SQLStatement getSqlStatement() {

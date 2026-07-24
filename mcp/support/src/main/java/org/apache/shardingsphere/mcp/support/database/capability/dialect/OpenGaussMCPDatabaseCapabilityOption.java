@@ -17,22 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
 /**
  * MCP database capability option for openGauss.
  */
-public final class OpenGaussMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class OpenGaussMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public OpenGaussMCPDatabaseCapabilityOption() {
-        super("openGauss", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
+    @Override
+    public boolean isExplainSupported() {
+        return true;
     }
     
     @Override
-    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return true;
+    public String getType() {
+        return "openGauss";
     }
 }

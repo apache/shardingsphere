@@ -73,12 +73,13 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
      * @return merged request
      */
     public static ShardingWorkflowRequest merge(final WorkflowRequest previous, final ShardingWorkflowRequest current) {
-        if (!(previous instanceof ShardingWorkflowRequest)) {
-            return current.copy();
-        }
-        ShardingWorkflowRequest result = ((ShardingWorkflowRequest) previous).copy();
+        ShardingWorkflowRequest result = copyPreviousRequest(previous);
         current.overlayTo(result);
         return result;
+    }
+    
+    private static ShardingWorkflowRequest copyPreviousRequest(final WorkflowRequest previous) {
+        return previous instanceof ShardingWorkflowRequest ? ((ShardingWorkflowRequest) previous).copy() : copyFieldsTo(previous, new ShardingWorkflowRequest());
     }
     
     @Override
@@ -176,6 +177,11 @@ public final class ShardingWorkflowRequest extends WorkflowRequest {
      */
     public void putKeyGeneratorProperties(final Map<String, String> props) {
         keyGeneratorProperties.putAll(props);
+    }
+    
+    @Override
+    public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+        return "key_generator".equals(algorithmRole) ? keyGeneratorProperties : super.getAlgorithmProperties(algorithmRole);
     }
     
     private void overlayTo(final ShardingWorkflowRequest target) {

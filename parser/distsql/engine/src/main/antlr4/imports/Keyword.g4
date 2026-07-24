@@ -183,18 +183,6 @@ MODE
     : M O D E
     ;
 
-LABEL
-    : L A B E L
-    ;
-
-RELABEL
-    : R E L A B E L
-    ;
-
-UNLABEL
-    : U N L A B E L
-    ;
-
 EXPORT
     : E X P O R T
     ;

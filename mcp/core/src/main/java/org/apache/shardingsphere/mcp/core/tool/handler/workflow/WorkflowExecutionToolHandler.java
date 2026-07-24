@@ -17,22 +17,20 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
-import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.core.workflow.WorkflowSessionSnapshotResolver;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,7 +39,7 @@ import java.util.Map;
 /**
  * Generic workflow execution tool handler.
  */
-public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
+public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private final WorkflowExecutionService executionService;
     
@@ -53,8 +51,8 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
     }
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -63,33 +61,27 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
+        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String executionMode = toolArguments.getStringArgument(WorkflowFieldNames.EXECUTION_MODE);
         if (executionMode.isEmpty()) {
-            throw new MCPExecutionModeRequiredException("database_gateway_apply_workflow", List.of("preview", "review-then-execute", "manual-only"),
-                    createPreviewSuggestedArguments(toolCall.getArguments()));
+            throw new MCPExecutionModeRequiredException(WorkflowToolDescriptors.APPLY_TOOL_NAME, List.of(WorkflowLifecycle.EXECUTION_MODE_PREVIEW,
+                    WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE, WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY),
+                    createPreviewSuggestedArguments(arguments));
         }
-        MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
-        WorkflowContextSnapshot snapshot = WorkflowSessionSnapshotResolver.getRequired(workflowContext.getWorkflowSessionContext(), toolCall.getSessionId(),
-                toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
-        WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
-        return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(),
-                databaseContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), toolCall.getSessionId(), snapshot,
-                toolArguments.getStringCollectionArgument("approved_steps"), executionMode));
-    }
-    
-    private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
-        if (null != snapshot.getWorkflowKind()) {
-            return snapshot.getWorkflowKind();
-        }
-        throw new MCPWorkflowStateException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()), snapshot.getPlanId());
+        WorkflowSessionContext workflowSessionContext = requestContext.getWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
+        WorkflowRuntimeDefinition workflowRuntimeDefinition = workflowRuntimeDefinitionRegistry.getRequired(snapshot);
+        return new MCPMapPayload(executionService.apply(workflowSessionContext, requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade(),
+                requestContext.getExecutionFacade(), workflowRuntimeDefinition.getApplySynchronizationHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(),
+                requestContext.getSessionIdentity().getSessionId(),
+                snapshot, toolArguments.getStringCollectionArgument(WorkflowFieldNames.APPROVED_STEPS), executionMode));
     }
     
     private static Map<String, Object> createPreviewSuggestedArguments(final Map<String, Object> arguments) {
         Map<String, Object> result = new LinkedHashMap<>(arguments);
         result.remove(WorkflowFieldNames.EXECUTION_MODE);
-        result.put(WorkflowFieldNames.EXECUTION_MODE, "preview");
+        result.put(WorkflowFieldNames.EXECUTION_MODE, WorkflowLifecycle.EXECUTION_MODE_PREVIEW);
         return result;
     }
 }

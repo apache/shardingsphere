@@ -81,6 +81,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -191,7 +192,8 @@ class PostgreSQLComBindExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(schema.getName()).thenReturn("public");
+        lenient().when(database.getDefaultSchemaName()).thenReturn("public");
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getSchema("public")).thenReturn(schema);

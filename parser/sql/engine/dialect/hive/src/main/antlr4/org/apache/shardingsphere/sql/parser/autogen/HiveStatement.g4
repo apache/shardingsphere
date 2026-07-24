@@ -51,6 +51,7 @@ execute
     | dropFunction
     | reloadFunction
     | show
+    | optimizeTable
     | describe
     | abort
     ) (SEMI_ EOF? | EOF)

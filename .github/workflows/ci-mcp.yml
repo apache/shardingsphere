@@ -22,7 +22,9 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/ci-mcp.yml'
+      - '.github/workflows/resources/actions/setup-build-environment/**'
       - 'pom.xml'
+      - 'database/connector/**'
       - 'mcp/**'
   workflow_dispatch:
 
@@ -52,9 +54,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          MCP_MODULES=mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask
+          MCP_MODULES=mcp/api,mcp/support,mcp/core,mcp/features/broadcast,mcp/features/encrypt,mcp/features/mask
+          MCP_MODULES="${MCP_MODULES},mcp/features/readwrite-splitting,mcp/features/shadow,mcp/features/sharding"
           MCP_MODULES="${MCP_MODULES},mcp/bootstrap,mcp/registry"
           ./mvnw -pl "${MCP_MODULES}" -am install \
             -DskipITs -Dspotless.skip=true \
+            -Dsurefire.failIfNoSpecifiedTests=false \
+            -B -ntp
+      - name: Verify MCP Metadata Pagination Coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./mvnw -pl mcp/core verify -Pcoverage-check \
+            -DskipITs -Dspotless.skip=true -Djacoco.skip=false \
+            -Djacoco.check.class.pattern='org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadata*' \
             -Dsurefire.failIfNoSpecifiedTests=false \
             -B -ntp

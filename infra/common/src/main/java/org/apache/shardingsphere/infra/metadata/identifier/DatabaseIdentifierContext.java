@@ -17,59 +17,83 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-
-import java.util.Objects;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Database identifier context.
  */
+@AllArgsConstructor
 public final class DatabaseIdentifierContext {
     
-    private volatile IdentifierCaseRuleSet ruleSet;
+    private volatile IdentifierCasePolicySet protocolPolicySet;
+    
+    private volatile IdentifierCasePolicySet storagePolicySet;
+    
+    private volatile IdentifierCasePolicySet metaDataPolicySet;
     
     @Getter
     private volatile boolean heterogeneousTableLookupEnabled;
     
-    public DatabaseIdentifierContext(final IdentifierCaseRuleSet ruleSet) {
-        this(ruleSet, false);
+    public DatabaseIdentifierContext(final IdentifierCasePolicySet policySet) {
+        this(policySet, policySet, policySet, false);
     }
     
-    public DatabaseIdentifierContext(final IdentifierCaseRuleSet ruleSet, final boolean heterogeneousTableLookupEnabled) {
-        this.ruleSet = Objects.requireNonNull(ruleSet, "ruleSet cannot be null.");
-        this.heterogeneousTableLookupEnabled = heterogeneousTableLookupEnabled;
+    IdentifierCasePolicy getMetaDataPolicy(final IdentifierScope identifierScope) {
+        return metaDataPolicySet.getPolicy(identifierScope);
     }
     
     /**
-     * Get identifier case rule for scope.
+     * Judge whether stored metadata identifier matches input identifier.
      *
      * @param identifierScope identifier scope
-     * @return identifier case rule
+     * @param storedName stored metadata identifier name
+     * @param identifier input identifier
+     * @return whether matched
      */
-    public IdentifierCaseRule getRule(final IdentifierScope identifierScope) {
-        return ruleSet.getRule(identifierScope);
+    public boolean matchesMetaData(final IdentifierScope identifierScope, final String storedName, final IdentifierValue identifier) {
+        return metaDataPolicySet.getPolicy(identifierScope).matches(storedName, identifier.getValue(), identifier.getQuoteCharacter());
+    }
+    
+    /**
+     * Normalize protocol identifier.
+     *
+     * @param identifierScope identifier scope
+     * @param identifier identifier to be normalized
+     * @return normalized protocol identifier
+     */
+    public String normalizeProtocol(final IdentifierScope identifierScope, final IdentifierValue identifier) {
+        return protocolPolicySet.getPolicy(identifierScope).normalizeForDefinition(identifier.getValue(), identifier.getQuoteCharacter());
+    }
+    
+    /**
+     * Normalize storage identifier.
+     *
+     * @param identifierScope identifier scope
+     * @param identifier identifier to be normalized
+     * @return normalized storage identifier
+     */
+    public String normalizeStorage(final IdentifierScope identifierScope, final IdentifierValue identifier) {
+        return storagePolicySet.getPolicy(identifierScope).normalizeForDefinition(identifier.getValue(), identifier.getQuoteCharacter());
     }
     
     /**
      * Refresh identifier context.
      *
-     * @param ruleSet identifier case rule set
-     */
-    public synchronized void refresh(final IdentifierCaseRuleSet ruleSet) {
-        this.ruleSet = Objects.requireNonNull(ruleSet, "ruleSet cannot be null.");
-    }
-    
-    /**
-     * Refresh identifier context.
-     *
-     * @param ruleSet identifier case rule set
+     * @param protocolPolicySet protocol identifier case policy set
+     * @param storagePolicySet storage identifier case policy set
+     * @param metaDataPolicySet metadata identifier case policy set
      * @param heterogeneousTableLookupEnabled heterogeneous table lookup enabled or not
      */
-    public synchronized void refresh(final IdentifierCaseRuleSet ruleSet, final boolean heterogeneousTableLookupEnabled) {
-        this.ruleSet = Objects.requireNonNull(ruleSet, "ruleSet cannot be null.");
+    public synchronized void refresh(final IdentifierCasePolicySet protocolPolicySet, final IdentifierCasePolicySet storagePolicySet,
+                                     final IdentifierCasePolicySet metaDataPolicySet, final boolean heterogeneousTableLookupEnabled) {
+        this.protocolPolicySet = protocolPolicySet;
+        this.storagePolicySet = storagePolicySet;
+        this.metaDataPolicySet = metaDataPolicySet;
         this.heterogeneousTableLookupEnabled = heterogeneousTableLookupEnabled;
     }
 }

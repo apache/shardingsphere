@@ -36,6 +36,7 @@ import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColu
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.sql.env.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.sql.env.DataSetResetScopeCalculator;
 import org.apache.shardingsphere.test.e2e.sql.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectDatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectQueryBehaviorProvider;
@@ -81,7 +82,11 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     
     private static final String DATA_COLUMN_DELIMITER = ", ";
     
+    private static final DataSetResetScopeCalculator DATA_SET_RESET_SCOPE_CALCULATOR = new DataSetResetScopeCalculator();
+    
     private DataSetEnvironmentManager dataSetEnvironmentManager;
+    
+    private Collection<String> resetTableNames = Collections.emptyList();
     
     @Getter
     @Setter
@@ -97,14 +102,16 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     protected void init(final E2ETestParameter testParam) throws IOException, JAXBException {
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
                 new ScenarioDataPath(testParam.getScenario(), Type.ACTUAL).getDataSetFile(), getEnvironmentEngine().getActualDataSourceMap(), testParam.getDatabaseType());
-        dataSetEnvironmentManager.fillData();
+        resetTableNames = DATA_SET_RESET_SCOPE_CALCULATOR.getResetTableNames(testParam);
+        fillActualDataSet(resetTableNames);
+    }
+    
+    private void fillActualDataSet(final Collection<String> tableNames) {
+        dataSetEnvironmentManager.fillData(tableNames);
     }
     
     void tearDown() {
-        // TODO make sure test case can not be null
-        if (null != dataSetEnvironmentManager) {
-            dataSetEnvironmentManager.cleanData();
-        }
+        dataSetEnvironmentManager.cleanData(resetTableNames);
     }
     
     private DataSet getDataSet(final int[] actualUpdateCounts, final Collection<DataSet> dataSets, final String sql) {

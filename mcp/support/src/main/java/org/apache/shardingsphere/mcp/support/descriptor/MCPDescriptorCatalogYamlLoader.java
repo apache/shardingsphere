@@ -17,34 +17,35 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPDescriptorCatalog;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Comparator;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MCPDescriptorCatalogYamlLoader {
     
     private static final String MCP_DESCRIPTOR_DIRECTORY = "META-INF/shardingsphere-mcp/mcp-descriptors";
     
-    private MCPDescriptorCatalogYamlLoader() {
-    }
-    
     static Collection<YamlMCPDescriptorCatalog> load() {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try (Stream<String> resources = ClasspathResourceDirectoryReader.read(MCP_DESCRIPTOR_DIRECTORY)) {
-            return resources.filter(each -> each.endsWith(".yaml") || each.endsWith(".yml")).sorted().map(MCPDescriptorCatalogYamlLoader::loadYamlCatalog).toList();
+            return resources.filter(each -> each.endsWith(".yaml") || each.endsWith(".yml")).distinct()
+                    .flatMap(classLoader::resources).sorted(Comparator.comparing(URL::toExternalForm)).map(MCPDescriptorCatalogYamlLoader::loadYamlCatalog).toList();
         }
     }
     
-    private static YamlMCPDescriptorCatalog loadYamlCatalog(final String resourceName) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream(resourceName)) {
-            if (null == inputStream) {
-                throw new IllegalStateException(String.format("MCP descriptor resource `%s` is not found.", resourceName));
-            }
+    private static YamlMCPDescriptorCatalog loadYamlCatalog(final URL resourceUrl) {
+        String resourceName = resourceUrl.toExternalForm();
+        try (InputStream inputStream = resourceUrl.openStream()) {
             byte[] yamlBytes = inputStream.readAllBytes();
             MCPDescriptorYamlKeyValidator.validate(resourceName, yamlBytes);
             return YamlEngine.unmarshal(yamlBytes, YamlMCPDescriptorCatalog.class);

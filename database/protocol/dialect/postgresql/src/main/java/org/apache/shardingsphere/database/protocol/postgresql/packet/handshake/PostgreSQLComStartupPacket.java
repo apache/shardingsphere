@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQL
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Startup packet for PostgreSQL.
@@ -73,6 +74,22 @@ public final class PostgreSQLComStartupPacket extends PostgreSQLPacket {
      */
     public String getClientEncoding() {
         return parametersMap.getOrDefault(CLIENT_ENCODING_KEY, "UTF8");
+    }
+    
+    /**
+     * Get connection attributes.
+     *
+     * @return connection attributes
+     */
+    public Map<String, String> getConnectionAttributes() {
+        Map<String, String> result = new HashMap<>(parametersMap.size());
+        for (Entry<String, String> entry : parametersMap.entrySet()) {
+            if (DATABASE_NAME_KEY.equalsIgnoreCase(entry.getKey()) || USER_NAME_KEY.equalsIgnoreCase(entry.getKey()) || CLIENT_ENCODING_KEY.equalsIgnoreCase(entry.getKey())) {
+                continue;
+            }
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
     
     @Override

@@ -17,9 +17,17 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.completion.ShardingAlgorithmCompletionHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingAlgorithmResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingGovernanceResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingStrategyResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingTableResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowApplyArtifactValidator;
+import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +37,7 @@ import java.util.ServiceLoader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingMCPHandlerProviderTest {
@@ -39,6 +48,10 @@ class ShardingMCPHandlerProviderTest {
         assertThat(actual.size(), is(22));
         assertTrue(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList().contains(ShardingFeatureDefinition.TABLE_RULES_RESOURCE_URI));
         assertTrue(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList().contains(ShardingFeatureDefinition.UNUSED_AUDITORS_RESOURCE_URI));
+        assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingAlgorithmResourceHandler));
+        assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingTableResourceHandler));
+        assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingStrategyResourceHandler));
+        assertTrue(actual.stream().anyMatch(each -> each instanceof ShardingGovernanceResourceHandler));
     }
     
     @Test
@@ -51,11 +64,20 @@ class ShardingMCPHandlerProviderTest {
     }
     
     @Test
+    void assertGetCompletionHandlers() {
+        MCPCompletionHandler<?> actual = new ShardingMCPHandlerProvider().getCompletionHandlers().iterator().next();
+        assertThat(actual, isA(ShardingAlgorithmCompletionHandler.class));
+    }
+    
+    @Test
     void assertGetWorkflowDefinitions() {
         Collection<WorkflowRuntimeDefinition> actual = new ShardingMCPHandlerProvider().getWorkflowDefinitions();
         assertThat(actual.stream().map(each -> each.getWorkflowKind().getValue()).toList(),
                 containsInAnyOrder("sharding.table.rule", "sharding.table.reference", "sharding.default.strategy",
                         "sharding.key.generator", "sharding.key.generate.strategy", "sharding.component.cleanup"));
+        assertTrue(actual.stream().allMatch(each -> each.getValidationHandler() instanceof ShardingWorkflowValidationService));
+        assertTrue(actual.stream().allMatch(each -> each.getApplySynchronizationHandler() instanceof ShardingWorkflowValidationService));
+        assertTrue(actual.stream().allMatch(each -> each.getApplyArtifactValidator() instanceof ShardingWorkflowApplyArtifactValidator));
     }
     
     @Test

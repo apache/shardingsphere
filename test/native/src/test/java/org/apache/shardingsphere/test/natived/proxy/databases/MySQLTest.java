@@ -46,7 +46,7 @@ import java.util.Properties;
 class MySQLTest {
     
     @Container
-    private final GenericContainer<?> mysqlContainer = new GenericContainer<>("mysql:9.5.0-oraclelinux9")
+    private final GenericContainer<?> mysqlContainer = new GenericContainer<>("mysql:9.7.1-oraclelinux9")
             .withEnv("MYSQL_ROOT_PASSWORD", "yourStrongPassword123!")
             .withExposedPorts(3306);
     
@@ -70,7 +70,7 @@ class MySQLTest {
         }
         String absolutePath = Paths.get("src/test/resources/test-native/yaml/proxy/databases/mysql").toAbsolutePath().toString();
         proxyTestingServer = new ProxyTestingServer(absolutePath);
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptionsMatching(CommunicationsException.class::isInstance).until(() -> {
+        Awaitility.await().atMost(Duration.ofMinutes(5L)).ignoreExceptionsMatching(CommunicationsException.class::isInstance).until(() -> {
             openConnection("root", "root", "jdbc:mysql://127.0.0.1:" + proxyTestingServer.getProxyPort()).close();
             return true;
         });

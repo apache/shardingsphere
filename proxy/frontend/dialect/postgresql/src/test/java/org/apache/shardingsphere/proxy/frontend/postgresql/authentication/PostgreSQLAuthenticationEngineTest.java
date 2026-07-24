@@ -189,11 +189,12 @@ class PostgreSQLAuthenticationEngineTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, false, null);
         ContextManager contextManager = mockContextManager(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, createStartupPayload(USERNAME, DATABASE_NAME));
+        AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, createStartupPayloadWithConnectionAttributes());
         ArgumentCaptor<Object> argumentCaptor = ArgumentCaptor.forClass(Object.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getClass(), is((Object) PostgreSQLPasswordAuthenticationPacket.class));
         assertFalse(actual.isFinished());
+        assertThat(actual.getConnectionAttributes(), is(Collections.singletonMap("application_name", "foo_app")));
     }
     
     @Test
@@ -365,6 +366,13 @@ class PostgreSQLAuthenticationEngineTest {
             payload.writeStringNul(clientEncoding);
         }
         return payload;
+    }
+    
+    private PostgreSQLPacketPayload createStartupPayloadWithConnectionAttributes() {
+        PostgreSQLPacketPayload result = createStartupPayload(USERNAME, DATABASE_NAME);
+        result.writeStringNul("application_name");
+        result.writeStringNul("foo_app");
+        return result;
     }
     
     private PostgreSQLPacketPayload createPasswordMessage(final String digest) {

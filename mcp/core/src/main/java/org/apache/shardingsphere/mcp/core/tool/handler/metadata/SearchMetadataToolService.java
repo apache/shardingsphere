@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
+import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 
 import java.util.LinkedHashMap;
@@ -37,15 +39,17 @@ import java.util.Set;
  */
 public final class SearchMetadataToolService {
     
+    private static final int LARGE_RESULT_THRESHOLD = 100;
+    
     private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
-            "database", 0, "schema", 1, "table", 2, "view", 3, "column", 4, "index", 5, "sequence", 6);
+            "database", 0, "schema", 1, "storage_unit", 2, "table", 3, "view", 4, "column", 5, "index", 6, "sequence", 7);
     
     private final MetadataSearchCollector collector;
     
     private final MetadataSearchMatcher matcher = new MetadataSearchMatcher();
     
-    public SearchMetadataToolService(final MCPMetadataQueryFacade metadataQueryFacade) {
-        collector = new MetadataSearchCollector(metadataQueryFacade, new MetadataSearchResourceUriFactory());
+    public SearchMetadataToolService(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade) {
+        collector = new MetadataSearchCollector(metadataQueryFacade, queryFacade, new GovernanceMetadataQueryService(), new MetadataSearchResourceUriFactory());
     }
     
     /**
@@ -76,7 +80,15 @@ public final class SearchMetadataToolService {
                                                     final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {
         List<MetadataSearchHit> filteredItems = matcher.filterByQuery(metadataItems, request.getQuery());
         filteredItems.sort(this::compareSearchHits);
-        return new MetadataSearchResult(filteredItems, createSearchContext(request, searchObjectTypes, broadSearchGuarded), filteredItems.size());
+        List<MetadataSearchHit> returnedItems = pageSearchResult(filteredItems, request);
+        return new MetadataSearchResult(returnedItems, createSearchContext(request, searchObjectTypes, broadSearchGuarded), filteredItems.size(), returnedItems.size(),
+                request.getOffset() + returnedItems.size() < filteredItems.size(), LARGE_RESULT_THRESHOLD);
+    }
+    
+    private List<MetadataSearchHit> pageSearchResult(final List<MetadataSearchHit> items, final MetadataSearchRequest request) {
+        int fromIndex = Math.min(request.getOffset(), items.size());
+        int toIndex = (int) Math.min((long) fromIndex + request.getLimit(), items.size());
+        return items.subList(fromIndex, toIndex);
     }
     
     private Map<String, Object> createSearchContext(final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {
@@ -86,6 +98,8 @@ public final class SearchMetadataToolService {
         result.put("database_scope", request.getDatabase().isEmpty() ? "all_query_databases" : "single_database");
         result.put("schema", request.getSchema());
         result.put("object_types", createObjectTypeNames(searchObjectTypes));
+        result.put("limit", request.getLimit());
+        result.put("offset", request.getOffset());
         if (broadSearchGuarded) {
             result.put("broad_search_guarded", true);
             result.put("guard_reason", "Blank cross-database metadata search lists databases only instead of expanding every object type.");

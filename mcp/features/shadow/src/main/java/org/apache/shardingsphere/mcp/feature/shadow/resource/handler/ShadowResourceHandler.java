@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
 
 import java.util.List;
 import java.util.Map;
@@ -33,23 +35,14 @@ import java.util.Map;
 /**
  * Shadow resource handler.
  */
-public final class ShadowResourceHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShadowResourceHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private final String resourceUriTemplate;
     
     private final ResourceKind resourceKind;
     
-    private final ShadowInspectionService inspectionService;
-    
-    private ShadowResourceHandler(final String resourceUriTemplate, final ResourceKind resourceKind) {
-        this(resourceUriTemplate, resourceKind, new ShadowInspectionService());
-    }
-    
-    ShadowResourceHandler(final String resourceUriTemplate, final ResourceKind resourceKind, final ShadowInspectionService inspectionService) {
-        this.resourceUriTemplate = resourceUriTemplate;
-        this.resourceKind = resourceKind;
-        this.inspectionService = inspectionService;
-    }
+    private final ShadowInspectionService inspectionService = new ShadowInspectionService();
     
     /**
      * Create rules resource handler.
@@ -124,8 +117,8 @@ public final class ShadowResourceHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -134,21 +127,21 @@ public final class ShadowResourceHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(query(databaseContext, uriVariables),
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
+        return new MCPItemsPayload(query(requestContext, uriVariables),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
     
-    private List<Map<String, Object>> query(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    private List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         return switch (resourceKind) {
-            case RULES -> inspectionService.queryRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case RULE -> inspectionService.queryRule(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.RULE_FIELD));
-            case TABLE_RULES -> inspectionService.queryTableRules(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case TABLE_RULE -> inspectionService.queryTableRule(databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.TABLE_FIELD));
-            case ALGORITHMS -> inspectionService.queryAlgorithms(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case DEFAULT_ALGORITHM -> inspectionService.queryDefaultAlgorithm(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case RULE_COUNT -> inspectionService.queryRuleCount(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case ALGORITHM_PLUGINS -> inspectionService.queryAlgorithmPlugins(databaseContext.getQueryFacade());
+            case RULES -> inspectionService.queryRules(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case RULE -> inspectionService.queryRule(requestContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.RULE_FIELD));
+            case TABLE_RULES -> inspectionService.queryTableRules(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case TABLE_RULE -> inspectionService.queryTableRule(requestContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShadowFeatureDefinition.TABLE_FIELD));
+            case ALGORITHMS -> inspectionService.queryAlgorithms(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case DEFAULT_ALGORITHM -> inspectionService.queryDefaultAlgorithm(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case RULE_COUNT -> inspectionService.queryRuleCount(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case ALGORITHM_PLUGINS -> inspectionService.queryAlgorithmPlugins(requestContext.getQueryFacade()).getRows();
         };
     }
     

@@ -17,39 +17,46 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.encrypt.completion.EncryptAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptAlgorithmsHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRuleHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRulesHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.PlanEncryptRuleToolHandler;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Encrypt MCP handler provider.
  */
-public final class EncryptMCPHandlerProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
+public final class EncryptMCPHandlerProvider implements MCPWorkflowDefinitionProvider {
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
-        return Arrays.asList(new EncryptAlgorithmsHandler(), new EncryptRulesHandler(), new EncryptRuleHandler());
+        return List.of(new EncryptAlgorithmsHandler(), new EncryptRulesHandler(), new EncryptRuleHandler());
     }
     
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
-        return Collections.singleton(new PlanEncryptRuleToolHandler());
+        return List.of(new PlanEncryptRuleToolHandler());
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of(new EncryptAlgorithmCompletionHandler());
     }
     
     @Override
     public Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
-        return List.of(new WorkflowRuntimeDefinition(EncryptFeatureDefinition.WORKFLOW_KIND, new EncryptWorkflowValidationService()));
+        EncryptWorkflowValidationService validationService = new EncryptWorkflowValidationService();
+        return List.of(new WorkflowRuntimeDefinition(EncryptFeatureDefinition.WORKFLOW_KIND,
+                validationService, validationService, new EncryptWorkflowApplyArtifactValidator()));
     }
 }

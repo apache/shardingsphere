@@ -14,7 +14,7 @@ weight = 4
 
 ## 自然语言示例
 
-- 查看 `<logic-database>` 当前有哪些广播表规则。
+- 查看 `logic_db` 当前有哪些广播表规则。
 - 为 `config_region` 和 `config_feature` 规划广播表规则，先预览不要执行。
 - 删除 `config_region` 的广播表规则，并校验结果。
 
@@ -22,6 +22,8 @@ weight = 4
 
 - 确认计划语句是 `CREATE BROADCAST TABLE RULE` 或 `DROP BROADCAST TABLE RULE`。
 - 确认所有表名都是逻辑表名。
+- 执行 workflow 前，确认返回的 `plan_id`、`resources_to_read`、`next_actions` 和 `distsql_artifacts`。
+- 广播表规划不需要算法推荐或算法属性要求。
 - 执行前先预览 workflow，执行后校验 Proxy 可见规则状态。
 
 规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。

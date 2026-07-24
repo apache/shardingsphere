@@ -89,7 +89,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.log(Level.SEVERE, "Failed to execute the pre-method of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
+            LOGGER.log(Level.SEVERE, "Failed to execute the pre-method of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getName(), ex.getMessage()});
         }
     }
     
@@ -105,7 +105,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             // CHECKSTYLE:OFF
         } catch (final Throwable ignored) {
             // CHECKSTYLE:ON
-            LOGGER.log(Level.SEVERE, "Failed to execute the error handler of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
+            LOGGER.log(Level.SEVERE, "Failed to execute the error handler of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getName(), ex.getMessage()});
         }
     }
     
@@ -121,7 +121,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.log(Level.SEVERE, "Failed to execute the post-method of method `{0}` in class `{1}` {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
+            LOGGER.log(Level.SEVERE, "Failed to execute the post-method of method `{0}` in class `{1}` {2}.", new String[]{method.getName(), klass.getName(), ex.getMessage()});
         }
     }
     

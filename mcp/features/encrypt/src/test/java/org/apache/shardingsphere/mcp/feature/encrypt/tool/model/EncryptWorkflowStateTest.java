@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
-import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -31,20 +30,11 @@ class EncryptWorkflowStateTest {
     
     @Test
     void assertCopy() {
-        DerivedColumnPlan plan = new DerivedColumnPlan();
-        plan.setLogicalColumn("phone");
-        plan.setCipherColumnName("phone_cipher");
-        plan.setCipherColumnRequired(true);
-        plan.getNameCollisions().add(Map.of("original_name", "phone_cipher", "resolved_name", "phone_cipher_1"));
         EncryptWorkflowState state = new EncryptWorkflowState(List.of(Map.of("logic_column", "email")), List.of(Map.of("logic_column", "phone")));
-        state.setDerivedColumnPlan(plan);
         EncryptWorkflowState actual = state.copy();
         state.getExpectedRules().getFirst().put("logic_column", "mutated");
-        state.getDerivedColumnPlan().setCipherColumnName("mutated_cipher");
         assertThat(actual.getBeforeRules().getFirst().get("logic_column"), is("email"));
         assertThat(actual.getExpectedRules().getFirst().get("logic_column"), is("phone"));
-        assertThat(actual.getDerivedColumnPlan().getCipherColumnName(), is("phone_cipher"));
-        assertThat(actual.getDerivedColumnPlan().getNameCollisions().getFirst().get("resolved_name"), is("phone_cipher_1"));
     }
     
     @Test

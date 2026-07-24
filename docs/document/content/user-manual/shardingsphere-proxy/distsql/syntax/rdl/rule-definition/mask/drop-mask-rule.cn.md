@@ -13,7 +13,7 @@ weight = 3
 {{% tab name="语法" %}}
 ```sql
 DropMaskRule ::=
-  'DROP' 'MASK' 'RULE' ifExists? ruleName (',' ruleName)*
+  'DROP' 'MASK' 'TABLE'? 'RULE' ifExists? ruleName (',' ruleName)*
 
 ifExists ::=
   'IF' 'EXISTS'
@@ -47,7 +47,7 @@ DROP MASK RULE IF EXISTS t_mask, t_mask_1;
 
 ### 保留字
 
-`DROP`, `MASK`, `RULE`
+`DROP`, `MASK`, `TABLE`, `RULE`
 
 ### 相关链接
 

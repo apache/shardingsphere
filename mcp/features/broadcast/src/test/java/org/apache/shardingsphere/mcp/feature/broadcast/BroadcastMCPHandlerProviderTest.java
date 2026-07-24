@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.mcp.feature.broadcast;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastWorkflowValidationService;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -40,13 +41,20 @@ class BroadcastMCPHandlerProviderTest {
         Collection<MCPResourceHandler<?>> actual = new BroadcastMCPHandlerProvider().getResourceHandlers();
         assertThat(actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList(), is(List.of(
                 BroadcastFeatureDefinition.RULES_RESOURCE_URI,
+                BroadcastFeatureDefinition.TABLE_RULE_RESOURCE_URI,
                 BroadcastFeatureDefinition.RULE_COUNT_RESOURCE_URI)));
+        assertTrue(actual.stream().allMatch(each -> MCPFeatureRequestContext.class.equals(each.getContextType())));
     }
     
     @Test
     void assertGetToolHandlers() {
         MCPToolHandler<?> actual = new BroadcastMCPHandlerProvider().getToolHandlers().iterator().next();
         assertThat(actual.getToolName(), is(BroadcastFeatureDefinition.PLAN_TOOL_NAME));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        assertTrue(new BroadcastMCPHandlerProvider().getCompletionHandlers().isEmpty());
     }
     
     @Test

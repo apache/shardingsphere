@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
 import java.util.LinkedHashMap;
@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * Execute side-effecting SQL tool handler.
  */
-public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
+public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private static final String TOOL_NAME = "database_gateway_execute_update";
     
@@ -51,9 +51,19 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     
     private static final String RESULT_KIND_PREVIEW = "preview";
     
+    private static final String PREVIEW_REVIEW_GUIDANCE = "Review normalized_sql and side_effect_scope before execution. "
+            + "This preview performs database-aware validation and classification; it does not guarantee rule validation, algorithm initialization, affected rows, or runtime success.";
+    
+    private static final String RULE_DIST_SQL_PREVIEW_REVIEW_GUIDANCE = PREVIEW_REVIEW_GUIDANCE
+            + " For natural-language rule changes, prefer the matching database_gateway_plan_* workflow tool before raw execution.";
+    
+    private static final String PREVIEW_CONFIRMATION_REASON = "Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.";
+    
+    private static final String PREVIEW_EXECUTION_REASON = "Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.";
+    
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -62,21 +72,22 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
+        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String executionMode = resolveExecutionMode(toolArguments);
+        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
         String sql = toolArguments.getStringArgument("sql");
-        ClassificationResult classificationResult = checkUpdateStatement(toolArguments, sql);
+        ClassificationResult classificationResult = checkUpdateStatement(requestContext, toolArguments, sql);
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return createPreviewResponse(toolArguments, classificationResult);
         }
-        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, TOOL_NAME))
-                .withExecutionMode(EXECUTION_MODE_EXECUTE);
+        return SQLExecutionPayload.executed(requestContext.getExecutionFacade().execute(
+                SQLExecutionToolHandlerSupport.createExecutionRequest(requestContext.getSessionIdentity().getSessionId(), toolArguments, sql, TOOL_NAME)));
     }
     
-    private ClassificationResult checkUpdateStatement(final MCPToolArguments toolArguments, final String sql) {
-        ClassificationResult classificationResult = new StatementClassifier().classify(sql);
-        if (SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult)) {
+    private ClassificationResult checkUpdateStatement(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments, final String sql) {
+        ClassificationResult classificationResult = SQLExecutionToolHandlerSupport.analyze(requestContext, toolArguments, sql);
+        if (SQLExecutionToolHandlerSupport.isQueryStatement(classificationResult)) {
             throw new SQLToolMismatchException("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL.",
                     TOOL_NAME, "database_gateway_execute_query", classificationResult,
                     createQuerySuggestedArguments(toolArguments, classificationResult));
@@ -95,8 +106,8 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         throw new MCPInvalidExecutionModeException(TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
     }
     
-    private MCPResponse createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
-        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+    private MCPSuccessPayload createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
+        Map<String, Object> result = new LinkedHashMap<>(17, 1F);
         result.put("response_mode", MCPResponseMode.PREVIEW);
         result.put("result_kind", RESULT_KIND_PREVIEW);
         result.put(MCPPayloadFieldNames.EXECUTION_MODE, EXECUTION_MODE_PREVIEW);
@@ -110,15 +121,21 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("side_effect_scope", createSideEffectScope(classificationResult));
         classificationResult.getTargetObjectName().ifPresent(optional -> result.put("target_object", optional));
         classificationResult.getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
-        result.put("review_guidance", "Review normalized_sql and side_effect_scope before calling database_gateway_execute_update with execution_mode=execute.");
-        result.put("review_summary", createReviewSummary(classificationResult));
+        result.put("review_guidance", createReviewGuidance(classificationResult));
+        String reviewSummary = createReviewSummary(classificationResult);
+        result.put(MCPPayloadFieldNames.SUMMARY, reviewSummary);
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createResourcesToRead(toolArguments));
         result.put("argument_provenance", createArgumentProvenance(suggestedArguments));
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(TOOL_NAME,
-                "Execute after reviewing normalized_sql and side_effect_scope.", suggestedArguments)));
-        return new MCPMapResponse(result);
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createPreviewNextActions(suggestedArguments));
+        return new MCPMapPayload(result);
+    }
+    
+    private List<Map<String, Object>> createPreviewNextActions(final Map<String, Object> suggestedArguments) {
+        return MCPNextActionUtils.ordered(
+                MCPNextActionUtils.askUser(PREVIEW_CONFIRMATION_REASON, List.of("execution_approved")),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(TOOL_NAME, PREVIEW_EXECUTION_REASON, suggestedArguments), 1));
     }
     
     private String createReviewSummary(final ClassificationResult classificationResult) {
@@ -126,14 +143,12 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
                 String.join(", ", createSideEffectScope(classificationResult)));
     }
     
+    private String createReviewGuidance(final ClassificationResult classificationResult) {
+        return classificationResult.isRuleDistSQL() ? RULE_DIST_SQL_PREVIEW_REVIEW_GUIDANCE : PREVIEW_REVIEW_GUIDANCE;
+    }
+    
     private List<String> createSideEffectScope(final ClassificationResult classificationResult) {
-        return switch (classificationResult.getAnalyzedStatementClass().orElse(classificationResult.getStatementClass())) {
-            case DML -> List.of("physical-data");
-            case DDL -> List.of("physical-structure");
-            case DCL -> List.of("privilege-metadata");
-            case TRANSACTION_CONTROL, SAVEPOINT -> List.of("transaction-state");
-            default -> List.of("unknown-side-effect");
-        };
+        return List.of(classificationResult.getSideEffectScope());
     }
     
     private Map<String, Object> createSuggestedArguments(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {

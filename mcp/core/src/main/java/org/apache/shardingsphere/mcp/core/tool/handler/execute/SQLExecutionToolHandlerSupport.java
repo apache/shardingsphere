@@ -19,25 +19,33 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 
+import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class SQLExecutionToolHandlerSupport {
     
-    static boolean isReadOnlyStatement(final ClassificationResult classificationResult) {
-        if (SupportedMCPStatement.QUERY == classificationResult.getStatementClass()) {
-            return true;
-        }
-        return SupportedMCPStatement.EXPLAIN_ANALYZE == classificationResult.getStatementClass()
-                && SupportedMCPStatement.QUERY == classificationResult.getAnalyzedStatementClass().orElse(SupportedMCPStatement.QUERY);
+    private static final MCPStatementAnalyzer STATEMENT_ANALYZER = new MCPStatementAnalyzer();
+    
+    static boolean isQueryStatement(final ClassificationResult classificationResult) {
+        return SupportedMCPStatement.QUERY == classificationResult.getStatementClass();
+    }
+    
+    static ClassificationResult analyze(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments, final String sql) {
+        String database = toolArguments.getStringArgument("database");
+        MCPDatabaseCapability databaseCapability = requestContext.getCapabilityFacade().provide(database).orElseThrow(DatabaseCapabilityNotFoundException::new);
+        return STATEMENT_ANALYZER.analyze(sql, databaseCapability);
     }
     
     static void checkExecutionArguments(final MCPToolArguments toolArguments, final String sourceTool) {
@@ -46,25 +54,38 @@ final class SQLExecutionToolHandlerSupport {
                 MCPRuntimeProtectionPolicy.MAX_TIMEOUT_MILLISECONDS, MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS);
     }
     
-    static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String sql, final String sourceTool) {
-        return createExecutionRequest(toolCall, toolArguments, toolArguments.getStringArgument("schema"), sql, sourceTool);
+    static SQLExecutionRequest createExecutionRequest(final String sessionId, final MCPToolArguments toolArguments, final String sql, final String sourceTool) {
+        return createExecutionRequest(sessionId, toolArguments, toolArguments.getStringArgument("schema"), sql, sourceTool);
     }
     
-    static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
-        return createExecutionRequest(toolCall, toolArguments, schema, sql, sourceTool, false);
+    static SQLExecutionRequest createExecutionRequest(final String sessionId, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
+        return createExecutionRequest(sessionId, toolArguments, schema, sql, sourceTool, false);
     }
     
-    private static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool,
+    private static SQLExecutionRequest createExecutionRequest(final String sessionId, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool,
                                                               final boolean readOnlyExecution) {
-        return new SQLExecutionRequest(toolCall.getSessionId(), toolArguments.getStringArgument("database"), schema, sql,
+        return new SQLExecutionRequest(sessionId, toolArguments.getStringArgument("database"), schema, sql,
                 resolveMaxRows(toolArguments, sourceTool), getIntegerArgument(toolArguments, sourceTool, "timeout_ms", MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS,
                         MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS, MCPRuntimeProtectionPolicy.MAX_TIMEOUT_MILLISECONDS,
                         MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS),
                 readOnlyExecution);
     }
     
-    static SQLExecutionRequest createReadOnlyExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
-        return createExecutionRequest(toolCall, toolArguments, schema, sql, sourceTool, true);
+    static SQLExecutionRequest createReadOnlyExecutionRequest(final String sessionId, final MCPToolArguments toolArguments, final String schema, final String sql, final String sourceTool) {
+        return createExecutionRequest(sessionId, toolArguments, schema, sql, sourceTool, true);
+    }
+    
+    static String resolveSchema(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments) {
+        String result = toolArguments.getStringArgument("schema");
+        if (!result.isEmpty()) {
+            return result;
+        }
+        String database = toolArguments.getStringArgument("database");
+        if (database.isEmpty()) {
+            return "";
+        }
+        List<ShardingSphereSchema> schemas = requestContext.getMetadataQueryFacade().querySchemas(database);
+        return 1 == schemas.size() ? schemas.iterator().next().getName() : "";
     }
     
     private static int resolveMaxRows(final MCPToolArguments toolArguments, final String sourceTool) {

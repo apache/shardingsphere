@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DeclareVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropDatabaseContext;
@@ -69,8 +70,12 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableVariableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableTableColumnConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableTableColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
@@ -113,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.DeclareVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
@@ -499,5 +505,41 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
         return new DropSequenceStatement(getDatabaseType(), Collections.emptyList());
+    }
+    
+    @Override
+    public ASTNode visitDeclareVariable(final DeclareVariableContext ctx) {
+        VariableSegment variableName = (VariableSegment) visit(ctx.tableVariable().variableName());
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        for (TableVariableClauseContext each : ctx.tableVariable().variTableTypeDefinition().tableVariableClause()) {
+            if (null != each.variableTableColumnDefinition()) {
+                columnDefinitions.add((ColumnDefinitionSegment) visit(each.variableTableColumnDefinition()));
+            }
+        }
+        return new DeclareVariableStatement(getDatabaseType(), variableName, columnDefinitions);
+    }
+    
+    @Override
+    public ASTNode visitVariableTableColumnDefinition(final VariableTableColumnDefinitionContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+        DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
+        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType,
+                isVariableTableColumnPrimaryKey(ctx), isVariableTableColumnNotNull(ctx), getText(ctx));
+    }
+    
+    private boolean isVariableTableColumnNotNull(final VariableTableColumnDefinitionContext ctx) {
+        if (null == ctx.variableTableColumnConstraint()) {
+            return false;
+        }
+        VariableTableColumnConstraintContext constraint = ctx.variableTableColumnConstraint();
+        return null != constraint.NOT() && null != constraint.NULL();
+    }
+    
+    private boolean isVariableTableColumnPrimaryKey(final VariableTableColumnDefinitionContext ctx) {
+        if (null == ctx.variableTableColumnConstraint()) {
+            return false;
+        }
+        VariableTableColumnConstraintContext constraint = ctx.variableTableColumnConstraint();
+        return null != constraint.PRIMARY() && null != constraint.KEY();
     }
 }

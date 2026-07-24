@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public final class BroadcastRuleDistSQLPlanningService {
      * @return rule artifact
      */
     public RuleArtifact planCreateRule(final List<String> tableNames) {
-        return new RuleArtifact("create", String.format("CREATE BROADCAST TABLE RULE %s", formatTableNames(tableNames)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, String.format("CREATE BROADCAST TABLE RULE %s", formatTableNames(tableNames)));
     }
     
     /**
@@ -45,11 +46,11 @@ public final class BroadcastRuleDistSQLPlanningService {
      * @return rule artifact
      */
     public RuleArtifact planDropRule(final List<String> tableNames) {
-        return new RuleArtifact("drop", String.format("DROP BROADCAST TABLE RULE %s", formatTableNames(tableNames)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP BROADCAST TABLE RULE %s", formatTableNames(tableNames)));
     }
     
     private String formatTableNames(final List<String> tableNames) {
         return tableNames.stream().peek(each -> WorkflowSQLUtils.checkSupportedIdentifier("table", each))
-                .map(WorkflowSQLUtils::formatDistSQLIdentifier).collect(Collectors.joining(", "));
+                .map(WorkflowSQLUtils::formatGeneratedRuleDistSQLIdentifier).collect(Collectors.joining(", "));
     }
 }

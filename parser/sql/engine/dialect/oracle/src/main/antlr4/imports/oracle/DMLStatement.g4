@@ -28,11 +28,15 @@ insertSingleTable
     ;
 
 insertMultiTable
-    : (ALL multiTableElement+ | conditionalInsertClause) selectSubquery
+    : (ALL multiTableElements | conditionalInsertClause) selectSubquery
     ;
 
 multiTableElement
-    : insertIntoClause insertValuesClause? errorLoggingClause?
+    : multiTableInsertIntoClause insertValuesClause? errorLoggingClause?
+    ;
+
+multiTableElements
+    : multiTableElement+
     ;
 
 conditionalInsertClause
@@ -40,16 +44,19 @@ conditionalInsertClause
     ;
 
 conditionalInsertWhenPart
-    : WHEN expr THEN multiTableElement+
+    : WHEN expr THEN multiTableElements
     ;
 
 conditionalInsertElsePart
-    : ELSE multiTableElement+
+    : ELSE multiTableElements
     ;
 
 insertIntoClause
-    : INTO dmlTableExprClause
-    | INTO dmlTableExprClause columnNames?
+    : INTO dmlTableExprClause insertColumnNames?
+    ;
+
+multiTableInsertIntoClause
+    : INTO insertDmlTableExprClause insertColumnNames?
     ;
 
 insertValuesClause
@@ -57,12 +64,27 @@ insertValuesClause
     ;
 
 returningClause
-    : (RETURN | RETURNING) exprs INTO dataItem (COMMA_ dataItem)*
+    : (RETURN | RETURNING) exprs INTO returningIntoItem (COMMA_ returningIntoItem)*
+    ;
+
+returningIntoItem
+    : dataItem | parameterMarker
     ;
 
 dmlTableExprClause
-    : dmlTableClause | dmlSubqueryClause | tableCollectionExpr
-    | (dmlTableClause | dmlSubqueryClause | tableCollectionExpr) alias
+    : dmlTableClause dmlTableAlias?
+    | dmlSubqueryClause dmlTableAlias?
+    | tableCollectionExpr dmlTableAlias?
+    ;
+
+insertDmlTableExprClause
+    : dmlTableClause
+    | dmlSubqueryClause
+    | tableCollectionExpr
+    ;
+
+insertColumnNames
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 dmlTableClause
@@ -92,7 +114,7 @@ collectionExpr
     ;
 
 update
-    : UPDATE hint? updateSpecification (AS? alias)? updateSetClause whereClause? returningClause? errorLoggingClause?
+    : UPDATE hint? updateSpecification (AS? alias)? updateSetClause (whereClause | currentOfClause)? returningClause? errorLoggingClause?
     ;
 
 updateSpecification
@@ -125,7 +147,7 @@ assignmentValue
     ;
 
 delete
-    : DELETE hint? FROM? deleteSpecification alias? whereClause? returningClause? errorLoggingClause?
+    : DELETE hint? FROM? deleteSpecification alias? (whereClause | currentOfClause)? returningClause? errorLoggingClause?
     ;
 
 deleteSpecification
@@ -158,7 +180,17 @@ selectIntoClause
     ;
 
 variableNames
-    : variableName (COMMA_ variableName)*
+    : selectIntoTarget (COMMA_ selectIntoTarget)*
+    ;
+
+selectIntoTarget
+    : parameterMarker
+    | COLON_? variableName selectIntoTargetSuffix*
+    ;
+
+selectIntoTargetSuffix
+    : LP_ (expr (COMMA_ expr)*)? RP_
+    | DOT_ identifier
     ;
 
 variableName
@@ -178,7 +210,7 @@ functionDeclaration
     ;
 
 functionHeading
-    : FUNCTION functionName (LP_ parameterDeclaration (SQ_ parameterDeclaration)* RP_)? RETURN dataType
+    : FUNCTION functionName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
     ;
 
 parameterDeclaration
@@ -190,7 +222,7 @@ procedureDeclaration
     ;
 
 procedureHeading
-    : PROCEDURE procedureName (LP_ parameterDeclaration (SQ_ parameterDeclaration)* RP_)?
+    : PROCEDURE procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)?
     ;
 
 procedureProperties
@@ -449,9 +481,25 @@ fromClauseOption
     ;
 
 selectTableReference
-    : queryTableExprClause | containersClause | shardsClause
-    | (queryTableExprClause | containersClause | shardsClause) alias?
+    : (queryTableExprClause | containersClause | shardsClause) dmlTableAlias?
     | LP_ joinClause RP_
+    ;
+
+dmlTableAlias
+    : IDENTIFIER_
+    | DOUBLE_QUOTED_TEXT
+    | STRING_
+    | SINGLE_C
+    | SINGLE_K
+    | SINGLE_M
+    | SINGLE_G
+    | SINGLE_T
+    | SINGLE_P
+    | SINGLE_E
+    | SINGLE_H
+    | V1
+    | LENGTH
+    | CHILD
     ;
 
 queryTableExprClause
@@ -608,6 +656,10 @@ inlineAnalyticView
 
 whereClause
     : WHERE expr
+    ;
+
+currentOfClause
+    : WHERE CURRENT OF cursorName
     ;
 
 hierarchicalQueryClause

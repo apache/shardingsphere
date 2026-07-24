@@ -24,11 +24,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.OriginHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.ProtocolVersionHeaderConstraint;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Server transport security validator factory.
@@ -45,13 +41,7 @@ public final class ServerTransportSecurityValidatorFactory {
      * @return transport security validator
      */
     public static ServerTransportSecurityValidator create(final MCPSessionManager sessionManager, final String bindHost, final SessionAttributionResolver sessionAttributionResolver) {
-        return new ShardingSphereServerTransportSecurityValidator(sessionManager, createConstraints(bindHost), sessionAttributionResolver);
-    }
-    
-    private static List<TransportHeaderConstraint> createConstraints(final String bindHost) {
-        List<TransportHeaderConstraint> result = new LinkedList<>();
-        result.add(new OriginHeaderConstraint(HttpTransportHostUtils.isLoopbackHost(bindHost)));
-        result.add(new ProtocolVersionHeaderConstraint());
-        return result;
+        return new ShardingSphereServerTransportSecurityValidator(sessionManager, new OriginHeaderConstraint(HttpTransportHostUtils.isLoopbackHost(bindHost)),
+                new ProtocolVersionHeaderConstraint(), sessionAttributionResolver);
     }
 }

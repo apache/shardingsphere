@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -34,24 +35,16 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        Map<String, RuntimeDatabaseConfiguration> actual = swapper.swapToObject(Map.of("logic_db", Map.of(
-                "databaseType", "MySQL",
-                "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
-                "username", "demo",
-                "password", "",
-                "driverClassName", "com.mysql.cj.jdbc.Driver")));
+        Map<String, RuntimeDatabaseConfiguration> actual = swapper.swapToObject(Map.of(
+                "logic_db", createYamlRuntimeDatabaseConfiguration("jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver")));
         
-        assertThat(actual.get("logic_db").getDatabaseType(), is("MySQL"));
         assertThat(actual.get("logic_db").getJdbcUrl(), is("jdbc:mysql://localhost:3306/logic_db"));
     }
     
     @Test
     void assertSwapToObjectWithPasswordMissing() {
-        Map<String, RuntimeDatabaseConfiguration> actual = swapper.swapToObject(Map.of("logic_db", Map.of(
-                "databaseType", "MySQL",
-                "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
-                "username", "demo",
-                "driverClassName", "com.mysql.cj.jdbc.Driver")));
+        Map<String, RuntimeDatabaseConfiguration> actual = swapper.swapToObject(Map.of(
+                "logic_db", createYamlRuntimeDatabaseConfiguration("jdbc:mysql://localhost:3306/logic_db", "demo", null, "com.mysql.cj.jdbc.Driver")));
         
         assertThat(actual.get("logic_db").getPassword(), is(""));
     }
@@ -65,7 +58,7 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     
     @Test
     void assertSwapToObjectWithNullRuntimeDatabaseConfiguration() {
-        Map<String, Map<String, Object>> yamlRuntimeConfiguration = new LinkedHashMap<>(1, 1F);
+        Map<String, YamlRuntimeDatabaseConfiguration> yamlRuntimeConfiguration = new LinkedHashMap<>(1, 1F);
         yamlRuntimeConfiguration.put("logic_db", null);
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlRuntimeConfiguration));
@@ -74,25 +67,11 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectWithUnsupportedRuntimeDatabaseProperty() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(Map.of("logic_db", Map.of(
-                "databaseType", "MySQL",
-                "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
-                "username", "demo",
-                "password", "",
-                "driverClassName", "com.mysql.cj.jdbc.Driver",
-                "unsupported", true))));
-        
-        assertThat(actual.getMessage(), is("Unsupported runtime database property `unsupported`."));
-    }
-    
-    @Test
     void assertSwapToYamlConfiguration() {
-        Map<String, Map<String, Object>> actual = swapper.swapToYamlConfiguration(Map.of(
-                "logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver")));
+        Map<String, YamlRuntimeDatabaseConfiguration> actual = swapper.swapToYamlConfiguration(Map.of(
+                "logic_db", new RuntimeDatabaseConfiguration("jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver")));
         
-        assertThat(String.valueOf(actual.get("logic_db").get("databaseType")), is("MySQL"));
-        assertThat(String.valueOf(actual.get("logic_db").get("driverClassName")), is("com.mysql.cj.jdbc.Driver"));
+        assertThat(actual.get("logic_db").getDriverClassName(), is("com.mysql.cj.jdbc.Driver"));
     }
     
     @Test
@@ -103,5 +82,14 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToYamlConfiguration(runtimeDatabases));
         
         assertThat(actual.getMessage(), is("Runtime database configuration cannot be null."));
+    }
+    
+    private YamlRuntimeDatabaseConfiguration createYamlRuntimeDatabaseConfiguration(final String jdbcUrl, final String username, final String password, final String driverClassName) {
+        YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
+        result.setJdbcUrl(jdbcUrl);
+        result.setUsername(username);
+        result.setPassword(password);
+        result.setDriverClassName(driverClassName);
+        return result;
     }
 }

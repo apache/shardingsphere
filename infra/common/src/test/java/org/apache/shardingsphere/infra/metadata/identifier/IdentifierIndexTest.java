@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.StandardIdentifierCaseRule;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.AmbiguousIdentifierException;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertRebuild() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         index.rebuild(createSingleValueMap("Foo", "value_1"));
         index.rebuild(createSingleValueMap("Bar", "value_2"));
         Optional<String> actualValue = index.find(new IdentifierValue("\"Bar\""));
@@ -52,7 +51,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertGetAll() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         Map<String, String> values = new LinkedHashMap<>(2, 1F);
         values.put("Foo", "value_1");
         values.put("Bar", "value_2");
@@ -62,7 +61,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertGetAllNames() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         Map<String, String> values = new LinkedHashMap<>(2, 1F);
         values.put("Foo", "value_1");
         values.put("Bar", "value_2");
@@ -72,7 +71,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertFindWithExactLookup() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         index.rebuild(createSingleValueMap("Foo", "value_1"));
         Optional<String> actualValue = index.find(new IdentifierValue("\"Foo\""));
         assertThat(actualValue, is(Optional.of("value_1")));
@@ -80,14 +79,14 @@ class IdentifierIndexTest {
     
     @Test
     void assertPut() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         index.put("Foo", "value_1");
         assertThat(index.find(new IdentifierValue("\"Foo\"")), is(Optional.of("value_1")));
     }
     
     @Test
     void assertPutOverridesExistingValue() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         index.put("Foo", "value_1");
         index.put("Foo", "value_2");
         assertThat(index.find(new IdentifierValue("\"Foo\"")), is(Optional.of("value_2")));
@@ -95,7 +94,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertFindWithNormalizedLookup() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createPostgreSQLRule())), IdentifierScope.TABLE);
         index.rebuild(createSingleValueMap("foo", "value_1"));
         Optional<String> actualValue = index.find(new IdentifierValue("FOO"));
         assertThat(actualValue, is(Optional.of("value_1")));
@@ -103,21 +102,21 @@ class IdentifierIndexTest {
     
     @Test
     void assertContainsWithNormalizedLookup() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createPostgreSQLRule())), IdentifierScope.TABLE);
         index.rebuild(createSingleValueMap("foo", "value_1"));
         assertTrue(index.contains("FOO"));
     }
     
     @Test
     void assertGetWithNormalizedLookup() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createPostgreSQLRule())), IdentifierScope.TABLE);
         index.rebuild(createSingleValueMap("foo", "value_1"));
         assertThat(index.get("FOO"), is("value_1"));
     }
     
     @Test
     void assertFindWithNormalizedLookupIgnoresNonMatchingStoredCase() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createPostgreSQLRule())), IdentifierScope.TABLE);
         Map<String, String> values = new LinkedHashMap<>(2, 1F);
         values.put("Foo", "value_1");
         values.put("foo", "value_2");
@@ -128,7 +127,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertFindWithQuotedNormalizedLookup() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
         index.rebuild(createSingleValueMap("t_mask", "value_1"));
         Optional<String> actualValue = index.find(new IdentifierValue("`T_MASK`"));
         assertThat(actualValue, is(Optional.of("value_1")));
@@ -136,7 +135,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertFindPrefersExactIdentifierWhenNormalizedLookupMatchesMultipleValues() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
         index.rebuild(createAmbiguousValueMap());
         Optional<String> actualValue = index.find(new IdentifierValue("foo"));
         assertThat(actualValue, is(Optional.of("value_2")));
@@ -144,14 +143,14 @@ class IdentifierIndexTest {
     
     @Test
     void assertGetPrefersExactIdentifierWhenNormalizedLookupMatchesMultipleValues() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
         index.rebuild(createAmbiguousValueMap());
         assertThat(index.get("foo"), is("value_2"));
     }
     
     @Test
     void assertRemove() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         index.put("Foo", "value_1");
         String actualValue = index.remove("Foo");
         assertThat(actualValue, is("value_1"));
@@ -160,13 +159,13 @@ class IdentifierIndexTest {
     
     @Test
     void assertRemoveReturnsNullWhenMissing() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         assertNull(index.remove("Foo"));
     }
     
     @Test
     void assertFindReturnsEmpty() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createPostgreSQLRule())), IdentifierScope.TABLE);
         index.rebuild(createSingleValueMap("foo", "value_1"));
         Optional<String> actualValue = index.find(new IdentifierValue("bar"));
         assertThat(actualValue, is(Optional.empty()));
@@ -174,7 +173,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertIsEmpty() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         assertTrue(index.isEmpty());
         index.put("Foo", "value_1");
         assertFalse(index.isEmpty());
@@ -182,7 +181,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertSize() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createExactRule())), IdentifierScope.TABLE);
         assertThat(index.size(), is(0));
         index.put("Foo", "value_1");
         assertThat(index.size(), is(1));
@@ -190,7 +189,7 @@ class IdentifierIndexTest {
     
     @Test
     void assertFindThrowsAmbiguousIdentifierException() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
         index.rebuild(createAmbiguousValueMap());
         AmbiguousIdentifierException actualException = assertThrows(AmbiguousIdentifierException.class, () -> index.find(new IdentifierValue("FOO")));
         assertThat(actualException.getMessage(), is("Identifier 'FOO' is ambiguous, matched actual identifiers: Foo, foo."));
@@ -198,24 +197,25 @@ class IdentifierIndexTest {
     
     @Test
     void assertGetThrowsAmbiguousIdentifierException() {
-        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCasePolicySet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
         index.rebuild(createAmbiguousValueMap());
         AmbiguousIdentifierException actualException = assertThrows(AmbiguousIdentifierException.class, () -> index.get("FOO"));
         assertThat(actualException.getMessage(), is("Identifier 'FOO' is ambiguous, matched actual identifiers: Foo, foo."));
     }
     
-    private IdentifierCaseRule createExactRule() {
-        return new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> true);
+    private IdentifierCasePolicy createExactRule() {
+        return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> each, each -> each, each -> true);
     }
     
-    private IdentifierCaseRule createPostgreSQLRule() {
-        return new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.NORMALIZED,
-                each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
+    private IdentifierCasePolicy createPostgreSQLRule() {
+        return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
+                each -> each, each -> each.toLowerCase(Locale.ENGLISH), each -> each.toLowerCase(Locale.ENGLISH),
+                each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
     }
     
-    private IdentifierCaseRule createMySQLInsensitiveRule() {
-        return new StandardIdentifierCaseRule(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
-                each -> each.toLowerCase(Locale.ENGLISH), each -> true);
+    private IdentifierCasePolicy createMySQLInsensitiveRule() {
+        return new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
+                each -> each, each -> each.toLowerCase(Locale.ENGLISH), each -> each.toLowerCase(Locale.ENGLISH), each -> true);
     }
     
     private Map<String, String> createSingleValueMap(final String key, final String value) {

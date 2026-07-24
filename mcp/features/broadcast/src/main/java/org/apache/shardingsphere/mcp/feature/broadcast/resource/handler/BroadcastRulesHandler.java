@@ -17,34 +17,26 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPayloadBuilder;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
 
 /**
  * Broadcast rules handler.
  */
-public final class BroadcastRulesHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
+public final class BroadcastRulesHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
-    private final BroadcastRuleInspectionService ruleInspectionService;
-    
-    public BroadcastRulesHandler() {
-        ruleInspectionService = new BroadcastRuleInspectionService();
-    }
-    
-    BroadcastRulesHandler(final BroadcastRuleInspectionService ruleInspectionService) {
-        this.ruleInspectionService = ruleInspectionService;
-    }
+    private final BroadcastRuleInspectionService ruleInspectionService = new BroadcastRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -53,8 +45,8 @@ public final class BroadcastRulesHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.queryBroadcastRules(databaseContext.getQueryFacade(), uriVariables.getValue("database")),
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
+        return new MCPItemsPayload(ruleInspectionService.queryBroadcastRules(requestContext.getQueryFacade(), uriVariables.getValue("database")),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
 }

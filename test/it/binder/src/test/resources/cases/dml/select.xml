@@ -1766,4 +1766,52 @@
             <parameter-marker-expression parameter-index="0" start-index="147" stop-index="147" />
         </parameters>
     </select>
+    
+    <select sql-case-id="select_with_top_and_delimited_row_number_alias" parameters="10, 5">
+        <projections start-index="7" stop-index="20">
+            <column-projection name="rownum_" start-index="7" stop-index="20" start-delimiter="[" end-delimiter="]">
+                <owner name="row_" start-index="7" stop-index="10" />
+            </column-projection>
+        </projections>
+        <from>
+            <subquery-table alias="row_" start-index="27" stop-index="115">
+                <subquery>
+                    <select>
+                        <projections start-index="35" stop-index="94">
+                            <top-projection alias="rownum_" start-index="35" stop-index="94">
+                                <top-value value="10" parameter-index="0" start-index="40" stop-index="40" />
+                            </top-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="t_order" alias="o" start-index="101" stop-index="109">
+                                <table-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="dbo" />
+                                </table-bound>
+                            </simple-table>
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <where start-index="117" stop-index="140">
+            <expr>
+                <binary-operation-expression start-index="123" stop-index="140">
+                    <left>
+                        <column name="rownum_" start-index="123" stop-index="136" start-delimiter="[" end-delimiter="]">
+                            <owner name="row_" start-index="123" stop-index="126" />
+                        </column>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="1" start-index="140" stop-index="140" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <parameters>
+            <parameter-marker-expression parameter-index="0" start-index="40" stop-index="40" />
+            <parameter-marker-expression parameter-index="1" start-index="140" stop-index="140" />
+        </parameters>
+    </select>
 </sql-parser-test-cases>

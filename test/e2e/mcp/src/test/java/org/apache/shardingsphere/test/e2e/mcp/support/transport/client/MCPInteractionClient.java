@@ -49,11 +49,8 @@ public interface MCPInteractionClient extends AutoCloseable {
      * Get initialize payload.
      *
      * @return raw initialize JSON-RPC payload
-     * @throws UnsupportedOperationException unsupported operation exception
      */
-    default Map<String, Object> getInitializePayload() {
-        throw new UnsupportedOperationException("initialize payload is not available.");
-    }
+    Map<String, Object> getInitializePayload();
     
     /**
      * List tools.
@@ -61,11 +58,8 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @return MCP tool list payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
-     * @throws UnsupportedOperationException unsupported operation exception
      */
-    default List<Map<String, Object>> listTools() throws IOException, InterruptedException {
-        throw new UnsupportedOperationException("tools/list is not supported.");
-    }
+    List<Map<String, Object>> listTools() throws IOException, InterruptedException;
     
     /**
      * List resources.
@@ -73,11 +67,8 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @return MCP resources payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
-     * @throws UnsupportedOperationException unsupported operation exception
      */
-    default Map<String, Object> listResources() throws IOException, InterruptedException {
-        throw new UnsupportedOperationException("resources/list is not supported.");
-    }
+    Map<String, Object> listResources() throws IOException, InterruptedException;
     
     /**
      * List resource templates.
@@ -85,11 +76,8 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @return MCP resource templates payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
-     * @throws UnsupportedOperationException unsupported operation exception
      */
-    default Map<String, Object> listResourceTemplates() throws IOException, InterruptedException {
-        throw new UnsupportedOperationException("resources/templates/list is not supported.");
-    }
+    Map<String, Object> listResourceTemplates() throws IOException, InterruptedException;
     
     /**
      * List prompts.
@@ -97,11 +85,8 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @return MCP prompts payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
-     * @throws UnsupportedOperationException unsupported operation exception
      */
-    default Map<String, Object> listPrompts() throws IOException, InterruptedException {
-        throw new UnsupportedOperationException("prompts/list is not supported.");
-    }
+    Map<String, Object> listPrompts() throws IOException, InterruptedException;
     
     /**
      * Get prompt.
@@ -111,11 +96,8 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @return MCP prompt payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
-     * @throws UnsupportedOperationException unsupported operation exception
      */
-    default Map<String, Object> getPrompt(final String promptName, final Map<String, Object> arguments) throws IOException, InterruptedException {
-        throw new UnsupportedOperationException("prompts/get is not supported.");
-    }
+    Map<String, Object> getPrompt(String promptName, Map<String, Object> arguments) throws IOException, InterruptedException;
     
     /**
      * Complete one argument.
@@ -127,12 +109,9 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @return MCP completion payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
-     * @throws UnsupportedOperationException unsupported operation exception
      */
-    default Map<String, Object> complete(final Map<String, Object> reference, final String argumentName, final String argumentValue,
-                                         final Map<String, String> contextArguments) throws IOException, InterruptedException {
-        throw new UnsupportedOperationException("completion/complete is not supported.");
-    }
+    Map<String, Object> complete(Map<String, Object> reference, String argumentName, String argumentValue,
+                                 Map<String, String> contextArguments) throws IOException, InterruptedException;
     
     /**
      * Read resource.
@@ -141,7 +120,6 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @return MCP resource payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
-     * @throws UnsupportedOperationException unsupported operation exception
      */
     Map<String, Object> readResource(String resourceUri) throws IOException, InterruptedException;
     
@@ -154,11 +132,18 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @return raw JSON-RPC payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
-     * @throws UnsupportedOperationException unsupported operation exception
      */
-    default Map<String, Object> sendRawRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException, InterruptedException {
-        throw new UnsupportedOperationException("Raw JSON-RPC request is not supported.");
-    }
+    Map<String, Object> sendRawRequest(String requestId, String method, Map<String, Object> params) throws IOException, InterruptedException;
+    
+    /**
+     * Send raw JSON-RPC notification.
+     *
+     * @param method method name
+     * @param params notification params
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
+    void sendRawNotification(String method, Map<String, Object> params) throws IOException, InterruptedException;
     
     @Override
     void close() throws IOException, InterruptedException;

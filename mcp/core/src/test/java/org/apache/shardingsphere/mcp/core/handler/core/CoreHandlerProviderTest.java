@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.handler.core;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.core.completion.handler.MetadataCompletionHandler;
+import org.apache.shardingsphere.mcp.core.completion.handler.WorkflowPlanIdCompletionHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -34,18 +37,27 @@ class CoreHandlerProviderTest {
     void assertGetToolHandlers() {
         Collection<MCPToolHandler<?>> actual = new CoreHandlerProvider().getToolHandlers();
         assertThat(actual.stream().map(MCPToolHandler::getToolName).toList(),
-                is(List.of("database_gateway_search_metadata", "database_gateway_validate_proxy_connectivity", "database_gateway_execute_query", "database_gateway_execute_update",
-                        "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
+                is(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query", "database_gateway_execute_explain_query",
+                        "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
     }
     
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new CoreHandlerProvider().getResourceHandlers();
-        assertThat(actual.size(), is(20));
+        assertThat(actual.size(), is(27));
         List<String> actualUris = actual.stream().map(MCPResourceHandler::getResourceUriTemplate).toList();
         assertTrue(actualUris.contains("shardingsphere://capabilities"));
+        assertTrue(actualUris.contains("shardingsphere://guidance"));
         assertTrue(actualUris.contains("shardingsphere://runtime"));
         assertTrue(actualUris.contains("shardingsphere://workflows/{plan_id}"));
+        assertTrue(actualUris.contains("shardingsphere://databases/{database}/storage-units/{storageUnit}"));
+        assertTrue(actualUris.contains("shardingsphere://databases/{database}/single-table/default-storage-unit"));
         assertTrue(actualUris.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        Collection<MCPCompletionHandler<?>> actual = new CoreHandlerProvider().getCompletionHandlers();
+        assertThat(actual.stream().map(Object::getClass).toList(), is(List.of(MetadataCompletionHandler.class, WorkflowPlanIdCompletionHandler.class)));
     }
 }

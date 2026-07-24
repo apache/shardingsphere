@@ -14,6 +14,8 @@ weight = 2
 ```sql
 unloadSingleTable ::=
   'UNLOAD' 'SINGLE' 'TABLE' tableNames
+  | 'UNLOAD' 'SINGLE' 'TABLE' '*'
+  | 'UNLOAD' 'ALL' 'SINGLE' 'TABLES'
 
 tableNames ::=
   tableName (',' tableName)*

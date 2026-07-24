@@ -17,15 +17,23 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Dialect generated key option.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DialectGeneratedKeyOption {
+public interface DialectGeneratedKeyOption {
     
-    private final String columnName;
+    /**
+     * Get generated key column name.
+     *
+     * @return generated key column name
+     */
+    String getColumnName();
+    
+    /**
+     * Check if the explicit value triggers an auto-increment key generation.
+     *
+     * @param value explicit insert value
+     * @return whether the value triggers generated key
+     */
+    boolean isGeneratedKeyTriggerValue(Object value);
 }

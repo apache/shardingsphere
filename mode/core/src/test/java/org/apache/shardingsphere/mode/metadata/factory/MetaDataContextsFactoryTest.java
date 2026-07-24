@@ -77,6 +77,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -109,11 +110,23 @@ class MetaDataContextsFactoryTest {
         when(ShardingSphereDatabaseFactory.create(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
                 any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class), anyCollection()))
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(5)));
+        when(ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
+                any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class), anyCollection()))
+                .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(5)));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
         when(DatabaseTypeEngine.getProtocolType(any(DatabaseConfiguration.class), any(ConfigurationProperties.class))).thenReturn(databaseType);
         when(DatabaseTypeFactory.get(anyString())).thenReturn(databaseType);
+        when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenAnswer(invocation -> createStorageUnitNodeMap(invocation.getArgument(0)));
         when(metaDataPersistFacade.getRepository()).thenReturn(repository);
         when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load(anyString(), any(DatabaseType.class))).thenReturn(Collections.emptyList());
+    }
+    
+    private Map<String, StorageNode> createStorageUnitNodeMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
+        Map<String, StorageNode> result = new LinkedHashMap<>(dataSourcePoolPropsMap.size(), 1F);
+        for (String each : dataSourcePoolPropsMap.keySet()) {
+            result.put(each, new StorageNode(each));
+        }
+        return result;
     }
     
     private ShardingSphereDatabase createDatabaseFromConfiguration(final String databaseName, final DatabaseType protocolType,
@@ -148,7 +161,7 @@ class MetaDataContextsFactoryTest {
     }
     
     @Test
-    void assertCreateBySwitchResourceFiltersStaleResources() throws SQLException {
+    void assertCreateBySwitchResourceFiltersStaleResources() {
         StorageNode staleNode = new StorageNode("stale_ds");
         StorageNode activeNode = new StorageNode("active_ds");
         Map<StorageNode, DataSource> currentStorageNodes = new LinkedHashMap<>(2, 1F);
@@ -177,7 +190,7 @@ class MetaDataContextsFactoryTest {
     }
     
     @Test
-    void assertCreateBySwitchResourceKeepsExistingNodesWhenNoNewDataSources() throws SQLException {
+    void assertCreateBySwitchResourceKeepsExistingNodesWhenNoNewDataSources() {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit();
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
@@ -192,7 +205,7 @@ class MetaDataContextsFactoryTest {
     }
     
     @Test
-    void assertCreateByAlterRuleKeepsPersistedSchemasWhenEnabled() throws SQLException {
+    void assertCreateByAlterRuleKeepsPersistedSchemasWhenEnabled() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
@@ -206,6 +219,22 @@ class MetaDataContextsFactoryTest {
         ShardingSphereSchema persistedSchema = loadedSchemas.iterator().next();
         assertThat(persistedSchema.getAllTables().size(), is(1));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));
+    }
+    
+    @Test
+    void assertCreateByAlterRuleWithReloadedSchemasPassesCurrentSchemasAsRevisionCandidates() throws SQLException {
+        ShardingSphereSchema currentSchema = createSchemaWithTable("foo_schema", "current_table");
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.singleton(currentSchema),
+                new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
+                new ConfigurationProperties(new Properties()));
+        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
+        ShardingSphereDatabase actualDatabase = new MetaDataContextsFactory(metaDataPersistFacade, mock())
+                .createChangedDatabaseByRebuild("foo_db", null, Collections.singleton(new MockedRuleConfiguration("alter_rule")), originalMetaDataContexts);
+        assertTrue(actualDatabase.containsSchema("foo_schema"));
+        assertTrue(actualDatabase.getSchema("foo_schema").containsTable("current_table"));
     }
     
     @Test
@@ -228,7 +257,7 @@ class MetaDataContextsFactoryTest {
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo", new MockedDataSource()), Collections.emptyList());
         return new ContextManagerBuilderParameter(null, Collections.singletonMap("foo_db", databaseConfig), Collections.emptyMap(),
-                Collections.emptyList(), new Properties(), Collections.emptyList(), null);
+                Collections.emptyList(), new Properties(), null);
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final String... storageUnitNames) {
@@ -247,6 +276,8 @@ class MetaDataContextsFactoryTest {
         props.put("url", "jdbc:mock://127.0.0.1/" + storageUnitName);
         props.put("username", "root");
         StorageUnit result = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(result.getStorageNode()).thenReturn(new StorageNode(storageUnitName));
+        when(result.getStorageType()).thenReturn(databaseType);
         when(result.getDataSourcePoolProperties()).thenReturn(new DataSourcePoolProperties("HikariCP", props));
         when(result.getDataSource()).thenReturn(new MockedDataSource());
         return result;

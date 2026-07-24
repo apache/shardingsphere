@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Shadow MCP feature definition.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowFeatureDefinition {
     
     public static final String PLAN_RULE_TOOL_NAME = "database_gateway_plan_shadow_rule";
@@ -56,6 +59,8 @@ public final class ShadowFeatureDefinition {
     
     public static final String ALGORITHM_PROPERTIES_FIELD = "algorithm_properties";
     
+    public static final String DEFAULT_ALGORITHM_TYPE = "SQL_HINT";
+    
     public static final String RULES_RESOURCE_URI = "shardingsphere://features/shadow/databases/{database}/rules";
     
     public static final String RULE_RESOURCE_URI = "shardingsphere://features/shadow/databases/{database}/rules/{rule}";
@@ -72,6 +77,10 @@ public final class ShadowFeatureDefinition {
     
     public static final String ALGORITHM_PLUGINS_RESOURCE_URI = "shardingsphere://features/shadow/algorithm-plugins";
     
-    private ShadowFeatureDefinition() {
-    }
+    public static final String STORAGE_UNITS_RESOURCE_URI = "shardingsphere://databases/{database}/storage-units";
+    
+    public static final String SINGLE_TABLES_RESOURCE_URI = "shardingsphere://databases/{database}/single-tables";
+    
+    public static final String SINGLE_TABLE_RESOURCE_URI = "shardingsphere://databases/{database}/single-tables/{table}";
+    
 }

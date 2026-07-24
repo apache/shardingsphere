@@ -17,10 +17,22 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Workflow lifecycle vocabulary.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowLifecycle {
+    
+    public static final String DELIVERY_MODE_ALL_AT_ONCE = "all-at-once";
+    
+    public static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
+    
+    public static final String EXECUTION_MODE_PREVIEW = "preview";
+    
+    public static final String EXECUTION_MODE_REVIEW_THEN_EXECUTE = "review-then-execute";
     
     public static final String STATUS_AWAITING_MANUAL_EXECUTION = "awaiting-manual-execution";
     
@@ -44,7 +56,15 @@ public final class WorkflowLifecycle {
     
     public static final String STEP_CLARIFYING = "clarifying";
     
+    public static final String STEP_COLLECTING_PROPERTIES = "collecting-properties";
+    
+    public static final String STEP_COLLECTING_RULE_INPUTS = "collecting-rule-inputs";
+    
+    public static final String STEP_DISCOVERING = "discovering";
+    
     public static final String STEP_EXECUTED = "executed";
+    
+    public static final String STEP_EXECUTING = "executing";
     
     public static final String STEP_FAILED = "failed";
     
@@ -52,12 +72,20 @@ public final class WorkflowLifecycle {
     
     public static final String STEP_MANUAL_EXECUTION = "manual-execution";
     
+    public static final String STEP_PLANNING_ARTIFACTS = "planning-artifacts";
+    
     public static final String STEP_REVIEW = "review";
+    
+    public static final String STEP_SELECTING_ALGORITHM = "selecting-algorithm";
     
     public static final String STEP_VALIDATED = "validated";
     
+    public static final String STEP_VALIDATING = "validating";
+    
+    public static final String OPERATION_ALTER = "alter";
+    
+    public static final String OPERATION_CREATE = "create";
+    
     public static final String OPERATION_DROP = "drop";
     
-    private WorkflowLifecycle() {
-    }
 }

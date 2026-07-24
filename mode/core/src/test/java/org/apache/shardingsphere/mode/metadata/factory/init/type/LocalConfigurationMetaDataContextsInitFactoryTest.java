@@ -113,6 +113,6 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter(final Map<String, DatabaseConfiguration> databaseConfigs, final Properties props) {
-        return new ContextManagerBuilderParameter(null, databaseConfigs, Collections.emptyMap(), Collections.emptyList(), props, Collections.emptyList(), null);
+        return new ContextManagerBuilderParameter(null, databaseConfigs, Collections.emptyMap(), Collections.emptyList(), props, null);
     }
 }

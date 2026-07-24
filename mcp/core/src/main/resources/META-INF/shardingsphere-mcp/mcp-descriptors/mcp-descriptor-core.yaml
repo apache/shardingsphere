@@ -19,8 +19,8 @@ resources:
     name: server-capability-catalog
     title: ShardingSphere MCP Capability Catalog
     description: >
-      Generated ShardingSphere domain catalog for resources, resource templates, tools, prompts, completions, workflow relationships,
-      side-effect notes, and navigation hints. Use official MCP discovery methods for protocol surface discovery.
+      Generated ShardingSphere domain catalog for supported SQL statement classes, completion targets, workflow relationships, and navigation hints.
+      Use MCP list methods for resources, resource templates, tools, and prompts. Read shardingsphere://guidance for model-facing workflow and safety guidance.
     mimeType: application/json
     annotations:
       audience:
@@ -30,6 +30,23 @@ resources:
       resourceKind: capability-catalog
       useBefore:
         - inspecting ShardingSphere catalog metadata
+        - planning multi-step workflows
+  - uri: shardingsphere://guidance
+    name: server-guidance
+    title: ShardingSphere MCP Guidance
+    description: "Read model-facing ShardingSphere MCP guidance for discovery order, tool selection, workflow handling, side-effect review, and recovery behavior."
+    mimeType: application/json
+    annotations:
+      audience:
+        - assistant
+      priority: 0.95
+    shardingSphereMetadata:
+      resourceKind: guidance
+      relatedResources:
+        - shardingsphere://capabilities
+        - shardingsphere://databases
+      useBefore:
+        - choosing MCP tools
         - planning multi-step workflows
   - uri: shardingsphere://runtime
     name: runtime-status
@@ -57,6 +74,7 @@ resources:
       relatedTools:
         - database_gateway_search_metadata
         - database_gateway_execute_query
+        - database_gateway_execute_explain_query
 resourceTemplates:
   - uriTemplate: shardingsphere://databases/{database}
     name: logical-database-detail
@@ -75,7 +93,7 @@ resourceTemplates:
   - uriTemplate: shardingsphere://databases/{database}/capabilities
     name: database-capabilities
     title: Database Capabilities
-    description: "Read statement, transaction, schema, and metadata-object capabilities for one logical database. Use before executing SQL or deciding whether EXPLAIN ANALYZE is available."
+    description: "Read statement, transaction, schema, and metadata-object capabilities for one logical database. Use before executing SQL or preparing a database-native EXPLAIN candidate."
     mimeType: application/json
     shardingSphereMetadata:
       uriVariables:
@@ -87,7 +105,111 @@ resourceTemplates:
       resourceKind: detail
       relatedTools:
         - database_gateway_execute_query
+        - database_gateway_execute_explain_query
         - database_gateway_execute_update
+  - uriTemplate: shardingsphere://databases/{database}/storage-units
+    name: storage-units
+    title: Storage Units
+    description: "List Proxy-visible storage units in one ShardingSphere logical database. Use this before planning rules that require storage unit names."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose storage units should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      objectScope: storage_unit
+      relatedTools:
+        - database_gateway_search_metadata
+  - uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}
+    name: storage-unit-detail
+    title: Storage Unit Detail
+    description: "Read one Proxy-visible storage unit without exposing secret connection properties. Use this to confirm host, port, type, and pool settings."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the storage unit."
+          required: true
+          scope: logical-database
+        - name: storageUnit
+          title: Storage Unit
+          description: "Proxy storage unit name returned by SHOW STORAGE UNITS."
+          required: true
+          scope: storage_unit
+      resourceKind: detail
+      objectScope: storage_unit
+      relatedTools:
+        - database_gateway_search_metadata
+  - uriTemplate: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+    name: storage-unit-used-by-rules
+    title: Storage Unit Used By Rules
+    description: "List rule type and rule name rows that currently reference one storage unit."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the storage unit."
+          required: true
+          scope: logical-database
+        - name: storageUnit
+          title: Storage Unit
+          description: "Proxy storage unit name whose rule usage should be inspected."
+          required: true
+          scope: storage_unit
+      resourceKind: list
+      objectScope: storage_unit
+  - uriTemplate: shardingsphere://databases/{database}/single-tables
+    name: single-tables
+    title: Single Tables
+    description: "List single table to storage unit mappings in one ShardingSphere logical database."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose single table mappings should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: list
+      objectScope: single_table
+  - uriTemplate: shardingsphere://databases/{database}/single-tables/{table}
+    name: single-table-detail
+    title: Single Table Detail
+    description: "Read the storage unit mapping for one single table."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database that owns the single table."
+          required: true
+          scope: logical-database
+        - name: table
+          title: Single Table
+          description: "Single table name returned by SHOW SINGLE TABLES."
+          required: true
+          scope: single_table
+      resourceKind: detail
+      objectScope: single_table
+  - uriTemplate: shardingsphere://databases/{database}/single-table/default-storage-unit
+    name: default-single-table-storage-unit
+    title: Default Single Table Storage Unit
+    description: "Read the default storage unit used for new single tables in one ShardingSphere logical database."
+    mimeType: application/json
+    shardingSphereMetadata:
+      uriVariables:
+        - name: database
+          title: Logical Database
+          description: "ShardingSphere logical database whose default single table storage unit should be inspected."
+          required: true
+          scope: logical-database
+      resourceKind: detail
+      objectScope: single_table
   - uriTemplate: shardingsphere://databases/{database}/schemas
     name: schemas
     title: Schemas
@@ -435,17 +557,70 @@ completionTargets:
       - database
     maxValues: 50
   - referenceType: resource
+    reference: shardingsphere://databases/{database}/storage-units
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/storage-units/{storageUnit}
+    arguments:
+      - database
+      - storageUnit
+    maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        storageUnit:
+          - database
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+    arguments:
+      - database
+      - storageUnit
+    maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        storageUnit:
+          - database
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/single-tables
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/single-tables/{table}
+    arguments:
+      - database
+      - table
+    maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        table:
+          - database
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/single-table/default-storage-unit
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
     arguments:
@@ -453,6 +628,13 @@ completionTargets:
       - schema
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
     arguments:
@@ -460,6 +642,13 @@ completionTargets:
       - schema
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
     arguments:
@@ -468,6 +657,17 @@ completionTargets:
       - table
       - column
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
+        column:
+          - database
+          - schema
+          - table
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
     arguments:
@@ -475,6 +675,13 @@ completionTargets:
       - schema
       - table
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
     arguments:
@@ -483,12 +690,27 @@ completionTargets:
       - table
       - index
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        table:
+          - database
+          - schema
+        index:
+          - database
+          - schema
+          - table
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/sequences
     arguments:
       - database
       - schema
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
   - referenceType: resource
     reference: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
     arguments:
@@ -496,7 +718,19 @@ completionTargets:
       - schema
       - sequence
     maxValues: 50
+    meta:
+      org.apache.shardingsphere/required-context-arguments:
+        schema:
+          - database
+        sequence:
+          - database
+          - schema
 resourceNavigation:
+  - from: shardingsphere://capabilities
+    to: shardingsphere://guidance
+    requiredArguments: []
+    carriedArguments: []
+    description: "Read model-facing guidance before choosing multi-step workflows or side-effecting tools."
   - from: shardingsphere://capabilities
     to: shardingsphere://runtime
     requiredArguments: []
@@ -519,6 +753,36 @@ resourceNavigation:
     carriedArguments:
       - database
     description: "List schemas after choosing a logical database."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/storage-units
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "List storage units after choosing a logical database."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/single-tables
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "List single table mappings after choosing a logical database."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/single-table/default-storage-unit
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Read the default single table storage unit after choosing a logical database."
+  - from: shardingsphere://databases/{database}/storage-units/{storageUnit}
+    to: shardingsphere://databases/{database}/storage-units/{storageUnit}/used-by-rules
+    requiredArguments:
+      - database
+      - storageUnit
+    carriedArguments:
+      - database
+      - storageUnit
+    description: "Read rule usage after choosing a storage unit."
   - from: shardingsphere://databases/{database}/schemas/{schema}
     to: shardingsphere://databases/{database}/schemas/{schema}/tables
     requiredArguments:
@@ -583,8 +847,8 @@ tools:
   - name: database_gateway_search_metadata
     title: Search Metadata
     description: >-
-      Search ShardingSphere logical metadata by name and object type. Use this to find databases, schemas, tables, columns, indexes, views,
-      or sequences before calling detail resources or planning tools.
+      Search ShardingSphere logical metadata and Proxy governance metadata by name and object type. Use this to find databases, schemas, tables,
+      columns, indexes, views, sequences, or storage units before calling detail resources or planning tools.
     inputSchema:
       type: object
       properties:
@@ -596,7 +860,7 @@ tools:
           description: "Optional schema or namespace used to narrow table, view, column, index, and sequence search."
         query:
           type: string
-          description: "Optional name fragment or exact object name. Blank query lists metadata inside the narrowed database/schema/object_types scope."
+          description: "Optional object-name fragment. It also matches a parent table or view name when present. Blank query lists the narrowed metadata scope."
         object_types:
           type: array
           description: "Optional object-type filter. Omit it when the user intent does not identify a specific metadata object kind."
@@ -610,7 +874,20 @@ tools:
               - view
               - column
               - index
+              - storage_unit
               - sequence
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 100
+          description: "Maximum metadata hits to return in one page. Defaults to 100."
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          default: 0
+          description: "Zero-based offset into the deterministically sorted current metadata search result. Defaults to 0."
       required: []
       additionalProperties: false
     outputSchema:
@@ -621,6 +898,9 @@ tools:
           description: "Stable response mode marker for metadata search payloads."
           enum:
             - search
+        summary:
+          type: string
+          description: "Short model-facing metadata search result summary."
         items:
           type: array
           description: "Matched metadata objects with logical path fields, object type, and direct resource navigation hints when derivable."
@@ -633,10 +913,10 @@ tools:
                 description: "ShardingSphere logical database that owns the metadata object."
               schema:
                 type: string
-                description: "Schema or namespace for schema-scoped metadata objects."
+                description: "Logical metadata namespace for resource navigation. It is not necessarily a valid SQL schema or catalog qualifier."
               objectType:
                 type: string
-                description: "Matched metadata object type: database, schema, table, view, column, index, or sequence."
+                description: "Matched metadata object type: database, schema, storage_unit, table, view, column, index, or sequence."
               table:
                 type: string
                 description: "Parent logical table for table, table column, and index hits."
@@ -677,20 +957,43 @@ tools:
         count:
           type: integer
           description: "Number of matched metadata items returned in this response."
-        has_more:
-          type: boolean
-          description: "Whether an application-level continuation mode is active. Metadata search returns false; not MCP list pagination."
         continuation_mode:
           type: string
           description: "ShardingSphere application continuation mode for this metadata search result; not MCP cursor or nextCursor semantics."
           enum:
             - none
+            - pagination
         search_context:
           type: object
           description: "Applied search scope, query, and object types used for this response."
         total_match_count:
           type: integer
           description: "Total matched metadata objects for this search scope."
+        truncated:
+          type: boolean
+          description: "Whether more search hits remain after this page."
+        has_more:
+          type: boolean
+          description: "Whether another metadata search page is available."
+        next_offset:
+          type: integer
+          description: "Zero-based offset for the next page. Present only when has_more is true."
+        large_result_guidance:
+          type: object
+          description: "Structured narrowing guidance when more metadata matches remain after the current page and the total exceeds the large-result threshold."
+          properties:
+            state:
+              type: string
+              description: "Large-result guidance state."
+            threshold:
+              type: integer
+              description: "Match-count threshold above which narrowing guidance is emitted."
+            narrowing_arguments:
+              type: array
+              description: "Public database_gateway_search_metadata arguments the model can set to narrow the result."
+            reason:
+              type: string
+              description: "Why the model should narrow the search."
         empty_state:
           type: object
           description: "Structured empty state when no metadata hits were returned."
@@ -715,7 +1018,7 @@ tools:
               description: "Public database_gateway_search_metadata arguments the model can ask for or set to narrow the search."
         next_actions:
           type: array
-          description: "Structured follow-up actions for empty, broad, or duplicate-name search results."
+          description: "Structured follow-up actions for pagination, empty, broad, or duplicate-name search results."
           items:
             type: object
             properties:
@@ -740,11 +1043,18 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take this action."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
       examples:
         - response_mode: search
+          summary: Metadata search returned 1 of 1 matches.
           items:
             - database: logic_db
               schema: public
@@ -775,9 +1085,10 @@ tools:
                 - name
               matched_value: orders
           count: 1
-          has_more: false
           continuation_mode: none
           total_match_count: 1
+          truncated: false
+          has_more: false
           search_context:
             query: orders
             database: logic_db
@@ -785,6 +1096,8 @@ tools:
             schema: public
             object_types:
               - table
+            limit: 100
+            offset: 0
     annotations:
       title: Search Metadata
       readOnlyHint: true
@@ -794,11 +1107,12 @@ tools:
     meta:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://databases
+        - "shardingsphere://databases/{database}/storage-units"
         - "shardingsphere://databases/{database}/schemas"
-  - name: database_gateway_validate_proxy_connectivity
-    title: Validate Proxy Connectivity
+  - name: database_gateway_validate_runtime_database
+    title: Validate Runtime Database
     description: >-
-      Validate one configured ShardingSphere-MCP runtime database before formal onboarding. Use this to preflight the configured database type,
+      Validate one configured ShardingSphere-MCP runtime database before formal onboarding. Use this to preflight JDBC URL database type resolution,
       JDBC driver, JDBC connectivity, metadata readability, and database visibility without executing SQL tools.
     inputSchema:
       type: object
@@ -814,9 +1128,12 @@ tools:
       properties:
         response_mode:
           type: string
-          description: "Stable response mode marker for proxy preflight validation payloads."
+          description: "Stable response mode marker for runtime database validation payloads."
           enum:
             - validation
+        summary:
+          type: string
+          description: "Short model-facing runtime database validation summary."
         status:
           type: string
           description: "Overall preflight status: ready when all required checks passed, failed otherwise."
@@ -854,9 +1171,40 @@ tools:
           description: "Overall result category. ready indicates success; other values reuse runtime database connection failure categories."
         recovery:
           type: object
-          description: "Structured runtime recovery payload. Empty when status is ready."
+          description: "Structured runtime recovery payload present only when status is failed."
+        next_actions:
+          type: array
+          description: "Canonical top-level structured follow-up actions when validation fails."
+          items:
+            type: object
+            properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
       examples:
         - response_mode: validation
+          summary: Runtime database `logic_db` passed validation.
           status: ready
           database: logic_db
           checks:
@@ -871,7 +1219,7 @@ tools:
             - name: jdbc_connectivity
               status: passed
               category: ready
-              message: Opened a JDBC connection and validated the configured database type.
+              message: Opened a JDBC connection and resolved the database type from the JDBC URL.
             - name: metadata_read
               status: passed
               category: ready
@@ -883,7 +1231,7 @@ tools:
           category: ready
           recovery: {}
     annotations:
-      title: Validate Proxy Connectivity
+      title: Validate Runtime Database
       readOnlyHint: true
       destructiveHint: false
       idempotentHint: true
@@ -895,20 +1243,20 @@ tools:
   - name: database_gateway_execute_query
     title: Execute Query SQL
     description: >-
-      Execute exactly one classifier-approved SELECT or EXPLAIN ANALYZE statement against a ShardingSphere logical database. Use for inspection only;
+      Execute exactly one parser-approved SELECT statement against a ShardingSphere logical database. Use for inspection only;
       DML, DDL, DCL, transaction control, savepoints, and known side-effecting query forms are rejected.
     inputSchema:
       type: object
       properties:
         database:
           type: string
-          description: "ShardingSphere logical database name that provides the execution boundary."
+          description: "ShardingSphere logical database used only to select the runtime connection. Do not use this value as an SQL catalog or schema qualifier."
         schema:
           type: string
           description: "Optional schema or namespace hint for unqualified object names."
         sql:
           type: string
-          description: "One classifier-approved SELECT or EXPLAIN ANALYZE statement. Do not include multiple statements or mutating SQL."
+          description: "One parser-approved SELECT statement. Do not include EXPLAIN, multiple statements, or mutating SQL."
         max_rows:
           type: integer
           description: "Optional maximum number of rows to return. Omit or pass 0 to use the server default of 100."
@@ -937,6 +1285,9 @@ tools:
           description: "Stable response mode marker for read-only SQL results."
           enum:
             - query
+        summary:
+          type: string
+          description: "Short model-facing SQL execution result summary."
         result_kind:
           type: string
           description: "Result kind. database_gateway_execute_query returns result_set for row results."
@@ -944,10 +1295,9 @@ tools:
             - result_set
         statement_class:
           type: string
-          description: "Statement class: query or explain_analyze."
+          description: "Statement class: query."
           enum:
             - query
-            - explain_analyze
         statement_type:
           type: string
           description: "Database statement type reported by the execution classifier."
@@ -1013,6 +1363,7 @@ tools:
                 description: "User inputs needed before continuing."
       examples:
         - response_mode: query
+          summary: Executed SELECT statement and returned 0 row(s).
           result_kind: result_set
           statement_class: query
           statement_type: SELECT
@@ -1046,17 +1397,179 @@ tools:
         - DCL
         - TRANSACTION_CONTROL
         - SAVEPOINT
-  - name: database_gateway_execute_update
-    title: Execute Update SQL
+  - name: database_gateway_execute_explain_query
+    title: Execute Explain Query SQL
     description: >-
-      Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state.
-      Use execution_mode=preview first when the side-effect scope has not been reviewed.
+      Execute exactly one model-generated database-native EXPLAIN SQL for one parser-approved SELECT statement. Pass the original SELECT as sql
+      and the generated EXPLAIN as explain_sql. EXPLAIN ANALYZE and EXPLAIN PLAN FOR workflows are rejected.
     inputSchema:
       type: object
       properties:
         database:
           type: string
-          description: "ShardingSphere logical database name that provides the execution boundary."
+          description: "ShardingSphere logical database used only to select the runtime connection. Do not use this value as an SQL catalog or schema qualifier."
+        schema:
+          type: string
+          description: "Optional schema or namespace hint for unqualified object names."
+        sql:
+          type: string
+          description: "Original parser-approved SELECT statement to explain. Do not include EXPLAIN, multiple statements, or mutating SQL."
+        explain_sql:
+          type: string
+          description: "Database-native EXPLAIN SQL generated for sql. It must start with EXPLAIN, include sql without rewriting it, and must not use ANALYZE."
+        max_rows:
+          type: integer
+          description: "Optional maximum number of plan rows to return. Omit or pass 0 to use the server default of 100."
+          default: 100
+          minimum: 0
+          maximum: 5000
+          examples:
+            - 100
+        timeout_ms:
+          type: integer
+          description: "Optional execution timeout in milliseconds. Zero means no explicit timeout."
+          default: 0
+          minimum: 0
+          maximum: 300000
+          examples:
+            - 0
+      required:
+        - database
+        - sql
+        - explain_sql
+      additionalProperties: false
+    outputSchema:
+      type: object
+      properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for read-only SQL results."
+          enum:
+            - query
+        summary:
+          type: string
+          description: "Short model-facing SQL execution result summary."
+        result_kind:
+          type: string
+          description: "Result kind. database_gateway_execute_explain_query returns result_set for plan rows."
+          enum:
+            - result_set
+        statement_class:
+          type: string
+          description: "Statement class: explain."
+          enum:
+            - explain
+        statement_type:
+          type: string
+          description: "Database statement type reported by the execution classifier."
+        status:
+          type: string
+          description: "Execution status returned by the server."
+        normalized_sql:
+          type: string
+          description: "Classifier-normalized EXPLAIN SQL executed by the server."
+        columns:
+          type: array
+          description: "Returned column definitions."
+        rows:
+          type: array
+          description: "Returned plan rows."
+        row_objects:
+          type: array
+          description: "Object-shaped row view when column labels are unique."
+        row_object_status:
+          type: string
+          description: "Whether row_objects is available or why positional rows must be used, such as unnamed_columns, duplicate_column_labels, or omitted_large_result."
+        returned_row_count:
+          type: integer
+          description: "Number of result rows returned in this payload."
+        applied_max_rows:
+          type: integer
+          description: "Applied max_rows argument after defaulting and bounds enforcement."
+        applied_timeout_ms:
+          type: integer
+          description: "Applied timeout_ms argument; zero means the request used the server default."
+        truncated:
+          type: boolean
+          description: "Whether rows were truncated by max_rows or server limits."
+        next_actions:
+          type: array
+          description: "Ordered structured model-facing recommendations after SQL execution."
+          items:
+            type: object
+            properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+      examples:
+        - response_mode: query
+          summary: Executed EXPLAIN statement and returned 0 row(s).
+          result_kind: result_set
+          statement_class: explain
+          statement_type: EXPLAIN
+          status: OK
+          columns: []
+          rows: []
+          row_objects: []
+          row_object_status: available
+          returned_row_count: 0
+          applied_max_rows: 10
+          applied_timeout_ms: 0
+          truncated: false
+          next_actions:
+            - order: 1
+              type: terminal
+              title: Stop
+              reason: Return the execution plan rows to the user.
+    annotations:
+      title: Execute Explain Query SQL
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: true
+    meta:
+      org.apache.shardingsphere/related-resource-uris:
+        - "shardingsphere://databases/{database}/capabilities"
+        - "shardingsphere://databases/{database}/schemas"
+      org.apache.shardingsphere/rejected-statement-classes:
+        - DML
+        - DDL
+        - DCL
+        - TRANSACTION_CONTROL
+        - SAVEPOINT
+  - name: database_gateway_execute_update
+    title: Preview or Execute Side-Effecting SQL
+    description: >-
+      Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state.
+      Use execution_mode=preview first when the side-effect scope has not been reviewed. Preview performs database-aware validation and classification,
+      not a database dry run. For natural-language rule changes, prefer the matching database_gateway_plan_* workflow tool.
+    inputSchema:
+      type: object
+      properties:
+        database:
+          type: string
+          description: "ShardingSphere logical database used only to select the runtime connection. Do not use this value as an SQL catalog or schema qualifier."
         schema:
           type: string
           description: "Optional schema or namespace hint for unqualified object names."
@@ -1065,7 +1578,7 @@ tools:
           description: "One SQL statement. The server contract rejects banned commands and multiple statements."
         execution_mode:
           type: string
-          description: "Required safety gate. Use preview to classify side effects without execution, or execute after reviewing the preview."
+          description: "Required safety gate. Use preview to classify side effects without execution; preview is not a database dry run. Use execute only after reviewing the preview."
           enum:
             - execute
             - preview
@@ -1099,6 +1612,9 @@ tools:
           enum:
             - preview
             - executed
+        summary:
+          type: string
+          description: "Short model-facing SQL preview or execution result summary."
         result_kind:
           type: string
           description: "Result kind: preview, result_set, update_count, or statement_ack."
@@ -1109,9 +1625,8 @@ tools:
             - statement_ack
         statement_class:
           type: string
-          description: "Statement class such as dml, ddl, dcl, transaction_control, savepoint, or explain_analyze."
+          description: "Statement class such as dml, ddl, dcl, transaction_control, or savepoint."
           enum:
-            - explain_analyze
             - dml
             - ddl
             - dcl
@@ -1125,7 +1640,9 @@ tools:
           description: "Execution mode used by the call; preview means the statement was not executed."
         preview_semantics:
           type: string
-          description: "Preview meaning. classification_only means the server classified SQL and side-effect scope without estimating affected rows."
+          description: >-
+            Preview meaning. classification_only means the server parsed and classified SQL and side-effect scope without rule validation,
+            algorithm initialization, affected-row estimation, runtime execution, or database dry-run guarantees.
           enum:
             - classification_only
         status:
@@ -1133,13 +1650,16 @@ tools:
           description: "Execution or preview status returned by the server."
         normalized_sql:
           type: string
-          description: "Classifier-normalized SQL returned by preview or recovery paths."
+          description: "Normalized single SQL statement accepted by MCP for the target database."
         affected_rows:
           type: integer
           description: "Affected row count when the database reports one."
-        message:
-          type: string
-          description: "Execution message for statements without row results."
+        columns:
+          type: array
+          description: "Returned column definitions when result_kind is result_set."
+        rows:
+          type: array
+          description: "Returned result rows when result_kind is result_set."
         returned_row_count:
           type: integer
           description: "Number of rows returned when result_kind is result_set."
@@ -1163,7 +1683,7 @@ tools:
           description: "False for preview because preview does not estimate affected row counts."
         side_effect_scope:
           type: array
-          description: "Preview-only side-effect categories such as physical-data, physical-structure, privilege-metadata, or transaction-state."
+          description: "Preview-only side-effect categories such as physical-data, physical-structure, privilege-metadata, rule-metadata, or transaction-state."
         target_object:
           type: string
           description: "Preview-only target object name when the classifier can identify one."
@@ -1173,9 +1693,6 @@ tools:
         review_guidance:
           type: string
           description: "Preview-only guidance before execution."
-        review_summary:
-          type: string
-          description: "Preview-only natural-language summary that confirms the statement was not executed."
         suggested_arguments:
           type: object
           description: "Preview-only arguments to reuse for execution after review."
@@ -1212,6 +1729,9 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take this action."
+              question:
+                type: string
+                description: "Question to ask the user when type is ask_user."
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
@@ -1223,6 +1743,7 @@ tools:
           description: "Whether returned rows were truncated."
       examples:
         - response_mode: preview
+          summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
           result_kind: preview
           execution_mode: preview
           preview_semantics: classification_only
@@ -1231,29 +1752,50 @@ tools:
           status: PREVIEWED
           would_execute: false
           affected_rows_estimated: false
-          review_summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
+          review_guidance: >-
+            Review normalized_sql and side_effect_scope before execution. This preview performs database-aware validation and classification; it does not guarantee
+            rule validation, algorithm initialization, affected rows, or runtime success.
           suggested_arguments:
             execution_mode: execute
           next_actions:
             - order: 1
+              type: ask_user
+              title: Ask user
+              question: Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.
+              required_inputs:
+                - execution_approved
+            - order: 2
               type: tool_call
               title: Call database_gateway_execute_update
               tool_name: database_gateway_execute_update
               arguments:
                 execution_mode: execute
-              reason: Execute after reviewing normalized_sql and side_effect_scope.
+              depends_on:
+                - 1
+              reason: Execute only after reviewing normalized_sql and side_effect_scope; preview did not validate runtime executability.
+        - response_mode: executed
+          summary: Executed UPDATE statement and affected 1 row(s).
+          result_kind: update_count
+          execution_mode: execute
+          statement_class: dml
+          statement_type: UPDATE
+          status: OK
+          normalized_sql: "UPDATE orders SET status = 'PAID' WHERE order_id = 1"
+          affected_rows: 1
+          applied_max_rows: 1
+          applied_timeout_ms: 0
+          truncated: false
+          next_actions:
+            - order: 1
+              type: terminal
+              title: Stop
+              reason: The side-effecting statement already executed; do not replay it automatically.
     annotations:
-      title: Execute Update SQL
+      title: Preview or Execute Side-Effecting SQL
       readOnlyHint: false
       destructiveHint: true
       idempotentHint: false
       openWorldHint: true
-    runtime:
-      sideEffectScope:
-        - physical-data
-        - physical-structure
-        - privilege-metadata
-        - transaction-state
     meta:
       org.apache.shardingsphere/related-resource-uris:
         - "shardingsphere://databases/{database}/capabilities"

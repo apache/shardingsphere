@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.impl;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -35,6 +37,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ProxyStatementExecutorCallbackTest {
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "SQL92");
+    
     @Mock
     private Statement statement;
     
@@ -42,7 +46,7 @@ class ProxyStatementExecutorCallbackTest {
     void assertExecuteWithGeneratedKeys() throws SQLException {
         String sql = "SELECT 1";
         when(statement.execute(sql, Statement.RETURN_GENERATED_KEYS)).thenReturn(true);
-        ProxyStatementExecutorCallback callback = new ProxyStatementExecutorCallback(mock(), mock(), mock(), mock(), true, true, false);
+        ProxyStatementExecutorCallback callback = new ProxyStatementExecutorCallback(DATABASE_TYPE, mock(), mock(), mock(), true, true, false);
         assertTrue(callback.execute(sql, statement, true));
         verify(statement).execute(sql, Statement.RETURN_GENERATED_KEYS);
     }
@@ -50,7 +54,7 @@ class ProxyStatementExecutorCallbackTest {
     @Test
     void assertExecuteWithoutGeneratedKeys() throws SQLException {
         String sql = "SELECT 1";
-        ProxyStatementExecutorCallback callback = new ProxyStatementExecutorCallback(mock(), mock(), mock(), mock(), false, false, false);
+        ProxyStatementExecutorCallback callback = new ProxyStatementExecutorCallback(DATABASE_TYPE, mock(), mock(), mock(), false, false, false);
         assertFalse(callback.execute(sql, statement, false));
         verify(statement).execute(sql, Statement.NO_GENERATED_KEYS);
     }
@@ -60,7 +64,7 @@ class ProxyStatementExecutorCallbackTest {
         String sql = "SELECT 1";
         when(statement.execute(sql, Statement.RETURN_GENERATED_KEYS)).thenThrow(new SQLFeatureNotSupportedException());
         when(statement.execute(sql)).thenReturn(true);
-        ProxyStatementExecutorCallback callback = new ProxyStatementExecutorCallback(mock(), mock(), mock(), mock(), true, false, false);
+        ProxyStatementExecutorCallback callback = new ProxyStatementExecutorCallback(DATABASE_TYPE, mock(), mock(), mock(), true, false, false);
         assertTrue(callback.execute(sql, statement, true));
         verify(statement).execute(sql, Statement.RETURN_GENERATED_KEYS);
         verify(statement).execute(sql);

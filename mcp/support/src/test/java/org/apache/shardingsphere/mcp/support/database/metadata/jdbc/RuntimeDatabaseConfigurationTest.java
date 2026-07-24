@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
+import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -33,13 +37,24 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class RuntimeDatabaseConfigurationTest {
     
     @Test
+    void assertNewRuntimeDatabaseConfiguration() {
+        RuntimeDatabaseConfiguration actual = new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName());
+        assertThat(actual.getJdbcUrl(), is(RecordingDriver.JDBC_URL));
+        assertThat(actual.getUsername(), is("sa"));
+        assertThat(actual.getPassword(), is("pwd"));
+        assertThat(actual.getDriverClassName(), is(RecordingDriver.class.getName()));
+    }
+    
+    @Test
     void assertOpenConnectionWithoutCredentials() throws SQLException {
         RecordingDriver.reset();
-        try (Connection actual = new RuntimeDatabaseConfiguration("MySQL", RecordingDriver.JDBC_URL, "", "", RecordingDriver.class.getName()).openConnection("logic_db")) {
+        try (Connection actual = new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "", "", RecordingDriver.class.getName()).openConnection("logic_db")) {
             assertThat(actual, is(RecordingDriver.CONNECTION));
             assertThat(RecordingDriver.lastUrl, is(RecordingDriver.JDBC_URL));
             assertTrue(RecordingDriver.lastProperties.isEmpty());
@@ -49,7 +64,7 @@ class RuntimeDatabaseConfigurationTest {
     @Test
     void assertOpenConnectionWithDriverClassNameAndCredentials() throws SQLException {
         RecordingDriver.reset();
-        try (Connection actual = new RuntimeDatabaseConfiguration("MySQL", RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName()).openConnection("logic_db")) {
+        try (Connection actual = new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "sa", "pwd", RecordingDriver.class.getName()).openConnection("logic_db")) {
             assertThat(actual, is(RecordingDriver.CONNECTION));
             assertThat(RecordingDriver.lastProperties.getProperty("user"), is("sa"));
             assertThat(RecordingDriver.lastProperties.getProperty("password"), is("pwd"));
@@ -60,7 +75,7 @@ class RuntimeDatabaseConfigurationTest {
     @Test
     void assertOpenConnectionWithBlankDriverClassName() {
         RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                () -> new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:missing-driver", "", "", "").openConnection("logic_db"));
+                () -> new RuntimeDatabaseConfiguration("jdbc:test:missing-driver", "", "", "").openConnection("logic_db"));
         assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: missing_jdbc_driver."));
         assertThat(actual.getCategory(), is("missing_jdbc_driver"));
     }
@@ -69,9 +84,49 @@ class RuntimeDatabaseConfigurationTest {
     @Test
     void assertOpenConnectionWithUnavailableDriverClassName() {
         RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
-                () -> new RuntimeDatabaseConfiguration("MySQL", "jdbc:test:missing-driver", "", "", "org.example.MissingDriver").openConnection("logic_db"));
+                () -> new RuntimeDatabaseConfiguration("jdbc:test:missing-driver", "", "", "org.example.MissingDriver").openConnection("logic_db"));
         assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: missing_jdbc_driver."));
         assertThat(actual.getCategory(), is("missing_jdbc_driver"));
+    }
+    
+    @SuppressWarnings("resource")
+    @Test
+    void assertOpenConnectionFailureWithDatabaseType() {
+        RecordingDriver.reset();
+        RecordingDriver.connectionFailure = new SQLException("permission denied", "28000", 335544352);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(databaseType.getType()).thenReturn("Firebird");
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+            mocked.when(() -> DatabaseTypeFactory.get(RecordingDriver.JDBC_URL)).thenReturn(databaseType);
+            RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
+                    () -> new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "", "", RecordingDriver.class.getName()).openConnection("logic_db"));
+            assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED));
+        } finally {
+            RecordingDriver.reset();
+        }
+    }
+    
+    @SuppressWarnings("resource")
+    @Test
+    void assertOpenConnectionFailureWithUnsupportedDatabaseType() {
+        RecordingDriver.reset();
+        RecordingDriver.connectionFailure = new SQLException("permission denied", "28000", 335544352);
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+            mocked.when(() -> DatabaseTypeFactory.get(RecordingDriver.JDBC_URL)).thenThrow(new UnsupportedStorageTypeException(RecordingDriver.JDBC_URL));
+            RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
+                    () -> new RuntimeDatabaseConfiguration(RecordingDriver.JDBC_URL, "", "", RecordingDriver.class.getName()).openConnection("logic_db"));
+            assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED));
+        } finally {
+            RecordingDriver.reset();
+        }
+    }
+    
+    @SuppressWarnings("resource")
+    @Test
+    void assertOpenConnectionFailureWithNullJdbcUrl() {
+        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
+                () -> new RuntimeDatabaseConfiguration(null, "", "", RecordingDriver.class.getName()).openConnection("logic_db"));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE));
     }
     
     private static final class RecordingDriver implements Driver {
@@ -86,6 +141,8 @@ class RuntimeDatabaseConfigurationTest {
         
         private static String lastUrl;
         
+        private static SQLException connectionFailure;
+        
         static {
             try {
                 DriverManager.registerDriver(INSTANCE);
@@ -97,12 +154,16 @@ class RuntimeDatabaseConfigurationTest {
         private static void reset() {
             lastProperties = new Properties();
             lastUrl = null;
+            connectionFailure = null;
         }
         
         @Override
-        public Connection connect(final String url, final Properties info) {
+        public Connection connect(final String url, final Properties info) throws SQLException {
             if (!acceptsURL(url)) {
                 return null;
+            }
+            if (null != connectionFailure) {
+                throw connectionFailure;
             }
             lastUrl = url;
             lastProperties = new Properties();

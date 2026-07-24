@@ -33,6 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,8 +48,12 @@ import java.util.stream.Collectors;
  */
 public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
     
-    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema, is_nullable"
-            + " FROM information_schema.columns WHERE table_schema IN (%s)";
+    private static final Collection<String> OFFICIAL_CASE_INSENSITIVE_COLLATIONS = Arrays.asList(
+            "utf8mb4_general_ci", "utf8mb4_unicode_ci", "utf8_general_ci", "utf8_unicode_ci", "gbk_chinese_ci", "gb18030_chinese_ci");
+    
+    private static final String BASIC_TABLE_META_DATA_SQL =
+            "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema, is_nullable, collation_schema, collation_name"
+                    + " FROM information_schema.columns WHERE table_schema IN (%s)";
     
     private static final String TABLE_META_DATA_SQL_WITHOUT_TABLES = BASIC_TABLE_META_DATA_SQL + " ORDER BY ordinal_position";
     
@@ -175,8 +180,8 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
         boolean isPrimaryKey = primaryKeys.contains(schemaName + "," + tableName + "," + columnName);
         String columnDefault = resultSet.getString("column_default");
         boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
-        // TODO user defined collation which deterministic is false
-        boolean caseSensitive = true;
+        boolean caseSensitive = !"pg_catalog".equals(resultSet.getString("collation_schema"))
+                || !OFFICIAL_CASE_INSENSITIVE_COLLATIONS.contains(resultSet.getString("collation_name"));
         boolean isNullable = "YES".equals(resultSet.getString("is_nullable"));
         return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), isPrimaryKey, generated, caseSensitive, true, false, isNullable);
     }

@@ -48,8 +48,6 @@ public final class ContextManagerBuilderParameter {
     
     private final Properties props;
     
-    private final Collection<String> labels;
-    
     private final InstanceMetaData instanceMetaData;
     
     /**

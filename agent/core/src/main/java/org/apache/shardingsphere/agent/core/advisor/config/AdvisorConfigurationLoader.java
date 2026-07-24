@@ -25,9 +25,9 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper.YamlAdvi
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -51,20 +51,22 @@ public final class AdvisorConfigurationLoader {
     public static Map<String, AdvisorConfiguration> load(final Collection<JarFile> pluginJars, final Collection<String> pluginTypes) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
         for (String each : pluginTypes) {
-            InputStream advisorsResourceStream = getResourceStream(pluginJars, each);
-            if (null == advisorsResourceStream) {
-                LOGGER.log(Level.WARNING, "The configuration file for advice of plugin `{0}` is not found", new String[]{each});
-            }
-            Optional.ofNullable(advisorsResourceStream)
-                    .ifPresent(optional -> mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(optional), each)));
-            if (null != advisorsResourceStream) {
-                try {
-                    advisorsResourceStream.close();
-                } catch (final IOException ignored) {
-                }
-            }
+            mergeConfigurations(result, loadAdvisorConfigurations(pluginJars, each));
         }
+        mergeConfigurations(result, loadAdvisorConfigurations(pluginJars, "common"));
         return result;
+    }
+    
+    private static Collection<AdvisorConfiguration> loadAdvisorConfigurations(final Collection<JarFile> pluginJars, final String pluginType) {
+        try (InputStream advisorsResourceStream = getResourceStream(pluginJars, pluginType)) {
+            if (null == advisorsResourceStream) {
+                LOGGER.log(Level.WARNING, "The configuration file for advice of plugin `{0}` is not found", new String[]{pluginType});
+                return Collections.emptyList();
+            }
+            return YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), pluginType);
+        } catch (final IOException ignored) {
+            return Collections.emptyList();
+        }
     }
     
     private static InputStream getResourceStream(final Collection<JarFile> pluginJars, final String pluginType) {

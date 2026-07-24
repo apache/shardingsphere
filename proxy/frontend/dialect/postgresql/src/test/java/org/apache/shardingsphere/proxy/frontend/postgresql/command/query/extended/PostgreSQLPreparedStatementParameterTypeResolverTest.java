@@ -90,14 +90,14 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        final PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
-                SQL, sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
         when(connectionSession.getCurrentDatabaseName()).thenReturn("postgres");
         when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
         when(connectionSession.getConnectionContext()).thenReturn(mock(ConnectionContext.class));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         prepareJDBCBackendConnectionWithParamTypes();
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                SQL, sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
         PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement, PARAMETERS);
         assertThat(preparedStatement.getParameterTypes(), is(Collections.singletonList(PostgreSQLBinaryColumnType.INT4)));
     }
@@ -107,13 +107,13 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         SQLStatement sqlStatement = sqlParserEngine.parse("SELECT id FROM foo_tbl WHERE id=? AND k=?", false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        final PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=? AND k=?",
-                sqlStatementContext, new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.INT4), Arrays.asList(0, 1));
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
         when(parameterMetaData.getParameterType(1)).thenReturn(Types.SMALLINT);
         when(parameterMetaData.getParameterTypeName(1)).thenReturn("int2");
         PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
         when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=? AND k=?",
+                sqlStatementContext, new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.INT4), Arrays.asList(0, 1));
         PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
         assertThat(preparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.INT2, PostgreSQLBinaryColumnType.INT4)));
     }
@@ -154,7 +154,8 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(schema.getName()).thenReturn("public");
+        lenient().when(database.getDefaultSchemaName()).thenReturn("public");
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getSchema("public")).thenReturn(schema);

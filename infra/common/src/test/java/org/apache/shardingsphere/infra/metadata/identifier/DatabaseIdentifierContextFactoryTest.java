@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
@@ -39,21 +41,21 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Proxy;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.stream.Stream;
 import java.io.PrintWriter;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -93,9 +95,18 @@ class DatabaseIdentifierContextFactoryTest {
     @Test
     void assertCreateDefault() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
-        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actualRule.matches("Foo", "foo", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateWithSingleDatabase() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new LowerCaseTableNamesDataSource(0));
+        assertThat(actual.normalizeStorage(IdentifierScope.COLUMN, new IdentifierValue("FooColumn")), is("FooColumn"));
+        assertTrue(actual.matchesMetaData(IdentifierScope.COLUMN, "foo_column", new IdentifierValue("FOO_COLUMN")));
+        assertFalse(actual.matchesMetaData(IdentifierScope.TABLE, "foo_table", new IdentifierValue("FOO_TABLE")));
+        assertFalse(actual.isHeterogeneousTableLookupEnabled());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -103,7 +114,7 @@ class DatabaseIdentifierContextFactoryTest {
     void assertCreateWithProtocolTypeAndProps(final String name, final DatabaseType protocolType, final ConfigurationProperties props, final LookupMode expectedLookupMode,
                                               final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(protocolType, props);
-        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
         assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
     }
@@ -114,20 +125,28 @@ class DatabaseIdentifierContextFactoryTest {
                                                   final ConfigurationProperties props, final LookupMode expectedLookupMode,
                                                   final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props);
-        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
         assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("refreshWithProtocolTypeAndPropsArguments")
-    void assertRefreshWithProtocolTypeAndProps(final String name, final DatabaseType protocolType, final ConfigurationProperties props, final LookupMode expectedLookupMode,
-                                               final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
+    @Test
+    void assertInsensitivePropsOnlyAffectMetaDataPolicy() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(ORACLE_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA,
+                createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
+        assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
+        assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
+        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalizeForLookup("Foo"), is("foo"));
+    }
+    
+    @Test
+    void assertRefreshWithInsensitivePropsOnlyAffectsMetaDataPolicy() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
-        DatabaseIdentifierContextFactory.refresh(actual, protocolType, props);
-        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
-        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
-        assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
+        DatabaseIdentifierContextFactory.refresh(actual, ORACLE_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA,
+                createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
+        assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
+        assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
+        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalizeForLookup("Foo"), is("foo"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -137,7 +156,7 @@ class DatabaseIdentifierContextFactoryTest {
                                                    final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, protocolType, resourceMetaData, props);
-        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
         assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
     }
@@ -145,8 +164,8 @@ class DatabaseIdentifierContextFactoryTest {
     @Test
     void assertCreateUsesProtocolRuleForSchemaAndStorageRuleForTable() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCaseRule actualSchemaRule = actual.getRule(IdentifierScope.SCHEMA);
-        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualSchemaRule = actual.getMetaDataPolicy(IdentifierScope.SCHEMA);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
     }
@@ -155,8 +174,8 @@ class DatabaseIdentifierContextFactoryTest {
     void assertRefreshUsesProtocolRuleForSchemaAndStorageRuleForTable() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCaseRule actualSchemaRule = actual.getRule(IdentifierScope.SCHEMA);
-        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualSchemaRule = actual.getMetaDataPolicy(IdentifierScope.SCHEMA);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
     }
@@ -164,8 +183,8 @@ class DatabaseIdentifierContextFactoryTest {
     @Test
     void assertCreateUsesProtocolRuleForLogicalTableAndEnablesHeterogeneousLookup() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actual.isHeterogeneousTableLookupEnabled());
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
@@ -175,18 +194,33 @@ class DatabaseIdentifierContextFactoryTest {
     void assertRefreshUsesProtocolRuleForLogicalTableAndEnablesHeterogeneousLookup() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actual.isHeterogeneousTableLookupEnabled());
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
     }
     
     @Test
+    void assertCreateDoesNotUseStorageDataSourceForProtocolPolicy() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE,
+                createResourceMetaDataWithStorageUnit("jdbc:oracle:thin:@localhost:1521:xe", createDataSourceFailingOnConnection()), new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE).matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshDoesNotUseStorageDataSourceForProtocolPolicy() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE,
+                createResourceMetaDataWithStorageUnit("jdbc:oracle:thin:@localhost:1521:xe", createDataSourceFailingOnConnection()), new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE).matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+    }
+    
+    @Test
     void assertCreateUsesInsensitiveRuleForLogicalTableWhenMySQLLowerCaseTableNamesIsZero() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertFalse(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
     }
@@ -195,8 +229,8 @@ class DatabaseIdentifierContextFactoryTest {
     void assertRefreshUsesInsensitiveRuleForLogicalTableWhenMySQLLowerCaseTableNamesIsZero() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertFalse(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
     }
@@ -204,8 +238,8 @@ class DatabaseIdentifierContextFactoryTest {
     @Test
     void assertCreateKeepsPostgreSQLLogicalTableRuleWithResourceMetadata() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
-        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        IdentifierCasePolicy actualLogicalTableRule = actual.getMetaDataPolicy(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertFalse(actualLogicalTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
@@ -248,22 +282,27 @@ class DatabaseIdentifierContextFactoryTest {
         assertTrue(oracleFirstActual.isHeterogeneousTableLookupEnabled());
     }
     
-    @Test
-    void assertCreateUsesInsensitiveRuleForDatabaseScope() {
-        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(ORACLE_DATABASE_TYPE,
-                createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE));
-        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.DATABASE);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("storageObjectScopes")
+    void assertCreateUsesInsensitiveRuleForStorageObjectScope(final String name, final IdentifierScope identifierScope) {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(identifierScope);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(actualRule.matches("foo_db", "FOO_DB", QuoteCharacter.NONE));
+        assertThat(actualRule.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
+        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.NONE));
+        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.BACK_QUOTE));
     }
     
-    @Test
-    void assertRefreshUsesInsensitiveRuleForDatabaseScope() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("storageObjectScopes")
+    void assertRefreshUsesInsensitiveRuleForStorageObjectScope(final String name, final IdentifierScope identifierScope) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
-        DatabaseIdentifierContextFactory.refresh(actual, ORACLE_DATABASE_TYPE, createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE));
-        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.DATABASE);
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(identifierScope);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(actualRule.matches("foo_db", "FOO_DB", QuoteCharacter.NONE));
+        assertThat(actualRule.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
+        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.NONE));
+        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.BACK_QUOTE));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -382,36 +421,17 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static Stream<Arguments> createWithProtocolTypeAndPropsArguments() {
         return Stream.of(
-                Arguments.of("null protocol type and null props use insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("sensitive props override protocol rules", DATABASE_TYPE,
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("empty props use insensitive rules", DATABASE_TYPE, new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "Foo", "foo", true),
                 Arguments.of("insensitive props normalize identifiers", DATABASE_TYPE,
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
     }
     
     private static Stream<Arguments> createWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
-                Arguments.of("null resource metadata and null props use insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("null storage units keep explicit sensitive rules", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), null),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("empty storage units keep explicit sensitive rules", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("first data source path keeps explicit sensitive rules", DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("null resource metadata and empty props use insensitive rules", DATABASE_TYPE, null, new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "Foo", "foo",
+                        true),
                 Arguments.of("storage type overrides protocol type for oracle backend", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
-                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true),
-                Arguments.of("mixed storage trunk types use first data source rules", MYSQL_DATABASE_TYPE,
-                        createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe"),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
-    }
-    
-    private static Stream<Arguments> refreshWithProtocolTypeAndPropsArguments() {
-        return Stream.of(
-                Arguments.of("null protocol type and null props refresh to insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("sensitive props refresh to exact lookup", DATABASE_TYPE,
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("insensitive props refresh to normalized lookup", DATABASE_TYPE,
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
+                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true));
     }
     
     private static Stream<Arguments> createWithSupportedDatabaseSchemaLookupArguments() {
@@ -437,26 +457,19 @@ class DatabaseIdentifierContextFactoryTest {
         return Stream.of(
                 createNormalizedLookupArguments("mysql column lower_case_table_names=1", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
                 createNormalizedLookupArguments("mysql column lower_case_table_names=2", MYSQL_DATABASE_TYPE, MYSQL_QUOTED_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
-                createLowerCaseLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
-                createLowerCaseLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
-                createUpperCaseLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
+                createNormalizedLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
+                createNormalizedLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
+                createNormalizedLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
                 .flatMap(each -> each);
     }
     
     private static Stream<Arguments> refreshWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
-                Arguments.of("null resource metadata and null props refresh to insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("null storage units refresh to exact lookup", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), null),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("empty storage units refresh to exact lookup", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("first data source path refreshes to exact lookup", DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("null resource metadata and empty props refresh to insensitive rules", DATABASE_TYPE, null, new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "Foo",
+                        "foo",
+                        true),
                 Arguments.of("refresh uses oracle storage type when protocol type is mysql", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
-                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true),
-                Arguments.of("refresh uses first data source rules for mixed storage types", MYSQL_DATABASE_TYPE,
-                        createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe"),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
+                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true));
     }
     
     private static Stream<Arguments> refreshWithSupportedDatabaseSchemaLookupArguments() {
@@ -494,9 +507,9 @@ class DatabaseIdentifierContextFactoryTest {
         return Stream.of(
                 createNormalizedMixedLookupArguments("mysql column lower_case_table_names=1", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
                 createNormalizedMixedLookupArguments("mysql column lower_case_table_names=2", MYSQL_DATABASE_TYPE, MYSQL_QUOTED_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
-                createLowerCaseMixedLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
-                createLowerCaseMixedLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
-                createUpperCaseMixedLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
+                createNormalizedMixedLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
+                createNormalizedMixedLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
+                createNormalizedMixedLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
                 .flatMap(each -> each);
     }
     
@@ -513,7 +526,14 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     private static ConfigurationProperties createConfigurationProperties(final MetadataIdentifierCaseSensitivity caseSensitivity) {
-        return new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), caseSensitivity.name())));
+        return new ConfigurationProperties(PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), caseSensitivity.name())));
+    }
+    
+    private static Stream<Arguments> storageObjectScopes() {
+        return Stream.of(
+                Arguments.of("column", IdentifierScope.COLUMN),
+                Arguments.of("index", IdentifierScope.INDEX),
+                Arguments.of("constraint", IdentifierScope.CONSTRAINT));
     }
     
     private static IdentifierIndex<String> createIdentifierIndex(final DatabaseIdentifierContext identifierContext, final IdentifierScope identifierScope, final String... actualNames) {
@@ -674,10 +694,6 @@ class DatabaseIdentifierContextFactoryTest {
         return new IdentifierValue(quoted ? quoteCharacter + lookupName + quoteCharacter : lookupName);
     }
     
-    private static ResourceMetaData createResourceMetaDataWithFirstDataSource() {
-        return createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db");
-    }
-    
     private static ResourceMetaData createResourceMetaDataWithMySQLLowerCaseTableNames(final int lowerCaseTableNames) {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
         storageUnits.put("ds_0", createStorageUnit("ds_0", "jdbc:mysql://localhost:3306/foo_db", new LowerCaseTableNamesDataSource(lowerCaseTableNames)));
@@ -690,6 +706,19 @@ class DatabaseIdentifierContextFactoryTest {
             storageUnits.put("ds_" + i, createStorageUnit("ds_" + i, urls[i]));
         }
         return new ResourceMetaData(Collections.emptyMap(), storageUnits);
+    }
+    
+    private static ResourceMetaData createResourceMetaDataWithStorageUnit(final String url, final DataSource dataSource) {
+        return new ResourceMetaData(Collections.emptyMap(), Collections.singletonMap("ds_0", createStorageUnit("ds_0", url, dataSource)));
+    }
+    
+    private static DataSource createDataSourceFailingOnConnection() {
+        return (DataSource) Proxy.newProxyInstance(DataSource.class.getClassLoader(), new Class[]{DataSource.class}, (proxy, method, args) -> {
+            if ("getConnection".equals(method.getName())) {
+                throw new AssertionError("Storage data source must not be used to resolve protocol policy.");
+            }
+            return null;
+        });
     }
     
     private static StorageUnit createStorageUnit(final String name, final String url) {
@@ -749,13 +778,10 @@ class DatabaseIdentifierContextFactoryTest {
         }
     }
     
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class LowerCaseTableNamesDataSource implements DataSource {
         
         private final int lowerCaseTableNames;
-        
-        private LowerCaseTableNamesDataSource(final int lowerCaseTableNames) {
-            this.lowerCaseTableNames = lowerCaseTableNames;
-        }
         
         @Override
         public Connection getConnection() {

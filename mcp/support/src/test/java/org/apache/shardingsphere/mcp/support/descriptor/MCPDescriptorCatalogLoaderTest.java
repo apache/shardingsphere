@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -42,16 +43,15 @@ class MCPDescriptorCatalogLoaderTest {
     @Test
     void assertLoadValidatesDescriptorQuality() {
         MCPDescriptorCatalog actual = MCPDescriptorCatalogLoader.load();
-        Set<String> actualToolNames = actual.getToolDescriptors().stream().map(MCPToolDescriptor::getName).collect(Collectors.toSet());
+        Set<String> actualToolNames = actual.getProtocolDescriptors().getToolDescriptors().stream().map(MCPToolDescriptor::getName).collect(Collectors.toSet());
         assertToolNames(actualToolNames);
         assertOutputProperties(actual, "database_gateway_apply_workflow", Set.of(
-                "response_mode", "plan_id", "execution_mode", "next_actions", "manual_artifact_package", "manual_artifact_summary", "manual_follow_up", "argument_provenance",
-                "review_summary", "review_focus"));
-        assertOutputProperties(actual, "database_gateway_validate_workflow", Set.of("response_mode", "plan_id", "status", "recovery_guidance", "next_actions", "sections", "mismatches"));
+                "response_mode", "summary", "plan_id", "execution_mode", "next_actions", "manual_artifact_package", "manual_artifact_summary", "argument_provenance",
+                "review_focus", "category", "secret_reference_summary"));
+        assertOutputProperties(actual, "database_gateway_validate_workflow", Set.of("response_mode", "summary", "plan_id", "status", "recovery_guidance", "next_actions", "sections", "mismatches"));
         assertPublicToolAnnotations(actual);
         assertPlanningToolAnnotations(actual);
         assertResourceDescriptor(actual);
-        assertNoBannedPublicAliasFields(actual);
         assertNoResponseFormatOptions(actual);
         assertNoToolExecutionPayload(actual);
     }
@@ -61,14 +61,14 @@ class MCPDescriptorCatalogLoaderTest {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
         MCPToolDescriptor actual = findTool(catalog, "database_gateway_apply_workflow");
         assertThat(findInputProperty(actual, "execution_mode").get("enum"), is(List.of("preview", "review-then-execute", "manual-only")));
-        assertFalse(hasInputProperty(actual, "approved_by_user"));
     }
     
     @Test
     void assertValidateRejectsUndeclaredPromptCompletionArgument() {
-        MCPDescriptorCatalog actual = new MCPDescriptorCatalog(List.of(), List.of(createResourceTemplateDescriptor()), List.of(createShardingSphereResourceMetadata()), List.of(),
-                List.of(createPromptDescriptor()), List.of(new MCPPromptTemplateBinding("inspect_metadata", "META-INF/shardingsphere-mcp/prompts/inspect-metadata.md")),
-                List.of(new MCPCompletionTargetDescriptor("prompt", "inspect_metadata", List.of("table"), 50, Map.of())), List.of(), List.of());
+        MCPDescriptorCatalog actual = new MCPDescriptorCatalog(new MCPProtocolDescriptorCatalog(List.of(), List.of(createResourceTemplateDescriptor()), List.of(), List.of(createPromptDescriptor())),
+                new MCPShardingSphereDescriptorCatalog(List.of(createShardingSphereResourceMetadata()),
+                        List.of(new MCPPromptTemplateBinding("inspect_metadata", "META-INF/shardingsphere-mcp/prompts/inspect-metadata.md")),
+                        List.of(new MCPCompletionTargetDescriptor("prompt", "inspect_metadata", List.of("table"), 50, Map.of())), List.of(), List.of()));
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogValidator.validate(actual));
         assertThat(exception.getMessage(), is("Completion target `prompt:inspect_metadata` argument `table` is not declared by prompt `inspect_metadata`."));
     }
@@ -87,7 +87,7 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private void assertPublicToolAnnotations(final MCPDescriptorCatalog catalog) {
-        for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
+        for (MCPToolDescriptor each : catalog.getProtocolDescriptors().getToolDescriptors()) {
             assertNotNull(each.getAnnotations());
         }
     }
@@ -103,11 +103,11 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
-        return catalog.getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
+        return catalog.getProtocolDescriptors().getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
     }
     
     private MCPResourceDescriptor findResource(final MCPDescriptorCatalog catalog, final String uriTemplate) {
-        return catalog.getAllResourceDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
+        return catalog.getProtocolDescriptors().getAllResourceDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
     
     private MCPResourceDescriptor createResourceTemplateDescriptor() {
@@ -132,17 +132,12 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private ShardingSphereMCPResourceMetadata findShardingSphereResourceMetadata(final MCPDescriptorCatalog catalog, final String uriTemplate) {
-        return catalog.getShardingSphereResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriOrTemplate())).findFirst().orElseThrow();
+        return catalog.getShardingSphereDescriptors().getResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
     
     private Map<?, ?> findInputProperty(final MCPToolDescriptor toolDescriptor, final String fieldName) {
         Object properties = toolDescriptor.getInputSchema().get("properties");
         return (Map<?, ?>) ((Map<?, ?>) properties).get(fieldName);
-    }
-    
-    private boolean hasInputProperty(final MCPToolDescriptor toolDescriptor, final String fieldName) {
-        Object properties = toolDescriptor.getInputSchema().get("properties");
-        return ((Map<?, ?>) properties).containsKey(fieldName);
     }
     
     private void assertResourceDescriptor(final MCPDescriptorCatalog catalog) {
@@ -156,51 +151,17 @@ class MCPDescriptorCatalogLoaderTest {
         assertThat(findShardingSphereResourceMetadata(catalog, "shardingsphere://workflow/test-resource").getResourceKind(), is("detail"));
     }
     
-    private void assertNoBannedPublicAliasFields(final MCPDescriptorCatalog catalog) {
-        for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
-            assertFalse(containsBannedPublicAliasField(each.getOutputSchema()));
-        }
-    }
-    
     private void assertNoResponseFormatOptions(final MCPDescriptorCatalog catalog) {
-        for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
+        for (MCPToolDescriptor each : catalog.getProtocolDescriptors().getToolDescriptors()) {
             assertFalse(containsResponseFormatOption(each.getInputSchema()));
             assertFalse(containsResponseFormatOption(each.getOutputSchema()));
         }
     }
     
     private void assertNoToolExecutionPayload(final MCPDescriptorCatalog catalog) {
-        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of(), List.of(), List.of());
-        for (Object each : (List<?>) payload.get("tools")) {
-            assertFalse(((Map<?, ?>) each).containsKey("execution"));
+        for (MCPToolDescriptor each : catalog.getProtocolDescriptors().getToolDescriptors()) {
+            assertFalse(each.getMeta().containsKey("execution"));
         }
-    }
-    
-    private boolean containsBannedPublicAliasField(final Object value) {
-        if (value instanceof Map) {
-            return containsBannedPublicAliasFieldMap((Map<?, ?>) value);
-        }
-        if (value instanceof Iterable) {
-            for (Object each : (Iterable<?>) value) {
-                if (containsBannedPublicAliasField(each)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsBannedPublicAliasFieldMap(final Map<?, ?> value) {
-        if (value.containsKey("recommended_next_tool") || value.containsKey("suggested_next_tool") || value.containsKey("suggested_next_tools")
-                || value.containsKey("recommended_recovery") || value.containsKey("suggested_next_action")) {
-            return true;
-        }
-        for (Object each : value.values()) {
-            if (containsBannedPublicAliasField(each)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private boolean containsResponseFormatOption(final Object value) {

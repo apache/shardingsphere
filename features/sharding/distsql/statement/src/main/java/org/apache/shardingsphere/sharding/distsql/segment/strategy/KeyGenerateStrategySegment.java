@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.segment.strategy;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
@@ -27,6 +28,7 @@ import java.util.Optional;
  * Key generate strategy segment.
  */
 @Getter
+@AllArgsConstructor
 public final class KeyGenerateStrategySegment implements DistSQLSegment {
     
     private final String keyGenerateColumn;
@@ -41,12 +43,6 @@ public final class KeyGenerateStrategySegment implements DistSQLSegment {
     
     public KeyGenerateStrategySegment(final String keyGenerateColumn, final String keyGeneratorName) {
         this(keyGenerateColumn, null, keyGeneratorName);
-    }
-    
-    public KeyGenerateStrategySegment(final String keyGenerateColumn, final AlgorithmSegment keyGenerateAlgorithmSegment, final String keyGeneratorName) {
-        this.keyGenerateColumn = keyGenerateColumn;
-        this.keyGenerateAlgorithmSegment = keyGenerateAlgorithmSegment;
-        this.keyGeneratorName = keyGeneratorName;
     }
     
     /**

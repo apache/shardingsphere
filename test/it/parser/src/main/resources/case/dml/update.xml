@@ -119,7 +119,7 @@
         <table start-index="7" stop-index="31">
             <subquery-table start-index="7" stop-index="31">
                 <subquery>
-                    <select>
+                    <select subquery-type="TABLE">
                         <projections start-index="15" stop-index="15">
                             <shorthand-projection start-index="15" stop-index="15" />
                         </projections>
@@ -152,6 +152,25 @@
                 </assignment-value>
             </assignment>
         </set>
+    </update>
+
+    <update sql-case-id="update_with_current_of_oracle">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="31">
+            <assignment start-index="19" stop-index="31">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <literal-expression value="OK" start-index="28" stop-index="31" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="33" stop-index="61">
+            <expr>
+                <common-expression text="CURRENT OF order_cursor" start-index="39" stop-index="61" />
+            </expr>
+        </where>
     </update>
 
     <update sql-case-id="update_with_alias" parameters="'update', 1, 1">

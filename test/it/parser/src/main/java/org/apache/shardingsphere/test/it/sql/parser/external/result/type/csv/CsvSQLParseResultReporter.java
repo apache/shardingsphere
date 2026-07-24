@@ -54,14 +54,6 @@ public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
         }
     }
     
-    /**
-     * Print result.
-     *
-     * @param sqlCaseId SQL case ID
-     * @param databaseType database type
-     * @param isSuccess whether success
-     * @param sql SQL
-     */
     @SneakyThrows(IOException.class)
     @Override
     public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {

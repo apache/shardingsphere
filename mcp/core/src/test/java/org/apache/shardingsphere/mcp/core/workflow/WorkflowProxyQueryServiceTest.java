@@ -17,38 +17,41 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPDatabaseQueryFailedException;
+import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class WorkflowProxyQueryServiceTest {
     
     @Test
-    void assertQueryReturnsLowerCaseRowsAndAppliesSchema() throws SQLException {
+    void assertQueryReturnsLowerCaseRows() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -65,11 +68,10 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.getObject(1)).thenReturn("orders");
         when(resultSet.getObject(2)).thenReturn("status");
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
-        List<Map<String, Object>> actual = service.query("logic_db", "public", "SHOW MASK RULES");
+        List<Map<String, Object>> actual = service.query("logic_db", "SHOW MASK RULES");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).get("table"), is("orders"));
         assertThat(actual.get(0).get("column"), is("status"));
-        verify(connection).setSchema("public");
     }
     
     @Test
@@ -102,127 +104,37 @@ class WorkflowProxyQueryServiceTest {
     @Test
     void assertQueryThrowsWhenDatabaseIsNotConfigured() {
         WorkflowProxyQueryService service = createService(Map.of());
-        Exception actual = assertThrows(MCPUnavailableException.class, () -> service.query("logic_db", "", "SHOW MASK RULES"));
+        Exception actual = assertThrows(MCPUnavailableException.class, () -> service.query("logic_db", "SHOW MASK RULES"));
         assertThat(actual.getMessage(), is("Database `logic_db` is not configured."));
     }
     
     @Test
-    void assertQueryColumnDefinitionFormatsDecimalDefinition() throws SQLException {
+    void assertQueryClassifiesDatabaseFailure() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT amount FROM orders WHERE 1 = 0")).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.DECIMAL);
-        when(resultSetMetaData.getColumnTypeName(1)).thenReturn("DECIMAL");
-        when(resultSetMetaData.getPrecision(1)).thenReturn(10);
-        when(resultSetMetaData.getScale(1)).thenReturn(2);
+        when(statement.executeQuery("SHOW MASK RULES")).thenThrow(new SQLException("access denied", "42000", 1044));
         WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
-        String actual = service.queryColumnDefinition("logic_db", "public", "orders", "amount");
-        assertThat(actual, is("DECIMAL(10, 2)"));
+        MCPDatabaseQueryFailedException actual = assertThrows(MCPDatabaseQueryFailedException.class, () -> service.query("logic_db", "SHOW MASK RULES"));
+        assertThat(actual.getCategory(), is(MCPJDBCErrorCategory.AUTHORIZATION));
     }
     
     @Test
-    void assertQueryColumnDefinitionReturnsDefaultWhenMetadataIsEmpty() throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT amount FROM orders WHERE 1 = 0")).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(0);
-        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
-        String actual = service.queryColumnDefinition("logic_db", "public", "orders", "amount");
-        assertThat(actual, is("VARCHAR(4000)"));
+    void assertCheckDatabaseCapabilityWithoutCapability() {
+        WorkflowProxyQueryService service = new WorkflowProxyQueryService(new MCPSessionManager(Map.of()), mock(MCPDatabaseCapabilityProvider.class));
+        assertThrows(DatabaseCapabilityNotFoundException.class, () -> service.checkDatabaseCapability("logic_db"));
     }
     
     @Test
-    void assertQueryColumnDefinitionFormatsSpecialCharacterIdentifiers() throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT `amount due` FROM `order detail` WHERE 1 = 0")).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(0);
-        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
-        String actual = service.queryColumnDefinition("`logic_db`", "`public`", "order detail", "amount due");
-        assertThat(actual, is("VARCHAR(4000)"));
-        verify(connection).setSchema("public");
+    void assertIsSameColumnIdentifier() {
+        assertTrue(createService(Map.of()).isSameIdentifier("logic_db", IdentifierScope.COLUMN, "Phone", "phone"));
     }
     
     @Test
-    void assertQueryColumnDefinitionFormatsPostgreSQLIdentifiers() throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT \"amount due\" FROM \"order detail\" WHERE 1 = 0")).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(0);
-        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig), "PostgreSQL");
-        String actual = service.queryColumnDefinition("\"logic_db\"", "\"public\"", "order detail", "amount due");
-        assertThat(actual, is("VARCHAR(4000)"));
-        verify(connection).setSchema("public");
-    }
-    
-    @Test
-    void assertQueryInformationSchemaColumnNamesSkipsSchemaFilterWhenSchemaIsEmpty() throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT DISTINCT column_name FROM information_schema.columns WHERE table_name = 'orders' "
-                + "AND column_name IN ('status_cipher', 'status_assisted_query')"))
-                .thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("COLUMN_NAME");
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getObject(1)).thenReturn("status_cipher", "status_assisted_query");
-        Set<String> columnNames = new LinkedHashSet<>(List.of("status_cipher", "status_assisted_query"));
-        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig));
-        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "", "orders", columnNames);
-        assertThat(actual, is(Set.of("status_cipher", "status_assisted_query")));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @ValueSource(strings = {"MySQL", "MariaDB", "PostgreSQL", "openGauss"})
-    void assertQueryInformationSchemaColumnNamesUsesSchemaFilter(final String databaseType) throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT DISTINCT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'orders' "
-                + "AND column_name IN ('status_cipher')")).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("COLUMN_NAME");
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getObject(1)).thenReturn("status_cipher");
-        WorkflowProxyQueryService service = createService(Map.of("logic_db", runtimeDatabaseConfig), databaseType);
-        Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "public", "orders", new LinkedHashSet<>(List.of("status_cipher")));
-        assertThat(actual, is(Set.of("status_cipher")));
+    void assertIsSameTableIdentifier() {
+        assertFalse(createService(Map.of()).isSameIdentifier("logic_db", IdentifierScope.TABLE, "Phone", "phone"));
     }
     
     private WorkflowProxyQueryService createService(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
@@ -230,34 +142,15 @@ class WorkflowProxyQueryServiceTest {
     }
     
     private WorkflowProxyQueryService createService(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final String databaseType) {
-        Map<String, RuntimeDatabaseConfiguration> capabilityRuntimeDatabases = new LinkedHashMap<>(runtimeDatabases.isEmpty() ? 0 : 1, 1F);
-        if (!runtimeDatabases.isEmpty()) {
-            capabilityRuntimeDatabases.put("logic_db", createCapabilityRuntimeDatabaseConfiguration(databaseType));
-        }
-        return new WorkflowProxyQueryService(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(capabilityRuntimeDatabases));
+        MCPDatabaseCapability databaseCapability = mock(MCPDatabaseCapability.class);
+        when(databaseCapability.getDatabaseType()).thenReturn(databaseType);
+        IdentifierCasePolicySet insensitivePolicySet = IdentifierCasePolicyFactory.newInsensitivePolicySet();
+        when(databaseCapability.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(new IdentifierCasePolicySet(
+                IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE),
+                Map.of(IdentifierScope.COLUMN, insensitivePolicySet.getPolicy(IdentifierScope.COLUMN)))));
+        MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
+        when(databaseCapabilityProvider.provide("logic_db")).thenReturn(Optional.of(databaseCapability));
+        return new WorkflowProxyQueryService(new MCPSessionManager(runtimeDatabases), databaseCapabilityProvider);
     }
     
-    private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration(final String databaseType) {
-        RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        try {
-            when(result.getDatabaseType()).thenReturn(databaseType);
-            when(result.openConnection("logic_db")).thenReturn(connection);
-            when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
-            when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
-            when(databaseMetaData.getURL()).thenReturn(getJdbcUrl(databaseType));
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex);
-        }
-        return result;
-    }
-    
-    private String getJdbcUrl(final String databaseType) {
-        if ("PostgreSQL".equals(databaseType)) {
-            return "jdbc:postgresql://workflow-proxy-query/test";
-        }
-        return "jdbc:mysql://workflow-proxy-query/test";
-    }
 }

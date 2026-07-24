@@ -18,21 +18,18 @@
 package org.apache.shardingsphere.mcp.core.tool.request;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidMetadataObjectTypesException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -51,18 +48,6 @@ public final class MCPToolArguments {
      * @throws MCPInvalidRequestException object types is malformed or unsupported
      */
     public Set<SupportedMCPMetadataObjectType> getObjectTypes(final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
-        return getObjectTypes(supportedObjectTypes, Set.of());
-    }
-    
-    /**
-     * Get object types.
-     *
-     * @param supportedObjectTypes supported object types
-     * @param ignoredUnsupportedValues unsupported values to ignore
-     * @return object types
-     * @throws MCPInvalidRequestException object types is malformed or unsupported
-     */
-    public Set<SupportedMCPMetadataObjectType> getObjectTypes(final Set<SupportedMCPMetadataObjectType> supportedObjectTypes, final Set<String> ignoredUnsupportedValues) {
         Object rawValue = arguments.get("object_types");
         if (null == rawValue) {
             return Collections.emptySet();
@@ -76,13 +61,12 @@ public final class MCPToolArguments {
         }
         Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(objectTypes.size(), 1F);
         for (Object each : objectTypes) {
-            resolveObjectType(each, supportedObjectTypes, ignoredUnsupportedValues).ifPresent(result::add);
+            result.add(resolveObjectType(each, supportedObjectTypes));
         }
         return result;
     }
     
-    private Optional<SupportedMCPMetadataObjectType> resolveObjectType(final Object objectType, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes,
-                                                                       final Set<String> ignoredUnsupportedValues) {
+    private SupportedMCPMetadataObjectType resolveObjectType(final Object objectType, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
         String actualValue = Objects.toString(objectType, "").trim();
         if (actualValue.isEmpty()) {
             throw new MCPInvalidRequestException("object_types cannot contain blank values.");
@@ -90,23 +74,11 @@ public final class MCPToolArguments {
         try {
             SupportedMCPMetadataObjectType result = SupportedMCPMetadataObjectType.valueOf(actualValue.toUpperCase(Locale.ENGLISH));
             if (supportedObjectTypes.contains(result)) {
-                return Optional.of(result);
+                return result;
             }
         } catch (final IllegalArgumentException ignored) {
         }
-        if (containsIgnoreCase(ignoredUnsupportedValues, actualValue)) {
-            return Optional.empty();
-        }
         throw new MCPInvalidMetadataObjectTypesException(actualValue, createAllowedObjectTypes(supportedObjectTypes));
-    }
-    
-    private boolean containsIgnoreCase(final Set<String> values, final String value) {
-        for (String each : values) {
-            if (each.equalsIgnoreCase(value)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private List<String> createAllowedObjectTypes(final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
@@ -121,32 +93,6 @@ public final class MCPToolArguments {
      */
     public String getStringArgument(final String name) {
         return Objects.toString(arguments.get(name), "").trim();
-    }
-    
-    /**
-     * Get integer argument.
-     *
-     * @param name argument name
-     * @param defaultValue default value
-     * @return argument value
-     */
-    public int getIntegerArgument(final String name, final int defaultValue) {
-        Object result = arguments.get(name);
-        if (null == result) {
-            return defaultValue;
-        }
-        if (result instanceof Number) {
-            return ((Number) result).intValue();
-        }
-        String actualValue = result.toString().trim();
-        if (actualValue.isEmpty()) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(actualValue);
-        } catch (final NumberFormatException ignored) {
-            return defaultValue;
-        }
     }
     
     /**
@@ -184,28 +130,6 @@ public final class MCPToolArguments {
     }
     
     /**
-     * Get boolean argument.
-     *
-     * @param name argument name
-     * @param defaultValue default value
-     * @return argument value
-     */
-    public boolean getBooleanArgument(final String name, final boolean defaultValue) {
-        Object result = arguments.get(name);
-        if (null == result) {
-            return defaultValue;
-        }
-        if (result instanceof Boolean) {
-            return (Boolean) result;
-        }
-        String actualValue = result.toString().trim();
-        if (actualValue.isEmpty()) {
-            return defaultValue;
-        }
-        return Boolean.parseBoolean(actualValue);
-    }
-    
-    /**
      * Get string collection argument.
      *
      * @param name argument name
@@ -226,39 +150,4 @@ public final class MCPToolArguments {
         return result;
     }
     
-    /**
-     * Get string map argument.
-     *
-     * @param name argument name
-     * @return string map
-     */
-    public Map<String, String> getMapArgument(final String name) {
-        Object rawValue = arguments.get(name);
-        if (rawValue instanceof Map) {
-            Map<String, String> result = new LinkedHashMap<>();
-            for (Entry<?, ?> entry : ((Map<?, ?>) rawValue).entrySet()) {
-                String actualKey = Objects.toString(entry.getKey(), "").trim();
-                if (!actualKey.isEmpty()) {
-                    result.put(actualKey, Objects.toString(entry.getValue(), "").trim());
-                }
-            }
-            return result;
-        }
-        if (rawValue instanceof Collection) {
-            Map<String, String> result = new LinkedHashMap<>();
-            for (String each : getStringCollectionArgument(name)) {
-                int separatorIndex = each.indexOf('=');
-                if (-1 == separatorIndex) {
-                    continue;
-                }
-                String actualKey = each.substring(0, separatorIndex).trim();
-                String actualValue = each.substring(separatorIndex + 1).trim();
-                if (!actualKey.isEmpty()) {
-                    result.put(actualKey, actualValue);
-                }
-            }
-            return result;
-        }
-        return Collections.emptyMap();
-    }
 }

@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.infra.instance;
 
+import com.google.errorprone.annotations.ThreadSafe;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
-
-import com.google.errorprone.annotations.ThreadSafe;
-import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Instance of compute node.
@@ -40,15 +37,8 @@ public final class ComputeNodeInstance {
     
     private final InstanceStateContext state = new InstanceStateContext();
     
-    private final Collection<String> labels = new CopyOnWriteArrayList<>();
-    
     @Setter
     private volatile int workerId = -1;
-    
-    public ComputeNodeInstance(final InstanceMetaData metaData, final Collection<String> labels) {
-        this.metaData = metaData;
-        this.labels.addAll(labels);
-    }
     
     /**
      * Switch state.

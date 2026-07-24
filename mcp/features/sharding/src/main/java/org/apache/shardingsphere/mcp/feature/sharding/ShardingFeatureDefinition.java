@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Sharding MCP feature definition.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingFeatureDefinition {
     
     public static final WorkflowKind TABLE_RULE_WORKFLOW_KIND = WorkflowKind.valueOf("sharding.table.rule");
@@ -104,6 +107,12 @@ public final class ShardingFeatureDefinition {
     
     public static final String RULE_COUNT_RESOURCE_URI = "shardingsphere://features/sharding/databases/{database}/rule-count";
     
+    public static final String STORAGE_UNITS_RESOURCE_URI = "shardingsphere://databases/{database}/storage-units";
+    
+    public static final String SINGLE_TABLES_RESOURCE_URI = "shardingsphere://databases/{database}/single-tables";
+    
+    public static final String SINGLE_TABLE_RESOURCE_URI = "shardingsphere://databases/{database}/single-tables/{table}";
+    
     public static final String TABLE_FIELD = "table";
     
     public static final String RULE_FIELD = "rule";
@@ -116,6 +125,4 @@ public final class ShardingFeatureDefinition {
     
     public static final String AUDITOR_FIELD = "auditor";
     
-    private ShardingFeatureDefinition() {
-    }
 }

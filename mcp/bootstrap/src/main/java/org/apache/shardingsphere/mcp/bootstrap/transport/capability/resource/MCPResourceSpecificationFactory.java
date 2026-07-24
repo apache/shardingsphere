@@ -23,14 +23,12 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -62,7 +60,7 @@ public final class MCPResourceSpecificationFactory {
     public List<SyncResourceSpecification> createResourceSpecifications() {
         return descriptors.stream()
                 .filter(each -> !each.isTemplated())
-                .map(each -> new SyncResourceSpecification(createResource(each), (exchange, request) -> readResource(request))).toList();
+                .map(each -> new SyncResourceSpecification(createResource(each), (exchange, request) -> readResource(exchange.sessionId(), request))).toList();
     }
     
     private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
@@ -89,7 +87,7 @@ public final class MCPResourceSpecificationFactory {
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
         return descriptors.stream()
                 .filter(MCPResourceDescriptor::isTemplated)
-                .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), (exchange, request) -> readResource(request))).toList();
+                .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), (exchange, request) -> readResource(exchange.sessionId(), request))).toList();
     }
     
     private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
@@ -113,12 +111,14 @@ public final class MCPResourceSpecificationFactory {
         return new McpSchema.Annotations(audience, annotations.getPriority(), annotations.getLastModified());
     }
     
-    private ReadResourceResult readResource(final McpSchema.ReadResourceRequest request) {
+    private ReadResourceResult readResource(final String sessionId, final McpSchema.ReadResourceRequest request) {
         try {
-            Map<String, Object> payload = controller.handle(request.uri()).toPayload();
+            Map<String, Object> payload = controller.handle(sessionId, request.uri()).toPayload();
             return new ReadResourceResult(Collections.singletonList(new TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
-        } catch (final ShardingSphereMCPException | RuntimeDatabaseConnectionException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
-            throw MCPTransportErrorFactory.createError(ex);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw MCPTransportErrorFactory.createResourceError(ex);
         }
     }
 }

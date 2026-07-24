@@ -1,0 +1,87 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JavaSafeCompressor",
+      "allPublicFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4HCJavaSafeCompressor",
+      "allPublicFields": true,
+      "allDeclaredConstructors": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JavaSafeSafeDecompressor",
+      "allPublicFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JNICompressor",
+      "allPublicFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4HCJNICompressor",
+      "allPublicFields": true,
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4Factory"
+      },
+      "type": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JNISafeDecompressor",
+      "allPublicFields": true
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.config.ClickHouseClientOption"
+      },
+      "glob": "clickhouse-client-version.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.config.ClickHouseClientOption"
+      },
+      "glob": "jdbc-v2-version.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.config.ClickHouseClientOption"
+      },
+      "glob": "client-v2-version.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.org.apache.hc.core5.util.VersionInfo"
+      },
+      "glob": "com/clickhouse/client/internal/org/apache/hc/client5/version.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.logging.LoggerFactory"
+      },
+      "glob": "META-INF/services/com.clickhouse.logging.LoggerFactory"
+    },
+    {
+      "condition": {
+        "typeReached": "com.clickhouse.client.internal.net.jpountz.lz4.LZ4JNI"
+      },
+      "glob": "com/clickhouse/client/internal/net/jpountz/util/linux/amd64/liblz4-java.so"
+    }
+  ]
+}

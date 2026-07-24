@@ -123,13 +123,13 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
         encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
     }
     
-    private void addToEncryptors(final EncryptColumnSegment column, final Collection<AlgorithmSegment> result) {
-        result.add(column.getCipher().getEncryptor());
+    private void addToEncryptors(final EncryptColumnSegment column, final Collection<AlgorithmSegment> algorithmSegments) {
+        algorithmSegments.add(column.getCipher().getEncryptor());
         if (null != column.getAssistedQuery()) {
-            result.add(column.getAssistedQuery().getEncryptor());
+            algorithmSegments.add(column.getAssistedQuery().getEncryptor());
         }
         if (null != column.getLikeQuery()) {
-            result.add(column.getLikeQuery().getEncryptor());
+            algorithmSegments.add(column.getLikeQuery().getEncryptor());
         }
     }
     

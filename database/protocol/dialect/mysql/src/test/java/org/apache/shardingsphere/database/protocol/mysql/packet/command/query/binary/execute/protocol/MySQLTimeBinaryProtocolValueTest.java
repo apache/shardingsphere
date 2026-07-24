@@ -97,7 +97,8 @@ class MySQLTimeBinaryProtocolValueTest {
         return Stream.of(
                 Arguments.of("zero_length", new int[]{0, 0, 0, 0, 0}, new int[]{0, 0}, new Timestamp(0L)),
                 Arguments.of("eight_bytes", new int[]{8, 0, 10, 59, 0}, new int[]{0, 0}, createTimestamp(0)),
-                Arguments.of("twelve_bytes", new int[]{12, 0, 10, 59, 0}, new int[]{0, 1000}, createTimestamp(1000)));
+                Arguments.of("twelve_bytes", new int[]{12, 0, 10, 59, 0}, new int[]{0, 1000}, createTimestamp(1_000_000)),
+                Arguments.of("twelve_bytes_fractional_second", new int[]{12, 0, 10, 59, 0}, new int[]{0, 230000}, createTimestamp(230_000_000)));
     }
     
     private static Stream<Arguments> writeArguments() {

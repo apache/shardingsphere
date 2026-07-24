@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator.ValidMCPLau
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator.ValidYamlRuntimeDatabaseConfigurations;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
@@ -40,7 +39,8 @@ public final class YamlMCPLaunchConfiguration implements YamlConfiguration {
     @Valid
     private YamlMCPTransportConfiguration transport;
     
-    @NotEmpty(message = "is required")
+    @NotNull(message = "is required")
+    @Valid
     @ValidYamlRuntimeDatabaseConfigurations
-    private Map<String, Map<String, Object>> runtimeDatabases;
+    private Map<String, YamlRuntimeDatabaseConfiguration> runtimeDatabases;
 }

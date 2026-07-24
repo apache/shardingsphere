@@ -20,10 +20,13 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.tabl
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -39,6 +42,8 @@ public final class FunctionTableSegment implements TableSegment {
     private final int stopIndex;
     
     private final ExpressionSegment tableFunction;
+    
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     @Setter
     private AliasSegment alias;

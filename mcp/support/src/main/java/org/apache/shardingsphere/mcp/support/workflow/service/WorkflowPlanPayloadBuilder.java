@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
@@ -41,12 +42,6 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowPlanPayloadBuilder {
     
-    private static final String DELIVERY_MODE_ALL_AT_ONCE = "all-at-once";
-    
-    private static final String EXECUTION_MODE_REVIEW_THEN_EXECUTE = "review-then-execute";
-    
-    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
-    
     /**
      * Build one workflow-plan payload map.
      *
@@ -54,8 +49,9 @@ public final class WorkflowPlanPayloadBuilder {
      * @return workflow-plan payload
      */
     public static Map<String, Object> build(final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(24, 1F);
         result.put("response_mode", resolveResponseMode(snapshot));
+        result.put(MCPPayloadFieldNames.SUMMARY, createSummary(snapshot));
         result.put(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId());
         result.put("workflow_kind", snapshot.getWorkflowKind().getValue());
         result.put("status", snapshot.getStatus());
@@ -70,25 +66,51 @@ public final class WorkflowPlanPayloadBuilder {
         result.put("intent_inference", createIntentInference(snapshot.getClarifiedIntent()));
         result.put("argument_provenance", createArgumentProvenance(snapshot));
         result.put("review_focus", createReviewFocus(snapshot));
+        appendSecretReferenceSummary(result, snapshot);
         WorkflowGuidancePayloadBuilder.appendPlanningGuidance(result, snapshot);
         return result;
     }
     
+    private static String createSummary(final WorkflowContextSnapshot snapshot) {
+        String workflowKind = snapshot.getWorkflowKind().getValue();
+        if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus())) {
+            return String.format("Workflow plan `%s` for %s requires clarification before preview.", snapshot.getPlanId(), workflowKind);
+        }
+        if (WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus())) {
+            return String.format("Workflow plan `%s` for %s is ready for preview.", snapshot.getPlanId(), workflowKind);
+        }
+        if (WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus())) {
+            return String.format("Workflow plan `%s` for %s failed with %d issue(s).", snapshot.getPlanId(), workflowKind, snapshot.getIssues().size());
+        }
+        return String.format("Workflow plan `%s` for %s is `%s`.", snapshot.getPlanId(), workflowKind, snapshot.getStatus());
+    }
+    
     /**
-     * Build one rule DistSQL-only workflow-plan payload map.
+     * Build one workflow-plan payload map with generated artifacts.
      *
      * @param snapshot workflow snapshot
      * @param propertySource workflow property source
-     * @return rule DistSQL-only workflow-plan payload
+     * @return workflow-plan payload with generated artifacts
      */
-    public static Map<String, Object> buildRuleDistSQLOnly(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
+    public static Map<String, Object> buildWithArtifacts(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
         Map<String, Object> result = build(snapshot);
-        result.putAll(WorkflowArtifactPayloadUtils.createRuleArtifactPayload(snapshot, propertySource));
+        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));
         return result;
     }
     
     private static String resolveResponseMode(final WorkflowContextSnapshot snapshot) {
         return WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus()) ? "terminal" : "planning";
+    }
+    
+    private static void appendSecretReferenceSummary(final Map<String, Object> result, final WorkflowContextSnapshot snapshot) {
+        WorkflowPropertySource propertySource = null == snapshot.getRequest() ? snapshot.getFeatureData() : snapshot.getRequest();
+        if (null == propertySource) {
+            return;
+        }
+        Map<String, Object> summary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(propertySource);
+        if ((Boolean) summary.get("required")) {
+            result.put("secret_reference_summary", summary);
+        }
     }
     
     private static Map<String, Object> createIntentInference(final ClarifiedIntent clarifiedIntent) {
@@ -103,7 +125,7 @@ public final class WorkflowPlanPayloadBuilder {
     
     private static Map<String, Object> createReviewFocus(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        boolean manualOnly = EXECUTION_MODE_MANUAL_ONLY.equals(snapshot.getInteractionPlan().getExecutionMode());
+        boolean manualOnly = WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY.equals(snapshot.getInteractionPlan().getExecutionMode());
         result.put("artifact_categories", createReviewArtifactCategories(snapshot));
         result.put("side_effect_scope", createReviewSideEffectScope(snapshot));
         result.put("manual_only", manualOnly);
@@ -145,7 +167,9 @@ public final class WorkflowPlanPayloadBuilder {
     }
     
     private static boolean isDefaultMode(final String fieldName, final String value) {
-        return WorkflowFieldNames.DELIVERY_MODE.equals(fieldName) ? DELIVERY_MODE_ALL_AT_ONCE.equals(value) : EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(value);
+        return WorkflowFieldNames.DELIVERY_MODE.equals(fieldName)
+                ? WorkflowLifecycle.DELIVERY_MODE_ALL_AT_ONCE.equals(value)
+                : WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE.equals(value);
     }
     
     private static Map<String, Object> getInferredValues(final WorkflowContextSnapshot snapshot) {
@@ -164,12 +188,6 @@ public final class WorkflowPlanPayloadBuilder {
     
     private static List<String> createReviewArtifactCategories(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
-        if (!snapshot.getDdlArtifacts().isEmpty()) {
-            result.add("ddl_artifacts");
-        }
-        if (!snapshot.getIndexPlans().isEmpty()) {
-            result.add("index_plan");
-        }
         if (!snapshot.getRuleArtifacts().isEmpty()) {
             result.add("distsql_artifacts");
         }
@@ -181,9 +199,6 @@ public final class WorkflowPlanPayloadBuilder {
     
     private static List<String> createReviewSideEffectScope(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
-        if (!snapshot.getDdlArtifacts().isEmpty() || !snapshot.getIndexPlans().isEmpty()) {
-            result.add("physical-structure");
-        }
         if (!snapshot.getRuleArtifacts().isEmpty()) {
             result.add("rule-metadata");
         }

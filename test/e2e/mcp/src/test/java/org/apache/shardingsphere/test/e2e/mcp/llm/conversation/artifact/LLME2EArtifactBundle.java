@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
 import java.util.List;
-import java.util.Map;
 
-@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Getter
 public final class LLME2EArtifactBundle {
     
@@ -37,8 +39,6 @@ public final class LLME2EArtifactBundle {
     private final String modelProvider;
     
     private final String modelName;
-    
-    private final Map<String, Object> capabilityFingerprints;
     
     private final String finalAnswerJson;
     

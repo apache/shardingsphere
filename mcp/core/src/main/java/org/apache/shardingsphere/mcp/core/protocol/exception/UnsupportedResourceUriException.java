@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mcp.core.protocol.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPNotFoundException;
 
 /**
  * Exception for unsupported MCP resource URIs.
  */
-public final class UnsupportedResourceUriException extends MCPInvalidRequestException {
+public final class UnsupportedResourceUriException extends MCPNotFoundException {
     
     private static final long serialVersionUID = -5677772971573969755L;
     

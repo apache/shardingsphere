@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.mcp.core.session;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPJdbcTransactionResourceManager;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.List;
 
 /**
  * MCP session manager.
@@ -41,9 +42,7 @@ public final class MCPSessionManager {
     @Getter
     private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
-    private final Map<String, ReentrantLock> sessions = new ConcurrentHashMap<>();
-    
-    private final Map<String, MCPSessionAttribution> sessionAttributions = new ConcurrentHashMap<>();
+    private final Map<String, SessionState> sessions = new ConcurrentHashMap<>();
     
     private final List<Consumer<String>> sessionCloseListeners = new CopyOnWriteArrayList<>();
     
@@ -54,33 +53,31 @@ public final class MCPSessionManager {
     /**
      * Create a new session.
      *
-     * @param sessionId session id
+     * @param sessionIdentity session identity
      */
-    public void createSession(final String sessionId) {
-        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, new ReentrantLock(true)), () -> new IllegalStateException("Session already exists."));
+    public void createSession(final MCPSessionIdentity sessionIdentity) {
+        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionIdentity.getSessionId(), new SessionState(sessionIdentity)),
+                () -> new IllegalStateException("Session already exists."));
     }
     
     /**
-     * Bind session attribution to one existing session.
+     * Find session identity.
      *
      * @param sessionId session id
-     * @param sessionAttribution session attribution
+     * @return session identity
      */
-    public void bindSessionAttribution(final String sessionId, final MCPSessionAttribution sessionAttribution) {
-        ShardingSpherePreconditions.checkState(hasSession(sessionId), MCPSessionNotExistedException::new);
-        MCPSessionAttribution existing = sessionAttributions.putIfAbsent(sessionId, sessionAttribution);
-        ShardingSpherePreconditions.checkState(null == existing || existing.equals(sessionAttribution),
-                () -> new IllegalStateException(String.format("Session attribution does not match existing binding for session `%s`.", sessionId)));
+    public Optional<MCPSessionIdentity> findSessionIdentity(final String sessionId) {
+        return Optional.ofNullable(sessions.get(sessionId)).map(each -> each.identity);
     }
     
     /**
-     * Find session attribution.
+     * Get required session identity.
      *
      * @param sessionId session id
-     * @return session attribution
+     * @return session identity
      */
-    public Optional<MCPSessionAttribution> findSessionAttribution(final String sessionId) {
-        return Optional.ofNullable(sessionAttributions.get(sessionId));
+    public MCPSessionIdentity getRequiredSessionIdentity(final String sessionId) {
+        return getRequiredSessionState(sessionId).identity;
     }
     
     /**
@@ -94,7 +91,7 @@ public final class MCPSessionManager {
     }
     
     /**
-     * Add a callback invoked after one session is closed.
+     * Add a callback invoked during session close, before the session identifier becomes reusable.
      *
      * @param sessionCloseListener session close listener
      */
@@ -107,32 +104,27 @@ public final class MCPSessionManager {
      *
      * @param sessionId session identifier
      */
-    public void closeSession(final String sessionId) {
-        ReentrantLock executionLock = findExecutionLock(sessionId);
-        if (null == executionLock) {
+    void closeSession(final String sessionId) {
+        SessionState sessionState = sessions.get(sessionId);
+        if (null == sessionState) {
             return;
         }
         try {
             transactionResourceManager.closeSession(sessionId);
         } finally {
-            if (sessions.remove(sessionId, executionLock)) {
-                sessionAttributions.remove(sessionId);
-                notifySessionCloseListeners(sessionId);
+            if (sessionState == sessions.get(sessionId)) {
+                try {
+                    notifySessionCloseListeners(sessionId);
+                } finally {
+                    sessions.remove(sessionId, sessionState);
+                }
             }
         }
     }
     
-    /**
-     * Close all current sessions.
-     */
-    public void closeAllSessions() {
-        for (String each : new LinkedHashSet<>(sessions.keySet())) {
-            closeSession(each);
-        }
-    }
-    
     ReentrantLock findExecutionLock(final String sessionId) {
-        return sessions.get(sessionId);
+        SessionState sessionState = sessions.get(sessionId);
+        return null == sessionState ? null : sessionState.executionLock;
     }
     
     ReentrantLock getRequiredExecutionLock(final String sessionId) {
@@ -147,9 +139,25 @@ public final class MCPSessionManager {
         return new LinkedHashSet<>(sessions.keySet());
     }
     
+    private SessionState getRequiredSessionState(final String sessionId) {
+        SessionState result = sessions.get(sessionId);
+        if (null == result) {
+            throw new MCPSessionNotExistedException();
+        }
+        return result;
+    }
+    
     private void notifySessionCloseListeners(final String sessionId) {
         for (Consumer<String> each : sessionCloseListeners) {
             each.accept(sessionId);
         }
+    }
+    
+    @RequiredArgsConstructor
+    private static final class SessionState {
+        
+        private final ReentrantLock executionLock = new ReentrantLock(true);
+        
+        private final MCPSessionIdentity identity;
     }
 }

@@ -9,7 +9,7 @@ weight = 2
 
 - 适合在 Claude Code CLI 中接入已经启动的 ShardingSphere-MCP HTTP Server。
 - 适合在本地开发环境中由 Claude Code 直接拉起 ShardingSphere-MCP STDIO 进程。
-- 接入完成后，可以在 Claude Code 中查看逻辑库中的表、查看表结构、执行受控只读查询，或调用 `database_gateway_validate_proxy_connectivity` 进行接入前校验。
+- 接入完成后，可以在 Claude Code 中查看逻辑库中的表、查看表结构、执行受控只读查询，或调用 `database_gateway_validate_runtime_database` 进行接入前校验。
 
 ## 前置条件
 
@@ -75,9 +75,9 @@ claude mcp add --transport stdio shardingsphere -- \
 调用成功：
 
 - 在 Claude Code 对话中执行一条最小验证任务，例如：
-  - 查看 `<logic-database>` 中有哪些表。
+  - 查看 `logic_db` 中有哪些表。
   - 查看 `orders` 表的列和索引。
-  - 对已经配置的 runtime database 执行 `database_gateway_validate_proxy_connectivity`。
+  - 对已经配置的 runtime database 执行 `database_gateway_validate_runtime_database`。
 - 如果工具已被列出并能返回查询结果，说明接入已经生效。
 
 ## 注意事项

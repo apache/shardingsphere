@@ -125,15 +125,15 @@ class MySQLComStmtExecuteExecutorTest {
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         SQLStatementContext selectStatementContext = prepareSelectStatementContext();
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?", selectStatementContext, new HintValueContext(), Collections.emptyList()));
+                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?", selectStatementContext, new HintValueContext()));
         UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         when(updateStatementContext.getSqlStatement()).thenReturn(prepareUpdateStatement());
         when(updateStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2))
-                .thenReturn(new MySQLServerPreparedStatement("UPDATE tbl SET col=1 WHERE id = ?", updateStatementContext, new HintValueContext(), Collections.emptyList()));
+                .thenReturn(new MySQLServerPreparedStatement("UPDATE tbl SET col=1 WHERE id = ?", updateStatementContext, new HintValueContext()));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
                 .thenReturn(
-                        new MySQLServerPreparedStatement("COMMIT", new CommonSQLStatementContext(new CommitStatement(databaseType)), new HintValueContext(), Collections.emptyList()));
+                        new MySQLServerPreparedStatement("COMMIT", new CommonSQLStatementContext(new CommitStatement(databaseType)), new HintValueContext()));
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(new ShardingSphereMetaData(Collections.emptyList(),
@@ -196,7 +196,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST);
         when(packet.getNewParameterTypes()).thenReturn(Collections.singletonList(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.LONG, 0)));
-        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenReturn(Collections.singletonList(1));
+        when(packet.readParameters(anyList(), any(), anyList())).thenReturn(Collections.singletonList(1));
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(databaseType).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
@@ -232,13 +232,13 @@ class MySQLComStmtExecuteExecutorTest {
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         when(selectStatement.getParameterCount()).thenReturn(1);
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?", selectStatementContext, new HintValueContext(), Collections.singletonList(0)));
+                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?", selectStatementContext, new HintValueContext()));
         when(packet.getNewParameterTypes()).thenReturn(Collections.emptyList());
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST);
         MySQLNullBitmap nullBitmap = mock(MySQLNullBitmap.class);
         when(nullBitmap.isNullParameter(0)).thenReturn(true);
         when(packet.getNullBitmap()).thenReturn(nullBitmap);
-        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenAnswer(invocation -> Collections.singletonList(null));
+        when(packet.readParameters(anyList(), any(), anyList())).thenAnswer(invocation -> Collections.singletonList(null));
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(selectStatement));
         AtomicReference<QueryContext> actualQueryContext = new AtomicReference<>();
@@ -251,7 +251,7 @@ class MySQLComStmtExecuteExecutorTest {
         assertFalse(actual.hasNext());
         assertThat(actualQueryContext.get().getParameters(), contains((Object) null));
         ArgumentCaptor<List<MySQLPreparedStatementParameterType>> parameterTypesCaptor = ArgumentCaptor.forClass(List.class);
-        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList(), anyList());
+        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList());
         assertThat(parameterTypesCaptor.getValue().size(), is(1));
         assertThat(parameterTypesCaptor.getValue().get(0).getColumnType(), is(MySQLBinaryColumnType.NULL));
     }
@@ -266,14 +266,14 @@ class MySQLComStmtExecuteExecutorTest {
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         when(selectStatement.getParameterCount()).thenReturn(2);
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE col1 = ? AND col2 = ?", selectStatementContext, new HintValueContext(), Arrays.asList(0, 1)));
+                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE col1 = ? AND col2 = ?", selectStatementContext, new HintValueContext()));
         when(packet.getNewParameterTypes()).thenReturn(Collections.emptyList());
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST);
         MySQLNullBitmap nullBitmap = mock(MySQLNullBitmap.class);
         when(nullBitmap.isNullParameter(0)).thenReturn(true);
         when(nullBitmap.isNullParameter(1)).thenReturn(true);
         when(packet.getNullBitmap()).thenReturn(nullBitmap);
-        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenReturn(Arrays.asList(null, null));
+        when(packet.readParameters(anyList(), any(), anyList())).thenReturn(Arrays.asList(null, null));
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(selectStatement));
         AtomicReference<QueryContext> actualQueryContext = new AtomicReference<>();
@@ -286,7 +286,7 @@ class MySQLComStmtExecuteExecutorTest {
         assertFalse(actual.hasNext());
         assertThat(actualQueryContext.get().getParameters(), contains((Object) null, null));
         ArgumentCaptor<List<MySQLPreparedStatementParameterType>> parameterTypesCaptor = ArgumentCaptor.forClass(List.class);
-        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList(), anyList());
+        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList());
         assertThat(parameterTypesCaptor.getValue().size(), is(2));
         assertThat(parameterTypesCaptor.getValue().get(0).getColumnType(), is(MySQLBinaryColumnType.NULL));
         assertThat(parameterTypesCaptor.getValue().get(1).getColumnType(), is(MySQLBinaryColumnType.NULL));
@@ -302,7 +302,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         when(selectStatement.getParameterCount()).thenReturn(2);
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE col1 = ? AND col2 = ?", selectStatementContext, new HintValueContext(), Arrays.asList(0, 1)));
+                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE col1 = ? AND col2 = ?", selectStatementContext, new HintValueContext()));
         when(packet.getNewParameterTypes()).thenReturn(Collections.emptyList());
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST);
         MySQLNullBitmap nullBitmap = mock(MySQLNullBitmap.class);
@@ -319,7 +319,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST);
         List<MySQLPreparedStatementParameterType> expectedTypes = Collections.singletonList(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.LONG, 0));
         when(packet.getNewParameterTypes()).thenReturn(expectedTypes);
-        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenReturn(Collections.singletonList(1));
+        when(packet.readParameters(anyList(), any(), anyList())).thenReturn(Collections.singletonList(1));
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(databaseType).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
@@ -327,7 +327,7 @@ class MySQLComStmtExecuteExecutorTest {
         assertThat(actual.next(), isA(MySQLOKPacket.class));
         assertFalse(actual.hasNext());
         ArgumentCaptor<List<MySQLPreparedStatementParameterType>> parameterTypesCaptor = ArgumentCaptor.forClass(List.class);
-        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList(), anyList());
+        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList());
         assertThat(parameterTypesCaptor.getValue(), is(expectedTypes));
     }
     
@@ -337,10 +337,9 @@ class MySQLComStmtExecuteExecutorTest {
         when(packet.getStatementId()).thenReturn(1);
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_NOT_EXIST);
         when(packet.getNewParameterTypes()).thenReturn(Collections.emptyList());
-        when(packet.readParameters(anyList(), any(), anyList(), anyList())).thenReturn(Collections.singletonList(1));
+        when(packet.readParameters(anyList(), any(), anyList())).thenReturn(Collections.singletonList(1));
         MySQLPreparedStatementParameterType expectedType = new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.LONG, 0);
-        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?",
-                prepareSelectStatementContext(), new HintValueContext(), Collections.singletonList(0));
+        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?", prepareSelectStatementContext(), new HintValueContext());
         preparedStatement.getParameterTypes().add(expectedType);
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1)).thenReturn(preparedStatement);
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
@@ -350,7 +349,7 @@ class MySQLComStmtExecuteExecutorTest {
         assertThat(actual.next(), isA(MySQLOKPacket.class));
         assertFalse(actual.hasNext());
         ArgumentCaptor<List<MySQLPreparedStatementParameterType>> parameterTypesCaptor = ArgumentCaptor.forClass(List.class);
-        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList(), anyList());
+        verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList());
         assertThat(parameterTypesCaptor.getValue(), contains(expectedType));
     }
 }

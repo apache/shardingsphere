@@ -38,21 +38,13 @@ public final class WorkflowIssueCode {
     
     public static final String COLUMN_NOT_FOUND = "WF-META-002";
     
-    public static final String LOGICAL_METADATA_UNAVAILABLE = "WF-META-003";
-    
-    public static final String FEATURE_TYPE_UNCLEAR = "WF-INTENT-001";
-    
     public static final String ALGORITHM_NOT_FOUND = "WF-ALGO-001";
     
     public static final String ALGORITHM_CAPABILITY_CONFLICT = "WF-ALGO-002";
     
     public static final String REQUIRED_PROPERTY_MISSING = "WF-PROP-001";
     
-    public static final String SECRET_PROPERTY_REQUIRED = "WF-PROP-002";
-    
-    public static final String USER_OVERRIDE_NAME_UNSAFE = "WF-NAME-001";
-    
-    public static final String AUTO_RENAMED_DUE_TO_CONFLICT = "WF-NAME-002";
+    public static final String SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED = "WF-PROP-002";
     
     public static final String DROP_TARGET_RULE_NOT_FOUND = "WF-LIFE-001";
     
@@ -60,29 +52,23 @@ public final class WorkflowIssueCode {
     
     public static final String ENCRYPT_DROP_SCOPE_LIMITED = "WF-LIFE-003";
     
-    public static final String PHYSICAL_CLEANUP_REQUIRED = "WF-LIFE-004";
+    public static final String ENCRYPT_RULE_REWRITE_LIMITED = "WF-LIFE-005";
     
-    public static final String ENCRYPT_ALTER_SCOPE_LIMITED = "WF-LIFE-005";
-    
-    public static final String MASK_ALTER_SCOPE_LIMITED = "WF-LIFE-006";
-    
-    public static final String DDL_PERMISSION_DENIED = "WF-DDL-001";
-    
-    public static final String DDL_EXECUTION_FAILED = "WF-DDL-002";
+    public static final String MASK_RULE_REWRITE_LIMITED = "WF-LIFE-006";
     
     public static final String RULE_EXECUTION_FAILED = "WF-RULE-001";
     
     public static final String RULE_INPUT_REQUIRED = "WF-RULE-002";
     
+    public static final String RULE_INPUT_CONFLICT = "WF-RULE-003";
+    
     public static final String MANUAL_EXECUTION_PENDING = "WF-MODE-001";
+    
+    public static final String CLUSTER_MODE_REQUIRED = "WF-MODE-002";
     
     public static final String UNSUPPORTED_IDENTIFIER = "WF-SQL-001";
     
-    public static final String DDL_STATE_MISMATCH = "WF-VAL-001";
-    
     public static final String RULE_STATE_MISMATCH = "WF-VAL-002";
     
-    public static final String LOGICAL_METADATA_MISMATCH = "WF-VAL-003";
-    
-    public static final String SQL_EXECUTABILITY_FAILED = "WF-VAL-004";
+    public static final String SQL_EXECUTABILITY_FAILED = "WF-VAL-003";
 }

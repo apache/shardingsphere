@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 
@@ -27,9 +28,18 @@ import java.util.Locale;
 
 final class SQLStatementScanner {
     
+    private final boolean mysqlCommentSyntax;
+    
+    private final boolean dollarQuotedStrings;
+    
+    SQLStatementScanner(final String databaseType) {
+        mysqlCommentSyntax = "MySQL".equalsIgnoreCase(databaseType) || "MariaDB".equalsIgnoreCase(databaseType);
+        dollarQuotedStrings = "PostgreSQL".equalsIgnoreCase(databaseType) || "openGauss".equalsIgnoreCase(databaseType);
+    }
+    
     String normalizeSingleStatement(final String sql) {
         String result = sql.trim();
-        ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new IllegalArgumentException("sql cannot be empty."));
+        ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new MCPInvalidRequestException("sql cannot be empty."));
         int statementDelimiterIndex = findStatementDelimiter(result);
         if (-1 == statementDelimiterIndex) {
             return result;
@@ -38,7 +48,7 @@ final class SQLStatementScanner {
             throw new MCPMultipleSQLStatementsException();
         }
         result = result.substring(0, statementDelimiterIndex).trim();
-        ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new IllegalArgumentException("sql cannot be empty."));
+        ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new MCPInvalidRequestException("sql cannot be empty."));
         return result;
     }
     
@@ -74,77 +84,6 @@ final class SQLStatementScanner {
         return sql.substring(startIndex, stopIndex).toUpperCase(Locale.ENGLISH);
     }
     
-    boolean matchesKeyword(final String sql, final int startIndex, final String keyword) {
-        int keywordLength = keyword.length();
-        if (startIndex + keywordLength > sql.length() || !sql.regionMatches(true, startIndex, keyword, 0, keywordLength)) {
-            return false;
-        }
-        return startIndex + keywordLength == sql.length() || !isIdentifierCharacter(sql.charAt(startIndex + keywordLength));
-    }
-    
-    int skipKeyword(final String sql, final int startIndex, final String keyword) {
-        if (!matchesKeyword(sql, startIndex, keyword)) {
-            throw new MCPUnsupportedSQLStatementException();
-        }
-        return startIndex + keyword.length();
-    }
-    
-    int skipIdentifier(final String sql, final int startIndex) {
-        if (startIndex >= sql.length()) {
-            throw new MCPUnsupportedSQLStatementException();
-        }
-        char currentChar = sql.charAt(startIndex);
-        if (isQuotedIdentifierStart(currentChar)) {
-            return skipQuotedText(sql, startIndex) + 1;
-        }
-        int result = startIndex;
-        while (result < sql.length()) {
-            currentChar = sql.charAt(result);
-            if (Character.isWhitespace(currentChar) || '(' == currentChar || ',' == currentChar) {
-                break;
-            }
-            result++;
-        }
-        return result;
-    }
-    
-    int skipParenthesizedSegment(final String sql, final int startIndex) {
-        return skipInsignificant(sql, findClosingParenthesis(sql, startIndex) + 1);
-    }
-    
-    int findClosingParenthesis(final String sql, final int startIndex) {
-        int parenthesesDepth = 0;
-        int result = startIndex;
-        while (result < sql.length()) {
-            char currentChar = sql.charAt(result);
-            if (isLineCommentStart(sql, result)) {
-                result = skipLineComment(sql, result) + 1;
-                continue;
-            }
-            if (isBlockCommentStart(sql, result)) {
-                result = skipBlockComment(sql, result) + 1;
-                continue;
-            }
-            if (isQuotedTextStart(currentChar)) {
-                result = skipQuotedText(sql, result) + 1;
-                continue;
-            }
-            if ('(' == currentChar) {
-                parenthesesDepth++;
-                result++;
-                continue;
-            }
-            if (')' == currentChar) {
-                parenthesesDepth--;
-                if (0 == parenthesesDepth) {
-                    return result;
-                }
-            }
-            result++;
-        }
-        throw new MCPUnsupportedSQLStatementException();
-    }
-    
     List<SQLStatementToken> tokenize(final String sql) {
         List<SQLStatementToken> result = new ArrayList<>(Math.max(1, sql.length() / 4));
         int currentIndex = 0;
@@ -154,27 +93,31 @@ final class SQLStatementScanner {
                 break;
             }
             char currentChar = sql.charAt(currentIndex);
+            if (isDollarQuotedTextStart(sql, currentIndex)) {
+                currentIndex = skipDollarQuotedText(sql, currentIndex) + 1;
+                continue;
+            }
             if ('\'' == currentChar) {
                 currentIndex = skipQuotedText(sql, currentIndex) + 1;
                 continue;
             }
             if (isQuotedIdentifierStart(currentChar)) {
                 int stopIndex = skipQuotedText(sql, currentIndex);
-                result.add(new SQLStatementToken(sql.substring(currentIndex, stopIndex + 1), true));
+                result.add(new SQLStatementToken(sql.substring(currentIndex, stopIndex + 1), true, currentIndex));
                 currentIndex = stopIndex + 1;
                 continue;
             }
-            if (isWordCharacter(currentChar)) {
+            if (isIdentifierCharacter(currentChar)) {
                 int stopIndex = currentIndex;
-                while (stopIndex < sql.length() && isWordCharacter(sql.charAt(stopIndex))) {
+                while (stopIndex < sql.length() && isIdentifierCharacter(sql.charAt(stopIndex))) {
                     stopIndex++;
                 }
-                result.add(new SQLStatementToken(sql.substring(currentIndex, stopIndex), false));
+                result.add(new SQLStatementToken(sql.substring(currentIndex, stopIndex), false, currentIndex));
                 currentIndex = stopIndex;
                 continue;
             }
             if ('.' == currentChar || '(' == currentChar || ')' == currentChar || ',' == currentChar || '*' == currentChar) {
-                result.add(new SQLStatementToken(String.valueOf(currentChar), false));
+                result.add(new SQLStatementToken(String.valueOf(currentChar), false, currentIndex));
             }
             currentIndex++;
         }
@@ -194,24 +137,7 @@ final class SQLStatementScanner {
         return !token.quotedIdentifier() && token.upperText().equals(keyword);
     }
     
-    String normalizeIdentifier(final String identifier) {
-        if (identifier.length() >= 2 && '"' == identifier.charAt(0) && '"' == identifier.charAt(identifier.length() - 1)) {
-            return identifier.substring(1, identifier.length() - 1).replace("\"\"", "\"");
-        }
-        if (identifier.length() >= 2 && '`' == identifier.charAt(0) && '`' == identifier.charAt(identifier.length() - 1)) {
-            return identifier.substring(1, identifier.length() - 1).replace("``", "`");
-        }
-        if (identifier.length() >= 2 && '[' == identifier.charAt(0) && ']' == identifier.charAt(identifier.length() - 1)) {
-            return identifier.substring(1, identifier.length() - 1).replace("]]", "]");
-        }
-        return identifier;
-    }
-    
-    String normalizeIdentifierForComparison(final String identifier) {
-        return normalizeIdentifier(identifier).toUpperCase(Locale.ENGLISH);
-    }
-    
-    boolean containsMySQLExecutableComment(final String sql) {
+    boolean containsExecutableComment(final String sql) {
         int currentIndex = 0;
         while (currentIndex < sql.length()) {
             if (isLineCommentStart(sql, currentIndex)) {
@@ -219,10 +145,14 @@ final class SQLStatementScanner {
                 continue;
             }
             if (isBlockCommentStart(sql, currentIndex)) {
-                if (currentIndex + 2 < sql.length() && '!' == sql.charAt(currentIndex + 2)) {
+                if (isExecutableCommentStart(sql, currentIndex)) {
                     return true;
                 }
                 currentIndex = skipBlockComment(sql, currentIndex) + 1;
+                continue;
+            }
+            if (isDollarQuotedTextStart(sql, currentIndex)) {
+                currentIndex = skipDollarQuotedText(sql, currentIndex) + 1;
                 continue;
             }
             if (isQuotedTextStart(sql.charAt(currentIndex))) {
@@ -234,6 +164,13 @@ final class SQLStatementScanner {
         return false;
     }
     
+    private boolean isExecutableCommentStart(final String sql, final int startIndex) {
+        if (startIndex + 2 < sql.length() && '!' == sql.charAt(startIndex + 2)) {
+            return true;
+        }
+        return startIndex + 3 < sql.length() && 'M' == Character.toUpperCase(sql.charAt(startIndex + 2)) && '!' == sql.charAt(startIndex + 3);
+    }
+    
     boolean containsUserVariableAssignment(final String sql) {
         int currentIndex = 0;
         while (currentIndex < sql.length()) {
@@ -243,6 +180,10 @@ final class SQLStatementScanner {
             }
             if (isBlockCommentStart(sql, currentIndex)) {
                 currentIndex = skipBlockComment(sql, currentIndex) + 1;
+                continue;
+            }
+            if (isDollarQuotedTextStart(sql, currentIndex)) {
+                currentIndex = skipDollarQuotedText(sql, currentIndex) + 1;
                 continue;
             }
             if (isQuotedTextStart(sql.charAt(currentIndex))) {
@@ -284,7 +225,6 @@ final class SQLStatementScanner {
     private int findStatementDelimiter(final String sql) {
         int result = 0;
         while (result < sql.length()) {
-            char currentChar = sql.charAt(result);
             if (isLineCommentStart(sql, result)) {
                 result = skipLineComment(sql, result) + 1;
                 continue;
@@ -293,6 +233,11 @@ final class SQLStatementScanner {
                 result = skipBlockComment(sql, result) + 1;
                 continue;
             }
+            if (isDollarQuotedTextStart(sql, result)) {
+                result = skipDollarQuotedText(sql, result) + 1;
+                continue;
+            }
+            char currentChar = sql.charAt(result);
             if (isQuotedTextStart(currentChar)) {
                 result = skipQuotedText(sql, result) + 1;
                 continue;
@@ -325,10 +270,6 @@ final class SQLStatementScanner {
         return Character.isLetterOrDigit(value) || '_' == value || '$' == value;
     }
     
-    private boolean isWordCharacter(final char value) {
-        return isIdentifierCharacter(value);
-    }
-    
     private boolean isQuotedIdentifierStart(final char value) {
         return '"' == value || '`' == value || '[' == value;
     }
@@ -338,7 +279,14 @@ final class SQLStatementScanner {
     }
     
     private boolean isLineCommentStart(final String sql, final int startIndex) {
-        return startIndex + 1 < sql.length() && '-' == sql.charAt(startIndex) && '-' == sql.charAt(startIndex + 1);
+        if (mysqlCommentSyntax && '#' == sql.charAt(startIndex)) {
+            return true;
+        }
+        if (startIndex + 1 >= sql.length() || '-' != sql.charAt(startIndex) || '-' != sql.charAt(startIndex + 1)) {
+            return false;
+        }
+        return !mysqlCommentSyntax || startIndex + 2 >= sql.length()
+                || Character.isWhitespace(sql.charAt(startIndex + 2)) || Character.isISOControl(sql.charAt(startIndex + 2));
     }
     
     private boolean isBlockCommentStart(final String sql, final int startIndex) {
@@ -346,7 +294,7 @@ final class SQLStatementScanner {
     }
     
     private int skipLineComment(final String sql, final int startIndex) {
-        int result = startIndex + 2;
+        int result = startIndex + ('#' == sql.charAt(startIndex) ? 1 : 2);
         while (result < sql.length() && '\n' != sql.charAt(result)) {
             result++;
         }
@@ -362,5 +310,44 @@ final class SQLStatementScanner {
             result++;
         }
         throw new MCPUnsupportedSQLStatementException();
+    }
+    
+    private boolean isDollarQuotedTextStart(final String sql, final int startIndex) {
+        return dollarQuotedStrings && (0 == startIndex || !isIdentifierCharacter(sql.charAt(startIndex - 1))) && !getDollarQuoteDelimiter(sql, startIndex).isEmpty();
+    }
+    
+    private int skipDollarQuotedText(final String sql, final int startIndex) {
+        String delimiter = getDollarQuoteDelimiter(sql, startIndex);
+        int closingDelimiterIndex = sql.indexOf(delimiter, startIndex + delimiter.length());
+        if (-1 == closingDelimiterIndex) {
+            throw new MCPUnsupportedSQLStatementException();
+        }
+        return closingDelimiterIndex + delimiter.length() - 1;
+    }
+    
+    private String getDollarQuoteDelimiter(final String sql, final int startIndex) {
+        if (startIndex >= sql.length() || '$' != sql.charAt(startIndex) || startIndex + 1 >= sql.length()) {
+            return "";
+        }
+        int result = startIndex + 1;
+        if ('$' == sql.charAt(result)) {
+            return "$$";
+        }
+        if (!isDollarQuoteTagStart(sql.charAt(result))) {
+            return "";
+        }
+        result++;
+        while (result < sql.length() && isDollarQuoteTagCharacter(sql.charAt(result))) {
+            result++;
+        }
+        return result < sql.length() && '$' == sql.charAt(result) ? sql.substring(startIndex, result + 1) : "";
+    }
+    
+    private boolean isDollarQuoteTagStart(final char value) {
+        return Character.isLetter(value) || '_' == value;
+    }
+    
+    private boolean isDollarQuoteTagCharacter(final char value) {
+        return Character.isLetterOrDigit(value) || '_' == value;
     }
 }

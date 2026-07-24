@@ -19,13 +19,9 @@ package org.apache.shardingsphere.mode.metadata.refresher.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -41,26 +37,14 @@ import java.util.Optional;
 public final class SchemaRefreshUtils {
     
     /**
-     * Get schema name.
-     *
-     * @param database database
-     * @param sqlStatementContext SQL statement context
-     * @return schema name
-     */
-    public static String getSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        return getRawSchemaName(database, sqlStatementContext).getValue().toLowerCase();
-    }
-    
-    /**
      * Get actual schema name.
      *
      * @param database database
      * @param sqlStatementContext SQL statement context
-     * @param props configuration properties
      * @return actual schema name
      */
-    public static String getActualSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final ConfigurationProperties props) {
-        return getActualSchemaName(database, getRawSchemaName(database, sqlStatementContext), props);
+    public static String getActualSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
+        return getActualSchemaName(database, getRawSchemaName(database, sqlStatementContext));
     }
     
     /**
@@ -68,16 +52,12 @@ public final class SchemaRefreshUtils {
      *
      * @param database database
      * @param schemaIdentifier schema identifier
-     * @param props configuration properties
      * @return actual schema name
      */
-    public static String getActualSchemaName(final ShardingSphereDatabase database, final IdentifierValue schemaIdentifier, final ConfigurationProperties props) {
-        IdentifierCaseRule rule = database.getIdentifierContext().getRule(IdentifierScope.SCHEMA);
+    public static String getActualSchemaName(final ShardingSphereDatabase database, final IdentifierValue schemaIdentifier) {
         Optional<String> matchedSchemaName = database.getAllSchemas().stream().map(ShardingSphereSchema::getName)
-                .filter(each -> rule.matches(each, schemaIdentifier.getValue(), schemaIdentifier.getQuoteCharacter())).findFirst();
-        return matchedSchemaName.orElseGet(() -> QuoteCharacter.NONE == schemaIdentifier.getQuoteCharacter() && LookupMode.NORMALIZED == rule.getLookupMode(schemaIdentifier.getQuoteCharacter())
-                ? rule.normalize(schemaIdentifier.getValue())
-                : schemaIdentifier.getValue());
+                .filter(each -> database.getIdentifierContext().matchesMetaData(IdentifierScope.SCHEMA, each, schemaIdentifier)).findFirst();
+        return matchedSchemaName.orElseGet(() -> database.getIdentifierContext().normalizeProtocol(IdentifierScope.SCHEMA, schemaIdentifier));
     }
     
     /**
@@ -85,13 +65,12 @@ public final class SchemaRefreshUtils {
      *
      * @param database database
      * @param schemaIdentifiers schema identifiers
-     * @param props configuration properties
      * @return actual schema names
      */
-    public static Collection<String> getActualSchemaNames(final ShardingSphereDatabase database, final Collection<IdentifierValue> schemaIdentifiers, final ConfigurationProperties props) {
+    public static Collection<String> getActualSchemaNames(final ShardingSphereDatabase database, final Collection<IdentifierValue> schemaIdentifiers) {
         Collection<String> result = new LinkedList<>();
         for (IdentifierValue each : schemaIdentifiers) {
-            String actualSchemaName = getActualSchemaName(database, each, props);
+            String actualSchemaName = getActualSchemaName(database, each);
             if (null != actualSchemaName) {
                 result.add(actualSchemaName);
             }

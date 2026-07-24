@@ -32,4 +32,5 @@
     <sql-case id="select_with_left_join_where_outer_column" value="SELECT t1.user_id, t1.user_name, t2.order_id, t2.creation_date FROM t_user t1 LEFT JOIN t_order t2 ON t1.user_id = t2.user_id WHERE t1.user_name = ?" db-types="MySQL" case-types="PLACEHOLDER"/>
     <sql-case id="select_with_left_join_having_outer_column" value="SELECT COUNT(*) AS count FROM t_order o LEFT JOIN t_user u ON o.user_id = u.user_id GROUP BY u.user_id HAVING u.user_id IS NOT NULL" db-types="MySQL"/>
     <sql-case id="select_with_outer_join_operator" value="SELECT o.order_id FROM t_order o, t_order_item i WHERE o.order_id = i.order_id(+)" db-types="Oracle"/>
+    <sql-case id="select_with_top_and_delimited_row_number_alias" value="SELECT row_.[rownum_] FROM (SELECT TOP (?) ROW_NUMBER() OVER (ORDER BY o.order_id) AS [rownum_] FROM t_order o) row_ WHERE row_.[rownum_] &gt; ?" db-types="SQLServer" case-types="PLACEHOLDER"/>
 </sql-cases>

@@ -54,7 +54,7 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
             return;
         }
         HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(endpointUri)
-                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                .POST(HttpRequest.BodyPublishers.ofString(MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                         INITIALIZE_REQUEST_ID, "initialize", MCPInteractionProtocolSupport.createInitializeRequestParams(CLIENT_NAME))))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -66,10 +66,11 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
             throw new IllegalStateException("Failed to initialize MCP session: "
                     + MCPInteractionPayloads.getJsonRpcErrorPayload(initializePayload).get("message"));
         }
+        MCPInteractionPayloads.getRequiredJsonRpcResult(initializePayload);
         sessionId = response.headers().firstValue("MCP-Session-Id")
                 .orElseThrow(() -> new IllegalStateException("MCP initialize response does not contain MCP-Session-Id header."));
-        actualProtocolVersion = response.headers().firstValue("MCP-Protocol-Version").orElse(MCPHttpTransportTestSupport.PROTOCOL_VERSION);
-        sendInitializedNotification();
+        actualProtocolVersion = response.headers().firstValue("MCP-Protocol-Version").orElse(MCPInteractionProtocolSupport.PROTOCOL_VERSION);
+        sendNotification("notifications/initialized", Map.of());
     }
     
     @Override
@@ -105,29 +106,33 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
         return MCPInteractionPayloads.parseJsonPayload(sendPostRequest(requestId, method, params).body());
     }
     
+    @Override
+    protected void sendNotification(final String method, final Map<String, Object> params) throws IOException, InterruptedException {
+        HttpRequest request = createSessionRequestBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(MCPInteractionProtocolSupport.createJsonRpcNotificationBody(method, params)))
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (202 != response.statusCode()) {
+            throw new IllegalStateException("MCP notification failed with status " + response.statusCode() + ".");
+        }
+        if (!response.body().isEmpty()) {
+            throw new IllegalStateException("MCP notification response body must be empty.");
+        }
+    }
+    
     private HttpRequest.Builder createSessionRequestBuilder() {
         return MCPHttpTransportTestSupport.createSessionRequestBuilder(endpointUri, sessionId, actualProtocolVersion);
     }
     
     private HttpResponse<String> sendPostRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException, InterruptedException {
         HttpRequest request = createSessionRequestBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(requestId, method, params)))
+                .POST(HttpRequest.BodyPublishers.ofString(MCPInteractionProtocolSupport.createJsonRpcRequestBody(requestId, method, params)))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (200 != response.statusCode()) {
             throw new IllegalStateException("MCP request failed with status " + response.statusCode() + ".");
         }
         return response;
-    }
-    
-    private void sendInitializedNotification() throws IOException, InterruptedException {
-        HttpRequest request = createSessionRequestBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcNotificationBody("notifications/initialized", Map.of())))
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (202 != response.statusCode()) {
-            throw new IllegalStateException("Failed to notify initialized MCP session.");
-        }
     }
     
 }

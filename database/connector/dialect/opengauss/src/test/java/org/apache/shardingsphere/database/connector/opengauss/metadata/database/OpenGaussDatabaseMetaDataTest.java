@@ -21,8 +21,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -32,7 +36,6 @@ import org.apache.shardingsphere.database.connector.postgresql.metadata.database
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -87,22 +90,30 @@ class OpenGaussDatabaseMetaDataTest {
         assertTrue(actual.isSchemaAvailable());
         assertThat(actual.getDefaultSchema(), is(Optional.of("public")));
         assertThat(actual.getDefaultSystemSchema(), is(Optional.of("pg_catalog")));
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
     }
     
     @Test
     void assertGetIndexOption() {
-        assertTrue(dialectDatabaseMetaData.getIndexOption().isSchemaUniquenessLevel());
+        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
+        assertTrue(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(63));
+    }
+    
+    @Test
+    void assertGetSequenceOption() {
+        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuerySQL).orElse(""),
+                is("SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences"));
     }
     
     @Test
     void assertGetTransactionOption() {
         DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
         assertTrue(actual.isSupportGlobalCSN());
-        assertFalse(actual.isDDLNeedImplicitCommit());
+        assertThat(actual.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertFalse(actual.isSupportAutoCommitInNestedTransaction());
         assertTrue(actual.isSupportDDLInXATransaction());
         assertFalse(actual.isSupportMetaDataRefreshInTransaction());
-        assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
         assertTrue(actual.isReturnRollbackStatementWhenCommitFailed());
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
@@ -112,11 +123,6 @@ class OpenGaussDatabaseMetaDataTest {
     @Test
     void assertGetProtocolVersionOption() {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is("9.2.4"));
-    }
-    
-    @Test
-    void assertIsCaseSensitive() {
-        assertTrue(dialectDatabaseMetaData.isCaseSensitive());
     }
     
     @Test

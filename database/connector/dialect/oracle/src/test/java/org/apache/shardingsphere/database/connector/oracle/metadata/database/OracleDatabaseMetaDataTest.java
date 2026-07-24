@@ -22,7 +22,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -33,7 +38,6 @@ import org.apache.shardingsphere.database.connector.oracle.metadata.database.opt
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -69,12 +73,22 @@ class OracleDatabaseMetaDataTest {
     
     @Test
     void assertGetSchemaOption() {
-        assertThat(dialectDatabaseMetaData.getSchemaOption(), isA(OracleSchemaOption.class));
+        DialectSchemaOption actual = dialectDatabaseMetaData.getSchemaOption();
+        assertThat(actual, isA(OracleSchemaOption.class));
+        assertThat(actual.getSchemaSemantics(), is(DialectSchemaSemantics.NATIVE_SCHEMA));
     }
     
     @Test
     void assertGetIndexOption() {
-        assertTrue(dialectDatabaseMetaData.getIndexOption().isSchemaUniquenessLevel());
+        DialectIndexOption actual = dialectDatabaseMetaData.getIndexOption();
+        assertTrue(actual.isSchemaUniquenessLevel());
+        assertThat(actual.getIndexNameMaxLength(), is(30));
+    }
+    
+    @Test
+    void assertGetSequenceOption() {
+        assertThat(dialectDatabaseMetaData.getSequenceOption().map(DialectSequenceOption::getSequenceMetadataQuerySQL).orElse(""),
+                is("SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES"));
     }
     
     @Test
@@ -88,11 +102,10 @@ class OracleDatabaseMetaDataTest {
     void assertGetTransactionOption() {
         DialectTransactionOption actualTransactionOption = dialectDatabaseMetaData.getTransactionOption();
         assertFalse(actualTransactionOption.isSupportGlobalCSN());
-        assertFalse(actualTransactionOption.isDDLNeedImplicitCommit());
+        assertThat(actualTransactionOption.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertFalse(actualTransactionOption.isSupportAutoCommitInNestedTransaction());
         assertFalse(actualTransactionOption.isSupportDDLInXATransaction());
         assertTrue(actualTransactionOption.isSupportMetaDataRefreshInTransaction());
-        assertThat(actualTransactionOption.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
         assertFalse(actualTransactionOption.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actualTransactionOption.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actualTransactionOption.getXaDriverClassNames(), is(Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource")));

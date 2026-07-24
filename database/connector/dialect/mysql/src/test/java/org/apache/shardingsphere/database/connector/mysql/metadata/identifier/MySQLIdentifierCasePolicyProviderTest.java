@@ -1,0 +1,331 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.database.connector.mysql.metadata.identifier;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.lang.reflect.Proxy;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class MySQLIdentifierCasePolicyProviderTest {
+    
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
+    private final IdentifierCasePolicyProvider provider = DatabaseTypedSPILoader.getService(IdentifierCasePolicyProvider.class, DATABASE_TYPE);
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideArguments")
+    void assertProvide(final String name, final IdentifierCasePolicyProviderContext context, final LookupMode expectedQuotedLookupMode,
+                       final LookupMode expectedUnquotedLookupMode, final boolean expectedMatch) {
+        IdentifierCasePolicySet actual = provider.provide(context);
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).getLookupMode(QuoteCharacter.BACK_QUOTE), is(expectedQuotedLookupMode));
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).matches("foo", "FOO", QuoteCharacter.NONE), is(expectedMatch));
+        assertThat(actual.getPolicy(IdentifierScope.COLUMN).normalizeForDefinition("FooColumn", QuoteCharacter.NONE), is("FooColumn"));
+        assertThat(actual.getPolicy(IdentifierScope.INDEX).normalizeForDefinition("FooIndex", QuoteCharacter.NONE), is("FooIndex"));
+        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).normalizeForDefinition("FooConstraint", QuoteCharacter.NONE), is("FooConstraint"));
+        assertThat(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_column", "FOO_COLUMN", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertThat(actual.getPolicy(IdentifierScope.INDEX).matches("foo_index", "FOO_INDEX", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).matches("foo_constraint", "FOO_CONSTRAINT", QuoteCharacter.NONE), is(Boolean.TRUE));
+    }
+    
+    @Test
+    void assertProvideWithQuotedTableName() {
+        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 1))).getPolicy(IdentifierScope.TABLE);
+        assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
+        assertThat(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE), is(Boolean.TRUE));
+    }
+    
+    private static Stream<Arguments> provideArguments() {
+        return Stream.of(
+                Arguments.of("null_data_source", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, null), LookupMode.NORMALIZED, LookupMode.NORMALIZED, true),
+                Arguments.of("null_connection", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new NullConnectionFixtureDataSource()), LookupMode.EXACT, LookupMode.NORMALIZED, true),
+                Arguments.of("lower_case_table_names_0", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0)),
+                        LookupMode.EXACT, LookupMode.EXACT, false),
+                Arguments.of("lower_case_table_names_1", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 1)),
+                        LookupMode.NORMALIZED, LookupMode.NORMALIZED, true),
+                Arguments.of("lower_case_table_names_2", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 2)),
+                        LookupMode.NORMALIZED, LookupMode.NORMALIZED, true),
+                Arguments.of("no_result_row", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(false, 0)), LookupMode.EXACT, LookupMode.NORMALIZED, true),
+                Arguments.of("sql_exception", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FailingFixtureDataSource()), LookupMode.EXACT, LookupMode.NORMALIZED, true),
+                Arguments.of("unexpected_lower_case_table_names", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 3)), LookupMode.EXACT, LookupMode.NORMALIZED,
+                        true));
+    }
+    
+    @Test
+    void assertProvideWithLowerCaseTableNamesZeroUsesScopedPolicies() {
+        IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0));
+        IdentifierCasePolicySet actual = provider.provide(context);
+        assertThat(actual.getPolicy(IdentifierScope.DATABASE).matches("foo_db", "FOO_DB", QuoteCharacter.NONE), is(Boolean.FALSE));
+        assertThat(actual.getPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.FALSE));
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).matches("foo_tbl", "FOO_TBL", QuoteCharacter.NONE), is(Boolean.FALSE));
+        assertThat(actual.getPolicy(IdentifierScope.VIEW).matches("foo_view", "FOO_VIEW", QuoteCharacter.NONE), is(Boolean.FALSE));
+        assertThat(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_col", "FOO_COL", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertThat(actual.getPolicy(IdentifierScope.INDEX).matches("foo_idx", "FOO_IDX", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).matches("foo_fk", "FOO_FK", QuoteCharacter.NONE), is(Boolean.TRUE));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("tableDefinitionArguments")
+    void assertTableDefinition(final String name, final int lowerCaseTableNames, final String expected) {
+        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE,
+                new FixtureDataSource(true, lowerCaseTableNames))).getPolicy(IdentifierScope.TABLE);
+        assertThat(actual.normalizeForDefinition("FooTable", QuoteCharacter.NONE), is(expected));
+        assertThat(actual.normalizeForDefinition("FooTable", QuoteCharacter.BACK_QUOTE), is(expected));
+    }
+    
+    private static Stream<Arguments> tableDefinitionArguments() {
+        return Stream.of(
+                Arguments.of("lower_case_table_names_0", 0, "FooTable"),
+                Arguments.of("lower_case_table_names_1", 1, "footable"),
+                Arguments.of("lower_case_table_names_2", 2, "FooTable"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("viewDefinitionArguments")
+    void assertViewDefinition(final String name, final int lowerCaseTableNames, final String expected) {
+        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE,
+                new FixtureDataSource(true, lowerCaseTableNames))).getPolicy(IdentifierScope.VIEW);
+        assertThat(actual.normalizeForDefinition("FooView", QuoteCharacter.NONE), is(expected));
+        assertThat(actual.normalizeForDefinition("FooView", QuoteCharacter.BACK_QUOTE), is(expected));
+    }
+    
+    private static Stream<Arguments> viewDefinitionArguments() {
+        return Stream.of(
+                Arguments.of("lower_case_table_names_0", 0, "FooView"),
+                Arguments.of("lower_case_table_names_1", 1, "fooview"),
+                Arguments.of("lower_case_table_names_2", 2, "fooview"));
+    }
+    
+    private static Object getDefaultValue(final Class<?> returnType) {
+        if (!returnType.isPrimitive()) {
+            return null;
+        }
+        if (boolean.class == returnType) {
+            return false;
+        }
+        if (byte.class == returnType) {
+            return (byte) 0;
+        }
+        if (short.class == returnType) {
+            return (short) 0;
+        }
+        if (int.class == returnType) {
+            return 0;
+        }
+        if (long.class == returnType) {
+            return 0L;
+        }
+        if (float.class == returnType) {
+            return 0F;
+        }
+        if (double.class == returnType) {
+            return 0D;
+        }
+        if (char.class == returnType) {
+            return '\0';
+        }
+        return null;
+    }
+    
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    private static final class FixtureDataSource implements DataSource {
+        
+        private final boolean hasResultSetRow;
+        
+        private final int lowerCaseTableNames;
+        
+        @Override
+        public Connection getConnection() {
+            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[]{Connection.class},
+                    (proxy, method, args) -> "prepareStatement".equals(method.getName()) ? createPreparedStatement() : getDefaultValue(method.getReturnType()));
+        }
+        
+        @Override
+        public Connection getConnection(final String username, final String password) {
+            return getConnection();
+        }
+        
+        private PreparedStatement createPreparedStatement() {
+            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[]{PreparedStatement.class},
+                    (proxy, method, args) -> "executeQuery".equals(method.getName()) ? createResultSet() : getDefaultValue(method.getReturnType()));
+        }
+        
+        private ResultSet createResultSet() {
+            boolean[] nextInvoked = new boolean[1];
+            return (ResultSet) Proxy.newProxyInstance(ResultSet.class.getClassLoader(), new Class[]{ResultSet.class}, (proxy, method, args) -> {
+                if ("next".equals(method.getName())) {
+                    boolean result = hasResultSetRow && !nextInvoked[0];
+                    nextInvoked[0] = true;
+                    return result;
+                }
+                return "getInt".equals(method.getName()) ? lowerCaseTableNames : getDefaultValue(method.getReturnType());
+            });
+        }
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) {
+            return null;
+        }
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return false;
+        }
+        
+        @Override
+        public PrintWriter getLogWriter() {
+            return null;
+        }
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) {
+        }
+        
+        @Override
+        public void setLoginTimeout(final int seconds) {
+        }
+        
+        @Override
+        public int getLoginTimeout() {
+            return 0;
+        }
+        
+        @Override
+        public Logger getParentLogger() {
+            return Logger.getGlobal();
+        }
+    }
+    
+    private static final class FailingFixtureDataSource implements DataSource {
+        
+        @Override
+        public Connection getConnection() throws SQLException {
+            throw new SQLException("expected");
+        }
+        
+        @Override
+        public Connection getConnection(final String username, final String password) throws SQLException {
+            throw new SQLException("expected");
+        }
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) {
+            return null;
+        }
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return false;
+        }
+        
+        @Override
+        public PrintWriter getLogWriter() {
+            return null;
+        }
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) {
+        }
+        
+        @Override
+        public void setLoginTimeout(final int seconds) {
+        }
+        
+        @Override
+        public int getLoginTimeout() {
+            return 0;
+        }
+        
+        @Override
+        public Logger getParentLogger() {
+            return Logger.getGlobal();
+        }
+    }
+    
+    private static final class NullConnectionFixtureDataSource implements DataSource {
+        
+        @Override
+        public Connection getConnection() {
+            return null;
+        }
+        
+        @Override
+        public Connection getConnection(final String username, final String password) {
+            return null;
+        }
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) {
+            return null;
+        }
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return false;
+        }
+        
+        @Override
+        public PrintWriter getLogWriter() {
+            return null;
+        }
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) {
+        }
+        
+        @Override
+        public void setLoginTimeout(final int seconds) {
+        }
+        
+        @Override
+        public int getLoginTimeout() {
+            return 0;
+        }
+        
+        @Override
+        public Logger getParentLogger() {
+            return Logger.getGlobal();
+        }
+    }
+}

@@ -22,31 +22,116 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowSynchronizationSupportTest {
     
     @Test
     void assertSynchronize() {
-        ValidationReport validationReport = new ValidationReport();
-        validationReport.setOverallStatus(WorkflowLifecycle.STATUS_PASSED);
-        WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(1, 0L);
-        workflowSynchronizationSupport.synchronize(() -> validationReport);
+        new WorkflowSynchronizationSupport(Duration.ofMillis(1L), Duration.ofMillis(1L))
+                .synchronize(() -> createValidationReport(WorkflowLifecycle.STATUS_PASSED));
+    }
+    
+    @Test
+    void assertSynchronizeAfterPolling() {
+        AtomicInteger attempts = new AtomicInteger();
+        new WorkflowSynchronizationSupport(Duration.ofMillis(2L), Duration.ofMillis(1L)).synchronize(
+                () -> createValidationReport(attempts.incrementAndGet() > 1 ? WorkflowLifecycle.STATUS_PASSED : WorkflowLifecycle.STATUS_FAILED));
+        assertThat(attempts.get(), is(2));
     }
     
     @Test
     void assertSynchronizeWhenValidationFails() {
-        ValidationReport validationReport = new ValidationReport();
-        validationReport.setOverallStatus(WorkflowLifecycle.STATUS_FAILED);
-        validationReport.getMismatches().add(Map.of("code", WorkflowIssueCode.DDL_STATE_MISMATCH,
-                "impact", "Derived column is not visible from Proxy information_schema."));
-        WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(1, 0L);
-        WorkflowSynchronizationException actual = assertThrows(WorkflowSynchronizationException.class, () -> workflowSynchronizationSupport.synchronize(() -> validationReport));
-        assertThat(actual.getIssueCode(), is(WorkflowIssueCode.DDL_STATE_MISMATCH));
-        assertThat(actual.getMessage(), is("Derived column is not visible from Proxy information_schema."));
+        ValidationReport validationReport = createValidationReport(WorkflowLifecycle.STATUS_FAILED);
+        validationReport.getMismatches().add(Map.of("code", WorkflowIssueCode.RULE_STATE_MISMATCH,
+                "impact", "Rule metadata is not visible from Proxy DistSQL."));
+        AtomicInteger attempts = new AtomicInteger();
+        WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(Duration.ofNanos(3L), Duration.ofNanos(1L));
+        WorkflowSynchronizationException actual = assertThrows(WorkflowSynchronizationException.class,
+                () -> workflowSynchronizationSupport.synchronize(() -> {
+                    attempts.incrementAndGet();
+                    return validationReport;
+                }));
+        assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+        assertThat(actual.getMessage(), is("Rule metadata is not visible from Proxy DistSQL."));
+        assertThat(attempts.get(), is(4));
+    }
+    
+    @Test
+    void assertSynchronizeWhenWindowIsNotDivisibleByPollInterval() {
+        AtomicInteger attempts = new AtomicInteger();
+        WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(Duration.ofNanos(5L), Duration.ofNanos(2L));
+        assertThrows(WorkflowSynchronizationException.class, () -> workflowSynchronizationSupport.synchronize(() -> {
+            attempts.incrementAndGet();
+            return createValidationReport(WorkflowLifecycle.STATUS_FAILED);
+        }));
+        assertThat(attempts.get(), is(4));
+    }
+    
+    @Test
+    void assertSynchronizeWhenPollIntervalExceedsWindow() {
+        AtomicInteger attempts = new AtomicInteger();
+        WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(Duration.ofNanos(1L), Duration.ofNanos(2L));
+        assertThrows(WorkflowSynchronizationException.class, () -> workflowSynchronizationSupport.synchronize(() -> {
+            attempts.incrementAndGet();
+            return createValidationReport(WorkflowLifecycle.STATUS_FAILED);
+        }));
+        assertThat(attempts.get(), is(2));
+    }
+    
+    @Test
+    void assertSynchronizeWhenQueryFails() {
+        AtomicInteger attempts = new AtomicInteger();
+        IllegalStateException expected = new IllegalStateException("Query failed.");
+        WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(Duration.ofMillis(2L), Duration.ofMillis(1L));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> workflowSynchronizationSupport.synchronize(() -> {
+            attempts.incrementAndGet();
+            throw expected;
+        }));
+        assertThat(actual, sameInstance(expected));
+        assertThat(attempts.get(), is(1));
+    }
+    
+    @Test
+    void assertSynchronizeWhenInterrupted() {
+        WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(Duration.ofMillis(2L), Duration.ofMillis(1L));
+        Thread.currentThread().interrupt();
+        try {
+            WorkflowSynchronizationException actual = assertThrows(WorkflowSynchronizationException.class,
+                    () -> workflowSynchronizationSupport.synchronize(() -> createValidationReport(WorkflowLifecycle.STATUS_FAILED)));
+            assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+            assertThat(actual.getMessage(), is("Workflow synchronization was interrupted."));
+            assertTrue(Thread.currentThread().isInterrupted());
+        } finally {
+            Thread.interrupted();
+        }
+    }
+    
+    @Test
+    void assertInvalidSynchronizationWindow() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new WorkflowSynchronizationSupport(Duration.ZERO, Duration.ofMillis(1L)));
+        assertThat(actual.getMessage(), is("Synchronization window must be positive."));
+    }
+    
+    @Test
+    void assertInvalidPollInterval() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new WorkflowSynchronizationSupport(Duration.ofMillis(1L), Duration.ZERO));
+        assertThat(actual.getMessage(), is("Poll interval must be positive."));
+    }
+    
+    private ValidationReport createValidationReport(final String overallStatus) {
+        ValidationReport result = new ValidationReport();
+        result.setOverallStatus(overallStatus);
+        return result;
     }
 }

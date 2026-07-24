@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class MCPToolElicitationFallbackResponseFactoryTest extends AbstractMCPToolSpeci
     
     @Test
     void assertCreateStructuredFallback() {
-        MCPResponse actual = factory.create(Map.of(WorkflowFieldNames.PLAN_ID, "plan-1", "status", "clarifying"),
+        MCPSuccessPayload actual = factory.create(Map.of(WorkflowFieldNames.PLAN_ID, "plan-1", "status", "clarifying"),
                 MCPToolElicitationFallbackReason.AMBIGUOUS_FIELD_BINDING, createClientCapabilities(McpSchema.ClientCapabilities.builder().elicitation().build()));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("fallback_reason"), is("ambiguous_field_binding"));
@@ -53,7 +53,7 @@ class MCPToolElicitationFallbackResponseFactoryTest extends AbstractMCPToolSpeci
     
     @Test
     void assertCreateSensitiveFallback() {
-        MCPResponse actual = factory.create(createClarifyingPayload(createClarifyingQuestion("primary_algorithm_properties.access-token", "string", false, "Provide access token.")),
+        MCPSuccessPayload actual = factory.create(createClarifyingPayload(createClarifyingQuestion("primary_algorithm_properties.access-token", "string", true, "Provide access token.")),
                 MCPToolElicitationFallbackReason.SENSITIVE_FORM_BLOCKED, createClientCapabilities(McpSchema.ClientCapabilities.builder().elicitation().build()));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("fallback_reason"), is("sensitive_form_blocked"));
@@ -66,7 +66,10 @@ class MCPToolElicitationFallbackResponseFactoryTest extends AbstractMCPToolSpeci
         assertTrue((boolean) actualQuestion.get(MCPPayloadFieldNames.SECRET));
         assertThat(actualQuestion.get(MCPPayloadFieldNames.MESSAGE), is("Sensitive input must be provided through configured secure channels before continuing the same planner."));
         assertFalse(actualQuestion.containsKey(MCPPayloadFieldNames.DISPLAY_MESSAGE));
-        assertThat(((Map<?, ?>) ((List<?>) actualPayload.get(MCPPayloadFieldNames.NEXT_ACTIONS)).get(0)).get("type"), is("terminal"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get(MCPPayloadFieldNames.NEXT_ACTIONS)).get(0);
+        assertThat(actualNextAction.get("type"), is("terminal"));
+        assertThat(actualNextAction.get(MCPPayloadFieldNames.REASON),
+                is("MCP form elicitation is limited to non-sensitive STDIO continuations; URL mode is not implemented by the MCP runtime."));
         assertFalse(String.valueOf(actualPayload).contains("Provide access token."));
     }
     

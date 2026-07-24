@@ -3776,6 +3776,41 @@
     <create-table sql-case-id="create_table_ctas_basic">
         <table name="test_ctas" start-index="13" stop-index="21" />
         <as-select query="select id, name from source_table where status = 'active'" start-index="26" stop-index="86" />
+        <select>
+            <projections start-index="33" stop-index="40">
+                <column-projection name="id" start-index="33" stop-index="34" />
+                <column-projection name="name" start-index="37" stop-index="40" />
+            </projections>
+            <from>
+                <simple-table name="source_table" start-index="47" stop-index="58" />
+            </from>
+            <where start-index="60" stop-index="82">
+                <expr>
+                    <binary-operation-expression start-index="66" stop-index="82">
+                        <left>
+                            <column name="status" start-index="66" stop-index="71" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="active" start-index="75" stop-index="82" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_as_select_with_projected_columns_hive">
+        <table name="t_hive_ctas_projection" start-index="13" stop-index="34" />
+        <select>
+            <projections start-index="46" stop-index="63">
+                <column-projection name="user_id" start-index="46" stop-index="52" />
+                <column-projection name="telephone" start-index="55" stop-index="63" />
+            </projections>
+            <from>
+                <simple-table name="t_user" start-index="70" stop-index="75" />
+            </from>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_table_like_basic">
@@ -3854,6 +3889,75 @@
         <location path="/user/hive/warehouse/test_db.db/test_table" start-index="908" stop-index="956" />
         <tblproperties properties="{'version':'1.0', 'orc.compress':'SNAPPY', 'transactional':'true'}" start-index="966" stop-index="1053" />
         <as-select query="SELECT u.id, u.name, u.age, u.email, u.score, named_struct('city', u.city, 'street', u.street) AS address, split(u.hobbies, ',') AS hobbies, str_to_map(u.metadata, ',', '=') AS metadata, case when u.flag = 1 then create_union(0, u.id) else create_union(1, u.name) end AS info, ds.dt, u.country FROM source_users u JOIN dim_dates ds ON u.date_id = ds.date_id WHERE u.status = 'active'" start-index="1061" stop-index="1598" />
+        <select>
+            <projections start-index="1336" stop-index="1741">
+                <column-projection name="id" start-index="1336" stop-index="1339">
+                    <owner name="u" start-index="1336" stop-index="1336" />
+                </column-projection>
+                <column-projection name="name" start-index="1354" stop-index="1359">
+                    <owner name="u" start-index="1354" stop-index="1354" />
+                </column-projection>
+                <column-projection name="age" start-index="1374" stop-index="1378">
+                    <owner name="u" start-index="1374" stop-index="1374" />
+                </column-projection>
+                <column-projection name="email" start-index="1393" stop-index="1399">
+                    <owner name="u" start-index="1393" stop-index="1393" />
+                </column-projection>
+                <column-projection name="score" start-index="1414" stop-index="1420">
+                    <owner name="u" start-index="1414" stop-index="1414" />
+                </column-projection>
+                <expression-projection text="named_struct('city', u.city, 'street', u.street)" alias="address" start-index="1435" stop-index="1493" />
+                <expression-projection text="split(u.hobbies, ',')" alias="hobbies" start-index="1508" stop-index="1539" />
+                <expression-projection text="str_to_map(u.metadata, ',', '=')" alias="metadata" start-index="1554" stop-index="1597" />
+                <expression-projection text="case when u.flag = 1 then create_union(0, u.id) else create_union(1, u.name) end" alias="info" start-index="1612" stop-index="1699" />
+                <column-projection name="dt" start-index="1714" stop-index="1718">
+                    <owner name="ds" start-index="1714" stop-index="1715" />
+                </column-projection>
+                <column-projection name="country" start-index="1733" stop-index="1741">
+                    <owner name="u" start-index="1733" stop-index="1733" />
+                </column-projection>
+            </projections>
+            <from>
+                <join-table join-type="INNER">
+                    <left>
+                        <simple-table name="source_users" alias="u" start-index="1758" stop-index="1771" />
+                    </left>
+                    <right>
+                        <simple-table name="dim_dates" alias="ds" start-index="1788" stop-index="1799" />
+                    </right>
+                    <on-condition>
+                        <binary-operation-expression start-index="1804" stop-index="1825">
+                            <left>
+                                <column name="date_id" start-index="1804" stop-index="1812">
+                                    <owner name="u" start-index="1804" stop-index="1804" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="date_id" start-index="1816" stop-index="1825">
+                                    <owner name="ds" start-index="1816" stop-index="1817" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </on-condition>
+                </join-table>
+            </from>
+            <where start-index="1837" stop-index="1861">
+                <expr>
+                    <binary-operation-expression start-index="1843" stop-index="1861">
+                        <left>
+                            <column name="status" start-index="1843" stop-index="1850">
+                                <owner name="u" start-index="1843" stop-index="1843" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="active" start-index="1854" stop-index="1861" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_table_like_all_options">
@@ -3896,6 +4000,14 @@
         <table name="target" start-index="13" stop-index="18" />
         <storage-handler name="ICEBERG" start-index="36" stop-index="43" />
         <as-select query="SELECT * FROM source" start-index="48" stop-index="64" />
+        <select>
+            <projections start-index="48" stop-index="48">
+                <shorthand-projection start-index="48" stop-index="48" />
+            </projections>
+            <from>
+                <simple-table name="source" start-index="55" stop-index="60" />
+            </from>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_iceberg_table_like_table">

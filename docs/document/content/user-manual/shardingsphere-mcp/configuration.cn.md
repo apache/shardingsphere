@@ -4,7 +4,7 @@ weight = 3
 +++
 
 ShardingSphere-MCP 使用 YAML 文件配置传输方式和 MCP Server 可以连接的数据库。
-发行包默认读取 `conf/mcp-http.yaml`，也内置 `conf/mcp-stdio.yaml`。
+发行包默认读取 `conf/mcp-http.yaml`，也内置 `conf/mcp-stdio.yaml` 和 `conf/mcp-http-docker.yaml`。
 
 ## 传输方式
 
@@ -14,7 +14,7 @@ HTTP 示例：
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     bindHost: 127.0.0.1
     port: 18088
@@ -30,8 +30,8 @@ transport:
 
 | 配置项                           | 说明                                                                                              |
 |-------------------------------|-------------------------------------------------------------------------------------------------|
-| `transport.type`              | 传输方式，支持 `STREAMABLE_HTTP` 和 `STDIO`。                                                            |
-| `transport.http`              | HTTP 传输配置，只在 `transport.type` 为 `STREAMABLE_HTTP` 时生效。                                          |
+| `transport.type`              | 传输方式，支持 `HTTP` 和 `STDIO`。                                                                       |
+| `transport.http`              | HTTP 传输配置，只在 `transport.type` 为 `HTTP` 时生效。                                                     |
 | `transport.http.bindHost`     | HTTP 监听地址，默认值为 `127.0.0.1`。`127.0.0.1`、`localhost`、`::1` 只允许本机访问；`0.0.0.0` 或指定内网 IP 允许对应网络接口访问。 |
 | `transport.http.port`         | HTTP 监听端口，默认值为 `18088`。                                                                         |
 | `transport.http.endpointPath` | HTTP 端点路径，默认值为 `/mcp`。                                                                          |
@@ -43,7 +43,7 @@ transport:
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     sessionAttributionSource:
       subjectHeader: X-ShardingSphere-MCP-Subject
@@ -59,29 +59,29 @@ transport:
 | `transport.http.sessionAttributionSource.attributeHeaderPrefix` | 自定义归属属性的请求头前缀。           |
 
 只有确认客户端不能直接伪造这些请求头时，才应启用该配置。
+同一个 MCP 会话的后续 HTTP 请求必须提供一致的 subject、source 和 attributes。
 
 ## 数据库配置
 
-`runtimeDatabases` 定义 MCP Server 可以连接并对外暴露的数据库。
+`runtimeDatabases` 定义 MCP Server 可以连接并对外暴露的数据库。Server 启动时可以省略或为空，此时不提供依赖数据库的能力。
 每个条目的 key 是用户在自然语言任务中引用的数据库名称，通常对应 ShardingSphere-Proxy 暴露的逻辑库。
+MCP Server 会从 `jdbcUrl` 解析数据库类型；请使用与该 JDBC URL 匹配的驱动类。
 
 ```yaml
 runtimeDatabases:
-  "<logic-database>":
-    databaseType: MySQL
-    jdbcUrl: "jdbc:mysql://<proxy-host>:<proxy-port>/<logic-database>"
-    username: "<proxy-username>"
-    password: "<proxy-password>"
+  "logic_db":
+    jdbcUrl: "jdbc:mysql://127.0.0.1:3307/logic_db"
+    username: "root"
+    password: ""
     driverClassName: "com.mysql.cj.jdbc.Driver"
 ```
 
-| *名称*                  | *说明*                                                                                                |
-|-----------------------|-----------------------------------------------------------------------------------------------------|
-| `databaseType` (+)    | 连接端点的数据库协议或方言类型，例如 `MySQL` 或 `PostgreSQL`。它影响元数据识别和 SQL 能力判断，不表示连接目标一定是数据库直连或 ShardingSphere-Proxy。 |
-| `jdbcUrl` (+)         | MCP Server 连接运行时数据库的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。                                 |
-| `username` (+)        | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。                                                       |
-| `password` (?)        | 连接运行时数据库的密码。                                                                                        |
-| `driverClassName` (+) | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。                                                 |
+| *名称*                  | *说明*                                                                                   |
+|-----------------------|----------------------------------------------------------------------------------------|
+| `jdbcUrl` (+)         | MCP Server 连接运行时数据库并解析数据库类型的 JDBC URL；使用 ShardingSphere 规则能力时应指向 Proxy 逻辑库。 |
+| `username` (+)        | 连接运行时数据库的用户名，通常是 ShardingSphere-Proxy 逻辑库用户名。                                      |
+| `password` (?)        | 连接运行时数据库的密码。                                                                       |
+| `driverClassName` (+) | JDBC 驱动类名，例如 MySQL 驱动使用 `com.mysql.cj.jdbc.Driver`。                                |
 
 说明：
 
@@ -94,10 +94,40 @@ runtimeDatabases:
 - 数据库直连时，用户看到的是目标数据库自身的元数据，不代表 ShardingSphere 规则状态。
 - 模式、表、视图、索引和序列等元数据依赖连接目标的 JDBC 元数据；Proxy 和数据库直连的可见结果可能不同。
 - 如果目标 JDBC 驱动没有随发行包提供，请把驱动 jar 放入 `plugins/`。
+- `logic_db` 和 `127.0.0.1:3307` 等示例值只用于说明。运行时 YAML 文件会拒绝未替换的尖括号占位符语法。
+
+## 敏感值占位符
+
+规则变更工具可能需要算法密钥、令牌或替换字符等敏感参数。
+不要把真实敏感值写入模型可见的工具入参、普通文档、聊天记录或日志。
+可以在工具入参的算法属性中传递敏感值占位符对象；MCP Server 只负责规划、预览和生成安全的人工执行包，不会读取或解析真实值。
+规划、预览和人工执行包只返回中性占位符或 `******`，不会返回 `secret_ref` 或真实敏感值。
+
+算法属性中的引用对象示例：
+
+```json
+{
+  "primary_algorithm_properties": {
+    "aes-key-value": {
+      "secret_ref": "placeholder://secret-value-1"
+    }
+  }
+}
+```
+
+注意事项：
+
+- MCP Server 只记录需要人工替换的敏感值槽位，不会从外部系统获取真实敏感值。
+- 带敏感值占位符的自动执行会在产生副作用前停止，并返回 `secret_reference_manual_execution_required`。
+- 使用人工执行包时，执行人员应在 MCP 和 AI 应用之外的受控环境中把中性占位符替换为真实值，再执行 DistSQL 或 YAML。
+- 文档和示例只使用中性占位符，避免在模型上下文中暴露真实密钥、路径或内部系统信息。
 
 ## 连接目标选择
 
-`runtimeDatabases` 可以配置任意可连接的 JDBC URL。用户能看到的数据库对象和可执行的治理任务取决于连接目标。
+只有当前发行包同时包含匹配的 ShardingSphere 数据库类型连接器和 JDBC 驱动时，`runtimeDatabases` 才能使用对应的可连接 JDBC URL。
+默认发行包包含 MySQL、PostgreSQL、Oracle、SQL Server 和 openGauss 数据库类型连接器，以及 MySQL、PostgreSQL 和 openGauss JDBC 驱动。
+Oracle、SQL Server 或其他未随包提供 JDBC 驱动的目标，需要把匹配的驱动 jar 放入 `plugins/`；只添加驱动并不能支持一个尚无数据库类型连接器的目标。
+用户能看到的数据库对象和可执行的治理任务取决于连接目标。
 
 ### 连接 ShardingSphere-Proxy 逻辑库
 

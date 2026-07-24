@@ -21,10 +21,10 @@ import io.modelcontextprotocol.server.transport.ServerTransportSecurityException
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.session.MCPSessionAttribution;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.SessionRequiredTransportHeaderConstraint;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.OriginHeaderConstraint;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.ProtocolVersionHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 
 import java.util.List;
@@ -40,45 +40,50 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
     
     private final MCPSessionManager sessionManager;
     
-    private final List<TransportHeaderConstraint> constraints;
+    private final OriginHeaderConstraint originHeaderConstraint;
+    
+    private final ProtocolVersionHeaderConstraint protocolVersionHeaderConstraint;
     
     private final SessionAttributionResolver sessionAttributionResolver;
     
     @Override
     public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
-        validateSessionAttribution(headers);
-        for (TransportHeaderConstraint each : constraints) {
-            if (each instanceof SessionRequiredTransportHeaderConstraint) {
-                String sessionId = getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
-                if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId)) {
-                    continue;
-                }
-            }
-            each.validate(getFirstHeaderValue(headers, each.getConstraintKey()));
+        originHeaderConstraint.validate(getFirstHeaderValue(headers, "Origin"));
+        String sessionId = getSessionId(headers);
+        if (sessionId.isBlank() || !sessionManager.hasSession(sessionId)) {
+            return;
+        }
+        validateSessionIdentity(headers, sessionId);
+        protocolVersionHeaderConstraint.validate(getFirstHeaderValue(headers, HttpHeaders.PROTOCOL_VERSION));
+    }
+    
+    private void validateSessionIdentity(final Map<String, List<String>> headers, final String sessionId) throws ServerTransportSecurityException {
+        if (!sessionAttributionResolver.isEnabled()) {
+            return;
+        }
+        Optional<MCPSessionIdentity> boundSessionIdentity = sessionManager.findSessionIdentity(sessionId);
+        if (boundSessionIdentity.isEmpty()) {
+            return;
+        }
+        if (!isSameAttribution(boundSessionIdentity.get(), sessionAttributionResolver.resolve(headers, sessionId))) {
+            throw new MCPTransportSecurityException(400, "Session attribution does not match this MCP session.",
+                    MCPTransportSecurityException.CATEGORY_SESSION_ATTRIBUTION_MISMATCH);
         }
     }
     
-    private void validateSessionAttribution(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
-        String sessionId = getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
-        if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId) || !sessionAttributionResolver.isEnabled()) {
-            return;
-        }
-        Optional<MCPSessionAttribution> sessionAttribution = sessionAttributionResolver.resolve(headers);
-        if (sessionAttribution.isEmpty()) {
-            return;
-        }
-        Optional<MCPSessionAttribution> boundSessionAttribution = sessionManager.findSessionAttribution(sessionId);
-        if (boundSessionAttribution.isEmpty()) {
-            throw new ServerTransportSecurityException(400, String.format("Session attribution is not bound for session `%s`.", sessionId));
-        }
-        if (!boundSessionAttribution.get().equals(sessionAttribution.get())) {
-            throw new ServerTransportSecurityException(400, String.format("Session attribution does not match existing binding for session `%s`.", sessionId));
-        }
+    private boolean isSameAttribution(final MCPSessionIdentity expected, final MCPSessionIdentity actual) {
+        return expected.getSubject().equals(actual.getSubject()) && expected.getSource().equals(actual.getSource()) && expected.getAttributes().equals(actual.getAttributes());
+    }
+    
+    private String getSessionId(final Map<String, List<String>> headers) {
+        return headers.entrySet().stream()
+                .filter(entry -> HttpHeaders.MCP_SESSION_ID.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst()
+                .map(optional -> Objects.toString(optional.getValue().getFirst(), "")).orElse("");
     }
     
     private String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
         return headers.entrySet().stream()
-                .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst().map(optional -> Objects.toString(optional.getValue().get(0), "").trim())
+                .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst().map(optional -> Objects.toString(optional.getValue().getFirst(), "").trim())
                 .orElse("");
     }
 }

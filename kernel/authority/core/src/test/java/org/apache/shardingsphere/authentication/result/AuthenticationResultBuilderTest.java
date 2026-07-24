@@ -19,6 +19,8 @@ package org.apache.shardingsphere.authentication.result;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,7 +39,7 @@ class AuthenticationResultBuilderTest {
     
     @Test
     void assertContinued() {
-        AuthenticationResult actual = AuthenticationResultBuilder.continued("username", "127.0.0.1", "database");
+        AuthenticationResult actual = AuthenticationResultBuilder.continued("username", "127.0.0.1", "database", Collections.emptyMap());
         assertThat(actual.getUsername(), is("username"));
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getDatabase(), is("database"));
@@ -46,7 +48,7 @@ class AuthenticationResultBuilderTest {
     
     @Test
     void assertFinished() {
-        AuthenticationResult actual = AuthenticationResultBuilder.finished("username", "127.0.0.1", "database");
+        AuthenticationResult actual = AuthenticationResultBuilder.finished("username", "127.0.0.1", "database", Collections.emptyMap());
         assertThat(actual.getUsername(), is("username"));
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getDatabase(), is("database"));

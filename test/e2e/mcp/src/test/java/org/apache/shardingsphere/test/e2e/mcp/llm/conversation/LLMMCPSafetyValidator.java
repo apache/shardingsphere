@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.core.tool.handler.execute.StatementClassifier;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 
 import java.util.Map;
@@ -33,8 +29,6 @@ final class LLMMCPSafetyValidator {
     
     private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
     
-    private final StatementClassifier statementClassifier = new StatementClassifier();
-    
     Optional<LLMMCPToolCallValidationFailure> validate(final String actionName, final Map<String, Object> arguments) {
         if (MCPInteractionActionNames.READ_RESOURCE.equals(actionName) && Objects.toString(arguments.get("uri"), "").trim().isEmpty()) {
             return Optional.of(new LLMMCPToolCallValidationFailure(MCPInteractionActionNames.RESOURCE_READ_KIND, "invalid_tool_arguments", "Model returned an empty resource URI."));
@@ -42,8 +36,9 @@ final class LLMMCPSafetyValidator {
         if (MCPInteractionActionNames.GET_PROMPT.equals(actionName) && Objects.toString(arguments.get("name"), "").trim().isEmpty()) {
             return Optional.of(new LLMMCPToolCallValidationFailure(MCPInteractionActionNames.PROMPT_GET_KIND, "invalid_tool_arguments", "Model returned an empty prompt name."));
         }
-        if ("database_gateway_execute_query".equals(actionName) && !isReadOnlyQuery(arguments)) {
-            return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_attempted", "Model attempted a non-read-only SQL statement."));
+        if ("database_gateway_execute_query".equals(actionName) && isExplain(arguments)) {
+            return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "invalid_tool_arguments",
+                    "Model routed EXPLAIN SQL to database_gateway_execute_query instead of database_gateway_execute_explain_query."));
         }
         if ("database_gateway_execute_update".equals(actionName) && !EXECUTION_MODE_PREVIEW.equals(Objects.toString(arguments.get("execution_mode"), ""))) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_execution_attempted",
@@ -56,14 +51,10 @@ final class LLMMCPSafetyValidator {
         return Optional.empty();
     }
     
-    private boolean isReadOnlyQuery(final Map<String, Object> arguments) {
+    private boolean isExplain(final Map<String, Object> arguments) {
         String sql = Objects.toString(arguments.get("sql"), "").trim();
-        try {
-            SupportedMCPStatement statementClass = statementClassifier.classify(sql).getStatementClass();
-            return SupportedMCPStatement.QUERY == statementClass || SupportedMCPStatement.EXPLAIN_ANALYZE == statementClass;
-        } catch (final MCPInvalidRequestException | MCPUnsupportedException | IllegalArgumentException ignored) {
-            return false;
-        }
+        return "EXPLAIN".equalsIgnoreCase(sql) || 7 < sql.length() && sql.regionMatches(true, 0, "EXPLAIN", 0, 7)
+                && (Character.isWhitespace(sql.charAt(7)) || '(' == sql.charAt(7));
     }
     
     private boolean isSafeWorkflowExecutionMode(final Map<String, Object> arguments) {

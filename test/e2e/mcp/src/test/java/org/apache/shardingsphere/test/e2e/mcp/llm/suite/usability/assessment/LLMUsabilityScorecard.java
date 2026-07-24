@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Getter
 public final class LLMUsabilityScorecard {
     
@@ -38,7 +41,11 @@ public final class LLMUsabilityScorecard {
     
     private final double naturalTaskSuccessRate;
     
+    private final int naturalTaskSampleCount;
+    
     private final double protocolContractSuccessRate;
+    
+    private final int protocolContractSampleCount;
     
     private final double firstCorrectActionRate;
     
@@ -46,13 +53,15 @@ public final class LLMUsabilityScorecard {
     
     private final double averageRoundTrips;
     
-    private final double queryAnswerFidelity;
-    
     private final double boundaryConfusionRate;
     
     private final double resourceHitRate;
     
+    private final int resourceHitSampleCount;
+    
     private final double recoveryRate;
+    
+    private final int recoverySampleCount;
     
     private final double nextActionFollowRate;
     

@@ -168,12 +168,12 @@ class JDBCRepositoryTest {
     
     @Test
     void assertPersistWithUpdateForSimpleKeys() throws SQLException {
-        final String key = "key";
-        final String value = "value";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
+        String key = "key";
+        String value = "value";
         repository.persist(key, value);
         verify(mockPreparedStatement).setString(1, key);
         verify(mockPreparedStatementForPersist).setString(eq(1), anyString());
@@ -184,11 +184,11 @@ class JDBCRepositoryTest {
     
     @Test
     void assertPersistForDirectory() throws SQLException {
-        final String key = "/parent/child/test1";
-        final String value = "test1_content";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockJdbcConnection.prepareStatement(repositorySQL.getInsertSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        String key = "/parent/child/test1";
+        String value = "test1_content";
         repository.persist(key, value);
         int depthOfDirectory = (int) key.chars().filter(each -> each == '/').count();
         int beginIndex = 0;
@@ -214,23 +214,23 @@ class JDBCRepositoryTest {
     
     @Test
     void assertPersistFailureDuringUpdate() throws SQLException {
-        final String key = "key";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatement);
+        String key = "key";
         repository.persist(key, "value");
         verify(mockPreparedStatementForPersist, never()).executeUpdate();
     }
     
     @Test
     void assertPersistWithInsertForSimpleKeys() throws SQLException {
-        final String key = "key";
-        final String value = "value";
         when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockJdbcConnection.prepareStatement(repositorySQL.getInsertSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
+        String key = "key";
+        String value = "value";
         repository.persist(key, value);
         verify(mockPreparedStatement).setString(1, key);
         verify(mockPreparedStatementForPersist).setString(eq(1), anyString());

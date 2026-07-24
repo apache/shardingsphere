@@ -33,7 +33,7 @@ public final class DropSchemaPushDownMetaDataRefresher implements PushDownMetaDa
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        metaDataManagerPersistService.dropSchema(database, SchemaRefreshUtils.getActualSchemaNames(database, sqlStatement.getSchemaNames(), props));
+        metaDataManagerPersistService.dropSchema(database, SchemaRefreshUtils.getActualSchemaNames(database, sqlStatement.getSchemaNames()));
     }
     
     @Override

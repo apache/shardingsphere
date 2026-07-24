@@ -1,22 +1,25 @@
 +++
-title = "SHOW SINGLE TABLE"
+title = "SHOW SINGLE TABLES"
 weight = 1
 +++
 
 ### Description
 
-The `SHOW SINGLE TABLE` syntax is used to query single tables for specified database.
+The `SHOW SINGLE TABLES` syntax is used to query single tables for specified database.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ShowSingleTable::=
-  'SHOW' 'SINGLE' ('TABLES' ('LIKES' likeLiteral)?|'TABLE' tableName) ('FROM' databaseName)?
+ShowSingleTables ::=
+  'SHOW' 'SINGLE' 'TABLES' ('FROM' databaseName)? showLike?
 
-tableName ::=
-  identifier
+showLike ::=
+  'LIKE' likePattern
+
+likePattern ::=
+  string
 
 databaseName ::=
   identifier
@@ -37,41 +40,10 @@ databaseName ::=
 |-------------------|---------------------------------------------------------|
 | table_name        | Single table name                                       |
 | storage_unit_name | The storage unit name where the single table is located |
+| schema_name       | Schema name, returned only when schema metadata exists  |
 
 
 ### Example
-
-- Query specified single table for specified database.
-
-```sql
-SHOW SINGLE TABLE t_user FROM sharding_db;
-```
-
-```sql
-mysql> SHOW SINGLE TABLE t_user FROM sharding_db;
-+------------+-------------------+
-| table_name | storage_unit_name |
-+------------+-------------------+
-| t_user     | ds_0              |
-+------------+-------------------+
-1 row in set (0.00 sec)
-```
-
-- Query specified single table for current database.
-
-```sql
-SHOW SINGLE TABLE t_user;
-```
-
-```sql
-mysql> SHOW SINGLE TABLE t_user;
-+------------+-------------------+
-| table_name | storage_unit_name |
-+------------+-------------------+
-| t_user     | ds_0              |
-+------------+-------------------+
-1 row in set (0.00 sec)
-```
 
 - Query single tables for specified database.
 
@@ -108,11 +80,11 @@ mysql> SHOW SINGLE TABLES;
 - Query the single tables whose table name end with `order_5` for the specified logic database.
 
 ```sql
-SHOW SINGLE TABLES LIKE '%order_5' FROM sharding_db;
+SHOW SINGLE TABLES FROM sharding_db LIKE '%order_5';
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM sharding_db;
+mysql> SHOW SINGLE TABLES FROM sharding_db LIKE '%order_5';
 +------------+-------------------+
 | table_name | storage_unit_name |
 +------------+-------------------+

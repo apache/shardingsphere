@@ -40,4 +40,5 @@ public final class MetaDataLoaderMaterial {
     private final DatabaseType storageType;
     
     private final String defaultSchemaName;
+    
 }

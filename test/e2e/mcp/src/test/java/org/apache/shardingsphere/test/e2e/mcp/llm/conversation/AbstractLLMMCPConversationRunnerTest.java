@@ -30,9 +30,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 abstract class AbstractLLMMCPConversationRunnerTest {
@@ -64,7 +70,7 @@ abstract class AbstractLLMMCPConversationRunnerTest {
     }
     
     protected LLMMCPConversationRunner createRunner(final int maxTurns) {
-        return new LLMMCPConversationRunner(maxTurns, llmChatClient, mcpInteractionClient);
+        return new LLMMCPConversationRunner(maxTurns, llmChatClient, mcpInteractionClient, "test-model");
     }
     
     protected LLME2EScenario createScenario(final List<String> toolNames) {
@@ -127,6 +133,24 @@ abstract class AbstractLLMMCPConversationRunnerTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected ArgumentCaptor<List<LLMChatMessage>> createChatMessagesCaptor() {
         return ArgumentCaptor.forClass((Class) List.class);
+    }
+    
+    protected List<List<LLMChatMessage>> captureAutoChatMessages(final int expectedInvocations) throws IOException, InterruptedException {
+        ArgumentCaptor<List<LLMChatMessage>> result = createChatMessagesCaptor();
+        verify(llmChatClient, times(expectedInvocations)).complete(result.capture(), anyList(), eq("auto"), eq(false));
+        return result.getAllValues();
+    }
+    
+    protected List<List<Map<String, Object>>> captureAutoToolDefinitions(final int expectedInvocations) throws IOException, InterruptedException {
+        ArgumentCaptor<List<Map<String, Object>>> result = createToolDefinitionsCaptor();
+        verify(llmChatClient, times(expectedInvocations)).complete(anyList(), result.capture(), eq("auto"), eq(false));
+        return result.getAllValues();
+    }
+    
+    protected List<List<LLMChatMessage>> captureFinalChatMessages() throws IOException, InterruptedException {
+        ArgumentCaptor<List<LLMChatMessage>> result = createChatMessagesCaptor();
+        verify(llmChatClient).complete(result.capture(), eq(List.of()), eq("none"), eq(true));
+        return result.getAllValues();
     }
     
     @SuppressWarnings("unchecked")

@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportOriginUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
 
 import java.net.URI;
 
@@ -31,18 +32,18 @@ import java.net.URI;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class OriginHeaderConstraint implements TransportHeaderConstraint {
+public final class OriginHeaderConstraint {
     
     private static final String FORBIDDEN_MESSAGE = "Origin is not allowed by MCP HTTP transport policy.";
     
     private final boolean loopbackBinding;
     
-    @Override
-    public String getConstraintKey() {
-        return "Origin";
-    }
-    
-    @Override
+    /**
+     * Validate the Origin header value.
+     *
+     * @param value Origin header value
+     * @throws ServerTransportSecurityException when the origin is not allowed
+     */
     public void validate(final String value) throws ServerTransportSecurityException {
         if (value.isEmpty()) {
             return;
@@ -56,6 +57,6 @@ public final class OriginHeaderConstraint implements TransportHeaderConstraint {
     
     private ServerTransportSecurityException createForbiddenException(final String reason) {
         log.warn("Rejected MCP HTTP request origin: reason={}, loopbackBinding={}.", reason, loopbackBinding);
-        return new ServerTransportSecurityException(403, FORBIDDEN_MESSAGE);
+        return new MCPTransportSecurityException(403, FORBIDDEN_MESSAGE, MCPTransportSecurityException.CATEGORY_ORIGIN_NOT_ALLOWED);
     }
 }

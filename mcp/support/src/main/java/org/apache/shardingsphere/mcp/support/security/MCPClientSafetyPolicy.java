@@ -29,32 +29,18 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPClientSafetyPolicy {
     
-    public static final int DEFAULT_MAX_TOOL_CALLS_PER_SESSION = MCPRuntimeProtectionPolicy.DEFAULT_MAX_TOOL_CALLS_PER_SESSION;
-    
-    public static final String MAX_TOOL_CALLS_PER_SESSION_PROPERTY = MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY;
-    
-    /**
-     * Get maximum tool calls per MCP session.
-     *
-     * @return maximum tool calls per MCP session
-     */
-    public static int getMaxToolCallsPerSession() {
-        return MCPRuntimeProtectionPolicy.getMaxToolCallsPerSession();
-    }
-    
     /**
      * Create model-facing safety policy payload.
      *
      * @return model-facing safety policy payload
      */
     public static Map<String, Object> createModelFacingPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("identity_scope", "mcp_session");
         result.put("transport_scope",
                 "HTTP transport can bind trusted session attribution when configured; "
-                        + "authentication and authorization remain outside the runtime in this release. "
+                        + "the MCP runtime does not provide built-in authentication or authorization. "
                         + "STDIO inherits the local process boundary.");
-        result.put("tool_call_limit", MCPRuntimeProtectionPolicy.createToolCallLimitPayload());
         result.put("runtime_protection", MCPRuntimeProtectionPolicy.createRuntimeProtectionPayload());
         result.put("abuse_guard", "Every tool call is counted before dispatch, including invalid calls, so runaway model loops stop at the session quota.");
         result.put("external_model_boundary", "The MCP runtime never calls external model providers; live LLM E2E clients call configured endpoints outside the server.");

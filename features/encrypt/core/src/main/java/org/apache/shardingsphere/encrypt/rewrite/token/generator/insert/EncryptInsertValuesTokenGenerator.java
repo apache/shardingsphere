@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.values.Inse
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.Use
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -54,6 +56,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Insert values token generator for encrypt.
@@ -62,9 +66,15 @@ import java.util.Optional;
 @Setter
 public final class EncryptInsertValuesTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, PreviousSQLTokensAware {
     
+    private static final Pattern TEMPORAL_LITERAL_PATTERN = Pattern.compile("^\\s*(?:\\{\\s*)?(?:DATE|TIME|TIMESTAMP)\\s*'([^']*)'\\s*}?\\s*$", Pattern.CASE_INSENSITIVE);
+    
+    private static final String DEFAULT_EXPRESSION = "DEFAULT";
+    
     private final EncryptRule rule;
     
     private final ShardingSphereDatabase database;
+    
+    private final SQLRewriteContext sqlRewriteContext;
     
     private List<SQLToken> previousSQLTokens;
     
@@ -149,15 +159,16 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(columnName);
             int columnIndex = useDefaultInsertColumnsToken
                     .map(optional -> ((UseDefaultInsertColumnsToken) optional).getColumns().indexOf(columnName)).orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
-            Object originalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);
+            Object literalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);
             ExpressionSegment valueExpression = insertValueContext.getValueExpressions().get(columnIndex);
             int parameterIndexCount = getParameterIndexCount(insertValueContext.getValueExpressions());
-            generateCipherColumnToken(schemaName, tableName, encryptColumn, valueExpression, columnIndex, originalValue).ifPresent(result::add);
+            generateCipherColumnToken(schemaName, tableName, encryptColumn, valueExpression, columnIndex, literalValue).ifPresent(result::add);
             if (encryptColumn.getAssistedQuery().isPresent()) {
-                addAssistedQueryColumn(schemaName, tableName, encryptColumn, valueExpression, columnIndex, originalValue, parameterIndexCount).ifPresent(result::add);
+                addAssistedQueryColumn(schemaName, tableName, encryptColumn, valueExpression, columnIndex, literalValue, parameterIndexCount)
+                        .ifPresent(result::add);
             }
             if (encryptColumn.getLikeQuery().isPresent()) {
-                addLikeQueryColumn(schemaName, tableName, encryptColumn, valueExpression, columnIndex, originalValue, parameterIndexCount).ifPresent(result::add);
+                addLikeQueryColumn(schemaName, tableName, encryptColumn, valueExpression, columnIndex, literalValue, parameterIndexCount).ifPresent(result::add);
             }
         }
         return result;
@@ -177,7 +188,10 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     private Optional<EncryptInsertColumnToken> generateCipherColumnToken(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
                                                                          final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue) {
-        if (valueExpression instanceof LiteralExpressionSegment) {
+        if (isDefaultExpression(valueExpression)) {
+            return Optional.of(new EncryptInsertSubstitutableColumnToken(columnIndex, createDefaultExpression(valueExpression)));
+        }
+        if (isLiteralExpression(valueExpression)) {
             return Optional.of(new EncryptInsertSubstitutableColumnToken(columnIndex, new LiteralExpressionSegment(
                     valueExpression.getStartIndex(), valueExpression.getStopIndex(),
                     encryptColumn.getCipher().encrypt(database.getName(), schemaName, tableName, encryptColumn.getName(), originalValue))));
@@ -186,6 +200,13 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             return Optional.of(new EncryptInsertSubstitutableColumnToken(columnIndex, createColumnSegment((ColumnSegment) valueExpression, encryptColumn.getCipher().getName())));
         }
         return Optional.empty();
+    }
+    
+    private Optional<String> getOriginalSQLExpressionText(final ExpressionSegment valueExpression) {
+        if (null == sqlRewriteContext || valueExpression.getStartIndex() < 0 || valueExpression.getStopIndex() >= sqlRewriteContext.getSql().length()) {
+            return Optional.empty();
+        }
+        return Optional.of(sqlRewriteContext.getSql().substring(valueExpression.getStartIndex(), valueExpression.getStopIndex() + 1));
     }
     
     private Optional<EncryptInsertColumnToken> addAssistedQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
@@ -220,14 +241,39 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return Optional.of(new EncryptInsertAttachableColumnToken(columnIndex, valueExpression));
     }
     
-    private ColumnSegment createColumnSegment(final ColumnSegment originalColumn, final String columnName) {
-        ColumnSegment result = new ColumnSegment(originalColumn.getStartIndex(), originalColumn.getStopIndex(), new IdentifierValue(columnName, originalColumn.getIdentifier().getQuoteCharacter()));
-        result.setNestedObjectAttributes(originalColumn.getNestedObjectAttributes());
-        originalColumn.getOwner().ifPresent(result::setOwner);
-        result.setColumnBoundInfo(originalColumn.getColumnBoundInfo());
-        result.setOtherUsingColumnBoundInfo(originalColumn.getOtherUsingColumnBoundInfo());
-        result.setVariable(originalColumn.isVariable());
-        return result;
+    private boolean isDefaultExpression(final ExpressionSegment valueExpression) {
+        return null != valueExpression.getText() && DEFAULT_EXPRESSION.equalsIgnoreCase(valueExpression.getText().trim());
+    }
+    
+    private ExpressionSegment createDefaultExpression(final ExpressionSegment valueExpression) {
+        return new CommonExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), DEFAULT_EXPRESSION);
+    }
+    
+    private boolean isLiteralExpression(final ExpressionSegment valueExpression) {
+        return valueExpression instanceof LiteralExpressionSegment || isTemporalLiteral(valueExpression);
+    }
+    
+    private boolean isTemporalLiteral(final ExpressionSegment valueExpression) {
+        return getTemporalLiteralValue(valueExpression).isPresent();
+    }
+    
+    private Optional<String> getTemporalLiteralValue(final ExpressionSegment valueExpression) {
+        return getTemporalLiteralExpressionText(valueExpression).flatMap(this::getTemporalLiteralValue);
+    }
+    
+    private Optional<String> getTemporalLiteralValue(final String expressionText) {
+        if (null == expressionText) {
+            return Optional.empty();
+        }
+        Matcher matcher = TEMPORAL_LITERAL_PATTERN.matcher(expressionText);
+        return matcher.matches() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    private Optional<String> getTemporalLiteralExpressionText(final ExpressionSegment valueExpression) {
+        if (getTemporalLiteralValue(valueExpression.getText()).isPresent()) {
+            return Optional.of(valueExpression.getText());
+        }
+        return getOriginalSQLExpressionText(valueExpression).filter(optional -> getTemporalLiteralValue(optional).isPresent());
     }
     
     private int getParameterIndexCount(final Collection<ExpressionSegment> expressionSegments) {
@@ -237,6 +283,16 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                 result++;
             }
         }
+        return result;
+    }
+    
+    private ColumnSegment createColumnSegment(final ColumnSegment originalColumn, final String columnName) {
+        ColumnSegment result = new ColumnSegment(originalColumn.getStartIndex(), originalColumn.getStopIndex(), new IdentifierValue(columnName, originalColumn.getIdentifier().getQuoteCharacter()));
+        result.setNestedObjectAttributes(originalColumn.getNestedObjectAttributes());
+        originalColumn.getOwner().ifPresent(result::setOwner);
+        result.setColumnBoundInfo(originalColumn.getColumnBoundInfo());
+        result.setOtherUsingColumnBoundInfo(originalColumn.getOtherUsingColumnBoundInfo());
+        result.setVariable(originalColumn.isVariable());
         return result;
     }
 }

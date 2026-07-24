@@ -30,14 +30,12 @@ class LLMMCPNextActionsTest {
     @Test
     void assertGetNextActions() {
         Map<String, Object> topLevelAction = Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases");
-        Map<String, Object> recoveryAction = Map.of("type", "tool_call", "tool_name", "database_gateway_search_metadata");
-        assertThat(LLMMCPNextActions.getNextActions(Map.of(
-                "next_actions", List.of(topLevelAction, "ignored"),
-                "recovery", Map.of("next_actions", List.of(recoveryAction)))), is(List.of(topLevelAction, recoveryAction)));
+        assertThat(LLMMCPNextActions.getNextActions(Map.of("next_actions", List.of(topLevelAction, "ignored"))), is(List.of(topLevelAction)));
     }
     
     @Test
     void assertGetNextActionsWithNoActions() {
-        assertThat(LLMMCPNextActions.getNextActions(Map.of("next_actions", "ignored", "recovery", Map.of("next_actions", "ignored"))), is(List.of()));
+        assertThat(LLMMCPNextActions.getNextActions(Map.of("next_actions", "ignored")), is(List.of()));
     }
+    
 }

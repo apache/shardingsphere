@@ -31,6 +31,7 @@ Model path:
 2. Read shardingsphere://features/mask/algorithms before choosing algorithm_type.
 3. Read existing mask rules for the database or table when database and table are known.
 4. Call database_gateway_plan_mask_rule with gathered logical names and any reviewed algorithm choice.
+   Omit plan_id for a new plan; pass plan_id only when continuing an actual current-session plan returned by a previous planning response.
 5. Use database_gateway_apply_workflow with execution_mode=preview before applying generated mask rule DistSQL.
    Call review-then-execute only after the user confirms explicit approved_steps from preview_artifacts.
 6. Before choosing uncertain database, schema, table, column, algorithm, or plan_id values, ask the user or read feature algorithm/rule resources.

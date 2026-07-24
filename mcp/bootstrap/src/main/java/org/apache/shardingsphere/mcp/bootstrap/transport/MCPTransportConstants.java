@@ -31,7 +31,7 @@ public final class MCPTransportConstants {
     
     public static final String PROTOCOL_VERSION = ProtocolVersions.MCP_2025_11_25;
     
-    public static final List<String> SUPPORTED_PROTOCOL_VERSIONS = List.of(PROTOCOL_VERSION, ProtocolVersions.MCP_2025_06_18);
+    public static final List<String> SUPPORTED_PROTOCOL_VERSIONS = List.of(PROTOCOL_VERSION);
     
     public static final String SERVER_NAME = "apache-shardingsphere-mcp";
     

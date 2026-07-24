@@ -33,9 +33,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class LLMMCPActionExecutorTest {
     
     @Test
+    void assertExecuteSafelyWithListTools() throws InterruptedException {
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient();
+        assertThat(new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.LIST_TOOLS, Map.of()),
+                is(Map.of("tools", List.of(Map.of("name", "fixture_ping")))));
+    }
+    
+    @Test
     void assertExecuteSafelyWithListResources() throws InterruptedException {
         FakeMCPInteractionClient client = new FakeMCPInteractionClient();
         assertThat(new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.LIST_RESOURCES, Map.of()), is(Map.of("resources", List.of())));
+    }
+    
+    @Test
+    void assertExecuteSafelyWithListResourceTemplates() throws InterruptedException {
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient();
+        assertThat(new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES, Map.of()),
+                is(Map.of("resourceTemplates", List.of(Map.of("uriTemplate", "shardingsphere://databases/{database}")))));
     }
     
     @Test
@@ -48,6 +62,13 @@ class LLMMCPActionExecutorTest {
     @Test
     void assertExecuteSafelyWithEmptyResourceUri() {
         assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(MCPInteractionActionNames.READ_RESOURCE, Map.of("uri", " ")));
+    }
+    
+    @Test
+    void assertExecuteSafelyRejectsNonStringResourceUri() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(MCPInteractionActionNames.READ_RESOURCE, Map.of("uri", 1)));
+        assertThat(actual.getMessage(), is("Resource URI is required."));
     }
     
     @Test
@@ -68,10 +89,9 @@ class LLMMCPActionExecutorTest {
     void assertExecuteSafelyWithCompletionReference() throws InterruptedException {
         FakeMCPInteractionClient client = new FakeMCPInteractionClient();
         Map<String, Object> actual = new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.COMPLETE, Map.of(
-                "reference", Map.of("type", "prompt", "name", "inspect_metadata"),
-                "argument_name", "schema",
-                "argument_value", "pub",
-                "context_arguments", Map.of("database", "logic_db")));
+                "ref", Map.of("type", "ref/prompt", "name", "inspect_metadata"),
+                "argument", Map.of("name", "schema", "value", "pub"),
+                "context", Map.of("arguments", Map.of("database", "logic_db"))));
         assertThat(actual, is(Map.of("completion", "public")));
         assertThat(client.completionReference, is(Map.of("type", "ref/prompt", "name", "inspect_metadata")));
         assertThat(client.completionArgumentName, is("schema"));
@@ -80,18 +100,41 @@ class LLMMCPActionExecutorTest {
     }
     
     @Test
-    void assertExecuteSafelyWithInlineCompletionReference() throws InterruptedException {
+    void assertExecuteSafelyWithCompletionResourceReference() throws InterruptedException {
         FakeMCPInteractionClient client = new FakeMCPInteractionClient();
-        new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.COMPLETE, Map.of("reference_type", "resource", "resource_uri", "shardingsphere://databases", "argument_name", "uri"));
+        new LLMMCPActionExecutor(client).executeSafely(MCPInteractionActionNames.COMPLETE, Map.of(
+                "ref", Map.of("type", "ref/resource", "uri", "shardingsphere://databases"),
+                "argument", Map.of("name", "uri")));
         assertThat(client.completionReference, is(Map.of("type", "ref/resource", "uri", "shardingsphere://databases")));
     }
     
     @Test
-    void assertExecuteSafelyWithCompletionRecovery() throws InterruptedException {
-        Map<String, Object> actual = new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(MCPInteractionActionNames.COMPLETE, Map.of("argument_value", "pub"));
-        assertThat(actual.get("response_mode"), is("recovery"));
-        assertThat(actual.get("error_code"), is("invalid_tool_arguments"));
-        assertThat(actual.get("message"), is("mcp_complete requires a reference object and argument_name."));
+    void assertExecuteSafelyRejectsUnsupportedCompletionReferenceType() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
+                MCPInteractionActionNames.COMPLETE, Map.of("ref", Map.of("type", "REF/PROMPT", "name", "inspect_metadata"), "argument", Map.of("name", "schema"))));
+        assertThat(actual.getMessage(), is("mcp_complete ref.type must be ref/prompt or ref/resource."));
+    }
+    
+    @Test
+    void assertExecuteSafelyRejectsNonStringCompletionArgumentName() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
+                MCPInteractionActionNames.COMPLETE, Map.of("ref", Map.of("type", "ref/resource", "uri", "shardingsphere://databases"), "argument", Map.of("name", 1))));
+        assertThat(actual.getMessage(), is("mcp_complete argument.name is required."));
+    }
+    
+    @Test
+    void assertExecuteSafelyRejectsNonObjectCompletionContext() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
+                MCPInteractionActionNames.COMPLETE, Map.of("ref", Map.of("type", "ref/resource", "uri", "shardingsphere://databases"), "argument", Map.of("name", "uri"), "context", "invalid")));
+        assertThat(actual.getMessage(), is("mcp_complete context must be an object."));
+    }
+    
+    @Test
+    void assertExecuteSafelyRejectsNonStringCompletionContextArgument() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new LLMMCPActionExecutor(new FakeMCPInteractionClient()).executeSafely(
+                MCPInteractionActionNames.COMPLETE,
+                Map.of("ref", Map.of("type", "ref/resource", "uri", "shardingsphere://databases"), "argument", Map.of("name", "uri"), "context", Map.of("arguments", Map.of("database", 1)))));
+        assertThat(actual.getMessage(), is("mcp_complete context.arguments values must be strings."));
     }
     
     @Test
@@ -145,11 +188,26 @@ class LLMMCPActionExecutorTest {
         }
         
         @Override
+        public Map<String, Object> getInitializePayload() {
+            throw new UnsupportedOperationException("initialize payload is not available.");
+        }
+        
+        @Override
+        public List<Map<String, Object>> listTools() {
+            return List.of(Map.of("name", "fixture_ping"));
+        }
+        
+        @Override
         public Map<String, Object> listResources() throws IOException {
             if (failWithIOException) {
                 throw new IOException("unavailable");
             }
             return Map.of("resources", List.of());
+        }
+        
+        @Override
+        public Map<String, Object> listResourceTemplates() {
+            return Map.of("resourceTemplates", List.of(Map.of("uriTemplate", "shardingsphere://databases/{database}")));
         }
         
         @Override
@@ -177,6 +235,16 @@ class LLMMCPActionExecutorTest {
             completionArgumentValue = argumentValue;
             this.contextArguments = contextArguments;
             return Map.of("completion", "public");
+        }
+        
+        @Override
+        public Map<String, Object> sendRawRequest(final String requestId, final String method, final Map<String, Object> params) {
+            throw new UnsupportedOperationException("Raw JSON-RPC request is not supported.");
+        }
+        
+        @Override
+        public void sendRawNotification(final String method, final Map<String, Object> params) {
+            throw new UnsupportedOperationException("Raw JSON-RPC notification is not supported.");
         }
         
         @Override

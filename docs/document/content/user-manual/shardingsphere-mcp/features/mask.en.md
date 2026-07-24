@@ -19,9 +19,9 @@ Users describe the masking goal in an AI application that integrates ShardingSph
 
 Examples:
 
-- Check whether `<logic-database>.orders.phone` already has a masking rule.
+- Check whether `logic_db.orders.phone` already has a masking rule.
 - List data masking algorithms available from the current Proxy.
-- Plan phone-number masking for `<logic-database>.orders.phone`, keep the first 3 and last 4 characters, and preview it without execution.
+- Plan phone-number masking for `logic_db.orders.phone`, keep the first 3 and last 4 characters, and preview it without execution.
 - Adjust the previous plan to use `*` as the replacement character.
 - Confirm and execute the previous masking rule plan, then validate the result.
 
@@ -33,7 +33,7 @@ When using natural language, include the following information when possible:
 
 | Information                         | Description                                                                          | Example                                                                                                         |
 |-------------------------------------|--------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| Logical database, table, and column | Specify the ShardingSphere-Proxy logical object to configure.                        | "Configure masking for `<logic-database>.orders.phone`."                                                        |
+| Logical database, table, and column | Specify the ShardingSphere-Proxy logical object to configure.                        | "Configure masking for `logic_db.orders.phone`."                                                        |
 | Schema or namespace                 | Recommended for multi-schema logical databases.                                      | "The schema is `public`."                                                                                       |
 | Operation type                      | Create, alter, or drop a masking rule.                                               | "Create a masking rule" or "drop the masking rule for this column."                                             |
 | Masking goal                        | Describe retained characters, replacement characters, or other masking effects.      | "Keep the first 3 and last 4 phone-number characters, and replace the middle part with `*`."                    |
@@ -57,6 +57,25 @@ After a plan is generated, review:
 - Whether queries through Proxy no longer apply masking to the column after dropping a rule.
 - Whether runtime rules or existing business SQL may be affected.
 - Whether no extra DDL, index, data processing, or SQL executability probing task is expected from ShardingSphere-MCP.
+
+## Sensitive parameter handling
+
+Some masking algorithm parameters may need to be supplied by operators in a controlled way, such as replacement characters or custom algorithm properties.
+Use a secret reference object in algorithm properties:
+
+```json
+{
+  "primary_algorithm_properties": {
+    "replace-char": {
+      "secret_ref": "placeholder://secret-value-1"
+    }
+  }
+}
+```
+
+The `secret_ref` in a placeholder object only marks a sensitive slot for manual replacement.
+Planning, preview, execution results, and validation output show only neutral placeholders or `******`; they do not echo `secret_ref` or real sensitive values.
+If a rule change still contains sensitive placeholders, automatic execution returns `secret_reference_manual_execution_required` before side effects. Operators should replace real values outside MCP and the AI application, then execute manually.
 
 ## Apply and validate
 

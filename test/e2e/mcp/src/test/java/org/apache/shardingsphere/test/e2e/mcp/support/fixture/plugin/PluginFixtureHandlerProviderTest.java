@@ -17,20 +17,35 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PluginFixtureHandlerProviderTest {
     
     @Test
     void assertGetToolHandlers() {
-        assertThat(new PluginFixtureHandlerProvider().getToolHandlers().iterator().next().getClass(), is(PluginFixturePingToolHandler.class));
+        MCPToolHandler<?> actual = new PluginFixtureHandlerProvider().getToolHandlers().iterator().next();
+        assertThat(actual.getClass(), is(PluginFixturePingToolHandler.class));
+        assertThat(actual.getToolName(), is("fixture_ping"));
+        assertThat(actual.getContextType(), is(MCPRequestContext.class));
     }
     
     @Test
     void assertGetResourceHandlers() {
-        assertThat(new PluginFixtureHandlerProvider().getResourceHandlers().iterator().next().getClass(), is(PluginFixtureStatusResourceHandler.class));
+        MCPResourceHandler<?> actual = new PluginFixtureHandlerProvider().getResourceHandlers().iterator().next();
+        assertThat(actual.getClass(), is(PluginFixtureStatusResourceHandler.class));
+        assertThat(actual.getResourceUriTemplate(), is("shardingsphere://features/test-fixture/status"));
+        assertThat(actual.getContextType(), is(MCPRequestContext.class));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        assertTrue(new PluginFixtureHandlerProvider().getCompletionHandlers().isEmpty());
     }
 }

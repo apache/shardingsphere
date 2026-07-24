@@ -9,7 +9,7 @@ This page explains how to connect Codex to an already running ShardingSphere-MCP
 
 - Use this page when you want to connect an already running ShardingSphere-MCP HTTP Server to Codex CLI or the Codex IDE extension.
 - Use this integration when Codex sessions need database metadata queries, controlled read-only SQL queries, rule planning, or preflight validation.
-- After integration, Codex can inspect logic databases, inspect table structures, run controlled read-only queries, or call `database_gateway_validate_proxy_connectivity` for preflight validation.
+- After integration, Codex can inspect logic databases, inspect table structures, run controlled read-only queries, or call `database_gateway_validate_runtime_database` for preflight validation.
 
 ## Prerequisites
 
@@ -51,9 +51,9 @@ Recognition succeeds when:
 Invocation succeeds when:
 
 - In a Codex session, run a minimal validation task such as:
-  - Show the tables in `<logic-database>`.
+  - Show the tables in `logic_db`.
   - Show columns and indexes for the `orders` table.
-  - Run `database_gateway_validate_proxy_connectivity` against a configured runtime database.
+  - Run `database_gateway_validate_runtime_database` against a configured runtime database.
 - If the tool list and query results are returned, the integration is working.
 
 ## Notes
