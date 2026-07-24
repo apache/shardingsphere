@@ -35,8 +35,6 @@ public final class MySQLTimeBinaryProtocolValue implements MySQLBinaryProtocolVa
     @Override
     public Object read(final MySQLPacketPayload payload, final boolean unsigned) throws SQLException {
         int length = payload.readInt1();
-        payload.readInt1();
-        payload.readInt4();
         switch (length) {
             case 0:
                 return new Timestamp(0L);
@@ -52,6 +50,8 @@ public final class MySQLTimeBinaryProtocolValue implements MySQLBinaryProtocolVa
     }
     
     private Timestamp getTimestamp(final MySQLPacketPayload payload) {
+        payload.readInt1();
+        payload.readInt4();
         Timestamp result = Timestamp.valueOf(LocalDateTime.of(0, 1, 1, payload.readInt1(), payload.readInt1(), payload.readInt1()));
         result.setNanos(0);
         return result;
