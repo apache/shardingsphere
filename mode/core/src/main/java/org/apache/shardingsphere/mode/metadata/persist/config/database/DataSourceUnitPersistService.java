@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -57,10 +58,10 @@ public final class DataSourceUnitPersistService {
      * @return data source pool properties map
      */
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
-        Collection<String> childrenKeys = repository.getChildrenKeys(NodePathGenerator.toPath(new StorageUnitNodePath(databaseName, null)));
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(childrenKeys.size(), 1F);
-        for (String each : childrenKeys) {
-            load(databaseName, each).ifPresent(dataSourcePoolProps -> result.put(each, dataSourcePoolProps));
+        Map<String, StorageUnitConfiguration> storageUnitConfigs = loadStorageUnitConfigurations(databaseName);
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(storageUnitConfigs.size(), 1F);
+        for (Entry<String, StorageUnitConfiguration> entry : storageUnitConfigs.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getDataSourcePoolProperties());
         }
         return result;
     }
@@ -72,8 +73,34 @@ public final class DataSourceUnitPersistService {
      * @param dataSourceName data source name
      * @return data source pool properties
      */
-    @SuppressWarnings("unchecked")
     public Optional<DataSourcePoolProperties> load(final String databaseName, final String dataSourceName) {
+        return loadStorageUnitConfiguration(databaseName, dataSourceName).map(StorageUnitConfiguration::getDataSourcePoolProperties);
+    }
+    
+    /**
+     * Load storage unit configurations.
+     *
+     * @param databaseName database name
+     * @return storage unit configurations
+     */
+    public Map<String, StorageUnitConfiguration> loadStorageUnitConfigurations(final String databaseName) {
+        Collection<String> childrenKeys = repository.getChildrenKeys(NodePathGenerator.toPath(new StorageUnitNodePath(databaseName, null)));
+        Map<String, StorageUnitConfiguration> result = new LinkedHashMap<>(childrenKeys.size(), 1F);
+        for (String each : childrenKeys) {
+            loadStorageUnitConfiguration(databaseName, each).ifPresent(storageUnitConfig -> result.put(each, storageUnitConfig));
+        }
+        return result;
+    }
+    
+    /**
+     * Load storage unit configuration.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return storage unit configuration
+     */
+    @SuppressWarnings("unchecked")
+    public Optional<StorageUnitConfiguration> loadStorageUnitConfiguration(final String databaseName, final String dataSourceName) {
         VersionNodePath versionNodePath = new VersionNodePath(new StorageUnitNodePath(databaseName, dataSourceName));
         String activeVersion = repository.query(versionNodePath.getActiveVersionPath());
         if (Strings.isNullOrEmpty(activeVersion)) {
@@ -83,7 +110,7 @@ public final class DataSourceUnitPersistService {
         if (Strings.isNullOrEmpty(dataSourceContent)) {
             return Optional.empty();
         }
-        return Optional.of(yamlDataSourceConfigurationSwapper.swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceContent, Map.class)));
+        return Optional.of(yamlDataSourceConfigurationSwapper.swapToStorageUnitConfiguration(YamlEngine.unmarshal(dataSourceContent, Map.class)));
     }
     
     /**
@@ -93,7 +120,21 @@ public final class DataSourceUnitPersistService {
      * @param dataSourcePropsMap to be persisted data source properties map
      */
     public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
+        Map<String, StorageUnitConfiguration> storageUnitConfigs = new LinkedHashMap<>(dataSourcePropsMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
+            storageUnitConfigs.put(entry.getKey(), new StorageUnitConfiguration(entry.getValue()));
+        }
+        persistStorageUnitConfigurations(databaseName, storageUnitConfigs);
+    }
+    
+    /**
+     * Persist storage unit configurations.
+     *
+     * @param databaseName database name
+     * @param storageUnitConfigs storage unit configurations
+     */
+    public void persistStorageUnitConfigurations(final String databaseName, final Map<String, StorageUnitConfiguration> storageUnitConfigs) {
+        for (Entry<String, StorageUnitConfiguration> entry : storageUnitConfigs.entrySet()) {
             VersionNodePath versionNodePath = new VersionNodePath(new StorageUnitNodePath(databaseName, entry.getKey()));
             versionPersistService.persist(versionNodePath, YamlEngine.marshal(yamlDataSourceConfigurationSwapper.swapToMap(entry.getValue())));
         }

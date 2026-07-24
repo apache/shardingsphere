@@ -21,11 +21,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.junit.jupiter.api.Test;
@@ -48,6 +50,7 @@ class YamlProxyConfigurationSwapperTest {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
         ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
         assertDataSources(actual);
+        assertStorageUnitConfigurations(actual);
         assertDatabaseRules(actual);
         assertAuthorityRuleConfiguration(actual);
         assertProxyConfigurationProps(actual);
@@ -104,5 +107,25 @@ class YamlProxyConfigurationSwapperTest {
         Properties actual = proxyConfig.getGlobalConfiguration().getProperties();
         assertThat(actual.size(), is(1));
         assertThat(actual.getProperty("bar"), is("bar_value"));
+    }
+    
+    private void assertStorageUnitConfigurations(final ProxyConfiguration proxyConfig) {
+        StorageUnitConfiguration actual = proxyConfig.getDatabaseConfigurations().get("swapper_test").getStorageUnitConfigurations().get("foo_db");
+        assertThat(actual.getDataSourcePoolProperties().getAllStandardProperties().get("url"), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
+    }
+    
+    private void assertGlobalDataSources(final ProxyConfiguration proxyConfig) {
+        HikariDataSource actual = (HikariDataSource) proxyConfig.getGlobalConfiguration().getDataSources().get("global_ds");
+        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
+        assertThat(actual.getUsername(), is("sa"));
+    }
+    
+    @Test
+    void assertSwapGlobalDataSources() throws IOException {
+        YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
+        YamlProxyDataSourceConfiguration globalDataSourceConfig =
+                yamlProxyConfig.getDatabaseConfigurations().get("swapper_test").getDataSources().get("foo_db");
+        yamlProxyConfig.getServerConfiguration().setDataSources(Collections.singletonMap("global_ds", globalDataSourceConfig));
+        assertGlobalDataSources(new YamlProxyConfigurationSwapper().swap(yamlProxyConfig));
     }
 }

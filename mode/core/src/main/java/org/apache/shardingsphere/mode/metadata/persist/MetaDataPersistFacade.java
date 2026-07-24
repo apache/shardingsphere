@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
@@ -98,11 +98,11 @@ public final class MetaDataPersistFacade {
      * @param rules rules
      */
     public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfig, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
-        Map<String, DataSourcePoolProperties> propsMap = getDataSourcePoolPropertiesMap(databaseConfig);
-        if (propsMap.isEmpty() && databaseConfig.getRuleConfigurations().isEmpty()) {
+        Map<String, StorageUnitConfiguration> storageUnitConfigs = databaseConfig.getStorageUnitConfigurations();
+        if (storageUnitConfigs.isEmpty() && databaseConfig.getRuleConfigurations().isEmpty()) {
             databaseMetaDataFacade.getDatabase().add(databaseName);
         } else {
-            dataSourceUnitService.persist(databaseName, propsMap);
+            dataSourceUnitService.persistStorageUnitConfigurations(databaseName, storageUnitConfigs);
             databaseRuleService.persist(databaseName, decorateRuleConfigurations(databaseName, dataSources, rules));
         }
     }
@@ -118,9 +118,14 @@ public final class MetaDataPersistFacade {
         return result;
     }
     
-    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final DatabaseConfiguration databaseConfig) {
-        return databaseConfig.getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    /**
+     * Load storage unit configurations.
+     *
+     * @param databaseName database name
+     * @return storage unit configurations
+     */
+    public Map<String, StorageUnitConfiguration> loadStorageUnitConfigurations(final String databaseName) {
+        return dataSourceUnitService.loadStorageUnitConfigurations(databaseName);
     }
     
     /**
@@ -130,7 +135,7 @@ public final class MetaDataPersistFacade {
      * @return data source configurations
      */
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String databaseName) {
-        return dataSourceUnitService.load(databaseName).entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                entry -> DataSourcePoolPropertiesCreator.createConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return loadStorageUnitConfigurations(databaseName).entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+                entry -> DataSourcePoolPropertiesCreator.createConfiguration(entry.getValue().getDataSourcePoolProperties()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

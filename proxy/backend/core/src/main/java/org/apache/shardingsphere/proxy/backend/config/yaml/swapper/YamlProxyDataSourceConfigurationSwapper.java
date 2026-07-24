@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 
 /**
@@ -35,6 +37,16 @@ public final class YamlProxyDataSourceConfigurationSwapper {
      */
     public DataSourceConfiguration swap(final YamlProxyDataSourceConfiguration yamlConfig) {
         return new DataSourceConfiguration(swapConnectionConfiguration(yamlConfig), swapPoolConfiguration(yamlConfig));
+    }
+    
+    /**
+     * Swap YAML proxy data source configuration to storage unit configuration.
+     *
+     * @param yamlConfig YAML proxy data source configuration
+     * @return storage unit configuration
+     */
+    public StorageUnitConfiguration swapToStorageUnitConfiguration(final YamlProxyDataSourceConfiguration yamlConfig) {
+        return new StorageUnitConfiguration(DataSourcePoolPropertiesCreator.create(swap(yamlConfig)));
     }
     
     private ConnectionConfiguration swapConnectionConfiguration(final YamlProxyDataSourceConfiguration yamlConfig) {

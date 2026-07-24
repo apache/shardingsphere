@@ -23,7 +23,10 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Database configuration.
@@ -43,6 +46,16 @@ public interface DatabaseConfiguration {
      * @return storage units
      */
     Map<String, StorageUnit> getStorageUnits();
+    
+    /**
+     * Get storage unit configurations.
+     *
+     * @return storage unit configurations
+     */
+    default Map<String, StorageUnitConfiguration> getStorageUnitConfigurations() {
+        return getStorageUnits().entrySet().stream().collect(Collectors.toMap(
+                Entry::getKey, entry -> new StorageUnitConfiguration(entry.getValue().getDataSourcePoolProperties()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
     
     /**
      * Get data sources.

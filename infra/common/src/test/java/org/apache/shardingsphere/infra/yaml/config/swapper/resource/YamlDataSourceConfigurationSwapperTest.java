@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper.resource;
 
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
@@ -142,5 +143,19 @@ class YamlDataSourceConfigurationSwapperTest {
         customProps.put("customKey2", "customValue2");
         result.put("customPoolProps", customProps);
         return result;
+    }
+    
+    @Test
+    void assertSwapToStorageUnitConfiguration() {
+        StorageUnitConfiguration actual = swapper.swapToStorageUnitConfiguration(createPropertyMap("foo_ds"));
+        assertThat(actual.getDataSourcePoolProperties().getPoolClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actual.getDataSourcePoolProperties().getAllLocalProperties().get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
+    }
+    
+    @Test
+    void assertSwapStorageUnitConfigurationToMap() {
+        DataSourcePoolProperties props = new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties());
+        Map<String, Object> actual = swapper.swapToMap(new StorageUnitConfiguration(props));
+        assertThat(actual, is(swapper.swapToMap(props)));
     }
 }

@@ -20,13 +20,13 @@ package org.apache.shardingsphere.mode.metadata.factory.init.type;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.StorageUnitConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
@@ -90,9 +90,9 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
     private DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName, final Map<String, DatabaseConfiguration> databaseConfigs,
                                                                        final boolean isInstanceConnectionEnabled) {
         closeGeneratedDataSources(databaseName, databaseConfigs);
-        Map<String, DataSourceConfiguration> dataSources = persistFacade.loadDataSourceConfigurations(databaseName);
+        Map<String, StorageUnitConfiguration> storageUnitConfigs = persistFacade.loadStorageUnitConfigurations(databaseName);
         Collection<RuleConfiguration> databaseRuleConfigs = persistFacade.getDatabaseRuleService().load(databaseName);
-        return new DataSourceGeneratedDatabaseConfiguration(dataSources, databaseRuleConfigs, isInstanceConnectionEnabled);
+        return new DataSourceGeneratedDatabaseConfiguration(storageUnitConfigs, databaseRuleConfigs, isInstanceConnectionEnabled);
     }
     
     private void closeGeneratedDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
