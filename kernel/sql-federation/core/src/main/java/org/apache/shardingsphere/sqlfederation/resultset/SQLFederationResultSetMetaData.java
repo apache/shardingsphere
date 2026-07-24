@@ -31,8 +31,13 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.sql.ResultSetMetaData;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -180,7 +185,59 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
     
     @Override
     public String getColumnClassName(final int column) {
-        return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getClass().getName();
+        RelDataType relDataType = resultColumnType.getFieldList().get(column - 1).getType();
+        if (relDataType instanceof JavaType && BigInteger.class.isAssignableFrom(((JavaType) relDataType).getJavaClass())) {
+            return BigInteger.class.getName();
+        }
+        SqlTypeName originalSqlTypeName = relDataType.getSqlTypeName();
+        if (null != columnTypeConverter) {
+            Class<?> convertedClass = columnTypeConverter.convertColumnValueClass(originalSqlTypeName);
+            if (null != convertedClass) {
+                return convertedClass.getName();
+            }
+        }
+        return getColumnClassNameByType(getColumnType(column));
+    }
+    
+    private String getColumnClassNameByType(final int columnType) {
+        switch (columnType) {
+            case Types.BOOLEAN:
+            case Types.BIT:
+                return Boolean.class.getName();
+            case Types.TINYINT:
+            case Types.SMALLINT:
+            case Types.INTEGER:
+                return Integer.class.getName();
+            case Types.BIGINT:
+                return Long.class.getName();
+            case Types.FLOAT:
+            case Types.REAL:
+                return Float.class.getName();
+            case Types.DOUBLE:
+                return Double.class.getName();
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+                return BigDecimal.class.getName();
+            case Types.DATE:
+                return Date.class.getName();
+            case Types.TIME:
+                return Time.class.getName();
+            case Types.TIMESTAMP:
+                return Timestamp.class.getName();
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+                return byte[].class.getName();
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.NCHAR:
+            case Types.NVARCHAR:
+            case Types.LONGNVARCHAR:
+                return String.class.getName();
+            default:
+                return Object.class.getName();
+        }
     }
     
     private Optional<String> findTableName(final int column) {

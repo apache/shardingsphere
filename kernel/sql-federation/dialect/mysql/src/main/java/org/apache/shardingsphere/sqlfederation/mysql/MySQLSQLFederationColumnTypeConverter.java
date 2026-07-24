@@ -43,6 +43,14 @@ public final class MySQLSQLFederationColumnTypeConverter implements DialectSQLFe
     }
     
     @Override
+    public Class<?> convertColumnValueClass(final SqlTypeName sqlTypeName) {
+        if (SqlTypeName.BOOLEAN == sqlTypeName) {
+            return Integer.class;
+        }
+        return null;
+    }
+
+    @Override
     public String getDatabaseType() {
         return "MySQL";
     }
