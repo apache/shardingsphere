@@ -34,7 +34,6 @@ public final class NativeSQLTranslator implements SQLTranslator {
     @Override
     public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
                                           final RuleMetaData globalRuleMetaData) {
-        // TODO
         return new SQLTranslatorContext(sql, parameters);
     }
     

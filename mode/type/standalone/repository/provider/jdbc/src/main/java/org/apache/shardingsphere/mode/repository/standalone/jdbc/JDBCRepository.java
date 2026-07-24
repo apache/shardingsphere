@@ -72,7 +72,6 @@ public final class JDBCRepository implements StandalonePersistRepository {
                 } catch (final SQLException ignored) {
                 }
             }
-            // Finish TODO
         }
     }
     
