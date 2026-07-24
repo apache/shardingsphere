@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -69,6 +72,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.De
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -313,7 +317,7 @@ public final class TableExtractor {
      * @param updateStatement update statement.
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
-        if (!updateStatement.isTargetTableIsFromAlias()) {
+        if (!updateStatement.isTargetTableIsFromAlias() && !isVariableTableTarget(updateStatement)) {
             extractTablesFromTableSegment(updateStatement.getTable());
         }
         updateStatement.getFrom().ifPresent(this::extractTablesFromTableSegment);
@@ -321,6 +325,22 @@ public final class TableExtractor {
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }
+    }
+    
+    private boolean isVariableTableTarget(final UpdateStatement updateStatement) {
+        if (!(updateStatement.getTable() instanceof SimpleTableSegment)) {
+            return false;
+        }
+        SimpleTableSegment targetTable = (SimpleTableSegment) updateStatement.getTable();
+        if (targetTable.getOwner().isPresent()) {
+            return false;
+        }
+        IdentifierValue tableName = targetTable.getTableName().getIdentifier();
+        if (QuoteCharacter.NONE != tableName.getQuoteCharacter()) {
+            return false;
+        }
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(updateStatement.getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.getVariableTableNamePrefix().filter(tableName.getValue()::startsWith).isPresent();
     }
     
     /**

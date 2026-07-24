@@ -113,4 +113,9 @@ class SQLServerDatabaseMetaDataTest {
     void assertGetFunctionOption() {
         assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(SQLServerFunctionOption.class));
     }
+    
+    @Test
+    void assertGetVariableTableNamePrefix() {
+        assertThat(dialectDatabaseMetaData.getVariableTableNamePrefix(), is(Optional.of("@")));
+    }
 }

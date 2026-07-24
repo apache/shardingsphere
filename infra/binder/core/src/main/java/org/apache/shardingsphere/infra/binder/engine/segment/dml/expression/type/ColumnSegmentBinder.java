@@ -323,7 +323,7 @@ public final class ColumnSegmentBinder {
                 return true;
             }
             if (each instanceof SimpleTableSegmentBinderContext) {
-                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
+                return isMetadataUnavailable((SimpleTableSegmentBinderContext) each);
             }
         }
         for (TableSegmentBinderContext each : outerBinderContexts) {
@@ -331,10 +331,14 @@ public final class ColumnSegmentBinder {
                 return true;
             }
             if (each instanceof SimpleTableSegmentBinderContext) {
-                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
+                return isMetadataUnavailable((SimpleTableSegmentBinderContext) each);
             }
         }
         return false;
+    }
+    
+    private static boolean isMetadataUnavailable(final SimpleTableSegmentBinderContext tableBinderContext) {
+        return tableBinderContext.isContainsDBLink() || tableBinderContext.isContainsTableVariable();
     }
     
     /**

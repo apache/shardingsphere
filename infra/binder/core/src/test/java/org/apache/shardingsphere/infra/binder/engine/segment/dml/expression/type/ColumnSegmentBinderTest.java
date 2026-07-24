@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -237,5 +238,26 @@ class ColumnSegmentBinderTest {
         assertThat(columnSegment, is(actual));
         assertTrue(actual.getOwner().isPresent());
         assertThat(actual.getOwner().get().getIdentifier().getValue(), is("EXCLUDED"));
+    }
+    
+    @Test
+    void assertBindWithTableVariableSkipsColumnExistenceCheck() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegmentBinderContext tableVariableBinderContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        tableVariableBinderContext.setContainsTableVariable(true);
+        tableBinderContexts.put(CaseInsensitiveString.of("@MyTableVar"), tableVariableBinderContext);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("NewVacationHours"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("NewVacationHours"));
+    }
+    
+    @Test
+    void assertBindUnknownColumnWithoutTableVariable() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
+                new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.PHYSICAL_TABLE));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("NewVacationHours"));
+        assertThrows(ColumnNotFoundException.class,
+                () -> ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create()));
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -56,6 +57,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -64,6 +66,8 @@ import static org.mockito.Mockito.when;
 class UpdateStatementBinderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
     @Test
     void assertBind() {
@@ -174,6 +178,35 @@ class UpdateStatementBinderTest {
         assertTrue(actual.isTargetTableIsFromAlias());
     }
     
+    @Test
+    void assertBindUpdateTableVariableTarget() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("NewVacationHours"));
+        ColumnSegment fromColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationHours"));
+        fromColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("e")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn),
+                        new BinaryOperationExpression(0, 0, fromColumn, new LiteralExpressionSegment(0, 0, 20), "+", "e.VacationHours + 20")))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        BinaryOperationExpression actualValue = (BinaryOperationExpression) actual.getAssignment().get().getAssignments().iterator().next().getValue();
+        assertThat(((SimpleTableSegment) actual.getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("NewVacationHours"));
+        assertThat(((ColumnSegment) actualValue.getLeft()).getColumnBoundInfo().getOriginalTable().getValue(), is("Employee"));
+        assertThat(((ColumnSegment) actualValue.getLeft()).getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationHours"));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(((SimpleTableSegment) updateStatementContext.getSqlStatement().getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(updateStatementContext.getTablesContext().getTableNames().contains("@MyTableVar"));
+    }
+    
     private WithSegment createWithSegment() {
         return new WithSegment(0, 0, new LinkedList<>(Collections.singletonList(
                 new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("combined_users")),
@@ -218,6 +251,38 @@ class UpdateStatementBinderTest {
         when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_user")).thenReturn(true);
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tUser)).thenReturn(true);
+        return result;
+    }
+    
+    private ShardingSphereMetaData createSQLServerMetaData() {
+        ShardingSphereSchema humanResourcesSchema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue humanResources = new IdentifierValue("HumanResources");
+        IdentifierValue employee = new IdentifierValue("Employee");
+        when(humanResourcesSchema.getName()).thenReturn("HumanResources");
+        when(humanResourcesSchema.containsTable(employee)).thenReturn(true);
+        when(humanResourcesSchema.containsTable("Employee")).thenReturn(true);
+        when(humanResourcesSchema.getTable(employee).getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("BusinessEntityID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationHours", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationNote", Types.VARCHAR, false, false, false, true, false, false)));
+        when(humanResourcesSchema.getTable("Employee").getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("BusinessEntityID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationHours", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationNote", Types.VARCHAR, false, false, false, true, false, false)));
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.containsDatabase(fooDatabase)).thenReturn(true);
+        when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("dbo");
+        when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("dbo");
+        when(result.getDatabase("foo_db").containsSchema("dbo")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).containsSchema(new IdentifierValue("dbo"))).thenReturn(true);
+        when(result.getDatabase("foo_db").containsSchema("HumanResources")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).containsSchema(humanResources)).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("HumanResources")).thenReturn(humanResourcesSchema);
+        when(result.getDatabase(fooDatabase).getSchema(humanResources)).thenReturn(humanResourcesSchema);
+        when(result.getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(humanResourcesSchema));
+        when(result.getDatabase(fooDatabase).getAllSchemas()).thenReturn(Collections.singleton(humanResourcesSchema));
         return result;
     }
 }

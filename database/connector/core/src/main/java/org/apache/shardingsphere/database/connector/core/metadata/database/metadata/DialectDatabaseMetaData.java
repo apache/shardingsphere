@@ -208,4 +208,13 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     default DialectFunctionOption getFunctionOption() {
         return new DefaultFunctionOption();
     }
+    
+    /**
+     * Get variable table name prefix.
+     *
+     * @return variable table name prefix
+     */
+    default Optional<String> getVariableTableNamePrefix() {
+        return Optional.empty();
+    }
 }

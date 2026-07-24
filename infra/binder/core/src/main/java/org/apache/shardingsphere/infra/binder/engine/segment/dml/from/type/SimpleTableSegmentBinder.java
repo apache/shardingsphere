@@ -318,6 +318,9 @@ public final class SimpleTableSegmentBinder {
         if (segment.getDbLink().isPresent()) {
             return;
         }
+        if (isVariableTable(binderContext, segment)) {
+            return;
+        }
         if (binderContext.getExternalTableBinderContexts().containsKey(CaseInsensitiveString.of(tableNameValue))) {
             return;
         }
@@ -325,6 +328,18 @@ public final class SimpleTableSegmentBinder {
             return;
         }
         ShardingSpherePreconditions.checkState(null != schema && schema.containsTable(tableName), () -> new TableNotFoundException(tableNameValue));
+    }
+    
+    private static boolean isVariableTable(final SQLStatementBinderContext binderContext, final SimpleTableSegment segment) {
+        if (segment.getOwner().isPresent()) {
+            return false;
+        }
+        IdentifierValue tableName = segment.getTableName().getIdentifier();
+        if (QuoteCharacter.NONE != tableName.getQuoteCharacter()) {
+            return false;
+        }
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.getVariableTableNamePrefix().filter(tableName.getValue()::startsWith).isPresent();
     }
     
     private static boolean isCreateTable(final SimpleTableSegment simpleTableSegment, final String tableName) {
@@ -392,6 +407,9 @@ public final class SimpleTableSegmentBinder {
         }
         SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
         segment.getDbLink().ifPresent(optional -> result.setContainsDBLink(true));
+        if (isVariableTable(binderContext, segment)) {
+            result.setContainsTableVariable(true);
+        }
         return Optional.of(result);
     }
     

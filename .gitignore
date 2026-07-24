@@ -76,3 +76,4 @@ document/public/
 .codex/.personality_migration
 
 .antlr_last_commit
+.cursor/
