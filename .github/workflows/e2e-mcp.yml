@@ -79,7 +79,7 @@ jobs:
           docker build \
             --platform "$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}')" \
             -f distribution/mcp/Dockerfile \
-            -t "${{ env.MCP_DISTRIBUTION_IMAGE }}" \
+            -t "${MCP_DISTRIBUTION_IMAGE}" \
             distribution/mcp/target
       - name: Package MCP Distribution Home
         shell: bash
@@ -161,16 +161,7 @@ jobs:
           mkdir -p distribution/mcp/target
           tar -xzf "${RUNNER_TEMP}/mcp-e2e-build-artifacts/mcp-distribution-home.tar.gz" -C distribution/mcp/target
       - name: Run MCP Core E2E
-        shell: bash
-        run: |
-          set -euo pipefail
-          ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-            -Dtest='*E2ETest' \
-            -DexcludedGroups=llm-e2e \
-            -Dsurefire.failIfNoSpecifiedTests=true \
-            -De2e.run.type=DOCKER \
-            -Dmcp.e2e.container.image="${{ env.MCP_DISTRIBUTION_IMAGE }}" \
-            -B -ntp
+        run: ./mvnw -pl test/e2e/mcp test -Pe2e.mcp -Dmcp.e2e.container.image=${{ env.MCP_DISTRIBUTION_IMAGE }} -DskipITs -Dspotless.skip=true -B -ntp
       - name: Upload MCP Core E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6
@@ -214,6 +205,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          scenarios=(
+            server-initialize
+            ping
+            tools-list
+            resources-list
+            prompts-list
+            dns-rebinding-protection
+          )
           container_name="shardingsphere-mcp-conformance"
           cleanup() {
             docker logs "${container_name}" >"${RUNNER_TEMP}/mcp-conformance-server.log" 2>&1 || true
@@ -236,11 +235,8 @@ jobs:
             node .mcp-conformance/dist/index.js list --server --spec-version 2025-11-25 \
               | sed -nE 's/^[[:space:]]+- ([^ ]+).*/\1/p'
           )"
-          scenario_count=0
-          while IFS= read -r scenario; do
-            [[ -z "${scenario}" || "${scenario}" == \#* ]] && continue
-            scenario_count=$((scenario_count + 1))
-            if ! grep -Fxq -- "${scenario}" <<< "${available_scenarios}"; then
+          for scenario in "${scenarios[@]}"; do
+            if ! grep -Fxq -- "${scenario}" <<<"${available_scenarios}"; then
               echo "MCP conformance scenario '${scenario}' is unavailable for protocol version 2025-11-25." >&2
               exit 1
             fi
@@ -253,11 +249,7 @@ jobs:
               echo "MCP conformance scenario '${scenario}' produced no checks." >&2
               exit 1
             fi
-          done < test/e2e/mcp/src/test/resources/conformance/server-scenarios.txt
-          if [[ "${scenario_count}" -eq 0 ]]; then
-            echo "No MCP conformance scenarios were selected." >&2
-            exit 1
-          fi
+          done
       - name: Upload MCP Conformance Artifacts
         if: always()
         uses: actions/upload-artifact@v6
@@ -324,14 +316,9 @@ jobs:
           if [[ -n "${MCP_LLM_TEST_PROPERTY}" ]]; then
             test_property_args+=("-D${MCP_LLM_TEST_PROPERTY}")
           fi
-          ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+          ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm -DskipITs -Dspotless.skip=true \
             -Dtest='${{ matrix.test-class }}' \
             "${test_property_args[@]}" \
-            -Dgroups=llm-e2e \
-            -Dsurefire.failIfNoSpecifiedTests=true \
-            -De2e.run.type=DOCKER \
-            -Dmcp.llm.ready-timeout-seconds=900 \
-            -Dmcp.llm.request-timeout-seconds=600 \
             -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" \
             -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.suite-id }} \
             -B -ntp
