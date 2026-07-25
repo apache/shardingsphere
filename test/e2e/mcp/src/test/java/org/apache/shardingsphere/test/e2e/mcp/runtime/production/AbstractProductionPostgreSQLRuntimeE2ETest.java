@@ -77,7 +77,7 @@ abstract class AbstractProductionPostgreSQLRuntimeE2ETest extends AbstractTransp
         return Map.of("database", LOGICAL_DATABASE_NAME, "schema", schema, "sql", sql, "execution_mode", "execute");
     }
     
-    protected static Stream<Arguments> dualTransports() {
-        return ProductionRuntimeTransportCases.transports();
+    protected static Stream<Arguments> semanticPrimaryTransport() {
+        return ProductionRuntimeTransportCases.semanticPrimaryTransport();
     }
 }

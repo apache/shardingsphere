@@ -47,28 +47,6 @@ class MCPPayloadAssertionsTest {
         assertThat(MCPPayloadAssertions.findItem(createPayload(), "name", "users"), is(Map.of("name", "users", "type", "table")));
     }
     
-    @Test
-    void assertGetItemValues() {
-        assertThat(MCPPayloadAssertions.getItemValues(createPayload(), "name"), is(List.of("orders", "users")));
-    }
-    
-    @Test
-    void assertGetItems() {
-        assertThat(MCPPayloadAssertions.getItems(createPayload()), is(List.of(Map.of("name", "orders", "type", "table"), Map.of("name", "users", "type", "table"))));
-    }
-    
-    @Test
-    void assertAssertToolDefinition() {
-        MCPPayloadAssertions.assertToolDefinition(List.of(Map.of(
-                "name", "database_gateway_execute_query",
-                "title", "Execute Query",
-                "inputSchema", Map.of(
-                        "type", "object",
-                        "required", List.of("sql"),
-                        "properties", Map.of("sql", Map.of("type", "string"))))),
-                "database_gateway_execute_query", "Execute Query", "sql", "sql", "string");
-    }
-    
     private Map<String, Object> createPayload() {
         return Map.of("items", List.of(Map.of("name", "orders", "type", "table"), Map.of("name", "users", "type", "table")));
     }

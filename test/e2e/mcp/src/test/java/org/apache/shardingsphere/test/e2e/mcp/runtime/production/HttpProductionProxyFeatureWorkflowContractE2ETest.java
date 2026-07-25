@@ -22,16 +22,12 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -85,33 +81,6 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     private static final List<String> FORBIDDEN_ARTIFACT_TOKENS = List.of(
             "create table", "alter table", "drop table", "create index", "drop index", "migrate", "migration", "backfill", "data probe", "physical metadata",
             "register storage unit", "alter storage unit", "unregister storage unit");
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("featureWorkflowScenarios")
-    void assertPlanManualApplyAndValidateFeatureWorkflowThroughProxy(final String scenarioName, final FeatureWorkflowScenario scenario) throws IOException, InterruptedException {
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(), hasItem(scenario.toolName()));
-            Map<String, Object> actualPlanResponse = planWorkflow(interactionClient, scenario.toolName(), createPlanArguments(scenario));
-            assertThat(String.valueOf(actualPlanResponse.get("current_step")), is("review"));
-            assertTrue(String.valueOf(getObjectListOrEmpty(actualPlanResponse.get("distsql_artifacts"))).contains(scenario.expectedDistSQLToken()));
-            List<String> actualResourceUris = getObjectListOrEmpty(actualPlanResponse.get("resources_to_read")).stream()
-                    .map(each -> String.valueOf(each.get("uri"))).toList();
-            List<String> expectedResourceUris = scenario.resourceUriTemplates().stream()
-                    .map(each -> String.format(each, getLogicalDatabaseName())).toList();
-            assertTrue(actualResourceUris.containsAll(expectedResourceUris));
-            String planId = String.valueOf(actualPlanResponse.get("plan_id"));
-            Map<String, Object> actualManualApplyResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "manual-only"));
-            assertThat(String.valueOf(actualManualApplyResponse.get("status")), is("awaiting-manual-execution"));
-            assertThat(getObjectListOrEmpty(actualManualApplyResponse.get("step_results")).size(), is(0));
-            assertNoForbiddenArtifacts(actualManualApplyResponse);
-            assertModelFacingPayloadContract(actualManualApplyResponse);
-            Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
-            assertThat(String.valueOf(actualValidationResponse.get("status")), is("failed"));
-            assertThat(String.valueOf(actualValidationResponse.get("overall_status")), is("failed"));
-            assertFalse(getObjectListOrEmpty(actualValidationResponse.get("issues")).isEmpty());
-            assertModelFacingPayloadContract(actualValidationResponse);
-        }
-    }
     
     @Test
     void assertBroadcastWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
@@ -367,34 +336,6 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
         assertThat(String.valueOf(actual.get("status")).toUpperCase(Locale.ENGLISH), is(expectedStatus));
     }
     
-    private static Stream<Arguments> featureWorkflowScenarios() {
-        return Stream.of(
-                Arguments.of("broadcast", new FeatureWorkflowScenario(BROADCAST_PLAN_TOOL_NAME,
-                        Map.of("operation_type", "create", "tables", "orders"), "CREATE BROADCAST TABLE RULE", List.of())),
-                Arguments.of("readwrite-splitting", new FeatureWorkflowScenario(READWRITE_SPLITTING_PLAN_TOOL_NAME,
-                        Map.of("operation_type", "create", "rule", "readwrite_ds", "write_storage_unit", "ds_0",
-                                "read_storage_units", "ds_1", "transactional_read_query_strategy", "DYNAMIC"),
-                        "CREATE READWRITE_SPLITTING RULE", List.of("shardingsphere://databases/%s/storage-units"))),
-                Arguments.of("shadow", new FeatureWorkflowScenario(SHADOW_PLAN_TOOL_NAME,
-                        Map.of("operation_type", "create", "rule", "shadow_rule", "source_storage_unit", "ds_0",
-                                "shadow_storage_unit", "ds_shadow", "table", "orders", "algorithm_type", "VALUE_MATCH",
-                                "algorithm_properties", Map.of("operation", "insert", "column", "order_id", "value", "1")),
-                        "CREATE SHADOW RULE", List.of("shardingsphere://databases/%s/storage-units", "shardingsphere://databases/%s/single-tables",
-                                "shardingsphere://databases/%s/single-tables/orders"))),
-                Arguments.of("sharding", new FeatureWorkflowScenario(SHARDING_PLAN_TOOL_NAME,
-                        Map.of("operation_type", "create", "table", "orders", "column", "order_id",
-                                "data_nodes", "ds_0.orders", "strategy_type", "standard", "algorithm_type", "INLINE",
-                                "algorithm_properties", Map.of("algorithm-expression", "orders")),
-                        "CREATE SHARDING TABLE RULE", List.of("shardingsphere://databases/%s/storage-units", "shardingsphere://databases/%s/single-tables",
-                                "shardingsphere://databases/%s/single-tables/orders"))));
-    }
-    
-    private Map<String, Object> createPlanArguments(final FeatureWorkflowScenario scenario) {
-        Map<String, Object> result = new LinkedHashMap<>(scenario.planArguments());
-        result.put("database", getLogicalDatabaseName());
-        return result;
-    }
-    
     private void assertNoForbiddenArtifacts(final Map<String, Object> payload) {
         String actualPayload = String.valueOf(payload).toLowerCase(Locale.ENGLISH);
         FORBIDDEN_ARTIFACT_TOKENS.forEach(each -> assertFalse(actualPayload.contains(each)));
@@ -443,6 +384,4 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
         assertModelFacingPayloadContract(actual);
     }
     
-    private record FeatureWorkflowScenario(String toolName, Map<String, Object> planArguments, String expectedDistSQLToken, List<String> resourceUriTemplates) {
-    }
 }

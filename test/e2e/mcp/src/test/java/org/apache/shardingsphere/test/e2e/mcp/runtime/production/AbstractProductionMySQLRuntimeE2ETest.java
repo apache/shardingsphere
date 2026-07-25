@@ -24,11 +24,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -41,13 +39,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -151,12 +146,8 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         return Map.of("database", databaseName, "schema", databaseName, "sql", sql, "execution_mode", "execute");
     }
     
-    protected static Stream<Arguments> transports() {
-        return ProductionRuntimeTransportCases.transports();
-    }
-    
     protected static Stream<Arguments> dualTransports() {
-        return transports();
+        return ProductionRuntimeTransportCases.transports();
     }
     
     protected static Stream<Arguments> semanticPrimaryTransport() {
@@ -185,25 +176,6 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
                 .stream().map(each -> String.valueOf(each.get("table"))).toList();
     }
     
-    protected void assertOfficialToolNames(final List<String> actualToolNames) {
-        assertThat(actualToolNames, containsInAnyOrder(OfficialMCPToolNames.getAll().toArray()));
-    }
-    
-    protected void assertToolDefinition(final List<Map<String, Object>> tools, final String toolName, final String expectedTitle,
-                                        final String expectedRequiredField, final String expectedPropertyField, final String expectedPropertyType) {
-        MCPPayloadAssertions.assertToolDefinition(tools, toolName, expectedTitle, expectedRequiredField, expectedPropertyField, expectedPropertyType);
-    }
-    
-    protected void assertJsonRpcErrorWithoutResult(final Map<String, Object> actual, final String requestId) {
-        assertThat(String.valueOf(actual.get("jsonrpc")), is("2.0"));
-        assertThat(String.valueOf(actual.get("id")), is(requestId));
-        assertTrue(MCPInteractionPayloads.hasJsonRpcError(actual));
-        assertFalse(actual.containsKey("result"));
-        Map<String, Object> error = getObjectOrEmpty(actual.get("error"));
-        assertThat(error.get("code"), isA(Number.class));
-        assertFalse(String.valueOf(error.get("message")).isBlank());
-    }
-    
     protected void assertRecoveryResponse(final Map<String, Object> actual) {
         assertThat(String.valueOf(actual.get("response_mode")), is("recovery"));
         assertFalse(String.valueOf(actual.get("summary")).isBlank());
@@ -212,11 +184,6 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     protected void assertRecoveryResponse(final Map<String, Object> actual, final String expectedMessage) {
         assertRecoveryResponse(actual);
         assertThat(String.valueOf(actual.get("summary")), is(expectedMessage));
-    }
-    
-    protected void assertRecoveryResponse(final Map<String, Object> actual, final String expectedMessage, final String expectedCategory) {
-        assertRecoveryResponse(actual, expectedMessage);
-        assertThat(String.valueOf(getObjectOrEmpty(actual.get("recovery")).get("category")), is(expectedCategory));
     }
     
     protected void assertAiNativeGuidance(final Map<String, Object> guidance) {
@@ -285,12 +252,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests) throws IOException {
-        return createElicitationClient(transport, elicitationRequests, this::createElicitationResult);
-    }
-    
-    protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests,
-                                                    final BiFunction<List<McpSchema.ElicitRequest>, McpSchema.ElicitRequest, McpSchema.ElicitResult> handler) throws IOException {
-        return ProductionMCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, handler);
+        return ProductionMCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, this::createElicitationResult);
     }
     
     private McpClientTransport createClientTransport(final RuntimeTransport transport) throws IOException {
@@ -299,8 +261,8 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
                 : ProductionMCPClientTransportFactory.createStdioClientTransport(getConfigFile());
     }
     
-    protected McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,
-                                                             final McpSchema.ElicitRequest request) {
+    private McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,
+                                                           final McpSchema.ElicitRequest request) {
         elicitationRequests.add(request);
         List<String> requiredFields = getRequiredStringList(request.requestedSchema().get("required"));
         return new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of(

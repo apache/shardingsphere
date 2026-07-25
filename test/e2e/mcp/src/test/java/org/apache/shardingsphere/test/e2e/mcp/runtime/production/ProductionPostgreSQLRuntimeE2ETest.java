@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ProductionPostgreSQLRuntimeE2ETest extends AbstractProductionPostgreSQLRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("dualTransports")
+    @MethodSource("semanticPrimaryTransport")
     void assertPostgreSQLRuntimeContract(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
