@@ -331,6 +331,9 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static boolean isVariableTable(final SQLStatementBinderContext binderContext, final SimpleTableSegment segment) {
+        if (!(binderContext.getSqlStatement() instanceof UpdateStatement)) {
+            return false;
+        }
         if (segment.getOwner().isPresent()) {
             return false;
         }
@@ -340,6 +343,13 @@ public final class SimpleTableSegmentBinder {
         }
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
         return dialectDatabaseMetaData.getVariableTableNamePrefix().filter(tableName.getValue()::startsWith).isPresent();
+    }
+    
+    private static boolean isUpdateTargetTableVariable(final SQLStatementBinderContext binderContext, final SimpleTableSegment segment) {
+        if (!isVariableTable(binderContext, segment)) {
+            return false;
+        }
+        return ((UpdateStatement) binderContext.getSqlStatement()).getTable() == segment;
     }
     
     private static boolean isCreateTable(final SimpleTableSegment simpleTableSegment, final String tableName) {
@@ -394,6 +404,11 @@ public final class SimpleTableSegmentBinder {
     private static Optional<SimpleTableSegmentBinderContext> createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
                                                                                             final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
+        if (isUpdateTargetTableVariable(binderContext, segment)) {
+            SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+            result.setContainsTableVariable(true);
+            return Optional.of(result);
+        }
         Optional<SimpleTableSegmentBinderContext> externalTableBinderContext = createExternalTableBinderContext(segment, tableName, binderContext);
         if (externalTableBinderContext.isPresent()) {
             return externalTableBinderContext;

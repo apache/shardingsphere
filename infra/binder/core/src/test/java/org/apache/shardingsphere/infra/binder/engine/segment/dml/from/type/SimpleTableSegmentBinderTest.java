@@ -31,11 +31,14 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -83,12 +86,55 @@ class SimpleTableSegmentBinderTest {
     
     @Test
     void assertBindWithTableVariableContainsTableVariable() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTableVar")));
+        SimpleTableSegment tableVar = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTableVar")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(tableVar)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SimpleTableSegmentBinder.bind(simpleTableSegment,
-                new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(sqlServerDatabaseType).build()), tableBinderContexts);
+        SimpleTableSegmentBinder.bind(tableVar, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement), tableBinderContexts);
         SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
         assertTrue(tableSegmentBinderContext.isContainsTableVariable());
+    }
+    
+    @Test
+    void assertBindWithUpdateTargetTableVariablePrecedesSameNamedPhysicalTable() {
+        SimpleTableSegment tableVar = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTableVar")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(tableVar)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegmentBinder.bind(tableVar, new SQLStatementBinderContext(createMetaDataWithAtSignTable(), "foo_db", new HintValueContext(), updateStatement), tableBinderContexts);
+        SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+        assertTrue(tableSegmentBinderContext.isContainsTableVariable());
+    }
+    
+    @Test
+    void assertBindWithUpdateTargetTableVariablePrecedesSameNamedCTE() {
+        SimpleTableSegment tableVar = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTableVar")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(tableVar)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement);
+        binderContext.getExternalTableBinderContexts().put(CaseInsensitiveString.of("@MyTableVar"),
+                new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegmentBinder.bind(tableVar, binderContext, tableBinderContexts);
+        SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+        assertTrue(tableSegmentBinderContext.isContainsTableVariable());
+    }
+    
+    @Test
+    void assertBindWithAtSignTableInSelectThrowsTableNotFoundException() {
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTableVar")));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        assertThrows(TableNotFoundException.class, () -> SimpleTableSegmentBinder.bind(simpleTableSegment,
+                new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(sqlServerDatabaseType).build()), tableBinderContexts));
     }
     
     @Test
@@ -183,6 +229,27 @@ class SimpleTableSegmentBinderTest {
         when(result.getDatabase("sharding_db").getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(result.getDatabase(shardingDatabase).getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(result.getDatabase(shardingDatabase).getSchema(shardingDatabase).containsTable(tOrder)).thenReturn(true);
+        return result;
+    }
+    
+    private ShardingSphereMetaData createMetaDataWithAtSignTable() {
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue dboSchema = new IdentifierValue("dbo");
+        IdentifierValue atSignTableName = new IdentifierValue("@MyTableVar");
+        when(schema.getName()).thenReturn("dbo");
+        when(schema.containsTable(atSignTableName)).thenReturn(true);
+        when(schema.getTable(atSignTableName).getAllColumns()).thenReturn(Collections.emptyList());
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.containsDatabase(fooDatabase)).thenReturn(true);
+        when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("dbo");
+        when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("dbo");
+        when(result.getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(result.getDatabase(fooDatabase).getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(result.getDatabase("foo_db").containsSchema("dbo")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).containsSchema(dboSchema)).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("dbo")).thenReturn(schema);
+        when(result.getDatabase(fooDatabase).getSchema(dboSchema)).thenReturn(schema);
         return result;
     }
     
