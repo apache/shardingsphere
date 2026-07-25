@@ -52,6 +52,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLColumnTypeOIDLoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -77,8 +78,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
@@ -87,6 +90,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -95,7 +99,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxyContext.class, ProxyBackendHandlerFactory.class})
+@StaticMockSettings({ProxyContext.class, ProxyBackendHandlerFactory.class, PostgreSQLColumnTypeOIDLoader.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PortalTest {
     
@@ -123,6 +127,7 @@ class PortalTest {
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class))).thenReturn(proxyBackendHandler);
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), any(QueryContext.class), anyList())).thenReturn(Collections.emptyMap());
     }
     
     @Test
@@ -136,9 +141,9 @@ class PortalTest {
     @Test
     void assertExecuteSelectStatementAndReturnAllRows() throws SQLException, ReflectiveOperationException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
-        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.VARCHAR, "columnTypeName", 0, 0, false, false, false, false);
-        QueryHeader intColumnQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
-        when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, intColumnQueryHeader));
+        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.STRUCT, "record_type", 0, 0, false, false, false, false);
+        QueryHeader binaryQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.STRUCT, "record_type", 0, 0, false, false, false, false);
+        when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, binaryQueryHeader));
         when(proxyBackendHandler.execute()).thenReturn(responseHeader);
         when(proxyBackendHandler.next()).thenReturn(true, true, false);
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
@@ -146,6 +151,11 @@ class PortalTest {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
         when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        Map<Integer, Integer> columnTypeOIDs = new HashMap<>(2, 1F);
+        columnTypeOIDs.put(1, 2249);
+        columnTypeOIDs.put(2, 2249);
+        when(PostgreSQLColumnTypeOIDLoader.load(eq(databaseConnectionManager.getConnectionSession()), any(QueryContext.class), anyList()))
+                .thenReturn(columnTypeOIDs);
         Portal portal = createPortal(sqlStatementContext, Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         PostgreSQLPacket portalDescription = portal.describe();
         assertThat(portalDescription, isA(PostgreSQLRowDescriptionPacket.class));
@@ -153,9 +163,11 @@ class PortalTest {
                 .get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), portalDescription);
         Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = columnDescriptions.iterator();
         PostgreSQLColumnDescription textColumnDescription = columnDescriptionIterator.next();
-        PostgreSQLColumnDescription intColumnDescription = columnDescriptionIterator.next();
+        PostgreSQLColumnDescription binaryColumnDescription = columnDescriptionIterator.next();
+        assertThat(textColumnDescription.getTypeOID(), is(2249));
         assertThat(textColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.TEXT.getCode()));
-        assertThat(intColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.BINARY.getCode()));
+        assertThat(binaryColumnDescription.getTypeOID(), is(PostgreSQLBinaryColumnType.VARCHAR.getValue()));
+        assertThat(binaryColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.BINARY.getCode()));
         List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));
         assertThat(actualPackets.get(0), isA(PostgreSQLDataRowPacket.class));

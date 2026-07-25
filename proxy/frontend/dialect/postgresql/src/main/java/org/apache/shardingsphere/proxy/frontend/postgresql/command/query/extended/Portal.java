@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLColumnTypeOIDLoader;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -61,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * PostgreSQL portal.
@@ -81,7 +83,11 @@ public final class Portal {
     
     private final ProxyBackendHandler proxyBackendHandler;
     
+    private final QueryContext queryContext;
+    
     private final ProxyDatabaseConnectionManager databaseConnectionManager;
+    
+    private Map<Integer, Integer> columnTypeOIDs;
     
     private ResponseHeader responseHeader;
     
@@ -97,7 +103,7 @@ public final class Portal {
             ((ParameterAware) sqlStatementContext).bindParameters(params);
         }
         DatabaseType protocolType = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getProtocolType();
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(),
+        queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(),
                 databaseConnectionManager.getConnectionSession().getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolType, queryContext, databaseConnectionManager.getConnectionSession(), true);
     }
@@ -109,6 +115,10 @@ public final class Portal {
      */
     public void bind() throws SQLException {
         responseHeader = proxyBackendHandler.execute();
+        if (responseHeader instanceof QueryResponseHeader) {
+            QueryResponseHeader queryResponseHeader = (QueryResponseHeader) responseHeader;
+            columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(databaseConnectionManager.getConnectionSession(), queryContext, queryResponseHeader.getQueryHeaders());
+        }
     }
     
     /**
@@ -136,7 +146,11 @@ public final class Portal {
         int columnIndex = 0;
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
             PostgreSQLValueFormat valueFormat = determineValueFormat(columnIndex);
-            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName(), valueFormat.getCode()));
+            int currentColumnIndex = ++columnIndex;
+            Integer typeOID = columnTypeOIDs.get(currentColumnIndex);
+            result.add(PostgreSQLValueFormat.TEXT == valueFormat && null != typeOID
+                    ? new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, typeOID, each.getColumnLength(), valueFormat.getCode())
+                    : new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName(), valueFormat.getCode()));
         }
         return result;
     }
