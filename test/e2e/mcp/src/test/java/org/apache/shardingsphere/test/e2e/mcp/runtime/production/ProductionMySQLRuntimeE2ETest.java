@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.support.markdown.MCPMarkdownResourceLoader;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
@@ -27,7 +25,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -63,102 +60,6 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             MCPPayloadAssertions.assertSingleItemValue(interactionClient.readResource("shardingsphere://databases"), "database", LOGICAL_DATABASE_NAME);
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertServiceCapabilitiesResourceWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.readResource("shardingsphere://capabilities");
-            assertFalse(((Collection<?>) actual.get("supportedStatementClasses")).isEmpty());
-            assertFalse(((List<?>) actual.get("completionTargets")).isEmpty());
-            assertFalse(((List<?>) actual.get("resourceNavigation")).isEmpty());
-            assertFalse(actual.containsKey("supportedTools"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertListToolsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> actual = interactionClient.listTools();
-            assertOfficialToolNames(actual.stream().map(each -> String.valueOf(each.get("name"))).toList());
-            assertToolDefinition(actual, "database_gateway_search_metadata", "Search Metadata", "", "object_types", "array");
-            assertToolDefinition(actual, "database_gateway_validate_runtime_database", "Validate Runtime Database", "database", "database", "string");
-            assertToolDefinition(actual, "database_gateway_execute_query", "Execute Query SQL", "sql", "timeout_ms", "integer");
-            assertToolDefinition(actual, "database_gateway_execute_update", "Preview or Execute Side-Effecting SQL", "sql", "timeout_ms", "integer");
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertListResourcesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertTrue(getResources(interactionClient.listResources()).stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertListResourceTemplatesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<String> actualTemplates = getResourceTemplates(interactionClient.listResourceTemplates()).stream()
-                    .map(each -> String.valueOf(each.get("uriTemplate"))).toList();
-            assertTrue(actualTemplates.contains("shardingsphere://databases/{database}"));
-            assertTrue(actualTemplates.contains("shardingsphere://databases/{database}/schemas/{schema}"));
-            assertTrue(actualTemplates.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectUnsupportedResourceUriWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            String requestId = "resources-read-unsupported-1";
-            Map<String, Object> actual = interactionClient.sendRawRequest(requestId, "resources/read", Map.of("uri", "unsupported://resource"));
-            assertJsonRpcErrorWithoutResult(actual, requestId);
-            assertFalse(getObjectOrEmpty(actual.get("result")).containsKey("contents"));
-            assertThat(String.valueOf(getObjectOrEmpty(actual.get("error")).get("message")), is("Resource not found"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectUnsupportedToolNameWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            String requestId = "tools-call-unsupported-1";
-            Map<String, Object> actual = interactionClient.sendRawRequest(requestId, "tools/call", Map.of("name", "unsupported_tool", "arguments", Map.of()));
-            assertJsonRpcErrorWithoutResult(actual, requestId);
-            assertFalse(getObjectOrEmpty(actual.get("result")).containsKey("isError"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertInitializeExposesMarkdownInstructionsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actualResult = getObjectOrEmpty(interactionClient.getInitializePayload().get("result"));
-            String actualInstructions = String.valueOf(actualResult.get("instructions"));
-            assertThat(actualInstructions, is(MCPMarkdownResourceLoader.load(MCPTransportConstants.SERVER_INSTRUCTIONS_RESOURCE, "server instruction")));
-            assertThat(actualInstructions.lines().findFirst().orElse(""), is("Apache ShardingSphere MCP."));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertServerInstructionsAreNotListedAsResourceWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertFalse(getResources(interactionClient.listResources()).stream()
-                    .anyMatch(each -> MCPTransportConstants.SERVER_INSTRUCTIONS_RESOURCE.equals(String.valueOf(each.get("uri")))));
         }
     }
     

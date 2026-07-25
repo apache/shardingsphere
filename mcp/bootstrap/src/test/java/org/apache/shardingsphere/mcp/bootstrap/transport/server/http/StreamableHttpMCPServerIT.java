@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.markdown.MCPMarkdownResourceLoader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -84,6 +85,7 @@ class StreamableHttpMCPServerIT {
         assertThat(initializePayload.get("jsonrpc"), is("2.0"));
         Map<?, ?> result = (Map<?, ?>) initializePayload.get("result");
         assertThat(result.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
+        assertThat(result.get("instructions"), is(MCPMarkdownResourceLoader.load(MCPTransportConstants.SERVER_INSTRUCTIONS_RESOURCE, "server instruction")));
         assertThat(sendInitializedNotification(sessionId, Collections.emptyMap()).statusCode(), is(202));
         HttpResponse<String> capabilitiesResponse = sendPost(createCapabilitiesPayload(), Map.of(
                 CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE,
@@ -91,6 +93,24 @@ class StreamableHttpMCPServerIT {
                 "mcp-session-id", sessionId,
                 "mcp-protocol-version", MCPTransportConstants.PROTOCOL_VERSION));
         assertThat(capabilitiesResponse.statusCode(), is(200));
+    }
+    
+    @Test
+    void assertRejectUnsupportedResource() throws IOException, InterruptedException {
+        startServer();
+        String sessionId = initializeSession(Collections.emptyMap());
+        HttpResponse<String> actual = sendRequest(sessionId, "resource-unsupported", "resources/read", Map.of("uri", "unsupported://resource"));
+        assertThat(actual.statusCode(), is(200));
+        assertThat(assertJsonRpcError(actual, "resource-unsupported").get("message"), is("Resource not found"));
+    }
+    
+    @Test
+    void assertRejectUnsupportedTool() throws IOException, InterruptedException {
+        startServer();
+        String sessionId = initializeSession(Collections.emptyMap());
+        HttpResponse<String> actual = sendRequest(sessionId, "tool-unsupported", "tools/call", Map.of("name", "unsupported_tool", "arguments", Map.of()));
+        assertThat(actual.statusCode(), is(200));
+        assertFalse(String.valueOf(assertJsonRpcError(actual, "tool-unsupported").get("message")).isBlank());
     }
     
     @Test
@@ -193,6 +213,11 @@ class StreamableHttpMCPServerIT {
         return sendPost(createCapabilitiesPayload(), createSessionHeaders(sessionId));
     }
     
+    private HttpResponse<String> sendRequest(final String sessionId, final String requestId, final String method,
+                                             final Map<String, Object> params) throws IOException, InterruptedException {
+        return sendPost(Map.of("jsonrpc", "2.0", "id", requestId, "method", method, "params", params), createSessionHeaders(sessionId));
+    }
+    
     private HttpResponse<String> sendDelete(final String sessionId) throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpoint).DELETE();
         createSessionHeaders(sessionId).forEach(requestBuilder::header);
@@ -243,7 +268,38 @@ class StreamableHttpMCPServerIT {
     }
     
     private Map<?, ?> parseBody(final HttpResponse<String> response) throws IOException {
-        return OBJECT_MAPPER.readValue(response.body(), Map.class);
+        return OBJECT_MAPPER.readValue(normalizeJsonBody(response.body()), Map.class);
+    }
+    
+    private String normalizeJsonBody(final String responseBody) {
+        String result = responseBody.trim();
+        if (result.startsWith("{")) {
+            return result;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean hasDataLine = false;
+        for (String each : result.split("\\R")) {
+            String line = each.trim();
+            if (!line.startsWith("data:")) {
+                continue;
+            }
+            if (hasDataLine) {
+                stringBuilder.append(System.lineSeparator());
+            }
+            stringBuilder.append(line.substring("data:".length()).trim());
+            hasDataLine = true;
+        }
+        return hasDataLine ? stringBuilder.toString() : result;
+    }
+    
+    private Map<?, ?> assertJsonRpcError(final HttpResponse<String> response, final String requestId) throws IOException {
+        Map<?, ?> actual = parseBody(response);
+        assertThat(actual.get("jsonrpc"), is("2.0"));
+        assertThat(actual.get("id"), is(requestId));
+        assertFalse(actual.containsKey("result"));
+        Map<?, ?> error = (Map<?, ?>) actual.get("error");
+        assertTrue(error.get("code") instanceof Number);
+        return error;
     }
     
     private String getRecoveryCategory(final HttpResponse<String> response) throws IOException {

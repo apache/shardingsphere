@@ -271,8 +271,8 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - suite-id: smoke
-            test-class: LLMSmokeE2ETest
+          - suite-id: stdio-transport
+            test-class: LLMStdioTransportE2ETest
           - suite-id: usability-core
             test-class: LLMUsabilitySuiteE2ETest
             test-property: mcp.e2e.llm.usability-suite=core

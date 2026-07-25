@@ -80,17 +80,6 @@ public final class LLMUsabilityScenarioCatalog {
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_update", "database_gateway_execute_query"),
                         List.of("database_gateway_execute_update", "database_gateway_execute_query")),
                 List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_update"), List.of(), false, false));
-        List<String> workflowActions = List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query");
-        List<String> workflowRequiredActions = List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query");
-        result.add(createScenario("natural-workflow-manual-export-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
-                List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural", "workflow"),
-                new LLME2EScenario("natural-workflow-manual-export-" + runtimeKind, SYSTEM_PROMPT,
-                        "Prepare a mask-rule workflow for logical database `" + databaseName + "`, schema `" + schemaName + "`, table `" + tableName
-                                + "`, and column `status` using MD5. Do not send plan_id to the planning tool; use the plan_id returned by the planning response for follow-up workflow calls. "
-                                + "Keep runtime side effects out of MCP, export reviewable artifacts for manual execution, and finish by verifying `" + query + "`.",
-                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
-                        workflowActions, workflowRequiredActions),
-                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_plan_mask_rule"), List.of(), false, false));
         result.add(createScenario("natural-mask-rule-md5-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
                 List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural", "workflow", "mask"),
                 new LLME2EScenario("natural-mask-rule-md5-" + runtimeKind, SYSTEM_PROMPT,

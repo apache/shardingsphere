@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.suite.smoke;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.transport;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
@@ -29,19 +29,15 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,7 +45,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("llm-e2e")
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
+class LLMStdioTransportE2ETest extends AbstractConfigBackedRuntimeE2ETest {
+    
+    private static final String SUITE_ID = "llm-stdio-transport";
     
     private static final String DATABASE_NAME = "logic_db";
     
@@ -69,8 +67,6 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private static LLMRuntimeSupport.ModelRuntime llmRuntime;
     
     private final LLMRuntimeFixtureFactory runtimeFixtureFactory = new LLMRuntimeFixtureFactory();
-    
-    private RuntimeTransport currentTransport;
     
     private Fixture currentRuntimeFixture;
     
@@ -95,31 +91,18 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         }
     }
     
-    @AfterEach
-    void clearCurrentTransport() {
-        currentTransport = null;
-    }
-    
-    static Stream<Arguments> getTestCases() {
-        return Stream.of(
-                Arguments.of("llm-smoke-mysql-http", RuntimeTransport.HTTP),
-                Arguments.of("llm-smoke-mysql-stdio", RuntimeTransport.STDIO));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getTestCases")
-    void assertSmoke(final String suiteId, final RuntimeTransport transport) throws IOException, InterruptedException {
-        currentTransport = transport;
+    @Test
+    void assertStdioTransport() throws IOException, InterruptedException {
         LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration(), getRequiredLLMRuntimeEvidence());
         conversationExecutor.assertModelReady();
         prepareRuntimeFixture();
-        LLMConversationExecutor.ConversationResult actualResult = conversationExecutor.runConversation(suiteId, createScenario(suiteId), createInteractionClient());
+        LLMConversationExecutor.ConversationResult actualResult = conversationExecutor.runConversation(SUITE_ID, createScenario(), createInteractionClient());
         assertSuccess(actualResult);
     }
     
-    private LLME2EScenario createScenario(final String scenarioId) {
+    private LLME2EScenario createScenario() {
         Fixture fixture = getRequiredRuntimeFixture();
-        return new LLME2EScenario(scenarioId, SYSTEM_PROMPT,
+        return new LLME2EScenario(SUITE_ID, SYSTEM_PROMPT,
                 "A user asks how many rows are in `" + TABLE_NAME + "` right now. Use logical database `" + DATABASE_NAME + "`, schema `"
                         + fixture.schemaName() + "`, and SQL `" + COUNT_ORDERS_SQL + "`.",
                 new LLMStructuredAnswer(DATABASE_NAME, fixture.schemaName(), TABLE_NAME, COUNT_ORDERS_SQL, fixture.totalOrders(), List.of()),
@@ -129,8 +112,8 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private void assertSuccess(final LLMConversationExecutor.ConversationResult actualResult) {
         LLME2EAssertionReport actualReport = actualResult.artifactBundle().getAssertionReport();
         assertTrue(actualReport.isSuccess(),
-                () -> String.format("LLM smoke scenario failed: %s - %s", actualReport.getFailureType(), actualReport.getMessage()));
-        assertFalse(actualResult.artifactBundle().getInteractionTrace().isEmpty(), "LLM smoke scenario must record at least one MCP interaction.");
+                () -> String.format("LLM stdio transport scenario failed: %s - %s", actualReport.getFailureType(), actualReport.getMessage()));
+        assertFalse(actualResult.artifactBundle().getInteractionTrace().isEmpty(), "LLM stdio transport scenario must record at least one MCP interaction.");
     }
     
     private static LLME2EConfiguration getRequiredLLMConfiguration() {
@@ -150,7 +133,7 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @Override
     protected RuntimeTransport getTransport() {
-        return getRequiredTransport();
+        return RuntimeTransport.STDIO;
     }
     
     @Override
@@ -163,20 +146,14 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         if (null != currentRuntimeFixture) {
             return;
         }
-        currentRuntimeFixture = runtimeFixtureFactory.createMySQLFixture(DATABASE_NAME, "Docker is required for the MySQL-backed LLM smoke E2E test.");
+        currentRuntimeFixture = runtimeFixtureFactory.createMySQLFixture(DATABASE_NAME, "Docker is required for the MySQL-backed LLM stdio transport E2E test.");
     }
     
     private Fixture getRequiredRuntimeFixture() {
         if (null == currentRuntimeFixture) {
-            throw new IllegalStateException("LLM smoke runtime fixture was not initialized.");
+            throw new IllegalStateException("LLM stdio transport runtime fixture was not initialized.");
         }
         return currentRuntimeFixture;
     }
     
-    private RuntimeTransport getRequiredTransport() {
-        if (null == currentTransport) {
-            throw new IllegalStateException("LLM smoke test case was not initialized.");
-        }
-        return currentTransport;
-    }
 }
