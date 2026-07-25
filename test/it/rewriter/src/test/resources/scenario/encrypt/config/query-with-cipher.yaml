@@ -202,6 +202,10 @@ rules:
           cipher:
             name: foo[bar
             encryptorName: rewrite_normal_fixture
+        ApostropheLabel:
+          cipher:
+            name: foo'bar
+            encryptorName: rewrite_normal_fixture
     StateRegion:
       columns:
         CountryRegionName:

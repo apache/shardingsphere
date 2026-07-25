@@ -169,6 +169,24 @@ class EncryptAssignmentTokenGeneratorTest {
     }
     
     @Test
+    void assertGenerateSQLTokenWithOpenQueryBracketedFromInSelectList() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        tokenGenerator = new EncryptAssignmentTokenGenerator(mockOpenQueryEncryptRule(), database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        ColumnSegment columnSegment = new ColumnSegment(112, 120, new IdentifierValue("GroupName"));
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(null, null, new IdentifierValue("GroupName"), TableSourceType.TEMPORARY_TABLE));
+        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(columnSegment));
+        when(assignmentSegment.getValue()).thenReturn(new LiteralExpressionSegment(124, 144, "Sales and Marketing"));
+        when(assignmentSegment.getStopIndex()).thenReturn(144);
+        when(tablesContext.getSchemaName()).thenReturn(Optional.of("dbo"));
+        Collection<SQLToken> actual = tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQueryTableSegmentWithBracketedFromInSelectList());
+        Iterator<SQLToken> iterator = actual.iterator();
+        assertThat(actual.size(), is(2));
+        assertThat(iterator.next().toString(), is("group_name_cipher = 'encryptValue'"));
+        assertThat(iterator.next().toString(), is("'SELECT [FROM], [group_name_cipher] FROM dbo.Department WHERE DepartmentID = 4'"));
+    }
+    
+    @Test
     void assertGenerateSQLTokenWithOpenQueryMultipleAssignments() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
@@ -270,6 +288,14 @@ class EncryptAssignmentTokenGeneratorTest {
         functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
         functionSegment.getParameters().add(new LiteralExpressionSegment(34, 95, "SELECT GroupName FROM dbo.Department WHERE DepartmentID = 4"));
         return new FunctionTableSegment(7, 106, functionSegment);
+    }
+    
+    private FunctionTableSegment createOpenQueryTableSegmentWithBracketedFromInSelectList() {
+        FunctionSegment functionSegment = new FunctionSegment(7, 114, "OPENQUERY",
+                "OPENQUERY (MyLinkedServer, 'SELECT [FROM], GroupName FROM dbo.Department WHERE DepartmentID = 4')");
+        functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
+        functionSegment.getParameters().add(new LiteralExpressionSegment(34, 103, "SELECT [FROM], GroupName FROM dbo.Department WHERE DepartmentID = 4"));
+        return new FunctionTableSegment(7, 114, functionSegment);
     }
     
     private FunctionTableSegment createOpenQueryTableSegmentWithColumnInWhere() {

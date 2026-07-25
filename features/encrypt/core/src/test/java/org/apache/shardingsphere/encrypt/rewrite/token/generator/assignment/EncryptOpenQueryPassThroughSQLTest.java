@@ -100,7 +100,10 @@ class EncryptOpenQueryPassThroughSQLTest {
                 Arguments.of("double quoted multipart", "SELECT foo_col FROM \"foo_schema\".\"foo_tbl\" WHERE id_col = 1", "foo_tbl"),
                 Arguments.of("escaped bracket", "SELECT foo_col FROM [foo_schema].[foo]]tbl]", "foo]tbl"),
                 Arguments.of("three-part table", "SELECT foo_col FROM foo_db.foo_schema.foo_tbl WHERE id_col = 4", "foo_tbl"),
-                Arguments.of("join", "SELECT foo_col FROM foo_schema.foo_tbl JOIN foo_schema.bar_tbl ON foo_tbl.id_col = bar_tbl.id_col", "foo_tbl"));
+                Arguments.of("join", "SELECT foo_col FROM foo_schema.foo_tbl JOIN foo_schema.bar_tbl ON foo_tbl.id_col = bar_tbl.id_col", "foo_tbl"),
+                Arguments.of("bracketed from in select list", "SELECT [FROM], foo_col FROM foo_schema.foo_tbl WHERE id_col = 4", "foo_tbl"),
+                Arguments.of("double quoted from in select list", "SELECT \"FROM\", foo_col FROM foo_schema.foo_tbl WHERE id_col = 4", "foo_tbl"),
+                Arguments.of("escaped bracketed from in select list", "SELECT [FR]]OM], foo_col FROM foo_schema.foo_tbl", "foo_tbl"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -126,7 +129,13 @@ class EncryptOpenQueryPassThroughSQLTest {
                 Arguments.of("intersect", "SELECT foo_col FROM foo_schema.foo_tbl INTERSECT SELECT foo_col FROM foo_schema.bar_tbl"),
                 Arguments.of("with hint then comma table sources", "SELECT foo_col FROM foo_schema.foo_tbl WITH (NOLOCK), foo_schema.bar_tbl"),
                 Arguments.of("inline hint then comma table sources", "SELECT foo_col FROM foo_schema.foo_tbl(NOLOCK), foo_schema.bar_tbl"),
-                Arguments.of("block comment then comma table sources", "SELECT foo_col FROM foo_schema.foo_tbl/*hint*/, foo_schema.bar_tbl"));
+                Arguments.of("block comment then comma table sources", "SELECT foo_col FROM foo_schema.foo_tbl/*hint*/, foo_schema.bar_tbl"),
+                Arguments.of("select list numeric literal", "SELECT 1 FROM foo_schema.foo_tbl"),
+                Arguments.of("select list null keyword", "SELECT NULL FROM foo_schema.foo_tbl"),
+                Arguments.of("statement terminator", "SELECT foo_col FROM foo_schema.foo_tbl; DELETE FROM foo_schema.bar_tbl"),
+                Arguments.of("order by", "SELECT foo_col FROM foo_schema.foo_tbl ORDER BY id_col"),
+                Arguments.of("group by", "SELECT foo_col FROM foo_schema.foo_tbl GROUP BY id_col"),
+                Arguments.of("having", "SELECT foo_col FROM foo_schema.foo_tbl HAVING COUNT(1) > 0"));
     }
     
     @Test
@@ -200,6 +209,20 @@ class EncryptOpenQueryPassThroughSQLTest {
                 Arguments.of("left bracket", "foo[bar", "[foo[bar]"));
     }
     
+    @Test
+    void assertRewriteWithBracketedFromInSelectList() {
+        EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse("SELECT [FROM], foo_col FROM foo_schema.foo_tbl WHERE id_col = 4");
+        String actual = passThroughSQL.rewrite(Collections.singletonList(createEncryptColumn("foo_col", "foo_col_cipher")));
+        assertThat(actual, is("SELECT [FROM], [foo_col_cipher] FROM foo_schema.foo_tbl WHERE id_col = 4"));
+    }
+    
+    @Test
+    void assertRewriteWithDoubleQuotedFromInSelectList() {
+        EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse("SELECT \"FROM\", foo_col FROM foo_schema.foo_tbl WHERE id_col = 4");
+        String actual = passThroughSQL.rewrite(Collections.singletonList(createEncryptColumn("foo_col", "foo_col_cipher")));
+        assertThat(actual, is("SELECT \"FROM\", [foo_col_cipher] FROM foo_schema.foo_tbl WHERE id_col = 4"));
+    }
+    
     private EncryptColumn createEncryptColumn(final String logicColumnName, final String physicalColumnName) {
         EncryptColumn result = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn(logicColumnName);
@@ -207,5 +230,18 @@ class EncryptOpenQueryPassThroughSQLTest {
         when(result.getAssistedQuery()).thenReturn(Optional.empty());
         when(result.getLikeQuery()).thenReturn(Optional.empty());
         return result;
+    }
+    
+    @Test
+    void assertParseDoesNotRejectSetKeywordInsideDoubledApostropheStringLiteral() {
+        EncryptOpenQueryPassThroughSQL actual = EncryptOpenQueryPassThroughSQL.parse("SELECT foo_col FROM foo_schema.foo_tbl WHERE note_col = ''UNION ALL''");
+        assertThat(actual.getRemainder(), is(" WHERE note_col = 'UNION ALL'"));
+    }
+    
+    @Test
+    void assertRewriteDoesNotRejectEncryptColumnNameInsideDoubledApostropheStringLiteral() {
+        EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse("SELECT foo_col FROM foo_schema.foo_tbl WHERE note_col = ''foo_col''");
+        String actual = passThroughSQL.rewrite(Collections.singletonList(createEncryptColumn("foo_col", "foo_col_cipher")));
+        assertThat(actual, is("SELECT [foo_col_cipher] FROM foo_schema.foo_tbl WHERE note_col = 'foo_col'"));
     }
 }

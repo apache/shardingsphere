@@ -96,9 +96,34 @@ class EncryptAssignmentTokenGeneratorOpenQueryUnsupportedShapeTest {
         when(assignmentSegment.getValue()).thenReturn(new FunctionSegment(124, 134, "UPPER", "UPPER('x')"));
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
         EncryptAssignmentTokenGenerator tokenGenerator = new EncryptAssignmentTokenGenerator(
-                mockOpenQueryEncryptRuleWithTable(), mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+                mockOpenQueryEncryptRuleForUnsupportedAssignmentExpression(), mock(ShardingSphereDatabase.class), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         assertThrows(UnsupportedEncryptSQLException.class,
                 () -> tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQueryTableSegment()));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithOpenQueryOrderByExpectsException() {
+        ColumnSegment columnSegment = new ColumnSegment(112, 120, new IdentifierValue("GroupName"));
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(null, null, new IdentifierValue("GroupName"), TableSourceType.TEMPORARY_TABLE));
+        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(columnSegment));
+        when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
+        EncryptAssignmentTokenGenerator tokenGenerator = new EncryptAssignmentTokenGenerator(mockOpenQueryEncryptRule(), mock(ShardingSphereDatabase.class),
+                TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        assertThrows(UnsupportedEncryptSQLException.class,
+                () -> tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQueryTableSegmentWithOrderBy()));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithOpenQueryNonEncryptAssignmentEncryptedPredicateExpectsException() {
+        ColumnSegment columnSegment = new ColumnSegment(112, 124, new IdentifierValue("DepartmentID"));
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(null, null, new IdentifierValue("DepartmentID"), TableSourceType.TEMPORARY_TABLE));
+        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(columnSegment));
+        when(assignmentSegment.getValue()).thenReturn(new LiteralExpressionSegment(128, 129, 5));
+        when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
+        EncryptAssignmentTokenGenerator tokenGenerator = new EncryptAssignmentTokenGenerator(mockOpenQueryEncryptRuleForEncryptedPredicateInWhere(), mock(ShardingSphereDatabase.class),
+                TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        assertThrows(UnsupportedEncryptSQLException.class,
+                () -> tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQueryTableSegmentWithNonEncryptAssignmentEncryptedPredicate()));
     }
     
     private EncryptRule mockOpenQueryEncryptRule() {
@@ -135,6 +160,14 @@ class EncryptAssignmentTokenGeneratorOpenQueryUnsupportedShapeTest {
         return new FunctionTableSegment(7, 95, functionSegment);
     }
     
+    private FunctionTableSegment createOpenQueryTableSegmentWithOrderBy() {
+        FunctionSegment functionSegment = new FunctionSegment(7, 108, "OPENQUERY",
+                "OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM dbo.Department ORDER BY DepartmentID')");
+        functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
+        functionSegment.getParameters().add(new LiteralExpressionSegment(34, 97, "SELECT GroupName FROM dbo.Department ORDER BY DepartmentID"));
+        return new FunctionTableSegment(7, 108, functionSegment);
+    }
+    
     private FunctionTableSegment createOpenQueryTableSegmentWithExtraColumnInWhere() {
         FunctionSegment functionSegment = new FunctionSegment(7, 112, "OPENQUERY",
                 "OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM dbo.Department WHERE ExtraCol IS NOT NULL')");
@@ -143,7 +176,15 @@ class EncryptAssignmentTokenGeneratorOpenQueryUnsupportedShapeTest {
         return new FunctionTableSegment(7, 112, functionSegment);
     }
     
-    private EncryptRule mockOpenQueryEncryptRuleWithTable() {
+    private FunctionTableSegment createOpenQueryTableSegmentWithNonEncryptAssignmentEncryptedPredicate() {
+        FunctionSegment functionSegment = new FunctionSegment(7, 127, "OPENQUERY",
+                "OPENQUERY (MyLinkedServer, 'SELECT GroupName, DepartmentID FROM dbo.Department WHERE GroupName IS NOT NULL')");
+        functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
+        functionSegment.getParameters().add(new LiteralExpressionSegment(34, 116, "SELECT GroupName, DepartmentID FROM dbo.Department WHERE GroupName IS NOT NULL"));
+        return new FunctionTableSegment(7, 127, functionSegment);
+    }
+    
+    private EncryptRule mockOpenQueryEncryptRuleForUnsupportedAssignmentExpression() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
@@ -151,6 +192,17 @@ class EncryptAssignmentTokenGeneratorOpenQueryUnsupportedShapeTest {
         when(encryptTable.isEncryptColumn("GroupName")).thenReturn(true);
         when(encryptTable.getTable()).thenReturn("Department");
         when(encryptTable.getEncryptColumn("GroupName")).thenReturn(encryptColumn);
+        return result;
+    }
+    
+    private EncryptRule mockOpenQueryEncryptRuleForEncryptedPredicateInWhere() {
+        EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
+        when(result.findEncryptTable("Department")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.isEncryptColumn("DepartmentID")).thenReturn(false);
+        when(encryptTable.getEncryptColumns()).thenReturn(Collections.singletonList(encryptColumn));
+        when(encryptColumn.getName()).thenReturn("GroupName");
         return result;
     }
     

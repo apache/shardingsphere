@@ -39,6 +39,6 @@ public final class EncryptOpenQuerySQLToken extends SQLToken implements Substitu
     
     @Override
     public String toString() {
-        return "'" + sql + "'";
+        return "'" + sql.replace("'", "''") + "'";
     }
 }

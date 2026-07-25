@@ -109,18 +109,14 @@ public final class EncryptAssignmentTokenGenerator {
         }
         EncryptTable table = encryptTable.get();
         Collection<SQLToken> result = new LinkedList<>();
-        boolean hasEncryptAssignment = false;
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             String columnName = getAssignedColumn(each).getIdentifier().getValue();
             if (!table.isEncryptColumn(columnName)) {
                 continue;
             }
             appendOpenQueryAssignmentTokens(result, tablesContext, openQueryTable, each, table, table.getEncryptColumn(columnName));
-            hasEncryptAssignment = true;
         }
-        if (hasEncryptAssignment) {
-            appendComposedOpenQuerySQLToken(result, openQueryTable, table.getEncryptColumns());
-        }
+        appendComposedOpenQuerySQLToken(result, openQueryTable, table.getEncryptColumns());
         return result;
     }
     
