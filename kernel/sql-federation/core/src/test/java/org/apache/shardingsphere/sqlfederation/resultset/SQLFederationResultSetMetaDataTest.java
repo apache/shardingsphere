@@ -372,7 +372,7 @@ class SQLFederationResultSetMetaDataTest {
                 Collections.singletonMap(1, "foo_label"), converter);
         assertThat(metaData.getColumnClassName(1), is(String.class.getName()));
     }
-
+    
     @Test
     void assertGetColumnClassNameForBigInteger() {
         JavaType javaBigIntegerType = mock(JavaType.class);
@@ -383,7 +383,7 @@ class SQLFederationResultSetMetaDataTest {
                 mock(), Collections.emptyList(), databaseType, resultType, Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getColumnClassName(1), is(BigInteger.class.getName()));
     }
-
+    
     @Test
     void assertGetColumnClassNameForConvertedValueClass() {
         RelDataType booleanType = mock(RelDataType.class);
@@ -395,7 +395,7 @@ class SQLFederationResultSetMetaDataTest {
                 mock(), Collections.emptyList(), databaseType, resultType, Collections.singletonMap(1, "foo_label"), converter);
         assertThat(metaData.getColumnClassName(1), is(Integer.class.getName()));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("columnClassNameSource")
     void assertGetColumnClassNameByType(final String name, final SqlTypeName sqlTypeName, final int jdbcType, final String expectedClassName) {
@@ -408,7 +408,7 @@ class SQLFederationResultSetMetaDataTest {
                 mock(), Collections.emptyList(), databaseType, resultType, Collections.singletonMap(1, "foo_label"), converter);
         assertThat(metaData.getColumnClassName(1), is(expectedClassName));
     }
-
+    
     private static Iterable<Arguments> columnClassNameSource() {
         return Arrays.asList(
                 Arguments.of("tinyint", SqlTypeName.TINYINT, Types.TINYINT, Integer.class.getName()),

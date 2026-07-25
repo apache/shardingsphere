@@ -49,7 +49,7 @@ public final class MySQLSQLFederationColumnTypeConverter implements DialectSQLFe
         }
         return null;
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "MySQL";

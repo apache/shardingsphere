@@ -42,6 +42,7 @@ class MySQLSQLFederationColumnTypeConverterTest {
     void assertConvertColumnValueClass() {
         assertThat(converter.convertColumnValueClass(SqlTypeName.BOOLEAN), is(Integer.class));
     }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("convertValueSource")
     void assertConvertColumnValue(final String name, final Object input, final Object expected) {

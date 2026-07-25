@@ -42,7 +42,7 @@ public interface DialectSQLFederationColumnTypeConverter extends DatabaseTypedSP
      * @return converted column type
      */
     int convertColumnType(SqlTypeName sqlTypeName);
-
+    
     /**
      * Convert column value class.
      *
