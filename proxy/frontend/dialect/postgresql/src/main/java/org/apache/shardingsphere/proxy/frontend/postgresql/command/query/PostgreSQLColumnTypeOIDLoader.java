@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Loader for PostgreSQL column type OIDs.
@@ -67,6 +68,10 @@ public final class PostgreSQLColumnTypeOIDLoader {
         return load(connections.get(0), queryHeaders);
     }
     
+    private static Map<Integer, Integer> load(final Connection connection, final List<QueryHeader> queryHeaders) throws SQLException {
+        return connection.isWrapperFor(BaseConnection.class) ? getTypeOIDs(connection.unwrap(BaseConnection.class), queryHeaders) : Collections.emptyMap();
+    }
+    
     /**
      * Load composite column type OIDs from result set metadata.
      *
@@ -76,44 +81,40 @@ public final class PostgreSQLColumnTypeOIDLoader {
      * @throws SQLException SQL exception
      */
     public static Map<Integer, Integer> load(final Connection connection, final ResultSetMetaData metaData) throws SQLException {
-        if (!connection.isWrapperFor(BaseConnection.class)) {
-            return Collections.emptyMap();
-        }
-        return getTypeOIDs(connection.unwrap(BaseConnection.class), metaData);
-    }
-    
-    private static Map<Integer, Integer> load(final Connection connection, final List<QueryHeader> queryHeaders) throws SQLException {
-        if (!connection.isWrapperFor(BaseConnection.class)) {
-            return Collections.emptyMap();
-        }
-        return getTypeOIDs(connection.unwrap(BaseConnection.class), queryHeaders);
-    }
-    
-    private static Map<Integer, Integer> getTypeOIDs(final BaseConnection connection, final ResultSetMetaData metaData) throws SQLException {
-        int columnCount = metaData.getColumnCount();
-        Map<Integer, Integer> result = new HashMap<>();
-        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            if (Types.STRUCT == metaData.getColumnType(columnIndex)) {
-                int typeOID = connection.getTypeInfo().getPGType(metaData.getColumnTypeName(columnIndex));
-                if (Oid.UNSPECIFIED != typeOID) {
-                    result.put(columnIndex, typeOID);
-                }
-            }
-        }
-        return result;
+        return connection.isWrapperFor(BaseConnection.class) ? getTypeOIDs(connection.unwrap(BaseConnection.class), metaData) : Collections.emptyMap();
     }
     
     private static Map<Integer, Integer> getTypeOIDs(final BaseConnection connection, final List<QueryHeader> queryHeaders) throws SQLException {
         Map<Integer, Integer> result = new HashMap<>();
         for (int i = 0; i < queryHeaders.size(); i++) {
             QueryHeader each = queryHeaders.get(i);
-            if (Types.STRUCT == each.getColumnType()) {
-                int typeOID = connection.getTypeInfo().getPGType(each.getColumnTypeName());
-                if (Oid.UNSPECIFIED != typeOID) {
-                    result.put(i + 1, typeOID);
-                }
+            Optional<Integer> typeOID = findTypeOID(connection, each.getColumnType(), each.getColumnTypeName());
+            if (typeOID.isPresent()) {
+                result.put(i + 1, typeOID.get());
             }
         }
         return result;
+    }
+    
+    private static Map<Integer, Integer> getTypeOIDs(final BaseConnection connection, final ResultSetMetaData metaData) throws SQLException {
+        int columnCount = metaData.getColumnCount();
+        Map<Integer, Integer> result = new HashMap<>();
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            Optional<Integer> typeOID = findTypeOID(connection, metaData.getColumnType(columnIndex), metaData.getColumnTypeName(columnIndex));
+            if (typeOID.isPresent()) {
+                result.put(columnIndex, typeOID.get());
+            }
+        }
+        return result;
+    }
+    
+    private static Optional<Integer> findTypeOID(final BaseConnection connection, final int columnType, final String columnTypeName) throws SQLException {
+        if (Types.STRUCT == columnType) {
+            int typeOID = connection.getTypeInfo().getPGType(columnTypeName);
+            if (Oid.UNSPECIFIED != typeOID) {
+                return Optional.of(typeOID);
+            }
+        }
+        return Optional.empty();
     }
 }
