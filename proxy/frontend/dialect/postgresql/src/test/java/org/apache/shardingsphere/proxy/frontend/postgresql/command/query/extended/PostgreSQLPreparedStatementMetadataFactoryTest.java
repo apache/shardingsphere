@@ -62,6 +62,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -98,7 +99,6 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
     @Test
     void assertLoad() throws SQLException {
         PreparedStatement expected = prepareJDBCBackendConnection(null);
-        when(connectionSession.getProtocolType()).thenReturn(databaseType);
         assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement(true), PARAMETERS), is(expected));
     }
     
@@ -129,12 +129,11 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
     void assertClosePreparedStatementOnCheckerException() throws SQLException {
         PreparedStatement expected = prepareJDBCBackendConnection(null);
         PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(true);
-        when(connectionSession.getProtocolType()).thenReturn(databaseType);
         PostgreSQLCompositeTypeAcrossDataSourcesException exception = new PostgreSQLCompositeTypeAcrossDataSourcesException();
         DialectResultSetMetadataChecker checker = mock(DialectResultSetMetadataChecker.class);
         doThrow(exception).when(checker).check(any(ExecutionContext.class), eq(expected), anyString());
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
-            spiLoader.when(() -> DatabaseTypedSPILoader.getService(DialectResultSetMetadataChecker.class, databaseType)).thenReturn(checker);
+            spiLoader.when(() -> DatabaseTypedSPILoader.findService(DialectResultSetMetadataChecker.class, databaseType)).thenReturn(Optional.of(checker));
             assertThat(assertThrows(PostgreSQLCompositeTypeAcrossDataSourcesException.class,
                     () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, PARAMETERS)), is(exception));
             verify(expected).close();

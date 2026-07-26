@@ -20,12 +20,9 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.postgresql.core.BaseConnection;
 import org.postgresql.core.Oid;
@@ -51,27 +48,21 @@ public final class PostgreSQLColumnTypeOIDLoader {
      * Load composite column type OIDs from the routed backend connection.
      *
      * @param connectionSession connection session
-     * @param queryContext query context
-     * @param queryHeaders query headers
+     * @param queryResponseHeader query response header
      * @return column indexes to type OIDs, or an empty map if no composite column type can be resolved
      * @throws SQLException SQL exception
      */
-    public static Map<Integer, Integer> load(final ConnectionSession connectionSession, final QueryContext queryContext, final List<QueryHeader> queryHeaders) throws SQLException {
+    public static Map<Integer, Integer> load(final ConnectionSession connectionSession, final QueryResponseHeader queryResponseHeader) throws SQLException {
+        List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
         if (!containsCompositeType(queryHeaders)) {
             return Collections.emptyMap();
         }
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, queryContext.getMetaData().getGlobalRuleMetaData(), queryContext.getMetaData().getProps());
-        if (executionContext.getExecutionUnits().isEmpty()) {
+        String dataSourceName = queryResponseHeader.getDataSourceName();
+        if (null == dataSourceName) {
             return Collections.emptyMap();
         }
-        ExecutionUnit executionUnit = executionContext.getExecutionUnits().iterator().next();
-        for (ExecutionUnit each : executionContext.getExecutionUnits()) {
-            if (!executionUnit.getDataSourceName().equals(each.getDataSourceName())) {
-                return Collections.emptyMap();
-            }
-        }
         List<Connection> connections = connectionSession.getDatabaseConnectionManager().getConnections(
-                connectionSession.getUsedDatabaseName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY);
+                connectionSession.getUsedDatabaseName(), dataSourceName, 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         return load(connections.get(0), queryHeaders);
     }
     

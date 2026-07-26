@@ -489,7 +489,9 @@ class StandardDatabaseProxyConnectorTest {
         DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, queryContext);
         setField(engine, "proxySQLExecutor", proxySQLExecutor);
         ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
-        when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
+        ExecutionUnit executionUnit = mock(ExecutionUnit.class);
+        when(executionUnit.getDataSourceName()).thenReturn("ds_0");
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(executionUnit));
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         QueryResult queryResult = mock(QueryResult.class);
         QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
@@ -517,7 +519,8 @@ class StandardDatabaseProxyConnectorTest {
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(eq(QueryHeaderBuilder.class), any(DatabaseType.class))).thenReturn(new QueryHeaderBuilderFixture());
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
-            assertThat(engine.execute(), isA(QueryResponseHeader.class));
+            QueryResponseHeader actual = (QueryResponseHeader) engine.execute();
+            assertThat(actual.getDataSourceName(), is("ds_0"));
             assertThat(mockedKernelProcessor.constructed().size(), is(1));
             assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
             assertThat(mockedMergeEngine.constructed().size(), is(1));

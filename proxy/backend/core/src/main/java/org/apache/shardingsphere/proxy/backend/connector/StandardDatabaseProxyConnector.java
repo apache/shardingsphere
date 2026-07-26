@@ -249,7 +249,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         }
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
+                ? processExecuteQuery(executionContext, executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
                 : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
     }
     
@@ -291,10 +291,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return new QueryResponseHeader(queryHeaders);
     }
     
-    private QueryResponseHeader processExecuteQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
-        queryHeaders = createQueryHeaders(sqlStatementContext, queryResultSample);
+    private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
+        queryHeaders = createQueryHeaders(executionContext.getSqlStatementContext(), queryResultSample);
         mergedResult = mergeQuery(queryResults);
-        return new QueryResponseHeader(queryHeaders);
+        return new QueryResponseHeader(queryHeaders, executionContext.getExecutionUnits().iterator().next().getDataSourceName());
     }
     
     private List<QueryHeader> createQueryHeaders(final SQLStatementContext sqlStatementContext, final QueryResult queryResultSample) throws SQLException {

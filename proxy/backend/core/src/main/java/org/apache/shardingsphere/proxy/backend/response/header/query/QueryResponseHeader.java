@@ -31,4 +31,15 @@ import java.util.List;
 public final class QueryResponseHeader implements ResponseHeader {
     
     private final List<QueryHeader> queryHeaders;
+    
+    private final String dataSourceName;
+    
+    /**
+     * Constructs a query response header without routed data sources.
+     *
+     * @param queryHeaders query headers
+     */
+    public QueryResponseHeader(final List<QueryHeader> queryHeaders) {
+        this(queryHeaders, null);
+    }
 }

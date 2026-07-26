@@ -83,8 +83,6 @@ public final class Portal {
     
     private final ProxyBackendHandler proxyBackendHandler;
     
-    private final QueryContext queryContext;
-    
     private final ProxyDatabaseConnectionManager databaseConnectionManager;
     
     private Map<Integer, Integer> columnTypeOIDs;
@@ -103,7 +101,7 @@ public final class Portal {
             ((ParameterAware) sqlStatementContext).bindParameters(params);
         }
         DatabaseType protocolType = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getProtocolType();
-        queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(),
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(),
                 databaseConnectionManager.getConnectionSession().getConnectionContext(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolType, queryContext, databaseConnectionManager.getConnectionSession(), true);
     }
@@ -116,7 +114,7 @@ public final class Portal {
     public void bind() throws SQLException {
         responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
-            columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(databaseConnectionManager.getConnectionSession(), queryContext, ((QueryResponseHeader) responseHeader).getQueryHeaders());
+            columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(databaseConnectionManager.getConnectionSession(), (QueryResponseHeader) responseHeader);
         }
     }
     

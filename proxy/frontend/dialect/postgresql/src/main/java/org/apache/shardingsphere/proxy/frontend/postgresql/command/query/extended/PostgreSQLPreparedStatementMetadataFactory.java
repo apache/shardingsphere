@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.PreparedStatementMetadataResolutionException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -81,11 +82,12 @@ public final class PostgreSQLPreparedStatementMetadataFactory {
         String sql = executionUnit.getSqlUnit().getSql();
         PreparedStatement result = connections.iterator().next().prepareStatement(sql);
         try {
-            Optional<DialectResultSetMetadataChecker> resultSetMetadataChecker = DatabaseTypedSPILoader.findService(DialectResultSetMetadataChecker.class, connectionSession.getProtocolType());
+            Optional<DialectResultSetMetadataChecker> resultSetMetadataChecker =
+                    DatabaseTypedSPILoader.findService(DialectResultSetMetadataChecker.class, sqlStatementContext.getSqlStatement().getDatabaseType());
             if (resultSetMetadataChecker.isPresent()) {
                 resultSetMetadataChecker.get().check(executionContext, result, sql);
             }
-        } catch (final SQLException ex) {
+        } catch (final SQLException | ShardingSphereSQLException ex) {
             QuietlyCloser.close(result);
             throw ex;
         }

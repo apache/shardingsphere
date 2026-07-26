@@ -90,7 +90,6 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -127,7 +126,7 @@ class PortalTest {
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class))).thenReturn(proxyBackendHandler);
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
-        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), any(QueryContext.class), anyList())).thenReturn(Collections.emptyMap());
+        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), any(QueryResponseHeader.class))).thenReturn(Collections.emptyMap());
     }
     
     @Test
@@ -154,7 +153,7 @@ class PortalTest {
         Map<Integer, Integer> columnTypeOIDs = new HashMap<>(2, 1F);
         columnTypeOIDs.put(1, 2249);
         columnTypeOIDs.put(2, 2249);
-        when(PostgreSQLColumnTypeOIDLoader.load(eq(databaseConnectionManager.getConnectionSession()), any(QueryContext.class), anyList()))
+        when(PostgreSQLColumnTypeOIDLoader.load(eq(databaseConnectionManager.getConnectionSession()), any(QueryResponseHeader.class)))
                 .thenReturn(columnTypeOIDs);
         Portal portal = createPortal(sqlStatementContext, Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         PostgreSQLPacket portalDescription = portal.describe();

@@ -90,7 +90,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
             QueryResponseHeader queryResponseHeader = (QueryResponseHeader) responseHeader;
-            Map<Integer, Integer> columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(connectionSession, connectionSession.getQueryContext(), queryResponseHeader.getQueryHeaders());
+            Map<Integer, Integer> columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(connectionSession, queryResponseHeader);
             return Collections.singleton(createRowDescriptionPacket(queryResponseHeader, columnTypeOIDs));
         }
         responseType = ResponseType.UPDATE;

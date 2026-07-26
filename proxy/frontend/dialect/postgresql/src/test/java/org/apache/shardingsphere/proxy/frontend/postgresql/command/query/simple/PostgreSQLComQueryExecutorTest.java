@@ -29,7 +29,6 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.Pos
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
@@ -79,7 +78,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -114,16 +113,13 @@ class PostgreSQLComQueryExecutorTest {
         SQLStatement sqlStatement = new SQLStatement(DATABASE_TYPE);
         when(ProxySQLComQueryParser.parse(queryPacket.getSQL(), DATABASE_TYPE, connectionSession)).thenReturn(sqlStatement);
         when(ProxyBackendHandlerFactory.newInstance(DATABASE_TYPE, queryPacket.getSQL(), sqlStatement, connectionSession, queryPacket.getHintValueContext())).thenReturn(proxyBackendHandler);
-        QueryContext queryContext = mock(QueryContext.class);
-        when(connectionSession.getQueryContext()).thenReturn(queryContext);
-        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), eq(queryContext), anyList())).thenReturn(Collections.emptyMap());
+        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), any(QueryResponseHeader.class))).thenReturn(Collections.emptyMap());
         queryExecutor = new PostgreSQLComQueryExecutor(portalContext, queryPacket, connectionSession);
     }
     
     @Test
     void assertExecuteQueryWithColumnDescription() throws SQLException, ReflectiveOperationException {
-        QueryContext queryContext = connectionSession.getQueryContext();
-        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), eq(queryContext), anyList())).thenReturn(Collections.singletonMap(1, 2249));
+        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), any(QueryResponseHeader.class))).thenReturn(Collections.singletonMap(1, 2249));
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(queryResponseHeader.getQueryHeaders()).thenReturn(
                 Collections.singletonList(new QueryHeader("schema", "table", "label", "column", Types.STRUCT, "record_type", 2, 3, true, true, true, true)));
