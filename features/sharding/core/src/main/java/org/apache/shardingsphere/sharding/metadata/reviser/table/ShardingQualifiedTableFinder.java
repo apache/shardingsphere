@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.table;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
@@ -26,9 +28,18 @@ import java.util.Optional;
 /**
  * Sharding qualified table finder.
  */
-final class ShardingQualifiedTableFinder {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingQualifiedTableFinder {
     
-    static Optional<ShardingTable> find(final ShardingRule rule, final String tableName, final String storageUnitName) {
+    /**
+     * Find sharding table by actual table name and optional storage unit name.
+     *
+     * @param rule sharding rule
+     * @param tableName actual table name
+     * @param storageUnitName storage unit name
+     * @return sharding table
+     */
+    public static Optional<ShardingTable> find(final ShardingRule rule, final String tableName, final String storageUnitName) {
         if (null == storageUnitName) {
             return rule.findShardingTableByActualTable(tableName);
         }
