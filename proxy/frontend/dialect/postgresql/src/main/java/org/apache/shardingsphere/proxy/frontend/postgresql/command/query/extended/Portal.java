@@ -116,8 +116,7 @@ public final class Portal {
     public void bind() throws SQLException {
         responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
-            QueryResponseHeader queryResponseHeader = (QueryResponseHeader) responseHeader;
-            columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(databaseConnectionManager.getConnectionSession(), queryContext, queryResponseHeader.getQueryHeaders());
+            columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(databaseConnectionManager.getConnectionSession(), queryContext, ((QueryResponseHeader) responseHeader).getQueryHeaders());
         }
     }
     
