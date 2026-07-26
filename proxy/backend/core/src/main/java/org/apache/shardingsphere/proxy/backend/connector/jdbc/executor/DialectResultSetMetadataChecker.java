@@ -25,10 +25,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Dialect JDBC result metadata checker.
+ * Dialect ResultSet metadata checker.
  */
 @SingletonSPI
-public interface DialectJDBCResultMetadataChecker extends DatabaseTypedSPI {
+public interface DialectResultSetMetadataChecker extends DatabaseTypedSPI {
     
     /**
      * Check JDBC result metadata after routed resources are prepared.

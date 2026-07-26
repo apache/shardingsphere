@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectResultSetMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.postgresql.exception.PostgreSQLCompositeTypeAcrossDataSourcesException;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +50,7 @@ class PostgreSQLJDBCResultMetadataCheckerTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
-    private final DialectJDBCResultMetadataChecker checker = DatabaseTypedSPILoader.getService(DialectJDBCResultMetadataChecker.class, databaseType);
+    private final DialectResultSetMetadataChecker checker = DatabaseTypedSPILoader.getService(DialectResultSetMetadataChecker.class, databaseType);
     
     @Test
     void assertCheckWithSingleDataSource() throws SQLException {

@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectResultSetMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.postgresql.exception.PostgreSQLCompositeTypeAcrossDataSourcesException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -131,10 +131,10 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
         PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(true);
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         PostgreSQLCompositeTypeAcrossDataSourcesException exception = new PostgreSQLCompositeTypeAcrossDataSourcesException();
-        DialectJDBCResultMetadataChecker checker = mock(DialectJDBCResultMetadataChecker.class);
+        DialectResultSetMetadataChecker checker = mock(DialectResultSetMetadataChecker.class);
         doThrow(exception).when(checker).check(any(ExecutionContext.class), eq(expected), anyString());
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
-            spiLoader.when(() -> DatabaseTypedSPILoader.getService(DialectJDBCResultMetadataChecker.class, databaseType)).thenReturn(checker);
+            spiLoader.when(() -> DatabaseTypedSPILoader.getService(DialectResultSetMetadataChecker.class, databaseType)).thenReturn(checker);
             assertThat(assertThrows(PostgreSQLCompositeTypeAcrossDataSourcesException.class,
                     () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, PARAMETERS)), is(exception));
             verify(expected).close();

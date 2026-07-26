@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.PreparedStatementMetadataResolutionException;
@@ -35,7 +34,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectResultSetMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -43,6 +42,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Metadata factory for PostgreSQL prepared statements.
@@ -81,9 +81,11 @@ public final class PostgreSQLPreparedStatementMetadataFactory {
         String sql = executionUnit.getSqlUnit().getSql();
         PreparedStatement result = connections.iterator().next().prepareStatement(sql);
         try {
-            DatabaseTypedSPILoader.getService(DialectJDBCResultMetadataChecker.class, connectionSession.getProtocolType())
-                    .check(executionContext, result, sql);
-        } catch (final SQLException | ShardingSphereSQLException ex) {
+            Optional<DialectResultSetMetadataChecker> resultSetMetadataChecker = DatabaseTypedSPILoader.findService(DialectResultSetMetadataChecker.class, connectionSession.getProtocolType());
+            if (resultSetMetadataChecker.isPresent()) {
+                resultSetMetadataChecker.get().check(executionContext, result, sql);
+            }
+        } catch (final SQLException ex) {
             QuietlyCloser.close(result);
             throw ex;
         }

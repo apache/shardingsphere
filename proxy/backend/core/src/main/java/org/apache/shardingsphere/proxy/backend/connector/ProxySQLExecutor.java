@@ -55,7 +55,7 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectResultSetMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
@@ -240,7 +240,7 @@ public final class ProxySQLExecutor {
             return getSaneExecuteResults(executionContext, ex);
         }
         DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getProtocolType();
-        Optional<DialectJDBCResultMetadataChecker> checker = DatabaseTypedSPILoader.findService(DialectJDBCResultMetadataChecker.class, databaseType);
+        Optional<DialectResultSetMetadataChecker> checker = DatabaseTypedSPILoader.findService(DialectResultSetMetadataChecker.class, databaseType);
         if (checker.isPresent()) {
             JDBCExecutionUnit sample = executionGroupContext.getInputGroups().iterator().next().getInputs().get(0);
             checker.get().check(executionContext, sample.getStorageResource(), sample.getExecutionUnit().getSqlUnit().getSql());

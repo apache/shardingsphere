@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectResultSetMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.postgresql.exception.PostgreSQLCompositeTypeAcrossDataSourcesException;
 
 import java.sql.PreparedStatement;
@@ -33,9 +33,9 @@ import java.sql.Types;
 import java.util.Collection;
 
 /**
- * JDBC result metadata checker for PostgreSQL.
+ * ResultSet metadata checker for PostgreSQL.
  */
-public final class PostgreSQLJDBCResultMetadataChecker implements DialectJDBCResultMetadataChecker {
+public final class PostgreSQLResultSetMetadataChecker implements DialectResultSetMetadataChecker {
     
     @Override
     public void check(final ExecutionContext executionContext, final Statement statement, final String sql) throws SQLException {

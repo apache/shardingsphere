@@ -58,7 +58,7 @@ import org.apache.shardingsphere.infra.session.connection.transaction.Transactio
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectResultSetMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
@@ -334,14 +334,14 @@ class ProxySQLExecutorTest {
         JDBCExecutionUnit jdbcExecutionUnit = new JDBCExecutionUnit(executionUnit, ConnectionMode.CONNECTION_STRICTLY, statement);
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
                 Collections.singletonList(new ExecutionGroup<>(Collections.singletonList(jdbcExecutionUnit))), mock(ExecutionGroupReportContext.class));
-        DialectJDBCResultMetadataChecker checker = mock(DialectJDBCResultMetadataChecker.class);
+        DialectResultSetMetadataChecker checker = mock(DialectResultSetMetadataChecker.class);
         SQLException expected = new SQLException("expected");
         doThrow(expected).when(checker).check(executionContext, statement, "SELECT 1");
         try (
                 MockedConstruction<DriverExecutionPrepareEngine> ignored = mockConstruction(DriverExecutionPrepareEngine.class,
                         (mock, context) -> when(mock.prepare(anyString(), eq(executionContext), anyCollection(), any(ExecutionGroupReportContext.class))).thenReturn(executionGroupContext));
                 MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
-            spiLoader.when(() -> DatabaseTypedSPILoader.findService(DialectJDBCResultMetadataChecker.class, fixtureDatabaseType)).thenReturn(Optional.of(checker));
+            spiLoader.when(() -> DatabaseTypedSPILoader.findService(DialectResultSetMetadataChecker.class, fixtureDatabaseType)).thenReturn(Optional.of(checker));
             assertThat(assertThrows(SQLException.class, () -> proxySQLExecutor.execute(executionContext)), is(expected));
             verify(regularExecutor, never()).execute(any(), any(), anyBoolean(), anyBoolean());
         }
