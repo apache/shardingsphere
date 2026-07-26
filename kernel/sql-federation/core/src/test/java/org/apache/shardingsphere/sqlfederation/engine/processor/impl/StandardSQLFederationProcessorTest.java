@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.engine.processor.impl;
 
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
+import org.apache.calcite.adapter.enumerable.EnumerableRel.Prefer;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
@@ -223,7 +224,7 @@ class StandardSQLFederationProcessorTest {
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
         EnumerableRel physicalPlan = mock(EnumerableRel.class);
         when(executionPlan.getPhysicalPlan()).thenReturn(physicalPlan);
-        when(executionPlan.getResultColumnType()).thenReturn(mock(org.apache.calcite.rel.type.RelDataType.class));
+        when(executionPlan.getResultColumnType()).thenReturn(mock(RelDataType.class));
         SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
         Bindable<Object> bindable = mock(Bindable.class);
         Enumerator<Object> enumerator = mock(Enumerator.class);
@@ -252,9 +253,9 @@ class StandardSQLFederationProcessorTest {
         Bindable<Object> bindable = mockBindable();
         ArgumentCaptor<DataContext> dataContextCaptor = ArgumentCaptor.forClass(DataContext.class);
         try (
-                MockedStatic<EnumerableInterpretable> ignoredInterpretable = mockStatic(EnumerableInterpretable.class);
+                MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class);
                 MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            ignoredInterpretable.when(() -> EnumerableInterpretable.toBindable(any(Map.class), any(), any(), any())).thenReturn(bindable);
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             mockedSpiLoader.when(() -> DatabaseTypedSPILoader
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
             ResultSet result = processor.executePlan(mock(), mock(), executionPlan, converter, federationContext, mock(SchemaPlus.class));
@@ -276,11 +277,12 @@ class StandardSQLFederationProcessorTest {
     @Test
     void assertExecutePlanRejectsOutOfRangePaginationParameter() {
         SQLFederationContext federationContext = createFederationContext(false, null, -1, 0, Collections.singletonList((Object) (Integer.MAX_VALUE + 1L)));
+        SQLFederationExecutionPlan executionPlan = createExecutionPlan();
         Bindable<Object> bindable = mockBindable();
-        try (MockedStatic<EnumerableInterpretable> ignoredInterpretable = mockStatic(EnumerableInterpretable.class)) {
-            ignoredInterpretable.when(() -> EnumerableInterpretable.toBindable(any(Map.class), any(), any(), any())).thenReturn(bindable);
+        try (MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class)) {
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> processor.executePlan(mock(), mock(), createExecutionPlan(), mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
+                    () -> processor.executePlan(mock(), mock(), executionPlan, mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
             assertThat(ex.getMessage(), is("SQL federation pagination parameter value `2147483648` is out of integer range."));
         }
     }
@@ -289,11 +291,12 @@ class StandardSQLFederationProcessorTest {
     @Test
     void assertExecutePlanRejectsFractionalPaginationParameter() {
         SQLFederationContext federationContext = createFederationContext(false, null, -1, 0, Collections.singletonList((Object) 20.5D));
+        SQLFederationExecutionPlan executionPlan = createExecutionPlan();
         Bindable<Object> bindable = mockBindable();
-        try (MockedStatic<EnumerableInterpretable> ignoredInterpretable = mockStatic(EnumerableInterpretable.class)) {
-            ignoredInterpretable.when(() -> EnumerableInterpretable.toBindable(any(Map.class), any(), any(), any())).thenReturn(bindable);
+        try (MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class)) {
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> processor.executePlan(mock(), mock(), createExecutionPlan(), mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
+                    () -> processor.executePlan(mock(), mock(), executionPlan, mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
             assertThat(ex.getMessage(), is("SQL federation pagination parameter value `20.5` must be an integer."));
         }
     }
@@ -321,7 +324,7 @@ class StandardSQLFederationProcessorTest {
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
         EnumerableRel physicalPlan = mock(EnumerableRel.class);
         when(executionPlan.getPhysicalPlan()).thenReturn(physicalPlan);
-        when(executionPlan.getResultColumnType()).thenReturn(mock(org.apache.calcite.rel.type.RelDataType.class));
+        when(executionPlan.getResultColumnType()).thenReturn(mock(RelDataType.class));
         SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
         Bindable<Object> bindable = mock(Bindable.class);
         Enumerator<Object> enumerator = mock(Enumerator.class);

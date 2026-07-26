@@ -135,7 +135,7 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     @Override
     public ResultSet executePlan(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> queryCallback,
                                  final SQLFederationExecutionPlan executionPlan, final SQLFederationRelConverter converter, final SQLFederationContext federationContext, final SchemaPlus schemaPlus) {
-        Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) executionPlan.getPhysicalPlan(), Prefer.ARRAY);
+        Bindable<Object> executablePlan = SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY);
         SelectStatementContext selectStatementContext = (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext();
         Map<String, Object> params = createParameters(selectStatementContext, federationContext.getQueryContext().getParameters());
         Enumerator<Object> enumerator = executablePlan.bind(new ExecutorBindContext(converter, params)).enumerator();
