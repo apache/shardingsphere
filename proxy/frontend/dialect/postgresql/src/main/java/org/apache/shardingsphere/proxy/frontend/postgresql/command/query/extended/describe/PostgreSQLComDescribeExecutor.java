@@ -152,8 +152,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
-                table.getAllColumns().stream().map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""))
-                        .forEach(result::add);
+                table.getAllColumns().stream()
+                        .map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), "")).forEach(result::add);
             }
             if (each instanceof ColumnProjectionSegment) {
                 ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
@@ -275,13 +275,11 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         if (columnTypeOIDs.isEmpty()) {
             return columnDescriptions;
         }
-        Collection<PostgreSQLColumnDescription> result = new ArrayList<>(columnDescriptions.size());
+        Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 1;
         for (PostgreSQLColumnDescription each : columnDescriptions) {
             Integer typeOID = columnTypeOIDs.get(columnIndex++);
-            result.add(null != typeOID
-                    ? new PostgreSQLColumnDescription(each.getColumnName(), each.getColumnIndex(), typeOID, each.getColumnLength(), each.getDataFormat())
-                    : each);
+            result.add(null == typeOID ? each : new PostgreSQLColumnDescription(each.getColumnName(), each.getColumnIndex(), typeOID, each.getColumnLength(), each.getDataFormat()));
         }
         return result;
     }
