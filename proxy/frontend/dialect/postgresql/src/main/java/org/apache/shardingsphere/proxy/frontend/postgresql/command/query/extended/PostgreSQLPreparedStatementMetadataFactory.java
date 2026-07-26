@@ -19,9 +19,12 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.PreparedStatementMetadataResolutionException;
@@ -30,7 +33,9 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -42,6 +47,7 @@ import java.util.List;
 /**
  * Metadata factory for PostgreSQL prepared statements.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLPreparedStatementMetadataFactory {
     
@@ -72,6 +78,15 @@ public final class PostgreSQLPreparedStatementMetadataFactory {
                 databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         ShardingSpherePreconditions.checkNotEmpty(connections,
                 () -> new PreparedStatementMetadataResolutionException("no backend connection was acquired"));
-        return connections.iterator().next().prepareStatement(executionUnit.getSqlUnit().getSql());
+        String sql = executionUnit.getSqlUnit().getSql();
+        PreparedStatement result = connections.iterator().next().prepareStatement(sql);
+        try {
+            DatabaseTypedSPILoader.getService(DialectJDBCResultMetadataChecker.class, connectionSession.getProtocolType())
+                    .check(executionContext, result, sql);
+        } catch (final SQLException | ShardingSphereSQLException ex) {
+            QuietlyCloser.close(result);
+            throw ex;
+        }
+        return result;
     }
 }

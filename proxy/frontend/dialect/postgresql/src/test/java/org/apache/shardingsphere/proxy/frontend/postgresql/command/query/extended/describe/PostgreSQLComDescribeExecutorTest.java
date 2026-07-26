@@ -136,6 +136,7 @@ class PostgreSQLComDescribeExecutorTest {
     
     @BeforeEach
     void setUp() throws SQLException {
+        when(connectionSession.getProtocolType()).thenReturn(DATABASE_TYPE);
         when(PostgreSQLColumnTypeOIDLoader.load(any(Connection.class), any(ResultSetMetaData.class))).thenReturn(Collections.emptyMap());
     }
     

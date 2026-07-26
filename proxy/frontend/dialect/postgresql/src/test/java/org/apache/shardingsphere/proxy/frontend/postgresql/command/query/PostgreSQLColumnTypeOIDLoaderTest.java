@@ -25,9 +25,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
 import org.postgresql.core.BaseConnection;
 import org.postgresql.core.Oid;
@@ -38,8 +36,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,21 +46,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
 class PostgreSQLColumnTypeOIDLoaderTest {
     
     @Test
-    void assertLoad() throws SQLException {
+    void assertLoadWithSameDataSource() throws SQLException {
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
-        ExecutionContext executionContext = createExecutionContext(
-                Collections.singletonList(new ExecutionUnit("ds_0", new SQLUnit("SELECT record_value", Collections.emptyList()))));
+        ExecutionContext executionContext = createExecutionContext(Arrays.asList(
+                new ExecutionUnit("ds_0", new SQLUnit("SELECT record_value", Collections.emptyList())),
+                new ExecutionUnit("ds_0", new SQLUnit("SELECT record_value", Collections.emptyList()))));
         BaseConnection connection = mock(BaseConnection.class);
         mockTypeOID(connection, "record_type", 2249);
         ConnectionSession connectionSession = createConnectionSession(connection);
@@ -82,7 +80,7 @@ class PostgreSQLColumnTypeOIDLoaderTest {
     }
     
     @Test
-    void assertLoadWithMultipleExecutionUnits() throws SQLException {
+    void assertLoadWithMultipleDataSources() throws SQLException {
         ExecutionContext executionContext = createExecutionContext(Arrays.asList(
                 new ExecutionUnit("ds_0", new SQLUnit("SELECT record_value", Collections.emptyList())),
                 new ExecutionUnit("ds_1", new SQLUnit("SELECT record_value", Collections.emptyList()))));
@@ -141,7 +139,7 @@ class PostgreSQLColumnTypeOIDLoaderTest {
         return new QueryHeader("", "", "record_value", "record_value", columnType, columnTypeName, -1, 0, false, false, false, false);
     }
     
-    private ExecutionContext createExecutionContext(final List<ExecutionUnit> executionUnits) {
+    private ExecutionContext createExecutionContext(final Collection<ExecutionUnit> executionUnits) {
         ExecutionContext result = mock(ExecutionContext.class);
         when(result.getExecutionUnits()).thenReturn(executionUnits);
         return result;

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -42,6 +43,7 @@ import java.util.Optional;
 /**
  * Loader for PostgreSQL column type OIDs.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLColumnTypeOIDLoader {
     
@@ -55,14 +57,19 @@ public final class PostgreSQLColumnTypeOIDLoader {
      * @throws SQLException SQL exception
      */
     public static Map<Integer, Integer> load(final ConnectionSession connectionSession, final QueryContext queryContext, final List<QueryHeader> queryHeaders) throws SQLException {
-        if (queryHeaders.stream().noneMatch(each -> Types.STRUCT == each.getColumnType())) {
+        if (!containsCompositeType(queryHeaders)) {
             return Collections.emptyMap();
         }
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, queryContext.getMetaData().getGlobalRuleMetaData(), queryContext.getMetaData().getProps());
-        if (1 != executionContext.getExecutionUnits().size()) {
+        if (executionContext.getExecutionUnits().isEmpty()) {
             return Collections.emptyMap();
         }
         ExecutionUnit executionUnit = executionContext.getExecutionUnits().iterator().next();
+        for (ExecutionUnit each : executionContext.getExecutionUnits()) {
+            if (!executionUnit.getDataSourceName().equals(each.getDataSourceName())) {
+                return Collections.emptyMap();
+            }
+        }
         List<Connection> connections = connectionSession.getDatabaseConnectionManager().getConnections(
                 connectionSession.getUsedDatabaseName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         return load(connections.get(0), queryHeaders);
@@ -84,13 +91,24 @@ public final class PostgreSQLColumnTypeOIDLoader {
         return connection.isWrapperFor(BaseConnection.class) ? getTypeOIDs(connection.unwrap(BaseConnection.class), metaData) : Collections.emptyMap();
     }
     
+    private static boolean containsCompositeType(final List<QueryHeader> queryHeaders) {
+        for (QueryHeader each : queryHeaders) {
+            if (Types.STRUCT == each.getColumnType()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private static Map<Integer, Integer> getTypeOIDs(final BaseConnection connection, final List<QueryHeader> queryHeaders) throws SQLException {
         Map<Integer, Integer> result = new HashMap<>();
         for (int i = 0; i < queryHeaders.size(); i++) {
             QueryHeader each = queryHeaders.get(i);
-            Optional<Integer> typeOID = findTypeOID(connection, each.getColumnType(), each.getColumnTypeName());
-            if (typeOID.isPresent()) {
-                result.put(i + 1, typeOID.get());
+            if (Types.STRUCT == each.getColumnType()) {
+                Optional<Integer> typeOID = findTypeOID(connection, each.getColumnTypeName());
+                if (typeOID.isPresent()) {
+                    result.put(i + 1, typeOID.get());
+                }
             }
         }
         return result;
@@ -100,21 +118,18 @@ public final class PostgreSQLColumnTypeOIDLoader {
         int columnCount = metaData.getColumnCount();
         Map<Integer, Integer> result = new HashMap<>();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            Optional<Integer> typeOID = findTypeOID(connection, metaData.getColumnType(columnIndex), metaData.getColumnTypeName(columnIndex));
-            if (typeOID.isPresent()) {
-                result.put(columnIndex, typeOID.get());
+            if (Types.STRUCT == metaData.getColumnType(columnIndex)) {
+                Optional<Integer> typeOID = findTypeOID(connection, metaData.getColumnTypeName(columnIndex));
+                if (typeOID.isPresent()) {
+                    result.put(columnIndex, typeOID.get());
+                }
             }
         }
         return result;
     }
     
-    private static Optional<Integer> findTypeOID(final BaseConnection connection, final int columnType, final String columnTypeName) throws SQLException {
-        if (Types.STRUCT == columnType) {
-            int typeOID = connection.getTypeInfo().getPGType(columnTypeName);
-            if (Oid.UNSPECIFIED != typeOID) {
-                return Optional.of(typeOID);
-            }
-        }
-        return Optional.empty();
+    private static Optional<Integer> findTypeOID(final BaseConnection connection, final String columnTypeName) throws SQLException {
+        int typeOID = connection.getTypeInfo().getPGType(columnTypeName);
+        return Oid.UNSPECIFIED == typeOID ? Optional.empty() : Optional.of(typeOID);
     }
 }
