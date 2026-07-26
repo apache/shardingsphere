@@ -131,13 +131,16 @@ class PostgreSQLComDescribeExecutorTest {
     @Mock
     private ConnectionSession connectionSession;
     
+    private Map<Integer, Integer> columnTypeOIDs;
+    
     @InjectMocks
     private PostgreSQLComDescribeExecutor executor;
     
     @BeforeEach
     void setUp() throws SQLException {
         when(connectionSession.getProtocolType()).thenReturn(DATABASE_TYPE);
-        when(PostgreSQLColumnTypeOIDLoader.load(any(Connection.class), any(ResultSetMetaData.class))).thenReturn(Collections.emptyMap());
+        columnTypeOIDs = Collections.emptyMap();
+        when(PostgreSQLColumnTypeOIDLoader.load(any(Connection.class), any(ResultSetMetaData.class))).thenAnswer(ignored -> columnTypeOIDs);
     }
     
     @Test
@@ -390,10 +393,9 @@ class PostgreSQLComDescribeExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         prepareJDBCBackendConnectionForResultMetaData(sql, expectedColumns.size());
         if ("returning complex columns".equals(testName)) {
-            Map<Integer, Integer> columnTypeOIDs = new HashMap<>(2, 1F);
+            columnTypeOIDs = new HashMap<>(2, 1F);
             columnTypeOIDs.put(12, 2249);
             columnTypeOIDs.put(13, 2249);
-            when(PostgreSQLColumnTypeOIDLoader.load(any(Connection.class), any(ResultSetMetaData.class))).thenReturn(columnTypeOIDs);
         }
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(
@@ -431,14 +433,14 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnection(sql);
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLBinaryColumnType.UNSPECIFIED));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        when(PostgreSQLColumnTypeOIDLoader.load(any(Connection.class), any(ResultSetMetaData.class))).thenReturn(Collections.singletonMap(1, 2249));
+        columnTypeOIDs = Collections.singletonMap(1, 2249);
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLBinaryColumnType.UNSPECIFIED));
+        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(
                 statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
         Collection<DatabasePacket> actual = executor.execute();

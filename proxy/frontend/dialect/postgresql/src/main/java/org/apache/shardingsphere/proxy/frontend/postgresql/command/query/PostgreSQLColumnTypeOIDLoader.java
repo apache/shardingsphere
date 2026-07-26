@@ -19,10 +19,14 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.data.type.UnicastDatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.postgresql.core.BaseConnection;
 import org.postgresql.core.Oid;
@@ -31,6 +35,7 @@ import java.sql.Connection;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,33 +45,40 @@ import java.util.Optional;
 /**
  * Loader for PostgreSQL column type OIDs.
  */
-@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLColumnTypeOIDLoader {
     
     /**
-     * Load composite column type OIDs from the routed backend connection.
+     * Load composite column type OIDs from the executed backend route.
      *
      * @param connectionSession connection session
-     * @param queryResponseHeader query response header
+     * @param backendHandler backend handler
+     * @param queryHeaders query headers
      * @return column indexes to type OIDs, or an empty map if no composite column type can be resolved
      * @throws SQLException SQL exception
      */
-    public static Map<Integer, Integer> load(final ConnectionSession connectionSession, final QueryResponseHeader queryResponseHeader) throws SQLException {
-        List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
+    public static Map<Integer, Integer> load(final ConnectionSession connectionSession, final ProxyBackendHandler backendHandler,
+                                             final List<QueryHeader> queryHeaders) throws SQLException {
         if (!containsCompositeType(queryHeaders)) {
             return Collections.emptyMap();
         }
-        String dataSourceName = queryResponseHeader.getDataSourceName();
-        if (null == dataSourceName) {
+        Collection<ExecutionUnit> executionUnits;
+        if (backendHandler instanceof StandardDatabaseProxyConnector) {
+            executionUnits = ((StandardDatabaseProxyConnector) backendHandler).getExecutionUnits();
+        } else if (backendHandler instanceof UnicastDatabaseProxyBackendHandler) {
+            executionUnits = ((UnicastDatabaseProxyBackendHandler) backendHandler).getExecutionUnits();
+        } else {
             return Collections.emptyMap();
         }
+        if (executionUnits.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        ShardingSpherePreconditions.checkState(1 == executionUnits.size(),
+                () -> new UnsupportedSQLOperationException("PostgreSQL composite result columns routed to multiple execution units"));
+        ExecutionUnit executionUnit = executionUnits.iterator().next();
         List<Connection> connections = connectionSession.getDatabaseConnectionManager().getConnections(
-                connectionSession.getUsedDatabaseName(), dataSourceName, 0, 1, ConnectionMode.CONNECTION_STRICTLY);
-        return load(connections.get(0), queryHeaders);
-    }
-    
-    private static Map<Integer, Integer> load(final Connection connection, final List<QueryHeader> queryHeaders) throws SQLException {
+                connectionSession.getUsedDatabaseName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY);
+        Connection connection = connections.get(0);
         return connection.isWrapperFor(BaseConnection.class) ? getTypeOIDs(connection.unwrap(BaseConnection.class), queryHeaders) : Collections.emptyMap();
     }
     

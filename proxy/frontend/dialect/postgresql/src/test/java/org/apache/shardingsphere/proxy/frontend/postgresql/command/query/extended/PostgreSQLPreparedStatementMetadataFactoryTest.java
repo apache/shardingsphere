@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -25,8 +24,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.PreparedStatementMetadataResolutionException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -39,9 +41,7 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectResultSetMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.postgresql.exception.PostgreSQLCompositeTypeAcrossDataSourcesException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -54,15 +54,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,15 +70,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -126,16 +121,20 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
     }
     
     @Test
-    void assertClosePreparedStatementOnCheckerException() throws SQLException {
+    void assertLoadCompositeTypeWithMultipleExecutionUnits() throws SQLException {
         PreparedStatement expected = prepareJDBCBackendConnection(null);
         PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(true);
-        PostgreSQLCompositeTypeAcrossDataSourcesException exception = new PostgreSQLCompositeTypeAcrossDataSourcesException();
-        DialectResultSetMetadataChecker checker = mock(DialectResultSetMetadataChecker.class);
-        doThrow(exception).when(checker).check(any(ExecutionContext.class), eq(expected), anyString());
-        try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
-            spiLoader.when(() -> DatabaseTypedSPILoader.findService(DialectResultSetMetadataChecker.class, databaseType)).thenReturn(Optional.of(checker));
-            assertThat(assertThrows(PostgreSQLCompositeTypeAcrossDataSourcesException.class,
-                    () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, PARAMETERS)), is(exception));
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(metaData.getColumnCount()).thenReturn(1);
+        when(metaData.getColumnType(1)).thenReturn(Types.STRUCT);
+        when(expected.getMetaData()).thenReturn(metaData);
+        ExecutionUnit executionUnit = new ExecutionUnit("ds_0", new SQLUnit("SELECT id FROM foo_tbl WHERE id=?", PARAMETERS));
+        ExecutionContext executionContext = mock(ExecutionContext.class);
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.nCopies(2, executionUnit));
+        try (
+                MockedConstruction<KernelProcessor> ignored = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(), any(), any())).thenReturn(executionContext))) {
+            assertThrows(UnsupportedSQLOperationException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, PARAMETERS));
             verify(expected).close();
         }
     }

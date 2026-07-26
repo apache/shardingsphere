@@ -17,29 +17,29 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
-import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
+import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.Test;
 import org.postgresql.core.BaseConnection;
 import org.postgresql.core.Oid;
 import org.postgresql.core.TypeInfo;
 
-import java.sql.Connection;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -48,84 +48,77 @@ import static org.mockito.Mockito.when;
 class PostgreSQLColumnTypeOIDLoaderTest {
     
     @Test
-    void assertLoadWithSameDataSource() throws SQLException {
-        BaseConnection connection = mock(BaseConnection.class);
-        mockTypeOID(connection, "record_type", 2249);
-        ConnectionSession connectionSession = createConnectionSession(connection);
-        QueryResponseHeader queryResponseHeader = new QueryResponseHeader(
-                Collections.singletonList(createQueryHeader(Types.STRUCT, "record_type")), "ds_0");
-        Map<Integer, Integer> actual = PostgreSQLColumnTypeOIDLoader.load(connectionSession, queryResponseHeader);
-        assertThat(actual.get(1), is(2249));
-        verify(connectionSession.getDatabaseConnectionManager()).getConnections("postgres", "ds_0", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
+    void assertLoadFromExecutedRoute() throws SQLException {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        StandardDatabaseProxyConnector backendHandler = mock(StandardDatabaseProxyConnector.class);
+        Collection<ExecutionUnit> executionUnits = mockExecutionUnits(1);
+        when(backendHandler.getExecutionUnits()).thenReturn(executionUnits);
+        BaseConnection connection = mockConnection("record_type", 2249);
+        ProxyDatabaseConnectionManager connectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(connectionManager);
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        when(connectionManager.getConnections("postgres", "ds_0", 0, 1, ConnectionMode.CONNECTION_STRICTLY)).thenReturn(Collections.singletonList(connection));
+        Map<Integer, Integer> actual = PostgreSQLColumnTypeOIDLoader.load(connectionSession, backendHandler, Collections.singletonList(createQueryHeader(Types.STRUCT, "record_type")));
+        assertThat(actual, is(Collections.singletonMap(1, 2249)));
     }
     
     @Test
-    void assertLoadWithoutCompositeColumn() throws SQLException {
-        QueryResponseHeader queryResponseHeader = new QueryResponseHeader(
-                Collections.singletonList(createQueryHeader(Types.VARCHAR, "varchar")), "ds_0");
-        assertTrue(PostgreSQLColumnTypeOIDLoader.load(mock(ConnectionSession.class), queryResponseHeader).isEmpty());
+    void assertLoadFromMultipleExecutionUnits() {
+        StandardDatabaseProxyConnector backendHandler = mock(StandardDatabaseProxyConnector.class);
+        Collection<ExecutionUnit> executionUnits = mockExecutionUnits(2);
+        when(backendHandler.getExecutionUnits()).thenReturn(executionUnits);
+        assertThrows(UnsupportedSQLOperationException.class, () -> PostgreSQLColumnTypeOIDLoader.load(
+                mock(ConnectionSession.class), backendHandler, Collections.singletonList(createQueryHeader(Types.STRUCT, "record_type"))));
     }
     
     @Test
-    void assertLoadWithoutDataSource() throws SQLException {
-        QueryResponseHeader queryResponseHeader = new QueryResponseHeader(Collections.singletonList(createQueryHeader(Types.STRUCT, "record_type")));
-        assertTrue(PostgreSQLColumnTypeOIDLoader.load(mock(ConnectionSession.class), queryResponseHeader).isEmpty());
-    }
-    
-    @Test
-    void assertLoadWithoutPgjdbcConnection() throws SQLException {
-        Connection connection = mock(Connection.class);
-        ConnectionSession connectionSession = createConnectionSession(connection);
-        QueryResponseHeader queryResponseHeader = new QueryResponseHeader(
-                Collections.singletonList(createQueryHeader(Types.STRUCT, "record_type")), "ds_0");
-        assertTrue(PostgreSQLColumnTypeOIDLoader.load(connectionSession, queryResponseHeader).isEmpty());
-        verify(connection, never()).unwrap(BaseConnection.class);
+    void assertLoadWithoutCompositeType() throws SQLException {
+        StandardDatabaseProxyConnector backendHandler = mock(StandardDatabaseProxyConnector.class);
+        assertTrue(PostgreSQLColumnTypeOIDLoader.load(
+                mock(ConnectionSession.class), backendHandler, Collections.singletonList(createQueryHeader(Types.VARCHAR, "varchar"))).isEmpty());
+        verify(backendHandler, never()).getExecutionUnits();
     }
     
     @Test
     void assertLoadFromResultSetMetaData() throws SQLException {
-        BaseConnection connection = mock(BaseConnection.class);
-        mockTypeOID(connection, "record_type", 2249);
+        BaseConnection connection = mockConnection("record_type", 2249);
         ResultSetMetaData metaData = mock(ResultSetMetaData.class);
         when(metaData.getColumnCount()).thenReturn(2);
         when(metaData.getColumnType(1)).thenReturn(Types.STRUCT);
         when(metaData.getColumnType(2)).thenReturn(Types.VARCHAR);
         when(metaData.getColumnTypeName(1)).thenReturn("record_type");
         Map<Integer, Integer> actual = PostgreSQLColumnTypeOIDLoader.load(connection, metaData);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(1), is(2249));
+        assertThat(actual, is(Collections.singletonMap(1, 2249)));
         verify(metaData, never()).getColumnTypeName(2);
     }
     
     @Test
     void assertLoadUnspecifiedTypeOID() throws SQLException {
-        BaseConnection connection = mock(BaseConnection.class);
-        mockTypeOID(connection, "unknown_type", Oid.UNSPECIFIED);
         ResultSetMetaData metaData = mock(ResultSetMetaData.class);
         when(metaData.getColumnCount()).thenReturn(1);
         when(metaData.getColumnType(1)).thenReturn(Types.STRUCT);
         when(metaData.getColumnTypeName(1)).thenReturn("unknown_type");
+        BaseConnection connection = mockConnection("unknown_type", Oid.UNSPECIFIED);
         assertTrue(PostgreSQLColumnTypeOIDLoader.load(connection, metaData).isEmpty());
     }
     
-    private QueryHeader createQueryHeader(final int columnType, final String columnTypeName) {
-        return new QueryHeader("", "", "record_value", "record_value", columnType, columnTypeName, -1, 0, false, false, false, false);
+    private Collection<ExecutionUnit> mockExecutionUnits(final int executionUnitCount) {
+        ExecutionUnit executionUnit = mock(ExecutionUnit.class);
+        when(executionUnit.getDataSourceName()).thenReturn("ds_0");
+        return Collections.nCopies(executionUnitCount, executionUnit);
     }
     
-    private ConnectionSession createConnectionSession(final Connection connection) throws SQLException {
-        ConnectionSession result = mock(ConnectionSession.class);
-        ProxyDatabaseConnectionManager connectionManager = mock(ProxyDatabaseConnectionManager.class);
-        when(connectionManager.getConnections(any(), anyString(), anyInt(), anyInt(), any())).thenReturn(Collections.singletonList(connection));
-        when(result.getDatabaseConnectionManager()).thenReturn(connectionManager);
-        when(result.getUsedDatabaseName()).thenReturn("postgres");
+    private BaseConnection mockConnection(final String columnTypeName, final int typeOID) throws SQLException {
+        TypeInfo typeInfo = mock(TypeInfo.class);
+        when(typeInfo.getPGType(columnTypeName)).thenReturn(typeOID);
+        BaseConnection result = mock(BaseConnection.class);
+        when(result.getTypeInfo()).thenReturn(typeInfo);
+        when(result.isWrapperFor(BaseConnection.class)).thenReturn(true);
+        when(result.unwrap(BaseConnection.class)).thenReturn(result);
         return result;
     }
     
-    private void mockTypeOID(final BaseConnection connection, final String columnTypeName, final int typeOID) throws SQLException {
-        TypeInfo typeInfo = mock(TypeInfo.class);
-        when(typeInfo.getPGType(columnTypeName)).thenReturn(typeOID);
-        when(connection.getTypeInfo()).thenReturn(typeInfo);
-        when(connection.isWrapperFor(BaseConnection.class)).thenReturn(true);
-        when(connection.unwrap(BaseConnection.class)).thenReturn(connection);
+    private QueryHeader createQueryHeader(final int columnType, final String columnTypeName) {
+        return new QueryHeader("", "", "", "", columnType, columnTypeName, 0, 0, false, false, false, false);
     }
 }

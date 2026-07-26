@@ -78,7 +78,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -113,16 +113,16 @@ class PostgreSQLComQueryExecutorTest {
         SQLStatement sqlStatement = new SQLStatement(DATABASE_TYPE);
         when(ProxySQLComQueryParser.parse(queryPacket.getSQL(), DATABASE_TYPE, connectionSession)).thenReturn(sqlStatement);
         when(ProxyBackendHandlerFactory.newInstance(DATABASE_TYPE, queryPacket.getSQL(), sqlStatement, connectionSession, queryPacket.getHintValueContext())).thenReturn(proxyBackendHandler);
-        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), any(QueryResponseHeader.class))).thenReturn(Collections.emptyMap());
+        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), eq(proxyBackendHandler), anyList())).thenReturn(Collections.emptyMap());
         queryExecutor = new PostgreSQLComQueryExecutor(portalContext, queryPacket, connectionSession);
     }
     
     @Test
     void assertExecuteQueryWithColumnDescription() throws SQLException, ReflectiveOperationException {
-        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), any(QueryResponseHeader.class))).thenReturn(Collections.singletonMap(1, 2249));
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(queryResponseHeader.getQueryHeaders()).thenReturn(
                 Collections.singletonList(new QueryHeader("schema", "table", "label", "column", Types.STRUCT, "record_type", 2, 3, true, true, true, true)));
+        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), eq(proxyBackendHandler), anyList())).thenReturn(Collections.singletonMap(1, 2249));
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket> actual = queryExecutor.execute();
         PostgreSQLRowDescriptionPacket rowDescriptionPacket = (PostgreSQLRowDescriptionPacket) actual.iterator().next();

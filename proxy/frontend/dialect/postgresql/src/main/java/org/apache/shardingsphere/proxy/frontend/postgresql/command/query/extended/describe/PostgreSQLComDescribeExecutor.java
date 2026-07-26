@@ -123,6 +123,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String logicTableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), insertStatement, logicTableName);
         List<ShardingSphereIdentifier> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
+        preparedStatement.setRowDescription(returningSegment.isPresent()
+                ? describeReturning(returningSegment.get(), table, preparedStatement)
+                : PostgreSQLNoDataPacket.getInstance());
         int parameterMarkerIndex = 0;
         for (InsertValuesSegment each : insertStatement.getValues()) {
             for (int i = 0; i < each.getValues().size(); i++) {
@@ -139,16 +142,34 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLBinaryColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
             }
         }
-        if (returningSegment.isPresent()) {
-            Collection<PostgreSQLColumnDescription> columnDescriptions = createReturningColumnDescriptions(returningSegment.get(), table);
-            Map<Integer, Integer> columnTypeOIDs = loadColumnTypeOIDs(preparedStatement, columnDescriptions.size());
-            preparedStatement.setRowDescription(new PostgreSQLRowDescriptionPacket(applyColumnTypeOIDs(columnDescriptions, columnTypeOIDs)));
-        } else {
-            preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
-        }
     }
     
-    private Collection<PostgreSQLColumnDescription> createReturningColumnDescriptions(final ReturningSegment returningSegment, final ShardingSphereTable table) {
+    private Collection<Integer> getUnspecifiedTypeParameterIndexes(final PostgreSQLServerPreparedStatement preparedStatement) {
+        Collection<Integer> result = new HashSet<>();
+        ListIterator<PostgreSQLBinaryColumnType> parameterTypesListIterator = preparedStatement.getParameterTypes().listIterator();
+        for (int index = parameterTypesListIterator.nextIndex(); parameterTypesListIterator.hasNext(); index = parameterTypesListIterator.nextIndex()) {
+            if (PostgreSQLBinaryColumnType.UNSPECIFIED == parameterTypesListIterator.next()) {
+                result.add(index);
+            }
+        }
+        return result;
+    }
+    
+    private ShardingSphereTable getTableFromMetaData(final String databaseName, final InsertStatement insertStatement, final String logicTableName) {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(databaseName);
+        String schemaName = insertStatement.getTable().flatMap(SimpleTableSegment::getOwner).map(optional -> optional.getIdentifier()
+                .getValue()).orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
+        return database.getSchema(schemaName).getTable(logicTableName);
+    }
+    
+    private List<ShardingSphereIdentifier> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
+        return insertStatement.getColumns().isEmpty()
+                ? table.getColumnNames()
+                : insertStatement.getColumns().stream().map(each -> new ShardingSphereIdentifier(each.getIdentifier().getValue())).collect(Collectors.toList());
+    }
+    
+    private PostgreSQLRowDescriptionPacket describeReturning(final ReturningSegment returningSegment, final ShardingSphereTable table,
+                                                             final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
@@ -166,7 +187,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 result.add(convertExpressionToDescription((ExpressionProjectionSegment) each));
             }
         }
-        return result;
+        return new PostgreSQLRowDescriptionPacket(applyColumnTypeOIDs(result, loadColumnTypeOIDs(preparedStatement, result.size())));
     }
     
     private ShardingSphereColumn generateDefaultColumn(final ColumnProjectionSegment segment) {
@@ -214,30 +235,6 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     ? Collections.emptyMap()
                     : PostgreSQLColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), metaData);
         }
-    }
-    
-    private Collection<Integer> getUnspecifiedTypeParameterIndexes(final PostgreSQLServerPreparedStatement preparedStatement) {
-        Collection<Integer> result = new HashSet<>();
-        ListIterator<PostgreSQLBinaryColumnType> parameterTypesListIterator = preparedStatement.getParameterTypes().listIterator();
-        for (int index = parameterTypesListIterator.nextIndex(); parameterTypesListIterator.hasNext(); index = parameterTypesListIterator.nextIndex()) {
-            if (PostgreSQLBinaryColumnType.UNSPECIFIED == parameterTypesListIterator.next()) {
-                result.add(index);
-            }
-        }
-        return result;
-    }
-    
-    private ShardingSphereTable getTableFromMetaData(final String databaseName, final InsertStatement insertStatement, final String logicTableName) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(databaseName);
-        String schemaName = insertStatement.getTable().flatMap(SimpleTableSegment::getOwner).map(optional -> optional.getIdentifier()
-                .getValue()).orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
-        return database.getSchema(schemaName).getTable(logicTableName);
-    }
-    
-    private List<ShardingSphereIdentifier> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
-        return insertStatement.getColumns().isEmpty()
-                ? table.getColumnNames()
-                : insertStatement.getColumns().stream().map(each -> new ShardingSphereIdentifier(each.getIdentifier().getValue())).collect(Collectors.toList());
     }
     
     private void tryDescribePreparedStatementByJDBC(final PostgreSQLServerPreparedStatement logicPreparedStatement) throws SQLException {

@@ -19,14 +19,12 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.PreparedStatementMetadataResolutionException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -35,20 +33,19 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectResultSetMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Metadata factory for PostgreSQL prepared statements.
  */
-@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLPreparedStatementMetadataFactory {
     
@@ -82,15 +79,24 @@ public final class PostgreSQLPreparedStatementMetadataFactory {
         String sql = executionUnit.getSqlUnit().getSql();
         PreparedStatement result = connections.iterator().next().prepareStatement(sql);
         try {
-            Optional<DialectResultSetMetadataChecker> resultSetMetadataChecker =
-                    DatabaseTypedSPILoader.findService(DialectResultSetMetadataChecker.class, sqlStatementContext.getSqlStatement().getDatabaseType());
-            if (resultSetMetadataChecker.isPresent()) {
-                resultSetMetadataChecker.get().check(executionContext, result, sql);
-            }
-        } catch (final SQLException | ShardingSphereSQLException ex) {
+            ShardingSpherePreconditions.checkState(1 == executionContext.getExecutionUnits().size() || !containsCompositeType(result.getMetaData()),
+                    () -> new UnsupportedSQLOperationException("PostgreSQL composite result columns routed to multiple execution units"));
+        } catch (final SQLException | UnsupportedSQLOperationException ex) {
             QuietlyCloser.close(result);
             throw ex;
         }
         return result;
+    }
+    
+    private static boolean containsCompositeType(final ResultSetMetaData metaData) throws SQLException {
+        if (null == metaData) {
+            return false;
+        }
+        for (int columnIndex = 1; columnIndex <= metaData.getColumnCount(); columnIndex++) {
+            if (Types.STRUCT == metaData.getColumnType(columnIndex)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

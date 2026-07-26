@@ -23,10 +23,12 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -88,6 +91,17 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
     @Override
     public QueryResponseRow getRowData() throws SQLException {
         return databaseProxyConnector.getRowData();
+    }
+    
+    /**
+     * Get execution units.
+     *
+     * @return execution units
+     */
+    public Collection<ExecutionUnit> getExecutionUnits() {
+        return databaseProxyConnector instanceof StandardDatabaseProxyConnector
+                ? ((StandardDatabaseProxyConnector) databaseProxyConnector).getExecutionUnits()
+                : Collections.emptyList();
     }
     
     @Override

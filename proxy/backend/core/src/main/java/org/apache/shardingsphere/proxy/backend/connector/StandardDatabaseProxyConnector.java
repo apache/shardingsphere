@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -125,6 +127,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private MergedResult mergedResult;
     
+    @Getter
+    private Collection<ExecutionUnit> executionUnits = Collections.emptyList();
+    
     public StandardDatabaseProxyConnector(final JDBCDriverType driverType, final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager) {
         this.driverType = driverType;
         this.queryContext = queryContext;
@@ -190,6 +195,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
         ExecutionContext executionContext = generateExecutionContext();
+        executionUnits = executionContext.getExecutionUnits();
         return isNeedImplicitCommitTransaction(queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
                 ? doExecuteWithImplicitCommitTransaction(() -> doExecute(executionContext))
                 : doExecute(executionContext);
@@ -249,7 +255,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         }
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(executionContext, executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
+                ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
                 : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
     }
     
@@ -291,10 +297,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return new QueryResponseHeader(queryHeaders);
     }
     
-    private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
-        queryHeaders = createQueryHeaders(executionContext.getSqlStatementContext(), queryResultSample);
+    private QueryResponseHeader processExecuteQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
+        queryHeaders = createQueryHeaders(sqlStatementContext, queryResultSample);
         mergedResult = mergeQuery(queryResults);
-        return new QueryResponseHeader(queryHeaders, executionContext.getExecutionUnits().iterator().next().getDataSourceName());
+        return new QueryResponseHeader(queryHeaders);
     }
     
     private List<QueryHeader> createQueryHeaders(final SQLStatementContext sqlStatementContext, final QueryResult queryResultSample) throws SQLException {
