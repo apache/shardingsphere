@@ -199,7 +199,8 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
   The checklist is the maximum allowed scope for production, test, documentation, and configuration changes.
   Every changed file and hunk must be necessary for a checklist item; prohibited files and modules must have zero diff.
   Do not infer broader scope from nearby code, unrelated failures, cleanup opportunities, or rule compliance.
-  If implementation evidence or the actual diff exceeds the checklist, stop before further editing, explain the required expansion, redesign from the PR base or last confirmed baseline without discarding unrelated user changes, and obtain confirmation.
+  If implementation evidence proves the checklist insufficient, stop before editing outside it, explain the required expansion, and obtain confirmation.
+  If the actual diff instead contains unnecessary current-task changes, stop the current design, remove only those changes, preserve unrelated user changes, and restart diff review from the PR base or last confirmed baseline.
 - **Rejected design reset**: if the user rejects a design, stop patching it. Remove only changes provably introduced by the current task and rejected design, preserve unrelated changes, and redesign the smallest solution from the last confirmed baseline before coding again. If ownership is unclear, stop and request confirmation.
 - **Goal-driven execution**: convert the request into verifiable outcomes before implementation, then validate those outcomes with scoped checks.
 
