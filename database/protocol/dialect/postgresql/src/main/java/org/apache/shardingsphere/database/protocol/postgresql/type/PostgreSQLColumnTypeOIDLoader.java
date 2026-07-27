@@ -46,16 +46,15 @@ public final class PostgreSQLColumnTypeOIDLoader {
      * @throws SQLException SQL exception
      */
     public static Map<Integer, Integer> load(final Connection connection, final ResultSetMetaData metaData) throws SQLException {
-        return connection.isWrapperFor(BaseConnection.class) ? getTypeOIDs(connection, metaData) : Collections.emptyMap();
+        return connection.isWrapperFor(BaseConnection.class) ? load(connection.unwrap(BaseConnection.class), metaData) : Collections.emptyMap();
     }
     
-    private static Map<Integer, Integer> getTypeOIDs(final Connection connection, final ResultSetMetaData metaData) throws SQLException {
-        BaseConnection baseConnection = connection.unwrap(BaseConnection.class);
+    private static Map<Integer, Integer> load(final BaseConnection connection, final ResultSetMetaData metaData) throws SQLException {
         int columnCount = metaData.getColumnCount();
         Map<Integer, Integer> result = new HashMap<>();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             if (Types.STRUCT == metaData.getColumnType(columnIndex)) {
-                int typeOID = baseConnection.getTypeInfo().getPGType(metaData.getColumnTypeName(columnIndex));
+                int typeOID = connection.getTypeInfo().getPGType(metaData.getColumnTypeName(columnIndex));
                 if (Oid.UNSPECIFIED != typeOID) {
                     result.put(columnIndex, typeOID);
                 }

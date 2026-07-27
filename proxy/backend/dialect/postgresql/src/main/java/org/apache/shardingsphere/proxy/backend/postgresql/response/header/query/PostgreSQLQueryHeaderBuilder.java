@@ -46,8 +46,8 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     @Override
     public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
                              final int columnIndex) throws SQLException {
-        return createQueryHeader(columnLabel, resultSetMetaData.getColumnType(columnIndex), resultSetMetaData.getColumnTypeName(columnIndex),
-                resultSetMetaData.getColumnDisplaySize(columnIndex), Collections.emptyMap());
+        return createQueryHeader(columnLabel,
+                resultSetMetaData.getColumnType(columnIndex), resultSetMetaData.getColumnTypeName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), Collections.emptyMap());
     }
     
     @Override
@@ -55,12 +55,10 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
                              final String columnLabel, final int columnIndex) throws SQLException {
         int columnType = resultSetMetaData.getColumnType(columnIndex);
         String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
-        return createQueryHeader(columnLabel, columnType, columnTypeName, resultSetMetaData.getColumnDisplaySize(columnIndex),
-                getProtocolAttributes(resultSet, columnType, columnTypeName));
+        return createQueryHeader(columnLabel, columnType, columnTypeName, resultSetMetaData.getColumnDisplaySize(columnIndex), getProtocolAttributes(resultSet, columnType, columnTypeName));
     }
     
-    private QueryHeader createQueryHeader(final String columnLabel, final int columnType, final String columnTypeName, final int columnLength,
-                                          final Map<String, Object> protocolAttributes) {
+    private QueryHeader createQueryHeader(final String columnLabel, final int columnType, final String columnTypeName, final int columnLength, final Map<String, Object> protocolAttributes) {
         return new QueryHeader(UNUSED_STRING_FIELD, UNUSED_STRING_FIELD, columnLabel, UNUSED_STRING_FIELD, columnType, columnTypeName, columnLength,
                 UNUSED_INT_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, protocolAttributes);
     }

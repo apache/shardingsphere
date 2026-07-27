@@ -302,10 +302,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         List<QueryHeader> result = new ArrayList<>(columnCount);
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
         ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(queryResultSample.getMetaData().getResultSetMetaData(), database, sqlStatementContext);
-        Optional<ResultSet> jdbcResultSet = cachedResultSets.stream().findFirst();
+        Optional<ResultSet> resultSetSample = cachedResultSets.stream().findFirst();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(jdbcResultSet.isPresent()
-                    ? queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, jdbcResultSet.get(), database, columnIndex)
+            result.add(resultSetSample.isPresent()
+                    ? queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, resultSetSample.get(), database, columnIndex)
                     : queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, columnIndex));
         }
         return result;
