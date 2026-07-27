@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
-import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -37,7 +36,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -127,9 +125,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private MergedResult mergedResult;
     
-    @Getter
-    private Collection<ExecutionUnit> executionUnits = Collections.emptyList();
-    
     public StandardDatabaseProxyConnector(final JDBCDriverType driverType, final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager) {
         this.driverType = driverType;
         this.queryContext = queryContext;
@@ -195,7 +190,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
         ExecutionContext executionContext = generateExecutionContext();
-        executionUnits = executionContext.getExecutionUnits();
         return isNeedImplicitCommitTransaction(queryContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
                 ? doExecuteWithImplicitCommitTransaction(() -> doExecute(executionContext))
                 : doExecute(executionContext);
@@ -307,10 +301,12 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         int columnCount = getColumnCount(sqlStatementContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
-        Collection<ShardingSphereDatabase> databases = queryContext.getMetaData().getAllDatabases();
         ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(queryResultSample.getMetaData().getResultSetMetaData(), database, sqlStatementContext);
+        Optional<ResultSet> jdbcResultSet = cachedResultSets.stream().findFirst();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(createQueryHeader(queryHeaderBuilderEngine, sqlStatementContext, resultSetMetaData, database, databases, columnIndex));
+            result.add(jdbcResultSet.isPresent()
+                    ? queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, jdbcResultSet.get(), database, columnIndex)
+                    : queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, columnIndex));
         }
         return result;
     }
@@ -319,12 +315,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return containsDerivedProjections
                 ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
                 : queryResultSample.getMetaData().getColumnCount();
-    }
-    
-    private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final SQLStatementContext sqlStatementContext,
-                                          final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database,
-                                          final Collection<ShardingSphereDatabase> databases, final int columnIndex) throws SQLException {
-        return queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, databases, columnIndex);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {

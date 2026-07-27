@@ -22,6 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResult
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -42,4 +43,21 @@ public interface QueryHeaderBuilder extends DatabaseTypedSPI {
      * @throws SQLException SQL exception
      */
     QueryHeader build(ShardingSphereResultSetMetaData resultSetMetaData, ShardingSphereDatabase database, String columnName, String columnLabel, int columnIndex) throws SQLException;
+    
+    /**
+     * Build query header.
+     *
+     * @param resultSetMetaData result set meta data
+     * @param resultSet JDBC result set
+     * @param database database
+     * @param columnName column name
+     * @param columnLabel column label
+     * @param columnIndex column index
+     * @return query header
+     * @throws SQLException SQL exception
+     */
+    default QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ResultSet resultSet, final ShardingSphereDatabase database,
+                              final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
+        return build(resultSetMetaData, database, columnName, columnLabel, columnIndex);
+    }
 }

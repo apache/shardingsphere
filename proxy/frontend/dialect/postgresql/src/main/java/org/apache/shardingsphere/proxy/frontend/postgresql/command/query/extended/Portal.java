@@ -49,7 +49,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLColumnTypeOIDLoader;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -62,7 +62,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * PostgreSQL portal.
@@ -84,8 +83,6 @@ public final class Portal {
     private final ProxyBackendHandler proxyBackendHandler;
     
     private final ProxyDatabaseConnectionManager databaseConnectionManager;
-    
-    private Map<Integer, Integer> columnTypeOIDs;
     
     private ResponseHeader responseHeader;
     
@@ -113,10 +110,6 @@ public final class Portal {
      */
     public void bind() throws SQLException {
         responseHeader = proxyBackendHandler.execute();
-        if (responseHeader instanceof QueryResponseHeader) {
-            columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(
-                    databaseConnectionManager.getConnectionSession(), proxyBackendHandler, ((QueryResponseHeader) responseHeader).getQueryHeaders());
-        }
     }
     
     /**
@@ -145,7 +138,7 @@ public final class Portal {
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
             PostgreSQLValueFormat valueFormat = determineValueFormat(columnIndex);
             int currentColumnIndex = ++columnIndex;
-            Integer typeOID = columnTypeOIDs.get(currentColumnIndex);
+            Integer typeOID = (Integer) each.getProtocolAttributes().get(PostgreSQLQueryHeaderBuilder.TYPE_OID);
             result.add(PostgreSQLValueFormat.TEXT == valueFormat && null != typeOID
                     ? new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, typeOID, each.getColumnLength(), valueFormat.getCode())
                     : new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName(), valueFormat.getCode()));

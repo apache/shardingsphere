@@ -38,9 +38,9 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLColumnTypeOIDLoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -78,15 +78,13 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxySQLComQueryParser.class, ProxyBackendHandlerFactory.class, PostgreSQLColumnTypeOIDLoader.class})
+@StaticMockSettings({ProxySQLComQueryParser.class, ProxyBackendHandlerFactory.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PostgreSQLComQueryExecutorTest {
     
@@ -113,7 +111,6 @@ class PostgreSQLComQueryExecutorTest {
         SQLStatement sqlStatement = new SQLStatement(DATABASE_TYPE);
         when(ProxySQLComQueryParser.parse(queryPacket.getSQL(), DATABASE_TYPE, connectionSession)).thenReturn(sqlStatement);
         when(ProxyBackendHandlerFactory.newInstance(DATABASE_TYPE, queryPacket.getSQL(), sqlStatement, connectionSession, queryPacket.getHintValueContext())).thenReturn(proxyBackendHandler);
-        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), eq(proxyBackendHandler), anyList())).thenReturn(Collections.emptyMap());
         queryExecutor = new PostgreSQLComQueryExecutor(portalContext, queryPacket, connectionSession);
     }
     
@@ -121,8 +118,8 @@ class PostgreSQLComQueryExecutorTest {
     void assertExecuteQueryWithColumnDescription() throws SQLException, ReflectiveOperationException {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(queryResponseHeader.getQueryHeaders()).thenReturn(
-                Collections.singletonList(new QueryHeader("schema", "table", "label", "column", Types.STRUCT, "record_type", 2, 3, true, true, true, true)));
-        when(PostgreSQLColumnTypeOIDLoader.load(eq(connectionSession), eq(proxyBackendHandler), anyList())).thenReturn(Collections.singletonMap(1, 2249));
+                Collections.singletonList(new QueryHeader("schema", "table", "label", "column", Types.STRUCT, "record_type", 2, 3, true, true, true, true,
+                        Collections.singletonMap(PostgreSQLQueryHeaderBuilder.TYPE_OID, 2249))));
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket> actual = queryExecutor.execute();
         PostgreSQLRowDescriptionPacket rowDescriptionPacket = (PostgreSQLRowDescriptionPacket) actual.iterator().next();

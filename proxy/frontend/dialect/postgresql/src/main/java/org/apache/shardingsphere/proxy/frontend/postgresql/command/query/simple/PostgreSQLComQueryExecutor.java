@@ -39,10 +39,10 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLColumnTypeOIDLoader;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -57,7 +57,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Command query executor for PostgreSQL.
@@ -70,8 +69,6 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private final PortalContext portalContext;
     
-    private final ConnectionSession connectionSession;
-    
     private final ProxyBackendHandler proxyBackendHandler;
     
     @Getter
@@ -79,7 +76,6 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
-        this.connectionSession = connectionSession;
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), databaseType, connectionSession);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
@@ -89,25 +85,23 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     public Collection<DatabasePacket> execute() throws SQLException {
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
-            QueryResponseHeader queryResponseHeader = (QueryResponseHeader) responseHeader;
-            Map<Integer, Integer> columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(connectionSession, proxyBackendHandler, queryResponseHeader.getQueryHeaders());
-            return Collections.singleton(createRowDescriptionPacket(queryResponseHeader, columnTypeOIDs));
+            return Collections.singleton(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
         }
         responseType = ResponseType.UPDATE;
         return createUpdatePacket((UpdateResponseHeader) responseHeader);
     }
     
-    private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader, final Map<Integer, Integer> columnTypeOIDs) {
+    private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
-        return new PostgreSQLRowDescriptionPacket(createColumnDescriptions(queryResponseHeader, columnTypeOIDs));
+        return new PostgreSQLRowDescriptionPacket(createColumnDescriptions(queryResponseHeader));
     }
     
-    private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader, final Map<Integer, Integer> columnTypeOIDs) {
+    private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
             int currentColumnIndex = ++columnIndex;
-            Integer typeOID = columnTypeOIDs.get(currentColumnIndex);
+            Integer typeOID = (Integer) each.getProtocolAttributes().get(PostgreSQLQueryHeaderBuilder.TYPE_OID);
             result.add(null == typeOID
                     ? new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName())
                     : new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, typeOID, each.getColumnLength(), PostgreSQLValueFormat.TEXT.getCode()));
