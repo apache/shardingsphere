@@ -206,6 +206,24 @@ rules:
           cipher:
             name: foo'bar
             encryptorName: rewrite_normal_fixture
+    "Depart$ment":
+      columns:
+        GroupName:
+          cipher:
+            name: group_name_cipher
+            encryptorName: rewrite_normal_fixture
+    "Depart@ment":
+      columns:
+        GroupName:
+          cipher:
+            name: group_name_cipher
+            encryptorName: rewrite_normal_fixture
+    "Depart#ment":
+      columns:
+        GroupName:
+          cipher:
+            name: group_name_cipher
+            encryptorName: rewrite_normal_fixture
     StateRegion:
       columns:
         CountryRegionName:

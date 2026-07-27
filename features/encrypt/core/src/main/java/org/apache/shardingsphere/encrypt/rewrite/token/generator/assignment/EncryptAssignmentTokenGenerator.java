@@ -58,6 +58,8 @@ public final class EncryptAssignmentTokenGenerator {
     
     private static final String UNSUPPORTED_ASSIGNMENT_EXPRESSION = "OPENQUERY with unsupported assignment expression";
     
+    private static final String UNSUPPORTED_ASSIGNMENT_NOT_IN_SELECT = "OPENQUERY with encrypted assignment column not in SELECT list";
+    
     private final EncryptRule rule;
     
     private final ShardingSphereDatabase database;
@@ -107,25 +109,25 @@ public final class EncryptAssignmentTokenGenerator {
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();
         }
+        Optional<LiteralExpressionSegment> openQuerySQL = EncryptOpenQueryUtils.findOpenQuerySQLLiteral(openQueryTable);
+        if (!openQuerySQL.isPresent()) {
+            return Collections.emptyList();
+        }
         EncryptTable table = encryptTable.get();
+        EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse(openQuerySQL.get().getText());
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             String columnName = getAssignedColumn(each).getIdentifier().getValue();
             if (!table.isEncryptColumn(columnName)) {
                 continue;
             }
+            if (!passThroughSQL.containsSelectColumn(columnName)) {
+                throw new UnsupportedEncryptSQLException(UNSUPPORTED_ASSIGNMENT_NOT_IN_SELECT);
+            }
             appendOpenQueryAssignmentTokens(result, tablesContext, openQueryTable, each, table, table.getEncryptColumn(columnName));
         }
-        appendComposedOpenQuerySQLToken(result, openQueryTable, table.getEncryptColumns());
+        result.add(new EncryptOpenQuerySQLToken(openQuerySQL.get().getStartIndex(), openQuerySQL.get().getStopIndex(), passThroughSQL.rewrite(table.getEncryptColumns())));
         return result;
-    }
-    
-    private void appendComposedOpenQuerySQLToken(final Collection<SQLToken> result, final TableSegment openQueryTable, final Collection<EncryptColumn> encryptColumns) {
-        Optional<LiteralExpressionSegment> openQuerySQL = EncryptOpenQueryUtils.findOpenQuerySQLLiteral(openQueryTable);
-        if (!openQuerySQL.isPresent()) {
-            return;
-        }
-        result.add(generateOpenQuerySQLToken(openQuerySQL.get(), encryptColumns));
     }
     
     private void appendNormalAssignmentTokens(final Collection<SQLToken> result, final TablesContext tablesContext,
@@ -151,11 +153,6 @@ public final class EncryptAssignmentTokenGenerator {
     
     private Optional<EncryptTable> findOpenQueryEncryptTable(final TableSegment openQueryTable) {
         return EncryptOpenQueryUtils.findEncryptTable(rule, openQueryTable);
-    }
-    
-    private EncryptOpenQuerySQLToken generateOpenQuerySQLToken(final LiteralExpressionSegment openQuerySQL, final Collection<EncryptColumn> encryptColumns) {
-        String rewrittenSQL = EncryptOpenQueryPassThroughSQL.parse(openQuerySQL.getText()).rewrite(encryptColumns);
-        return new EncryptOpenQuerySQLToken(openQuerySQL.getStartIndex(), openQuerySQL.getStopIndex(), rewrittenSQL);
     }
     
     private Collection<SQLToken> generateAssignmentSQLTokens(final String schemaName, final String tableName, final EncryptColumn encryptColumn,

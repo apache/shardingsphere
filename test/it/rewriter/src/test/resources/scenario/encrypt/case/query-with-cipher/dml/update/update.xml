@@ -255,6 +255,76 @@
         <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [FROM], [group_name_cipher] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="update_department_with_open_query_double_quoted_from_in_select_list_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT &quot;FROM&quot;, GroupName FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT &quot;FROM&quot;, [group_name_cipher] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_double_quoted_from_in_select_list_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT &quot;FROM&quot;, GroupName FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT &quot;FROM&quot;, [group_name_cipher] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_from_string_literal_in_where_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Department WHERE Note = ''FROM''') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Department WHERE Note = ''FROM''') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_from_string_literal_in_where_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Department WHERE Note = ''FROM''') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Department WHERE Note = ''FROM''') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_block_comment_from_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName /* FROM fake */ FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_block_comment_from_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName /* FROM fake */ FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_line_comment_from_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName -- FROM fake&#10;FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_line_comment_from_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName -- FROM fake&#10;FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Department WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_dollar_table_name_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Depart$ment WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Depart$ment WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_dollar_table_name_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Depart$ment WHERE DepartmentID = 4') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Depart$ment WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_at_table_name_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Depart@ment WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Depart@ment WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_at_table_name_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Depart@ment WHERE DepartmentID = 4') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Depart@ment WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_hash_table_name_for_literals" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Depart#ment WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Depart#ment WHERE DepartmentID = 4') SET [group_name_cipher] = 'encrypt_Sales and Marketing'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_department_with_open_query_hash_table_name_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Depart#ment WHERE DepartmentID = 4') SET GroupName = ?" parameters="Sales and Marketing" />
+        <output sql="UPDATE OPENQUERY (MyLinkedServer, 'SELECT [group_name_cipher] FROM HumanResources.Depart#ment WHERE DepartmentID = 4') SET [group_name_cipher] = ?" parameters="encrypt_Sales and Marketing" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="update_sales_person_with_linked_server_for_literals" db-types="SQLServer">
         <input sql="UPDATE MyLinkedServer.encrypt.dbo.SalesPerson SET Bonus = 3000.00 WHERE BusinessEntityID = 1" />
         <output sql="UPDATE MyLinkedServer.encrypt.dbo.SalesPerson SET [bonus_cipher] = 'encrypt_3000.00' WHERE BusinessEntityID = 1" />

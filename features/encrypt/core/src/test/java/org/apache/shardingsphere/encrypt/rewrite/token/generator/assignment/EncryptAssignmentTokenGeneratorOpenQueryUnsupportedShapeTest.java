@@ -126,13 +126,22 @@ class EncryptAssignmentTokenGeneratorOpenQueryUnsupportedShapeTest {
                 () -> tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQueryTableSegmentWithNonEncryptAssignmentEncryptedPredicate()));
     }
     
+    @Test
+    void assertGenerateSQLTokenWithOpenQueryEncryptAssignmentOmittedFromSelectExpectsException() {
+        ColumnSegment columnSegment = new ColumnSegment(80, 88, new IdentifierValue("GroupName"));
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(null, null, new IdentifierValue("GroupName"), TableSourceType.TEMPORARY_TABLE));
+        when(assignmentSegment.getColumns()).thenReturn(Collections.singletonList(columnSegment));
+        when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
+        EncryptAssignmentTokenGenerator tokenGenerator = new EncryptAssignmentTokenGenerator(mockOpenQueryEncryptRuleForAssignmentOmittedFromSelect(), mock(ShardingSphereDatabase.class),
+                TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        assertThrows(UnsupportedEncryptSQLException.class,
+                () -> tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment, createOpenQueryTableSegmentWithEncryptAssignmentOmittedFromSelect()));
+    }
+    
     private EncryptRule mockOpenQueryEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        EncryptColumn encryptColumn = mock(EncryptColumn.class, RETURNS_DEEP_STUBS);
         when(result.findEncryptTable("Department")).thenReturn(Optional.of(encryptTable));
-        when(encryptTable.isEncryptColumn("GroupName")).thenReturn(true);
-        when(encryptTable.getEncryptColumn("GroupName")).thenReturn(encryptColumn);
         return result;
     }
     
@@ -204,6 +213,22 @@ class EncryptAssignmentTokenGeneratorOpenQueryUnsupportedShapeTest {
         when(encryptTable.getEncryptColumns()).thenReturn(Collections.singletonList(encryptColumn));
         when(encryptColumn.getName()).thenReturn("GroupName");
         return result;
+    }
+    
+    private EncryptRule mockOpenQueryEncryptRuleForAssignmentOmittedFromSelect() {
+        EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(result.findEncryptTable("Department")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.isEncryptColumn("GroupName")).thenReturn(true);
+        return result;
+    }
+    
+    private FunctionTableSegment createOpenQueryTableSegmentWithEncryptAssignmentOmittedFromSelect() {
+        FunctionSegment functionSegment = new FunctionSegment(7, 84, "OPENQUERY",
+                "OPENQUERY (MyLinkedServer, 'SELECT DepartmentID FROM dbo.Department')");
+        functionSegment.getParameters().add(new ColumnSegment(18, 31, new IdentifierValue("MyLinkedServer")));
+        functionSegment.getParameters().add(new LiteralExpressionSegment(34, 73, "SELECT DepartmentID FROM dbo.Department"));
+        return new FunctionTableSegment(7, 84, functionSegment);
     }
     
     private FunctionTableSegment createOpenQueryTableSegment() {

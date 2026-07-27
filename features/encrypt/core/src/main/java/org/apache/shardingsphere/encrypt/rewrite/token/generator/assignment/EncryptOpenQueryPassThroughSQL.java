@@ -109,7 +109,7 @@ final class EncryptOpenQueryPassThroughSQL {
             throw new UnsupportedEncryptSQLException(UNSUPPORTED_SHAPE);
         }
         int fromIndex = findFromKeywordIndex(trimmedSQL);
-        String selectList = trimmedSQL.substring("SELECT".length(), fromIndex).trim();
+        String selectList = stripSqlComments(trimmedSQL.substring("SELECT".length(), fromIndex)).trim();
         if (selectList.isEmpty()) {
             throw new UnsupportedEncryptSQLException(UNSUPPORTED_SHAPE);
         }
@@ -137,6 +137,21 @@ final class EncryptOpenQueryPassThroughSQL {
             rewrittenItems.add(matchedEncryptColumn.map(EncryptOpenQueryPassThroughSQL::getPhysicalColumnNames).orElse(trimmedItem));
         }
         return "SELECT " + String.join(", ", rewrittenItems) + " FROM " + tableExpression + remainder;
+    }
+    
+    /**
+     * Whether SELECT list contains the logic column.
+     *
+     * @param logicColumnName logic column name
+     * @return whether SELECT list contains the logic column
+     */
+    boolean containsSelectColumn(final String logicColumnName) {
+        for (String each : splitSelectList(selectList)) {
+            if (unwrapIdentifier(each.trim()).equalsIgnoreCase(logicColumnName)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private static void validateRemainderHasNoEncryptColumnReference(final String remainder, final Collection<EncryptColumn> encryptColumns) {
@@ -184,11 +199,11 @@ final class EncryptOpenQueryPassThroughSQL {
                 index = delimitedPart.get().getStopIndex();
                 continue;
             }
-            if (Character.isLetter(current) || '_' == current) {
+            if (isRegularIdentifierStartCharacter(current)) {
                 int stopIndex = index + 1;
                 while (stopIndex < sqlFragment.length()) {
                     char stopChar = sqlFragment.charAt(stopIndex);
-                    if (Character.isLetterOrDigit(stopChar) || '_' == stopChar) {
+                    if (isRegularIdentifierCharacter(stopChar)) {
                         stopIndex++;
                         continue;
                     }
@@ -236,12 +251,11 @@ final class EncryptOpenQueryPassThroughSQL {
             return;
         }
         for (int index = 0; index < identifier.length(); index++) {
-            char current = identifier.charAt(index);
-            if (!Character.isLetterOrDigit(current) && '_' != current) {
+            if (!isRegularIdentifierCharacter(identifier.charAt(index))) {
                 throw new UnsupportedEncryptSQLException(UNSUPPORTED_SELECT_EXPRESSION);
             }
         }
-        if (Character.isDigit(identifier.charAt(0)) || isReservedKeywordIdentifier(identifier)) {
+        if (!isRegularIdentifierStartCharacter(identifier.charAt(0)) || isReservedKeywordIdentifier(identifier)) {
             throw new UnsupportedEncryptSQLException(UNSUPPORTED_SELECT_EXPRESSION);
         }
     }
@@ -443,13 +457,8 @@ final class EncryptOpenQueryPassThroughSQL {
             return delimitedPart.get();
         }
         int stopIndex = index;
-        while (stopIndex < passThroughSQL.length()) {
-            char current = passThroughSQL.charAt(stopIndex);
-            if (Character.isLetterOrDigit(current) || '_' == current) {
-                stopIndex++;
-                continue;
-            }
-            break;
+        while (stopIndex < passThroughSQL.length() && isRegularIdentifierCharacter(passThroughSQL.charAt(stopIndex))) {
+            stopIndex++;
         }
         if (stopIndex == index) {
             throw new UnsupportedEncryptSQLException(UNSUPPORTED_SHAPE);
@@ -484,6 +493,16 @@ final class EncryptOpenQueryPassThroughSQL {
                 return Optional.of(index);
             }
             char current = passThroughSQL.charAt(index);
+            if (!inString && '/' == current && index + 1 < passThroughSQL.length() && '*' == passThroughSQL.charAt(index + 1)) {
+                int closeIndex = passThroughSQL.indexOf("*/", index + 2);
+                index = closeIndex < 0 ? passThroughSQL.length() : closeIndex + 2;
+                continue;
+            }
+            if (!inString && '-' == current && index + 1 < passThroughSQL.length() && '-' == passThroughSQL.charAt(index + 1)) {
+                int newlineIndex = passThroughSQL.indexOf('\n', index + 2);
+                index = newlineIndex < 0 ? passThroughSQL.length() : newlineIndex + 1;
+                continue;
+            }
             if (!inString && ('[' == current || '"' == current)) {
                 Optional<IdentifierPart> delimitedPart = readDelimitedIdentifierPartIfPresent(passThroughSQL, index);
                 if (delimitedPart.isPresent()) {
@@ -512,6 +531,42 @@ final class EncryptOpenQueryPassThroughSQL {
         return Optional.empty();
     }
     
+    private static String stripSqlComments(final String sqlFragment) {
+        StringBuilder result = new StringBuilder(sqlFragment.length());
+        int index = 0;
+        boolean inString = false;
+        while (index < sqlFragment.length()) {
+            char current = sqlFragment.charAt(index);
+            if (!inString && '/' == current && index + 1 < sqlFragment.length() && '*' == sqlFragment.charAt(index + 1)) {
+                int closeIndex = sqlFragment.indexOf("*/", index + 2);
+                index = closeIndex < 0 ? sqlFragment.length() : closeIndex + 2;
+                continue;
+            }
+            if (!inString && '-' == current && index + 1 < sqlFragment.length() && '-' == sqlFragment.charAt(index + 1)) {
+                int newlineIndex = sqlFragment.indexOf('\n', index + 2);
+                index = newlineIndex < 0 ? sqlFragment.length() : newlineIndex + 1;
+                continue;
+            }
+            if ('\'' == current) {
+                result.append(current);
+                if (!inString) {
+                    inString = true;
+                } else if (index + 1 < sqlFragment.length() && '\'' == sqlFragment.charAt(index + 1)) {
+                    result.append('\'');
+                    index += 2;
+                    continue;
+                } else {
+                    inString = false;
+                }
+                index++;
+                continue;
+            }
+            result.append(current);
+            index++;
+        }
+        return result.toString();
+    }
+    
     private static Optional<IdentifierPart> readIdentifierPartIfPresent(final String passThroughSQL, final int startIndex) {
         int index = skipWhitespace(passThroughSQL, startIndex);
         if (index >= passThroughSQL.length()) {
@@ -522,13 +577,8 @@ final class EncryptOpenQueryPassThroughSQL {
             return delimitedPart;
         }
         int stopIndex = index;
-        while (stopIndex < passThroughSQL.length()) {
-            char current = passThroughSQL.charAt(stopIndex);
-            if (Character.isLetterOrDigit(current) || '_' == current) {
-                stopIndex++;
-                continue;
-            }
-            break;
+        while (stopIndex < passThroughSQL.length() && isRegularIdentifierCharacter(passThroughSQL.charAt(stopIndex))) {
+            stopIndex++;
         }
         if (stopIndex == index) {
             return Optional.empty();
@@ -612,8 +662,15 @@ final class EncryptOpenQueryPassThroughSQL {
         if (index < 0 || index >= passThroughSQL.length()) {
             return true;
         }
-        char current = passThroughSQL.charAt(index);
-        return !Character.isLetterOrDigit(current) && '_' != current;
+        return !isRegularIdentifierCharacter(passThroughSQL.charAt(index));
+    }
+    
+    private static boolean isRegularIdentifierStartCharacter(final char character) {
+        return Character.isLetter(character) || '_' == character || '@' == character || '#' == character;
+    }
+    
+    private static boolean isRegularIdentifierCharacter(final char character) {
+        return Character.isLetterOrDigit(character) || '_' == character || '$' == character || '@' == character || '#' == character;
     }
     
     private static int skipWhitespace(final String passThroughSQL, final int startIndex) {

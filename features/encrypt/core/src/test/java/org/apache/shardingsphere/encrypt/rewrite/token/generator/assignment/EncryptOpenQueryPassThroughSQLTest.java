@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -103,7 +104,13 @@ class EncryptOpenQueryPassThroughSQLTest {
                 Arguments.of("join", "SELECT foo_col FROM foo_schema.foo_tbl JOIN foo_schema.bar_tbl ON foo_tbl.id_col = bar_tbl.id_col", "foo_tbl"),
                 Arguments.of("bracketed from in select list", "SELECT [FROM], foo_col FROM foo_schema.foo_tbl WHERE id_col = 4", "foo_tbl"),
                 Arguments.of("double quoted from in select list", "SELECT \"FROM\", foo_col FROM foo_schema.foo_tbl WHERE id_col = 4", "foo_tbl"),
-                Arguments.of("escaped bracketed from in select list", "SELECT [FR]]OM], foo_col FROM foo_schema.foo_tbl", "foo_tbl"));
+                Arguments.of("escaped bracketed from in select list", "SELECT [FR]]OM], foo_col FROM foo_schema.foo_tbl", "foo_tbl"),
+                Arguments.of("from string literal in where", "SELECT foo_col FROM foo_schema.foo_tbl WHERE note_col = 'FROM'", "foo_tbl"),
+                Arguments.of("block comment from", "SELECT foo_col /* FROM fake */ FROM foo_schema.foo_tbl WHERE id_col = 4", "foo_tbl"),
+                Arguments.of("line comment from", "SELECT foo_col -- FROM fake\nFROM foo_schema.foo_tbl WHERE id_col = 4", "foo_tbl"),
+                Arguments.of("dollar in table name", "SELECT foo_col FROM foo_schema.Depart$ment WHERE id_col = 4", "Depart$ment"),
+                Arguments.of("at in table name", "SELECT foo_col FROM foo_schema.Depart@ment WHERE id_col = 4", "Depart@ment"),
+                Arguments.of("hash in table name", "SELECT foo_col FROM foo_schema.Depart#ment WHERE id_col = 4", "Depart#ment"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -221,6 +228,35 @@ class EncryptOpenQueryPassThroughSQLTest {
         EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse("SELECT \"FROM\", foo_col FROM foo_schema.foo_tbl WHERE id_col = 4");
         String actual = passThroughSQL.rewrite(Collections.singletonList(createEncryptColumn("foo_col", "foo_col_cipher")));
         assertThat(actual, is("SELECT \"FROM\", [foo_col_cipher] FROM foo_schema.foo_tbl WHERE id_col = 4"));
+    }
+    
+    @Test
+    void assertRewriteWithBlockCommentFromInSelectList() {
+        EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse("SELECT foo_col /* FROM fake */ FROM foo_schema.foo_tbl WHERE id_col = 4");
+        String actual = passThroughSQL.rewrite(Collections.singletonList(createEncryptColumn("foo_col", "foo_col_cipher")));
+        assertThat(actual, is("SELECT [foo_col_cipher] FROM foo_schema.foo_tbl WHERE id_col = 4"));
+    }
+    
+    @Test
+    void assertRewriteWithLineCommentFromInSelectList() {
+        EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse("SELECT foo_col -- FROM fake\nFROM foo_schema.foo_tbl WHERE id_col = 4");
+        String actual = passThroughSQL.rewrite(Collections.singletonList(createEncryptColumn("foo_col", "foo_col_cipher")));
+        assertThat(actual, is("SELECT [foo_col_cipher] FROM foo_schema.foo_tbl WHERE id_col = 4"));
+    }
+    
+    @Test
+    void assertRewriteWithDollarTableName() {
+        EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse("SELECT foo_col FROM foo_schema.Depart$ment WHERE id_col = 4");
+        String actual = passThroughSQL.rewrite(Collections.singletonList(createEncryptColumn("foo_col", "foo_col_cipher")));
+        assertThat(actual, is("SELECT [foo_col_cipher] FROM foo_schema.Depart$ment WHERE id_col = 4"));
+    }
+    
+    @Test
+    void assertContainsSelectColumn() {
+        EncryptOpenQueryPassThroughSQL passThroughSQL = EncryptOpenQueryPassThroughSQL.parse("SELECT DepartmentID, foo_col FROM foo_schema.foo_tbl WHERE id_col = 4");
+        assertTrue(passThroughSQL.containsSelectColumn("DepartmentID"));
+        assertTrue(passThroughSQL.containsSelectColumn("foo_col"));
+        assertFalse(passThroughSQL.containsSelectColumn("GroupName"));
     }
     
     private EncryptColumn createEncryptColumn(final String logicColumnName, final String physicalColumnName) {

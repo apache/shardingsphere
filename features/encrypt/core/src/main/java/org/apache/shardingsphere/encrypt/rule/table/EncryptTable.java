@@ -33,6 +33,8 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -80,7 +82,7 @@ public final class EncryptTable {
      * @return encrypt columns
      */
     public Collection<EncryptColumn> getEncryptColumns() {
-        return columns.values();
+        return Collections.unmodifiableCollection(new LinkedList<>(columns.values()));
     }
     
     /**
