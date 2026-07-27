@@ -28,6 +28,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,7 +41,9 @@ class MySQLSQLFederationColumnTypeConverterTest {
     
     @Test
     void assertConvertColumnValueClass() {
-        assertThat(converter.convertColumnValueClass(SqlTypeName.BOOLEAN), is(Integer.class));
+        assertThat(converter.convertColumnValueClass(SqlTypeName.BOOLEAN), is(Optional.of(Integer.class)));
+        assertThat(converter.convertColumnValueClass(SqlTypeName.INTEGER), is(Optional.empty()));
+        assertThat(converter.convertColumnValueClass(SqlTypeName.ANY), is(Optional.empty()));
     }
     
     @ParameterizedTest(name = "{0}")

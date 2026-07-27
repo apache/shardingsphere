@@ -31,18 +31,15 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Date;
 import java.sql.ResultSetMetaData;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +47,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -361,15 +359,11 @@ class SQLFederationResultSetMetaDataTest {
     
     @Test
     void assertGetColumnClassName() {
-        JavaType varcharType = mock(JavaType.class);
-        when(varcharType.getJavaClass()).thenReturn(SqlTypeName.class);
-        when(varcharType.getSqlTypeName()).thenReturn(SqlTypeName.VARCHAR);
-        DialectSQLFederationColumnTypeConverter converter = mock(DialectSQLFederationColumnTypeConverter.class);
-        when(converter.convertColumnType(SqlTypeName.VARCHAR)).thenReturn(Types.VARCHAR);
+        RelDataType varcharType = SQLFederationDataTypeFactory.getInstance().createSqlType(SqlTypeName.VARCHAR);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
                 mock(), Collections.emptyList(), databaseType,
                 createResultType(new String[]{"foo_col"}, varcharType),
-                Collections.singletonMap(1, "foo_label"), converter);
+                Collections.singletonMap(1, "foo_label"), null);
         assertThat(metaData.getColumnClassName(1), is(String.class.getName()));
     }
     
@@ -389,7 +383,7 @@ class SQLFederationResultSetMetaDataTest {
         RelDataType booleanType = mock(RelDataType.class);
         when(booleanType.getSqlTypeName()).thenReturn(SqlTypeName.BOOLEAN);
         DialectSQLFederationColumnTypeConverter converter = mock(DialectSQLFederationColumnTypeConverter.class);
-        doReturn(Integer.class).when(converter).convertColumnValueClass(SqlTypeName.BOOLEAN);
+        doReturn(Optional.of(Integer.class)).when(converter).convertColumnValueClass(SqlTypeName.BOOLEAN);
         RelDataType resultType = createResultType(new String[]{"foo_col"}, booleanType);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
                 mock(), Collections.emptyList(), databaseType, resultType, Collections.singletonMap(1, "foo_label"), converter);
@@ -398,33 +392,23 @@ class SQLFederationResultSetMetaDataTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("columnClassNameSource")
-    void assertGetColumnClassNameByType(final String name, final SqlTypeName sqlTypeName, final int jdbcType, final String expectedClassName) {
-        RelDataType relDataType = mock(RelDataType.class);
-        when(relDataType.getSqlTypeName()).thenReturn(sqlTypeName);
-        DialectSQLFederationColumnTypeConverter converter = mock(DialectSQLFederationColumnTypeConverter.class);
-        when(converter.convertColumnType(sqlTypeName)).thenReturn(jdbcType);
+    void assertGetColumnClassNameByType(final String name, final SqlTypeName sqlTypeName, final String expectedClassName) {
+        RelDataType relDataType = SQLFederationDataTypeFactory.getInstance().createSqlType(sqlTypeName);
         RelDataType resultType = createResultType(new String[]{"foo_col"}, relDataType);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
-                mock(), Collections.emptyList(), databaseType, resultType, Collections.singletonMap(1, "foo_label"), converter);
+                mock(), Collections.emptyList(), databaseType, resultType, Collections.singletonMap(1, "foo_label"), null);
         assertThat(metaData.getColumnClassName(1), is(expectedClassName));
     }
     
     private static Iterable<Arguments> columnClassNameSource() {
         return Arrays.asList(
-                Arguments.of("tinyint", SqlTypeName.TINYINT, Types.TINYINT, Integer.class.getName()),
-                Arguments.of("smallint", SqlTypeName.SMALLINT, Types.SMALLINT, Integer.class.getName()),
-                Arguments.of("integer", SqlTypeName.INTEGER, Types.INTEGER, Integer.class.getName()),
-                Arguments.of("bigint", SqlTypeName.BIGINT, Types.BIGINT, Long.class.getName()),
-                Arguments.of("float", SqlTypeName.FLOAT, Types.FLOAT, Float.class.getName()),
-                Arguments.of("double", SqlTypeName.DOUBLE, Types.DOUBLE, Double.class.getName()),
-                Arguments.of("numeric", SqlTypeName.DECIMAL, Types.NUMERIC, BigDecimal.class.getName()),
-                Arguments.of("decimal", SqlTypeName.DECIMAL, Types.DECIMAL, BigDecimal.class.getName()),
-                Arguments.of("date", SqlTypeName.DATE, Types.DATE, Date.class.getName()),
-                Arguments.of("time", SqlTypeName.TIME, Types.TIME, Time.class.getName()),
-                Arguments.of("timestamp", SqlTypeName.TIMESTAMP, Types.TIMESTAMP, Timestamp.class.getName()),
-                Arguments.of("binary", SqlTypeName.BINARY, Types.BINARY, byte[].class.getName()),
-                Arguments.of("varchar", SqlTypeName.VARCHAR, Types.VARCHAR, String.class.getName()),
-                Arguments.of("default", SqlTypeName.ANY, Types.OTHER, Object.class.getName()));
+                Arguments.of("tinyint", SqlTypeName.TINYINT, Byte.class.getName()),
+                Arguments.of("smallint", SqlTypeName.SMALLINT, Short.class.getName()),
+                Arguments.of("integer", SqlTypeName.INTEGER, Integer.class.getName()),
+                Arguments.of("bigint", SqlTypeName.BIGINT, Long.class.getName()),
+                Arguments.of("float", SqlTypeName.FLOAT, Double.class.getName()),
+                Arguments.of("real", SqlTypeName.REAL, Float.class.getName()),
+                Arguments.of("double", SqlTypeName.DOUBLE, Double.class.getName()));
     }
     
     private RelDataType createRowType(final boolean nullable, final int precision, final int scale) {
