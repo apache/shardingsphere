@@ -17,32 +17,18 @@
 
 package org.apache.shardingsphere.encrypt.enums;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.Test;
 
-/**
- * Encrypt derived column suffix.
- */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public enum EncryptDerivedColumnSuffix {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class EncryptDerivedColumnSuffixTest {
     
-    CIPHER("_C"),
-    ASSISTED_QUERY("_A"),
-    LIKE_QUERY("_L");
-    
-    private final String suffix;
-    
-    /**
-     * Get derived column name.
-     *
-     * @param columnName column name
-     * @param identifierContext database identifier context
-     * @return derived column name
-     */
-    public String getDerivedColumnName(final String columnName, final DatabaseIdentifierContext identifierContext) {
-        return String.format("%s%s", columnName, identifierContext.normalizeStorage(IdentifierScope.COLUMN, new IdentifierValue(suffix)));
+    @Test
+    void assertGetDerivedColumnName() {
+        DatabaseIdentifierContext identifierContext = new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet());
+        assertThat(EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName("foo_column", identifierContext), is("foo_column_c"));
     }
 }

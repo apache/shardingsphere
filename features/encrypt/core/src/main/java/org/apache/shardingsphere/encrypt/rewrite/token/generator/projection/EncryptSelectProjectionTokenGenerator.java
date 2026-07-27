@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -46,6 +47,8 @@ public final class EncryptSelectProjectionTokenGenerator implements CollectionSQ
     
     private List<SQLToken> previousSQLTokens;
     
+    private final DatabaseIdentifierContext identifierContext;
+    
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return extractSelectStatementContext(sqlStatementContext).map(each -> !each.getTablesContext().getSimpleTables().isEmpty()).orElse(false);
@@ -54,7 +57,7 @@ public final class EncryptSelectProjectionTokenGenerator implements CollectionSQ
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         return extractSelectStatementContext(sqlStatementContext)
-                .map(each -> new EncryptProjectionTokenGenerator(previousSQLTokens, each.getSqlStatement().getDatabaseType(), rule).generateSQLTokens(each))
+                .map(each -> new EncryptProjectionTokenGenerator(previousSQLTokens, each.getSqlStatement().getDatabaseType(), rule, identifierContext).generateSQLTokens(each))
                 .orElse(Collections.emptyList());
     }
     
