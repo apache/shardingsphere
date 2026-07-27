@@ -46,14 +46,14 @@ class PostgreSQLJDBCResultMetadataCheckerTest {
     private final PostgreSQLJDBCResultMetadataChecker checker = new PostgreSQLJDBCResultMetadataChecker();
     
     @Test
-    void assertCheckSameStorageUnit() throws SQLException {
+    void assertCheckSingleExecutionUnit() throws SQLException {
         PreparedStatement statement = mock(PreparedStatement.class);
-        checker.check(createExecutionUnits("ds_0", "ds_0"), statement, "SELECT record_value");
+        checker.check(createExecutionUnits("ds_0"), statement, "SELECT record_value");
         verify(statement, never()).getMetaData();
     }
     
     @Test
-    void assertCheckDifferentStorageUnits() throws SQLException {
+    void assertCheckMultipleExecutionUnits() throws SQLException {
         PreparedStatement statement = mock(PreparedStatement.class);
         ResultSetMetaData metaData = createMetaData(Types.INTEGER);
         when(statement.getMetaData()).thenReturn(metaData);
@@ -61,14 +61,14 @@ class PostgreSQLJDBCResultMetadataCheckerTest {
     }
     
     @Test
-    void assertCheckCompositeTypeAcrossStorageUnits() throws SQLException {
+    void assertCheckCompositeTypeAcrossExecutionUnits() throws SQLException {
         PreparedStatement statement = mock(PreparedStatement.class);
         ResultSetMetaData metaData = createMetaData(Types.STRUCT);
         when(statement.getMetaData()).thenReturn(metaData);
         UnsupportedSQLOperationException actual =
-                assertThrows(UnsupportedSQLOperationException.class, () -> checker.check(createExecutionUnits("ds_0", "ds_1"), statement, "SELECT record_value"));
+                assertThrows(UnsupportedSQLOperationException.class, () -> checker.check(createExecutionUnits("ds_0", "ds_0"), statement, "SELECT record_value"));
         assertThat(actual.getMessage(), is(
-                "Unsupported SQL operation: PostgreSQL composite result columns cannot be returned when routed to multiple storage units."));
+                "Unsupported SQL operation: PostgreSQL composite result columns cannot be returned when routed to multiple execution units."));
     }
     
     @Test

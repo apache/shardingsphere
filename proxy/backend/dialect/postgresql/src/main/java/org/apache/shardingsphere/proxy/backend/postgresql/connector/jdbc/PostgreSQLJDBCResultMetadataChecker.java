@@ -36,7 +36,7 @@ public final class PostgreSQLJDBCResultMetadataChecker implements DialectJDBCRes
     
     @Override
     public void check(final Collection<ExecutionUnit> executionUnits, final Statement statement, final String sql) throws SQLException {
-        if (!isRoutedToMultipleStorageUnits(executionUnits)) {
+        if (executionUnits.size() <= 1) {
             return;
         }
         if (statement instanceof PreparedStatement) {
@@ -48,16 +48,6 @@ public final class PostgreSQLJDBCResultMetadataChecker implements DialectJDBCRes
         }
     }
     
-    private boolean isRoutedToMultipleStorageUnits(final Collection<ExecutionUnit> executionUnits) {
-        String storageUnitName = executionUnits.iterator().next().getDataSourceName();
-        for (ExecutionUnit each : executionUnits) {
-            if (!storageUnitName.equals(each.getDataSourceName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     private void checkCompositeType(final ResultSetMetaData metaData) throws SQLException {
         if (null == metaData) {
             return;
@@ -65,7 +55,7 @@ public final class PostgreSQLJDBCResultMetadataChecker implements DialectJDBCRes
         int columnCount = metaData.getColumnCount();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             ShardingSpherePreconditions.checkState(Types.STRUCT != metaData.getColumnType(columnIndex),
-                    () -> new UnsupportedSQLOperationException("PostgreSQL composite result columns cannot be returned when routed to multiple storage units"));
+                    () -> new UnsupportedSQLOperationException("PostgreSQL composite result columns cannot be returned when routed to multiple execution units"));
         }
     }
     
