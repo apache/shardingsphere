@@ -36,6 +36,7 @@
 1. Proxy: Add MySQL exception mapping for ColumnNotFoundException - [#39126](https://github.com/apache/shardingsphere/pull/39126)
 1. Proxy: Fix MySQL prepared statement parameter signedness decoding - [#39204](https://github.com/apache/shardingsphere/pull/39204)
 1. Proxy: Fix Proxy Native Docker image failing to start due to unexpanded LOCAL_PATH in ENTRYPOINT - [#39146](https://github.com/apache/shardingsphere/pull/39146)
+1. Proxy: Fix incorrect PostgreSQL composite column type OIDs in simple and extended query row descriptions - [#39241](https://github.com/apache/shardingsphere/pull/39241)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
 1. Agent: Fix wrong target class name in StaticMethodAdviceExecutor error logs - [#39077](https://github.com/apache/shardingsphere/pull/39077)

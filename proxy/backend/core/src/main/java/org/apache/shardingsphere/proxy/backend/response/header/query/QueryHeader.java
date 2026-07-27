@@ -20,6 +20,9 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Query header.
  */
@@ -50,4 +53,11 @@ public final class QueryHeader {
     private final boolean notNull;
     
     private final boolean autoIncrement;
+    
+    private final Map<String, Object> protocolAttributes;
+    
+    public QueryHeader(final String schema, final String table, final String columnLabel, final String columnName, final int columnType, final String columnTypeName,
+                       final int columnLength, final int decimals, final boolean signed, final boolean primaryKey, final boolean notNull, final boolean autoIncrement) {
+        this(schema, table, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement, Collections.emptyMap());
+    }
 }
