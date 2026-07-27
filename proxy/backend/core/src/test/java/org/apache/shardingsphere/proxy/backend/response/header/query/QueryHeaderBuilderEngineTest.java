@@ -39,6 +39,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class QueryHeaderBuilderEngineTest {
@@ -94,11 +95,12 @@ class QueryHeaderBuilderEngineTest {
         QueryHeader expectedQueryHeader = mock(QueryHeader.class);
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
-            when(queryHeaderBuilder.build(resultSetMetaData, resultSet, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
+            when(queryHeaderBuilder.build(resultSetMetaData, database, "col_name", "col_label", 1)).thenReturn(expectedQueryHeader);
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType)).thenReturn(queryHeaderBuilder);
             QueryHeader actualQueryHeader =
                     new QueryHeaderBuilderEngine(databaseType).build(sqlStatementContext, resultSetMetaData, resultSet, database, 1);
             assertThat(actualQueryHeader, is(expectedQueryHeader));
+            verify(queryHeaderBuilder).appendProtocolAttributes(expectedQueryHeader, resultSet);
         }
     }
     

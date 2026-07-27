@@ -512,7 +512,7 @@ class StandardDatabaseProxyConnectorTest {
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(dialectTransactionOption);
         QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
         QueryHeader queryHeader = new QueryHeader("", "", "order_id", "order_id", Types.INTEGER, "int4", 4, 0, true, false, false, false);
-        when(queryHeaderBuilder.build(any(ShardingSphereResultSetMetaData.class), eq(resultSet), any(), eq("order_id"), eq("order_id"), eq(1))).thenReturn(queryHeader);
+        when(queryHeaderBuilder.build(any(ShardingSphereResultSetMetaData.class), any(), eq("order_id"), eq("order_id"), eq(1))).thenReturn(queryHeader);
         try (
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
                         (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
@@ -530,7 +530,8 @@ class StandardDatabaseProxyConnectorTest {
             assertThat(mockedMergeEngine.constructed().size(), is(1));
             assertTrue(engine.next());
             assertNotNull(engine.getRowData());
-            verify(queryHeaderBuilder).build(any(ShardingSphereResultSetMetaData.class), eq(resultSet), any(), eq("order_id"), eq("order_id"), eq(1));
+            verify(queryHeaderBuilder).build(any(ShardingSphereResultSetMetaData.class), any(), eq("order_id"), eq("order_id"), eq(1));
+            verify(queryHeaderBuilder).appendProtocolAttributes(queryHeader, resultSet);
         }
     }
     

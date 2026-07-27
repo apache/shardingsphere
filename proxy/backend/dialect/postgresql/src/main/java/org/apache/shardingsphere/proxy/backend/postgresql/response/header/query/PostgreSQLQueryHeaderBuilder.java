@@ -27,8 +27,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Query header builder for PostgreSQL.
@@ -46,29 +46,23 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     @Override
     public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
                              final int columnIndex) throws SQLException {
-        return createQueryHeader(columnLabel,
-                resultSetMetaData.getColumnType(columnIndex), resultSetMetaData.getColumnTypeName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), Collections.emptyMap());
+        int columnType = resultSetMetaData.getColumnType(columnIndex);
+        Map<String, Object> protocolAttributes = Types.STRUCT == columnType ? new HashMap<>(1, 1F) : Collections.emptyMap();
+        return createQueryHeader(columnLabel, columnType, resultSetMetaData.getColumnTypeName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), protocolAttributes);
     }
     
     @Override
-    public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ResultSet resultSet, final ShardingSphereDatabase database, final String columnName,
-                             final String columnLabel, final int columnIndex) throws SQLException {
-        int columnType = resultSetMetaData.getColumnType(columnIndex);
-        String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
-        return createQueryHeader(columnLabel, columnType, columnTypeName, resultSetMetaData.getColumnDisplaySize(columnIndex), getProtocolAttributes(resultSet, columnType, columnTypeName));
+    public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
+        if (Types.STRUCT != queryHeader.getColumnType()) {
+            return;
+        }
+        PostgreSQLColumnTypeOIDLoader.findTypeOID(resultSet.getStatement().getConnection(), queryHeader.getColumnTypeName())
+                .ifPresent(typeOID -> queryHeader.getProtocolAttributes().put(TYPE_OID, typeOID));
     }
     
     private QueryHeader createQueryHeader(final String columnLabel, final int columnType, final String columnTypeName, final int columnLength, final Map<String, Object> protocolAttributes) {
         return new QueryHeader(UNUSED_STRING_FIELD, UNUSED_STRING_FIELD, columnLabel, UNUSED_STRING_FIELD, columnType, columnTypeName, columnLength,
                 UNUSED_INT_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, protocolAttributes);
-    }
-    
-    private Map<String, Object> getProtocolAttributes(final ResultSet resultSet, final int columnType, final String columnTypeName) throws SQLException {
-        if (Types.STRUCT != columnType) {
-            return Collections.emptyMap();
-        }
-        Optional<Integer> typeOID = PostgreSQLColumnTypeOIDLoader.findTypeOID(resultSet.getStatement().getConnection(), columnTypeName);
-        return typeOID.<Map<String, Object>>map(integer -> Collections.singletonMap(TYPE_OID, integer)).orElse(Collections.emptyMap());
     }
     
     @Override

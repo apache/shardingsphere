@@ -56,7 +56,7 @@ class PostgreSQLQueryHeaderBuilderTest {
     }
     
     @Test
-    void assertBuildPostgreSQLCompositeQueryHeader() throws SQLException {
+    void assertAppendProtocolAttributes() throws SQLException {
         int columnIndex = 1;
         ShardingSphereResultSetMetaData resultSetMetaData = mock(ShardingSphereResultSetMetaData.class);
         when(resultSetMetaData.getColumnType(columnIndex)).thenReturn(Types.STRUCT);
@@ -68,17 +68,21 @@ class PostgreSQLQueryHeaderBuilderTest {
         when(statement.getConnection()).thenReturn(connection);
         try (MockedStatic<PostgreSQLColumnTypeOIDLoader> loader = mockStatic(PostgreSQLColumnTypeOIDLoader.class)) {
             loader.when(() -> PostgreSQLColumnTypeOIDLoader.findTypeOID(connection, "record_type")).thenReturn(Optional.of(2249));
-            QueryHeader actual = new PostgreSQLQueryHeaderBuilder().build(resultSetMetaData, resultSet, null, null, "record", columnIndex);
+            PostgreSQLQueryHeaderBuilder builder = new PostgreSQLQueryHeaderBuilder();
+            QueryHeader actual = builder.build(resultSetMetaData, null, null, "record", columnIndex);
+            builder.appendProtocolAttributes(actual, resultSet);
             assertThat(actual.getProtocolAttributes().get(PostgreSQLQueryHeaderBuilder.TYPE_OID), is(2249));
         }
     }
     
     @Test
-    void assertBuildPostgreSQLQueryHeaderFromResultSet() throws SQLException {
+    void assertAppendProtocolAttributesForNonCompositeColumn() throws SQLException {
         ShardingSphereResultSetMetaData resultSetMetaData = mock(ShardingSphereResultSetMetaData.class);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
         ResultSet resultSet = mock(ResultSet.class);
-        QueryHeader actual = new PostgreSQLQueryHeaderBuilder().build(resultSetMetaData, resultSet, null, null, "id", 1);
+        PostgreSQLQueryHeaderBuilder builder = new PostgreSQLQueryHeaderBuilder();
+        QueryHeader actual = builder.build(resultSetMetaData, null, null, "id", 1);
+        builder.appendProtocolAttributes(actual, resultSet);
         assertTrue(actual.getProtocolAttributes().isEmpty());
         verifyNoInteractions(resultSet);
     }

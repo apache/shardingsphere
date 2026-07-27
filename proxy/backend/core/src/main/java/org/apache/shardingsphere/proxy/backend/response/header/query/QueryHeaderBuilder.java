@@ -45,19 +45,12 @@ public interface QueryHeaderBuilder extends DatabaseTypedSPI {
     QueryHeader build(ShardingSphereResultSetMetaData resultSetMetaData, ShardingSphereDatabase database, String columnName, String columnLabel, int columnIndex) throws SQLException;
     
     /**
-     * Build query header.
+     * Append protocol attributes to a query header built by this builder before it is published.
      *
-     * @param resultSetMetaData result set meta data
+     * @param queryHeader query header
      * @param resultSet JDBC result set
-     * @param database database
-     * @param columnName column name
-     * @param columnLabel column label
-     * @param columnIndex column index
-     * @return query header
      * @throws SQLException SQL exception
      */
-    default QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ResultSet resultSet, final ShardingSphereDatabase database,
-                              final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
-        return build(resultSetMetaData, database, columnName, columnLabel, columnIndex);
+    default void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
     }
 }
