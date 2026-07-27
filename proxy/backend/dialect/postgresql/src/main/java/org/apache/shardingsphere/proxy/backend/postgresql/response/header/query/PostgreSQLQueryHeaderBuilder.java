@@ -26,9 +26,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Query header builder for PostgreSQL.
@@ -47,22 +44,17 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
                              final int columnIndex) throws SQLException {
         int columnType = resultSetMetaData.getColumnType(columnIndex);
-        Map<String, Object> protocolAttributes = Types.STRUCT == columnType ? new HashMap<>(1, 1F) : Collections.emptyMap();
-        return createQueryHeader(columnLabel, columnType, resultSetMetaData.getColumnTypeName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), protocolAttributes);
+        final String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
+        return new QueryHeader(UNUSED_STRING_FIELD, UNUSED_STRING_FIELD, columnLabel, UNUSED_STRING_FIELD, columnType, columnTypeName, resultSetMetaData.getColumnDisplaySize(columnIndex),
+                UNUSED_INT_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD);
     }
     
     @Override
     public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
-        if (Types.STRUCT != queryHeader.getColumnType()) {
-            return;
+        if (Types.STRUCT == queryHeader.getColumnType()) {
+            PostgreSQLColumnTypeOIDLoader.findTypeOID(resultSet.getStatement().getConnection(), queryHeader.getColumnTypeName())
+                    .ifPresent(optional -> queryHeader.getProtocolAttributes().put(TYPE_OID, optional));
         }
-        PostgreSQLColumnTypeOIDLoader.findTypeOID(resultSet.getStatement().getConnection(), queryHeader.getColumnTypeName())
-                .ifPresent(typeOID -> queryHeader.getProtocolAttributes().put(TYPE_OID, typeOID));
-    }
-    
-    private QueryHeader createQueryHeader(final String columnLabel, final int columnType, final String columnTypeName, final int columnLength, final Map<String, Object> protocolAttributes) {
-        return new QueryHeader(UNUSED_STRING_FIELD, UNUSED_STRING_FIELD, columnLabel, UNUSED_STRING_FIELD, columnType, columnTypeName, columnLength,
-                UNUSED_INT_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, protocolAttributes);
     }
     
     @Override

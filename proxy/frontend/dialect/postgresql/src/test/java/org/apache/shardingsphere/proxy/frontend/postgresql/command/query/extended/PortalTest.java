@@ -137,8 +137,8 @@ class PortalTest {
     @Test
     void assertExecuteSelectStatementAndReturnAllRows() throws SQLException, ReflectiveOperationException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
-        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.STRUCT, "record_type", 0, 0, false, false, false, false,
-                Collections.singletonMap(PostgreSQLQueryHeaderBuilder.TYPE_OID, 2249));
+        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.STRUCT, "record_type", 0, 0, false, false, false, false);
+        queryHeader.getProtocolAttributes().put(PostgreSQLQueryHeaderBuilder.TYPE_OID, 2249);
         QueryHeader binaryQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.STRUCT, "record_type", 0, 0, false, false, false, false);
         when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, binaryQueryHeader));
         when(proxyBackendHandler.execute()).thenReturn(responseHeader);
