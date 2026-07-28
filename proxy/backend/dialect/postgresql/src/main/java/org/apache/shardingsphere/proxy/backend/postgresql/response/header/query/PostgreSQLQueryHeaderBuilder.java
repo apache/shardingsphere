@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.response.header.query;
 
-import org.apache.shardingsphere.database.protocol.postgresql.type.PostgreSQLColumnTypeOIDLoader;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
+import org.apache.shardingsphere.database.protocol.postgresql.type.PostgreSQLColumnTypeOIDResolver;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -40,6 +41,8 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     
     private static final boolean UNUSED_BOOLEAN_FIELD = false;
     
+    private final ColumnTypeOIDResolver columnTypeOIDResolver = new PostgreSQLColumnTypeOIDResolver();
+    
     @Override
     public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
                              final int columnIndex) throws SQLException {
@@ -52,8 +55,8 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     @Override
     public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
         if (Types.STRUCT == queryHeader.getColumnType()) {
-            PostgreSQLColumnTypeOIDLoader.findTypeOID(resultSet.getStatement().getConnection(), queryHeader.getColumnTypeName())
-                    .ifPresent(optional -> queryHeader.getProtocolAttributes().put(TYPE_OID, optional));
+            columnTypeOIDResolver.findTypeOID(resultSet.getStatement().getConnection(), queryHeader.getColumnTypeName())
+                    .ifPresent(typeOID -> queryHeader.getProtocolAttributes().put(TYPE_OID, typeOID));
         }
     }
     

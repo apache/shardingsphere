@@ -19,63 +19,38 @@ package org.apache.shardingsphere.database.protocol.postgresql.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.postgresql.core.BaseConnection;
-import org.postgresql.core.Oid;
 
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
- * Loader for PostgreSQL column type OIDs.
+ * Loader for column type OIDs.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLColumnTypeOIDLoader {
+public final class ColumnTypeOIDLoader {
     
     /**
      * Load composite column type OIDs from result set metadata.
      *
      * @param connection database connection
      * @param metaData result set metadata
+     * @param typeOIDResolver column type OID resolver
      * @return column indexes to type OIDs, or an empty map if no composite column type can be resolved
      * @throws SQLException SQL exception
      */
-    public static Map<Integer, Integer> load(final Connection connection, final ResultSetMetaData metaData) throws SQLException {
-        return connection.isWrapperFor(BaseConnection.class) ? load(connection.unwrap(BaseConnection.class), metaData) : Collections.emptyMap();
-    }
-    
-    private static Map<Integer, Integer> load(final BaseConnection connection, final ResultSetMetaData metaData) throws SQLException {
+    public static Map<Integer, Integer> load(final Connection connection, final ResultSetMetaData metaData, final ColumnTypeOIDResolver typeOIDResolver) throws SQLException {
         int columnCount = metaData.getColumnCount();
         Map<Integer, Integer> result = new HashMap<>();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             if (Types.STRUCT == metaData.getColumnType(columnIndex)) {
-                int typeOID = connection.getTypeInfo().getPGType(metaData.getColumnTypeName(columnIndex));
-                if (Oid.UNSPECIFIED != typeOID) {
-                    result.put(columnIndex, typeOID);
-                }
+                int currentColumnIndex = columnIndex;
+                typeOIDResolver.findTypeOID(connection, metaData.getColumnTypeName(columnIndex)).ifPresent(typeOID -> result.put(currentColumnIndex, typeOID));
             }
         }
         return result;
-    }
-    
-    /**
-     * Find type OID.
-     *
-     * @param connection database connection
-     * @param columnTypeName column type name
-     * @return type OID
-     * @throws SQLException SQL exception
-     */
-    public static Optional<Integer> findTypeOID(final Connection connection, final String columnTypeName) throws SQLException {
-        if (!connection.isWrapperFor(BaseConnection.class)) {
-            return Optional.empty();
-        }
-        int typeOID = connection.unwrap(BaseConnection.class).getTypeInfo().getPGType(columnTypeName);
-        return Oid.UNSPECIFIED == typeOID ? Optional.empty() : Optional.of(typeOID);
     }
 }

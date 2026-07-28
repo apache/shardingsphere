@@ -29,7 +29,8 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.database.protocol.postgresql.type.PostgreSQLColumnTypeOIDLoader;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDLoader;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -110,7 +111,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxyContext.class, PostgreSQLColumnTypeOIDLoader.class})
+@StaticMockSettings({ProxyContext.class, ColumnTypeOIDLoader.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PostgreSQLComDescribeExecutorTest {
     
@@ -131,6 +132,9 @@ class PostgreSQLComDescribeExecutorTest {
     @Mock
     private ConnectionSession connectionSession;
     
+    @Mock
+    private ColumnTypeOIDResolver columnTypeOIDResolver;
+    
     private Map<Integer, Integer> columnTypeOIDs;
     
     @InjectMocks
@@ -140,7 +144,7 @@ class PostgreSQLComDescribeExecutorTest {
     void setUp() throws SQLException {
         when(connectionSession.getProtocolType()).thenReturn(DATABASE_TYPE);
         columnTypeOIDs = Collections.emptyMap();
-        when(PostgreSQLColumnTypeOIDLoader.load(any(Connection.class), any(ResultSetMetaData.class))).thenAnswer(ignored -> columnTypeOIDs);
+        when(ColumnTypeOIDLoader.load(any(Connection.class), any(ResultSetMetaData.class), any(ColumnTypeOIDResolver.class))).thenAnswer(ignored -> columnTypeOIDs);
     }
     
     @Test
@@ -724,7 +728,7 @@ class PostgreSQLComDescribeExecutorTest {
     
     @Test
     void assertDescribeUnknownType() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLComDescribeExecutor(portalContext, packet, connectionSession).execute());
+        assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLComDescribeExecutor(portalContext, packet, connectionSession, columnTypeOIDResolver).execute());
     }
     
     private static Stream<Arguments> provideInsertMetaDataCases() {

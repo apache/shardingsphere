@@ -17,18 +17,24 @@
 
 package org.apache.shardingsphere.proxy.backend.opengauss.response.header.query;
 
+import org.apache.shardingsphere.database.protocol.opengauss.type.OpenGaussColumnTypeOIDResolver;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * Query header builder for openGauss.
  */
 public final class OpenGaussQueryHeaderBuilder implements QueryHeaderBuilder {
+    
+    private final ColumnTypeOIDResolver columnTypeOIDResolver = new OpenGaussColumnTypeOIDResolver();
     
     private final PostgreSQLQueryHeaderBuilder delegate = new PostgreSQLQueryHeaderBuilder();
     
@@ -36,6 +42,14 @@ public final class OpenGaussQueryHeaderBuilder implements QueryHeaderBuilder {
     public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
                              final int columnIndex) throws SQLException {
         return delegate.build(resultSetMetaData, database, columnName, columnLabel, columnIndex);
+    }
+    
+    @Override
+    public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
+        if (Types.STRUCT == queryHeader.getColumnType()) {
+            columnTypeOIDResolver.findTypeOID(resultSet.getStatement().getConnection(), queryHeader.getColumnTypeName())
+                    .ifPresent(typeOID -> queryHeader.getProtocolAttributes().put(PostgreSQLQueryHeaderBuilder.TYPE_OID, typeOID));
+        }
     }
     
     @Override
