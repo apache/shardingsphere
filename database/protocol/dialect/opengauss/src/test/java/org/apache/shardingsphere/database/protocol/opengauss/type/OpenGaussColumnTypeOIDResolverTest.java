@@ -15,61 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.postgresql.type;
+package org.apache.shardingsphere.database.protocol.opengauss.type;
 
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
 import org.junit.jupiter.api.Test;
-import org.postgresql.core.BaseConnection;
-import org.postgresql.core.Oid;
-import org.postgresql.core.TypeInfo;
+import org.opengauss.core.BaseConnection;
+import org.opengauss.core.Oid;
+import org.opengauss.core.TypeInfo;
 
 import java.sql.Connection;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class PostgreSQLColumnTypeOIDLoaderTest {
+class OpenGaussColumnTypeOIDResolverTest {
+    
+    private final ColumnTypeOIDResolver resolver = new OpenGaussColumnTypeOIDResolver();
     
     @Test
-    void assertLoadFromResultSetMetaData() throws SQLException {
-        BaseConnection connection = mockConnection("record_type", 2249);
-        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
-        when(metaData.getColumnCount()).thenReturn(2);
-        when(metaData.getColumnType(1)).thenReturn(Types.STRUCT);
-        when(metaData.getColumnType(2)).thenReturn(Types.VARCHAR);
-        when(metaData.getColumnTypeName(1)).thenReturn("record_type");
-        Map<Integer, Integer> actual = PostgreSQLColumnTypeOIDLoader.load(connection, metaData);
-        assertThat(actual, is(Collections.singletonMap(1, 2249)));
-        verify(metaData, never()).getColumnTypeName(2);
-    }
-    
-    @Test
-    void assertLoadFromNonPostgreSQLConnection() throws SQLException {
+    void assertFindTypeOIDFromNonOpenGaussConnection() throws SQLException {
         Connection connection = mock(Connection.class);
-        assertTrue(PostgreSQLColumnTypeOIDLoader.load(connection, mock(ResultSetMetaData.class)).isEmpty());
+        assertFalse(resolver.findTypeOID(connection, "record_type").isPresent());
     }
     
     @Test
     void assertFindUnspecifiedTypeOID() throws SQLException {
         BaseConnection connection = mockConnection("unknown_type", Oid.UNSPECIFIED);
-        assertFalse(PostgreSQLColumnTypeOIDLoader.findTypeOID(connection, "unknown_type").isPresent());
+        assertFalse(resolver.findTypeOID(connection, "unknown_type").isPresent());
     }
     
     @Test
     void assertFindTypeOID() throws SQLException {
         BaseConnection connection = mockConnection("record_type", 2249);
-        assertThat(PostgreSQLColumnTypeOIDLoader.findTypeOID(connection, "record_type"), is(Optional.of(2249)));
+        assertThat(resolver.findTypeOID(connection, "record_type"), is(Optional.of(2249)));
     }
     
     private BaseConnection mockConnection(final String columnTypeName, final int typeOID) throws SQLException {

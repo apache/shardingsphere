@@ -17,24 +17,21 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.response.header.query;
 
-import org.apache.shardingsphere.database.protocol.postgresql.type.PostgreSQLColumnTypeOIDLoader;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
+import org.postgresql.core.BaseConnection;
+import org.postgresql.core.TypeInfo;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -63,16 +60,18 @@ class PostgreSQLQueryHeaderBuilderTest {
         when(resultSetMetaData.getColumnTypeName(columnIndex)).thenReturn("record_type");
         ResultSet resultSet = mock(ResultSet.class);
         Statement statement = mock(Statement.class);
-        Connection connection = mock(Connection.class);
+        BaseConnection connection = mock(BaseConnection.class);
+        TypeInfo typeInfo = mock(TypeInfo.class);
         when(resultSet.getStatement()).thenReturn(statement);
         when(statement.getConnection()).thenReturn(connection);
-        try (MockedStatic<PostgreSQLColumnTypeOIDLoader> loader = mockStatic(PostgreSQLColumnTypeOIDLoader.class)) {
-            loader.when(() -> PostgreSQLColumnTypeOIDLoader.findTypeOID(connection, "record_type")).thenReturn(Optional.of(2249));
-            PostgreSQLQueryHeaderBuilder builder = new PostgreSQLQueryHeaderBuilder();
-            QueryHeader actual = builder.build(resultSetMetaData, null, null, "record", columnIndex);
-            builder.appendProtocolAttributes(actual, resultSet);
-            assertThat(actual.getProtocolAttributes().get(PostgreSQLQueryHeaderBuilder.TYPE_OID), is(2249));
-        }
+        when(connection.isWrapperFor(BaseConnection.class)).thenReturn(true);
+        when(connection.unwrap(BaseConnection.class)).thenReturn(connection);
+        when(connection.getTypeInfo()).thenReturn(typeInfo);
+        when(typeInfo.getPGType("record_type")).thenReturn(2249);
+        PostgreSQLQueryHeaderBuilder builder = new PostgreSQLQueryHeaderBuilder();
+        QueryHeader actual = builder.build(resultSetMetaData, null, null, "record", columnIndex);
+        builder.appendProtocolAttributes(actual, resultSet);
+        assertThat(actual.getProtocolAttributes().get(PostgreSQLQueryHeaderBuilder.TYPE_OID), is(2249));
     }
     
     @Test

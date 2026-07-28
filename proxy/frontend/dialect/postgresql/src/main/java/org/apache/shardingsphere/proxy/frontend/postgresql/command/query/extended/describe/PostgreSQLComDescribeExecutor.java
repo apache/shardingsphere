@@ -25,9 +25,10 @@ import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQ
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.type.PostgreSQLColumnTypeOIDLoader;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDLoader;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -80,6 +81,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private final PostgreSQLComDescribePacket packet;
     
     private final ConnectionSession connectionSession;
+    
+    private final ColumnTypeOIDResolver columnTypeOIDResolver;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
@@ -233,7 +236,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             ResultSetMetaData metaData = actualPreparedStatement.getMetaData();
             return null == metaData || expectedColumnCount != metaData.getColumnCount()
                     ? Collections.emptyMap()
-                    : PostgreSQLColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), metaData);
+                    : ColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), metaData, columnTypeOIDResolver);
         }
     }
     
@@ -253,7 +256,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             logicPreparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
             return;
         }
-        Map<Integer, Integer> columnTypeOIDs = PostgreSQLColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), resultSetMetaData);
+        Map<Integer, Integer> columnTypeOIDs = ColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), resultSetMetaData, columnTypeOIDResolver);
         List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(resultSetMetaData.getColumnCount());
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
             String columnName = resultSetMetaData.getColumnName(columnIndex);
