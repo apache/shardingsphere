@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -36,9 +36,9 @@ import java.util.List;
  * Batch send message command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdBatchSendMessageCommandExecutor implements CommandExecutor {
+public final class FirebirdBatchMessageCommandExecutor implements CommandExecutor {
     
-    private final FirebirdBatchSendMessageCommandPacket packet;
+    private final FirebirdBatchMessageCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     

@@ -29,12 +29,12 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class FirebirdBatchSendMessageCommandPacketTest {
+class FirebirdBatchMessageCommandPacketTest {
     
     @Test
     void assertGetLengthWithColumnDescriptors() {
         ByteBuf packet = Unpooled.buffer().writeInt(0).writeInt(42).writeInt(1).writeByte(0).writeZero(3).writeInt(100);
-        int actual = FirebirdBatchSendMessageCommandPacket.getLength(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8),
+        int actual = FirebirdBatchMessageCommandPacket.getLength(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8),
                 Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.LONG, Integer.BYTES, 0, 0)));
         assertThat(actual, is(20));
     }

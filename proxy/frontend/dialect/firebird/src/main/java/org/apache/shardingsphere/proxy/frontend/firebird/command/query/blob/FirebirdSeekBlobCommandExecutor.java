@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 
-public class FirebirdBatchSyncCommandExecutor implements CommandExecutor {
+/**
+ * Seek blob command executor for Firebird.
+ */
+@RequiredArgsConstructor
+public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {
+    
+    private final FirebirdSeekBlobCommandPacket packet;
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
-        return Collections.singleton(new FirebirdGenericResponsePacket());
+    public Collection<DatabasePacket> execute() {
+        throw new FirebirdProtocolException("SEEK BLOB is not supported at the moment, blob handle: %d", packet.getBlobHandle());
     }
 }

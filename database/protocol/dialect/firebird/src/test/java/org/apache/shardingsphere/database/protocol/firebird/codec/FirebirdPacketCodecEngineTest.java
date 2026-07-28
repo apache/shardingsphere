@@ -29,7 +29,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -126,6 +126,22 @@ class FirebirdPacketCodecEngineTest {
         assertThat(in.readerIndex(), is(0));
         codecEngine.decode(context, in, out);
         assertTrue(out.isEmpty());
+        assertTrue(getPendingMessages().isEmpty());
+    }
+    
+    @Test
+    void assertDecodeCoalescedSeekBlobAndFollowingPacket() {
+        ByteBuf seekBlob = Unpooled.buffer().writeInt(FirebirdCommandPacketType.SEEK_BLOB.getValue()).writeInt(5).writeInt(0).writeInt(100);
+        ByteBuf commit = Unpooled.buffer().writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(1);
+        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(seekBlob, commit);
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertThat(out.size(), is(2));
+        assertThat(((ByteBuf) out.get(0)).readableBytes(), is(16));
+        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.SEEK_BLOB.getValue()));
+        assertThat(((ByteBuf) out.get(1)).readableBytes(), is(8));
+        assertThat(((ByteBuf) out.get(1)).getInt(0), is(FirebirdCommandPacketType.COMMIT.getValue()));
+        assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
     }
     
@@ -231,7 +247,7 @@ class FirebirdPacketCodecEngineTest {
             List<Object> out = new LinkedList<>();
             codecEngine.decode(context, in, out);
             assertThat(out.size(), is(1));
-            FirebirdBatchSendMessageCommandPacket actualPacket = createBatchSendMessagePacket((ByteBuf) out.iterator().next());
+            FirebirdBatchMessageCommandPacket actualPacket = createBatchSendMessagePacket((ByteBuf) out.iterator().next());
             assertThat(actualPacket.getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
             assertThat(actualPacket.getMessageCount(), is(2L));
             assertNull(getPendingPacketType());
@@ -416,8 +432,8 @@ class FirebirdPacketCodecEngineTest {
         FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
     }
     
-    private FirebirdBatchSendMessageCommandPacket createBatchSendMessagePacket(final ByteBuf byteBuf) {
-        return new FirebirdBatchSendMessageCommandPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
+    private FirebirdBatchMessageCommandPacket createBatchSendMessagePacket(final ByteBuf byteBuf) {
+        return new FirebirdBatchMessageCommandPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
     }
     
     private ByteBuf buildBatchMessage(final int statementHandle, final int... values) {

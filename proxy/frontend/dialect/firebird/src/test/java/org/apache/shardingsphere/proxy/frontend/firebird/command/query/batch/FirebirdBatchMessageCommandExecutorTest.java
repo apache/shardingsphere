@@ -29,7 +29,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -60,14 +60,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdBatchSendMessageCommandExecutorTest {
+class FirebirdBatchMessageCommandExecutorTest {
     
     private static final int CONNECTION_ID = 3;
     
     private static final int STATEMENT_ID = 33;
     
     @Mock
-    private FirebirdBatchSendMessageCommandPacket packet;
+    private FirebirdBatchMessageCommandPacket packet;
     
     @Mock
     private ConnectionSession connectionSession;
@@ -91,7 +91,7 @@ class FirebirdBatchSendMessageCommandExecutorTest {
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
-            Collection<DatabasePacket> actual = new FirebirdBatchSendMessageCommandExecutor(packet, connectionSession).execute();
+            Collection<DatabasePacket> actual = new FirebirdBatchMessageCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.size(), is(1));
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             verify(batchStatement).addParameterValues(Collections.singletonList("foo"));
@@ -106,7 +106,7 @@ class FirebirdBatchSendMessageCommandExecutorTest {
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(null);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
-            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchSendMessageCommandExecutor(packet, connectionSession).execute());
+            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchMessageCommandExecutor(packet, connectionSession).execute());
         }
     }
     
@@ -120,7 +120,7 @@ class FirebirdBatchSendMessageCommandExecutorTest {
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
-            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchSendMessageCommandExecutor(packet, connectionSession).execute());
+            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchMessageCommandExecutor(packet, connectionSession).execute());
             verify(batchStatement, never()).addSize(9);
         }
     }
@@ -139,8 +139,8 @@ class FirebirdBatchSendMessageCommandExecutorTest {
             List<Object> out = new LinkedList<>();
             new FirebirdPacketCodecEngine().decode(context, buildBatchMessages(), out);
             assertThat(out.size(), is(2));
-            new FirebirdBatchSendMessageCommandExecutor(createBatchSendMessagePacket((ByteBuf) out.get(0)), connectionSession).execute();
-            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchSendMessageCommandExecutor(createBatchSendMessagePacket((ByteBuf) out.get(1)), connectionSession).execute());
+            new FirebirdBatchMessageCommandExecutor(createBatchSendMessagePacket((ByteBuf) out.get(0)), connectionSession).execute();
+            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchMessageCommandExecutor(createBatchSendMessagePacket((ByteBuf) out.get(1)), connectionSession).execute());
             assertThat(batchStatement.getParameterValues().size(), is(1));
             assertThat(batchStatement.getParameterValues().get(0), is(Collections.singletonList(100)));
             assertThat(batchStatement.getAccumulatedSize(), is(8L));
@@ -149,8 +149,8 @@ class FirebirdBatchSendMessageCommandExecutorTest {
         }
     }
     
-    private FirebirdBatchSendMessageCommandPacket createBatchSendMessagePacket(final ByteBuf byteBuf) {
-        return new FirebirdBatchSendMessageCommandPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
+    private FirebirdBatchMessageCommandPacket createBatchSendMessagePacket(final ByteBuf byteBuf) {
+        return new FirebirdBatchMessageCommandPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
     }
     
     private ByteBuf buildBatchMessages() {
