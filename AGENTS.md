@@ -1,390 +1,357 @@
-# ShardingSphere AI Development Guide
+# ShardingSphere Codex Development Guide
 
-## TOKEN EFFICIENCY ACTION — READ OR REUSE .codex/context/token-efficiency.md
+This repository guide is written for Codex using GPT-5.6 Sol. Keep only stable,
+repository-wide rules here and rely on Codex for ordinary coding competence.
+Paths are relative to the repository root.
 
-Before running Maven, E2E, Proxy startup, database clients, IDE/MCP run configurations, any command likely to output more than 100 lines,
-or any task likely to produce large analysis or review output, I MUST ensure `.codex/context/token-efficiency.md` is available in the active context.
-If this exact file from this repository has already been read in the current session and there is no evidence it changed, reuse the loaded content.
-Otherwise, read it before running the high-output command or producing the large structured output.
-Execute the command according to the Mandatory Execution Contract in that file.
-This file is the repository-local source of truth for token-efficient command classification, log capture, filtered summaries, final reporting, and structured output.
-Paths in this section are relative to the Apache ShardingSphere repository root.
+## Instruction Sources
 
-This guide is written **for AI coding agents only**. Follow it literally; improvise only when the rules explicitly authorize it.
+1. `CODE_OF_CONDUCT.md` is the authority for contribution, Java, and unit-test
+   style. Inspect the applicable section before changing code or tests.
+2. Before Maven, E2E, Proxy startup, database clients, IDE/MCP run
+   configurations, commands likely to output more than 100 lines, or large
+   structured analysis, read or reuse
+   `.codex/context/token-efficiency.md` and follow its Mandatory Execution
+   Contract.
+3. Use repository Skills for specialized workflows instead of reproducing their
+   detailed instructions here.
+4. Keep task-specific notes in the task, issue, or PR. Do not add session notes
+   to this file.
 
-## Core Immutable Principles
+## Authority and Safety
 
-1. **Quality First**: code quality and system security are non-negotiable.
-2. **Think Before Action**: perform deep analysis and planning before coding.
-3. **Tools First**: prioritize the proven best toolchain.
-4. **Transparent Records**: keep every key decision and change traceable.
-5. **Continuous Improvement**: learn from each execution and keep optimizing.
-6. **Results Oriented**: judge success solely by whether the target is achieved.
-7. **Coding Standards**: `CODE_OF_CONDUCT.md` is the binding “law”; use it as the first reference for rule interpretation and cite relevant lines. See Governance Basics for precedence and session review expectations.
+- Answer, explain, review, diagnose, audit, and plan requests are read-only.
+  Inspect and report; do not edit the reviewed target.
+- Change, build, implement, and fix requests authorize the smallest in-scope
+  local production and test code edits plus non-destructive verification.
+  Documentation, configuration, scripts, generated artifacts, file deletion,
+  Docker cleanup, and system changes require explicit authorization in the
+  current task. A request that names the exact non-code target is authorization
+  for that target; do not ask again unless another gate below applies.
+- Preserve unrelated working-tree changes. Inspect `git status --short` before
+  editing and never discard work whose ownership is uncertain.
 
-## Quality Standards
+### Git Is Read-Only
 
-### Engineering Principles
-- **Architecture**: preserve existing architecture by default; SOLID, DRY, symmetry, anticipated reuse, and testability do not by themselves justify an unrequested abstraction or architectural boundary.
-- **Code Quality**:
-    - Use clear naming and reasonable abstractions.
-    - **Code economy**: every added line, identifier, literal, helper, abstraction, and configuration entry must serve production behavior, a public contract,
-      regression protection, diagnostics, safety, readability, or removal of real duplication.
-      Do not add code for formal symmetry, coverage appearance, hypothetical reuse, structural completeness, or test convenience.
-      Avoid unnecessary locals, thin wrappers, helpers, collection copies, comments, guards, and abstractions; inline single-use locals unless reuse or readability justifies them.
-      Before adding an implementation, prove that direct reuse cannot satisfy the goal; then prefer composition or delegation, and use an existing extension point only when the earlier options cannot satisfy the goal within the confirmed boundary or the task requires that extension contract.
-      Every new abstraction must own independent production behavior, state, or contract that existing types cannot express; forwarding, renaming, type distinction, structural symmetry, shorter call sites, test convenience, and anticipated reuse are insufficient.
-      Reuse never authorizes changes to class or method `final`, visibility, inheritance, or shared-code ownership; follow the Architecture change gate when such a change is required.
-      Use the smallest clear implementation, and remove obsolete code within scope only after verifying its usages.
-    - **YAML anchor rule**: do not add YAML anchors unless they are reused in the same file and reduce meaningful duplication.
-      Prefer repeating a small block when an anchor has no aliases, anticipates future reuse, or obscures nearby YAML.
-    - Do not introduce package-private top-level helper types by default.
-      Keep very small, single-owner state or continuation helpers as private nested types, but avoid accumulating multiple nested collaborators inside one class.
-      Add a top-level or public helper only when existing types cannot reasonably own independent production behavior, state, or contract required by the task; multiple callers, readability, direct test value, symmetry, and anticipated reuse are insufficient.
-      If neither private nor public fits, do not add a helper; keep the implementation in the approved owner or simplify the design within the declared boundary.
-    - Every new public production type must have direct, focused tests.
-      Broad workflow tests do not replace public contract tests unless they explicitly exercise that public type's behavior.
-    - Do not add production types or abstractions, widen visibility, or change constructors or signatures solely for test convenience.
-      Require an independent production reason and prefer test-local fixtures, mocks, existing public construction paths, builders, or SPI loaders.
-    - New internal abstractions must reduce cognitive complexity instead of merely wrapping branches in more types.
-      For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
-      Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
-    - Delete unused code; when changing functionality, remove legacy compatibility shims.
-    - When adding or touching boilerplate constructors, getters, setters, or logger fields, apply the `CODE_OF_CONDUCT.md` Lombok preference first when Lombok is already available in the module and the replacement is semantically equivalent.
-      Use the narrowest suitable Lombok annotation, such as `@NoArgsConstructor(access = AccessLevel.PRIVATE)` for utility-class private constructors, `@RequiredArgsConstructor` or `@AllArgsConstructor` for plain constructors, and `@Getter` or `@Setter` for accessor methods.
-      For public constructors and accessors, verify the generated signature, access level, parameter order, annotations, and reflection or serialization behavior before replacing manual code.
-      Keep manual members only when they contain real logic, annotations, documentation, validation, defaulting, side effects, compatibility requirements, framework or reflection semantics, or public-contract details that Lombok would change or obscure.
-      Do not use broad Lombok annotations such as `@Data` unless every generated behavior is intentionally required.
-    - **Validation discipline**: add null, size, state, or other runtime guards only at real contract boundaries, such as external input, public APIs,
-      persisted or parsed configuration, SPI or reflection input, and shared or asynchronous state, or when they provide concrete diagnostic value.
-      Do not recheck invariants guaranteed by callers or upstream contracts; every added guard must map to a specific failure scenario or diagnostic benefit.
-      Prefer `ShardingSpherePreconditions` with lazy exception suppliers for production guards.
-      Use manual throws only when the module cannot depend on `infra/exception`, the check is inside `ShardingSpherePreconditions`,
-      or required control flow would otherwise be obscured; record the reason.
-      Remove stale checked `throws` from private and internal methods when their last exception source disappears.
-      Keep them on public or overridden methods only when required by a caller-facing, framework, external API, or compatibility contract; do not widen them to generic `Exception` or `Throwable`.
-    - **Javadoc signal-to-noise gate**:
-      - Keep the concise summaries and required tags mandated by `CODE_OF_CONDUCT.md` for public APIs and SPIs.
-      - Beyond that baseline, document only contracts not expressed by code that change caller or implementer behavior,
-        such as concurrency, lifecycle, state, protocol, compatibility, or failure handling.
-      - Do not restate names, signatures, visible collection properties, or parent contracts unless an override adds implementation-specific obligations.
-      - Review only Javadocs within scope, and remove any sentence that does not affect caller action, implementer obligation, compatibility, or failure handling.
-    - Keep variable declarations adjacent to first use to satisfy Checkstyle VariableDeclarationUsageDistance; do not mark local variables as `final`,
-      including ordinary local declarations, loop variables, enhanced `for` variables, and try-with-resources resources.
-      For parameters, use `final` only on method parameters, constructor parameters and `catch` parameters; leave lambda parameters without `final` unless surrounding code style or tooling requires it.
-    - For collection declarations in production and test code, use the least-specific type that expresses the required contract.
-      Prefer `Collection` for parameters, fields, local variables, and internal return values when the code only iterates, checks emptiness or size,
-      or uses common collection operations.
-      Use `List` only when list-specific semantics or APIs are required, such as positional access, stable ordered contract, duplicate-preserving list contract,
-      or an external API or public contract that requires `List`.
-      Use `Set` only when uniqueness, set semantics, set-specific APIs, or an external API or public contract requires `Set`.
-      Do not declare implementation types such as `LinkedList`, `ArrayList`, or `HashSet` unless implementation-specific APIs are required.
-      Choose concrete implementations according to `CODE_OF_CONDUCT.md`.
-    - Do not copy, wrap, or re-materialize collections merely for defensive programming, possible mutability or ordering, concrete-type symmetry, or convenience.
-      A copy or wrapper requires a documented public contract, a snapshot of shared, asynchronous, or cached state, isolation for later mutation, or an external API requirement.
-      Ordinary collection literals and transformation results need no mutable replacement; in tests, use a mutable copy only when that instance is mutated or mutability is the scenario.
-      Record the concrete reason for any explicit copy or wrapper.
-- **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
+The user owns every Git state change. Codex may use read-only Git commands such
+as `status`, `diff`, `show`, `log`, `blame`, `grep`, and `ls-files`.
 
-### Dead Code Verification
-- Before declaring code unused, use semantic Find Usages; otherwise search the entire repository, covering direct calls, method references, generated accessors, overrides, reflection, SPI/framework registrations, tests, E2E, and external consumers.
-- Inspect every match; one regex or production-only search is insufficient evidence.
+Never run a Git command that changes the index, working tree, refs, remotes,
+branches, tags, stashes, worktrees, or submodules. This prohibition includes
+`add`, `commit`, `push`, `fetch`, `pull`, `merge`, `rebase`, `reset`, `restore`,
+`checkout`, `switch`, `clean`, `cherry-pick`, `revert`, branch or tag mutation,
+stash mutation, worktree mutation, and `submodule update`. Do not stage changes
+or use Git as a rollback mechanism.
 
-### Constructor Design Rules
-- Before adding or changing a constructor, inspect nearby production code and follow the module's existing conventions for visibility, Lombok, validation, and tests.
-- Keep only constructors with distinct production semantics or real framework, SPI, reflection, or serialization requirements.
-- Do not add or keep constructor overloads only for fewer arguments, test convenience, new-code backward compatibility, or future flexibility.
-- When a new semantic parameter is required, update callers to pass it explicitly instead of adding a default-forwarding overload.
-- Before handoff, scan changed files and call sites for unused or compatibility constructors and delete them.
+When asked to commit, push, restore, or otherwise mutate Git, do not perform the
+Git action. Complete any separately authorized local edits, then provide the
+user with a commit message or exact manual next step.
 
-### Performance Standards
-- **Algorithm Awareness**: account for time and space complexity.
-- **Resource Management**: optimize memory usage and I/O behavior.
-- **Boundary Handling**: cover exceptional situations and edge conditions.
+### Remote Writes and Sensitive Data
 
-### Testing Requirements
-- **Test-Driven**: design for testability, ensure unit-test coverage, and keep background unit tests under 60s to avoid job stalls.
-- **Meaningful Unit Tests**:
-    - Meaningless unit tests are tests that do not protect behavior owned by the class under test.
-      A unit test must cover computation, decision-making, validation, transformation, state transition, error handling,
-      protocol or payload contract generation, or another non-trivial behavior owned by the target class.
-      If a method only passes data through, delegates directly, returns a constant, exposes a getter or setter, or wires an object without adding logic,
-      do not add a dedicated unit test for that method unless the pass-through itself is a documented public contract or part of an externally visible protocol boundary.
-      Never add tests whose subject is a test class, test fixture, mock helper, or other test-only code; test only the production behavior it supports.
-      Test-support code distributed as an independent artifact with an external contract is production code for this rule.
-    - A unit test is meaningful only if it would fail for a realistic bug that matters to users, callers, protocol clients, or maintainers of the class contract.
-      If a test only proves that implementation structure remains the same, rather than proving behavior is correct, remove it.
-    - Do not add unit tests that only assert constant literal values, enum names, field names, method names, YAML anchor names,
-      or configuration structure created only for internal reuse.
-      Literal-value tests are allowed only when the literal is an external protocol value, documented compatibility contract, SQL keyword, configuration key, YAML key,
-      error code, resource URI, or model-visible schema value, and no broader behavior or contract test already protects it.
-      Prefer protecting such literals through the behavior that emits or consumes them; add a dedicated literal-only test only when no behavior path can cover the contract.
-    - Do not add tests that only verify Java, Lombok, Mockito, YAML parser, collection library, or framework behavior.
-      Do not add tests that duplicate an existing scenario without covering a new branch, input class, edge case, contract, calculation path, or failure mode.
-      Do not add tests that only increase coverage numbers but would not catch a real behavioral regression.
-    - Do not add tests that mirror private implementation details, helper call order, local variable structure,
-      or current refactoring shape unless that interaction is the explicit public contract of the class under test.
-- **Quality Assurance**: run static checks, formatting, and code reviews.
-- **Checkstyle Gate**: do not hand off code with Checkstyle/Spotless failures—run the relevant module check locally and fix before completion.
-- **Formatting Gate**: after code or documentation changes, format only with `./mvnw spotless:apply -Pcheck -T1C`, then check style with `./mvnw checkstyle:check -Pcheck -T1C`; do not use any other formatting method.
-  Spotless must run after the last file-changing action and before Checkstyle/tests in the final handoff sequence.
-  If any file is edited, generated, moved, or manually whitespace-cleaned after Spotless, rerun Spotless before replying.
-- **Continuous Verification**: rely on automated tests and integration validation.
-- **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
-- **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
-- **Dedicated and scoped tests**: each behavior-owning public production method must be covered by dedicated test methods.
-  Pure pass-through, constant-returning, accessor, or wiring-only methods follow the Meaningful Unit Tests gate instead of forcing dedicated tests.
-  Each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions),
-  and different branches/inputs belong in separate test methods.
-- **No testing through layers**: a unit test must not appear to test the current class under test while its inputs, branch triggers, or assertions encode collaborator implementation rules such as SPI, registry, factory, parser, loader, metadata option, driver option, dialect defaults, exception classification, or message/SQLState parsing.
-  Unit tests must distinguish behavior owned by the class under test from behavior owned by collaborators.
-  If a collaborator implementation can change while the class under test contract stays unchanged, the current class test must not fail; mock the nearest stable collaborator boundary and cover the collaborator rule in that collaborator's own focused tests.
-  Cross-layer verification belongs only in explicitly scoped integration, contract, or E2E tests.
-- **No interface-only tests**: do not create unit tests for interfaces themselves; cover behavior through concrete implementations instead, and avoid dedicated test classes for pure contracts or SPI interfaces.
-- **Parameterized tests naming**: all parameterized tests must set an explicit `name` and use the `"{0}"` template for display names.
-- **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
+- A local coding request never authorizes updating an issue, PR, review,
+  repository, deployment, production API, connector, cloud task, message, or
+  other remote state. Perform a remote write only when the current request
+  explicitly names the action and exact target.
+- Do not send credentials, tokens, private keys, private logs, proprietary
+  source, personal data, connection strings, or other sensitive repository data
+  to any model, website, search query, connector, plugin, MCP server, review
+  service, or external tool beyond the active user-authorized Codex/Sol task.
+  Redact sensitive values from commands, summaries, and retained artifacts.
+- Do not invoke an additional model or cross-model review service. Perform
+  bounded self-review in the active Codex/Sol task.
 
-#### Mock Helper and Test Fixture Boundaries
+### Destructive and High-Risk Local Actions
 
-##### Prefer Direct Mocks for Scenario Behavior
-- Do not create standalone mock utility classes only to hide Mockito setup, reduce imports, or share a few `mock`, `when`, `mockStatic`, or `mockConstruction` calls.
-- Prefer direct mocks in the test method when the mocked behavior is part of the scenario being asserted.
+Before deleting files or data, bulk-editing non-code artifacts, removing Docker
+images or containers, changing global configuration, permissions, or packages,
+or performing another destructive local action:
 
-##### Use Private Helpers Only for Local Repetition
-- Use a private helper inside the same test class only when the setup is repeated in that class and the helper name makes the tested scenario easier to read.
+1. Resolve and inspect the exact targets with read-only commands.
+2. State the impact and whether recovery is reliable.
+3. Obtain explicit confirmation unless the user already authorized those exact
+   resolved targets and a reliable recovery path exists.
 
-##### Allow Standalone Fixtures Only for Stable Boundaries
-- A standalone test fixture or helper is allowed only when it represents a stable test fixture boundary, such as a reusable fake external runtime, packaged plugin fixture, JDBC metadata fixture, test distribution fixture, or multi-collaborator context that would otherwise obscure the test intent.
-- Standalone test helpers must have the narrowest practical visibility, live in the nearest owning test package or module, and must not become cross-module test APIs for convenience.
+A reliable recovery path is a verified backup or source plus concrete restore
+steps, or a deterministic rebuild or re-download whose origin has been
+confirmed. Git is not a recovery path for Codex because Git writes are
+forbidden. If the only copy would be lost, the source is unknown, or recovery
+has not been verified, state that there is no reliable rollback and confirm
+again before acting. Never imply that an irreversible action is recoverable.
 
-##### Delete or Inline Thin Mock Wrappers
-- Delete or inline mock helpers when they merely wrap simple Mockito behavior, hide database-specific or SPI behavior from the test scenario, have only one or two incidental callers, or make it harder to see which collaborator behavior the test depends on.
-- Test-only reuse, shorter call sites, easier static mocking, or avoiding duplicated imports are not sufficient reasons to add or keep a standalone mock utility class.
-- **Reflection Rule**: when tests must touch fields or methods via reflection, use `Plugins.getMemberAccessor()`—direct reflection APIs are forbidden.
+For Docker cleanup, distinguish reproducible images and containers from
+persistent volumes or local data. Broad requests such as “clean whatever is
+unused” authorize inspection only, not deletion.
 
-## Dangerous Operation Confirmation Mechanism
+Use this prompt when confirmation is required:
 
-### High-Risk Operation Checklist—obtain explicit confirmation **before** doing any of the following:
-- **File System**: deleting files/directories, bulk edits, or moving system files.
-- **Code Submission**: `git commit`, `git push`, `git reset --hard`.
-- **System Configuration**: editing environment variables, system settings, or permissions.
-- **Data Operations**: dropping databases, changing schemas, or running batch updates.
-- **Network Requests**: sending sensitive data or calling production APIs.
-- **Package Management**: global installs/uninstalls or updating core dependencies.
+```text
+Dangerous operation detected!
+Operation type: [specific action]
+Scope of impact: [exact targets]
+Recovery: [verified steps, or "no reliable rollback"]
+Risk assessment: [potential consequence]
+Please confirm whether to continue.
+```
 
-### Confirmation Template
+## Evidence, Scope, and Planning
 
-Dangerous operation detected! Operation type: [specific action] Scope of impact: [affected area] Risk assessment: [potential consequence] Please confirm whether to continue. [Requires explicit “yes”, “confirm”, or “proceed”]
+Before editing:
 
-## Coding Execution Principles
-- **Reference-first implementation**: before coding, inspect the affected code, tests, contracts, configuration, registration paths, and module boundaries.
-  For each affected subsystem, follow the closest applicable, compliant, and maintained pattern for architecture, extension points, dependencies, naming, and tests.
-  When adding a database, dialect, plugin, or module, reuse applicable framework and extension mechanisms;
-  a database or dialect may be derived or entirely new, and derived dialects must keep shared behavior aligned and isolate only real differences.
-  If no applicable precedent exists, do not invent architecture; record the search evidence and follow the Architecture change gate before proposing a new boundary.
-  Do not use this analysis to expand the task or refactor unrelated code.
-- **Architecture change gate**: changes to class or method `final`, visibility, inheritance, public contracts, SPIs or extension points, loading or registration contracts, module or dependency boundaries, or shared-code ownership are architecture changes; local-variable `final` is only a style concern.
-  Before editing, report existing behavior and ownership, reuse analysis, compatibility impact, and the minimum affected files.
-  An exact architecture change explicitly requested by the user is authorized after that report; otherwise stop and obtain explicit confirmation.
-  Adding, changing, or removing an SPI is always an architecture change.
-- **Simple first**: solve the verified goal with the smallest clear implementation that preserves existing behavior.
-- **Precise modification**: change only the files and code paths required by the task; avoid drive-by refactors and unrelated cleanup.
-- **Path portability**: when writing code, tests, scripts, or skills, do not hard-code local machine paths or workspace-specific absolute paths.
-  Use repository-relative paths, configurable parameters, temporary directories, or documented environment variables instead.
-- **Execution mode discipline**: in confirmation-only tasks, surface unclear boundaries, design conflicts, and rule conflicts as questions or recommendations before editing.
-  In authorized implementation tasks, produce a compliant result directly when the issue can be resolved within the declared boundary; do not stop merely to ask permission or explain alternatives.
-  Stop only for missing scope, required scope expansion, dangerous operations, external approvals, or true impasses that cannot be resolved from local evidence.
-- **Scope declaration gate**: after reference analysis and before planning or editing, record the verifiable goal, non-goals, behavior owners and evidence, expected changed files, prohibited paths, reuse and architecture decisions, required production and test protection, scoped verification, and response constraints as the acceptance checklist.
-  If any item is missing or ambiguous, pause and ask the developer to confirm it before making changes.
-  The checklist is the maximum allowed scope for production, test, documentation, and configuration changes.
-  Every changed file and hunk must be necessary for a checklist item; prohibited files and modules must have zero diff.
-  Do not infer broader scope from nearby code, unrelated failures, cleanup opportunities, or rule compliance.
-  If implementation evidence proves the checklist insufficient, stop before editing outside it, explain the required expansion, and obtain confirmation.
-  If the actual diff instead contains unnecessary current-task changes, stop the current design, remove only those changes, preserve unrelated user changes, and restart diff review from the PR base or last confirmed baseline.
-- **Rejected design reset**: if the user rejects a design, stop patching it. Remove only changes provably introduced by the current task and rejected design, preserve unrelated changes, and redesign the smallest solution from the last confirmed baseline before coding again. If ownership is unclear, stop and request confirmation.
-- **Goal-driven execution**: convert the request into verifiable outcomes before implementation, then validate those outcomes with scoped checks.
+1. Restate the verifiable goal, non-goals, user-forbidden tools or APIs, and
+   coverage or output constraints.
+2. Inspect the affected code, tests, contracts, configuration, registrations,
+   module boundaries, closest maintained precedent, and applicable
+   instructions.
+3. Identify behavior owners, reuse opportunities, compatibility impact,
+   expected changed files, prohibited paths, required tests, and scoped
+   verification.
+4. Convert these items into a compact acceptance checklist and a 3–10 step plan
+   for non-trivial work.
 
-## Coding Skill Guidance
-- When the named third-party skills are available in the current environment, use them for the matching work:
-  `source-driven-development` for official-source checks, `api-and-interface-design` for public contracts,
-  `code-simplification` after implementation, and `code-review-and-quality` before handoff.
-- If a named third-party skill is unavailable, do not install it automatically or block the task.
-  Apply an equivalent manual checklist for the same intent, record the fallback in the plan or final response, and continue.
+When the request makes the boundary clear, infer and record it without asking
+the user to repeat it. The checklist is the maximum change boundary. Every
+changed file and hunk must satisfy it; nearby cleanup and unrelated failures do
+not expand it. If evidence proves that work outside the boundary is required,
+stop before that edit, report the required expansion, and request confirmation.
 
-### Cross-Model Review Prohibition
-- Do not use `doubt-driven-development` in this repository when it requires an external or cross-model review offer.
-- Unless the user explicitly requests a specific external model in the current task, never ask whether to run a cross-model review, never pause work for that choice,
-  and never invoke Gemini CLI, Codex CLI, Claude CLI, or any other external model or model-review service.
-- When an independent challenge is useful, use a fresh-context sub-agent within the current session or perform a bounded adversarial self-review, then continue to completion without asking the user to choose a reviewer.
+Changes to public contracts, SPIs, extension or loading contracts, class or
+method `final`, visibility, inheritance, constructors or signatures, module
+dependencies, or shared-code ownership are architecture changes. Before such a
+change, report:
 
-## Workflow
-- Use Sequential Thinking when tasks need decomposition: 6-10 steps (fallback 3-5), one sentence each, actionable.
-- Intake: choose the strategy for the task, confirm tool availability/fallbacks, capture constraints (forbidden APIs, output format, coverage/test expectations),
-  and use `source-driven-development` when available, or equivalent source-checking, to verify facts that depend on authoritative sources.
-- Plan: complete the required reference analysis and plan before coding, use a bounded fresh-context or adversarial self-review for non-trivial decisions,
-  and set the quality/verification bar without invoking or offering cross-model review.
-- Implement: keep scope minimal, follow quality standards, record decisions, and handle edge cases; honor instruction precedence from Core Principle #7.
-- Validate: run the narrowest meaningful checks (see Verification & Commands) and prefer scoped runs; note any sandbox or limit blocks and alternatives.
-- Report & self-check: share intent, edits, verification results, and next steps; ensure all required instructions, coverage, and mocking rules are satisfied, with remaining risks called out.
+- current behavior and owner;
+- direct-reuse and delegation analysis;
+- compatibility impact;
+- minimum affected files and tests.
 
-### Database Protocol / Client Compatibility Evidence Gate
-- Apply this gate only to database wire-protocol, proxy frontend protocol, native/client compatibility, protocol E2E, Docker/native client smoke,
-  packet/trace/log/client behavior evidence, and database client-visible protocol behavior work.
-  It does not apply to unrelated feature work, ordinary unit-test failures, formatting failures, documentation-only changes, or non-protocol implementation tasks.
-- Treat database protocol compatibility, native-client smoke, driver compatibility, packet/trace/log evidence, and externally visible client behavior failures
-  as evidence-first failures until proven otherwise.
-- Evidence-first, capture-first, trace-first, or packet-first is an execution method, not a user-confirmation stop gate.
-  When the next action remains inside the approved scope, continue with evidence collection, behavior correlation, root-cause classification,
-  the smallest deterministic fix, focused checks, and one matching sentinel instead of stopping only to report progress.
-- Before changing protocol bytes, packet order, handshake/authentication/session lifecycle, status/error semantics, cursor or fetch lifecycle,
-  row-transfer payloads, metadata payloads, or client-specific completion logic, create a reference-versus-current behavior record for the same scenario.
-- The behavior record must use the same client or driver version, server or database version, schema/configuration, input SQL or scripts, and execution markers.
-- The behavior record must identify the first actionable mismatch, such as a missing message, extra message, wrong order, wrong status or error semantics,
-  wrong lifecycle transition, wrong field value, wrong metadata shape, or wrong bounded payload shape.
-- Capture, trace, log, or packet collection complete is not analysis complete. A record is code-ready only when it includes scenario identity,
-  reference/current inventories, chronological request/response correlation, critical response ownership, the first actionable mismatch,
-  non-mismatch exclusions, minimum fix scope, and a deterministic guard plan.
-- If any correlation field is missing, continue capture, source analysis, or behavior analysis. Do not change protocol implementation code,
-  rewrite test expectations, rerun the same or adjacent sentinel, or send a progress-only final response unless the user explicitly asks for status or stop.
-- A deterministic guard is not an exploratory probe. Add or run it only after the behavior record states the expected branch.
-  If the guard failure matches the recorded mismatch, implement the smallest in-scope fix. If it exposes a wrong guard expectation or route assumption,
-  return to behavior correlation before changing protocol code or test expectations.
-- After one fix, run only one sentinel that matches the recorded mismatch. If the sentinel fails, update the behavior record before any further code change or rerun.
-- Having no current question for the user is not a reason to continue rerunning the failed scenario, but it is also not a reason to stop work.
-  Continue analysis until the behavior record is complete, then proceed with an in-scope fix when available.
-- If a database-specific spec, task state, evidence matrix, or machine gate exists, follow it as the specialization of this general rule.
-  Database-specific specializations may be stricter than this root rule.
-- Stop and ask the user only when the next action requires scope expansion, third-party license or login approval, deleting files, adding dependencies,
-  changing project goals, or when analysis reaches an actual impasse that cannot be resolved from local evidence.
+An exact architecture change explicitly requested by the user is authorized
+after that report. If materially different ownership, architecture, or
+compatibility choices remain unresolved, obtain confirmation. Adding,
+changing, or removing an SPI always follows this gate.
 
-### E2E / Integration Failure Gate
-- When an E2E, integration, client-smoke, Docker-smoke, or protocol scenario fails, hangs, times out, or requires guess-and-retry debugging, stop further reruns immediately. This means stop the rerun loop, not stop the task.
-- Before rerunning the scenario, classify the failure as environment, classpath, stale snapshot, dependency, test design, protocol implementation, data setup, assertion logic, or external-service behavior.
-- Record the root cause, the evidence inspected, and the minimum fix scope before changing code or configuration.
-- Complete deterministic gates first, such as classpath consistency, stale bytecode scan, dependency alignment, packet-trace completeness, or direct/proxy evidence review.
-- After the gate passes, rerun only one sentinel scenario. If that sentinel fails unexpectedly, stop rerunning and return to analysis instead of applying small speculative patches.
-- Do not loop through repeated E2E attempts, incremental guesses, or patch-and-rerun cycles unless the user explicitly approves that debugging mode for the current task.
-- Slow-loop fuse: after one matching sentinel fails, or when 30-45 minutes of work on the same failing scenario produces no new mismatch,
-  guard expectation, state transition, or closed task, stop reruns and blind patches immediately and continue analysis, state repair, or handoff.
-  This is not a user stop gate unless the next action needs approval under the dangerous-operation or scope-expansion rules.
+If the user rejects a design, stop patching it. Remove only current-task changes
+that are provably part of the rejected design, preserve unrelated work, and
+redesign from the last confirmed boundary. Because Git writes are forbidden,
+perform any authorized restoration through precise file edits.
 
-## Compliance Guardrails & Checklists
-- **Pre-task checklist (do before planning/coding):** re-read AGENTS.md and `CODE_OF_CONDUCT.md`; restate user goal, constraints, forbidden tools/APIs, coverage expectations, sandbox/network/approval limits; prefer `rg`/`./mvnw`/`apply_patch`; avoid destructive commands (`git reset --hard`, `git checkout --`, bulk deletes) and generated paths like `target/`.
-- **Change boundary checklist:** determine and declare the change boundary before planning or editing.
-  If the boundary is clear from the request, state the inferred module, package, class, file path, public API, issue/PR scope, or behavior/test scenario.
-  If the boundary is missing or ambiguous, ask the developer to confirm it before making changes.
-- **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
-- **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived by the user.
-- **Report root-cause rule:** for report, audit, review, or analysis tasks, if a reported finding, verdict, or conclusion is challenged, disproved, or shown to be inaccurate,
-  do not stop at patching the output artifact. First fix the highest-leverage root cause in rules, workflow, schema, validators, prompts, regression cases,
-  or tests so the same class of error is less likely to recur. Update the report artifact afterward as a consequence of that root-cause fix, unless the user explicitly requests a one-off result correction only.
-- **Execution discipline:** keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use without marking local variables `final`; delete dead code and avoid placeholders/TODOs.
-  Before handoff, inspect the Java diff for newly added `final` declarations and remove any new meaningless local-variable `final`.
-  Verify code and skills do not contain local machine paths before handoff.
-- **Final semantic fix gate:** after finishing code, test, documentation, configuration, or generated-artifact changes and before considering the task complete,
-  inspect the final diff and surrounding changed context against the acceptance checklist and every applicable `AGENTS.md` and `CODE_OF_CONDUCT.md` rule.
-  Scripts, search output, Checkstyle, Spotless, tests, and compilation provide evidence, not proof of semantic compliance.
-  Make an explicit semantic judgment from the code, contracts, existing patterns, and user request.
-  Verify that every changed file and hunk maps to a checklist item; prohibited paths have zero diff; direct reuse was considered first; no unjustified abstraction or public type was added; class or method `final`, visibility, inheritance, and SPI changes were exactly authorized; and every test protects production behavior.
-  Keep necessary formatting changes inside touched hunks, but remove unrelated file or hunk changes introduced by the current task.
-  If an applicable rule is violated, or if a change is meaningless, speculative, cosmetic, convenience-only, or unnecessary, fix or remove the current-task edit before completion.
-  Do not treat reporting a violation, waiver, or residual risk as a substitute for fixing an in-scope issue that can be fixed safely.
-- **CI impact gate:** before handoff, determine affected GitHub Actions from changed files.
-  Use `rg` or small `sed` ranges to inspect only matching workflow `paths`, job names, and execution commands instead of reading every workflow file.
-  For production code, tests, E2E, build configuration, or project-rule changes, run the local equivalent of the affected workflow command when practical.
-  For docs-only or clearly unrelated changes, or when a workflow-equivalent run is not practical, state the rationale, residual risk, and narrower verification that was run.
-- **Public contract propagation gate:** when changing any public contract or externally visible identifier, search the affected reference surfaces with `rg` before handoff.
-  This includes API names, SQL syntax, configuration keys, YAML keys, SPI types, error codes, protocol fields, CLI commands, resource identifiers, canonical documentation names, descriptors, examples, distributions, tests, E2E fixtures, and baseline resources.
-  Exclude generated directories such as `.git` and `target`.
-  If a compatibility alias remains, document whether it is discoverable; if it must stay hidden, cover that with a focused test or contract check.
-- **External output safety gate:** when changing externally visible errors, diagnostics, log summaries, HTTP/JSON payloads, CLI output, or exception conversion, test the complete external output when inputs may contain connection strings, credentials, tokens, SQL text, filesystem paths, or user data.
-  Do not rely only on nested-field assertions when the full payload could still expose sensitive or misleading text.
-- **Generated contract and baseline gate:** when a change can affect snapshots, baselines, golden files, fingerprints, expected SQL cases, protocol descriptors, generated schemas, or client/model-visible metadata, regenerate or verify those artifacts with the existing project tool or test before handoff.
-  Run the corresponding contract, golden, baseline, or E2E check when practical; otherwise report why it was not practical and what narrower verification was used.
-- **AGENTS.md maintenance:** do not add or update a `Session Notes` section in `AGENTS.md`. Keep task-specific notes in the active conversation, issue, or PR; only stable project-level rules may be generalized into this file.
-- **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups; complete all applicable checks before replying and do not rely on users to find missed rule violations.
-- **End-of-task format/style gate:** for any task that edits files, run `./mvnw spotless:apply -Pcheck -T1C` after the final edit, then run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.
-  Do not perform manual formatting or whitespace cleanup after the final Spotless run; if a later cleanup is required, repeat Spotless and then Checkstyle before the final response.
-- **Final response template:** lead with the shortest complete outcome; add detail only when requested or needed to resolve ambiguity, risk, or the next action, and never repeat information that does not change the decision.
-  Never omit required evidence, blockers, or validation failures. Include intent, changed files and rationale, commands with exit codes, verification status, remaining risks or next actions, and a concise self-check result; if a check was skipped, state why and give the exact command to run.
+## Implementation Rules
 
-## Final Self-Iteration Gate
-- Apply this gate only to implementation tasks where the user has requested or authorized code or documentation edits.
-  For review-only, analysis-only, triage-only, or plan-only tasks, report findings and suggested follow-ups without modifying the reviewed target.
-- Before finishing an authorized implementation task, ask whether this task created in-scope legacy or dead code that can be safely removed,
-  whether the changed implementation can be simpler without changing behavior,
-  whether existing public behavior and contracts are preserved, and whether `code-review-and-quality` or equivalent review still has in-scope required findings.
-- Use a bounded fresh-context or adversarial self-review to keep raising and resolving valuable in-scope questions until the stop condition is met.
-  Stop only when no actionable findings remain. Repeated findings must be fixed or, when the fix would exceed the confirmed boundary, reported as a blocker requiring confirmation; cycle count is never a completion condition.
-- Before finishing any implementation task, compare the final diff against the declared or confirmed change boundary.
-  Use `git diff` to verify the final changed file set and changed hunks against the declared or confirmed boundary.
-  If any edit is outside that boundary and has no documented reason required by the task or an applicable rule,
-  revert only the out-of-scope edits made in the current task, then rework the solution within the allowed scope.
-  Do not keep out-of-scope changes for convenience, and do not use destructive git commands or revert unrelated user changes.
-  If the task cannot be completed after removing the out-of-scope edits, stop and ask the developer to confirm the required scope expansion.
-- If any answer reveals an in-scope, behavior-preserving, low-risk required fix, make the fix and rerun relevant checks.
-- Any file-changing fix invalidates the previous diff review and verification; rerun affected checks and restart the final review.
-- Repeat the review-fix-verify loop until no in-scope required findings remain.
-- Do not continue iterating for optional polish, broad cleanup, risky refactors, or unrelated code. Record those as follow-up suggestions instead of expanding the task.
+- Preserve existing architecture by default. Prefer direct reuse, then
+  composition or delegation, then an existing extension point. Do not invent a
+  boundary when no maintained precedent exists.
+- Use the smallest clear implementation. Every added line, helper, abstraction,
+  identifier, literal, guard, copy, wrapper, and configuration entry must serve
+  production behavior, a public contract, regression protection, diagnostics,
+  safety, readability, or removal of real duplication.
+- A new abstraction must own production behavior, state, or a contract that
+  existing types cannot express. Symmetry, type distinction, shorter call
+  sites, test convenience, and anticipated reuse are insufficient.
+- Do not add production types, widen visibility, remove `final`, or change
+  constructors or signatures for test convenience. Keep tiny single-owner
+  helpers private and nested; avoid accumulating nested collaborators.
+- Keep only constructors with distinct production semantics or framework,
+  reflection, serialization, or SPI requirements. Update callers explicitly
+  instead of adding convenience or compatibility overloads.
+- Before declaring code unused, inspect semantic usages and repository-wide
+  references, including method references, generated accessors, overrides,
+  reflection, registrations, tests, E2E, and external consumers.
+- Remove obsolete in-scope code after verifying usages. Do not leave
+  placeholders, TODO implementations, speculative compatibility shims, or
+  test-only production hooks.
 
-## Coverage & Branch Checklist
-- When coverage targets are declared (including 100%), list every branch/path with its planned test before coding.
-- Map each branch to exactly one test; add cases until all declared branches are covered or explicitly waived.
-- For utilities with multiple return paths, record the branch list and update it if the code changes.
-- Use Jacoco to confirm expectations when coverage is in question; document any unreachable code instead of adding redundant tests.
+### Validation and Exceptions
 
-## Governance Basics
-- Follow the instruction order from Core Principle #7 and surface conflicts with rationale when they arise.
-- Technical choices must satisfy ASF transparency: include license headers, document intent, and keep rationales visible to reviewers.
-- Default to the smallest safe change: monthly feature trains plus weekly patch windows reward incremental fixes unless the product requires deeper refactors.
-- Secure approvals for structural changes (new modules, configs, knobs); localized doc or code tweaks may land after self-review when you surface the evidence reviewers expect (tests, configs, reproduction steps).
-- Maintain deterministic builds, measurable coverage, and clear rollback notes; avoid speculative work without a benefit statement.
+- Add runtime validation only at real external, public, persisted, parsed, SPI,
+  reflection, shared-state, or asynchronous boundaries, or for a concrete
+  diagnostic benefit.
+- Prefer `ShardingSpherePreconditions` with lazy exception suppliers when the
+  module can use it and the resulting control flow preserves the required
+  exception type, message, timing, and cause.
+- Keep a manual throw when the module cannot depend on `infra/exception`, the
+  code is inside `ShardingSpherePreconditions`, a caller-facing exception
+  contract requires it, or a precondition wrapper would obscure necessary
+  control flow. Do not replace manual throws mechanically.
+- When an edit removes the last checked-exception source from a private or
+  internal method, remove the stale `throws` declaration and update callers.
+  Keep checked exceptions on public or overridden methods only when a
+  caller-facing, framework, external API, or compatibility contract requires
+  them. Never widen to generic `Exception` or `Throwable`.
 
-## Verification & Commands
-- Core commands: `./mvnw clean install -B -T1C -Pcheck` (full build), `./mvnw test -pl <module>` (scoped unit tests),
-  `./mvnw -pl <module> -DskipITs -Dspotless.skip=true -Dtest=<TestClassName> test` (fast verification),
-  `./mvnw -pl <explicit-module-set> -DskipTests package` (scoped packaging or smoke preparation).
-- Reactor freshness strategy: prefer IDE/MCP current-source runs or precise `-pl <moduleA>,<moduleB>` Maven scopes.
-  Use `-am` only when dependency freshness, missing local reactor artifacts, or CI-equivalent behavior cannot be proven otherwise,
-  and normally run that freshness gate at most once per unchanged PR head before final handoff or mergeability judgment.
-- Module selection: derive the explicit module set from changed modules, affected tests, and runtime entry modules.
-  For multi-module checks, validate lower-level changed modules first and then higher-level adapter or runtime modules that consume them.
-- Coverage: when tests change or targets demand it, run `./mvnw test jacoco:check@jacoco-check -Pcoverage-check`
-  or scoped `-pl <explicit-module-set> -Djacoco.skip=false test jacoco:report`; pair with the Coverage & Branch Checklist.
-- Format: after code or documentation changes, run `./mvnw spotless:apply -Pcheck -T1C`; do not use any other formatting method.
-  This must be repeated after the last file-changing action before handoff.
-- Style: after formatting, run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.
-- Scoped defaults: prefer module-scoped runs over whole-repo builds; include `-Dsurefire.failIfNoSpecifiedTests=false` when targeting specific tests.
-- Testing ground rules: JUnit 5 + Mockito, `<ProductionClassName>Test` naming, Arrange–Act–Assert, mock external systems/time/network, reset static caches, and reuse swappers/helpers for complex configs.
-- API bans: if a user forbids a tool/assertion, add it to the plan, avoid it during implementation, and cite verification searches (e.g., `rg assertEquals`) in the final report.
+### Repository Style
 
-## Run & Triage Quick Sheet
-- **Proxy quick start:** prefer an IDE/MCP `Bootstrap` run configuration or `./mvnw -pl proxy,<required-upstream-modules> package`
-  when the module set is known; use `./mvnw -pl proxy -am package` only when dependency freshness cannot otherwise be proven.
-  Report command, exit code, config path, and protocol.
-- **JDBC smoke:** prefer IDE/MCP current-source test runs or `./mvnw -pl jdbc,<required-upstream-modules> test -Dtest=<TestClassName>`
-  when the module set is known; use `-am` only as the freshness fallback. Note test name, datasource setup, and failure logs.
-- **Config validation:** update standalone `server.yaml` and cluster `mode/` configs together; call out defaults and any edits that affect both.
-- **Failure triage:** collect `proxy/logs/` plus `target/surefire-reports`, quote the relevant log lines, map them to the data-flow step, and propose the next diagnostic.
-- **Routing mistakes:** check feature-rule configs, metadata freshness, and parser dialect; include SQL + config snippet plus impacted module (`features` or `kernel`), and add/plan targeted tests.
-- **Proxy won’t start:** verify configs/mode/ports and reuse known-good example configs; share the log snippet and files inspected without editing generated artifacts.
-- **Sandbox/network block:** if a command is denied, state what you ran, why it failed, and the approval or alternative plan required.
-- **Single-module tests:** prefer scoped commands over repo-wide runs; use fully-qualified test class names and append `-Dsurefire.failIfNoSpecifiedTests=false` when targeting specific tests (see Verification & Commands for flags).
+- Apply the `CODE_OF_CONDUCT.md` Lombok preference to touched boilerplate when
+  generated semantics are equivalent. Use narrow annotations; never use broad
+  annotations such as `@Data` unless every generated behavior is required.
+- Keep public API and SPI Javadocs required by the code of conduct. Beyond that,
+  document only caller or implementer obligations not expressed by code.
+- Keep declarations near first use. Do not mark local, loop, resource, or
+  lambda variables `final`; use `final` only for method, constructor, and
+  `catch` parameters when applicable.
+- Declare collections by the least-specific required contract. Do not copy or
+  wrap collections without an owned mutability, snapshot, isolation, or public
+  contract reason.
+- Add a YAML anchor only when aliases in the same file remove meaningful
+  duplication.
+- Use repository-relative paths, configuration, or temporary directories in
+  code, tests, scripts, and Skills; never hard-code a local workspace path.
+- Add the ASF license header to new source files and keep implementation intent
+  and reviewer-relevant rationale transparent.
+- Account for compatibility, security, time and space complexity, I/O, memory,
+  resource lifecycle, concurrency, and boundary failures when the affected
+  path makes them relevant.
 
-## Compatibility, Performance & External Systems
-- Specify targeted engines and dialect files (MySQL 5.7/8.0, PostgreSQL 13+, openGauss, etc.) and guarantee backward-compatible behavior.
-- Call out registry/config-center expectations (ZooKeeper, Etcd, Consul) and note risks when governance logic changes.
-- Mention observability or agent impacts (metrics exporters, tracing hooks) whenever touched.
-- Capture performance guardrails—baseline vs new latency/QPS, CPU, memory observations—when runtime paths change.
+## Test Rules
 
-## Mocking & SPI Guidance
-- Favor Mockito over bespoke fixtures; only add new fixture classes when mocks cannot express the scenario.
-- Reuse an existing SPI only when its contract matches the required behavior; one caller, one known implementation, code sharing, type distinction, symmetry, anticipated reuse, or test convenience does not establish a new SPI contract.
-- Name tests after the production method under test; never probe private helpers directly—document unreachable branches instead.
-- Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs.
-- When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension's constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if `AutoMockExtension` cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.
-- Before coding tests, follow the Coverage & Branch Checklist to map inputs/branches to planned assertions.
-- When a component is available via SPI (e.g., `TypedSPILoader`, `DatabaseTypedSPILoader`, `PushDownMetaDataRefresher`), obtain the instance through SPI by default; note any exceptions in the plan.
-- If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it via `TypedSPILoader` or `DatabaseTypedSPILoader` instead of calling `new` directly.
-- Do not mix Mockito matchers with raw arguments; choose a single style per invocation, and ensure the Mockito extension aligns with the mocking approach.
-- Compliance is mandatory: before any coding, re-read AGENTS.md and convert all hard requirements (SPI usage, no FQCN, mocking rules, coverage targets, planning steps) into a checklist in the plan; do not proceed or report completion until every item is satisfied or explicitly waived by the user.
+- Test behavior owned by the production class: computation, decisions,
+  validation, transformation, state transitions, error handling, or external
+  contracts. Each test must fail for a realistic regression that matters.
+- Do not add tests that only prove constants, accessors, delegation, wiring,
+  Java, Lombok, Mockito, parsers, collection libraries, framework behavior, or
+  private implementation shape. Contract literals are exceptions only when no
+  broader behavior can protect them. Never add a test solely to increase a
+  coverage number.
+- Do not test collaborator rules through the current class. Mock the nearest
+  stable boundary and test the collaborator rule in its owner. Cross-layer
+  behavior belongs in an explicitly scoped integration, contract, or E2E test.
+- Give each behavior-owning public production method focused coverage. Each
+  test method covers one scenario and normally invokes the target public method
+  once. Do not create interface-only tests; exercise concrete implementations.
+- Every new public production type requires direct focused tests unless it is a
+  pure pass-through excluded by the meaningful-test gate.
+- Default to direct Mockito mocks. Use a private helper only for repeated local
+  setup and a standalone fixture only for a stable external or packaged test
+  boundary. Do not create thin mock wrappers.
+- Obtain SPI implementations through the project loader by default. Use
+  `Plugins.getMemberAccessor()` for permitted field access; direct reflection
+  APIs and reflective invocation of private methods are forbidden.
+- Prefer `AutoMockExtension` and its static or construction mocking support.
+  Use direct `mockStatic` or `mockConstruction` only when the extension cannot
+  apply and the reason is recorded; scope it with try-with-resources.
+- Parameterized tests must set `name = "{0}"`. Keep test names concise and
+  scenario-focused, following `CODE_OF_CONDUCT.md`.
+- When a coverage target is stated, map every branch to a planned test before
+  coding and verify with JaCoCo when coverage is uncertain.
+
+## Specialized Workflows
+
+Use the matching repository Skill when its trigger applies:
+
+- Issue diagnosis and copy-ready maintainer replies: `$analyze-issue`.
+- Unit-test generation or systematic coverage work: `$gen-ut`.
+- PR correctness, side effects, mergeability, or GitHub review replies:
+  `$review-pr`.
+
+If a named Skill is unavailable, apply an equivalent manual checklist, record
+the fallback in the plan or final response, and continue without installing it.
+Do not create a new Skill merely to hold task-specific instructions.
+
+When implementation decisions depend on a current external framework or
+library, use authoritative documentation and record the relevant source. Do
+not include sensitive repository data in external searches.
+
+## Contract and Impact Gates
+
+- For a public or externally visible identifier, search all affected reference
+  surfaces: APIs, SQL, configuration and YAML keys, SPIs, errors, CLI commands,
+  resources, documentation, examples, distributions, tests, E2E, and
+  baselines. Exclude `.git` and `target`.
+- For errors, logs, HTTP or JSON payloads, CLI output, and exception conversion,
+  test the complete external output when it could expose credentials, tokens,
+  connection strings, SQL, paths, or user data.
+- Regenerate or verify affected snapshots, golden files, fingerprints, SQL
+  cases, descriptors, schemas, and model-visible metadata with the existing
+  project tool.
+- Determine affected GitHub Actions from changed-file path filters and job
+  commands. Run the local equivalent when practical; otherwise record the
+  narrower check and residual risk. Do not update remote workflow state.
+- When runtime paths change, record relevant engine or dialect compatibility
+  and a performance baseline or guardrail. When governance, registry,
+  observability, or agent integrations are touched, state their impact.
+
+## Runtime Triage
+
+- For Proxy startup, prefer the existing IDE/MCP `Bootstrap` configuration or a
+  scoped `proxy` package with explicit upstream modules. Record the
+  configuration path, mode, ports, command, and exit code.
+- For JDBC smoke tests, use a current-source IDE/MCP run or a focused `jdbc`
+  module test with explicit upstream modules and datasource setup.
+- Keep standalone `server.yaml` and affected cluster `mode/` configuration
+  behavior aligned; call out default changes.
+- For startup, routing, or runtime failures, inspect `proxy/logs/` and relevant
+  `target/surefire-reports`; correlate decisive lines with configuration,
+  metadata freshness, parser dialect, and the owning data-flow step. Do not
+  edit generated output.
+- When an E2E, integration, client smoke, or Docker smoke fails, hangs, or times
+  out, stop rerunning. Classify the failure and record evidence and minimum fix
+  scope before changing code or configuration. After deterministic
+  prerequisites pass, run one matching sentinel; if it fails unexpectedly,
+  return to analysis.
+
+## Verification and Commands
+
+Run the narrowest meaningful checks first. Derive explicit Maven modules from
+changed owners, affected tests, and consuming runtime modules.
+
+- Focused test:
+  `./mvnw -pl <module> -DskipITs -Dspotless.skip=true
+  -Dtest=<TestClassName> -Dsurefire.failIfNoSpecifiedTests=false test`
+- Scoped tests: `./mvnw test -pl <explicit-module-set>`
+- Scoped package:
+  `./mvnw -pl <explicit-module-set> -DskipTests package`
+- Coverage:
+  `./mvnw -pl <explicit-module-set> -Djacoco.skip=false test jacoco:report`
+- Full build: `./mvnw clean install -B -T1C -Pcheck`
+
+Prefer current-source IDE/MCP runs or explicit `-pl` module sets. Use `-am`
+only when dependency freshness, missing reactor artifacts, or CI equivalence
+cannot otherwise be established, normally once per unchanged task state.
+
+Keep background unit tests under 60 seconds. Capture high-volume output
+according to `.codex/context/token-efficiency.md`; report commands, exit codes,
+and decisive log excerpts instead of dumping raw logs.
+
+After the last file-changing action:
+
+1. Run `./mvnw spotless:apply -Pcheck -T1C` for code or documentation changes.
+2. Run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or
+   project-rule files changed.
+3. Do not manually reformat afterward. Any later edit invalidates formatting
+   and requires the applicable checks again.
+
+## Completion Loop
+
+For an authorized implementation:
+
+1. Compare the read-only `git diff` and surrounding context with the acceptance
+   checklist.
+2. Confirm every hunk is necessary, prohibited paths have zero diff, direct
+   reuse was considered, architecture changes were authorized, and every test
+   protects owned behavior.
+3. Apply `$code-simplification` when available, or its equivalent checklist, to
+   remove unnecessary complexity without changing behavior.
+4. Apply `$code-review-and-quality` when available, or an equivalent review,
+   before handoff and fix every safe in-scope required finding.
+5. Rerun checks invalidated by a fix, then repeat the semantic diff review.
+6. Stop when no required in-scope finding remains. Do not iterate for optional
+   polish, broad cleanup, or risky refactoring.
+
+For changes to this guide, use `.codex/harness/agents/`:
+
+1. Capture a V0 policy baseline before editing.
+2. Change one coherent instruction group.
+3. Run all policy canaries and reject any critical regression.
+4. Compare pass rate, duration, input tokens, and uncached input tokens with V0.
+5. Accept only candidates that preserve correctness; efficiency improvements
+   count only after quality gates pass.
+6. If the same failure appears twice, add a focused case instead of generic
+   prose. Stop after five candidates or when no measurable improvement remains.
+
+If a report or verdict is disproved, fix the highest-leverage rule, schema,
+validator, prompt, or regression case before correcting the artifact, unless
+the user explicitly requests a one-off correction.
+
+The final response must lead with the outcome and include changed files and
+rationale, commands with exit codes, verification status, remaining risks, and
+the next action only when one is still required. When changes are ready, provide
+a proposed Git commit message; never stage or commit them.
