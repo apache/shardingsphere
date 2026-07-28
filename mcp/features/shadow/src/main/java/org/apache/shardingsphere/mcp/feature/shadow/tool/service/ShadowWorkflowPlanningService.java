@@ -98,6 +98,8 @@ public final class ShadowWorkflowPlanningService {
         WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ShadowRuleWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.RULE_WORKFLOW_KIND,
                 resolveIntent(request, WorkflowLifecycle.OPERATION_CREATE), "Shadow rule workflow plan.", RULE_INTERACTION_STEPS);
+        result.getResourceUriTemplates().addAll(List.of(ShadowFeatureDefinition.STORAGE_UNITS_RESOURCE_URI,
+                ShadowFeatureDefinition.SINGLE_TABLES_RESOURCE_URI, ShadowFeatureDefinition.SINGLE_TABLE_RESOURCE_URI));
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
         planAlgorithmsIfRequired(queryFacade, mergedRequest, result);
         if (!ensureRulePlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
@@ -132,8 +134,8 @@ public final class ShadowWorkflowPlanningService {
         if (!ensureDefaultAlgorithmPlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
-        if (!isReadyForAlgorithmArtifactPlanning(mergedRequest, result)) {
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
+        if (!ensureDefaultAlgorithmType(mergedRequest, result)) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         boolean exists = !inspectionService.queryDefaultAlgorithm(queryFacade, mergedRequest.getDatabase()).isEmpty();
         if (!planningSupport.ensureLifecycleState("Default shadow algorithm", result.getClarifiedIntent(), exists, result)) {
@@ -226,6 +228,18 @@ public final class ShadowWorkflowPlanningService {
         return ensureNoMissingInputs(missingInputs, clarifiedIntent, snapshot, "Default shadow algorithm DistSQL requires an explicit algorithm type and properties.");
     }
     
+    private boolean ensureDefaultAlgorithmType(final ShadowDefaultAlgorithmWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())
+                || ShadowFeatureDefinition.DEFAULT_ALGORITHM_TYPE.equalsIgnoreCase(request.getAlgorithmType())) {
+            return true;
+        }
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
+                "Default shadow algorithm must implement the hint algorithm contract.",
+                "Use algorithm_type=SQL_HINT for the default shadow algorithm.", false, Map.of("algorithm_type", request.getAlgorithmType())));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        return false;
+    }
+    
     private boolean ensureCleanupPlanningContext(final ShadowAlgorithmCleanupWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         return ensureDatabase(request, clarifiedIntent, snapshot) && ensureSupportedIdentifiers(snapshot, request.getDatabase(), request.getAlgorithmName())
                 && ensureNoMissingInputs(request.getAlgorithmName().isEmpty() ? List.of(ShadowFeatureDefinition.ALGORITHM_NAME_FIELD) : List.of(), clarifiedIntent, snapshot,
@@ -271,7 +285,7 @@ public final class ShadowWorkflowPlanningService {
     }
     
     private void addMissingInput(final Collection<String> missingInputs, final String value, final String fieldName) {
-        if (null == value || value.trim().isEmpty()) {
+        if (value.trim().isEmpty()) {
             missingInputs.add(fieldName);
         }
     }

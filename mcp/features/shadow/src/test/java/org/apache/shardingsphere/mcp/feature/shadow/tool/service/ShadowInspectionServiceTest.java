@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -29,6 +30,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -41,30 +43,31 @@ class ShadowInspectionServiceTest {
     void assertQueryRules() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         new ShadowInspectionService().queryRules(queryFacade, "logic_db");
-        verify(queryFacade).query("logic_db", "", "SHOW SHADOW RULES FROM logic_db");
+        verify(queryFacade).query("logic_db", "SHOW SHADOW RULES FROM logic_db");
     }
     
     @Test
     void assertQueryRule() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         new ShadowInspectionService().queryRule(queryFacade, "logic_db", "shadow_rule");
-        verify(queryFacade).query("logic_db", "", "SHOW SHADOW RULE shadow_rule FROM logic_db");
+        verify(queryFacade).query("logic_db", "SHOW SHADOW RULE shadow_rule FROM logic_db");
     }
     
     @Test
     void assertQueryTableRule() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         new ShadowInspectionService().queryTableRule(queryFacade, "logic_db", "t_order");
-        verify(queryFacade).query("logic_db", "", "SHOW SHADOW TABLE RULE t_order FROM logic_db");
+        verify(queryFacade).query("logic_db", "SHOW SHADOW TABLE RULE t_order FROM logic_db");
     }
     
     @Test
     void assertQueryAlgorithmPlugins() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "VALUE_MATCH")));
-        List<Map<String, Object>> actual = new ShadowInspectionService().queryAlgorithmPlugins(queryFacade);
-        assertThat(actual.size(), is(1));
-        assertThat(String.valueOf(actual.getFirst().get("property_guidance")), containsString("operation"));
+        WorkflowQueryResult actual = new ShadowInspectionService().queryAlgorithmPlugins(queryFacade);
+        assertThat(actual.getRows().size(), is(1));
+        assertThat(String.valueOf(actual.getRows().getFirst().get("property_guidance")), containsString("operation"));
+        assertTrue(actual.isAvailabilityConfirmed());
     }
     
     @Test
@@ -72,9 +75,10 @@ class ShadowInspectionServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS"))
                 .thenThrow(new MCPQueryFailedException("syntax error near 'SHADOW ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
-        List<Map<String, Object>> actual = new ShadowInspectionService().queryAlgorithmPlugins(queryFacade);
-        assertTrue(actual.stream().anyMatch(each -> "VALUE_MATCH".equals(each.get("type"))));
-        assertTrue(actual.stream().anyMatch(each -> "VALUE_MATCH".equals(each.get("type")) && String.valueOf(each.get("property_guidance")).contains("operation")));
+        WorkflowQueryResult actual = new ShadowInspectionService().queryAlgorithmPlugins(queryFacade);
+        assertTrue(actual.getRows().stream().anyMatch(each -> "VALUE_MATCH".equals(each.get("type"))));
+        assertTrue(actual.getRows().stream().anyMatch(each -> "VALUE_MATCH".equals(each.get("type")) && String.valueOf(each.get("property_guidance")).contains("operation")));
+        assertFalse(actual.isAvailabilityConfirmed());
     }
     
     @Test

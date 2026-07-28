@@ -91,15 +91,6 @@ public final class ClassificationResult {
     }
     
     /**
-     * Determine whether this statement mutates ShardingSphere rule metadata through DistSQL.
-     *
-     * @return true when the statement is a recognized rule DistSQL statement
-     */
-    public boolean isRuleDistSQL() {
-        return ruleDistSQL;
-    }
-    
-    /**
      * Get model-facing side-effect scope.
      *
      * @return side-effect scope
@@ -115,9 +106,5 @@ public final class ClassificationResult {
             case TRANSACTION_CONTROL, SAVEPOINT -> "transaction-state";
             default -> "unknown-side-effect";
         };
-    }
-    
-    String getTraceStatementMarker() {
-        return SupportedMCPStatement.TRANSACTION_CONTROL == statementClass || SupportedMCPStatement.SAVEPOINT == statementClass ? statementType : statementClass.name();
     }
 }

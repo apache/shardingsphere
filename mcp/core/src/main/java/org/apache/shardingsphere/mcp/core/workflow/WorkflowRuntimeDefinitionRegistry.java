@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.core.workflow;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -77,8 +77,8 @@ public final class WorkflowRuntimeDefinitionRegistry {
     private static Collection<WorkflowRuntimeDefinition> loadDefinitions() {
         Collection<WorkflowRuntimeDefinition> result = new LinkedList<>();
         for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
-            if (each instanceof MCPWorkflowDefinitionProvider) {
-                result.addAll(createDefinitions((MCPWorkflowDefinitionProvider) each));
+            if (each instanceof MCPWorkflowDefinitionProvider workflowDefinitionProvider) {
+                result.addAll(createDefinitions(workflowDefinitionProvider));
             }
         }
         return result;

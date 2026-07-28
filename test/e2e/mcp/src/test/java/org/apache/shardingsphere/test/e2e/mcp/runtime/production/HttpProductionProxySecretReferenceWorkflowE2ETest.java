@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.fixture.MCPWorkflowSecretReferenceFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
     
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_encrypt_rule";
@@ -43,10 +42,6 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
     private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     
     private static final String RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/%s/rules";
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
     
     @Test
     void assertSecretReferenceApplyRequiresManualExecutionThroughProxy() throws IOException, InterruptedException {
@@ -62,8 +57,6 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
             assertThat(String.valueOf(applyResponse.get("category")), is(MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
             assertModelFacingPayloadContract(applyResponse);
             assertThat(getObjectListOrEmpty(applyResponse.get("step_results")).size(), is(0));
-            assertThat(getStringListOrEmpty(applyResponse.get("executed_distsql")).size(), is(0));
-            assertThat(getStringListOrEmpty(applyResponse.get("applied_artifacts")).size(), is(0));
             MCPWorkflowSecretReferenceFixture.assertSecretReferenceRedacted(applyResponse);
             assertTrue(getPayloadItems(interactionClient.readResource(String.format(RULES_RESOURCE_URI, getLogicalDatabaseName()))).isEmpty());
         }

@@ -39,7 +39,6 @@ public final class TopProjectionSegment implements ProjectionSegment {
     
     @Override
     public String getColumnLabel() {
-        // TODO return column label according to database result
-        return "TOP";
+        return null == alias || alias.isEmpty() ? "TOP" : alias;
     }
 }

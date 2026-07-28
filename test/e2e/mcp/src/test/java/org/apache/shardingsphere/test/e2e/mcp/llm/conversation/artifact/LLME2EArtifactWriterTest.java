@@ -100,6 +100,7 @@ class LLME2EArtifactWriterTest {
                 Map.entry("serverImageId", "test-server-image-id"),
                 Map.entry("baseServerImage", "ghcr.io/ggml-org/llama.cpp:server-b9191"),
                 Map.entry("baseServerImageDigest", "test-base-server-image-digest"),
+                Map.entry("modelRepository", "ggml-org/Qwen3-1.7B-GGUF"),
                 Map.entry("modelReference", MODEL_NAME),
                 Map.entry("servedModelId", MODEL_NAME),
                 Map.entry("modelQuantization", "Q4_K_M"),
@@ -107,6 +108,7 @@ class LLME2EArtifactWriterTest {
                 Map.entry("modelFileName", "Qwen3-1.7B-Q4_K_M.gguf"),
                 Map.entry("modelSha256", "configured-model-sha256"),
                 Map.entry("modelPackaging", "prepackaged"),
+                Map.entry("contextWindowTokens", 8192),
                 Map.entry("baseUrlOwnedByTest", true),
                 Map.entry("scoreClosing", true));
     }

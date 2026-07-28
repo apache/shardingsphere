@@ -19,10 +19,12 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
@@ -70,6 +72,7 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyB
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -109,6 +112,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -499,12 +503,16 @@ class StandardDatabaseProxyConnectorTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
         when(queryResult.getMetaData()).thenReturn(queryResultMetaData);
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(queryResult));
+        engine.add(resultSet);
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         when(mergedResult.getValue(1, Object.class)).thenReturn(1);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         DialectTransactionOption dialectTransactionOption = mock(DialectTransactionOption.class);
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(dialectTransactionOption);
+        QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
+        QueryHeader queryHeader = new QueryHeader("", "", "order_id", "order_id", Types.INTEGER, "int4", 4, 0, true, false, false, false);
+        when(queryHeaderBuilder.build(any(ShardingSphereResultSetMetaData.class), eq(resultSet), any(), eq("order_id"), eq("order_id"), eq(1))).thenReturn(queryHeader);
         try (
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
                         (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
@@ -514,7 +522,7 @@ class StandardDatabaseProxyConnectorTest {
                         mockConstruction(MergeEngine.class, (mock, context) -> when(mock.merge(anyList(), any(QueryContext.class))).thenReturn(mergedResult));
                 MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class);
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
-            spiLoader.when(() -> DatabaseTypedSPILoader.getService(eq(QueryHeaderBuilder.class), any(DatabaseType.class))).thenReturn(new QueryHeaderBuilderFixture());
+            spiLoader.when(() -> DatabaseTypedSPILoader.getService(eq(QueryHeaderBuilder.class), any(DatabaseType.class))).thenReturn(queryHeaderBuilder);
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
             assertThat(engine.execute(), isA(QueryResponseHeader.class));
             assertThat(mockedKernelProcessor.constructed().size(), is(1));
@@ -522,6 +530,7 @@ class StandardDatabaseProxyConnectorTest {
             assertThat(mockedMergeEngine.constructed().size(), is(1));
             assertTrue(engine.next());
             assertNotNull(engine.getRowData());
+            verify(queryHeaderBuilder).build(any(ShardingSphereResultSetMetaData.class), eq(resultSet), any(), eq("order_id"), eq("order_id"), eq(1));
         }
     }
     
@@ -586,7 +595,7 @@ class StandardDatabaseProxyConnectorTest {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         DialectTransactionOption dialectTransactionOption = mock(DialectTransactionOption.class);
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(dialectTransactionOption);
-        when(dialectTransactionOption.isDDLNeedImplicitCommit()).thenReturn(true);
+        when(dialectTransactionOption.getDDLCommitPolicy()).thenReturn(DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION);
         try (
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
                         (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));

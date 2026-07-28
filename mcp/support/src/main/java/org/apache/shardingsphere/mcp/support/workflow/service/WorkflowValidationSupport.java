@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -96,19 +95,6 @@ public final class WorkflowValidationSupport {
     }
     
     /**
-     * Create the baseline projection SQL used by workflow validation.
-     *
-     * @param snapshot workflow snapshot
-     * @param databaseType database type
-     * @return projection validation SQL
-     */
-    public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot, final String databaseType) {
-        String columnName = WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getColumn());
-        String tableName = WorkflowSQLUtils.formatSQLIdentifier(databaseType, snapshot.getRequest().getTable());
-        return String.format("SELECT %s FROM %s", columnName, tableName);
-    }
-    
-    /**
      * Persist validation result and create response payload.
      *
      * @param workflowSessionContext workflow session context
@@ -127,7 +113,6 @@ public final class WorkflowValidationSupport {
         result.put("status", validationStatus);
         result.put("issues", createValidationIssues(validationReport));
         result.putAll(validationReport.toMap());
-        result.put("sections", createValidationSections(validationReport));
         WorkflowGuidancePayloadBuilder.appendValidationGuidance(result, snapshot, validationReport);
         return result;
     }
@@ -161,25 +146,6 @@ public final class WorkflowValidationSupport {
         }
         return List.of(new WorkflowIssue(resolveValidationIssueCode(validationReport), "error", WorkflowLifecycle.STEP_VALIDATING,
                 "Validation detected mismatches between the plan and the current state.", "Inspect mismatches and re-run the workflow after fixes.", true, Map.of()).toMap());
-    }
-    
-    private List<Map<String, Object>> createValidationSections(final ValidationReport validationReport) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        addValidationSection(result, "ddl", validationReport.getDdlValidation());
-        addValidationSection(result, "rule", validationReport.getRuleValidation());
-        addValidationSection(result, "logical_metadata", validationReport.getLogicalMetadataValidation());
-        addValidationSection(result, "sql_executability", validationReport.getSqlExecutabilityValidation());
-        return result;
-    }
-    
-    private void addValidationSection(final List<Map<String, Object>> sections, final String layer, final ValidationSection section) {
-        if (null == section) {
-            return;
-        }
-        Map<String, Object> sectionPayload = new LinkedHashMap<>(4, 1F);
-        sectionPayload.put("layer", layer);
-        sectionPayload.putAll(section.toMap());
-        sections.add(sectionPayload);
     }
     
     private String resolveValidationStatus(final ValidationReport validationReport) {

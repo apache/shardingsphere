@@ -78,7 +78,7 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         Map<String, Object> actual = createRuleService(inspectionService).validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
     }
@@ -121,7 +121,59 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
         Map<String, Object> actual = createRuleService(inspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateRuleRejectsExtraReadStorageUnit() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
+        workflowSessionContext.save(snapshot);
+        ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
+        when(inspectionService.queryRules(any(), any())).thenReturn(List.of(createRuleRow("read_ds_0,read_ds_1", "", Map.of())));
+        Map<String, Object> actual = createRuleService(inspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateRuleRejectsDifferentLoadBalancerType() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
+        ((ReadwriteSplittingRuleWorkflowRequest) snapshot.getRequest()).setLoadBalancerType("RANDOM");
+        workflowSessionContext.save(snapshot);
+        ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
+        when(inspectionService.queryRules(any(), any())).thenReturn(List.of(createRuleRow("read_ds_0", "ROUND_ROBIN", Map.of())));
+        Map<String, Object> actual = createRuleService(inspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateRuleRejectsDifferentLoadBalancerProperties() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
+        ReadwriteSplittingRuleWorkflowRequest request = (ReadwriteSplittingRuleWorkflowRequest) snapshot.getRequest();
+        request.setLoadBalancerType("WEIGHT");
+        request.putLoadBalancerProperties(Map.of("read_ds_0", "2"));
+        workflowSessionContext.save(snapshot);
+        ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
+        when(inspectionService.queryRules(any(), any())).thenReturn(List.of(createRuleRow("read_ds_0", "WEIGHT", Map.of("read_ds_0", "1"))));
+        Map<String, Object> actual = createRuleService(inspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
+    }
+    
+    @Test
+    void assertValidateRuleRejectsDuplicateTargetRows() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createRuleSnapshot("plan-1", "session-1", "executed", "create");
+        workflowSessionContext.save(snapshot);
+        ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
+        when(inspectionService.queryRules(any(), any())).thenReturn(List.of(createRuleRow(), createRuleRow("read_ds_0", "RANDOM", Map.of())));
+        Map<String, Object> actual = createRuleService(inspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
     }
     
     @Test
@@ -147,7 +199,7 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
         Map<String, Object> actual = createStatusService(inspectionService).validate(
                 workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
     }
     
     @Test
@@ -160,8 +212,20 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
         Map<String, Object> actual = createStatusService(inspectionService).validate(
                 workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("code"), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
+    }
+    
+    @Test
+    void assertValidateStatusRejectsDuplicateTargetRows() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createStatusSnapshot("plan-1", "session-1", "executed", "enable");
+        workflowSessionContext.save(snapshot);
+        ReadwriteSplittingInspectionService inspectionService = mock(ReadwriteSplittingInspectionService.class);
+        when(inspectionService.queryRuleStatus(any(), any(), any())).thenReturn(List.of(createStatusRow("ENABLED"), createStatusRow("DISABLED")));
+        Map<String, Object> actual = createStatusService(inspectionService).validate(
+                workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("failed"));
     }
     
     @Test
@@ -239,11 +303,17 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
     }
     
     private Map<String, Object> createRuleRow() {
+        return createRuleRow("read_ds_0", "", Map.of());
+    }
+    
+    private Map<String, Object> createRuleRow(final String readStorageUnits, final String loadBalancerType, final Map<String, String> loadBalancerProperties) {
         return Map.of(
                 "name", "readwrite_ds",
                 "write_storage_unit_name", "write_ds",
-                "read_storage_unit_names", "read_ds_0",
-                "transactional_read_query_strategy", "DYNAMIC");
+                "read_storage_unit_names", readStorageUnits,
+                "transactional_read_query_strategy", "DYNAMIC",
+                "load_balancer_type", loadBalancerType,
+                "load_balancer_props", loadBalancerProperties);
     }
     
     private Map<String, Object> createStatusRow(final String status) {
@@ -251,7 +321,11 @@ class ReadwriteSplittingWorkflowValidationServicesTest {
     }
     
     private ExecutableWorkflowArtifact createRuleDistSQLArtifact() {
-        return new ExecutableWorkflowArtifact("review-rule-sql", "rule_dist_sql",
-                "CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')", true);
+        String sql = "CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')";
+        return new ExecutableWorkflowArtifact(sql, sql);
+    }
+    
+    private Map<?, ?> getValidationSection(final Map<String, Object> payload, final String layer) {
+        return ((List<?>) payload.get("sections")).stream().map(each -> (Map<?, ?>) each).filter(each -> layer.equals(each.get("layer"))).findFirst().orElse(Map.of());
     }
 }

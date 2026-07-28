@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.Readw
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -39,7 +40,8 @@ class ReadwriteSplittingAlgorithmRecommendationServiceTest {
     void assertRecommendSpecifiedAlgorithm() {
         ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
         request.setLoadBalancerType("round_robin");
-        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(request, List.of(Map.of("type", "ROUND_ROBIN")), new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(
+                request, WorkflowQueryResult.confirmed(List.of(Map.of("type", "ROUND_ROBIN"))), new LinkedList<>());
         assertThat(actual.getFirst().getAlgorithmType(), is("ROUND_ROBIN"));
         assertThat(actual.getFirst().getAlgorithmRole(), is("primary"));
     }
@@ -47,7 +49,8 @@ class ReadwriteSplittingAlgorithmRecommendationServiceTest {
     @Test
     void assertRecommendDefaultAlgorithm() {
         ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
-        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(request, List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN")), new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(
+                request, WorkflowQueryResult.confirmed(List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN"))), new LinkedList<>());
         assertThat(actual.getFirst().getAlgorithmType(), is("ROUND_ROBIN"));
     }
     
@@ -56,7 +59,16 @@ class ReadwriteSplittingAlgorithmRecommendationServiceTest {
         ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
         request.setLoadBalancerType("WEIGHT");
         List<WorkflowIssue> issues = new LinkedList<>();
-        assertTrue(service.recommendLoadBalanceAlgorithms(request, List.of(Map.of("type", "RANDOM")), issues).isEmpty());
+        assertTrue(service.recommendLoadBalanceAlgorithms(request, WorkflowQueryResult.confirmed(List.of(Map.of("type", "RANDOM"))), issues).isEmpty());
         assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
+    }
+    
+    @Test
+    void assertRecommendSpecifiedAlgorithmWithFallbackCatalog() {
+        ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
+        request.setLoadBalancerType("CUSTOM");
+        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(
+                request, WorkflowQueryResult.fallback(List.of(Map.of("type", "ROUND_ROBIN"))), new LinkedList<>());
+        assertThat(actual.getFirst().getAlgorithmType(), is("CUSTOM"));
     }
 }

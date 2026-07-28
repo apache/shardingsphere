@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,11 +40,6 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPToolDescriptorCatalogValidator {
-    
-    private static final Collection<String> SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS = Set.of("type", "properties", "required", "additionalProperties");
-    
-    private static final Collection<String> SUPPORTED_INPUT_SCHEMA_FIELDS = Set.of(
-            "type", "properties", "required", "additionalProperties", "items", "enum", "minimum", "maximum", "default", "description", "examples");
     
     private static final String SEARCH_METADATA = "database_gateway_search_metadata";
     
@@ -67,6 +61,7 @@ public final class MCPToolDescriptorCatalogValidator {
     public static void validate(final MCPDescriptorCatalog catalog) {
         Collection<MCPToolDescriptor> descriptors = catalog.getProtocolDescriptors().getToolDescriptors();
         Collection<MCPToolRuntimeDescriptor> runtimeDescriptors = catalog.getShardingSphereDescriptors().getToolRuntimeDescriptors();
+        validateToolRuntimeDescriptors(runtimeDescriptors);
         Map<String, MCPToolDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         Map<String, MCPToolRuntimeDescriptor> runtimes = runtimeDescriptors.stream()
                 .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
@@ -76,59 +71,21 @@ public final class MCPToolDescriptorCatalogValidator {
         for (MCPToolDescriptor each : descriptors) {
             ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getName(), each),
                     () -> new IllegalStateException(String.format("Duplicate MCP tool descriptor `%s`.", each.getName())));
-            validateToolInputSchema(each);
+            MCPToolInputSchemaValidator.validate(each);
             MCPToolOutputSchemaValidator.validate(each);
             validateToolDescriptorContract(each, runtimes.get(each.getName()));
-            validateDestructiveToolDescriptor(each, runtimes.get(each.getName()));
-            validatePlanningExecutionMode(each);
+            validateDestructiveToolDescriptor(each);
+            validateNonDestructiveExecutionMode(each);
             validateRelatedResourceUris(each, resourceIdentifiers, shardingSphereResourceIdentifiers);
         }
         validatePlanningToolRuntimeDescriptors(registered, runtimeDescriptors);
     }
     
-    private static void validateToolInputSchema(final MCPToolDescriptor descriptor) {
-        Map<String, Object> inputSchema = descriptor.getInputSchema();
-        for (String each : inputSchema.keySet()) {
-            ShardingSpherePreconditions.checkState(SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS.contains(each),
-                    () -> new IllegalStateException(String.format("Tool `%s` inputSchema contains unsupported top-level field `%s`.", descriptor.getName(), each)));
+    private static void validateToolRuntimeDescriptors(final Collection<MCPToolRuntimeDescriptor> runtimeDescriptors) {
+        for (MCPToolRuntimeDescriptor each : runtimeDescriptors) {
+            ShardingSpherePreconditions.checkState(each.getWorkflowRole().isBlank() || "plan".equals(each.getWorkflowRole()),
+                    () -> new IllegalStateException(String.format("Tool `%s` runtime workflowRole `%s` is unsupported.", each.getToolName(), each.getWorkflowRole())));
         }
-        ShardingSpherePreconditions.checkState("object".equals(inputSchema.get("type")),
-                () -> new IllegalStateException(String.format("Tool `%s` inputSchema must be an object.", descriptor.getName())));
-        Object properties = inputSchema.get("properties");
-        ShardingSpherePreconditions.checkState(properties instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName())));
-        validateNestedInputSchemaFields(descriptor, inputSchema, "inputSchema");
-        MCPToolDescriptorValidationUtils.validateModelFacingSchemaFields(descriptor, inputSchema);
-    }
-    
-    private static void validateNestedInputSchemaFields(final MCPToolDescriptor descriptor, final Map<?, ?> schema, final String path) {
-        validateInputSchemaProperties(descriptor, schema.get("properties"), path + ".properties");
-        validateInputSchemaMapField(descriptor, schema.get("items"), path + ".items");
-        validateInputSchemaMapField(descriptor, schema.get("additionalProperties"), path + ".additionalProperties");
-    }
-    
-    private static void validateInputSchemaProperties(final MCPToolDescriptor descriptor, final Object properties, final String path) {
-        if (!(properties instanceof Map)) {
-            return;
-        }
-        for (Entry<?, ?> entry : ((Map<?, ?>) properties).entrySet()) {
-            validateInputSchemaMapField(descriptor, entry.getValue(), path + "." + entry.getKey());
-        }
-    }
-    
-    private static void validateInputSchemaMapField(final MCPToolDescriptor descriptor, final Object value, final String path) {
-        if (!(value instanceof Map)) {
-            return;
-        }
-        validateInputSchemaMap(descriptor, (Map<?, ?>) value, path);
-    }
-    
-    private static void validateInputSchemaMap(final MCPToolDescriptor descriptor, final Map<?, ?> schema, final String path) {
-        for (Object each : schema.keySet()) {
-            String fieldName = String.valueOf(each);
-            ShardingSpherePreconditions.checkState(SUPPORTED_INPUT_SCHEMA_FIELDS.contains(fieldName),
-                    () -> new IllegalStateException(String.format("Tool `%s` inputSchema at `%s` contains unsupported field `%s`.", descriptor.getName(), path, fieldName)));
-        }
-        validateNestedInputSchemaFields(descriptor, schema, path);
     }
     
     private static void validateToolDescriptorContract(final MCPToolDescriptor descriptor, final MCPToolRuntimeDescriptor runtimeDescriptor) {
@@ -265,7 +222,7 @@ public final class MCPToolDescriptorCatalogValidator {
     private static void validateApplyWorkflowDescriptor(final MCPToolDescriptor descriptor) {
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor,
                 List.of("response_mode", MCPPayloadFieldNames.SUMMARY, WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, MCPPayloadFieldNames.NEXT_ACTIONS,
-                        "manual_artifact_summary", "category", "message", "secret_reference_summary"));
+                        "manual_artifact_summary", "category", "secret_reference_summary"));
     }
     
     private static void validateValidateWorkflowDescriptor(final MCPToolDescriptor descriptor) {
@@ -329,7 +286,7 @@ public final class MCPToolDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Planning tool `%s` annotations.idempotentHint must be false.", descriptor.getName())));
     }
     
-    private static void validateDestructiveToolDescriptor(final MCPToolDescriptor descriptor, final MCPToolRuntimeDescriptor runtimeDescriptor) {
+    private static void validateDestructiveToolDescriptor(final MCPToolDescriptor descriptor) {
         if (!descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
@@ -342,11 +299,9 @@ public final class MCPToolDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must allow preview.", descriptor.getName())));
         ShardingSpherePreconditions.checkState(!executionModes.contains("auto-execute"),
                 () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
-        ShardingSpherePreconditions.checkState(null != runtimeDescriptor && !runtimeDescriptor.getSideEffectScope().isEmpty(),
-                () -> new IllegalStateException(String.format("Destructive tool `%s` must declare sideEffectScope in internal runtime.", descriptor.getName())));
     }
     
-    private static void validatePlanningExecutionMode(final MCPToolDescriptor descriptor) {
+    private static void validateNonDestructiveExecutionMode(final MCPToolDescriptor descriptor) {
         if (descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
@@ -356,9 +311,9 @@ public final class MCPToolDescriptorCatalogValidator {
         }
         Collection<?> executionModes = executionMode.get().get("enum") instanceof Collection ? (Collection<?>) executionMode.get().get("enum") : List.of();
         ShardingSpherePreconditions.checkState(!executionModes.contains("preview"),
-                () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose preview.", descriptor.getName())));
+                () -> new IllegalStateException(String.format("Non-destructive tool `%s` execution_mode must not expose preview.", descriptor.getName())));
         ShardingSpherePreconditions.checkState(!executionModes.contains("auto-execute"),
-                () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
+                () -> new IllegalStateException(String.format("Non-destructive tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
     }
     
 }

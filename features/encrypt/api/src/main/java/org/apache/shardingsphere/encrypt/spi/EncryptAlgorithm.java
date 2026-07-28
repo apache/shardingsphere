@@ -52,7 +52,7 @@ public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
     EncryptAlgorithmMetaData getMetaData();
     
     /**
-     * convert to encryptor configuration.
+     * Convert to encryptor configuration.
      *
      * @return converted configuration
      */

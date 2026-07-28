@@ -44,8 +44,6 @@ public final class MySQLServerPreparedStatement implements ServerPreparedStateme
     
     private final HintValueContext hintValueContext;
     
-    private final List<Integer> parameterColumnDefinitionFlags;
-    
     private final List<MySQLBinaryColumnType> parameterColumnTypes = new CopyOnWriteArrayList<>();
     
     private final List<MySQLPreparedStatementParameterType> parameterTypes = new CopyOnWriteArrayList<>();

@@ -71,7 +71,23 @@ public final class PomTemplateTest {
         assertThat(content, containsString("shardingsphere-sharding-core"));
         assertThat(content, containsString("shardingsphere-broadcast-core"));
     }
-    
+
+    @Test
+    public void assertClusterZookeeperRepositoryDependency() throws IOException, TemplateException {
+        Map<String, Object> dataModel = createBaseDataModel();
+        dataModel.put("mode", "cluster-zookeeper");
+        String content = renderPomTemplate(dataModel);
+        assertThat(content, containsString("shardingsphere-cluster-mode-repository-zookeeper"));
+    }
+
+    @Test
+    public void assertClusterEtcdRepositoryDependency() throws IOException, TemplateException {
+        Map<String, Object> dataModel = createBaseDataModel();
+        dataModel.put("mode", "cluster-etcd");
+        String content = renderPomTemplate(dataModel);
+        assertThat(content, containsString("shardingsphere-cluster-mode-repository-etcd"));
+    }
+
     private Map<String, Object> createBaseDataModel() {
         Map<String, Object> result = new HashMap<>(6, 1F);
         result.put("mode", "standalone");

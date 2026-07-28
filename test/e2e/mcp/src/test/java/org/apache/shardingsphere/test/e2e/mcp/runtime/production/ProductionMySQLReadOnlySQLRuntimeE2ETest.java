@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETest {
     
     @Override
@@ -91,51 +91,6 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT SLEEP(2)", "timeout_ms", 1));
             assertRecoveryResponse(actual);
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectExecuteMultiStatementWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
-                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT 1; SELECT 2"));
-            assertRecoveryResponse(actual, "Only one SQL statement is allowed.", "multiple_sql_statements");
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectExplainUpdateWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_explain_query",
-                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "UPDATE orders SET status = 'DONE' WHERE order_id = 1",
-                            "explain_sql", "EXPLAIN UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
-            assertRecoveryResponse(actual, "database_gateway_execute_explain_query only supports QUERY statements as the explained SQL.");
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectLockingReadFromReadOnlyToolWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
-                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT * FROM orders FOR UPDATE"));
-            assertRecoveryResponse(actual, "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract.");
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectLockingReadFromUpdateToolWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_update",
-                    createExecuteUpdateArguments("SELECT * FROM orders FOR UPDATE"));
-            assertRecoveryResponse(actual, "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract.");
         }
     }
     

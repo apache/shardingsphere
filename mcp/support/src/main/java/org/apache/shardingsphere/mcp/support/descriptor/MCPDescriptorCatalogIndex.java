@@ -19,15 +19,18 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,6 +46,8 @@ public final class MCPDescriptorCatalogIndex {
     private static final Map<String, MCPResourceDescriptor> RESOURCE_DESCRIPTORS = createResourceDescriptors();
     
     private static final Map<String, ShardingSphereMCPResourceMetadata> SHARDINGSPHERE_RESOURCE_METADATA = createShardingSphereResourceMetadata();
+    
+    private static final List<Entry<MCPUriTemplate, ShardingSphereMCPResourceMetadata>> RESOURCE_METADATA_TEMPLATES = createResourceMetadataTemplates();
     
     private static final Map<String, MCPToolDescriptor> TOOL_DESCRIPTORS = createToolDescriptors();
     
@@ -75,6 +80,10 @@ public final class MCPDescriptorCatalogIndex {
     private static Map<String, ShardingSphereMCPResourceMetadata> createShardingSphereResourceMetadata() {
         return CATALOG.getShardingSphereDescriptors().getResourceMetadata().stream()
                 .collect(Collectors.toMap(ShardingSphereMCPResourceMetadata::getUriTemplate, each -> each));
+    }
+    
+    private static List<Entry<MCPUriTemplate, ShardingSphereMCPResourceMetadata>> createResourceMetadataTemplates() {
+        return CATALOG.getShardingSphereDescriptors().getResourceMetadata().stream().map(each -> Map.entry(new MCPUriTemplate(each.getUriTemplate()), each)).toList();
     }
     
     private static Map<String, MCPToolDescriptor> createToolDescriptors() {
@@ -115,7 +124,7 @@ public final class MCPDescriptorCatalogIndex {
     private static Map<String, Collection<String>> createWorkflowKindsByPromptName() {
         Map<String, Collection<String>> result = new LinkedHashMap<>(PROMPT_DESCRIPTORS.size(), 1F);
         for (MCPPromptDescriptor each : PROMPT_DESCRIPTORS) {
-            Collection<String> workflowKinds = findPromptPlanningWorkflowKind(each);
+            Collection<String> workflowKinds = findPromptPlanningWorkflowKinds(each);
             if (!workflowKinds.isEmpty()) {
                 result.put(each.getName(), workflowKinds);
             }
@@ -123,23 +132,35 @@ public final class MCPDescriptorCatalogIndex {
         return result;
     }
     
-    private static Collection<String> findPromptPlanningWorkflowKind(final MCPPromptDescriptor prompt) {
-        String planningToolName = "database_gateway_" + prompt.getName();
+    private static Collection<String> findPromptPlanningWorkflowKinds(final MCPPromptDescriptor prompt) {
         Object relatedTools = prompt.getMeta().get(MCPShardingSphereMetadataKeys.RELATED_TOOLS);
-        MCPToolDescriptor toolDescriptor = TOOL_DESCRIPTORS.get(planningToolName);
         if (!(relatedTools instanceof Collection<?>)) {
             return List.of();
         }
-        if (!((Collection<?>) relatedTools).contains(planningToolName) || null == toolDescriptor || !isPlanningTool(planningToolName)) {
+        String planningToolName = "";
+        for (Object each : (Collection<?>) relatedTools) {
+            String toolName = Objects.toString(each, "");
+            MCPToolRuntimeDescriptor runtimeDescriptor = TOOL_RUNTIME_DESCRIPTORS.get(toolName);
+            if (null == runtimeDescriptor) {
+                if (TOOL_DESCRIPTORS.containsKey(toolName)) {
+                    continue;
+                }
+                return List.of();
+            }
+            if (!"plan".equals(runtimeDescriptor.getWorkflowRole())) {
+                continue;
+            }
+            if (!planningToolName.isEmpty()) {
+                return List.of();
+            }
+            planningToolName = toolName;
+        }
+        MCPToolDescriptor toolDescriptor = TOOL_DESCRIPTORS.get(planningToolName);
+        if (null == toolDescriptor) {
             return List.of();
         }
         String workflowKind = Objects.toString(toolDescriptor.getMeta().get(MCPShardingSphereMetadataKeys.WORKFLOW_KIND), "");
         return workflowKind.isEmpty() ? List.of() : List.of(workflowKind);
-    }
-    
-    private static boolean isPlanningTool(final String toolName) {
-        MCPToolRuntimeDescriptor runtimeDescriptor = TOOL_RUNTIME_DESCRIPTORS.get(toolName);
-        return null != runtimeDescriptor && "plan".equals(runtimeDescriptor.getWorkflowRole());
     }
     
     /**
@@ -170,6 +191,24 @@ public final class MCPDescriptorCatalogIndex {
     public static ShardingSphereMCPResourceMetadata getRequiredShardingSphereResourceMetadata(final String uriTemplate) {
         return Optional.ofNullable(SHARDINGSPHERE_RESOURCE_METADATA.get(uriTemplate)).orElseThrow(
                 () -> new IllegalStateException(String.format("ShardingSphere MCP resource metadata descriptor is required for `%s`.", uriTemplate)));
+    }
+    
+    /**
+     * Resolve resource kind from a descriptor URI template or expanded resource URI.
+     *
+     * @param uri resource URI or URI template
+     * @return descriptor resource kind, or generic resource kind when the URI is unknown
+     */
+    public static String resolveResourceKind(final String uri) {
+        ShardingSphereMCPResourceMetadata metadata = SHARDINGSPHERE_RESOURCE_METADATA.get(uri);
+        if (null == metadata) {
+            metadata = RESOURCE_METADATA_TEMPLATES.stream().filter(each -> each.getKey().parse(uri).isPresent())
+                    .map(Entry::getValue).findFirst().orElse(null);
+        }
+        if (null == metadata) {
+            return "resource";
+        }
+        return null == metadata.getObjectScope() ? metadata.getResourceKind() : metadata.getObjectScope();
     }
     
     /**
@@ -275,13 +314,11 @@ public final class MCPDescriptorCatalogIndex {
     /**
      * Create capability catalog payload.
      *
-     * @param supportedResources supported resource URI templates
-     * @param supportedTools supported tool names
      * @param supportedStatements supported statement classes
      * @return capability catalog payload
      */
-    public static Map<String, Object> createCapabilityPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
-        return MCPDescriptorCatalogPayloadBuilder.build(CATALOG, supportedResources, supportedTools, supportedStatements);
+    public static Map<String, Object> createCapabilityPayload(final Collection<?> supportedStatements) {
+        return MCPDescriptorCatalogPayloadBuilder.build(CATALOG, supportedStatements);
     }
     
     /**
@@ -290,6 +327,6 @@ public final class MCPDescriptorCatalogIndex {
      * @return guidance payload
      */
     public static Map<String, Object> createGuidancePayload() {
-        return MCPGuidancePayloadBuilder.build(CATALOG);
+        return MCPGuidancePayloadBuilder.build();
     }
 }

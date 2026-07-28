@@ -28,7 +28,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPa
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
@@ -48,6 +47,8 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     private boolean sharedRuntimeFixtureSelected;
     
+    private boolean clusterRuntimeFixtureSelected;
+    
     @AfterEach
     void tearDownFixture() {
         if (sharedRuntimeFixtureSelected) {
@@ -59,6 +60,7 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
             runtimeFixture.close();
             runtimeFixture = null;
         }
+        clusterRuntimeFixtureSelected = false;
     }
     
     @AfterAll
@@ -76,14 +78,15 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     @Override
     protected final void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
-                () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the Proxy-backed workflow E2E tests."));
+        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
+            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the Proxy-backed workflow E2E tests."));
+        }
         try {
             if (sharedRuntimeFixtureSelected) {
                 prepareSharedRuntimeFixture();
                 return;
             }
-            runtimeFixture = ProxyWorkflowRuntimeTestSupport.createFixture();
+            runtimeFixture = clusterRuntimeFixtureSelected ? ProxyWorkflowRuntimeTestSupport.createClusterFixture() : ProxyWorkflowRuntimeTestSupport.createFixture();
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
@@ -107,6 +110,10 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     protected final void useSharedReadOnlyRuntimeFixture() {
         sharedRuntimeFixtureSelected = true;
+    }
+    
+    protected final void useClusterRuntimeFixture() {
+        clusterRuntimeFixtureSelected = true;
     }
     
     protected final void assertValidationPassed(final Map<String, Object> actualValidationResponse) {
@@ -168,5 +175,9 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     protected final Map<String, Object> getObjectOrEmpty(final Object value) {
         return null == value ? Map.of() : MCPInteractionPayloads.getRequiredObjectValue(value, "payload");
+    }
+    
+    protected final Map<String, Object> getValidationSection(final Map<String, Object> payload, final String layer) {
+        return getObjectListOrEmpty(payload.get("sections")).stream().filter(each -> layer.equals(each.get("layer"))).findFirst().orElse(Map.of());
     }
 }

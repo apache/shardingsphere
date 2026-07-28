@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import com.google.common.collect.LinkedHashMultimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -31,9 +32,13 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
@@ -53,6 +58,7 @@ import org.apache.shardingsphere.infra.session.connection.transaction.Transactio
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
@@ -97,6 +103,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -115,6 +122,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyCollection;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -314,6 +322,33 @@ class ProxySQLExecutorTest {
                 Arguments.of("execute-with-driver-and-no-transaction", false, createInsertStatement(postgresqlDatabaseType), false, false, false));
     }
     
+    @Test
+    void assertExecuteWithDialectResultMetadataCheckerException() throws SQLException {
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        when(database.getRuleMetaData().getRules()).thenReturn(createRules(false));
+        ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor("foo_schema", true);
+        setExecutorField(proxySQLExecutor, "regularExecutor", regularExecutor);
+        ExecutionContext executionContext = createExecutionContext("execute-with-dialect-result-metadata-checker", new SQLStatement(fixtureDatabaseType), false);
+        Statement statement = mock(Statement.class);
+        ExecutionUnit executionUnit = new ExecutionUnit("foo_ds", new SQLUnit("SELECT 1", Collections.emptyList()));
+        Collection<ExecutionUnit> executionUnits = Arrays.asList(executionUnit, new ExecutionUnit("foo_ds_1", new SQLUnit("SELECT 1", Collections.emptyList())));
+        when(executionContext.getExecutionUnits()).thenReturn(executionUnits);
+        JDBCExecutionUnit jdbcExecutionUnit = new JDBCExecutionUnit(executionUnit, ConnectionMode.CONNECTION_STRICTLY, statement);
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
+                Collections.singletonList(new ExecutionGroup<>(Collections.singletonList(jdbcExecutionUnit))), mock(ExecutionGroupReportContext.class));
+        DialectJDBCResultMetadataChecker checker = mock(DialectJDBCResultMetadataChecker.class);
+        SQLException expected = new SQLException("expected");
+        doThrow(expected).when(checker).check(executionUnits, statement, "SELECT 1");
+        try (
+                MockedConstruction<DriverExecutionPrepareEngine> ignored = mockConstruction(DriverExecutionPrepareEngine.class,
+                        (mock, context) -> when(mock.prepare(anyString(), eq(executionContext), anyCollection(), any(ExecutionGroupReportContext.class))).thenReturn(executionGroupContext));
+                MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
+            spiLoader.when(() -> DatabaseTypedSPILoader.findService(DialectJDBCResultMetadataChecker.class, fixtureDatabaseType)).thenReturn(Optional.of(checker));
+            assertThat(assertThrows(SQLException.class, () -> proxySQLExecutor.execute(executionContext)), is(expected));
+            verify(regularExecutor, never()).execute(any(), any(), anyBoolean(), anyBoolean());
+        }
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("executeFallbackScenarios")
     void assertExecuteFallback(final String name, final boolean hasRawExecutionRule, final SQLStatement sqlStatement, final boolean hasSaneResult) throws SQLException {
@@ -378,7 +413,8 @@ class ProxySQLExecutorTest {
     void assertCheckExecutePrerequisitesWithMetaDataRefreshInXATransaction() {
         DatabaseType databaseType = mock(DatabaseType.class);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(new DialectTransactionOption(false, false, false, true, true, false, false, Collections.emptyList()));
+        when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(
+                new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, true, false, false, Collections.emptyList()));
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         try (MockedStatic<DatabaseTypedSPILoader> mockedDatabaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {

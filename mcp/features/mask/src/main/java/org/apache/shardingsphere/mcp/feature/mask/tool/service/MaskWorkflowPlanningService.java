@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
@@ -58,26 +59,17 @@ public final class MaskWorkflowPlanningService {
     
     private static final List<String> VALIDATION_LAYERS = List.of("rules");
     
-    private final WorkflowPlanningSupport planningSupport;
+    private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
-    private final MaskWorkflowIntentResolver intentResolver;
+    private final MaskWorkflowIntentResolver intentResolver = new MaskWorkflowIntentResolver();
     
-    private final MaskRuleInspectionService ruleInspectionService;
+    private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
-    private final MaskAlgorithmRecommendationService algorithmRecommendationService;
+    private final MaskAlgorithmRecommendationService algorithmRecommendationService = new MaskAlgorithmRecommendationService();
     
-    private final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    private final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new MaskAlgorithmPropertyTemplateService();
     
-    private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService;
-    
-    public MaskWorkflowPlanningService() {
-        planningSupport = new WorkflowPlanningSupport();
-        intentResolver = new MaskWorkflowIntentResolver();
-        ruleInspectionService = new MaskRuleInspectionService();
-        algorithmRecommendationService = new MaskAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new MaskAlgorithmPropertyTemplateService();
-        ruleDistSQLPlanningService = new MaskRuleDistSQLPlanningService();
-    }
+    private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = new MaskRuleDistSQLPlanningService();
     
     /**
      * Plan mask workflow.
@@ -179,7 +171,7 @@ public final class MaskWorkflowPlanningService {
     }
     
     private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
-        List<Map<String, Object>> maskAlgorithms = ruleInspectionService.queryMaskAlgorithms(queryFacade);
+        WorkflowQueryResult maskAlgorithms = ruleInspectionService.queryMaskAlgorithms(queryFacade);
         List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendMaskAlgorithms(clarifiedIntent, request, maskAlgorithms, snapshot.getIssues());
         snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
         if (!algorithmCandidates.isEmpty()) {

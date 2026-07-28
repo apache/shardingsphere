@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 

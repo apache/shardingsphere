@@ -35,13 +35,6 @@ public final class MCPTransportSecurityException extends ServerTransportSecurity
     
     private final String category;
     
-    /**
-     * Create a MCP transport security exception.
-     *
-     * @param statusCode HTTP status code
-     * @param message safe message
-     * @param category stable diagnostic category
-     */
     public MCPTransportSecurityException(final int statusCode, final String message, final String category) {
         super(statusCode, message);
         this.category = category;

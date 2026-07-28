@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
@@ -46,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -56,18 +56,14 @@ import static org.mockito.Mockito.mockStatic;
 class ToolDefinitionRegistryTest {
     
     @Test
-    void assertGetSupportedTools() {
-        assertThat(ToolDefinitionRegistry.getSupportedTools(), contains("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
-                "database_gateway_execute_explain_query", "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow"));
-    }
-    
-    @Test
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolDefinitionRegistry.getSupportedToolDescriptors();
         assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(),
                 is(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query", "database_gateway_execute_explain_query",
                         "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
-        assertToolFields(actual.get(0), List.of("database", "schema", "query", "object_types"));
+        assertToolFields(actual.get(0), List.of("database", "schema", "query", "object_types", "limit", "offset"));
+        assertField(actual.get(0), "limit", "integer", List.of(), false);
+        assertField(actual.get(0), "offset", "integer", List.of(), false);
         assertToolFields(actual.get(1), List.of("database"));
         assertRequiredFields(actual.get(1), List.of("database"));
         assertToolFields(actual.get(2), List.of("database", "schema", "sql", "max_rows", "timeout_ms"));
@@ -93,7 +89,7 @@ class ToolDefinitionRegistryTest {
     @Test
     void assertDispatch() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-        runtimeContext.getSessionManager().createSession("session-1");
+        runtimeContext.getSessionManager().createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
             MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
@@ -182,8 +178,8 @@ class ToolDefinitionRegistryTest {
     void assertDispatchWithInvalidApprovedSteps() {
         MCPInvalidApprovedStepsException actual = assertThrows(MCPInvalidApprovedStepsException.class,
                 () -> dispatch("database_gateway_apply_workflow", Map.of("plan_id", "plan-1", "execution_mode", "preview", "approved_steps", List.of("all"))));
-        assertThat(actual.getMessage(), is("approved_steps must contain only [ddl, index_ddl, rule_distsql]."));
-        assertThat(actual.getAllowedValues(), is(List.of("ddl", "index_ddl", "rule_distsql")));
+        assertThat(actual.getMessage(), is("approved_steps must contain only [rule_distsql]."));
+        assertThat(actual.getAllowedValues(), is(List.of("rule_distsql")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("plan_id", "plan-1", "execution_mode", "preview")));
     }
     
@@ -220,6 +216,17 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
+    void assertValidateWithInvalidNestedBoolean() {
+        MCPToolDescriptor descriptor = createNestedFixtureToolDescriptor();
+        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
+                () -> new MCPToolArgumentContract(descriptor.getName(), descriptor.getInputSchema()).validate(Map.of("options", Map.of("enabled", "true"))));
+        assertThat(actual.getMessage(), is("options.enabled must be a boolean."));
+        assertThat(actual.getArgumentPath(), is("options.enabled"));
+        assertThat(actual.getCategory(), is("invalid_argument_type"));
+        assertThat(actual.getExpectedType(), is("boolean"));
+    }
+    
+    @Test
     void assertValidateWithSchemaAdditionalProperties() {
         MCPToolDescriptor descriptor = createAdditionalPropertiesFixtureToolDescriptor();
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
@@ -233,12 +240,12 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
-    void assertGetSupportedToolsWithNoToolHandlers() {
+    void assertGetSupportedToolDescriptorsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(Collections.emptyList());
             Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ToolDefinitionRegistry.class.getName(), false, createIsolatedToolDefinitionRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
-                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedTools"), null));
+                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedToolDescriptors"), null));
             assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
             Throwable actualCause = actual.getCause().getCause();
             assertThat(actualCause.getClass(), is(IllegalStateException.class));
@@ -251,7 +258,8 @@ class ToolDefinitionRegistryTest {
     }
     
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {
-        Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string")), "required", List.of(), "additionalProperties", false);
+        Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string"), "enabled", Map.of("type", "boolean")),
+                "required", List.of(), "additionalProperties", false);
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
                 "additionalProperties", false), Collections.emptyMap(),
                 MCPToolAnnotations.builder()

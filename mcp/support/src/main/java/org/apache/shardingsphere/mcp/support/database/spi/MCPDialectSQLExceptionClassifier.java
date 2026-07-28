@@ -32,6 +32,8 @@ public interface MCPDialectSQLExceptionClassifier extends TypedSPI {
     
     /**
      * Classify SQL exception when JDBC-standard evidence is ambiguous.
+     * An empty result delegates classification to portable SQLState rules. A concrete category is definitive for the current exception.
+     * {@link MCPJDBCErrorCategory#QUERY_FAILED} indicates that the dialect recognizes an ambiguous exception but cannot classify it more specifically.
      *
      * @param cause SQL exception
      * @return classified category

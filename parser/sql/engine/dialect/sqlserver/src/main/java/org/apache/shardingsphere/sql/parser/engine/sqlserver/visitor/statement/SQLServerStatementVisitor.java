@@ -1921,13 +1921,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         int startIndex = ctx.topNum().getStart().getStartIndex();
         int stopIndex = ctx.topNum().getStop().getStopIndex();
         ASTNode topNum = visit(ctx.topNum());
+        String alias = null == ctx.alias() ? null : ((AliasSegment) visit(ctx.alias())).getIdentifier().getValue();
         if (topNum instanceof NumberLiteralValue) {
             NumberLiteralRowNumberValueSegment rowNumberSegment = new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
-            return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), rowNumberSegment, null != ctx.alias() ? ctx.alias().getText() : null);
+            return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), rowNumberSegment, alias);
         }
         ParameterMarkerSegment parameterSegment = new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
         parameterMarkerSegments.add(parameterSegment);
-        return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (RowNumberValueSegment) parameterSegment, null != ctx.alias() ? ctx.alias().getText() : null);
+        return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (RowNumberValueSegment) parameterSegment, alias);
     }
     
     @Override

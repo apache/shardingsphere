@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.session;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -38,7 +40,7 @@ class MCPSessionExecutionCoordinatorTest {
     @Test
     void assertExecuteWithSessionLock() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        sessionManager.createSession("session-1");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
         String actual = coordinator.executeWithSessionLock("session-1", () -> "done");
         assertThat(actual, is("done"));
@@ -54,7 +56,7 @@ class MCPSessionExecutionCoordinatorTest {
     @Test
     void assertExecuteSerializesSameSession() throws InterruptedException, ExecutionException {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        sessionManager.createSession("session-1");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
         CountDownLatch firstExecutionStarted = new CountDownLatch(1);
         CountDownLatch releaseFirstExecution = new CountDownLatch(1);
@@ -93,8 +95,8 @@ class MCPSessionExecutionCoordinatorTest {
     @Test
     void assertExecuteAllowsDifferentSessionsConcurrently() throws InterruptedException, ExecutionException {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        sessionManager.createSession("session-1");
-        sessionManager.createSession("session-2");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
+        sessionManager.createSession(new MCPSessionIdentity("session-2", "", "", Map.of()));
         MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
         CountDownLatch executionsStarted = new CountDownLatch(2);
         CountDownLatch releaseExecutions = new CountDownLatch(1);
@@ -123,7 +125,7 @@ class MCPSessionExecutionCoordinatorTest {
     @Test
     void assertCloseSessionWaitsForGuardedExecution() throws InterruptedException, ExecutionException {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        sessionManager.createSession("session-1");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
         CountDownLatch executionStarted = new CountDownLatch(1);
         CountDownLatch releaseExecution = new CountDownLatch(1);
@@ -156,8 +158,8 @@ class MCPSessionExecutionCoordinatorTest {
     @Test
     void assertCloseAllSessions() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        sessionManager.createSession("session-1");
-        sessionManager.createSession("session-2");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
+        sessionManager.createSession(new MCPSessionIdentity("session-2", "", "", Map.of()));
         MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
         coordinator.closeAllSessions();
         assertFalse(sessionManager.hasSession("session-1"));

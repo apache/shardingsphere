@@ -44,19 +44,19 @@ import java.util.UUID;
 @Getter
 public final class LLME2EConfiguration {
     
+    public static final String MODEL_PROVIDER = "openai-compatible";
+    
     private static final DateTimeFormatter RUN_ID_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss", Locale.ENGLISH);
     
     private static final String DEFAULT_BASE_URL = "http://127.0.0.1:8080/v1";
     
-    private static final String DEFAULT_MODEL_NAME = "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M";
+    private static final String DEFAULT_MODEL_NAME = "unsloth/Qwen3.5-9B-GGUF:Q3_K_M";
     
     private static final String DEFAULT_API_KEY = "mcp-llm-score";
     
     private static final String DEFAULT_SERVER_IMAGE = "apache/shardingsphere-mcp-llm-runtime:local";
     
     private final String baseUrl;
-    
-    private final String modelProvider;
     
     private final String modelName;
     
@@ -93,11 +93,10 @@ public final class LLME2EConfiguration {
         ModelMetadata modelMetadata = readModelMetadata(props);
         return LLME2EConfiguration.builder()
                 .baseUrl(normalizeBaseUrl(readString(props, "mcp.llm.base-url", DEFAULT_BASE_URL)))
-                .modelProvider(readString(props, "mcp.llm.provider", "openai-compatible"))
                 .modelName(readString(props, "mcp.llm.model", DEFAULT_MODEL_NAME))
                 .apiKey(readString(props, "mcp.llm.api-key", DEFAULT_API_KEY))
                 .readyTimeoutSeconds(readInteger(props, "mcp.llm.ready-timeout-seconds", 600))
-                .requestTimeoutSeconds(readInteger(props, "mcp.llm.request-timeout-seconds", 240))
+                .requestTimeoutSeconds(readInteger(props, "mcp.llm.request-timeout-seconds", 600))
                 .maxTurns(readInteger(props, "mcp.llm.max-turns", 10))
                 .artifactRoot(Paths.get(readString(props, "mcp.llm.artifact-root", "target/llm-e2e")))
                 .runId(readString(props, "mcp.llm.run-id", createDefaultRunId()))
@@ -187,9 +186,13 @@ public final class LLME2EConfiguration {
     private static int readInteger(final Properties props, final String propertyName, final int defaultValue) {
         String result = readString(props, propertyName, String.valueOf(defaultValue));
         try {
-            return Integer.parseInt(result);
-        } catch (final NumberFormatException ignored) {
-            return defaultValue;
+            int parsedValue = Integer.parseInt(result);
+            if (parsedValue <= 0) {
+                throw new IllegalStateException(String.format("MCP LLM E2E property `%s` must be a positive integer, but was `%s`.", propertyName, result));
+            }
+            return parsedValue;
+        } catch (final NumberFormatException ex) {
+            throw new IllegalStateException(String.format("MCP LLM E2E property `%s` must be a positive integer, but was `%s`.", propertyName, result), ex);
         }
     }
     

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -45,11 +46,11 @@ class EncryptAlgorithmsHandlerTest {
         when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         try (
                 MockedConstruction<EncryptRuleInspectionService> mockedConstruction = mockConstruction(EncryptRuleInspectionService.class,
-                        (mock, context) -> when(mock.queryEncryptAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "AES"))))) {
-            MCPSuccessPayload actual = new EncryptAlgorithmsHandler().handle(requestContext, new MCPUriVariables(Map.of()));
+                        (mock, context) -> when(mock.queryEncryptAlgorithms(queryFacade)).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "AES")))))) {
+            MCPSuccessPayload actual = new EncryptAlgorithmsHandler().handle(requestContext, new MCPResourceURIVariables(Map.of()));
             verify(mockedConstruction.constructed().getFirst()).queryEncryptAlgorithms(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/algorithms"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/encrypt/algorithms"));
         }
     }
 }

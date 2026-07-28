@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.payload;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResultKind;
@@ -94,9 +94,6 @@ public final class SQLExecutionPayload implements MCPSuccessPayload {
         }
         if (SQLExecutionResultKind.UPDATE_COUNT == executionResult.getResultKind()) {
             result.put("affected_rows", executionResult.getAffectedRows());
-        }
-        if (SQLExecutionResultKind.STATEMENT_ACK == executionResult.getResultKind()) {
-            result.put(MCPPayloadFieldNames.MESSAGE, createStatementAcknowledgement());
         }
         result.put("applied_max_rows", executionResult.getAppliedMaxRows());
         result.put("applied_timeout_ms", executionResult.getAppliedTimeoutMs());

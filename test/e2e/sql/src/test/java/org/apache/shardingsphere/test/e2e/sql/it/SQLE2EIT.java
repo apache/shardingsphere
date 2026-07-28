@@ -52,10 +52,6 @@ public interface SQLE2EIT {
             for (Object each : invocationContext.getArguments()) {
                 if (each instanceof E2ETestParameter) {
                     E2ETestParameter testParameter = (E2ETestParameter) each;
-                    // TODO make sure test case can not be null
-                    if (null == testParameter.getTestCaseContext()) {
-                        break;
-                    }
                     setEnvironmentEngine(extensionContext, testParameter);
                 }
             }

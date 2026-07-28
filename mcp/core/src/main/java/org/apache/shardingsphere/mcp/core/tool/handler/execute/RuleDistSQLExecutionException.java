@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 
 import java.sql.SQLException;
 

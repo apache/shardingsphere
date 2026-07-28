@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 final class LLMMCPToolDefinitionFactory {
     
@@ -35,6 +38,50 @@ final class LLMMCPToolDefinitionFactory {
             result.add(createToolDefinition(each));
         }
         return result;
+    }
+    
+    List<Map<String, Object>> createFromRemote(final List<Map<String, Object>> advertisedTools, final Collection<String> allowedToolNames,
+                                               final Collection<String> bridgeToolNames) {
+        List<Map<String, Object>> result = new LinkedList<>(create(bridgeToolNames));
+        Set<String> matchedToolNames = new LinkedHashSet<>();
+        for (Map<String, Object> each : advertisedTools) {
+            String toolName = Objects.toString(each.get("name"), "").trim();
+            if (allowedToolNames.contains(toolName)) {
+                result.add(createRemoteToolDefinition(each, toolName));
+                matchedToolNames.add(toolName);
+            }
+        }
+        if (!matchedToolNames.containsAll(allowedToolNames)) {
+            Set<String> missingToolNames = new LinkedHashSet<>(allowedToolNames);
+            missingToolNames.removeAll(matchedToolNames);
+            throw new IllegalStateException("MCP runtime did not advertise required read-only tools: " + missingToolNames);
+        }
+        return result;
+    }
+    
+    List<Map<String, Object>> createReadOnlyFromRemote(final List<Map<String, Object>> advertisedTools, final Collection<String> bridgeToolNames) {
+        List<String> readOnlyToolNames = new LinkedList<>();
+        for (Map<String, Object> each : advertisedTools) {
+            Object annotations = each.get("annotations");
+            if (annotations instanceof Map && Boolean.TRUE.equals(((Map<?, ?>) annotations).get("readOnlyHint"))) {
+                readOnlyToolNames.add(Objects.toString(each.get("name"), "").trim());
+            }
+        }
+        if (readOnlyToolNames.isEmpty()) {
+            throw new IllegalStateException("MCP runtime did not advertise any read-only tools.");
+        }
+        return createFromRemote(advertisedTools, readOnlyToolNames, bridgeToolNames);
+    }
+    
+    private Map<String, Object> createRemoteToolDefinition(final Map<String, Object> advertisedTool, final String toolName) {
+        Object inputSchema = advertisedTool.get("inputSchema");
+        if (!(inputSchema instanceof Map)) {
+            throw new IllegalStateException("MCP runtime advertised tool without inputSchema: " + toolName);
+        }
+        return Map.of("type", "function", "function", Map.of(
+                "name", toolName,
+                "description", Objects.toString(advertisedTool.get("description"), ""),
+                "parameters", LLMMCPJsonValues.castToMap(inputSchema)));
     }
     
     private Map<String, Object> createToolDefinition(final String toolName) {

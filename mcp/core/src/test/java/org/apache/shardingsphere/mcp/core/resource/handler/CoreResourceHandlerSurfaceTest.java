@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
@@ -40,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,19 +83,17 @@ class CoreResourceHandlerSurfaceTest {
             }
             if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
                 assertThat(actual, isA(MCPMapPayload.class));
-                assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
-                assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://guidance"));
-                assertTrue(((List<?>) actualPayload.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
+                assertFalse(((Collection<?>) actualPayload.get("supportedStatementClasses")).isEmpty());
                 assertTrue(((List<?>) actualPayload.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
                 assertTrue(((List<?>) actualPayload.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("database_gateway_apply_workflow")));
+                assertFalse(actualPayload.containsKey("resources"));
+                assertFalse(actualPayload.containsKey("tools"));
                 assertFalse(actualPayload.containsKey("fingerprints"));
-                assertTrue((Boolean) ((Map<?, ?>) actualPayload.get("protocolAvailability")).get("resourceNavigation"));
                 return;
             }
             if (HandlerResultType.SERVICE_GUIDANCE == handlerCase.getExpectedType()) {
                 assertThat(actual, isA(MCPMapPayload.class));
                 assertThat(actualPayload.get("response_mode"), is("guidance"));
-                assertThat(actualPayload.get("guidance_resource"), is("shardingsphere://guidance"));
                 assertTrue(actualPayload.containsKey("model_contract"));
                 assertTrue(actualPayload.containsKey("common_flows"));
                 return;
@@ -114,13 +116,14 @@ class CoreResourceHandlerSurfaceTest {
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actual, isA(MCPItemsPayload.class));
             assertThat(actualPayload.get("count"), is(0));
-            assertThat(actualPayload.get("self_uri"), is("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
+            assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("uri"),
+                    is("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
         }
     }
     
     @Test
     void assertHandleWithUnsupportedSequenceResource() {
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/sequences",
                 (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().querySequences(
@@ -133,7 +136,7 @@ class CoreResourceHandlerSurfaceTest {
     
     @Test
     void assertHandleWithUnsupportedStorageUnitResource() {
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
                 "shardingsphere://databases/{database}/storage-units",
                 (featureContext, uriVariables) -> {
@@ -143,11 +146,12 @@ class CoreResourceHandlerSurfaceTest {
         assertThat(actual.getMessage(), is("Storage unit resources are not supported for the current database."));
     }
     
-    private MCPUriVariables parseUriVariables(final String uriTemplate, final String resourceUri) {
+    private MCPResourceURIVariables parseUriVariables(final String uriTemplate, final String resourceUri) {
         return new MCPUriPattern(uriTemplate).parse(resourceUri).orElseThrow();
     }
     
-    private <T extends MCPRequestContext> MCPSuccessPayload handle(final MCPResourceHandler<T> handler, final MCPFeatureRuntimeRequestContext requestContext, final MCPUriVariables uriVariables) {
+    private <T extends MCPRequestContext> MCPSuccessPayload handle(final MCPResourceHandler<T> handler,
+                                                                   final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         return handler.handle(handler.getContextType().cast(requestContext), uriVariables);
     }
     
@@ -155,12 +159,11 @@ class CoreResourceHandlerSurfaceTest {
         if (actualPayload.containsKey("resource_kind")) {
             assertThat(actual, isA(MCPMapPayload.class));
             assertThat(actualPayload.get("resource_kind"), is("detail"));
-            assertThat(actualPayload.get("found"), is(!handlerCase.getExpectedObjectNames().isEmpty()));
         } else {
             assertThat(actual, isA(MCPItemsPayload.class));
         }
         assertThat(actualPayload.get("count"), is(handlerCase.getExpectedObjectNames().size()));
-        assertThat(actualPayload.get("self_uri"), is(handlerCase.getResourceUri()));
+        assertThat(((Map<?, ?>) actualPayload.get("self_resource")).get("uri"), is(handlerCase.getResourceUri()));
         assertParentResource(handlerCase.getResourceUri(), actualPayload);
         assertNextResources(handlerCase.getResourceUri(), actualPayload);
         assertThat(extractMetadataNames(actualPayload), is(handlerCase.getExpectedObjectNames()));
@@ -359,6 +362,7 @@ class CoreResourceHandlerSurfaceTest {
         return Collections.singletonList(metadata);
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class HandlerCase {
         
         private final String description;
@@ -374,17 +378,6 @@ class CoreResourceHandlerSurfaceTest {
         private final String expectedDatabase;
         
         private final List<String> expectedObjectNames;
-        
-        private HandlerCase(final String description, final MCPResourceHandler<?> handler, final String expectedUriTemplate, final String resourceUri,
-                            final HandlerResultType expectedType, final String expectedDatabase, final List<String> expectedObjectNames) {
-            this.description = description;
-            this.handler = handler;
-            this.expectedUriTemplate = expectedUriTemplate;
-            this.resourceUri = resourceUri;
-            this.expectedType = expectedType;
-            this.expectedDatabase = expectedDatabase;
-            this.expectedObjectNames = expectedObjectNames;
-        }
         
         private MCPResourceHandler<?> getHandler() {
             return handler;

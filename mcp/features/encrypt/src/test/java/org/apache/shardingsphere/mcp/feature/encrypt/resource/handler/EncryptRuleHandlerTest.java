@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -46,10 +46,10 @@ class EncryptRuleHandlerTest {
         try (
                 MockedConstruction<EncryptRuleInspectionService> mockedConstruction = mockConstruction(EncryptRuleInspectionService.class,
                         (mock, context) -> when(mock.queryEncryptRules(queryFacade, "logic_db", "orders")).thenReturn(List.of(Map.of("logic_column", "phone"))))) {
-            MCPSuccessPayload actual = new EncryptRuleHandler().handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
+            MCPSuccessPayload actual = new EncryptRuleHandler().handle(requestContext, new MCPResourceURIVariables(Map.of("database", "logic_db", "table", "orders")));
             verify(mockedConstruction.constructed().getFirst()).queryEncryptRules(queryFacade, "logic_db", "orders");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
             assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is("shardingsphere://features/encrypt/databases/logic_db/rules"));
         }
     }

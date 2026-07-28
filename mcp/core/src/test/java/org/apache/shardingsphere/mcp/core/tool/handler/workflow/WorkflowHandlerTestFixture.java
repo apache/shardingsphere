@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
@@ -45,7 +46,7 @@ final class WorkflowHandlerTestFixture {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getSessionId()).thenReturn("session-1");
+        when(result.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(result.getQueryFacade()).thenReturn(queryFacade);

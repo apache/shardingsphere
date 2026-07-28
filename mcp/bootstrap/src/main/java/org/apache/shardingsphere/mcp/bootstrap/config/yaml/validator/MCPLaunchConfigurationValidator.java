@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.validator;
 
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
 
@@ -42,7 +42,7 @@ public final class MCPLaunchConfigurationValidator implements ConstraintValidato
             return true;
         }
         if (MCPTransportType.STDIO == value.getType() && null != value.getHttp()) {
-            addViolation(context, "transport.http is only valid when `transport.type` is STREAMABLE_HTTP.");
+            addViolation(context, "transport.http is only valid when `transport.type` is HTTP.");
             return false;
         }
         return true;

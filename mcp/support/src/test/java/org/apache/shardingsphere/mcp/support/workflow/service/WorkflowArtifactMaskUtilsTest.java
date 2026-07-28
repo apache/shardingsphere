@@ -48,6 +48,8 @@ class WorkflowArtifactMaskUtilsTest {
         assertTrue((Boolean) actualRedaction.get("applied"));
         assertThat(actualRedaction.get("redacted_count"), is(3));
         assertThat(actualRedaction.get("redacted_properties"), is(List.of("primary.aes-key-value", "assisted_query.salt", "like_query.token")));
+        assertThat(actualRedaction.get("categories"), is(List.of("aes-key-value", "salt", "token")));
+        assertFalse(actualRedaction.containsKey("secret_reference_summary"));
     }
     
     @Test

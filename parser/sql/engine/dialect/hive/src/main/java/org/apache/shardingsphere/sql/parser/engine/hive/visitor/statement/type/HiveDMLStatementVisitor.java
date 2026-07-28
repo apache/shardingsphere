@@ -75,6 +75,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JoinedTa
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JsonFunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LateralViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LeadLagInfoContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeWhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitClauseContext;
@@ -138,6 +139,8 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WhereCla
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WritingDataIntoFileSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertingValuesIntoTablesContext;
@@ -487,6 +490,24 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         return result;
     }
     
+    @Override
+    public ASTNode visitWindowSpecification(final WindowSpecificationContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.PARTITION()) {
+            result.setPartitionListSegments(getExpressionsFromExprList(ctx.expr()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.frameClause()) {
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().getStart().getStartIndex(), ctx.frameClause().getStop().getStopIndex(), ctx.frameClause().getText()));
+        }
+        if (null != ctx.identifier()) {
+            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
+        }
+        return result;
+    }
+    
     private Collection<ExpressionSegment> getExpressionsFromExprList(final List<ExprContext> exprList) {
         if (null == exprList) {
             return Collections.emptyList();
@@ -654,8 +675,56 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
-        super.visitWindowFunction(ctx);
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        if (null != ctx.NTILE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
+        }
+        if (null != ctx.LEAD() || null != ctx.LAG() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+            appendLeadLagParameters(result.getParameters(), ctx.leadLagInfo());
+        }
+        if (null != ctx.NTH_VALUE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+            result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
+        }
+        result.setWindow((WindowItemSegment) visit(ctx.windowingClause()));
+        return result;
+    }
+    
+    private void appendLeadLagParameters(final Collection<ExpressionSegment> parameters, final LeadLagInfoContext ctx) {
+        if (null == ctx) {
+            return;
+        }
+        if (null != ctx.NUMBER_()) {
+            parameters
+                    .add(new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(), new NumberLiteralValue(ctx.NUMBER_().getText()).getValue()));
+        } else {
+            int startIndex = ctx.QUESTION_().getSymbol().getStartIndex();
+            int stopIndex = ctx.QUESTION_().getSymbol().getStopIndex();
+            ParameterMarkerExpressionSegment parameterMarker = new ParameterMarkerExpressionSegment(startIndex, stopIndex, getParameterMarkerSegments().size());
+            getParameterMarkerSegments().add(parameterMarker);
+            parameters.add(parameterMarker);
+        }
+        if (null != ctx.expr()) {
+            parameters.add((ExpressionSegment) visit(ctx.expr()));
+        }
+    }
+    
+    @Override
+    public ASTNode visitWindowingClause(final WindowingClauseContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.windowName) {
+            result.setWindowName((IdentifierValue) visit(ctx.windowName));
+        }
+        if (null != ctx.windowSpecification()) {
+            WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+            result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+            result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+            result.setFrameClause(windowItemSegment.getFrameClause());
+        }
+        return result;
     }
     
     @Override

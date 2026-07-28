@@ -48,22 +48,20 @@ class WorkflowContextSnapshotTest {
         getStringList(originalSnapshot.getValidationReport().getMismatches().get(0), "layers").add("rule");
         originalSnapshot.getAlgorithmCandidates().clear();
         originalSnapshot.getPropertyRequirements().clear();
-        originalSnapshot.getDdlArtifacts().clear();
+        originalSnapshot.getResourceUriTemplates().clear();
         originalSnapshot.getRuleArtifacts().clear();
-        originalSnapshot.getIndexPlans().clear();
         assertThat(actualSnapshot.getRequest().getTable(), is("orders"));
         assertThat(actualSnapshot.getClarifiedIntent().getClarificationMessages(), is(List.of("provide schema")));
         assertTrue(actualSnapshot.getClarifiedIntent().getUnresolvedFields().isEmpty());
         assertTrue(actualSnapshot.getClarifiedIntent().getInferredValues().isEmpty());
         assertThat(actualSnapshot.getFeatureData().getAlgorithmProperties("primary").get("mode"), is("strict"));
-        assertThat(actualSnapshot.getInteractionPlan().getValidationStrategy().get("layers"), is(List.of("ddl")));
+        assertThat(actualSnapshot.getInteractionPlan().getValidationStrategy().get("layers"), is(List.of("rule")));
         assertThat(actualSnapshot.getIssues().get(0).getDetails().get("missing_fields"), is(List.of("column")));
-        assertThat(actualSnapshot.getValidationReport().getMismatches().get(0).get("layers"), is(List.of("ddl")));
+        assertThat(actualSnapshot.getValidationReport().getMismatches().get(0).get("layers"), is(List.of("rule")));
         assertThat(actualSnapshot.getAlgorithmCandidates().size(), is(1));
         assertThat(actualSnapshot.getPropertyRequirements().size(), is(1));
-        assertThat(actualSnapshot.getDdlArtifacts().size(), is(1));
+        assertThat(actualSnapshot.getResourceUriTemplates(), is(List.of("shardingsphere://workflow/test-resource")));
         assertThat(actualSnapshot.getRuleArtifacts().size(), is(1));
-        assertThat(actualSnapshot.getIndexPlans().size(), is(1));
     }
     
     @Test
@@ -75,9 +73,8 @@ class WorkflowContextSnapshotTest {
         assertTrue(snapshot.getIssues().isEmpty());
         assertTrue(snapshot.getAlgorithmCandidates().isEmpty());
         assertTrue(snapshot.getPropertyRequirements().isEmpty());
-        assertTrue(snapshot.getDdlArtifacts().isEmpty());
+        assertTrue(snapshot.getResourceUriTemplates().isEmpty());
         assertTrue(snapshot.getRuleArtifacts().isEmpty());
-        assertTrue(snapshot.getIndexPlans().isEmpty());
         assertThat(snapshot.getFeatureData(), is(featureData));
         assertNull(snapshot.getValidationReport());
     }
@@ -101,7 +98,7 @@ class WorkflowContextSnapshotTest {
         result.setFeatureData(featureData);
         InteractionPlan interactionPlan = new InteractionPlan();
         interactionPlan.setCurrentStep("review");
-        interactionPlan.getValidationStrategy().put("layers", List.of("ddl"));
+        interactionPlan.getValidationStrategy().put("layers", List.of("rule"));
         result.setInteractionPlan(interactionPlan);
         Map<String, Object> issueDetails = new LinkedHashMap<>(1, 1F);
         issueDetails.put("missing_fields", new LinkedList<>(List.of("column")));
@@ -109,13 +106,12 @@ class WorkflowContextSnapshotTest {
         result.getAlgorithmCandidates().add(AlgorithmCandidate.builder().algorithmRole("primary").algorithmType("AES")
                 .supportsDecrypt(true).supportsEquivalentFilter(true).supportsLike(false).recommendationScore(90).recommendationReason("reason").riskNotes("").build());
         result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "key", true, true, "desc", ""));
-        result.getDdlArtifacts().add(new DDLArtifact("ddl", "ALTER TABLE t ADD c VARCHAR(32)", 1));
+        result.getResourceUriTemplates().add("shardingsphere://workflow/test-resource");
         result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t"));
-        result.getIndexPlans().add(new IndexPlan("idx", "c", "reason", "CREATE INDEX idx ON t(c)"));
         ValidationReport validationReport = new ValidationReport();
         Map<String, Object> mismatch = new LinkedHashMap<>(2, 1F);
         mismatch.put("code", "mismatch");
-        mismatch.put("layers", new LinkedList<>(List.of("ddl")));
+        mismatch.put("layers", new LinkedList<>(List.of("rule")));
         validationReport.getMismatches().add(mismatch);
         result.setValidationReport(validationReport);
         return result;

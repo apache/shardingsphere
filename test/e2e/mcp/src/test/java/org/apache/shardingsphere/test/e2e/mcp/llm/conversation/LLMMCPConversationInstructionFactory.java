@@ -161,7 +161,7 @@ final class LLMMCPConversationInstructionFactory {
     private boolean shouldPromptExactResourceRead(final MCPInteractionTraceRecord traceRecord) {
         return MCPInteractionActionNames.LIST_RESOURCES.equals(traceRecord.getTargetName())
                 || MCPInteractionActionNames.READ_RESOURCE.equals(traceRecord.getTargetName())
-                        && (traceRecord.getStructuredContent().containsKey("error_code") || Boolean.FALSE.equals(traceRecord.getStructuredContent().get("found")));
+                        && (traceRecord.getStructuredContent().containsKey("error_code") || traceRecord.getStructuredContent().containsKey("empty_state"));
     }
     
     private boolean hasReadResource(final String resourceUri, final List<MCPInteractionTraceRecord> interactionTrace) {

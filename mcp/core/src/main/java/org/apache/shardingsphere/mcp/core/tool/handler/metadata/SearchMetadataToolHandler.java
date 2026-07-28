@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
@@ -36,6 +36,8 @@ import java.util.Set;
 public final class SearchMetadataToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     private static final String TOOL_NAME = "database_gateway_search_metadata";
+    
+    private static final int DEFAULT_LIMIT = 100;
     
     private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
@@ -58,7 +60,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPFeatur
         String query = toolArguments.getStringArgument("query");
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), query,
-                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES));
+                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES), toolArguments.getIntegerArgument("limit", DEFAULT_LIMIT, 1, DEFAULT_LIMIT),
+                toolArguments.getIntegerArgument("offset", 0, 0, Integer.MAX_VALUE));
         MetadataSearchResult searchResult = new SearchMetadataToolService(requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade()).execute(request);
         return new MCPItemsPayload(searchResult.getItems(), "", SearchMetadataPayloadBuilder.build(requestContext, request, searchResult, TOOL_NAME), MCPResponseMode.SEARCH);
     }

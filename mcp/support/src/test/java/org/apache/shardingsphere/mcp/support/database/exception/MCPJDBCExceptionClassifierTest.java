@@ -24,6 +24,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.SQLInvalidAuthorizationSpecException;
 import java.sql.SQLNonTransientConnectionException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
@@ -61,6 +62,13 @@ class MCPJDBCExceptionClassifierTest {
     }
     
     @Test
+    void assertClassifySpecificNextExceptionAfterSyntaxCandidate() {
+        SQLException cause = new SQLSyntaxErrorException("statement failed");
+        cause.setNextException(new SQLException("missing table", "42P01"));
+        assertThat(MCPJDBCExceptionClassifier.classify(cause), is(MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE));
+    }
+    
+    @Test
     void assertClassifyIgnoresSuppressedException() {
         SQLException cause = new SQLException("query failed");
         cause.addSuppressed(new SQLTimeoutException("timeout"));
@@ -86,6 +94,24 @@ class MCPJDBCExceptionClassifierTest {
     }
     
     @Test
+    void assertClassifyDialectBeforePortableAuthentication() {
+        assertThat(MCPJDBCExceptionClassifier.classify("Firebird", new SQLInvalidAuthorizationSpecException("permission denied", "28000", 335544352)),
+                is(MCPJDBCErrorCategory.AUTHORIZATION));
+    }
+    
+    @Test
+    void assertClassifyAmbiguousDialectError() {
+        assertThat(MCPJDBCExceptionClassifier.classify("MySQL", new SQLSyntaxErrorException("ambiguous", "42000", 1055)),
+                is(MCPJDBCErrorCategory.QUERY_FAILED));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertClassifyDialectCases")
+    void assertClassifyDialect(final String databaseType, final SQLException cause, final MCPJDBCErrorCategory expected) {
+        assertThat(MCPJDBCExceptionClassifier.classify(databaseType, cause), is(expected));
+    }
+    
+    @Test
     void assertClassifyMariaDBAlias() {
         assertThat(MCPJDBCExceptionClassifier.classify("MariaDB", new SQLException("syntax error", "42000", 1064)), is(MCPJDBCErrorCategory.SYNTAX));
     }
@@ -93,15 +119,30 @@ class MCPJDBCExceptionClassifierTest {
     private static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
                 Arguments.of("timeout", new SQLTimeoutException(), MCPJDBCErrorCategory.TIMEOUT),
+                Arguments.of("query timeout SQLState", new SQLException("", "HYT00"), MCPJDBCErrorCategory.TIMEOUT),
+                Arguments.of("connection timeout SQLState", new SQLException("", "HYT01"), MCPJDBCErrorCategory.TIMEOUT),
                 Arguments.of("feature not supported", new SQLFeatureNotSupportedException(), MCPJDBCErrorCategory.FEATURE_NOT_SUPPORTED),
                 Arguments.of("connection subtype", new SQLNonTransientConnectionException(), MCPJDBCErrorCategory.CONNECTION),
                 Arguments.of("connection SQLState", new SQLException("", "08006"), MCPJDBCErrorCategory.CONNECTION),
                 Arguments.of("authentication", new SQLException("", "28000"), MCPJDBCErrorCategory.AUTHENTICATION),
+                Arguments.of("authentication subtype", new SQLInvalidAuthorizationSpecException(), MCPJDBCErrorCategory.AUTHENTICATION),
                 Arguments.of("authorization", new SQLException("", "42501"), MCPJDBCErrorCategory.AUTHORIZATION),
+                Arguments.of("database not visible", new SQLException("", "3D000"), MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
                 Arguments.of("object not visible", new SQLSyntaxErrorException("", "42P01"), MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
+                Arguments.of("routine not visible", new SQLException("", "42883"), MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
                 Arguments.of("syntax subtype", new SQLSyntaxErrorException(), MCPJDBCErrorCategory.SYNTAX),
                 Arguments.of("syntax SQLState", new SQLException("", "42601"), MCPJDBCErrorCategory.SYNTAX),
                 Arguments.of("ambiguous class 42", new SQLException("", "42000"), MCPJDBCErrorCategory.QUERY_FAILED),
                 Arguments.of("unknown", new SQLException(), MCPJDBCErrorCategory.QUERY_FAILED));
+    }
+    
+    private static Stream<Arguments> assertClassifyDialectCases() {
+        return Stream.of(
+                Arguments.of("ClickHouse", new SQLException("unknown table", "07000", 60), MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
+                Arguments.of("Firebird", new SQLException("permission denied", "28000", 335544352), MCPJDBCErrorCategory.AUTHORIZATION),
+                Arguments.of("Hive", new SQLException("invalid table", "42000", 10001), MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE),
+                Arguments.of("Oracle", new SQLException("insufficient privileges", "42000", 1031), MCPJDBCErrorCategory.AUTHORIZATION),
+                Arguments.of("Presto", new SQLException("not supported", null, 13), MCPJDBCErrorCategory.FEATURE_NOT_SUPPORTED),
+                Arguments.of("SQLServer", new SQLException("login failed", "S0001", 18456), MCPJDBCErrorCategory.AUTHENTICATION));
     }
 }

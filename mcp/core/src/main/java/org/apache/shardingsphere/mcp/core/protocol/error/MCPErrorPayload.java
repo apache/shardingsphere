@@ -35,7 +35,7 @@ public final class MCPErrorPayload {
     
     private final Map<String, Object> recovery;
     
-    private final String requestId;
+    private final String errorId;
     
     public MCPErrorPayload(final String message) {
         this(message, Map.of());
@@ -44,7 +44,7 @@ public final class MCPErrorPayload {
     public MCPErrorPayload(final String message, final Map<String, Object> recovery) {
         this.message = message;
         this.recovery = recovery;
-        requestId = UUID.randomUUID().toString();
+        errorId = UUID.randomUUID().toString();
     }
     
     /**
@@ -53,13 +53,15 @@ public final class MCPErrorPayload {
      * @return error payload
      */
     public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("response_mode", MCPResponseMode.RECOVERY);
         result.put(MCPPayloadFieldNames.SUMMARY, message.isEmpty() ? "Recovery guidance is available." : message);
-        result.put("request_id", requestId);
-        result.put(MCPPayloadFieldNames.MESSAGE, message);
+        result.put("error_id", errorId);
         if (!recovery.isEmpty()) {
-            result.put(MCPPayloadFieldNames.RECOVERY, createRecoveryPayload());
+            Map<String, Object> recoveryPayload = createRecoveryPayload();
+            if (!recoveryPayload.isEmpty()) {
+                result.put(MCPPayloadFieldNames.RECOVERY, recoveryPayload);
+            }
             if (recovery.containsKey(MCPPayloadFieldNames.NEXT_ACTIONS)) {
                 result.put(MCPPayloadFieldNames.NEXT_ACTIONS, recovery.get(MCPPayloadFieldNames.NEXT_ACTIONS));
             }
@@ -68,9 +70,9 @@ public final class MCPErrorPayload {
     }
     
     private Map<String, Object> createRecoveryPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(recovery.size() + 1, 1F);
-        result.putAll(recovery);
-        result.putIfAbsent("request_id", requestId);
+        Map<String, Object> result = new LinkedHashMap<>(recovery);
+        result.remove("response_mode");
+        result.remove(MCPPayloadFieldNames.NEXT_ACTIONS);
         return result;
     }
 }

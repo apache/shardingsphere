@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
@@ -73,7 +73,8 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPFea
         WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         WorkflowRuntimeDefinition workflowRuntimeDefinition = workflowRuntimeDefinitionRegistry.getRequired(snapshot);
         return new MCPMapPayload(executionService.apply(workflowSessionContext, requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade(),
-                requestContext.getExecutionFacade(), workflowRuntimeDefinition.getApplySynchronizationHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(), requestContext.getSessionId(),
+                requestContext.getExecutionFacade(), workflowRuntimeDefinition.getApplySynchronizationHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(),
+                requestContext.getSessionIdentity().getSessionId(),
                 snapshot, toolArguments.getStringCollectionArgument(WorkflowFieldNames.APPROVED_STEPS), executionMode));
     }
     

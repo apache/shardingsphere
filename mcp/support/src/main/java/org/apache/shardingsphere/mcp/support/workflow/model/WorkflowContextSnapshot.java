@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,14 +58,12 @@ public final class WorkflowContextSnapshot {
     
     private final List<AlgorithmPropertyRequirement> propertyRequirements = new LinkedList<>();
     
+    private final Collection<String> resourceUriTemplates = new LinkedList<>();
+    
     @Setter
     private ValidationReport validationReport;
     
-    private final List<DDLArtifact> ddlArtifacts = new LinkedList<>();
-    
     private final List<RuleArtifact> ruleArtifacts = new LinkedList<>();
-    
-    private final List<IndexPlan> indexPlans = new LinkedList<>();
     
     /**
      * Clear planning artifacts before rebuilding them.
@@ -73,10 +72,9 @@ public final class WorkflowContextSnapshot {
         issues.clear();
         algorithmCandidates.clear();
         propertyRequirements.clear();
+        resourceUriTemplates.clear();
         validationReport = null;
-        ddlArtifacts.clear();
         ruleArtifacts.clear();
-        indexPlans.clear();
     }
     
     /**
@@ -90,7 +88,7 @@ public final class WorkflowContextSnapshot {
         result.setWorkflowKind(workflowKind);
         result.setSessionId(sessionId);
         result.setStatus(status);
-        result.setUpdateTime(copyInstant(updateTime));
+        result.setUpdateTime(updateTime);
         result.setRequest(null == request ? null : request.copy());
         result.setClarifiedIntent(copyClarifiedIntent(clarifiedIntent));
         result.setFeatureData(null == featureData ? null : featureData.copy());
@@ -98,15 +96,10 @@ public final class WorkflowContextSnapshot {
         issues.forEach(each -> result.getIssues().add(copyWorkflowIssue(each)));
         result.getAlgorithmCandidates().addAll(algorithmCandidates);
         result.getPropertyRequirements().addAll(propertyRequirements);
-        result.getDdlArtifacts().addAll(ddlArtifacts);
+        result.getResourceUriTemplates().addAll(resourceUriTemplates);
         result.getRuleArtifacts().addAll(ruleArtifacts);
-        result.getIndexPlans().addAll(indexPlans);
         result.setValidationReport(copyValidationReport(validationReport));
         return result;
-    }
-    
-    private static Instant copyInstant(final Instant original) {
-        return null == original ? null : Instant.ofEpochMilli(original.toEpochMilli());
     }
     
     private static ClarifiedIntent copyClarifiedIntent(final ClarifiedIntent original) {
@@ -148,7 +141,6 @@ public final class WorkflowContextSnapshot {
             return null;
         }
         ValidationReport result = new ValidationReport();
-        result.setDdlValidation(copyValidationSection(original.getDdlValidation()));
         result.setRuleValidation(copyValidationSection(original.getRuleValidation()));
         result.setLogicalMetadataValidation(copyValidationSection(original.getLogicalMetadataValidation()));
         result.setSqlExecutabilityValidation(copyValidationSection(original.getSqlExecutabilityValidation()));

@@ -123,13 +123,13 @@ public final class MCPNextActionUtils {
     /**
      * Create an ask-user action.
      *
-     * @param reason action reason
+     * @param question question for the user
      * @param requiredInputs required user inputs
      * @return action payload
      */
-    public static Map<String, Object> askUser(final String reason, final List<String> requiredInputs) {
-        Map<String, Object> result = createBaseAction("ask_user", "Ask user", reason);
-        result.put("question", reason);
+    public static Map<String, Object> askUser(final String question, final List<String> requiredInputs) {
+        Map<String, Object> result = createBaseAction("ask_user", "Ask user");
+        result.put("question", question);
         result.put("required_inputs", requiredInputs);
         return result;
     }
@@ -145,11 +145,16 @@ public final class MCPNextActionUtils {
     }
     
     private static Map<String, Object> createBaseAction(final String type, final String title, final String reason) {
-        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
+        Map<String, Object> result = createBaseAction(type, title);
+        result.put(MCPPayloadFieldNames.REASON, reason);
+        return result;
+    }
+    
+    private static Map<String, Object> createBaseAction(final String type, final String title) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("order", 1);
         result.put("type", type);
         result.put("title", title);
-        result.put(MCPPayloadFieldNames.REASON, reason);
         return result;
     }
     

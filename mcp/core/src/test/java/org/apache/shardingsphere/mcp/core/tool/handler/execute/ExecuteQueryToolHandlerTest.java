@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
@@ -54,7 +55,7 @@ class ExecuteQueryToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(createQueryResult());
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
-        when(requestContext.getSessionId()).thenReturn("session-1");
+        when(requestContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
         mockDatabaseCapability(requestContext);
         MCPSuccessPayload actual = new ExecuteQueryToolHandler().handle(requestContext, Map.of("database", "logic_db", "schema", "public", "sql", "select * from orders"));
@@ -76,7 +77,7 @@ class ExecuteQueryToolHandlerTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new ShardingSphereSchema("public", mock(DatabaseType.class))));
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
-        when(requestContext.getSessionId()).thenReturn("session-1");
+        when(requestContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
         when(requestContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         mockDatabaseCapability(requestContext);
@@ -142,7 +143,7 @@ class ExecuteQueryToolHandlerTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new ShardingSphereSchema("public", mock(DatabaseType.class))));
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
-        when(requestContext.getSessionId()).thenReturn("session-1");
+        when(requestContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
         when(requestContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         mockDatabaseCapability(requestContext);

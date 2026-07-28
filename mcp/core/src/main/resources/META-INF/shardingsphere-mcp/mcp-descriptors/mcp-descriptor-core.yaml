@@ -19,8 +19,8 @@ resources:
     name: server-capability-catalog
     title: ShardingSphere MCP Capability Catalog
     description: >
-      Generated ShardingSphere domain catalog for resources, resource templates, tools, prompts, completions, workflow relationships,
-      and navigation hints. Read shardingsphere://guidance for model-facing workflow and safety guidance.
+      Generated ShardingSphere domain catalog for supported SQL statement classes, completion targets, workflow relationships, and navigation hints.
+      Use MCP list methods for resources, resource templates, tools, and prompts. Read shardingsphere://guidance for model-facing workflow and safety guidance.
     mimeType: application/json
     annotations:
       audience:
@@ -860,7 +860,7 @@ tools:
           description: "Optional schema or namespace used to narrow table, view, column, index, and sequence search."
         query:
           type: string
-          description: "Optional name fragment or exact object name. Blank query lists metadata inside the narrowed database/schema/object_types scope."
+          description: "Optional object-name fragment. It also matches a parent table or view name when present. Blank query lists the narrowed metadata scope."
         object_types:
           type: array
           description: "Optional object-type filter. Omit it when the user intent does not identify a specific metadata object kind."
@@ -876,6 +876,18 @@ tools:
               - index
               - storage_unit
               - sequence
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 100
+          description: "Maximum metadata hits to return in one page. Defaults to 100."
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          default: 0
+          description: "Zero-based offset into the deterministically sorted current metadata search result. Defaults to 0."
       required: []
       additionalProperties: false
     outputSchema:
@@ -901,7 +913,7 @@ tools:
                 description: "ShardingSphere logical database that owns the metadata object."
               schema:
                 type: string
-                description: "Schema or namespace for schema-scoped metadata objects."
+                description: "Logical metadata namespace for resource navigation. It is not necessarily a valid SQL schema or catalog qualifier."
               objectType:
                 type: string
                 description: "Matched metadata object type: database, schema, storage_unit, table, view, column, index, or sequence."
@@ -945,36 +957,37 @@ tools:
         count:
           type: integer
           description: "Number of matched metadata items returned in this response."
-        has_more:
-          type: boolean
-          description: "Whether an application-level continuation mode is active. Metadata search returns false; not MCP list pagination."
         continuation_mode:
           type: string
           description: "ShardingSphere application continuation mode for this metadata search result; not MCP cursor or nextCursor semantics."
           enum:
             - none
+            - pagination
         search_context:
           type: object
           description: "Applied search scope, query, and object types used for this response."
         total_match_count:
           type: integer
           description: "Total matched metadata objects for this search scope."
-        returned_count:
-          type: integer
-          description: "Number of matched metadata objects returned after search result capping."
         truncated:
           type: boolean
-          description: "Whether search hits were capped by the large-result threshold."
+          description: "Whether more search hits remain after this page."
+        has_more:
+          type: boolean
+          description: "Whether another metadata search page is available."
+        next_offset:
+          type: integer
+          description: "Zero-based offset for the next page. Present only when has_more is true."
         large_result_guidance:
           type: object
-          description: "Structured narrowing guidance when matched metadata results are truncated."
+          description: "Structured narrowing guidance when more metadata matches remain after the current page and the total exceeds the large-result threshold."
           properties:
             state:
               type: string
               description: "Large-result guidance state."
             threshold:
               type: integer
-              description: "Maximum number of metadata hits returned before truncation."
+              description: "Match-count threshold above which narrowing guidance is emitted."
             narrowing_arguments:
               type: array
               description: "Public database_gateway_search_metadata arguments the model can set to narrow the result."
@@ -1005,7 +1018,7 @@ tools:
               description: "Public database_gateway_search_metadata arguments the model can ask for or set to narrow the search."
         next_actions:
           type: array
-          description: "Structured follow-up actions for empty, broad, or duplicate-name search results."
+          description: "Structured follow-up actions for pagination, empty, broad, or duplicate-name search results."
           items:
             type: object
             properties:
@@ -1072,11 +1085,10 @@ tools:
                 - name
               matched_value: orders
           count: 1
-          has_more: false
           continuation_mode: none
           total_match_count: 1
-          returned_count: 1
           truncated: false
+          has_more: false
           search_context:
             query: orders
             database: logic_db
@@ -1084,6 +1096,8 @@ tools:
             schema: public
             object_types:
               - table
+            limit: 100
+            offset: 0
     annotations:
       title: Search Metadata
       readOnlyHint: true
@@ -1157,10 +1171,10 @@ tools:
           description: "Overall result category. ready indicates success; other values reuse runtime database connection failure categories."
         recovery:
           type: object
-          description: "Structured runtime recovery payload. Empty when status is ready."
+          description: "Structured runtime recovery payload present only when status is failed."
         next_actions:
           type: array
-          description: "Top-level structured follow-up actions copied from recovery when validation fails."
+          description: "Canonical top-level structured follow-up actions when validation fails."
           items:
             type: object
             properties:
@@ -1236,7 +1250,7 @@ tools:
       properties:
         database:
           type: string
-          description: "ShardingSphere logical database name that provides the execution boundary."
+          description: "ShardingSphere logical database used only to select the runtime connection. Do not use this value as an SQL catalog or schema qualifier."
         schema:
           type: string
           description: "Optional schema or namespace hint for unqualified object names."
@@ -1393,7 +1407,7 @@ tools:
       properties:
         database:
           type: string
-          description: "ShardingSphere logical database name that provides the execution boundary."
+          description: "ShardingSphere logical database used only to select the runtime connection. Do not use this value as an SQL catalog or schema qualifier."
         schema:
           type: string
           description: "Optional schema or namespace hint for unqualified object names."
@@ -1555,7 +1569,7 @@ tools:
       properties:
         database:
           type: string
-          description: "ShardingSphere logical database name that provides the execution boundary."
+          description: "ShardingSphere logical database used only to select the runtime connection. Do not use this value as an SQL catalog or schema qualifier."
         schema:
           type: string
           description: "Optional schema or namespace hint for unqualified object names."
@@ -1640,9 +1654,6 @@ tools:
         affected_rows:
           type: integer
           description: "Affected row count when the database reports one."
-        message:
-          type: string
-          description: "Execution message for statements without row results."
         columns:
           type: array
           description: "Returned column definitions when result_kind is result_set."
@@ -1682,9 +1693,6 @@ tools:
         review_guidance:
           type: string
           description: "Preview-only guidance before execution."
-        review_summary:
-          type: string
-          description: "Preview-only natural-language summary that confirms the statement was not executed."
         suggested_arguments:
           type: object
           description: "Preview-only arguments to reuse for execution after review."
@@ -1747,7 +1755,6 @@ tools:
           review_guidance: >-
             Review normalized_sql and side_effect_scope before execution. This preview performs database-aware validation and classification; it does not guarantee
             rule validation, algorithm initialization, affected rows, or runtime success.
-          review_summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
           suggested_arguments:
             execution_mode: execute
           next_actions:
@@ -1757,7 +1764,6 @@ tools:
               question: Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.
               required_inputs:
                 - execution_approved
-              reason: Confirm that normalized_sql and side_effect_scope still match the intended side effect before execution.
             - order: 2
               type: tool_call
               title: Call database_gateway_execute_update
@@ -1790,13 +1796,6 @@ tools:
       destructiveHint: true
       idempotentHint: false
       openWorldHint: true
-    runtime:
-      sideEffectScope:
-        - physical-data
-        - physical-structure
-        - privilege-metadata
-        - rule-metadata
-        - transaction-state
     meta:
       org.apache.shardingsphere/related-resource-uris:
         - "shardingsphere://databases/{database}/capabilities"

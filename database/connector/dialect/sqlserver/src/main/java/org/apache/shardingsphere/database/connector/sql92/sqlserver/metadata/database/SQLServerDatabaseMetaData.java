@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.database.option.SQLServerFunctionOption;
 
@@ -62,7 +63,7 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true, false, false,
+        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, true, false, false,
                 Collections.singleton("com.microsoft.sqlserver.jdbc.SQLServerXADataSource"));
     }
     

@@ -17,27 +17,26 @@
 
 package org.apache.shardingsphere.mcp.api.session;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
 /**
  * MCP session identity.
+ *
+ * <p>The session identifier is always present. Subject, source and attributes are optional trusted attribution captured when the session is initialized.
+ * Attribution does not represent authentication or authorization.</p>
  */
+@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 public final class MCPSessionIdentity {
+    
+    private final String sessionId;
     
     private final String subject;
     
     private final String source;
     
     private final Map<String, String> attributes;
-    
-    public MCPSessionIdentity(final String subject, final String source, final Map<String, String> attributes) {
-        this.subject = subject;
-        this.source = source;
-        this.attributes = Map.copyOf(attributes);
-    }
 }

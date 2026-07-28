@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.completion.EncryptAlgorithmCompletionHandler;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
@@ -53,6 +56,12 @@ class EncryptMCPHandlerProviderTest {
     }
     
     @Test
+    void assertGetCompletionHandlers() {
+        MCPCompletionHandler<?> actual = new EncryptMCPHandlerProvider().getCompletionHandlers().iterator().next();
+        assertThat(actual, isA(EncryptAlgorithmCompletionHandler.class));
+    }
+    
+    @Test
     void assertLoadByServiceLoader() {
         assertTrue(ServiceLoader.load(MCPHandlerProvider.class).stream().map(ServiceLoader.Provider::type).anyMatch(EncryptMCPHandlerProvider.class::equals));
     }
@@ -62,7 +71,7 @@ class EncryptMCPHandlerProviderTest {
         WorkflowRuntimeDefinition actual = new EncryptMCPHandlerProvider().getWorkflowDefinitions().iterator().next();
         assertThat(actual.getWorkflowKind(), is(EncryptFeatureDefinition.WORKFLOW_KIND));
         assertThat(actual.getApplySynchronizationHandler(), isA(EncryptWorkflowValidationService.class));
-        assertThat(actual.getApplyArtifactValidator(), isA(EncryptWorkflowValidationService.class));
+        assertThat(actual.getApplyArtifactValidator(), isA(EncryptWorkflowApplyArtifactValidator.class));
         assertThat(actual.getValidationHandler(), isA(EncryptWorkflowValidationService.class));
     }
 }

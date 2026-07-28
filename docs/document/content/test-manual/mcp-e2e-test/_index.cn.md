@@ -12,12 +12,14 @@ chapter = true
 `test/e2e/mcp` 覆盖：
 
 - 发行包启动和配置。
-- HTTP runtime。
-- STDIO runtime。
-- MCP baseline contract。
-- Tool/resource/prompt/completion discovery。
+- 基于真实 MySQL、PostgreSQL 和 Proxy 的 HTTP、STDIO runtime。
+- Tool、resource、prompt 和 completion 的跨进程发现与执行。
+- 适用于当前 server capability 的官方 MCP conformance 场景。
 - 真实模型驱动的 MCP usability。
-- Encrypt 和 Mask workflow 可用性验证。
+- 基于实时元数据和数据的 10 题自主 MCP Builder 评测。
+- Encrypt、Mask、Broadcast、Readwrite-Splitting、Shadow 和 Sharding workflow 验收。
+
+不需要 Docker 的 HTTP 协议、会话和安全边界由 `mcp/bootstrap` 的 `StreamableHttpMCPServerIT` 覆盖，不属于 E2E。
 
 ## Feature 模板验收
 
@@ -32,24 +34,23 @@ chapter = true
 - 计划、workflow resource、preview、apply、validate、recovery 和 trace 可见输出不泄露敏感参数。
 - 自定义或能力未知的算法应被标记为未确认，而不是被当作已知能力处理。
 - Drop 场景应验证规则删除语义，不把物理清理作为成功条件。
-- 不支持的 alter 扩展应返回清晰限制，而不是生成不完整 workflow。
+- Encrypt、Mask 和 Sharding 的 ALTER 扩展、物理 DDL、迁移和回填仍是排除在外的商业版本能力。
 - Apply 必须经过 preview，并校验用户批准的步骤。
 
 测试复用应保留在 `test/e2e/mcp` 内的本地 helper 中；不要为了模板验收新增测试 jar 或跨模块测试支撑模块。
 
 ## 本地准备
 
-先安装 MCP E2E 依赖模块到本地仓库：
+构建并安装 MCP E2E 依赖和 distribution：
 
 ```bash
-./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+./mvnw -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
 ```
 
-打包 MCP distribution 并构建本地 distribution image：
+构建本地 distribution image：
 
 ```bash
-./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
-docker build -f distribution/mcp/Dockerfile -t apache/shardingsphere-mcp-e2e:local distribution/mcp/target
+docker build --platform "$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}')" -f distribution/mcp/Dockerfile -t apache/shardingsphere-mcp-e2e:local distribution/mcp/target
 ```
 
 ## LLM Runtime
@@ -79,44 +80,58 @@ MCP E2E 运行配置集中在 `test/e2e/mcp/src/test/resources/env/e2e-env.prope
 本地运行时可以直接修改该文件，也可以使用同名 `-D` 系统参数覆盖。
 
 ```bash
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-  -Dtest='*E2ETest' \
-  -Dsurefire.failIfNoSpecifiedTests=true \
-  -De2e.run.type=DOCKER \
-  -Dmcp.e2e.container.image=apache/shardingsphere-mcp-e2e:local
+./mvnw -pl test/e2e/mcp test -Pe2e.mcp
+```
+
+## 运行 MCP HTTP IT
+
+该测试启动真实 HTTP server，但不连接 Docker、数据库或模型：
+
+```bash
+./mvnw -pl mcp/bootstrap verify
 ```
 
 ## 运行 LLM Usability Suite
 
 ```bash
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-  -Dtest=LLMUsabilitySuiteE2ETest \
-  -Dsurefire.failIfNoSpecifiedTests=true \
-  -De2e.run.type=DOCKER
+./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm -Dtest=LLMUsabilitySuiteE2ETest
 ```
+
+## 运行自主 MCP Builder 评测
+
+评测从 `llm/evaluation/mcp-builder-evaluation.xml` 加载 10 个相互独立的只读问题。
+每个问题都创建新的 MCP session，从实时 `tools/list` response 派生模型 function definitions，保留模型原始 response 和 MCP structured response，并且不注入纠错提示或期望答案，只对最终答案做精确比较。
+用于闭合评分的运行显式使用 32768 token context window。选中 `llm-e2e` lane 后，如果 Docker、模型、数据库或 MCP 基础设施缺失，测试直接失败，不把评分失败转换成 skip。
+
+```bash
+./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm -Dtest=MCPBuilderEvaluationE2ETest
+```
+
+## 官方 MCP Conformance
+
+CI conformance lane 将 `modelcontextprotocol/conformance` 固定在 commit `21a9a2febd7100d7c17ac1021ee7f2ed9f66a1e0`，传入 protocol version `2025-11-25`，并且只运行 workflow 中声明的适用通用 server 场景。
+上游固定使用 `test_*` tool/resource 的产品无关调用、未声明的可选能力和固定 HTTP 传输面以外的场景不适用于本项目，产品能力继续由确定性 E2E 覆盖；不会为了上游 fixture 添加生产测试钩子。
+打包后的 server 使用 loopback HTTP 配置运行，使 DNS rebinding 场景校验 loopback Origin 策略，而不是独立的 Docker 远程绑定策略。
 
 ## External Debug
 
 仅本地调试时，可以连接已经运行的 OpenAI-compatible endpoint：
 
 ```bash
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-  -Dtest=LLMUsabilitySuiteE2ETest \
-  -De2e.run.type=DOCKER \
-  -Dmcp.llm.runtime-mode=external-debug \
-  -Dmcp.llm.base-url=http://127.0.0.1:8080/v1 \
-  -Dsurefire.failIfNoSpecifiedTests=true
+./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm -Dtest=LLMUsabilitySuiteE2ETest -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1
 ```
 
 External debug endpoint 不能作为 score-closing evidence。
 
 ## 产物
 
-LLM artifact 写入：
+LLM usability 和 MCP Builder evaluation artifact 写入：
 
 ```text
 test/e2e/mcp/target/llm-e2e/
 ```
+
+每个自主评测 case 都记录问题、期望与实际答案、原始模型 response、MCP interaction trace、实时 tool definitions、runtime evidence 和 assertion report。Artifact 写入会脱敏 secret-shaped 值；如果发现未脱敏 secret pattern 或已知模型 API key，评分运行直接失败。
 
 GitHub Actions 入口：
 

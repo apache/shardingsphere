@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -33,39 +34,65 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class LLMMCPModelFacingToolResponseFormatter {
     
+    private static final int COMPACT_ITEM_LIMIT = 5;
+    
     private static final List<String> GENERAL_FIELD_NAMES = List.of(
-            "response_mode", "error_code", "message", "recovery_category", "result_kind", "status", "statement_type", "normalized_sql", "rows", "row_objects",
+            "response_mode", "error_code", "error_id", "summary", "message", "recovery_category", "result_kind", "status", "statement_type", "normalized_sql", "rows", "row_objects",
             "returned_row_count", "plan_id", "workflow_resource");
     
     private static final List<String> POST_ACTION_FIELD_NAMES = List.of(
-            "completion", "count", "has_more", "total_match_count", "returned_count", "truncated", "large_result_guidance", "search_context");
+            "completion", "count", "total_match_count", "truncated", "large_result_guidance", "search_context");
     
     static String format(final Map<String, Object> response) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         copyFields(response, result, GENERAL_FIELD_NAMES);
-        copyCompactArtifactList(response, result, "manual_artifacts");
+        copyCompactArtifactPackage(response, result, "manual_artifact_package");
         copyCompactArtifactList(response, result, "exported_artifacts");
         copyModelCriticalFields(response, result);
         copyModelFacingNextActions(response, result);
         copyFields(response, result, POST_ACTION_FIELD_NAMES);
-        List<Map<String, Object>> resources = LLMMCPJsonValues.castToList(response.get("resources"));
-        if (!resources.isEmpty()) {
-            List<Map<String, Object>> compactResources = new LinkedList<>();
-            for (Map<String, Object> each : resources) {
-                Map<String, Object> compactResource = new LinkedHashMap<>(8, 1F);
-                copyIfPresent(each, compactResource, "uri");
-                copyIfPresent(each, compactResource, "name");
-                copyIfPresent(each, compactResource, "title");
-                copyIfPresent(each, compactResource, "mimeType");
-                compactResources.add(compactResource.isEmpty() ? each : compactResource);
-            }
-            result.put("resources", compactResources);
-        }
+        copyToolList(response, result);
+        copyCompactResourceList(response, result, "resources", "uri");
+        copyCompactResourceList(response, result, "resourceTemplates", "uriTemplate");
         copyPromptList(response, result);
         copyPromptMessages(response, result);
         copyCompactItems(response, result);
         copyCompactRecovery(response, result);
         return JsonUtils.toJsonString(result.isEmpty() ? response : result);
+    }
+    
+    private static void copyCompactResourceList(final Map<String, Object> source, final Map<String, Object> target,
+                                                final String fieldName, final String uriFieldName) {
+        List<Map<String, Object>> resources = LLMMCPJsonValues.castToList(source.get(fieldName));
+        if (!resources.isEmpty()) {
+            List<Map<String, Object>> compactResources = new LinkedList<>();
+            for (Map<String, Object> each : resources) {
+                Map<String, Object> compactResource = new LinkedHashMap<>(8, 1F);
+                copyIfPresent(each, compactResource, uriFieldName);
+                copyIfPresent(each, compactResource, "name");
+                copyIfPresent(each, compactResource, "title");
+                copyIfPresent(each, compactResource, "mimeType");
+                compactResources.add(compactResource.isEmpty() ? each : compactResource);
+            }
+            target.put(fieldName, compactResources);
+        }
+    }
+    
+    private static void copyToolList(final Map<String, Object> source, final Map<String, Object> target) {
+        List<Map<String, Object>> tools = LLMMCPJsonValues.castToList(source.get("tools"));
+        if (tools.isEmpty()) {
+            return;
+        }
+        List<Map<String, Object>> compactTools = new LinkedList<>();
+        for (Map<String, Object> each : tools) {
+            Map<String, Object> compactTool = new LinkedHashMap<>(2, 1F);
+            copyIfPresent(each, compactTool, "name");
+            copyIfPresent(each, compactTool, "title");
+            if (!compactTool.isEmpty()) {
+                compactTools.add(compactTool);
+            }
+        }
+        target.put("tools", compactTools);
     }
     
     private static void copyFields(final Map<String, Object> source, final Map<String, Object> target, final Collection<String> fieldNames) {
@@ -94,7 +121,8 @@ final class LLMMCPModelFacingToolResponseFormatter {
             return;
         }
         List<Map<String, Object>> compactItems = new LinkedList<>();
-        for (Map<String, Object> each : items.subList(0, Math.min(items.size(), 5))) {
+        int visibleItemCount = MCPResponseMode.SEARCH.equals(source.get("response_mode")) ? items.size() : Math.min(items.size(), COMPACT_ITEM_LIMIT);
+        for (Map<String, Object> each : items.subList(0, visibleItemCount)) {
             Map<String, Object> compactItem = new LinkedHashMap<>(8, 1F);
             copyIfPresent(each, compactItem, "database");
             copyIfPresent(each, compactItem, "schema");
@@ -140,8 +168,6 @@ final class LLMMCPModelFacingToolResponseFormatter {
         List<Map<String, Object>> summaries = new LinkedList<>();
         for (Map<String, Object> each : artifacts.subList(0, Math.min(artifacts.size(), 3))) {
             Map<String, Object> summary = new LinkedHashMap<>(4, 1F);
-            putArtifactCount(each, summary, "ddl_artifacts", "ddl_artifact_count");
-            putArtifactCount(each, summary, "index_plan", "index_plan_count");
             putArtifactCount(each, summary, "distsql_artifacts", "distsql_artifact_count");
             if (!summary.isEmpty()) {
                 summaries.add(summary);
@@ -149,6 +175,19 @@ final class LLMMCPModelFacingToolResponseFormatter {
         }
         if (!summaries.isEmpty()) {
             target.put(fieldName, summaries);
+        }
+    }
+    
+    private static void copyCompactArtifactPackage(final Map<String, Object> source, final Map<String, Object> target, final String fieldName) {
+        Object value = source.get(fieldName);
+        if (!(value instanceof Map)) {
+            return;
+        }
+        Map<String, Object> artifactPackage = LLMMCPJsonValues.castToMap(value);
+        Map<String, Object> summary = new LinkedHashMap<>(1, 1F);
+        putArtifactCount(artifactPackage, summary, "distsql_artifacts", "distsql_artifact_count");
+        if (!summary.isEmpty()) {
+            target.put(fieldName, summary);
         }
     }
     
@@ -175,7 +214,6 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyIfPresent(recovery, compactRecovery, "completion_first");
         copyIfPresent(recovery, compactRecovery, "suggested_arguments");
         copyModelCriticalFields(recovery, compactRecovery);
-        copyModelFacingNextActions(recovery, compactRecovery);
         target.put("recovery", compactRecovery);
     }
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.single.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -134,11 +133,6 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     
     private Collection<String> findMatchedTableKeys(final String tableName) {
         Collection<String> result = new LinkedList<>();
-        String formattedTableName = new DatabaseTypeRegistry(protocolType).formatIdentifierPattern(tableName);
-        if (singleTableDataNodes.containsKey(formattedTableName)) {
-            result.add(formattedTableName);
-            return result;
-        }
         if (singleTableDataNodes.containsKey(tableName)) {
             result.add(tableName);
             return result;

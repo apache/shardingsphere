@@ -29,6 +29,8 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -41,6 +43,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,7 +132,7 @@ public final class ResourceTestDataFactory {
      * @return runtime context
      */
     public static MCPRuntimeContext createRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadataList) {
-        return createRuntimeContext(databaseMetadataList, "http");
+        return createRuntimeContext(databaseMetadataList, MCPTransportType.HTTP);
     }
     
     /**
@@ -139,7 +142,7 @@ public final class ResourceTestDataFactory {
      * @param activeTransport active MCP transport
      * @return runtime context
      */
-    public static MCPRuntimeContext createRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadataList, final String activeTransport) {
+    public static MCPRuntimeContext createRuntimeContext(final List<DatabaseMetadataFixture> databaseMetadataList, final MCPTransportType activeTransport) {
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(databaseMetadataList.size(), 1F);
         for (DatabaseMetadataFixture each : databaseMetadataList) {
             runtimeDatabases.put(each.database, createRuntimeDatabaseConfiguration(each));
@@ -175,7 +178,7 @@ public final class ResourceTestDataFactory {
      */
     public static RequestContextFixture createRequestContextFixture(final MCPRuntimeContext runtimeContext, final List<DatabaseMetadataFixture> databaseMetadataList) {
         MetadataSPIMocks metadataSPIMocks = mockMetadataSPI(databaseMetadataList);
-        return new RequestContextFixture(new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1"), metadataSPIMocks);
+        return new RequestContextFixture(new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of())), metadataSPIMocks);
     }
     
     private static MCPDatabaseCapabilityProvider createDatabaseCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
@@ -277,6 +280,7 @@ public final class ResourceTestDataFactory {
         when(result.createStatement()).thenReturn(statement);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn(databaseMetadata.databaseVersion);
         when(databaseMetaData.getURL()).thenReturn(createJdbcUrl(databaseMetadata.databaseType));
+        when(databaseMetaData.getSearchStringEscape()).thenReturn("\\");
         when(databaseMetaData.getTables(nullable(String.class), nullable(String.class), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3, String[].class);
             return createResultSet("TABLE".equals(tableTypes[0]) ? createTableRows(databaseMetadata) : createViewRows(databaseMetadata));
@@ -314,32 +318,35 @@ public final class ResourceTestDataFactory {
         return result;
     }
     
-    private static List<Map<String, String>> createColumnRows(final DatabaseMetadataFixture databaseMetadata, final String objectName) {
-        List<Map<String, String>> result = new LinkedList<>();
+    private static List<Map<String, Object>> createColumnRows(final DatabaseMetadataFixture databaseMetadata, final String objectName) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        String relationName = "%".equals(objectName) ? "" : unescapePattern(objectName);
         for (SchemaMetadataFixture each : databaseMetadata.schemas) {
-            appendColumnRows(result, each.tables, objectName);
-            appendColumnRows(result, each.views, objectName);
+            appendColumnRows(result, each.tables, relationName);
+            appendColumnRows(result, each.views, relationName);
         }
         return result;
     }
     
-    private static void appendColumnRows(final List<Map<String, String>> result, final List<TableMetadataFixture> objects, final String objectName) {
+    private static void appendColumnRows(final List<Map<String, Object>> result, final List<TableMetadataFixture> objects, final String relationName) {
         for (TableMetadataFixture each : objects) {
-            if (each.name.equals(objectName)) {
-                for (String column : each.columns) {
-                    result.add(Map.of("COLUMN_NAME", column));
+            if (relationName.isEmpty() || each.name.equals(relationName)) {
+                for (int i = 0; i < each.columns.size(); i++) {
+                    result.add(Map.of("TABLE_NAME", each.name, "COLUMN_NAME", each.columns.get(i), "ORDINAL_POSITION", i + 1,
+                            "DATA_TYPE", Types.VARCHAR, "TYPE_NAME", "VARCHAR", "NULLABLE", DatabaseMetaData.columnNullable));
                 }
             }
         }
     }
     
-    private static List<Map<String, String>> createIndexRows(final DatabaseMetadataFixture databaseMetadata, final String tableName) {
-        List<Map<String, String>> result = new LinkedList<>();
+    private static List<Map<String, Object>> createIndexRows(final DatabaseMetadataFixture databaseMetadata, final String tableName) {
+        List<Map<String, Object>> result = new LinkedList<>();
         for (SchemaMetadataFixture each : databaseMetadata.schemas) {
             for (TableMetadataFixture table : each.tables) {
                 if (table.name.equals(tableName)) {
                     for (String index : table.indexes) {
-                        result.add(Map.of("INDEX_NAME", index));
+                        result.add(Map.of("INDEX_NAME", index, "TYPE", DatabaseMetaData.tableIndexOther, "NON_UNIQUE", false,
+                                "ORDINAL_POSITION", 1, "COLUMN_NAME", table.columns.isEmpty() ? "" : table.columns.getFirst()));
                     }
                 }
             }
@@ -357,12 +364,39 @@ public final class ResourceTestDataFactory {
         return result;
     }
     
-    private static ResultSet createResultSet(final List<Map<String, String>> rows) throws SQLException {
+    private static String unescapePattern(final String value) {
+        StringBuilder result = new StringBuilder(value.length());
+        boolean escaped = false;
+        for (char each : value.toCharArray()) {
+            if (escaped) {
+                result.append(each);
+                escaped = false;
+            } else if ('\\' == each) {
+                escaped = true;
+            } else {
+                result.append(each);
+            }
+        }
+        return escaped ? result.append('\\').toString() : result.toString();
+    }
+    
+    private static ResultSet createResultSet(final List<? extends Map<String, ?>> rows) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         AtomicInteger rowIndex = new AtomicInteger(-1);
         when(result.next()).thenAnswer(invocation -> rowIndex.incrementAndGet() < rows.size());
-        when(result.getString(anyString())).thenAnswer(invocation -> rows.get(rowIndex.get()).get(invocation.getArgument(0, String.class)));
+        when(result.getString(anyString())).thenAnswer(invocation -> {
+            Object value = rows.get(rowIndex.get()).get(invocation.getArgument(0, String.class));
+            return null == value ? null : value.toString();
+        });
+        when(result.getInt(anyString())).thenAnswer(invocation -> getNumber(rows, rowIndex.get(), invocation.getArgument(0, String.class)).intValue());
+        when(result.getShort(anyString())).thenAnswer(invocation -> getNumber(rows, rowIndex.get(), invocation.getArgument(0, String.class)).shortValue());
+        when(result.getBoolean(anyString())).thenAnswer(invocation -> Boolean.TRUE.equals(rows.get(rowIndex.get()).get(invocation.getArgument(0, String.class))));
         return result;
+    }
+    
+    private static Number getNumber(final List<? extends Map<String, ?>> rows, final int rowIndex, final String columnName) {
+        Object value = rows.get(rowIndex).get(columnName);
+        return value instanceof Number ? (Number) value : 0;
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

@@ -101,11 +101,11 @@ class SQLExecutionPayloadTest {
             "SAVEPOINT, RELEASE SAVEPOINT, Savepoint released.",
             "DDL, CREATE, Statement executed."
     })
-    void assertStatementAcknowledgement(final SupportedMCPStatement statementClass, final String statementType, final String expectedMessage) {
+    void assertStatementAcknowledgement(final SupportedMCPStatement statementClass, final String statementType, final String expectedSummary) {
         Map<String, Object> actual = SQLExecutionPayload.executed(SQLExecutionResult.statementAck(
                 statementClass, statementType, 100, 0, statementType)).toPayload();
-        assertThat(actual.get("message"), is(expectedMessage));
-        assertThat(actual.get("summary"), is(expectedMessage));
+        assertThat(actual.get("summary"), is(expectedSummary));
+        assertFalse(actual.containsKey("message"));
     }
     
     @Test

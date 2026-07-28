@@ -17,12 +17,29 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+
 /**
- * Policy of identifier case matching.
+ * Policy of identifier case normalization and matching.
  */
-public interface IdentifierCasePolicy {
+@RequiredArgsConstructor
+public final class IdentifierCasePolicy {
+    
+    private final LookupMode quotedLookupMode;
+    
+    private final LookupMode unquotedLookupMode;
+    
+    private final UnaryOperator<String> quotedDefinitionNormalizer;
+    
+    private final UnaryOperator<String> unquotedDefinitionNormalizer;
+    
+    private final UnaryOperator<String> lookupNormalizer;
+    
+    private final Predicate<String> unquotedStoredNamePredicate;
     
     /**
      * Get lookup mode for identifier.
@@ -30,15 +47,30 @@ public interface IdentifierCasePolicy {
      * @param quoteCharacter quote character
      * @return lookup mode
      */
-    LookupMode getLookupMode(QuoteCharacter quoteCharacter);
+    public LookupMode getLookupMode(final QuoteCharacter quoteCharacter) {
+        return QuoteCharacter.NONE == quoteCharacter ? unquotedLookupMode : quotedLookupMode;
+    }
     
     /**
-     * Normalize identifier value.
+     * Normalize identifier value for definition.
+     *
+     * @param value identifier value
+     * @param quoteCharacter quote character
+     * @return normalized identifier value
+     */
+    public String normalizeForDefinition(final String value, final QuoteCharacter quoteCharacter) {
+        return QuoteCharacter.NONE == quoteCharacter ? unquotedDefinitionNormalizer.apply(value) : quotedDefinitionNormalizer.apply(value);
+    }
+    
+    /**
+     * Normalize identifier value for lookup.
      *
      * @param value identifier value
      * @return normalized identifier value
      */
-    String normalize(String value);
+    public String normalizeForLookup(final String value) {
+        return lookupNormalizer.apply(value);
+    }
     
     /**
      * Judge whether stored identifier matches input identifier.
@@ -48,5 +80,12 @@ public interface IdentifierCasePolicy {
      * @param quoteCharacter quote character
      * @return whether matched
      */
-    boolean matches(String storedName, String actualIdentifier, QuoteCharacter quoteCharacter);
+    public boolean matches(final String storedName, final String actualIdentifier, final QuoteCharacter quoteCharacter) {
+        if (QuoteCharacter.NONE != quoteCharacter) {
+            return LookupMode.EXACT == quotedLookupMode
+                    ? storedName.equals(actualIdentifier)
+                    : normalizeForLookup(storedName).equals(normalizeForLookup(actualIdentifier));
+        }
+        return unquotedStoredNamePredicate.test(storedName) && normalizeForLookup(storedName).equals(normalizeForLookup(actualIdentifier));
+    }
 }

@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.workflow;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
@@ -41,11 +43,11 @@ class WorkflowPlanHandlerTest {
     @Test
     void assertHandle() {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
-        sessionManager.createSession("session-1");
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), "http");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.HTTP);
         runtimeContext.getWorkflowSessionContext("session-1").save(createSnapshot());
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
-        Map<String, Object> actual = new WorkflowPlanHandler().handle(requestContext, new MCPUriVariables(Map.of("plan_id", "plan-1"))).toPayload();
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, sessionManager.getRequiredSessionIdentity("session-1"));
+        Map<String, Object> actual = new WorkflowPlanHandler().handle(requestContext, new MCPResourceURIVariables(Map.of("plan_id", "plan-1"))).toPayload();
         assertThat(actual.get("plan_id"), is("plan-1"));
         assertThat(actual.get("workflow_kind"), is("mask.rule"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("tool_name"), is("database_gateway_apply_workflow"));

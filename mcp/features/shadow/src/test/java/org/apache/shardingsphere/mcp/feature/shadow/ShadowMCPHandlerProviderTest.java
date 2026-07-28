@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow;
 
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.feature.shadow.completion.ShadowAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +28,7 @@ import java.util.Collection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 
 class ShadowMCPHandlerProviderTest {
     
@@ -39,6 +42,12 @@ class ShadowMCPHandlerProviderTest {
         assertThat(new ShadowMCPHandlerProvider().getToolHandlers().stream().map(MCPToolHandler::getToolName).toList(),
                 containsInAnyOrder(ShadowFeatureDefinition.PLAN_RULE_TOOL_NAME,
                         ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_TOOL_NAME, ShadowFeatureDefinition.PLAN_ALGORITHM_CLEANUP_TOOL_NAME));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        MCPCompletionHandler<?> actual = new ShadowMCPHandlerProvider().getCompletionHandlers().iterator().next();
+        assertThat(actual, isA(ShadowAlgorithmCompletionHandler.class));
     }
     
     @Test

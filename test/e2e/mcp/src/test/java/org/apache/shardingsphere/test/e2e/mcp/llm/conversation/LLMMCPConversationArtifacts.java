@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
@@ -31,8 +32,6 @@ import java.util.List;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPConversationArtifacts {
-    
-    private final String modelProvider;
     
     private final String modelName;
     
@@ -47,6 +46,8 @@ final class LLMMCPConversationArtifacts {
     @Setter(AccessLevel.PACKAGE)
     private String finalAnswerJson = "";
     
+    private boolean harnessRecoveryPending;
+    
     void addRawModelOutput(final String rawModelOutput) {
         rawModelOutputs.add(rawModelOutput);
     }
@@ -59,6 +60,16 @@ final class LLMMCPConversationArtifacts {
         mcpRuntimeLogLines.add(runtimeLogLine);
     }
     
+    void markHarnessRecovery() {
+        harnessRecoveryPending = true;
+    }
+    
+    String consumeTurnActionOrigin() {
+        String result = harnessRecoveryPending ? MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN : MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN;
+        harnessRecoveryPending = false;
+        return result;
+    }
+    
     int nextSequence() {
         return interactionTrace.size() + 1;
     }
@@ -68,7 +79,7 @@ final class LLMMCPConversationArtifacts {
                 .scenarioId(scenario.getScenarioId())
                 .systemPrompt(scenario.getSystemPrompt())
                 .userPrompt(scenario.getUserPrompt())
-                .modelProvider(modelProvider)
+                .modelProvider(LLME2EConfiguration.MODEL_PROVIDER)
                 .modelName(modelName)
                 .finalAnswerJson(finalAnswerJson)
                 .rawModelOutputs(rawModelOutputs)

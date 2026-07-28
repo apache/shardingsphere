@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.feature.encrypt;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
@@ -32,7 +31,7 @@ public final class EncryptFeatureDefinition {
     
     public static final String PLAN_PROMPT_NAME = "plan_encrypt_rule";
     
-    public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.ENCRYPT_RULE);
+    public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf("encrypt.rule");
     
     public static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/encrypt/algorithms";
     

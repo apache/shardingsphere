@@ -38,6 +38,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
@@ -63,6 +64,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -115,7 +117,9 @@ class PostgreSQLComQueryExecutorTest {
     @Test
     void assertExecuteQueryWithColumnDescription() throws SQLException, ReflectiveOperationException {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
-        when(queryResponseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(new QueryHeader("schema", "table", "label", "column", 1, "type", 2, 3, true, true, true, true)));
+        when(queryResponseHeader.getQueryHeaders()).thenReturn(
+                Collections.singletonList(new QueryHeader("schema", "table", "label", "column", Types.STRUCT, "record_type", 2, 3, true, true, true, true,
+                        Collections.singletonMap(PostgreSQLQueryHeaderBuilder.TYPE_OID, 2249))));
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket> actual = queryExecutor.execute();
         PostgreSQLRowDescriptionPacket rowDescriptionPacket = (PostgreSQLRowDescriptionPacket) actual.iterator().next();
@@ -126,7 +130,7 @@ class PostgreSQLComQueryExecutorTest {
         assertThat(columnDescription.getColumnName(), is("label"));
         assertThat(columnDescription.getColumnIndex(), is(1));
         assertThat(columnDescription.getColumnLength(), is(2));
-        assertThat(columnDescription.getTypeOID(), is(new PostgreSQLColumnDescription("column", 1, 1, 2, "type").getTypeOID()));
+        assertThat(columnDescription.getTypeOID(), is(2249));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));
     }
     

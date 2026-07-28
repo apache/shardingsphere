@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -41,13 +41,31 @@ class SessionAttributionResolverTest {
         when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("X-Test-Subject", "X-Test-Source", "X-Test-ATTR-Region")));
         when(request.getHeader("X-Test-ATTR-Region")).thenReturn("ap-south");
         SessionAttributionResolver resolver = new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-"));
-        assertThat(resolver.resolve(request).map(each -> each.getAttributes().get("region")), is(Optional.of("ap-south")));
+        assertSessionIdentity(resolver.resolve(request, "session-1"), "subject", "gateway", Map.of("region", "ap-south"));
     }
     
     @Test
     void assertResolveFromHeaders() {
         SessionAttributionResolver resolver = new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-"));
-        assertThat(resolver.resolve(Map.of("X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"), "x-test-attr-Region", List.of("ap-south"))).get()
-                .getAttributes().get("region"), is("ap-south"));
+        assertSessionIdentity(resolver.resolve(Map.of("X-Test-Subject", List.of("subject"), "X-Test-Source", List.of("gateway"), "x-test-attr-Region", List.of("ap-south")), "session-1"),
+                "subject", "gateway", Map.of("region", "ap-south"));
+    }
+    
+    @Test
+    void assertResolveUnattributedWithoutSubject() {
+        SessionAttributionResolver resolver = new SessionAttributionResolver(new SessionAttributionSourceConfiguration("X-Test-Subject", "X-Test-Source", "X-Test-Attr-"));
+        assertSessionIdentity(resolver.resolve(Map.of(), "session-1"), "", "", Map.of());
+    }
+    
+    @Test
+    void assertResolveUnattributedWhenDisabled() {
+        assertSessionIdentity(new SessionAttributionResolver(null).resolve(Map.of(), "session-1"), "", "", Map.of());
+    }
+    
+    private void assertSessionIdentity(final MCPSessionIdentity actual, final String subject, final String source, final Map<String, String> attributes) {
+        assertThat(actual.getSessionId(), is("session-1"));
+        assertThat(actual.getSubject(), is(subject));
+        assertThat(actual.getSource(), is(source));
+        assertThat(actual.getAttributes(), is(attributes));
     }
 }

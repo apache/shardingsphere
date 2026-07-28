@@ -48,7 +48,7 @@ class LLMMCPConversationTurnPlannerTest {
         List<String> actual = planner.createTurnToolNames(createScenario(List.of("database_gateway_plan_mask_rule", "database_gateway_execute_query"),
                 List.of("database_gateway_plan_mask_rule", "database_gateway_execute_query")),
                 List.of(createTraceRecord("database_gateway_plan_mask_rule",
-                        Map.of("recovery", Map.of("next_actions", List.of(Map.of("type", "completion")))))));
+                        Map.of("next_actions", List.of(Map.of("type", "completion"))))));
         assertThat(actual, is(List.of(MCPInteractionActionNames.COMPLETE)));
     }
     
@@ -83,22 +83,23 @@ class LLMMCPConversationTurnPlannerTest {
     }
     
     @Test
-    void assertCreateToolChoiceWithMissingCoverage() {
+    void assertCreateTurnToolNamesExposesAllowedToolsWithoutServerGuidance() {
         LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(Set.of());
-        assertThat(planner.createToolChoice(createScenario(List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query")), List.of(), false), is("required"));
+        assertThat(planner.createTurnToolNames(createScenario(
+                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"), List.of("database_gateway_execute_query")), List.of()),
+                is(List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")));
     }
     
     @Test
-    void assertCreateToolChoiceWithCoveredRequiredTools() {
+    void assertCreateToolChoice() {
         LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(Set.of());
-        assertThat(planner.createToolChoice(createScenario(List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query")),
-                List.of(createTraceRecord("database_gateway_execute_query", Map.of("row_objects", List.of()))), false), is("auto"));
+        assertThat(planner.createToolChoice(false), is("auto"));
     }
     
     @Test
     void assertCreateToolChoiceWithFinalAnswer() {
         LLMMCPConversationTurnPlanner planner = new LLMMCPConversationTurnPlanner(Set.of());
-        assertThat(planner.createToolChoice(createScenario(List.of("database_gateway_execute_query"), List.of("database_gateway_execute_query")), List.of(), true), is("none"));
+        assertThat(planner.createToolChoice(true), is("none"));
     }
     
     private MCPInteractionTraceRecord createTraceRecord(final String targetName, final Map<String, Object> structuredContent) {

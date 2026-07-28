@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.protocol.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 
 /**
  * Exception for workflow state recovery.

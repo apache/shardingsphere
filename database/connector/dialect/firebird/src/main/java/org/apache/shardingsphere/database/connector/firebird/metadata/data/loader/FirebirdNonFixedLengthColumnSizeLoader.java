@@ -20,7 +20,6 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.data.load
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,11 +43,9 @@ final class FirebirdNonFixedLengthColumnSizeLoader {
             return Collections.emptyMap();
         }
         Map<String, Map<String, Integer>> result = new HashMap<>(material.getActualTableNames().size(), 1F);
-        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(material.getStorageType());
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(material.getStorageType(), material.getDataSource().getConnection())) {
             for (String each : material.getActualTableNames()) {
-                String formattedTableName = databaseTypeRegistry.formatIdentifierPattern(each);
-                Map<String, Integer> columnSizes = loadTableColumnSizes(connection, formattedTableName);
+                Map<String, Integer> columnSizes = loadTableColumnSizes(connection, each);
                 result.put(each, columnSizes);
             }
         }

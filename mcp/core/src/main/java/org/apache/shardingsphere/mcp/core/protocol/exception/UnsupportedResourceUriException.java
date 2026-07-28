@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.protocol.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPNotFoundException;
+import org.apache.shardingsphere.mcp.api.exception.MCPNotFoundException;
 
 /**
  * Exception for unsupported MCP resource URIs.

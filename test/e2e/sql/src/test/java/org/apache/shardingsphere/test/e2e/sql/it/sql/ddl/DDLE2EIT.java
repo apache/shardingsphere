@@ -83,14 +83,10 @@ class DDLE2EIT implements SQLE2EIT {
     
     private SQLE2EEnvironmentEngine environmentEngine;
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(testParam, context);
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {
@@ -117,14 +113,10 @@ class DDLE2EIT implements SQLE2EIT {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws Exception {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         init(testParam, context);
         try (Connection connection = environmentEngine.getTargetDataSource().getConnection()) {

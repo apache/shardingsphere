@@ -195,7 +195,6 @@ public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.OTHER, JSON);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.SQLXML, XML);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BOOLEAN, BOOL);
-        // TODO Temporary solution for https://github.com/apache/shardingsphere/issues/22522
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.STRUCT, VARCHAR);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.ARRAY, TEXT_ARRAY);
     }

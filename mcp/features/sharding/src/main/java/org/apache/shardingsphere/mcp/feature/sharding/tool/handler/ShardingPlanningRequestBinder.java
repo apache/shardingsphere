@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflo
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,7 @@ public final class ShardingPlanningRequestBinder {
         workflowPlanningArguments.applyStringArgument("allow_hint_disable", request::setAllowHintDisable);
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument("algorithm_properties"));
         request.putKeyGeneratorProperties(workflowPlanningArguments.getMapArgument("key_generator_properties"));
-        request.getAuditorNames().addAll(createStringList(workflowPlanningArguments.getStringArgument("auditors")));
+        replaceValues(request.getAuditorNames(), workflowPlanningArguments.getStringArgument("auditors"));
     }
     
     private void applyTableRuleEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
@@ -128,17 +129,17 @@ public final class ShardingPlanningRequestBinder {
         WorkflowRequestBinder.applyStringField(values, "allow_hint_disable", request::setAllowHintDisable);
         applyMapField(values, "algorithm_properties", request::putAlgorithmProperties);
         applyMapField(values, "key_generator_properties", request::putKeyGeneratorProperties);
-        request.getAuditorNames().addAll(createStringList(values.get("auditors")));
+        replaceValues(request.getAuditorNames(), values.get("auditors"));
     }
     
     private void bindTableReferenceRuleArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
         workflowPlanningArguments.applyStringArgument("rule", request::setRuleName);
-        request.getReferenceTables().addAll(createStringList(workflowPlanningArguments.getStringArgument("reference_tables")));
+        replaceValues(request.getReferenceTables(), workflowPlanningArguments.getStringArgument("reference_tables"));
     }
     
     private void applyTableReferenceRuleEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
         WorkflowRequestBinder.applyStringField(values, "rule", request::setRuleName);
-        request.getReferenceTables().addAll(createStringList(values.get("reference_tables")));
+        replaceValues(request.getReferenceTables(), values.get("reference_tables"));
     }
     
     private void bindDefaultStrategyArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
@@ -162,14 +163,12 @@ public final class ShardingPlanningRequestBinder {
         workflowPlanningArguments.applyStringArgument("key_generator", request::setKeyGeneratorName);
         workflowPlanningArguments.applyStringArgument("key_generator_type", request::setKeyGeneratorType);
         request.putKeyGeneratorProperties(workflowPlanningArguments.getMapArgument("key_generator_properties"));
-        request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument("algorithm_properties"));
     }
     
     private void applyKeyGeneratorEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
         WorkflowRequestBinder.applyStringField(values, "key_generator", request::setKeyGeneratorName);
         WorkflowRequestBinder.applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
         applyMapField(values, "key_generator_properties", request::putKeyGeneratorProperties);
-        applyMapField(values, "algorithm_properties", request::putAlgorithmProperties);
     }
     
     private void bindKeyGenerateStrategyArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
@@ -178,7 +177,6 @@ public final class ShardingPlanningRequestBinder {
         workflowPlanningArguments.applyStringArgument("key_generator", request::setKeyGeneratorName);
         workflowPlanningArguments.applyStringArgument("key_generator_type", request::setKeyGeneratorType);
         request.putKeyGeneratorProperties(workflowPlanningArguments.getMapArgument("key_generator_properties"));
-        request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument("algorithm_properties"));
     }
     
     private void applyKeyGenerateStrategyEvidence(final ShardingWorkflowRequest request, final Map<String, Object> values) {
@@ -189,7 +187,6 @@ public final class ShardingPlanningRequestBinder {
         WorkflowRequestBinder.applyStringField(values, "key_generator", request::setKeyGeneratorName);
         WorkflowRequestBinder.applyStringField(values, "key_generator_type", request::setKeyGeneratorType);
         applyMapField(values, "key_generator_properties", request::putKeyGeneratorProperties);
-        applyMapField(values, "algorithm_properties", request::putAlgorithmProperties);
     }
     
     private void bindRuleComponentCleanupArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
@@ -215,6 +212,14 @@ public final class ShardingPlanningRequestBinder {
             result.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
         }
         return result;
+    }
+    
+    private void replaceValues(final Collection<String> target, final Object value) {
+        List<String> values = createStringList(value);
+        if (!values.isEmpty()) {
+            target.clear();
+            target.addAll(values);
+        }
     }
     
     private List<String> createStringList(final Object value) {

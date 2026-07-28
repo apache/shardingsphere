@@ -21,8 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.testcontainers.containers.GenericContainer;
 
-import java.util.Properties;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
@@ -33,30 +31,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 class MySQLRuntimeTestSupportTest {
-    
-    @Test
-    void assertCreateDockerRequiredMessageWithReadinessDiagnostic() {
-        assertThat(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required.", "daemon unavailable"),
-                is("Docker is required. Docker readiness diagnostic: daemon unavailable"));
-    }
-    
-    @Test
-    void assertCreateDockerRequiredMessageWithoutReadinessDiagnostic() {
-        assertThat(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required.", ""), is("Docker is required."));
-    }
-    
-    @Test
-    void assertGetMySQLImage() {
-        Properties props = new Properties();
-        props.setProperty("mcp.e2e.mysql.image", "mysql:8.4.0");
-        assertThat(MySQLRuntimeTestSupport.getMySQLImage(props), is("mysql:8.4.0"));
-    }
-    
-    @Test
-    void assertGetMySQLImageWithMissingProperty() {
-        IllegalStateException actualException = assertThrows(IllegalStateException.class, () -> MySQLRuntimeTestSupport.getMySQLImage(new Properties()));
-        assertThat(actualException.getMessage(), is("MCP E2E MySQL image property `mcp.e2e.mysql.image` is required."));
-    }
     
     @Test
     void assertCreateLLMRuntimeFixturePreservesInitializationFailure() {

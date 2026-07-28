@@ -39,9 +39,11 @@ import java.util.Map;
  */
 public final class ReadwriteSplittingStatusWorkflowPlanningService {
     
+    private static final String CLUSTER_MODE = "Cluster";
+    
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, rule, read storage unit and target status",
-            "Inspect DistSQL-visible readwrite-splitting status",
+            "Confirm Cluster mode and inspect DistSQL-visible readwrite-splitting status",
             "Generate readwrite-splitting status DistSQL artifact",
             "Review artifacts and choose execution mode",
             "Execute or export artifacts",
@@ -75,6 +77,9 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
         queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
+        if (!ensureClusterMode(inspectionService.queryProxyMode(queryFacade, mergedRequest.getDatabase()), result)) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+        }
         List<Map<String, Object>> statuses = inspectionService.queryRuleStatus(queryFacade, mergedRequest.getDatabase(), mergedRequest.getRuleName());
         if (!ensureTargetStatusRow(mergedRequest, statuses, result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
@@ -85,8 +90,10 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
     
     private ReadwriteSplittingStatusWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final ReadwriteSplittingStatusWorkflowRequest request) {
         ReadwriteSplittingStatusWorkflowRequest result = ReadwriteSplittingStatusWorkflowRequest.merge(snapshot.getRequest(), request);
-        return planningSupport.prepareSnapshot(snapshot, ReadwriteSplittingFeatureDefinition.STATUS_WORKFLOW_KIND, result, null,
+        planningSupport.prepareSnapshot(snapshot, ReadwriteSplittingFeatureDefinition.STATUS_WORKFLOW_KIND, result, null,
                 intentResolver.resolveStatusIntent(result), "Readwrite-splitting status workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+        snapshot.getResourceUriTemplates().add(ReadwriteSplittingFeatureDefinition.STORAGE_UNITS_RESOURCE_URI);
+        return result;
     }
     
     private void applyResolvedStatusIntent(final ReadwriteSplittingStatusWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
@@ -126,6 +133,17 @@ public final class ReadwriteSplittingStatusWorkflowPlanningService {
             return false;
         }
         return true;
+    }
+    
+    private boolean ensureClusterMode(final String proxyMode, final WorkflowContextSnapshot snapshot) {
+        if (CLUSTER_MODE.equalsIgnoreCase(proxyMode)) {
+            return true;
+        }
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.CLUSTER_MODE_REQUIRED, "error", WorkflowLifecycle.STEP_DISCOVERING,
+                String.format("Readwrite-splitting storage-unit status changes require Cluster mode; current Proxy mode is `%s`.", proxyMode),
+                "Connect MCP to a Cluster-mode ShardingSphere Proxy, then start a new readwrite-splitting status plan.", false,
+                Map.of("required_mode", CLUSTER_MODE, "actual_mode", proxyMode)));
+        return false;
     }
     
     private void addMissingInput(final List<String> missingInputs, final String value, final String fieldName) {

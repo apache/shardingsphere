@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ class MCPToolElicitationFallbackResponseFactoryTest extends AbstractMCPToolSpeci
     
     @Test
     void assertCreateSensitiveFallback() {
-        MCPSuccessPayload actual = factory.create(createClarifyingPayload(createClarifyingQuestion("primary_algorithm_properties.access-token", "string", false, "Provide access token.")),
+        MCPSuccessPayload actual = factory.create(createClarifyingPayload(createClarifyingQuestion("primary_algorithm_properties.access-token", "string", true, "Provide access token.")),
                 MCPToolElicitationFallbackReason.SENSITIVE_FORM_BLOCKED, createClientCapabilities(McpSchema.ClientCapabilities.builder().elicitation().build()));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actualPayload.get("fallback_reason"), is("sensitive_form_blocked"));

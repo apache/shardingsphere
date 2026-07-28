@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.context;
 
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -32,36 +33,27 @@ import static org.hamcrest.Matchers.is;
 class MCPFeatureRuntimeRequestContextTest {
     
     @Test
-    void assertFindSessionIdentity() {
-        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
-        MCPSessionIdentity sessionIdentity = new MCPSessionIdentity("subject", "gateway", Map.of("cluster", "demo"));
-        sessionManager.createSession("session-1");
-        sessionManager.bindSessionIdentity("session-1", sessionIdentity);
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
-        assertThat(requestContext.findSessionIdentity(), is(Optional.of(sessionIdentity)));
-    }
-    
-    @Test
-    void assertFindSessionIdentityWithoutSession() {
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
-        assertThat(requestContext.findSessionIdentity(), is(Optional.empty()));
+    void assertSessionIdentity() {
+        MCPSessionIdentity sessionIdentity = new MCPSessionIdentity("session-1", "subject", "gateway", Map.of("cluster", "demo"));
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()),
+                new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.HTTP);
+        assertThat(new MCPFeatureRuntimeRequestContext(runtimeContext, sessionIdentity).getSessionIdentity(), is(sessionIdentity));
     }
     
     @Test
     void assertFindRuntimeDatabaseConfiguration() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig)),
-                new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+                new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.HTTP);
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         assertThat(requestContext.findRuntimeDatabaseConfiguration("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
     }
     
     @Test
     void assertFindMissingRuntimeDatabaseConfiguration() {
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()), new MCPDatabaseCapabilityProvider(Map.of()), "http");
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Map.of()),
+                new MCPDatabaseCapabilityProvider(Map.of()), MCPTransportType.HTTP);
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         assertThat(requestContext.findRuntimeDatabaseConfiguration("missing_db"), is(Optional.empty()));
     }
 }

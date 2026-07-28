@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPDialectSQLException
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.SQLInvalidAuthorizationSpecException;
 import java.sql.SQLNonTransientConnectionException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
@@ -41,7 +42,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPJDBCExceptionClassifier {
     
-    private static final Set<String> OBJECT_NOT_VISIBLE_SQL_STATES = Set.of("3F000", "42P01", "42703", "42704", "42S02", "42S22");
+    private static final Set<String> OBJECT_NOT_VISIBLE_SQL_STATES = Set.of("3D000", "3F000", "42P01", "42703", "42704", "42883", "42S02", "42S22");
     
     /**
      * Classify JDBC exception without database dialect evidence.
@@ -68,6 +69,7 @@ public final class MCPJDBCExceptionClassifier {
         Deque<Throwable> pending = new ArrayDeque<>();
         pending.add(cause);
         Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        MCPJDBCErrorCategory candidate = MCPJDBCErrorCategory.QUERY_FAILED;
         while (!pending.isEmpty()) {
             Throwable current = pending.removeFirst();
             if (!visited.add(current)) {
@@ -84,34 +86,42 @@ public final class MCPJDBCExceptionClassifier {
                 if (category.isPresent() && MCPJDBCErrorCategory.QUERY_FAILED != category.get()) {
                     return category.get();
                 }
+                if (category.isEmpty() && current instanceof SQLSyntaxErrorException) {
+                    candidate = MCPJDBCErrorCategory.SYNTAX;
+                }
                 addIfPresent(pending, ((SQLException) current).getNextException());
             }
             addIfPresent(pending, current.getCause());
         }
-        return MCPJDBCErrorCategory.QUERY_FAILED;
+        return candidate;
     }
     
     private static Optional<MCPJDBCErrorCategory> classifySQLException(final Optional<MCPDialectSQLExceptionClassifier> dialectClassifier, final SQLException cause) {
-        Optional<MCPJDBCErrorCategory> standardCategory = classifyStandard(cause);
+        Optional<MCPJDBCErrorCategory> standardCategory = classifyJDBCInvariant(cause);
         if (standardCategory.isPresent()) {
             return standardCategory;
         }
         Optional<MCPJDBCErrorCategory> dialectCategory = dialectClassifier.flatMap(classifier -> classifier.classify(cause));
-        return dialectCategory.isPresent() ? dialectCategory : classifySyntax(cause);
+        return dialectCategory.isPresent() ? dialectCategory : classifyPortable(cause);
     }
     
-    private static Optional<MCPJDBCErrorCategory> classifyStandard(final SQLException cause) {
-        if (cause instanceof SQLTimeoutException) {
+    private static Optional<MCPJDBCErrorCategory> classifyJDBCInvariant(final SQLException cause) {
+        String sqlState = cause.getSQLState();
+        if (cause instanceof SQLTimeoutException || "HYT00".equals(sqlState) || "HYT01".equals(sqlState)) {
             return Optional.of(MCPJDBCErrorCategory.TIMEOUT);
         }
-        String sqlState = cause.getSQLState();
         if (cause instanceof SQLFeatureNotSupportedException || startsWith(sqlState, "0A")) {
             return Optional.of(MCPJDBCErrorCategory.FEATURE_NOT_SUPPORTED);
         }
         if (cause instanceof SQLTransientConnectionException || cause instanceof SQLNonTransientConnectionException || startsWith(sqlState, "08")) {
             return Optional.of(MCPJDBCErrorCategory.CONNECTION);
         }
-        if (startsWith(sqlState, "28")) {
+        return Optional.empty();
+    }
+    
+    private static Optional<MCPJDBCErrorCategory> classifyPortable(final SQLException cause) {
+        String sqlState = cause.getSQLState();
+        if (cause instanceof SQLInvalidAuthorizationSpecException || startsWith(sqlState, "28")) {
             return Optional.of(MCPJDBCErrorCategory.AUTHENTICATION);
         }
         if ("42501".equals(sqlState)) {
@@ -120,13 +130,7 @@ public final class MCPJDBCExceptionClassifier {
         if (null != sqlState && OBJECT_NOT_VISIBLE_SQL_STATES.contains(sqlState)) {
             return Optional.of(MCPJDBCErrorCategory.OBJECT_NOT_VISIBLE);
         }
-        return Optional.empty();
-    }
-    
-    private static Optional<MCPJDBCErrorCategory> classifySyntax(final SQLException cause) {
-        return "42601".equals(cause.getSQLState()) || cause instanceof SQLSyntaxErrorException
-                ? Optional.of(MCPJDBCErrorCategory.SYNTAX)
-                : Optional.empty();
+        return "42601".equals(sqlState) ? Optional.of(MCPJDBCErrorCategory.SYNTAX) : Optional.empty();
     }
     
     private static boolean startsWith(final String value, final String prefix) {

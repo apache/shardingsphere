@@ -19,9 +19,11 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Call statement.
@@ -31,11 +33,27 @@ public final class CallStatement extends DMLStatement {
     
     private final String procedureName;
     
+    private final FunctionNameSegment procedureNameSegment;
+    
     private final List<ExpressionSegment> parameters;
     
     public CallStatement(final DatabaseType databaseType, final String procedureName, final List<ExpressionSegment> parameters) {
+        this(databaseType, procedureName, null, parameters);
+    }
+    
+    public CallStatement(final DatabaseType databaseType, final String procedureName, final FunctionNameSegment procedureNameSegment, final List<ExpressionSegment> parameters) {
         super(databaseType);
         this.procedureName = procedureName;
+        this.procedureNameSegment = procedureNameSegment;
         this.parameters = parameters;
+    }
+    
+    /**
+     * Get procedure name segment.
+     *
+     * @return procedure name segment
+     */
+    public Optional<FunctionNameSegment> getProcedureNameSegment() {
+        return Optional.ofNullable(procedureNameSegment);
     }
 }

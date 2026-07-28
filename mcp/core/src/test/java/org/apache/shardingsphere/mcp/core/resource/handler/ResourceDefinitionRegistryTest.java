@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mcp.core.resource.handler;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,7 +56,7 @@ class ResourceDefinitionRegistryTest {
     void assertDispatch() {
         Optional<MCPSuccessPayload> actual = ResourceDefinitionRegistry.dispatch(mock(MCPFeatureRuntimeRequestContext.class), "shardingsphere://capabilities");
         assertTrue(actual.isPresent());
-        assertTrue(actual.get().toPayload().containsKey("supportedTools"));
+        assertTrue(actual.get().toPayload().containsKey("supportedStatementClasses"));
     }
     
     @Test
@@ -73,7 +73,7 @@ class ResourceDefinitionRegistryTest {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
             Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ResourceDefinitionRegistry.class.getName(), false, createIsolatedResourceDefinitionRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
-                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedResources"), null));
+                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedResourceDescriptors"), null));
             assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
             Throwable actualCause = actual.getCause().getCause();
             assertThat(actualCause.getClass(), is(expectedCauseType));
@@ -82,8 +82,8 @@ class ResourceDefinitionRegistryTest {
     }
     
     @Test
-    void assertGetSupportedResources() {
-        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResources();
+    void assertGetSupportedResourceDescriptors() {
+        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).toList();
         assertThat(actual, is(List.of(
                 "shardingsphere://capabilities",
                 "shardingsphere://guidance",
@@ -112,12 +112,6 @@ class ResourceDefinitionRegistryTest {
                 "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}")));
-    }
-    
-    @Test
-    void assertGetSupportedResourceDescriptors() {
-        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).toList();
-        assertThat(actual, is(ResourceDefinitionRegistry.getSupportedResources()));
     }
     
     private static Stream<Arguments> getSupportedResourcesFailureCases() {
@@ -154,8 +148,8 @@ class ResourceDefinitionRegistryTest {
     }
     
     private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
-        MCPResourceHandler<UnsupportedRequestContext> result = mock(MCPResourceHandler.class);
-        when(result.getContextType()).thenReturn(UnsupportedRequestContext.class);
+        MCPResourceHandler<MCPFeatureRuntimeRequestContext> result = mock(MCPResourceHandler.class);
+        when(result.getContextType()).thenReturn(MCPFeatureRuntimeRequestContext.class);
         when(result.getResourceUriTemplate()).thenReturn("shardingsphere://unsupported");
         return result;
     }
@@ -222,9 +216,6 @@ class ResourceDefinitionRegistryTest {
     
     private static String getUnsupportedResourceHandlerMessage() {
         MCPResourceHandler<?> handler = createUnsupportedResourceHandler();
-        return String.format("Unsupported request context type `%s` for `%s`.", UnsupportedRequestContext.class.getName(), handler.getClass().getName());
-    }
-    
-    private interface UnsupportedRequestContext extends MCPRequestContext {
+        return String.format("Unsupported request context type `%s` for `%s`.", MCPFeatureRuntimeRequestContext.class.getName(), handler.getClass().getName());
     }
 }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -101,7 +102,7 @@ class OracleDatabaseMetaDataTest {
     void assertGetTransactionOption() {
         DialectTransactionOption actualTransactionOption = dialectDatabaseMetaData.getTransactionOption();
         assertFalse(actualTransactionOption.isSupportGlobalCSN());
-        assertFalse(actualTransactionOption.isDDLNeedImplicitCommit());
+        assertThat(actualTransactionOption.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertFalse(actualTransactionOption.isSupportAutoCommitInNestedTransaction());
         assertFalse(actualTransactionOption.isSupportDDLInXATransaction());
         assertTrue(actualTransactionOption.isSupportMetaDataRefreshInTransaction());

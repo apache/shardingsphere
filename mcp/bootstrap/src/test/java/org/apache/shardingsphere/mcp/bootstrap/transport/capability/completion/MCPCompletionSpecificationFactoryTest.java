@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.completion;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncCompletionSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
@@ -61,7 +63,7 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.RESPONSE_MODE), is("list"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MATCH_STRATEGY), is("prefix"));
-        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MATCHED_CANDIDATE_COUNT), is(1));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT), is(2));
         assertThat(((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).size(), is(1));
     }
     
@@ -199,10 +201,12 @@ class MCPCompletionSpecificationFactoryTest {
     private MCPRuntimeContext createRuntimeContext(final WorkflowSessionContext workflowSessionContext) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.getDatabaseProfiles()).thenReturn(List.of(
-                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()),
-                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
+                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                        new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet())),
+                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                        new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()))));
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
-        sessionManager.createSession("session-1");
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPRuntimeContext result = mock(MCPRuntimeContext.class);
         when(result.getDatabaseCapabilityProvider()).thenReturn(databaseCapabilityProvider);
         when(result.getSessionManager()).thenReturn(sessionManager);

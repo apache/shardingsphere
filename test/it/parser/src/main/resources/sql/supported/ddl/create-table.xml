@@ -479,6 +479,7 @@
     <sql-case id="create_table_with_location" value="create table test_with_location (data string) location '/user/hive/test_location'" db-types="Hive" />
     <sql-case id="create_table_with_tblproperties" value="create table test_tblproperties (id int) tblproperties ('owner'='admin', 'version'='1.0')" db-types="Hive" />
     <sql-case id="create_table_ctas_basic" value="create table test_ctas as select id, name from source_table where status = 'active'" db-types="Hive" />
+    <sql-case id="create_table_as_select_with_projected_columns_hive" value="CREATE TABLE t_hive_ctas_projection AS SELECT user_id, telephone FROM t_user" db-types="Hive" />
     <sql-case id="create_table_like_basic" value="create table test_like like source_table" db-types="Hive" />
     <sql-case id="create_temp_table_like" value="create temporary table test_temp_like like source_table" db-types="Hive" />
     <sql-case id="create_external_table_like" value="create external table test_ext_like like source_table" db-types="Hive" />

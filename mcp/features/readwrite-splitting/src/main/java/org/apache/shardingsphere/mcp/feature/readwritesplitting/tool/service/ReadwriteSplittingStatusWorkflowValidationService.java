@@ -43,18 +43,12 @@ public final class ReadwriteSplittingStatusWorkflowValidationService implements 
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final ReadwriteSplittingInspectionService inspectionService;
+    private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
-    private final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService;
+    private final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
-    
-    public ReadwriteSplittingStatusWorkflowValidationService() {
-        inspectionService = new ReadwriteSplittingInspectionService();
-        distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
-                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
-    }
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
@@ -82,8 +76,8 @@ public final class ReadwriteSplittingStatusWorkflowValidationService implements 
     private ValidationSection validateStatus(final ReadwriteSplittingStatusWorkflowRequest request, final List<Map<String, Object>> statuses,
                                              final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
         String expectedStatus = "ENABLE".equals(distSQLPlanningService.resolveStatusOperation(request)) ? "ENABLED" : "DISABLED";
-        boolean matched = statuses.stream().anyMatch(each -> matchesStatus(request, each, queryFacade, expectedStatus));
-        if (!matched) {
+        List<Map<String, Object>> targetStatuses = statuses.stream().filter(each -> matchesStatusTarget(request, each, queryFacade)).toList();
+        if (1 != targetStatuses.size() || !expectedStatus.equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(targetStatuses.getFirst(), "status"))) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "status", expectedStatus, request.getStorageUnit(),
                     "Readwrite-splitting storage-unit status does not match the planned artifact.",
                     "Apply the readwrite-splitting status DistSQL again or inspect current status."));
@@ -92,10 +86,8 @@ public final class ReadwriteSplittingStatusWorkflowValidationService implements 
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, statuses, "Readwrite-splitting status state matches the planned DistSQL artifact.");
     }
     
-    private boolean matchesStatus(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> status,
-                                  final MCPFeatureQueryFacade queryFacade, final String expectedStatus) {
+    private boolean matchesStatusTarget(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> status, final MCPFeatureQueryFacade queryFacade) {
         return queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(status, "name"))
-                && queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"))
-                && expectedStatus.equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(status, "status"));
+                && queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getStorageUnit(), WorkflowRuleValueUtils.getRuleValue(status, "storage_unit"));
     }
 }

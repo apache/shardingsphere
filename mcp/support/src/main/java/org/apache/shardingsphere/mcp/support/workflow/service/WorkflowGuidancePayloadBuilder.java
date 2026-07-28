@@ -65,15 +65,10 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static Map<String, Object> createProxyTopologyHint(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        boolean ruleDistSQLOnlyWorkflow = WorkflowArtifactPayloadUtils.isRuleDistSQLOnlyWorkflow(snapshot);
-        result.put("expected_runtime_view", ruleDistSQLOnlyWorkflow ? "proxy_rule_distsql" : "proxy_logical_database");
+        result.put("expected_runtime_view", "proxy_rule_distsql");
         result.put("workflow_kind", resolveWorkflowKind(snapshot));
-        result.put(MCPPayloadFieldNames.REASON, ruleDistSQLOnlyWorkflow
-                ? "Rule DistSQL workflow planning must use Proxy DistSQL-visible rule state."
-                : "Workflow planning must use Proxy logical metadata; physical-database metadata can hide or misrepresent rule-visible objects.");
-        result.put("safe_recovery", ruleDistSQLOnlyWorkflow
-                ? "Read the feature algorithm and rule resources from ShardingSphere Proxy before retrying."
-                : "Reconnect the MCP runtime to ShardingSphere Proxy for this logical database if metadata appears to be physical-table-first.");
+        result.put(MCPPayloadFieldNames.REASON, "Rule DistSQL workflow planning must use Proxy DistSQL-visible rule state.");
+        result.put("safe_recovery", "Read the feature algorithm and rule resources from ShardingSphere Proxy before retrying.");
         return result;
     }
     
@@ -94,11 +89,11 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(status) && isSecretReferenceRecovery(payload)) {
             nextActions.add(createUserAction("Review the manual artifacts, replace neutral secret placeholders outside MCP, and execute them through the normal operational channel.",
-                    List.of("manual_artifacts")));
+                    List.of("manual_artifacts_executed")));
         } else if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
             nextActions.add(createUserAction("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", List.of("issues")));
         }
-        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, addSequencing(nextActions));
+        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, nextActions);
     }
     
     private static boolean isSecretReferenceRecovery(final Map<String, Object> payload) {
@@ -171,20 +166,21 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static Map<String, Object> createClarificationQuestion(final WorkflowContextSnapshot snapshot, final String fieldName, final String clarificationMessage) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
-        String inputType = resolveClarificationInputType(snapshot, fieldName);
+        boolean secret = isSecretClarificationField(snapshot, fieldName);
+        String inputType = resolveClarificationInputType(fieldName, secret);
         result.put(MCPPayloadFieldNames.FIELD, fieldName);
         result.put("question_key", fieldName.replace('.', '_'));
         result.put(MCPPayloadFieldNames.INPUT_TYPE, inputType);
         if ("boolean".equals(inputType)) {
             result.put(MCPPayloadFieldNames.ALLOWED_VALUES, List.of(true, false));
         }
-        result.put(MCPPayloadFieldNames.SECRET, isSecretClarificationField(snapshot, fieldName));
+        result.put(MCPPayloadFieldNames.SECRET, secret);
         result.put(MCPPayloadFieldNames.DISPLAY_MESSAGE, clarificationMessage.isBlank() ? String.format("Please provide `%s`.", fieldName) : clarificationMessage);
         return result;
     }
     
-    private static String resolveClarificationInputType(final WorkflowContextSnapshot snapshot, final String fieldName) {
-        if (isSecretClarificationField(snapshot, fieldName)) {
+    private static String resolveClarificationInputType(final String fieldName, final boolean secret) {
+        if (secret) {
             return "secret";
         }
         return fieldName.startsWith("requires_") ? "boolean" : "string";
@@ -200,7 +196,7 @@ public final class WorkflowGuidancePayloadBuilder {
                 return each.isSecret();
             }
         }
-        return false;
+        return true;
     }
     
     private static void addMissingInputsFromIssue(final Collection<String> missingInputs, final WorkflowContextSnapshot snapshot, final WorkflowIssue issue) {
@@ -286,10 +282,22 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<Map<String, Object>> createRecoveryPlanningActions(final WorkflowContextSnapshot snapshot) {
+        if (hasIssue(snapshot, WorkflowIssueCode.CLUSTER_MODE_REQUIRED)) {
+            return List.of(MCPNextActionUtils.stop("Connect to a Cluster-mode ShardingSphere Proxy, then start a new workflow plan."));
+        }
         String planningTool = resolvePlanningTool(snapshot);
+        if (hasIssue(snapshot, WorkflowIssueCode.RULE_INPUT_CONFLICT)) {
+            return planningTool.isEmpty()
+                    ? List.of(createUserAction("Choose one input mode, remove conflicting inputs, and start a new plan without plan_id.", List.of("workflow_kind", "conflicting_inputs")))
+                    : List.of(createToolAction(planningTool, "Choose one input mode, remove conflicting inputs, and start a new plan without plan_id.", Map.of()));
+        }
         return planningTool.isEmpty()
                 ? List.of(createUserAction("Confirm the workflow kind, then call the matching planning tool with the existing plan_id.", List.of("workflow_kind", "issues")))
                 : List.of(createToolAction(planningTool, "Re-plan after resolving the reported issues.", Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId())));
+    }
+    
+    private static boolean hasIssue(final WorkflowContextSnapshot snapshot, final String issueCode) {
+        return snapshot.getIssues().stream().anyMatch(each -> issueCode.equals(each.getCode()));
     }
     
     private static Map<String, Object> createToolAction(final String targetTool, final String reason, final Map<String, Object> requiredArguments) {
@@ -302,16 +310,6 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static Map<String, Object> createStopAction() {
         return MCPNextActionUtils.stop("Validation passed. Report the confirmed workflow result to the user.");
-    }
-    
-    private static List<Map<String, Object>> addSequencing(final List<Map<String, Object>> nextActions) {
-        for (int index = 0; index < nextActions.size(); index++) {
-            nextActions.get(index).put("order", index + 1);
-            if (0 < index && "ask_user".equals(nextActions.get(index - 1).get("type"))) {
-                nextActions.get(index).put("depends_on", List.of(index));
-            }
-        }
-        return nextActions;
     }
     
     private static String resolvePlanningTool(final WorkflowContextSnapshot snapshot) {

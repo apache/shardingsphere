@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -79,20 +79,12 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPFeatu
     }
     
     private void applyStructuredIntentEvidence(final EncryptWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        request.getOptions().setRequiresDecrypt(getNullableBoolean(structuredIntentEvidence, WorkflowFieldNames.REQUIRES_DECRYPT));
-        request.getOptions().setRequiresEqualityFilter(getNullableBoolean(structuredIntentEvidence, WorkflowFieldNames.REQUIRES_EQUALITY_FILTER));
-        request.getOptions().setRequiresLikeQuery(getNullableBoolean(structuredIntentEvidence, WorkflowFieldNames.REQUIRES_LIKE_QUERY));
+        request.getOptions().setRequiresDecrypt((Boolean) structuredIntentEvidence.get(WorkflowFieldNames.REQUIRES_DECRYPT));
+        request.getOptions().setRequiresEqualityFilter((Boolean) structuredIntentEvidence.get(WorkflowFieldNames.REQUIRES_EQUALITY_FILTER));
+        request.getOptions().setRequiresLikeQuery((Boolean) structuredIntentEvidence.get(WorkflowFieldNames.REQUIRES_LIKE_QUERY));
         Object fieldSemantics = structuredIntentEvidence.get(WorkflowFieldNames.FIELD_SEMANTICS);
         if (null != fieldSemantics) {
-            request.setFieldSemantics(String.valueOf(fieldSemantics).trim());
+            request.setFieldSemantics(((String) fieldSemantics).trim());
         }
-    }
-    
-    private Boolean getNullableBoolean(final Map<String, Object> source, final String fieldName) {
-        if (!source.containsKey(fieldName) || null == source.get(fieldName)) {
-            return null;
-        }
-        Object rawValue = source.get(fieldName);
-        return rawValue instanceof Boolean ? (Boolean) rawValue : Boolean.parseBoolean(String.valueOf(rawValue).trim());
     }
 }

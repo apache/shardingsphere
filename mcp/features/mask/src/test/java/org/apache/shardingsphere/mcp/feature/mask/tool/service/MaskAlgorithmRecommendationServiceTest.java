@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,7 @@ class MaskAlgorithmRecommendationServiceTest {
         WorkflowRequest request = new WorkflowRequest();
         request.setAlgorithmType("MD5");
         List<WorkflowIssue> issues = new LinkedList<>();
-        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), request, List.of(Map.of("type", "MD5")), issues);
+        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), request, confirmed(Map.of("type", "MD5")), issues);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getAlgorithmType(), is("MD5"));
         assertTrue(issues.isEmpty());
@@ -52,7 +53,7 @@ class MaskAlgorithmRecommendationServiceTest {
         WorkflowRequest request = new WorkflowRequest();
         request.setAlgorithmType("CUSTOM");
         List<WorkflowIssue> issues = new LinkedList<>();
-        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), request, List.of(Map.of("type", "MD5")), issues);
+        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), request, confirmed(Map.of("type", "MD5")), issues);
         assertTrue(actual.isEmpty());
         assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
     }
@@ -63,7 +64,7 @@ class MaskAlgorithmRecommendationServiceTest {
         clarifiedIntent.setFieldSemantics("phone");
         WorkflowRequest request = new WorkflowRequest();
         List<WorkflowIssue> issues = new LinkedList<>();
-        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(clarifiedIntent, request, List.of(
+        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(clarifiedIntent, request, confirmed(
                 Map.of("type", "MASK_FROM_X_TO_Y"),
                 Map.of("type", "KEEP_FIRST_N_LAST_M")), issues);
         assertThat(actual.size(), is(1));
@@ -76,7 +77,7 @@ class MaskAlgorithmRecommendationServiceTest {
         WorkflowRequest request = new WorkflowRequest();
         request.setNaturalLanguageIntent("保留前3后4位");
         List<WorkflowIssue> issues = new LinkedList<>();
-        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(clarifiedIntent, request, List.of(
+        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(clarifiedIntent, request, confirmed(
                 Map.of("type", "MASK_FROM_X_TO_Y"),
                 Map.of("type", "KEEP_FIRST_N_LAST_M")), issues);
         assertThat(actual.size(), is(1));
@@ -86,8 +87,24 @@ class MaskAlgorithmRecommendationServiceTest {
     @Test
     void assertRecommendMaskAlgorithmsWithoutAvailableAlgorithms() {
         List<WorkflowIssue> issues = new LinkedList<>();
-        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), new WorkflowRequest(), List.of(), issues);
+        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(
+                new ClarifiedIntent(), new WorkflowRequest(), WorkflowQueryResult.confirmed(List.of()), issues);
         assertTrue(actual.isEmpty());
         assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
+    }
+    
+    @Test
+    void assertRecommendMaskAlgorithmsWithUnconfirmedAvailability() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setAlgorithmType("CUSTOM");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), request, WorkflowQueryResult.fallback(List.of()), issues);
+        assertThat(actual.getFirst().getAlgorithmType(), is("CUSTOM"));
+        assertTrue(issues.isEmpty());
+    }
+    
+    @SafeVarargs
+    private WorkflowQueryResult confirmed(final Map<String, Object>... rows) {
+        return WorkflowQueryResult.confirmed(List.of(rows));
     }
 }

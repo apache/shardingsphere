@@ -20,12 +20,12 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.capability.completion;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncCompletionSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
+import org.apache.shardingsphere.mcp.api.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionResult;
 import org.apache.shardingsphere.mcp.core.completion.MCPCompletionService;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
 import java.util.Collection;

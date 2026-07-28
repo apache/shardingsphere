@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
@@ -29,9 +29,11 @@ import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -129,16 +131,27 @@ final class MetadataSearchCollector {
     
     private List<MetadataSearchHit> queryColumnSearchHits(final String databaseName, final String schemaName) {
         List<MetadataSearchHit> result = new LinkedList<>();
-        for (TableSearchScope each : queryTables(databaseName, schemaName)) {
-            for (ShardingSphereColumn column : metadataQueryFacade.queryTableColumns(databaseName, each.schema, each.table.getName())) {
-                result.add(createColumnSearchHit(databaseName, each.schema, each.table.getName(), "", column));
+        List<String> schemaNames = schemaName.isEmpty()
+                ? metadataQueryFacade.querySchemas(databaseName).stream().map(ShardingSphereSchema::getName).toList()
+                : List.of(schemaName);
+        for (String each : schemaNames) {
+            Map<String, TableType> relationTypes = createRelationTypes(databaseName, each);
+            for (MCPColumnMetadata column : metadataQueryFacade.querySchemaColumns(databaseName, each)) {
+                TableType relationType = relationTypes.get(column.getRelationName());
+                if (TableType.TABLE == relationType) {
+                    result.add(createColumnSearchHit(databaseName, each, column.getRelationName(), "", column));
+                } else if (TableType.VIEW == relationType) {
+                    result.add(createColumnSearchHit(databaseName, each, "", column.getRelationName(), column));
+                }
             }
         }
-        for (TableSearchScope each : queryViews(databaseName, schemaName)) {
-            for (ShardingSphereColumn column : metadataQueryFacade.queryViewColumns(databaseName, each.schema, each.table.getName())) {
-                result.add(createColumnSearchHit(databaseName, each.schema, "", each.table.getName(), column));
-            }
-        }
+        return result;
+    }
+    
+    private Map<String, TableType> createRelationTypes(final String databaseName, final String schemaName) {
+        Map<String, TableType> result = new LinkedHashMap<>();
+        metadataQueryFacade.queryTables(databaseName, schemaName).forEach(each -> result.put(each.getName(), TableType.TABLE));
+        metadataQueryFacade.queryViews(databaseName, schemaName).forEach(each -> result.put(each.getName(), TableType.VIEW));
         return result;
     }
     
@@ -209,7 +222,7 @@ final class MetadataSearchCollector {
         return createSearchHit(database, view.schema, SupportedMCPMetadataObjectType.VIEW, "", view.table.getName(), view.table.getName());
     }
     
-    private MetadataSearchHit createColumnSearchHit(final String database, final String schema, final String table, final String view, final ShardingSphereColumn column) {
+    private MetadataSearchHit createColumnSearchHit(final String database, final String schema, final String table, final String view, final MCPColumnMetadata column) {
         return createSearchHit(database, schema, SupportedMCPMetadataObjectType.COLUMN, table, view, column.getName());
     }
     

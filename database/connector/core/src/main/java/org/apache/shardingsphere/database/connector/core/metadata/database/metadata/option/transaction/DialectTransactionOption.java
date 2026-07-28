@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +32,8 @@ public final class DialectTransactionOption {
     
     private final boolean isSupportGlobalCSN;
     
-    private final boolean isDDLNeedImplicitCommit;
+    @Getter(AccessLevel.NONE)
+    private final DDLCommitPolicy ddlCommitPolicy;
     
     private final boolean isSupportAutoCommitInNestedTransaction;
     
@@ -45,4 +47,13 @@ public final class DialectTransactionOption {
     private final boolean isAllowCommitAndRollbackOnlyWhenTransactionFailed;
     
     private final Collection<String> xaDriverClassNames;
+    
+    /**
+     * Get DDL commit policy.
+     *
+     * @return DDL commit policy
+     */
+    public DDLCommitPolicy getDDLCommitPolicy() {
+        return ddlCommitPolicy;
+    }
 }

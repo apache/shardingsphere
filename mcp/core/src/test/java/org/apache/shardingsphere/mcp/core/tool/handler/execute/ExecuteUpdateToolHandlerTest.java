@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
@@ -52,7 +53,7 @@ class ExecuteUpdateToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(createUpdateResult());
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
-        when(requestContext.getSessionId()).thenReturn("session-1");
+        when(requestContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
         mockDatabaseCapability(requestContext, "logic_db");
         MCPSuccessPayload actual = new ExecuteUpdateToolHandler().handle(requestContext,
@@ -74,7 +75,7 @@ class ExecuteUpdateToolHandlerTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(createUpdateResult());
         MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
-        when(requestContext.getSessionId()).thenReturn("session-1");
+        when(requestContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
         mockDatabaseCapability(requestContext, "logic_db");
         MCPSuccessPayload actual = new ExecuteUpdateToolHandler().handle(requestContext,
@@ -125,7 +126,6 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
         assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("physical-data")));
         assertThat(actual.toPayload().get("summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
-        assertThat(actual.toPayload().get("review_summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
         assertThat(actual.toPayload().get("review_guidance"),
                 is("Review normalized_sql and side_effect_scope before execution. "
                         + "This preview performs database-aware validation and classification; it does not guarantee rule validation, algorithm initialization, affected rows, or runtime success."));

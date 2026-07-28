@@ -175,9 +175,10 @@ public final class EncryptAssignmentTokenGenerator {
         return result;
     }
     
-    private String getColumnName(final ColumnSegment columnSegment, final EncryptDerivedColumnSuffix derivedColumnSuffix, final String actualColumnName, final boolean useActualColumnName) {
+    private String getColumnName(final ColumnSegment columnSegment, final EncryptDerivedColumnSuffix derivedColumnSuffix, final String actualColumnName,
+                                 final boolean useActualColumnName) {
         return !useActualColumnName && TableSourceType.TEMPORARY_TABLE == columnSegment.getColumnBoundInfo().getTableSourceType()
-                ? derivedColumnSuffix.getDerivedColumnName(columnSegment.getIdentifier().getValue(), databaseType)
+                ? derivedColumnSuffix.getDerivedColumnName(columnSegment.getIdentifier().getValue(), database.getIdentifierContext())
                 : actualColumnName;
     }
     

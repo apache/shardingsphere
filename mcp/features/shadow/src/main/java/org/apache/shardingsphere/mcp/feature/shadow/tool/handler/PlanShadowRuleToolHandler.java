@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowWorkflowPlanningService;
@@ -55,7 +55,7 @@ public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPFeatur
         ShadowRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowRuleWorkflowRequest::new, arguments,
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.planRule(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
-        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest()));
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final ShadowRuleWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

@@ -31,14 +31,14 @@ class InteractionPlanTest {
         WorkflowRequest request = new WorkflowRequest();
         request.setDeliveryMode("step-by-step");
         request.setExecutionMode("manual-only");
-        InteractionPlan actual = InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("inspect", "plan"), List.of("rules", "ddl"));
+        InteractionPlan actual = InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("inspect", "plan"), List.of("rules", "logical_metadata"));
         assertThat(actual.getPlanId(), is("plan-1"));
         assertThat(actual.getSummary(), is("Encrypt workflow plan."));
         assertThat(actual.getCurrentStep(), is("intaking"));
         assertThat(actual.getDeliveryMode(), is("step-by-step"));
         assertThat(actual.getExecutionMode(), is("manual-only"));
         assertThat(actual.getSteps(), is(List.of("inspect", "plan")));
-        assertThat(actual.getValidationStrategy().get("layers"), is(List.of("rules", "ddl")));
+        assertThat(actual.getValidationStrategy().get("layers"), is(List.of("rules", "logical_metadata")));
     }
     
     @Test

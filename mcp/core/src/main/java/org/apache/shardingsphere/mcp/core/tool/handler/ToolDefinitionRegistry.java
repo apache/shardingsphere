@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
@@ -78,15 +78,6 @@ public final class ToolDefinitionRegistry {
             ShardingSpherePreconditions.checkState(REGISTERED_TOOL_DEFINITIONS.containsKey(each.getName()),
                     () -> new IllegalStateException(String.format("MCP tool descriptor `%s` has no registered handler.", each.getName())));
         }
-    }
-    
-    /**
-     * Get supported tools.
-     *
-     * @return supported tools
-     */
-    public static Collection<String> getSupportedTools() {
-        return REGISTERED_TOOL_DEFINITIONS.keySet().stream().toList();
     }
     
     /**

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.completion;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnavailableException;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;

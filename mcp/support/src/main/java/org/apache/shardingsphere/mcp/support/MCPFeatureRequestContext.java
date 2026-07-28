@@ -29,8 +29,6 @@ import java.util.Optional;
 
 /**
  * MCP feature request context.
- *
- * <p>The runtime owns this context. Feature handlers and completion providers must use it only during the current synchronous invocation.</p>
  */
 public interface MCPFeatureRequestContext extends MCPRequestContext {
     

@@ -44,15 +44,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SQLE2EITSettings(SQLCommandType.DQL)
 class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteQuery(final AssertionTestParameter testParam) throws SQLException, IOException, JAXBException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         executeDQL(context, () -> {
             init(testParam, context);
@@ -148,15 +144,11 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @Execution(ExecutionMode.CONCURRENT)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecute(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         SQLE2EITContext context = new SQLE2EITContext(testParam);
         executeDQL(context, () -> {
             init(testParam, context);

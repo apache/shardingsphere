@@ -57,10 +57,16 @@ class MySQLIdentifierCasePolicyProviderTest {
     @MethodSource("provideArguments")
     void assertProvide(final String name, final IdentifierCasePolicyProviderContext context, final LookupMode expectedQuotedLookupMode,
                        final LookupMode expectedUnquotedLookupMode, final boolean expectedMatch) {
-        IdentifierCasePolicy actual = provider.provide(context).getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(expectedQuotedLookupMode));
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
-        assertThat(actual.matches("foo", "FOO", QuoteCharacter.NONE), is(expectedMatch));
+        IdentifierCasePolicySet actual = provider.provide(context);
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).getLookupMode(QuoteCharacter.BACK_QUOTE), is(expectedQuotedLookupMode));
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
+        assertThat(actual.getPolicy(IdentifierScope.TABLE).matches("foo", "FOO", QuoteCharacter.NONE), is(expectedMatch));
+        assertThat(actual.getPolicy(IdentifierScope.COLUMN).normalizeForDefinition("FooColumn", QuoteCharacter.NONE), is("FooColumn"));
+        assertThat(actual.getPolicy(IdentifierScope.INDEX).normalizeForDefinition("FooIndex", QuoteCharacter.NONE), is("FooIndex"));
+        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).normalizeForDefinition("FooConstraint", QuoteCharacter.NONE), is("FooConstraint"));
+        assertThat(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_column", "FOO_COLUMN", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertThat(actual.getPolicy(IdentifierScope.INDEX).matches("foo_index", "FOO_INDEX", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).matches("foo_constraint", "FOO_CONSTRAINT", QuoteCharacter.NONE), is(Boolean.TRUE));
     }
     
     @Test
@@ -72,7 +78,7 @@ class MySQLIdentifierCasePolicyProviderTest {
     
     private static Stream<Arguments> provideArguments() {
         return Stream.of(
-                Arguments.of("null_data_source", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, null), LookupMode.EXACT, LookupMode.NORMALIZED, true),
+                Arguments.of("null_data_source", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, null), LookupMode.NORMALIZED, LookupMode.NORMALIZED, true),
                 Arguments.of("null_connection", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new NullConnectionFixtureDataSource()), LookupMode.EXACT, LookupMode.NORMALIZED, true),
                 Arguments.of("lower_case_table_names_0", new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0)),
                         LookupMode.EXACT, LookupMode.EXACT, false),
@@ -90,11 +96,45 @@ class MySQLIdentifierCasePolicyProviderTest {
     void assertProvideWithLowerCaseTableNamesZeroUsesScopedPolicies() {
         IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0));
         IdentifierCasePolicySet actual = provider.provide(context);
-        assertThat(actual.getPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertThat(actual.getPolicy(IdentifierScope.DATABASE).matches("foo_db", "FOO_DB", QuoteCharacter.NONE), is(Boolean.FALSE));
+        assertThat(actual.getPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.FALSE));
         assertThat(actual.getPolicy(IdentifierScope.TABLE).matches("foo_tbl", "FOO_TBL", QuoteCharacter.NONE), is(Boolean.FALSE));
         assertThat(actual.getPolicy(IdentifierScope.VIEW).matches("foo_view", "FOO_VIEW", QuoteCharacter.NONE), is(Boolean.FALSE));
         assertThat(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_col", "FOO_COL", QuoteCharacter.NONE), is(Boolean.TRUE));
         assertThat(actual.getPolicy(IdentifierScope.INDEX).matches("foo_idx", "FOO_IDX", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).matches("foo_fk", "FOO_FK", QuoteCharacter.NONE), is(Boolean.TRUE));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("tableDefinitionArguments")
+    void assertTableDefinition(final String name, final int lowerCaseTableNames, final String expected) {
+        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE,
+                new FixtureDataSource(true, lowerCaseTableNames))).getPolicy(IdentifierScope.TABLE);
+        assertThat(actual.normalizeForDefinition("FooTable", QuoteCharacter.NONE), is(expected));
+        assertThat(actual.normalizeForDefinition("FooTable", QuoteCharacter.BACK_QUOTE), is(expected));
+    }
+    
+    private static Stream<Arguments> tableDefinitionArguments() {
+        return Stream.of(
+                Arguments.of("lower_case_table_names_0", 0, "FooTable"),
+                Arguments.of("lower_case_table_names_1", 1, "footable"),
+                Arguments.of("lower_case_table_names_2", 2, "FooTable"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("viewDefinitionArguments")
+    void assertViewDefinition(final String name, final int lowerCaseTableNames, final String expected) {
+        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE,
+                new FixtureDataSource(true, lowerCaseTableNames))).getPolicy(IdentifierScope.VIEW);
+        assertThat(actual.normalizeForDefinition("FooView", QuoteCharacter.NONE), is(expected));
+        assertThat(actual.normalizeForDefinition("FooView", QuoteCharacter.BACK_QUOTE), is(expected));
+    }
+    
+    private static Stream<Arguments> viewDefinitionArguments() {
+        return Stream.of(
+                Arguments.of("lower_case_table_names_0", 0, "FooView"),
+                Arguments.of("lower_case_table_names_1", 1, "fooview"),
+                Arguments.of("lower_case_table_names_2", 2, "fooview"));
     }
     
     private static Object getDefaultValue(final Class<?> returnType) {

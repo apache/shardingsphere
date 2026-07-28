@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
@@ -51,10 +51,10 @@ abstract class AbstractShardingResourceHandler implements MCPResourceHandler<MCP
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         return new MCPItemsPayload(query(requestContext, uriVariables),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
     
-    protected abstract List<Map<String, Object>> query(MCPFeatureRequestContext requestContext, MCPUriVariables uriVariables);
+    protected abstract List<Map<String, Object>> query(MCPFeatureRequestContext requestContext, MCPResourceURIVariables uriVariables);
 }

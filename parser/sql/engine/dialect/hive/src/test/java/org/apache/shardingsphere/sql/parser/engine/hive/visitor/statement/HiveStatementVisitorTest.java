@@ -24,6 +24,10 @@ import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.junit.jupiter.api.Test;
@@ -56,6 +60,36 @@ class HiveStatementVisitorTest {
     }
     
     @Test
+    void assertVisitCreateTableAsSelect() {
+        CreateTableStatement actual = parseCreateTableStatement("CREATE TABLE t_projection AS SELECT id, name FROM source_table");
+        assertTrue(actual.getSelectStatement().isPresent());
+        SimpleTableSegment actualFrom = (SimpleTableSegment) actual.getSelectStatement().get().getFrom().get();
+        assertThat(actualFrom.getTableName().getIdentifier().getValue(), is("source_table"));
+    }
+    
+    @Test
+    void assertVisitWindowFunction() {
+        SelectStatement actual = parseSelectStatement(
+                "SELECT ROW_NUMBER() OVER (PARTITION BY merchant_id, telephone ORDER BY creation_date DESC) AS row_number_value FROM t_merchant");
+        ExpressionProjectionSegment actualProjection = (ExpressionProjectionSegment) actual.getProjections().getProjections().iterator().next();
+        FunctionSegment actualFunction = (FunctionSegment) actualProjection.getExpr();
+        assertTrue(actualFunction.getWindow().isPresent());
+        WindowItemSegment actualWindow = actualFunction.getWindow().get();
+        assertThat(actualWindow.getPartitionListSegments().size(), is(2));
+        assertThat(actualWindow.getOrderBySegment().getOrderByItems().size(), is(1));
+    }
+    
+    @Test
+    void assertVisitFirstValueWithParameter() {
+        SelectStatement actual = parseSelectStatement(
+                "SELECT first_value(remark, ?) OVER (PARTITION BY user_id ORDER BY order_id) AS first_remark FROM t_order");
+        ExpressionProjectionSegment actualProjection = (ExpressionProjectionSegment) actual.getProjections().getProjections().iterator().next();
+        FunctionSegment actualFunction = (FunctionSegment) actualProjection.getExpr();
+        assertThat(actualFunction.getParameters().size(), is(2));
+        assertThat(actual.getParameterCount(), is(1));
+    }
+    
+    @Test
     void assertVisitUpdateCastAssignment() {
         UpdateStatement actual = parseUpdateStatement("UPDATE t_product_detail SET description = cast(? AS STRING) WHERE detail_id = ?");
         ColumnAssignmentSegment actualAssignment = actual.getAssignment().get().getAssignments().iterator().next();
@@ -76,6 +110,11 @@ class HiveStatementVisitorTest {
     private SelectStatement parseSelectStatement(final String sql) {
         ParseASTNode parseASTNode = new SQLParserEngine("Hive", CACHE_OPTION).parse(sql, false);
         return (SelectStatement) new SQLStatementVisitorEngine("Hive").visit(parseASTNode);
+    }
+    
+    private CreateTableStatement parseCreateTableStatement(final String sql) {
+        ParseASTNode parseASTNode = new SQLParserEngine("Hive", CACHE_OPTION).parse(sql, false);
+        return (CreateTableStatement) new SQLStatementVisitorEngine("Hive").visit(parseASTNode);
     }
     
     private UpdateStatement parseUpdateStatement(final String sql) {

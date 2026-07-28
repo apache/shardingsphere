@@ -87,7 +87,19 @@ public final class RuntimeDatabaseConnectionException extends RuntimeException {
      * @return runtime database connection exception
      */
     public static RuntimeDatabaseConnectionException connectionFailed(final String databaseName, final SQLException cause) {
-        return new RuntimeDatabaseConnectionException(databaseName, resolveCategory(cause), cause);
+        return new RuntimeDatabaseConnectionException(databaseName, resolveCategory(MCPJDBCExceptionClassifier.classify(cause)), cause);
+    }
+    
+    /**
+     * Create connection failure exception for a database type.
+     *
+     * @param databaseName database name
+     * @param databaseType database type
+     * @param cause cause
+     * @return runtime database connection exception
+     */
+    public static RuntimeDatabaseConnectionException connectionFailed(final String databaseName, final String databaseType, final SQLException cause) {
+        return new RuntimeDatabaseConnectionException(databaseName, resolveCategory(MCPJDBCExceptionClassifier.classify(databaseType, cause)), cause);
     }
     
     /**
@@ -101,8 +113,7 @@ public final class RuntimeDatabaseConnectionException extends RuntimeException {
         return new RuntimeDatabaseConnectionException(databaseName, CATEGORY_DATABASE_NOT_VISIBLE, cause);
     }
     
-    private static String resolveCategory(final SQLException cause) {
-        MCPJDBCErrorCategory category = MCPJDBCExceptionClassifier.classify(cause);
+    private static String resolveCategory(final MCPJDBCErrorCategory category) {
         return switch (category) {
             case TIMEOUT -> CATEGORY_CONNECTION_TIMEOUT;
             case AUTHORIZATION -> CATEGORY_AUTHORIZATION_FAILED;

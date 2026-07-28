@@ -66,8 +66,8 @@ plugins:
 #    OpenTelemetry:
 #      props:
 #        otel.service.name: "shardingsphere"
-#        otel.traces.exporter: "jaeger"
-#        otel.exporter.otlp.traces.endpoint: "http://localhost:14250"
+#        otel.traces.exporter: "otlp"
+#        otel.exporter.otlp.traces.endpoint: "http://localhost:4317"
 #        otel.traces.sampler: "always_on"
 ```
 

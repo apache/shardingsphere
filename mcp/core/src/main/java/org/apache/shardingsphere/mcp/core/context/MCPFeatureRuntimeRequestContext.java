@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.context;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
@@ -43,18 +44,15 @@ import java.util.Optional;
 @Getter
 public final class MCPFeatureRuntimeRequestContext implements MCPFeatureRequestContext {
     
-    private final String sessionId;
+    private final MCPSessionIdentity sessionIdentity;
     
-    private final String activeTransport;
+    private final MCPTransportType activeTransport;
     
     @Getter(AccessLevel.NONE)
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
     
     @Getter(AccessLevel.NONE)
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
-    
-    @Getter(AccessLevel.NONE)
-    private final Optional<MCPSessionIdentity> sessionIdentity;
     
     private final WorkflowSessionContext workflowSessionContext;
     
@@ -64,14 +62,13 @@ public final class MCPFeatureRuntimeRequestContext implements MCPFeatureRequestC
     
     private final MCPFeatureQueryFacade queryFacade;
     
-    public MCPFeatureRuntimeRequestContext(final MCPRuntimeContext runtimeContext, final String sessionId) {
-        this.sessionId = sessionId;
+    public MCPFeatureRuntimeRequestContext(final MCPRuntimeContext runtimeContext, final MCPSessionIdentity sessionIdentity) {
+        this.sessionIdentity = sessionIdentity;
         activeTransport = runtimeContext.getActiveTransport();
         databaseCapabilityProvider = runtimeContext.getDatabaseCapabilityProvider();
         MCPSessionManager sessionManager = runtimeContext.getSessionManager();
         runtimeDatabases = sessionManager.getTransactionResourceManager().getRuntimeDatabases();
-        sessionIdentity = sessionManager.findSessionIdentity(sessionId);
-        workflowSessionContext = runtimeContext.getWorkflowSessionContext(sessionId);
+        workflowSessionContext = runtimeContext.getWorkflowSessionContext(sessionIdentity.getSessionId());
         metadataQueryFacade = new MetadataQueryService(databaseCapabilityProvider, new RequestScopedMetadataContext(runtimeDatabases, databaseCapabilityProvider));
         executionFacade = new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionManager);
         queryFacade = new WorkflowProxyQueryService(sessionManager, databaseCapabilityProvider);
@@ -87,8 +84,4 @@ public final class MCPFeatureRuntimeRequestContext implements MCPFeatureRequestC
         return Optional.ofNullable(runtimeDatabases.get(databaseName));
     }
     
-    @Override
-    public Optional<MCPSessionIdentity> findSessionIdentity() {
-        return sessionIdentity;
-    }
 }

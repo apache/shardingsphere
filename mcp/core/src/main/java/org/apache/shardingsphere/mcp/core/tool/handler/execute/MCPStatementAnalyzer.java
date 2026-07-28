@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
@@ -45,8 +46,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,21 +59,18 @@ final class MCPStatementAnalyzer {
     
     private static final Set<String> DDL_STATEMENT_TYPES = Set.of("CREATE", "ALTER", "DROP", "TRUNCATE");
     
-    private final SQLStatementScanner scanner = new SQLStatementScanner();
-    
-    private final SQLStatementSafetyValidator safetyValidator = new SQLStatementSafetyValidator(scanner);
-    
-    private final SQLStatementObjectExtractor objectExtractor = new SQLStatementObjectExtractor(scanner);
-    
     private final Collection<MCPRuleDistSQLStatementClassifier> ruleDistSQLStatementClassifiers =
             ShardingSphereServiceLoader.getServiceInstances(MCPRuleDistSQLStatementClassifier.class);
     
     private final Map<String, SQLParserEngine> parserEngines = new ConcurrentHashMap<>();
     
     ClassificationResult analyze(final String sql, final MCPDatabaseCapability databaseCapability) {
+        String databaseType = databaseCapability.getDatabaseType();
+        SQLStatementScanner scanner = new SQLStatementScanner(databaseType);
         String actualSql = scanner.normalizeSingleStatement(sql);
         String leadingSql = actualSql.substring(scanner.skipInsignificant(actualSql, 0)).trim();
         String upperLeadingSql = leadingSql.toUpperCase(Locale.ENGLISH);
+        SQLStatementSafetyValidator safetyValidator = new SQLStatementSafetyValidator(scanner);
         safetyValidator.checkLeadingStatement(upperLeadingSql, actualSql);
         if (isSavepointStatement(upperLeadingSql)) {
             return analyzeSavepointStatement(actualSql, leadingSql, upperLeadingSql);
@@ -78,13 +78,60 @@ final class MCPStatementAnalyzer {
         if (isTransactionControlStatement(upperLeadingSql)) {
             return new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, extractTransactionStatementType(upperLeadingSql), actualSql, "", Set.of(), false);
         }
-        SQLStatement sqlStatement = parse(actualSql, databaseCapability.getDatabaseType());
+        SQLStatement sqlStatement = parse(actualSql, databaseType);
         safetyValidator.checkParsedStatement(sqlStatement, actualSql);
         boolean ruleDistSQL = isRuleDistSQL(sqlStatement);
         String leadingKeyword = scanner.extractLeadingKeyword(actualSql);
         SupportedMCPStatement statementClass = resolveStatementClass(sqlStatement, leadingKeyword, ruleDistSQL);
         String statementType = resolveStatementType(sqlStatement, statementClass, leadingKeyword);
-        return new ClassificationResult(statementClass, statementType, actualSql, "", objectExtractor.extract(sqlStatement, actualSql), ruleDistSQL);
+        return new ClassificationResult(statementClass, statementType, actualSql, "", extractReferencedObjects(sqlStatement, actualSql, databaseType, scanner), ruleDistSQL);
+    }
+    
+    private Collection<SQLStatementObjectName> extractReferencedObjects(final SQLStatement sqlStatement, final String sql, final String databaseType,
+                                                                        final SQLStatementScanner scanner) {
+        SQLStatementObjectExtractor extractor = new SQLStatementObjectExtractor(scanner);
+        Collection<SQLStatementObjectName> result = extractor.extract(sqlStatement, sql);
+        findCreateTableQuery(sqlStatement, sql, scanner).ifPresent(query -> result.addAll(extractor.extract(parse(query, databaseType), query)));
+        return result;
+    }
+    
+    private Optional<String> findCreateTableQuery(final SQLStatement sqlStatement, final String sql, final SQLStatementScanner scanner) {
+        if (!(sqlStatement instanceof CreateTableStatement)) {
+            return Optional.empty();
+        }
+        CreateTableStatement createTableStatement = (CreateTableStatement) sqlStatement;
+        if (createTableStatement.getSelectStatement().isPresent()) {
+            return Optional.empty();
+        }
+        List<SQLStatementToken> tokens = scanner.tokenize(sql);
+        int tableStopIndex = createTableStatement.getTable().getStopIndex();
+        int parenthesisDepth = 0;
+        for (int index = 0; index < tokens.size(); index++) {
+            SQLStatementToken token = tokens.get(index);
+            if (token.startIndex() <= tableStopIndex) {
+                continue;
+            }
+            if (0 == parenthesisDepth) {
+                int queryStartIndex = scanner.isKeyword(token, "AS") ? index + 1 : index;
+                if (isCreateTableQueryStart(tokens, queryStartIndex, scanner)) {
+                    return Optional.of(sql.substring(tokens.get(queryStartIndex).startIndex()));
+                }
+            }
+            if ("(".equals(token.text())) {
+                parenthesisDepth++;
+            } else if (")".equals(token.text())) {
+                parenthesisDepth--;
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private boolean isCreateTableQueryStart(final List<SQLStatementToken> tokens, final int startIndex, final SQLStatementScanner scanner) {
+        int queryKeywordIndex = startIndex;
+        while (queryKeywordIndex < tokens.size() && "(".equals(tokens.get(queryKeywordIndex).text())) {
+            queryKeywordIndex++;
+        }
+        return queryKeywordIndex < tokens.size() && scanner.isKeyword(tokens.get(queryKeywordIndex), "SELECT", "WITH", "TABLE", "VALUES");
     }
     
     private ClassificationResult analyzeSavepointStatement(final String actualSql, final String leadingSql, final String upperLeadingSql) {
@@ -184,11 +231,8 @@ final class MCPStatementAnalyzer {
         if (upperSql.startsWith("START TRANSACTION")) {
             return "START TRANSACTION";
         }
-        if (upperSql.startsWith("ROLLBACK TO SAVEPOINT")) {
-            return "ROLLBACK TO SAVEPOINT";
-        }
         if (upperSql.startsWith("ROLLBACK TO")) {
-            return "ROLLBACK TO";
+            return "ROLLBACK TO SAVEPOINT";
         }
         if (upperSql.startsWith("RELEASE SAVEPOINT")) {
             return "RELEASE SAVEPOINT";

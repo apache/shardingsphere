@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.support.database.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 
 import java.sql.SQLException;
 

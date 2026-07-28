@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mcp.core.protocol.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPTimeoutException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
 import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;

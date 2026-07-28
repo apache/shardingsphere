@@ -243,6 +243,11 @@ class LLMMCPActionExecutorTest {
         }
         
         @Override
+        public void sendRawNotification(final String method, final Map<String, Object> params) {
+            throw new UnsupportedOperationException("Raw JSON-RPC notification is not supported.");
+        }
+        
+        @Override
         public void close() {
         }
     }

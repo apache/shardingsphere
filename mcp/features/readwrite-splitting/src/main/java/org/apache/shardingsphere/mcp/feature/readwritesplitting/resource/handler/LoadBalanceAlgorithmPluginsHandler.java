@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
@@ -45,8 +45,8 @@ public final class LoadBalanceAlgorithmPluginsHandler implements MCPResourceHand
     }
     
     @Override
-    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsPayload(inspectionService.queryLoadBalanceAlgorithmPlugins(requestContext.getQueryFacade()),
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
+        return new MCPItemsPayload(inspectionService.queryLoadBalanceAlgorithmPlugins(requestContext.getQueryFacade()).getRows(),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
 }

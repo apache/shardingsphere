@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -57,7 +58,7 @@ class H2DatabaseMetaDataTest {
     void assertGetTransactionOption() {
         DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
         assertFalse(actual.isSupportGlobalCSN());
-        assertFalse(actual.isDDLNeedImplicitCommit());
+        assertThat(actual.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertFalse(actual.isSupportAutoCommitInNestedTransaction());
         assertFalse(actual.isSupportDDLInXATransaction());
         assertTrue(actual.isSupportMetaDataRefreshInTransaction());

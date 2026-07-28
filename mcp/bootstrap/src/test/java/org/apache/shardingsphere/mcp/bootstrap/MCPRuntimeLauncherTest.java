@@ -23,7 +23,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
@@ -82,7 +82,7 @@ class MCPRuntimeLauncherTest {
                 MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class,
                         (mock, context) -> {
-                            assertThat(((MCPRuntimeContext) context.arguments().get(1)).getActiveTransport(), is("http"));
+                            assertThat(((MCPRuntimeContext) context.arguments().get(1)).getActiveTransport(), is(MCPTransportType.HTTP));
                             when(mock.getLocalPort()).thenReturn(19090);
                         });
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class)) {
@@ -104,7 +104,7 @@ class MCPRuntimeLauncherTest {
                 MockedConstruction<MCPDatabaseCapabilityProvider> ignoredMockedCapabilityProvider = mockConstruction(MCPDatabaseCapabilityProvider.class);
                 MockedConstruction<StreamableHttpMCPServer> mockedHttpServer = mockConstruction(StreamableHttpMCPServer.class);
                 MockedConstruction<StdioMCPServer> mockedStdioServer = mockConstruction(StdioMCPServer.class,
-                        (mock, context) -> assertThat(((MCPRuntimeContext) context.arguments().get(0)).getActiveTransport(), is("stdio")))) {
+                        (mock, context) -> assertThat(((MCPRuntimeContext) context.arguments().get(0)).getActiveTransport(), is(MCPTransportType.STDIO)))) {
             MCPRuntimeServer actual = new MCPRuntimeLauncher("conf/mcp-http.yaml").launch(createLaunchConfiguration(false));
             assertThat(actual, isA(StdioMCPServer.class));
             assertThat(actual, is(mockedStdioServer.constructed().get(0)));
@@ -171,6 +171,6 @@ class MCPRuntimeLauncherTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled, final Map<String, RuntimeDatabaseConfiguration> databases) {
-        return new MCPLaunchConfiguration(httpEnabled ? MCPTransportType.STREAMABLE_HTTP : MCPTransportType.STDIO, new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), databases);
+        return new MCPLaunchConfiguration(httpEnabled ? MCPTransportType.HTTP : MCPTransportType.STDIO, new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), databases);
     }
 }

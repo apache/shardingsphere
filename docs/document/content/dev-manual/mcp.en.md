@@ -12,16 +12,25 @@ For installation and usage, see the [User Manual](../../user-manual/shardingsphe
 
 The MCP path is organized as `api + support + features + core + bootstrap`:
 
-- `mcp/api`: public tool/resource handler contracts, descriptor types, protocol responses, and MCP protocol exceptions.
-- `mcp/support`: database metadata, execution, capability, workflow contexts, models, facades, SPI, and reusable helpers.
+- `mcp/api`: public MCP capability contracts, descriptor types, protocol responses, MCP protocol exceptions, and SPI entry points.
+- `mcp/support`: database metadata, execution, capability, workflow contexts, models, facades, database/workflow SPIs, and reusable helpers.
 - `mcp/features/encrypt`: Encrypt MCP feature.
 - `mcp/features/mask`: Mask MCP feature.
-- `mcp/core`: handler discovery, registry, request context, session, SQL execution trace, metadata discovery, and runtime context.
+- `mcp/features/broadcast`: Broadcast MCP feature.
+- `mcp/features/readwrite-splitting`: Readwrite-Splitting MCP feature.
+- `mcp/features/shadow`: Shadow MCP feature.
+- `mcp/features/sharding`: Sharding MCP feature.
+- `mcp/core`: handler discovery, registry, request context, session, metadata discovery, and runtime context.
 - `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP/STDIO transport, configuration loading, and lifecycle management.
+- `mcp/registry`: isolated distribution metadata validation tooling; it does not depend on MCP runtime modules.
 - `distribution/mcp`: standalone packaging, startup scripts, configuration, and Dockerfile.
 - `test/e2e/mcp`: end-to-end contract validation.
 
-`mcp/bootstrap` only publishes the aggregated protocol surface. It should not hard-code concrete feature business logic.
+The production dependency direction is `api <- support <- core <- bootstrap` and `api <- support <- feature`.
+Feature modules do not depend on core, bootstrap, registry, or one another. `mcp/bootstrap` only publishes the aggregated protocol surface and does not hard-code concrete feature business logic.
+
+Public server capability contracts are organized under `org.apache.shardingsphere.mcp.api.capability.<capability>`, while the ServiceLoader entry interface is
+`org.apache.shardingsphere.mcp.api.MCPHandlerProvider`. Request contexts, sessions, transports, payloads, and exceptions are cross-capability or base-protocol contracts and stay outside capability packages.
 
 ## Add a Feature Plugin
 
@@ -56,6 +65,8 @@ The template implementation should satisfy:
 - Side-effecting execution must run preview first, then execute only user-approved `approved_steps`.
 - Sensitive properties must be masked in model-facing plan, preview, execution, validation, recovery, and error outputs; the execution path uses original values from the controlled context.
 - Validation should read Proxy-visible rule state or feature state, and should not use physical operations outside the current feature as acceptance conditions.
+- Encrypt, Mask, and Sharding ALTER expansion, physical DDL, data migration, and backfill are commercial-edition capabilities and are not open-source MCP workflow acceptance conditions.
+  This exclusion does not remove supported ALTER lifecycle coverage for other features such as Readwrite-Splitting and Shadow.
 - Startup descriptor validation should cover tool/resource/prompt name uniqueness, schema fields, side-effect annotations, related resources,
   follow-up tools, completion targets, and workflow recovery paths.
 
@@ -82,8 +93,10 @@ Do not duplicate descriptor fields inside handlers.
 
 ## Context selection
 
-- Use `MCPRequestContext` when a handler only needs the session ID, active transport, or session identity.
+- Use `MCPRequestContext` when a handler only needs the session identity or active transport. It exposes exactly `getSessionIdentity()` and `getActiveTransport()`.
 - Use `MCPFeatureRequestContext` when a handler or completion provider needs database metadata, execution, or workflow capabilities.
+
+`MCPSessionIdentity` contains the opaque session ID together with optional trusted `subject`, `source`, and `attributes`; read the ID through `getSessionIdentity().getSessionId()`. Attribution describes where a session came from and is not an authentication or authorization result.
 
 `MCPFeatureRuntimeRequestContext` is the runtime-owned, per-request implementation. Handlers and completion providers depend only on context interfaces, not on the core implementation class.
 

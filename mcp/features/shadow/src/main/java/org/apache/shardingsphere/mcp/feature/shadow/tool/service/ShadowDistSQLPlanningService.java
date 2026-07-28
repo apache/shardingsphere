@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
+import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
@@ -76,7 +77,7 @@ public final class ShadowDistSQLPlanningService {
      */
     public RuleArtifact planCreateDefaultAlgorithm(final ShadowDefaultAlgorithmWorkflowRequest request) {
         return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, String.format("CREATE DEFAULT SHADOW ALGORITHM %s",
-                WorkflowSQLUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getAlgorithmProperties())));
+                createDefaultAlgorithmFragment(request)));
     }
     
     /**
@@ -87,7 +88,11 @@ public final class ShadowDistSQLPlanningService {
      */
     public RuleArtifact planAlterDefaultAlgorithm(final ShadowDefaultAlgorithmWorkflowRequest request) {
         return new RuleArtifact(WorkflowLifecycle.OPERATION_ALTER, String.format("ALTER DEFAULT SHADOW ALGORITHM %s",
-                WorkflowSQLUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getAlgorithmProperties())));
+                createDefaultAlgorithmFragment(request)));
+    }
+    
+    private String createDefaultAlgorithmFragment(final ShadowDefaultAlgorithmWorkflowRequest request) {
+        return WorkflowSQLUtils.createAlgorithmFragmentWithExactType(ShadowFeatureDefinition.DEFAULT_ALGORITHM_TYPE, request.getAlgorithmProperties());
     }
     
     /**

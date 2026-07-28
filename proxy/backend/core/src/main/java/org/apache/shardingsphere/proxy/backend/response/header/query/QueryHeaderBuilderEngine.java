@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Query header builder engine.
@@ -62,17 +62,36 @@ public final class QueryHeaderBuilderEngine {
      * @param sqlStatementContext SQL statement context
      * @param resultSetMetaData result set meta data
      * @param database current database
-     * @param databases available databases
      * @param columnIndex column index
      * @return query header
      * @throws SQLException SQL exception
      */
     public QueryHeader build(final SQLStatementContext sqlStatementContext, final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database,
-                             final Collection<ShardingSphereDatabase> databases, final int columnIndex) throws SQLException {
+                             final int columnIndex) throws SQLException {
         Projection projection = findProjection(sqlStatementContext, columnIndex);
         return null == projection
                 ? build(resultSetMetaData, database, columnIndex)
                 : queryHeaderBuilder.build(resultSetMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
+    }
+    
+    /**
+     * Build query header builder.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param resultSetMetaData result set meta data
+     * @param resultSet JDBC result set
+     * @param database current database
+     * @param columnIndex column index
+     * @return query header
+     * @throws SQLException SQL exception
+     */
+    public QueryHeader build(final SQLStatementContext sqlStatementContext, final ShardingSphereResultSetMetaData resultSetMetaData, final ResultSet resultSet,
+                             final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
+        Projection projection = findProjection(sqlStatementContext, columnIndex);
+        if (null == projection) {
+            return queryHeaderBuilder.build(resultSetMetaData, resultSet, database, resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
+        }
+        return queryHeaderBuilder.build(resultSetMetaData, resultSet, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
     }
     
     private Projection findProjection(final SQLStatementContext sqlStatementContext, final int columnIndex) {

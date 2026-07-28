@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool;
 
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
-import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
+import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -69,9 +69,9 @@ class MCPToolCallLimiterTest {
     }
     
     private MCPToolCallLimiter createLimiter(final int maxToolCallsPerSession) {
-        String previous = System.getProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
+        String previous = System.getProperty(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
         try {
-            System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, String.valueOf(maxToolCallsPerSession));
+            System.setProperty(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, String.valueOf(maxToolCallsPerSession));
             return new MCPToolCallLimiter();
         } finally {
             resetMaxToolCallsPerSessionProperty(previous);
@@ -80,9 +80,9 @@ class MCPToolCallLimiterTest {
     
     private void resetMaxToolCallsPerSessionProperty(final String previous) {
         if (null == previous) {
-            System.clearProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
+            System.clearProperty(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
         } else {
-            System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, previous);
+            System.setProperty(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, previous);
         }
     }
 }

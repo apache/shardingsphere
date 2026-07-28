@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -46,11 +47,12 @@ class LoadBalanceAlgorithmPluginsHandlerTest {
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
             MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
             when(requestContext.getQueryFacade()).thenReturn(queryFacade);
-            when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "ROUND_ROBIN")));
-            MCPSuccessPayload actual = handler.handle(requestContext, new MCPUriVariables(Map.of()));
+            when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade))
+                    .thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "ROUND_ROBIN"))));
+            MCPSuccessPayload actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of()));
             verify(inspectionService).queryLoadBalanceAlgorithmPlugins(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/readwrite-splitting/load-balance-algorithm-plugins"));
         }
     }
 }

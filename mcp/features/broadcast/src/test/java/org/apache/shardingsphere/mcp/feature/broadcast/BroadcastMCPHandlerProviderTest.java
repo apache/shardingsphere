@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.feature.broadcast;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
@@ -50,6 +50,11 @@ class BroadcastMCPHandlerProviderTest {
     void assertGetToolHandlers() {
         MCPToolHandler<?> actual = new BroadcastMCPHandlerProvider().getToolHandlers().iterator().next();
         assertThat(actual.getToolName(), is(BroadcastFeatureDefinition.PLAN_TOOL_NAME));
+    }
+    
+    @Test
+    void assertGetCompletionHandlers() {
+        assertTrue(new BroadcastMCPHandlerProvider().getCompletionHandlers().isEmpty());
     }
     
     @Test

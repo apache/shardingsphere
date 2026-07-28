@@ -20,9 +20,6 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * Rule artifact.
  */
@@ -33,16 +30,4 @@ public final class RuleArtifact {
     private final String operationType;
     
     private final String sql;
-    
-    /**
-     * Convert to map.
-     *
-     * @return map representation
-     */
-    public Map<String, Object> toMap() {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put(WorkflowFieldNames.OPERATION_TYPE, operationType);
-        result.put("sql", sql);
-        return result;
-    }
 }

@@ -86,15 +86,15 @@ public final class WorkflowPlanPayloadBuilder {
     }
     
     /**
-     * Build one rule DistSQL-only workflow-plan payload map.
+     * Build one workflow-plan payload map with generated artifacts.
      *
      * @param snapshot workflow snapshot
      * @param propertySource workflow property source
-     * @return rule DistSQL-only workflow-plan payload
+     * @return workflow-plan payload with generated artifacts
      */
-    public static Map<String, Object> buildRuleDistSQLOnly(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
+    public static Map<String, Object> buildWithArtifacts(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
         Map<String, Object> result = build(snapshot);
-        result.putAll(WorkflowArtifactPayloadUtils.createRuleArtifactPayload(snapshot, propertySource));
+        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));
         return result;
     }
     
@@ -188,12 +188,6 @@ public final class WorkflowPlanPayloadBuilder {
     
     private static List<String> createReviewArtifactCategories(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
-        if (!snapshot.getDdlArtifacts().isEmpty()) {
-            result.add("ddl_artifacts");
-        }
-        if (!snapshot.getIndexPlans().isEmpty()) {
-            result.add("index_plan");
-        }
         if (!snapshot.getRuleArtifacts().isEmpty()) {
             result.add("distsql_artifacts");
         }
@@ -205,9 +199,6 @@ public final class WorkflowPlanPayloadBuilder {
     
     private static List<String> createReviewSideEffectScope(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
-        if (!snapshot.getDdlArtifacts().isEmpty() || !snapshot.getIndexPlans().isEmpty()) {
-            result.add("physical-structure");
-        }
         if (!snapshot.getRuleArtifacts().isEmpty()) {
             result.add("rule-metadata");
         }

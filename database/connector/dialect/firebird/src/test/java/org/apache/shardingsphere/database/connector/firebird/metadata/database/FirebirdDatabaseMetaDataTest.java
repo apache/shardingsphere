@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -71,7 +72,7 @@ class FirebirdDatabaseMetaDataTest {
     void assertGetTransactionOption() {
         DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
         assertFalse(actual.isSupportGlobalCSN());
-        assertTrue(actual.isDDLNeedImplicitCommit());
+        assertThat(actual.getDDLCommitPolicy(), is(DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION));
         assertFalse(actual.isSupportAutoCommitInNestedTransaction());
         assertFalse(actual.isSupportDDLInXATransaction());
         assertTrue(actual.isSupportMetaDataRefreshInTransaction());

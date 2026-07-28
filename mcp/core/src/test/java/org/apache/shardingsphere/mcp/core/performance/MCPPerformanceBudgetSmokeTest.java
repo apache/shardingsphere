@@ -17,17 +17,20 @@
 
 package org.apache.shardingsphere.mcp.core.performance;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.core.completion.provider.WorkflowPlanIdCompletionProvider;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.core.completion.handler.WorkflowPlanIdCompletionHandler;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.DatabaseMetadataFixture;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestContextFixture;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.TableMetadataFixture;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionStore;
-import org.apache.shardingsphere.mcp.support.completion.MCPCompletionRequest;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -39,6 +42,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +69,9 @@ class MCPPerformanceBudgetSmokeTest {
     
     private static final int REQUEST_CONTEXT_ITERATIONS = 200;
     
-    private static final int METADATA_SEARCH_ITERATIONS = 100;
+    private static final int METADATA_SEARCH_ITERATIONS = 20;
+    
+    private static final int METADATA_SEARCH_TABLE_COUNT = 1000;
     
     private static final int WORKFLOW_PLAN_PAYLOAD_ITERATIONS = 1000;
     
@@ -74,13 +80,13 @@ class MCPPerformanceBudgetSmokeTest {
     @Test
     void assertDescriptorGenerationBudget() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1");
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of()));
         ServerCapabilitiesHandler handler = new ServerCapabilitiesHandler();
-        Map<String, Object> actual = handler.handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
+        Map<String, Object> actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of())).toPayload();
         assertFalse(actual.containsKey("fingerprints"));
         long elapsedMillis = measureElapsedMillis(() -> {
             for (int i = 0; i < DESCRIPTOR_ITERATIONS; i++) {
-                handler.handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
+                handler.handle(requestContext, new MCPResourceURIVariables(Map.of())).toPayload();
             }
         });
         assertWithinBudget("descriptor generation", elapsedMillis, DESCRIPTOR_BUDGET_MILLIS);
@@ -91,7 +97,7 @@ class MCPPerformanceBudgetSmokeTest {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         long elapsedMillis = measureElapsedMillis(() -> {
             for (int i = 0; i < REQUEST_CONTEXT_ITERATIONS; i++) {
-                new MCPFeatureRuntimeRequestContext(runtimeContext, "session-1").getMetadataQueryFacade();
+                new MCPFeatureRuntimeRequestContext(runtimeContext, new MCPSessionIdentity("session-1", "", "", Map.of())).getMetadataQueryFacade();
             }
         });
         assertWithinBudget("request context creation", elapsedMillis, REQUEST_CONTEXT_BUDGET_MILLIS);
@@ -99,19 +105,31 @@ class MCPPerformanceBudgetSmokeTest {
     
     @Test
     void assertMetadataSearchBudget() {
-        MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
+        List<DatabaseMetadataFixture> databaseMetadata = createMetadataSearchScaleFixture();
+        MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext(databaseMetadata);
+        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, databaseMetadata)) {
             MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             SearchMetadataToolHandler handler = new SearchMetadataToolHandler();
-            Map<String, Object> arguments = Map.of("query", "order", "object_types", List.of("table"));
+            Map<String, Object> arguments = Map.of(
+                    "database", "scale_db", "schema", "public", "query", "target", "object_types", List.of("table"));
             assertDoesNotThrow(() -> handler.handle(requestContext, arguments));
             long elapsedMillis = measureElapsedMillis(() -> {
                 for (int i = 0; i < METADATA_SEARCH_ITERATIONS; i++) {
                     handler.handle(requestContext, arguments).toPayload();
                 }
             });
-            assertWithinBudget("metadata search", elapsedMillis, METADATA_SEARCH_BUDGET_MILLIS);
+            assertWithinBudget(String.format("metadata search across %d tables", METADATA_SEARCH_TABLE_COUNT), elapsedMillis, METADATA_SEARCH_BUDGET_MILLIS);
         }
+    }
+    
+    private List<DatabaseMetadataFixture> createMetadataSearchScaleFixture() {
+        List<TableMetadataFixture> tables = new LinkedList<>();
+        for (int index = 0; index < METADATA_SEARCH_TABLE_COUNT - 1; index++) {
+            tables.add(ResourceTestDataFactory.createTable("metadata_table_" + index, List.of("id"), List.of()));
+        }
+        tables.add(ResourceTestDataFactory.createTable("target_table", List.of("id"), List.of()));
+        return List.of(ResourceTestDataFactory.createDatabase("scale_db", "MySQL", "", List.of(
+                ResourceTestDataFactory.createSchema("public", tables, List.of(), List.of()))));
     }
     
     @Test
@@ -131,15 +149,15 @@ class MCPPerformanceBudgetSmokeTest {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionStore().getSessionContext("session-1");
         workflowSessionContext.save(createWorkflowSnapshot("plan-1"));
         MCPFeatureRequestContext handlerContext = mock(MCPFeatureRequestContext.class);
-        when(handlerContext.getSessionId()).thenReturn("session-1");
+        when(handlerContext.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(handlerContext.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        WorkflowPlanIdCompletionProvider provider = new WorkflowPlanIdCompletionProvider();
+        WorkflowPlanIdCompletionHandler handler = new WorkflowPlanIdCompletionHandler();
         MCPCompletionRequest request = new MCPCompletionRequest(
                 new MCPCompletionTargetDescriptor("prompt", "recover_workflow", List.of("plan_id"), 50, Map.of()), "plan_id", Map.of());
-        assertFalse(provider.complete(handlerContext, request).getCandidates().isEmpty());
+        assertFalse(handler.complete(handlerContext, request).getCandidates().isEmpty());
         long elapsedMillis = measureElapsedMillis(() -> {
             for (int i = 0; i < COMPLETION_ITERATIONS; i++) {
-                provider.complete(handlerContext, request);
+                handler.complete(handlerContext, request);
             }
         });
         assertWithinBudget("workflow plan id completion", elapsedMillis, COMPLETION_BUDGET_MILLIS);

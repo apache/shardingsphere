@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.util;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
@@ -108,6 +110,21 @@ class TableRefreshUtilsTest {
     @Test
     void assertGetViewLoadCandidateNameUsesNormalizedRule() {
         assertThat(TableRefreshUtils.getViewLoadCandidateName(createDatabase(), new IdentifierValue("Foo_View")), is("foo_view"));
+    }
+    
+    @Test
+    void assertGetTableLoadCandidateNameUsesStoragePolicy() {
+        assertThat(TableRefreshUtils.getTableLoadCandidateName(createDatabaseWithDistinctPolicies(), new IdentifierValue("Foo_Tbl")), is("FOO_TBL"));
+    }
+    
+    @Test
+    void assertGetActualTableNameUsesStoragePolicyWhenMissing() {
+        assertThat(TableRefreshUtils.getActualTableName(createDatabaseWithDistinctPolicies(), "foo_schema", new IdentifierValue("Foo_Tbl")), is("FOO_TBL"));
+    }
+    
+    @Test
+    void assertGetActualIndexNameUsesStoragePolicyWhenMissing() {
+        assertThat(TableRefreshUtils.getActualIndexName(createDatabaseWithDistinctPolicies(), "foo_schema", "foo_tbl", new IdentifierValue("Idx_Foo")), is("IDX_FOO"));
     }
     
     @Test
@@ -261,5 +278,13 @@ class TableRefreshUtilsTest {
                 Arrays.asList(new ShardingSphereView("Foo_View", "SELECT 1"), new ShardingSphereView("Bar_View", "SELECT 1")));
         return new ShardingSphereDatabase("foo_db", fixtureDatabaseType, new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Collections.emptyList()), Collections.singletonList(schema), new ConfigurationProperties(new Properties()));
+    }
+    
+    private ShardingSphereDatabase createDatabaseWithDistinctPolicies() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        when(result.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet(),
+                IdentifierCasePolicyFactory.newUpperCasePolicySet(), IdentifierCasePolicyFactory.newInsensitivePolicySet(), false));
+        when(result.getAllSchemas()).thenReturn(Collections.emptyList());
+        return result;
     }
 }

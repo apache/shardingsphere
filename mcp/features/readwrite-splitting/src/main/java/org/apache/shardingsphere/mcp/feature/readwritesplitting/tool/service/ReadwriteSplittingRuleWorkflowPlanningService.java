@@ -100,8 +100,10 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
     
     private ReadwriteSplittingRuleWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final ReadwriteSplittingRuleWorkflowRequest request) {
         ReadwriteSplittingRuleWorkflowRequest result = ReadwriteSplittingRuleWorkflowRequest.merge(snapshot.getRequest(), request);
-        return planningSupport.prepareSnapshot(snapshot, ReadwriteSplittingFeatureDefinition.RULE_WORKFLOW_KIND, result, null,
+        planningSupport.prepareSnapshot(snapshot, ReadwriteSplittingFeatureDefinition.RULE_WORKFLOW_KIND, result, null,
                 intentResolver.resolveRuleIntent(result), "Readwrite-splitting rule workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+        snapshot.getResourceUriTemplates().add(ReadwriteSplittingFeatureDefinition.STORAGE_UNITS_RESOURCE_URI);
+        return result;
     }
     
     private boolean ensurePlanningContext(final ReadwriteSplittingRuleWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
@@ -124,7 +126,7 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
         }
         addMissingInputs(request, clarifiedIntent, snapshot);
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
-            return !request.getDatabase().isEmpty() && !request.getRuleName().isEmpty();
+            return !request.getRuleName().isEmpty();
         }
         return !request.getRuleName().isEmpty() && !request.getWriteStorageUnit().isEmpty() && !request.getReadStorageUnits().isEmpty()
                 && !request.getTransactionalReadQueryStrategy().isEmpty();

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
@@ -222,8 +224,14 @@ final class SQLStatementObjectExtractor {
         } else if (sqlStatement instanceof AlterSequenceStatement) {
             addName(((AlterSequenceStatement) sqlStatement).getSequenceName(), result);
         } else if (sqlStatement instanceof DropSequenceStatement) {
-            for (String each : ((DropSequenceStatement) sqlStatement).getSequenceNames()) {
-                addName(each, result);
+            for (Object each : ((DropSequenceStatement) sqlStatement).getSequenceNames()) {
+                if (each instanceof String) {
+                    addName((String) each, result);
+                } else if (each instanceof SimpleTableSegment) {
+                    addTable((SimpleTableSegment) each, result);
+                } else {
+                    throw new MCPUnsupportedSQLStatementException();
+                }
             }
         }
     }
@@ -310,9 +318,31 @@ final class SQLStatementObjectExtractor {
     }
     
     private void addTable(final SimpleTableSegment table, final Collection<SQLStatementObjectName> result) {
-        if (null != table) {
-            result.add(SQLStatementObjectName.from(table.getOwner(), table.getTableName().getIdentifier()));
+        if (null == table) {
+            return;
         }
+        IdentifierValue identifier = table.getTableName().getIdentifier();
+        if (table.getOwner().isEmpty() && addFlattenedQualifiedTable(identifier, result)) {
+            return;
+        }
+        result.add(SQLStatementObjectName.from(table.getOwner(), identifier));
+    }
+    
+    private boolean addFlattenedQualifiedTable(final IdentifierValue identifier, final Collection<SQLStatementObjectName> result) {
+        if (!identifier.getValue().contains(".")) {
+            return false;
+        }
+        QuoteCharacter quoteCharacter = identifier.getQuoteCharacter();
+        String identifierText = QuoteCharacter.NONE == quoteCharacter || quoteCharacter.isWrapped(identifier.getValue())
+                ? identifier.getValue()
+                : identifier.getValueWithQuoteCharacters();
+        List<SQLStatementToken> tokens = scanner.tokenize(identifierText);
+        int objectNameEnd = findObjectNameEnd(tokens, 0);
+        if (3 > objectNameEnd || objectNameEnd != tokens.size()) {
+            return false;
+        }
+        addObjectName(tokens, 0, objectNameEnd, false, result);
+        return true;
     }
     
     private void addIndex(final IndexSegment index, final Collection<SQLStatementObjectName> result) {
