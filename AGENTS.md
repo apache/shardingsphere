@@ -186,6 +186,40 @@ perform any authorized restoration through precise file edits.
 
 ## Implementation Rules
 
+### Codex Design Style
+
+Codex must apply the following design style to every production, test, script,
+or other implementation it creates or changes within the authorized boundary.
+It must treat an in-scope violation in its own effective candidate as a required
+finding and fix it before handoff; it must not use these rules to expand scope
+or rewrite unrelated existing code.
+
+- Within already-authorized designs, resolve trade-offs in this order: semantic
+  and contract correctness; correct behavior and module ownership; verified
+  compatibility and real boundaries; minimal conceptual surface and local
+  readability; consistency with maintained nearby code and direct reuse;
+  testability; then optional extensibility, formal symmetry, or structural
+  completeness. A lower-priority concern must not compromise a higher-priority
+  one. This order does not override authority, safety, scope, or architecture
+  gates.
+- Minimize conceptual surface rather than line count. Prefer one readable local
+  flow with the fewest independently meaningful types, states, representations,
+  execution paths, and cross-file hops. Keep a name, local variable, or
+  extraction when it materially clarifies intent; do not compress code
+  mechanically.
+- Make each change converge on one coherent model. Correct or replace the
+  existing owner before adding a parallel path. After verifying usages and
+  contracts, remove superseded in-scope representations, paths, adapters,
+  shims, tests, and configuration. Keep coexistence only when a verified
+  compatibility contract requires it. If convergence requires work outside the
+  acceptance checklist or current file-type authorization, stop at the existing
+  scope or authority gate.
+- Abstract only around a real, stable variation or boundary that existing owners
+  cannot express. Otherwise keep behavior direct in its owner. When such a
+  variation exists, define the narrowest contract, place common behavior in the
+  common owner, and isolate only true implementation or dialect differences.
+  This rule does not bypass the architecture-change gate.
+
 - Preserve existing architecture by default. Prefer direct reuse, then
   composition or delegation, then an existing extension point. Do not invent a
   boundary when no maintained precedent exists.
