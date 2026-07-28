@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -54,5 +54,5 @@ public final class QueryHeader {
     
     private final boolean autoIncrement;
     
-    private final Map<String, Object> protocolAttributes = new LinkedHashMap<>();
+    private final Map<String, Object> protocolAttributes = new HashMap<>();
 }
