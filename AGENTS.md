@@ -21,24 +21,36 @@ repository root.
 4. Keep task-specific notes in the task, issue, or PR. Do not add session notes
    to this file.
 
-### Policy Capability Preservation
+### Changing This Guide
 
-When changing this guide, treat every explicit requirement, prohibition,
-exception, authorization boundary, and verification step as an independent
-policy capability.
+For changes to this guide, use `.codex/harness/agents/` and:
 
-- A replacement is equivalent only when it preserves the same trigger, required
-  or forbidden action, scope, exceptions, and verification obligation.
-- A positive general rule does not replace a specific negative prohibition.
-  Ordinary model competence, implied behavior, nearby prose, or the existence
-  of a Skill or policy canary is not evidence that an explicit rule is covered.
-- Before editing, build an old-to-new capability ledger. Classify every existing
-  capability as exactly preserved, changed with the user's explicit
-  authorization in the current task, or restored before handoff. Partial or
-  implicit coverage is a regression, not preservation.
-- Never remove, weaken, merge away, or broaden an exception to a capability
-  unless the user explicitly authorizes that exact policy change. When
-  equivalence is uncertain, keep the existing rule.
+1. Treat every explicit requirement, prohibition, exception, authorization
+   boundary, and verification step as an independent policy capability.
+2. Before editing, build an old-to-new capability ledger and classify every
+   capability as exactly preserved, changed with the user's explicit
+   authorization in the current task, or restored before handoff.
+3. Reconcile every deleted or weakened rule explicitly. A replacement is
+   equivalent only when it preserves the same trigger, required or forbidden
+   action, scope, exceptions, and verification obligation. A positive general
+   rule does not replace a specific negative prohibition. Model competence,
+   implication, nearby prose, a Skill, or a canary is not evidence that any
+   explicit rule is preserved. Partial or implicit coverage is a regression.
+4. Never remove, weaken, merge away, or broaden an exception to a capability
+   unless the user explicitly authorizes that exact policy change. When
+   equivalence is uncertain, keep the existing rule.
+5. Before editing, capture a V0 policy baseline; then change one coherent
+   instruction group.
+6. Count a canary as passing only when its decision matches, every required
+   action and reason is present, and every action outside its complete
+   allowed-action set is absent. A partial forbidden-action list is
+   insufficient.
+7. Run all policy canaries and reject any critical regression.
+8. Compare pass rate, duration, input tokens, and uncached input tokens with V0.
+   Accept only candidates that preserve correctness; efficiency improvements
+   count only after quality gates pass.
+9. If the same failure appears twice, add a focused case instead of generic
+   prose. Stop after five candidates or when no measurable improvement remains.
 
 ## Authority and Safety
 
@@ -399,12 +411,11 @@ Do not include sensitive repository data in external searches.
   behavior aligned; call out default changes.
 - For startup, routing, or runtime failures, inspect `proxy/logs/` and relevant
   `target/surefire-reports`; correlate decisive lines with configuration,
-  metadata freshness, parser dialect, and the owning data-flow step. Do not
-  edit generated output.
-- For routing failures, inspect feature-rule configuration, metadata freshness,
-  and parser dialect; report the SQL, relevant configuration, owning module, and
-  focused test. For a sandbox or network denial, report the command, failure,
-  and safe alternative or required authorization.
+  metadata freshness, parser dialect, and the owning data-flow step. For routing
+  failures, also inspect feature-rule configuration and report the SQL, relevant
+  configuration, owning module, and focused test. Do not edit generated output.
+- For a sandbox or network denial, report the command, failure, and safe
+  alternative or required authorization.
 - When an E2E, integration, client smoke, or Docker smoke fails, hangs, or times
   out, stop rerunning. Classify it as environment, classpath, stale snapshot,
   dependency, test design, protocol implementation, data setup, assertion
@@ -473,23 +484,6 @@ For an authorized implementation:
 6. Rerun checks invalidated by a fix, then repeat the semantic diff review.
 7. Stop when no required in-scope finding remains. Do not iterate for optional
    polish, broad cleanup, or risky refactoring.
-
-For changes to this guide, use `.codex/harness/agents/`:
-
-1. Build the old-to-new capability ledger required above and capture a V0 policy
-   baseline before editing.
-2. Change one coherent instruction group.
-3. Reconcile every deleted or weakened rule explicitly; never count implication,
-   general model competence, or canary coverage as policy preservation.
-4. A canary passes only when its decision matches, every required action and
-   reason is present, and every action outside its complete allowed-action set
-   is absent. A partial forbidden-action list is not sufficient.
-5. Run all policy canaries and reject any critical regression.
-6. Compare pass rate, duration, input tokens, and uncached input tokens with V0.
-7. Accept only candidates that preserve correctness; efficiency improvements
-   count only after quality gates pass.
-8. If the same failure appears twice, add a focused case instead of generic
-   prose. Stop after five candidates or when no measurable improvement remains.
 
 If a report or verdict is disproved, fix the highest-leverage rule, schema,
 validator, prompt, or regression case before correcting the artifact, unless
