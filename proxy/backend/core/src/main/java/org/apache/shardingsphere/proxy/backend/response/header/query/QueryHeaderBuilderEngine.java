@@ -42,7 +42,7 @@ public final class QueryHeaderBuilderEngine {
     }
     
     /**
-     * Build query header builder.
+     * Build query header.
      *
      * @param resultSetMetaData result set meta data
      * @param database database
@@ -57,7 +57,7 @@ public final class QueryHeaderBuilderEngine {
     }
     
     /**
-     * Build query header builder.
+     * Build query header.
      *
      * @param sqlStatementContext SQL statement context
      * @param resultSetMetaData result set meta data
@@ -75,7 +75,7 @@ public final class QueryHeaderBuilderEngine {
     }
     
     /**
-     * Build query header builder.
+     * Build query header.
      *
      * @param sqlStatementContext SQL statement context
      * @param resultSetMetaData result set meta data
