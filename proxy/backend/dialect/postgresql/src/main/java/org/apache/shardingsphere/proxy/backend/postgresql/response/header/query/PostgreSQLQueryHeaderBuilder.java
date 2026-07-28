@@ -56,7 +56,7 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
         if (Types.STRUCT == queryHeader.getColumnType()) {
             columnTypeOIDResolver.findTypeOID(resultSet.getStatement().getConnection(), queryHeader.getColumnTypeName())
-                    .ifPresent(typeOID -> queryHeader.getProtocolAttributes().put(TYPE_OID, typeOID));
+                    .ifPresent(optional -> queryHeader.getProtocolAttributes().put(TYPE_OID, optional));
         }
     }
     

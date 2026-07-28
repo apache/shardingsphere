@@ -34,9 +34,9 @@ import java.sql.Types;
  */
 public final class OpenGaussQueryHeaderBuilder implements QueryHeaderBuilder {
     
-    private final ColumnTypeOIDResolver columnTypeOIDResolver = new OpenGaussColumnTypeOIDResolver();
-    
     private final PostgreSQLQueryHeaderBuilder delegate = new PostgreSQLQueryHeaderBuilder();
+    
+    private final ColumnTypeOIDResolver columnTypeOIDResolver = new OpenGaussColumnTypeOIDResolver();
     
     @Override
     public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
@@ -48,7 +48,7 @@ public final class OpenGaussQueryHeaderBuilder implements QueryHeaderBuilder {
     public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
         if (Types.STRUCT == queryHeader.getColumnType()) {
             columnTypeOIDResolver.findTypeOID(resultSet.getStatement().getConnection(), queryHeader.getColumnTypeName())
-                    .ifPresent(typeOID -> queryHeader.getProtocolAttributes().put(PostgreSQLQueryHeaderBuilder.TYPE_OID, typeOID));
+                    .ifPresent(optional -> queryHeader.getProtocolAttributes().put(PostgreSQLQueryHeaderBuilder.TYPE_OID, optional));
         }
     }
     
