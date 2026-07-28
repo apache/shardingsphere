@@ -83,6 +83,14 @@ def load_cases(case_ids: list[str] | None) -> list[dict[str, Any]]:
     cases_path = Path(__file__).with_name("cases.toml")
     with cases_path.open("rb") as cases_file:
         cases = tomllib.load(cases_file)["cases"]
+    for each in cases:
+        required_actions = set(each["required_actions"])
+        allowed_actions = set(each["allowed_actions"])
+        forbidden_actions = set(each["forbidden_actions"])
+        if not required_actions.issubset(allowed_actions):
+            raise ValueError(f"Required actions must be allowed for case: {each['id']}")
+        if allowed_actions.intersection(forbidden_actions):
+            raise ValueError(f"Allowed and forbidden actions overlap for case: {each['id']}")
     if not case_ids:
         return cases
     requested = set(case_ids)
@@ -235,7 +243,7 @@ def read_usage(events_path: Path) -> dict[str, int]:
 
 
 def grade(cases: list[dict[str, Any]], actual: dict[str, Any]) -> list[dict[str, Any]]:
-    """Grade decisions, required actions and reasons, and forbidden actions."""
+    """Grade decisions, required actions and reasons, and unauthorized actions."""
     actual_by_id = {each["case_id"]: each for each in actual.get("results", [])}
     results = []
     for expected in cases:
@@ -248,12 +256,16 @@ def grade(cases: list[dict[str, Any]], actual: dict[str, Any]) -> list[dict[str,
                 failures.append(f"decision={actual_case['decision']} expected={expected['decision']}")
             actions = set(actual_case["actions"])
             missing_actions = set(expected["required_actions"]).difference(actions)
+            allowed_actions = set(expected["allowed_actions"])
             forbidden_actions = set(expected["forbidden_actions"]).intersection(actions)
+            unauthorized_actions = actions.difference(allowed_actions, forbidden_actions)
             missing_reasons = set(expected["required_reasons"]).difference(actual_case["reasons"])
             if missing_actions:
                 failures.append(f"missing actions={sorted(missing_actions)}")
             if forbidden_actions:
                 failures.append(f"forbidden actions={sorted(forbidden_actions)}")
+            if unauthorized_actions:
+                failures.append(f"unauthorized actions={sorted(unauthorized_actions)}")
             if missing_reasons:
                 failures.append(f"missing reasons={sorted(missing_reasons)}")
         results.append({
