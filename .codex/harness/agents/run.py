@@ -64,6 +64,8 @@ REASONS = [
     "exception_contract",
     "stale_checked_throw",
     "meaningful_test_required",
+    "concise_response_default",
+    "layered_response_required",
 ]
 
 
@@ -106,6 +108,14 @@ def load_cases(case_ids: list[str] | None) -> list[dict[str, Any]]:
             raise ValueError(f"Required actions must be allowed for case: {each['id']}")
         if allowed_actions.intersection(forbidden_actions):
             raise ValueError(f"Allowed and forbidden actions overlap for case: {each['id']}")
+        if each.get("response_style") not in {None, "concise", "layered"}:
+            raise ValueError(f"Unknown response style for case: {each['id']}")
+        if "max_summary_chars" in each:
+            if type(each["max_summary_chars"]) is not int or each["max_summary_chars"] <= 0:
+                raise ValueError(f"Maximum summary characters must be a positive integer for case: {each['id']}")
+        if "required_summary_prefix" in each:
+            if not isinstance(each["required_summary_prefix"], str) or not each["required_summary_prefix"]:
+                raise ValueError(f"Required summary prefix must be a non-empty string for case: {each['id']}")
     if not case_ids:
         return cases
     requested = set(case_ids)
@@ -160,7 +170,7 @@ def normalize_case_contracts(cases: list[dict[str, Any]]) -> list[dict[str, Any]
     """Create a stable representation of the policy canary contract."""
     contracts = []
     for each in cases:
-        contracts.append({
+        contract = {
             "id": each["id"],
             "prompt": each["prompt"],
             "decision": each["decision"],
@@ -169,7 +179,14 @@ def normalize_case_contracts(cases: list[dict[str, Any]]) -> list[dict[str, Any]
             "forbidden_actions": sorted(each["forbidden_actions"]),
             "required_reasons": sorted(each["required_reasons"]),
             "critical": each["critical"],
-        })
+        }
+        if "response_style" in each:
+            contract["response_style"] = each["response_style"]
+        if "max_summary_chars" in each:
+            contract["max_summary_chars"] = each["max_summary_chars"]
+        if "required_summary_prefix" in each:
+            contract["required_summary_prefix"] = each["required_summary_prefix"]
+        contracts.append(contract)
     return sorted(contracts, key=lambda each: each["id"])
 
 
@@ -195,8 +212,9 @@ def create_schema(case_ids: list[str]) -> dict[str, Any]:
                 "items": {"type": "string", "enum": REASONS},
             },
             "summary": {"type": "string"},
+            "response_style": {"type": "string", "enum": ["concise", "layered"]},
         },
-        "required": ["case_id", "decision", "actions", "reasons", "summary"],
+        "required": ["case_id", "decision", "actions", "reasons", "summary", "response_style"],
         "additionalProperties": False,
     }
     return {
@@ -240,6 +258,11 @@ the action awaiting confirmation. For `refuse`, omit every refused action.
 Use only: {action_help}.
 `reasons` are the policy rules that determine the decision. Use only:
 {reason_help}.
+`response_style` is the required response format:
+- `concise`: the shortest complete response, without a detail separator.
+- `layered`: a self-contained concise answer, then `---`, then necessary details.
+Use `summary` to demonstrate that format by answering the synthetic request,
+not by describing how it should be answered.
 
 Return exactly one result for every case and preserve each case ID.
 
@@ -338,6 +361,33 @@ def grade(cases: list[dict[str, Any]], actual: dict[str, Any]) -> list[dict[str,
             forbidden_actions = set(expected["forbidden_actions"]).intersection(actions)
             unauthorized_actions = actions.difference(allowed_actions, forbidden_actions)
             missing_reasons = set(expected["required_reasons"]).difference(actual_case["reasons"])
+            if "response_style" in expected and actual_case["response_style"] != expected["response_style"]:
+                failures.append(
+                    f"response_style={actual_case['response_style']} expected={expected['response_style']}"
+                )
+            summary = actual_case["summary"]
+            lines = summary.splitlines()
+            separators = [index for index, line in enumerate(lines) if line.strip() == "---"]
+            concise_answer = summary.strip()
+            if expected.get("response_style") == "concise" and separators:
+                failures.append("concise response contains detail separator line")
+            if expected.get("response_style") == "layered":
+                if len(separators) != 1:
+                    failures.append("layered response requires exactly one detail separator line")
+                else:
+                    separator = separators[0]
+                    concise_answer = "\n".join(lines[:separator]).strip()
+                    details = "\n".join(lines[separator + 1:]).strip()
+                    if not concise_answer or not details:
+                        failures.append("layered response lacks two non-empty sections")
+            if "required_summary_prefix" in expected and not concise_answer.startswith(expected["required_summary_prefix"]):
+                failures.append(
+                    f"summary does not start with required prefix={expected['required_summary_prefix']!r}"
+                )
+            if "max_summary_chars" in expected and len(summary) > expected["max_summary_chars"]:
+                failures.append(
+                    f"summary characters={len(summary)} maximum={expected['max_summary_chars']}"
+                )
             if missing_actions:
                 failures.append(f"missing actions={sorted(missing_actions)}")
             if forbidden_actions:

@@ -51,6 +51,14 @@ For changes to this guide, use `.codex/harness/agents/` and:
 9. If the same failure appears twice, add a focused case instead of generic
    prose. Stop after five candidates or when no measurable improvement remains.
 
+## Response Style
+
+- Use plain language and the shortest response that fully answers the request.
+- Do not add details unless the user requests them or they are necessary.
+- When details are necessary, put a self-contained concise answer above a line
+  containing only `---` and the details below it. Omit the separator when no
+  details follow.
+
 ## Authority and Safety
 
 - Answer, explain, review, diagnose, audit, and plan requests are read-only.
