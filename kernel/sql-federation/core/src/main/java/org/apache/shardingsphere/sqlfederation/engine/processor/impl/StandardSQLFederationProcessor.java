@@ -60,6 +60,7 @@ import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -149,20 +150,28 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     }
     
     private Map<String, Object> createParameters(final SelectStatementContext selectStatementContext, final List<Object> params) {
-        PaginationContext paginationContext = selectStatementContext.getPaginationContext();
-        int offsetParameterIndex = paginationContext.getOffsetParameterIndex().orElse(-1);
-        int rowCountParameterIndex = paginationContext.getRowCountParameterIndex().orElse(-1);
+        Collection<Integer> paginationParameterIndexes = getPaginationParameterIndexes(selectStatementContext);
         Map<String, Object> result = new HashMap<>(params.size(), 1F);
         int index = 0;
         for (Object each : params) {
-            result.put("?" + index, isPaginationParameterIndex(index, offsetParameterIndex, rowCountParameterIndex) ? convertPaginationParameter(each) : each);
+            result.put("?" + index, paginationParameterIndexes.contains(index) ? convertPaginationParameter(each) : each);
             index++;
         }
         return result;
     }
     
-    private boolean isPaginationParameterIndex(final int parameterIndex, final int offsetParameterIndex, final int rowCountParameterIndex) {
-        return parameterIndex == offsetParameterIndex || parameterIndex == rowCountParameterIndex;
+    private Collection<Integer> getPaginationParameterIndexes(final SelectStatementContext selectStatementContext) {
+        Collection<Integer> result = new LinkedList<>();
+        collectPaginationParameterIndexes(result, selectStatementContext.getPaginationContext());
+        for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
+            result.addAll(getPaginationParameterIndexes(each));
+        }
+        return result;
+    }
+    
+    private void collectPaginationParameterIndexes(final Collection<Integer> result, final PaginationContext paginationContext) {
+        paginationContext.getOffsetParameterIndex().ifPresent(result::add);
+        paginationContext.getRowCountParameterIndex().ifPresent(result::add);
     }
     
     private Object convertPaginationParameter(final Object value) {
