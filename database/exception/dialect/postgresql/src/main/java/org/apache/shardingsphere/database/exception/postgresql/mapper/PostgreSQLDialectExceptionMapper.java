@@ -97,7 +97,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         }
         if (sqlDialectException instanceof ColumnNotFoundException) {
             ColumnNotFoundException cause = (ColumnNotFoundException) sqlDialectException;
-            return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.UNDEFINED_COLUMN, cause.getTableName(), cause.getColumnName()));
+            return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.UNDEFINED_COLUMN, cause.getColumnName(), cause.getTableName()));
         }
         return new PostgreSQLException(sqlDialectException.getMessage(), PostgreSQLState.UNEXPECTED_ERROR.getValue());
     }

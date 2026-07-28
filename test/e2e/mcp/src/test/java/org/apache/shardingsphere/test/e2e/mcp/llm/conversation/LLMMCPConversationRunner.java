@@ -59,21 +59,14 @@ public final class LLMMCPConversationRunner {
     
     private final LLMMCPTraceRecordFactory traceRecordFactory = new LLMMCPTraceRecordFactory();
     
-    private final String modelProvider;
-    
     private final String modelName;
     
-    public LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
-        this(maxTurns, llmChatClient, mcpInteractionClient, "unknown", "unknown");
-    }
-    
     public LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
-                                    final String modelProvider, final String modelName) {
+                                    final String modelName) {
         this.maxTurns = maxTurns;
         this.llmChatClient = llmChatClient;
         this.mcpInteractionClient = mcpInteractionClient;
         actionExecutor = new LLMMCPActionExecutor(mcpInteractionClient);
-        this.modelProvider = modelProvider;
         this.modelName = modelName;
     }
     
@@ -85,17 +78,23 @@ public final class LLMMCPConversationRunner {
      */
     public LLME2EArtifactBundle run(final LLME2EScenario scenario) {
         List<LLMChatMessage> messages = createInitialMessages(scenario);
-        LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts(modelProvider, modelName);
+        LLMMCPConversationArtifacts artifacts = new LLMMCPConversationArtifacts(modelName);
         try {
-            openInteractionClient();
+            try {
+                mcpInteractionClient.open();
+            } catch (final IOException | IllegalStateException ex) {
+                return createFailureBundle(scenario, artifacts, "mcp_runtime_unavailable", "MCP runtime failed to initialize.");
+            }
             LLMMCPConversationInstructionFactory instructionFactory = new LLMMCPConversationInstructionFactory();
             LLMMCPConversationTurnPlanner turnPlanner = new LLMMCPConversationTurnPlanner();
             boolean finalAnswerRequested = false;
             for (int turnIndex = 0; turnIndex < maxTurns; turnIndex++) {
                 finalAnswerRequested = requestFinalAnswerIfReady(scenario, messages, artifacts, finalAnswerRequested, instructionFactory);
                 List<String> turnToolNames = finalAnswerRequested ? List.of() : turnPlanner.createTurnToolNames(scenario, artifacts.getInteractionTrace());
-                LLMChatCompletion completion = completeTurn(scenario, messages, artifacts, finalAnswerRequested, turnToolNames, instructionFactory, turnPlanner);
-                Optional<LLME2EArtifactBundle> toolCallFailure = processToolCallCompletion(scenario, completion, messages, artifacts, instructionFactory, turnPlanner);
+                TurnCompletion turnCompletion = completeTurn(scenario, messages, artifacts, finalAnswerRequested, turnToolNames, instructionFactory, turnPlanner);
+                LLMChatCompletion completion = turnCompletion.completion();
+                Optional<LLME2EArtifactBundle> toolCallFailure = processToolCallCompletion(
+                        scenario, completion, messages, artifacts, instructionFactory, turnPlanner, turnCompletion.actionOrigin());
                 if (toolCallFailure.isPresent()) {
                     return toolCallFailure.get();
                 }
@@ -105,6 +104,7 @@ public final class LLMMCPConversationRunner {
                 if (!finalAnswerRequested) {
                     if (!LLMMCPInteractionCoverage.hasRequiredInteractionCoverage(scenario.getRequiredToolNames(), artifacts.getInteractionTrace())) {
                         messages.add(LLMChatMessage.user(instructionFactory.createRequiredToolCallInstruction(scenario, artifacts)));
+                        artifacts.markHarnessRecovery();
                     }
                     continue;
                 }
@@ -118,10 +118,7 @@ public final class LLMMCPConversationRunner {
             Thread.currentThread().interrupt();
             return createFailureBundle(scenario, artifacts, "model_service_unavailable", "Conversation was interrupted.");
         } catch (final IllegalStateException ex) {
-            String failureType = ex.getMessage().startsWith("MCP") || ex.getMessage().startsWith("Failed to initialize MCP")
-                    ? "mcp_runtime_unavailable"
-                    : "model_service_unavailable";
-            return createFailureBundle(scenario, artifacts, failureType, ex.getMessage());
+            return createFailureBundle(scenario, artifacts, "model_service_unavailable", ex.getMessage());
         } finally {
             closeInteractionClient();
         }
@@ -144,6 +141,7 @@ public final class LLMMCPConversationRunner {
         }
         if (scenario.getRequiredToolNames().contains("database_gateway_execute_query") && !hasExpectedExecuteQuery(scenario.getExpectedAnswer(), artifacts.getInteractionTrace())) {
             messages.add(LLMChatMessage.user(instructionFactory.createExpectedQueryInstruction(scenario.getExpectedAnswer())));
+            artifacts.markHarnessRecovery();
             return false;
         }
         messages.add(LLMChatMessage.user(instructionFactory.createFinalAnswerInstruction(scenario, artifacts.getInteractionTrace())));
@@ -170,21 +168,22 @@ public final class LLMMCPConversationRunner {
         return expectedAnswer.getSchema().equals(schema) || schema.isEmpty();
     }
     
-    private LLMChatCompletion completeTurn(final LLME2EScenario scenario, final List<LLMChatMessage> messages, final LLMMCPConversationArtifacts artifacts,
-                                           final boolean finalAnswerRequested, final List<String> turnToolNames, final LLMMCPConversationInstructionFactory instructionFactory,
-                                           final LLMMCPConversationTurnPlanner turnPlanner) throws IOException, InterruptedException {
-        String toolChoice = turnPlanner.createToolChoice(scenario, artifacts.getInteractionTrace(), finalAnswerRequested);
+    private TurnCompletion completeTurn(final LLME2EScenario scenario, final List<LLMChatMessage> messages, final LLMMCPConversationArtifacts artifacts,
+                                        final boolean finalAnswerRequested, final List<String> turnToolNames, final LLMMCPConversationInstructionFactory instructionFactory,
+                                        final LLMMCPConversationTurnPlanner turnPlanner) throws IOException, InterruptedException {
+        String toolChoice = turnPlanner.createToolChoice(finalAnswerRequested);
+        String actionOrigin = artifacts.consumeTurnActionOrigin();
         LLMChatCompletion result = llmChatClient.complete(finalAnswerRequested ? instructionFactory.createFinalAnswerMessages(scenario, artifacts.getInteractionTrace()) : messages,
                 finalAnswerRequested ? List.of() : toolDefinitionFactory.create(turnToolNames),
                 toolChoice, finalAnswerRequested);
         artifacts.addRawModelOutput(result.getRawResponse());
-        return result;
+        return new TurnCompletion(result, actionOrigin);
     }
     
     private Optional<LLME2EArtifactBundle> processToolCallCompletion(final LLME2EScenario scenario, final LLMChatCompletion completion,
                                                                      final List<LLMChatMessage> messages, final LLMMCPConversationArtifacts artifacts,
                                                                      final LLMMCPConversationInstructionFactory instructionFactory,
-                                                                     final LLMMCPConversationTurnPlanner turnPlanner) throws InterruptedException {
+                                                                     final LLMMCPConversationTurnPlanner turnPlanner, final String actionOrigin) throws InterruptedException {
         if (completion.getToolCalls().isEmpty()) {
             return Optional.empty();
         }
@@ -192,10 +191,10 @@ public final class LLMMCPConversationRunner {
         for (LLMToolCall each : completion.getToolCalls()) {
             List<String> availableToolNames = resolveAvailableToolNames(scenario, artifacts, turnPlanner);
             if (!availableToolNames.isEmpty() && !availableToolNames.contains(each.getName())) {
-                addUnavailableToolCorrection(scenario, each, messages, availableToolNames);
+                addUnavailableToolCorrection(scenario, each, messages, artifacts, availableToolNames);
                 return Optional.empty();
             }
-            Optional<LLME2EArtifactBundle> result = processToolCall(scenario, each, messages, artifacts, availableToolNames);
+            Optional<LLME2EArtifactBundle> result = processToolCall(scenario, each, messages, artifacts, availableToolNames, actionOrigin);
             if (result.isPresent()) {
                 return result;
             }
@@ -203,6 +202,7 @@ public final class LLMMCPConversationRunner {
         String traceDrivenInstruction = instructionFactory.createTraceDrivenInstruction(scenario, artifacts.getInteractionTrace());
         if (!traceDrivenInstruction.isEmpty()) {
             messages.add(LLMChatMessage.user(traceDrivenInstruction));
+            artifacts.markHarnessRecovery();
         }
         return Optional.empty();
     }
@@ -216,12 +216,13 @@ public final class LLMMCPConversationRunner {
     }
     
     private void addUnavailableToolCorrection(final LLME2EScenario scenario, final LLMToolCall toolCall, final List<LLMChatMessage> messages,
-                                              final List<String> availableToolNames) {
+                                              final LLMMCPConversationArtifacts artifacts, final List<String> availableToolNames) {
         messages.add(LLMChatMessage.tool(toolCall.getId(), JsonUtils.toJsonString(createUnavailableToolResponse(scenario, availableToolNames))));
         messages.add(LLMChatMessage.user(String.format(Locale.ENGLISH,
                 "The previous response requested `%s`, but that MCP tool is not available in this turn. Available MCP tools for this turn: %s. "
                         + "Do not call tools outside this list.%s",
                 toolCall.getName(), String.join(", ", availableToolNames), createExpectedQueryInstruction(scenario, availableToolNames))));
+        artifacts.markHarnessRecovery();
     }
     
     private Map<String, Object> createUnavailableToolResponse(final LLME2EScenario scenario, final List<String> availableToolNames) {
@@ -247,7 +248,8 @@ public final class LLMMCPConversationRunner {
     }
     
     private Optional<LLME2EArtifactBundle> processToolCall(final LLME2EScenario scenario, final LLMToolCall toolCall, final List<LLMChatMessage> messages,
-                                                           final LLMMCPConversationArtifacts artifacts, final List<String> extraAllowedToolNames) throws InterruptedException {
+                                                           final LLMMCPConversationArtifacts artifacts, final List<String> extraAllowedToolNames,
+                                                           final String actionOrigin) throws InterruptedException {
         if (!scenario.getAllowedToolNames().contains(toolCall.getName()) && !extraAllowedToolNames.contains(toolCall.getName())) {
             artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolCall.getName(),
                     Map.of("rawArgumentsJson", toolCall.getArgumentsJson()), "unexpected_tool_requested"));
@@ -255,7 +257,7 @@ public final class LLMMCPConversationRunner {
         }
         try {
             Map<String, Object> rawArguments = LLMMCPJsonValues.parseToolArguments(toolCall.getArgumentsJson());
-            return processToolCall(scenario, toolCall, messages, artifacts, rawArguments);
+            return processToolCall(scenario, toolCall, messages, artifacts, rawArguments, actionOrigin);
         } catch (final IllegalArgumentException ex) {
             artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolCall.getName(),
                     Map.of("rawArgumentsJson", toolCall.getArgumentsJson()), "invalid_tool_arguments"));
@@ -264,7 +266,8 @@ public final class LLMMCPConversationRunner {
     }
     
     private Optional<LLME2EArtifactBundle> processToolCall(final LLME2EScenario scenario, final LLMToolCall toolCall, final List<LLMChatMessage> messages,
-                                                           final LLMMCPConversationArtifacts artifacts, final Map<String, Object> arguments) throws InterruptedException {
+                                                           final LLMMCPConversationArtifacts artifacts, final Map<String, Object> arguments,
+                                                           final String actionOrigin) throws InterruptedException {
         String toolName = toolCall.getName();
         Optional<LLME2EArtifactBundle> validationFailure = validateToolCall(scenario, toolName, arguments, artifacts);
         if (validationFailure.isPresent()) {
@@ -277,11 +280,12 @@ public final class LLMMCPConversationRunner {
         } catch (final IllegalArgumentException ex) {
             artifacts.addInteractionTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", toolName, arguments, "invalid_tool_arguments"));
             return Optional.of(createFailureBundle(scenario, artifacts, "invalid_tool_arguments", "Model provided invalid tool arguments."));
+        } catch (final IllegalStateException ex) {
+            return Optional.of(createFailureBundle(scenario, artifacts, "mcp_runtime_unavailable", ex.getMessage()));
         }
         long latencyMillis = System.currentTimeMillis() - startTime;
         artifacts.addRuntimeLogLine("action=" + toolName + " args=" + JsonUtils.toJsonString(arguments));
         artifacts.addRuntimeLogLine("response=" + JsonUtils.toJsonString(response));
-        String actionOrigin = MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN;
         artifacts.addInteractionTrace(traceRecordFactory.createTraceRecord(artifacts.nextSequence(), toolName, actionOrigin, arguments, response, latencyMillis));
         messages.add(LLMChatMessage.tool(toolCall.getId(), LLMMCPModelFacingToolResponseFormatter.format(response)));
         return Optional.empty();
@@ -311,14 +315,6 @@ public final class LLMMCPConversationRunner {
         return artifacts.createArtifactBundle(scenario, LLME2EAssertionReport.failure(failureType, message));
     }
     
-    private void openInteractionClient() throws InterruptedException {
-        try {
-            mcpInteractionClient.open();
-        } catch (final IOException ex) {
-            throw new IllegalStateException("MCP runtime failed to initialize.", ex);
-        }
-    }
-    
     private void closeInteractionClient() {
         try {
             mcpInteractionClient.close();
@@ -326,6 +322,9 @@ public final class LLMMCPConversationRunner {
             Thread.currentThread().interrupt();
         } catch (final IOException ignored) {
         }
+    }
+    
+    private record TurnCompletion(LLMChatCompletion completion, String actionOrigin) {
     }
     
 }

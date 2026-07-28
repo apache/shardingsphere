@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.projection;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.enums.EncryptDerivedColumnSuffix;
@@ -32,7 +33,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -70,12 +71,11 @@ class EncryptProjectionTokenGeneratorTest {
     
     private EncryptProjectionTokenGenerator generator;
     
+    private final DatabaseIdentifierContext identifierContext = new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newCasePreservingInsensitivePolicySet());
+    
     @BeforeEach
     void setup() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        generator = new EncryptProjectionTokenGenerator(Collections.emptyList(), databaseType, mockEncryptRule());
+        generator = new EncryptProjectionTokenGenerator(Collections.emptyList(), databaseType, mockEncryptRule(), identifierContext);
     }
     
     private EncryptRule mockEncryptRule() {
@@ -167,7 +167,8 @@ class EncryptProjectionTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokensWhenInsertSelectUsesActualColumnsForPhysicalTable() {
-        EncryptProjectionTokenGenerator actualGenerator = new EncryptProjectionTokenGenerator(Collections.emptyList(), databaseType, mockEncryptRule(createEncryptColumnWithDerivedColumns()));
+        EncryptProjectionTokenGenerator actualGenerator = new EncryptProjectionTokenGenerator(
+                Collections.emptyList(), databaseType, mockEncryptRule(createEncryptColumnWithDerivedColumns()), identifierContext);
         SelectStatementContext sqlStatementContext = mockInsertSelectStatementContext(TableSourceType.PHYSICAL_TABLE, QuoteCharacter.QUOTE);
         Collection<SQLToken> actual = actualGenerator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
@@ -180,16 +181,17 @@ class EncryptProjectionTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokensWhenInsertSelectUsesDerivedColumnsForTemporaryTable() {
-        EncryptProjectionTokenGenerator actualGenerator = new EncryptProjectionTokenGenerator(Collections.emptyList(), databaseType, mockEncryptRule(createEncryptColumnWithDerivedColumns()));
+        EncryptProjectionTokenGenerator actualGenerator = new EncryptProjectionTokenGenerator(
+                Collections.emptyList(), databaseType, mockEncryptRule(createEncryptColumnWithDerivedColumns()), identifierContext);
         SelectStatementContext sqlStatementContext = mockInsertSelectStatementContext(TableSourceType.TEMPORARY_TABLE, QuoteCharacter.BACK_QUOTE);
         Collection<SQLToken> actual = actualGenerator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
         SubstitutableColumnNameToken actualToken = (SubstitutableColumnNameToken) actual.iterator().next();
         List<ColumnProjection> actualProjections = getColumnProjections(actualToken.getProjections());
         assertThat(getProjectionNames(actualProjections), is(Arrays.asList(
-                EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName("mobile", databaseType),
-                EncryptDerivedColumnSuffix.ASSISTED_QUERY.getDerivedColumnName("mobile", databaseType),
-                EncryptDerivedColumnSuffix.LIKE_QUERY.getDerivedColumnName("mobile", databaseType))));
+                EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName("mobile", identifierContext),
+                EncryptDerivedColumnSuffix.ASSISTED_QUERY.getDerivedColumnName("mobile", identifierContext),
+                EncryptDerivedColumnSuffix.LIKE_QUERY.getDerivedColumnName("mobile", identifierContext))));
         assertThat(getProjectionQuoteCharacters(actualProjections), is(Arrays.asList(QuoteCharacter.BACK_QUOTE, QuoteCharacter.BACK_QUOTE, QuoteCharacter.BACK_QUOTE)));
     }
     

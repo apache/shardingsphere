@@ -28,7 +28,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPa
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
@@ -79,8 +78,9 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     @Override
     protected final void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
-                () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the Proxy-backed workflow E2E tests."));
+        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
+            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the Proxy-backed workflow E2E tests."));
+        }
         try {
             if (sharedRuntimeFixtureSelected) {
                 prepareSharedRuntimeFixture();

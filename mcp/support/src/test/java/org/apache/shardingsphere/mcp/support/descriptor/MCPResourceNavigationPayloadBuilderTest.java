@@ -64,11 +64,8 @@ class MCPResourceNavigationPayloadBuilderTest {
     
     private static Stream<Arguments> resourceKinds() {
         return Stream.of(
-                Arguments.of("rule", "shardingsphere://databases/{database}/rules", "rule"),
-                Arguments.of("algorithm", "shardingsphere://databases/{database}/algorithms", "algorithm"),
-                Arguments.of("column", "shardingsphere://databases/{database}/columns", "column"),
-                Arguments.of("index", "shardingsphere://databases/{database}/indexes", "index"),
-                Arguments.of("resource", "shardingsphere://databases/{database}", "resource"));
+                Arguments.of("workflow", "shardingsphere://workflows/{database}", "workflow-plan"),
+                Arguments.of("resource", "shardingsphere://unknown/{database}", "resource"));
     }
     
     private MCPResourceDescriptor createDescriptor(final String uriTemplate) {

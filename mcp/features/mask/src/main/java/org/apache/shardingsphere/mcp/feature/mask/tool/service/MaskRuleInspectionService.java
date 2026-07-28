@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -66,16 +67,17 @@ public final class MaskRuleInspectionService {
      * @param queryFacade query facade
      * @return mask algorithms
      */
-    public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
-        return decorateMaskAlgorithms(queryAlgorithmRows(queryFacade));
+    public WorkflowQueryResult queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
+        WorkflowQueryResult result = queryAlgorithmRows(queryFacade);
+        return new WorkflowQueryResult(decorateMaskAlgorithms(result.getRows()), result.isAvailabilityConfirmed());
     }
     
-    private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
+    private WorkflowQueryResult queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
         try {
-            return queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
+            return WorkflowQueryResult.confirmed(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS"));
         } catch (final MCPQueryFailedException ex) {
             if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return propertyTemplateService.getSupportedAlgorithmTypes().stream().map(each -> Map.<String, Object>of("type", each)).toList();
+                return WorkflowQueryResult.fallback(propertyTemplateService.getSupportedAlgorithmTypes().stream().map(each -> Map.<String, Object>of("type", each)).toList());
             }
             throw ex;
         }

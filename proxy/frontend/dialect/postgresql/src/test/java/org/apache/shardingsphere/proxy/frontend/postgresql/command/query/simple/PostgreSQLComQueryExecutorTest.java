@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -27,12 +28,12 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
-import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -63,6 +64,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -70,11 +72,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -115,7 +117,9 @@ class PostgreSQLComQueryExecutorTest {
     @Test
     void assertExecuteQueryWithColumnDescription() throws SQLException, ReflectiveOperationException {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
-        when(queryResponseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(new QueryHeader("schema", "table", "label", "column", 1, "type", 2, 3, true, true, true, true)));
+        QueryHeader queryHeader = new QueryHeader("schema", "table", "label", "column", Types.STRUCT, "record_type", 2, 3, true, true, true, true);
+        queryHeader.getProtocolAttributes().put(PostgreSQLQueryHeaderBuilder.TYPE_OID, 2249);
+        when(queryResponseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket> actual = queryExecutor.execute();
         PostgreSQLRowDescriptionPacket rowDescriptionPacket = (PostgreSQLRowDescriptionPacket) actual.iterator().next();
@@ -126,7 +130,7 @@ class PostgreSQLComQueryExecutorTest {
         assertThat(columnDescription.getColumnName(), is("label"));
         assertThat(columnDescription.getColumnIndex(), is(1));
         assertThat(columnDescription.getColumnLength(), is(2));
-        assertThat(columnDescription.getTypeOID(), is(new PostgreSQLColumnDescription("column", 1, 1, 2, "type").getTypeOID()));
+        assertThat(columnDescription.getTypeOID(), is(2249));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));
     }
     

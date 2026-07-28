@@ -223,7 +223,7 @@ List-shaped business payloads usually contain:
 - `items`
 - `count`
 - `continuation_mode`
-- `next_page_token` when continuation is available
+- `has_more` and `next_offset` when offset continuation is available
 
 Large-result payloads use:
 

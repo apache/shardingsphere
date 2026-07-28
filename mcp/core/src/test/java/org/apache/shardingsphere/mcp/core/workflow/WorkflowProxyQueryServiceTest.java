@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.workflow;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
@@ -144,9 +145,9 @@ class WorkflowProxyQueryServiceTest {
         MCPDatabaseCapability databaseCapability = mock(MCPDatabaseCapability.class);
         when(databaseCapability.getDatabaseType()).thenReturn(databaseType);
         IdentifierCasePolicySet insensitivePolicySet = IdentifierCasePolicyFactory.newInsensitivePolicySet();
-        when(databaseCapability.getIdentifierCasePolicySet()).thenReturn(new IdentifierCasePolicySet(
+        when(databaseCapability.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(new IdentifierCasePolicySet(
                 IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE),
-                Map.of(IdentifierScope.COLUMN, insensitivePolicySet.getPolicy(IdentifierScope.COLUMN))));
+                Map.of(IdentifierScope.COLUMN, insensitivePolicySet.getPolicy(IdentifierScope.COLUMN)))));
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.provide("logic_db")).thenReturn(Optional.of(databaseCapability));
         return new WorkflowProxyQueryService(new MCPSessionManager(runtimeDatabases), databaseCapabilityProvider);

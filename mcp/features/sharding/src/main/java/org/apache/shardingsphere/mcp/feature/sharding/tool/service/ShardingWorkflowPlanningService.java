@@ -80,7 +80,7 @@ public final class ShardingWorkflowPlanningService {
         return planLifecycleWorkflow(workflowSessionContext, request, new ShardingWorkflowLifecycleSpec(
                 ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, WorkflowLifecycle.OPERATION_CREATE, "Sharding table rule workflow plan.",
                 actual -> !inspectionService.queryTableRule(queryFacade, actual.getDatabase(), actual.getTable()).isEmpty(),
-                inputValidator::hasRequiredTableRuleInputs, (actual, snapshot) -> planAlgorithms(queryFacade, actual,
+                inputValidator::ensureRequiredTableRuleInputs, (actual, snapshot) -> planAlgorithms(queryFacade, actual,
                         shouldPlanShardingAlgorithm(actual), shouldPlanTableRuleKeyGenerator(actual), snapshot),
                 actual -> distSQLPlanningService.planTableRule(actual, actual.getOperationType())));
     }
@@ -98,7 +98,7 @@ public final class ShardingWorkflowPlanningService {
         return planLifecycleWorkflow(workflowSessionContext, request, new ShardingWorkflowLifecycleSpec(
                 ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND, WorkflowLifecycle.OPERATION_CREATE, "Sharding table reference rule workflow plan.",
                 actual -> !inspectionService.queryTableReferenceRule(queryFacade, actual.getDatabase(), actual.getRuleName()).isEmpty(),
-                inputValidator::hasRequiredReferenceRuleInputs, (actual, snapshot) -> true, actual -> distSQLPlanningService.planTableReferenceRule(actual, actual.getOperationType())));
+                inputValidator::ensureRequiredReferenceRuleInputs, (actual, snapshot) -> true, actual -> distSQLPlanningService.planTableReferenceRule(actual, actual.getOperationType())));
     }
     
     /**
@@ -115,7 +115,7 @@ public final class ShardingWorkflowPlanningService {
                 ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND, WorkflowLifecycle.OPERATION_CREATE, "Default sharding strategy workflow plan.",
                 actual -> containsDefaultStrategy(inspectionService.queryDefaultStrategy(queryFacade, actual.getDatabase()),
                         queryFacade, actual.getDatabase(), actual.getDefaultStrategyType()),
-                inputValidator::hasRequiredDefaultStrategyInputs,
+                inputValidator::ensureRequiredDefaultStrategyInputs,
                 (actual, snapshot) -> planAlgorithms(queryFacade, actual, shouldPlanShardingAlgorithm(actual), false, snapshot),
                 actual -> distSQLPlanningService.planDefaultStrategy(actual, actual.getOperationType())));
     }
@@ -133,7 +133,7 @@ public final class ShardingWorkflowPlanningService {
         return planLifecycleWorkflow(workflowSessionContext, request, new ShardingWorkflowLifecycleSpec(
                 ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND, WorkflowLifecycle.OPERATION_CREATE, "Sharding key generator workflow plan.",
                 actual -> !inspectionService.queryKeyGenerator(queryFacade, actual.getDatabase(), actual.getKeyGeneratorName()).isEmpty(),
-                inputValidator::hasRequiredKeyGeneratorInputs, (actual, snapshot) -> planAlgorithms(queryFacade, actual, false, true, snapshot),
+                inputValidator::ensureRequiredKeyGeneratorInputs, (actual, snapshot) -> planAlgorithms(queryFacade, actual, false, true, snapshot),
                 actual -> distSQLPlanningService.planKeyGenerator(actual, actual.getOperationType())));
     }
     
@@ -150,7 +150,7 @@ public final class ShardingWorkflowPlanningService {
         return planLifecycleWorkflow(workflowSessionContext, request, new ShardingWorkflowLifecycleSpec(
                 ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND, WorkflowLifecycle.OPERATION_CREATE, "Sharding key generate strategy workflow plan.",
                 actual -> !inspectionService.queryKeyGenerateStrategy(queryFacade, actual.getDatabase(), actual.getKeyGenerateStrategyName()).isEmpty(),
-                inputValidator::hasRequiredKeyGenerateStrategyInputs, (actual, snapshot) -> planAlgorithms(queryFacade, actual, false,
+                inputValidator::ensureRequiredKeyGenerateStrategyInputs, (actual, snapshot) -> planAlgorithms(queryFacade, actual, false,
                         shouldPlanKeyGenerateStrategyGenerator(actual), snapshot),
                 actual -> distSQLPlanningService.planKeyGenerateStrategy(actual, actual.getOperationType())));
     }
@@ -168,10 +168,10 @@ public final class ShardingWorkflowPlanningService {
         WorkflowContextSnapshot result = prepareSnapshot(workflowSessionContext, request, ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND,
                 WorkflowLifecycle.OPERATION_DROP, "Sharding rule component cleanup workflow plan.");
         ShardingWorkflowRequest mergedRequest = (ShardingWorkflowRequest) result.getRequest();
-        if (!inputValidator.hasDatabase(mergedRequest, result)) {
+        if (!inputValidator.ensureDatabase(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
-        if (!inputValidator.hasRequiredCleanupInputs(mergedRequest, result)) {
+        if (!inputValidator.ensureRequiredCleanupInputs(mergedRequest, result)) {
             addRequiredInputClarification(mergedRequest, result);
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
@@ -209,13 +209,13 @@ public final class ShardingWorkflowPlanningService {
         if (!planningSupport.ensureSupportedOperationType(result.getClarifiedIntent(), SUPPORTED_LIFECYCLE_OPERATION_TYPES, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
-        if (!inputValidator.hasDatabase(mergedRequest, result)) {
+        if (!inputValidator.ensureDatabase(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
         if (!inputValidator.ensureIdentifiers(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, result.getStatus());
         }
-        if (!inputValidator.hasCompatibleInputs(spec.getWorkflowKind(), mergedRequest, result)) {
+        if (!inputValidator.ensureCompatibleInputs(spec.getWorkflowKind(), mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, result.getStatus());
         }
         if (!spec.getRequiredInputSupplier().apply(mergedRequest, result)) {

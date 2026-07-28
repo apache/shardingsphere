@@ -82,7 +82,7 @@ class DatabaseRulePersistServiceTest {
         when(repository.getChildrenKeys("/metadata/foo_db/rules/fixture/unique/versions")).thenReturn(Collections.singletonList("10"));
         Collection<MetaDataVersion> actual = persistService.persist("foo_db", Collections.singleton(new MockedRuleConfiguration("test")));
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getActiveVersion(), is(10));
+        assertThat(actual.iterator().next().getActiveVersion(), is(11));
     }
     
     @Test

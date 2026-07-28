@@ -26,7 +26,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Col
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -56,8 +55,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -119,8 +116,8 @@ class HiveMetaDataLoaderTest {
     void assertLoadWithoutInformationSchemaFallbackToDefaultLoader() throws SQLException {
         DataSource dataSource = mockDataSource(mockInformationSchemaConnection(false));
         TableMetaData tableMetaData = new TableMetaData("present_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        when(TableMetaDataLoader.load(eq(dataSource), eq("missing_table"), eq(databaseType), any(IdentifierCasePolicy.class))).thenReturn(Optional.empty());
-        when(TableMetaDataLoader.load(eq(dataSource), eq("present_table"), eq(databaseType), any(IdentifierCasePolicy.class))).thenReturn(Optional.of(tableMetaData));
+        when(TableMetaDataLoader.loadNormalized(dataSource, "missing_table", databaseType)).thenReturn(Optional.empty());
+        when(TableMetaDataLoader.loadNormalized(dataSource, "present_table", databaseType)).thenReturn(Optional.of(tableMetaData));
         Collection<SchemaMetaData> fallbackSchemas = loader.load(new MetaDataLoaderMaterial(Arrays.asList("missing_table", "present_table"), "ds_2", dataSource, databaseType, "fallback_schema"));
         TableMetaData defaultLoadedTable = fallbackSchemas.iterator().next().getTables().iterator().next();
         assertThat(defaultLoadedTable.getName(), is("present_table"));

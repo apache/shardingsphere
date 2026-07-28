@@ -20,7 +20,6 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.data.load
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,8 +53,7 @@ final class FirebirdBlobColumnLoader {
                 MetaDataLoaderConnection connection = new MetaDataLoaderConnection(
                         material.getStorageType(), material.getDataSource().getConnection())) {
             for (String each : material.getActualTableNames()) {
-                String formattedTableName = IdentifierNormalizeEngine.normalize(material.getTableIdentifierPolicy(), each);
-                Map<String, Integer> blobColumns = loadTableBlobColumns(connection, formattedTableName);
+                Map<String, Integer> blobColumns = loadTableBlobColumns(connection, each);
                 result.put(each, blobColumns);
             }
         }

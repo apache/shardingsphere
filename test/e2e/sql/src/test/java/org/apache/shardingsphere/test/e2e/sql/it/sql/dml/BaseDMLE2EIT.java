@@ -111,10 +111,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     }
     
     void tearDown() {
-        // TODO make sure test case can not be null
-        if (null != dataSetEnvironmentManager) {
-            dataSetEnvironmentManager.cleanData(resetTableNames);
-        }
+        dataSetEnvironmentManager.cleanData(resetTableNames);
     }
     
     private DataSet getDataSet(final int[] actualUpdateCounts, final Collection<DataSet> dataSets, final String sql) {

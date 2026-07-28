@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,12 +54,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 class ToolDefinitionRegistryTest {
-    
-    @Test
-    void assertGetSupportedTools() {
-        assertThat(ToolDefinitionRegistry.getSupportedTools(), contains("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
-                "database_gateway_execute_explain_query", "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow"));
-    }
     
     @Test
     void assertGetSupportedToolDescriptors() {
@@ -223,6 +216,17 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
+    void assertValidateWithInvalidNestedBoolean() {
+        MCPToolDescriptor descriptor = createNestedFixtureToolDescriptor();
+        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
+                () -> new MCPToolArgumentContract(descriptor.getName(), descriptor.getInputSchema()).validate(Map.of("options", Map.of("enabled", "true"))));
+        assertThat(actual.getMessage(), is("options.enabled must be a boolean."));
+        assertThat(actual.getArgumentPath(), is("options.enabled"));
+        assertThat(actual.getCategory(), is("invalid_argument_type"));
+        assertThat(actual.getExpectedType(), is("boolean"));
+    }
+    
+    @Test
     void assertValidateWithSchemaAdditionalProperties() {
         MCPToolDescriptor descriptor = createAdditionalPropertiesFixtureToolDescriptor();
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
@@ -236,12 +240,12 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
-    void assertGetSupportedToolsWithNoToolHandlers() {
+    void assertGetSupportedToolDescriptorsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(Collections.emptyList());
             Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ToolDefinitionRegistry.class.getName(), false, createIsolatedToolDefinitionRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
-                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedTools"), null));
+                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedToolDescriptors"), null));
             assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
             Throwable actualCause = actual.getCause().getCause();
             assertThat(actualCause.getClass(), is(IllegalStateException.class));
@@ -254,7 +258,8 @@ class ToolDefinitionRegistryTest {
     }
     
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {
-        Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string")), "required", List.of(), "additionalProperties", false);
+        Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string"), "enabled", Map.of("type", "boolean")),
+                "required", List.of(), "additionalProperties", false);
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
                 "additionalProperties", false), Collections.emptyMap(),
                 MCPToolAnnotations.builder()

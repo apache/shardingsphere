@@ -29,7 +29,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 final class LLMMCPConversationTurnPlanner {
@@ -68,8 +67,7 @@ final class LLMMCPConversationTurnPlanner {
                 return List.of(missingReadOnlyToolNames.getFirst());
             }
         }
-        List<String> missingToolNames = findMissingAllowedToolNames(scenario, interactionTrace);
-        return missingToolNames.isEmpty() ? scenario.getAllowedToolNames() : List.of(missingToolNames.getFirst());
+        return scenario.getAllowedToolNames();
     }
     
     List<String> createImmediateNextActionToolNames(final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -80,16 +78,8 @@ final class LLMMCPConversationTurnPlanner {
         return immediateActionName.isEmpty() ? List.of() : List.of(immediateActionName);
     }
     
-    String createToolChoice(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace, final boolean finalAnswerRequested) {
-        if (finalAnswerRequested) {
-            return "none";
-        }
-        return LLMMCPInteractionCoverage.hasRequiredInteractionCoverage(scenario.getRequiredToolNames(), interactionTrace) ? "auto" : "required";
-    }
-    
-    private List<String> findMissingAllowedToolNames(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {
-        return LLMMCPInteractionCoverage.findMissingRequiredInteractionNames(
-                scenario.getRequiredToolNames(), interactionTrace).stream().filter(each -> scenario.getAllowedToolNames().contains(each)).collect(Collectors.toList());
+    String createToolChoice(final boolean finalAnswerRequested) {
+        return finalAnswerRequested ? "none" : "auto";
     }
     
     private List<String> findMissingReadOnlyToolNames(final LLME2EScenario scenario, final List<MCPInteractionTraceRecord> interactionTrace) {

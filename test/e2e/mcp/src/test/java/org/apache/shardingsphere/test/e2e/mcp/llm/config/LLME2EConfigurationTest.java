@@ -151,8 +151,15 @@ class LLME2EConfigurationTest {
     @Test
     void assertLoadWithInvalidIntegerProperty() {
         System.setProperty("mcp.llm.ready-timeout-seconds", "invalid-number");
-        LLME2EConfiguration actual = LLME2EConfiguration.load();
-        assertThat(actual.getReadyTimeoutSeconds(), is(600));
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, LLME2EConfiguration::load);
+        assertThat(actualException.getMessage(), is("MCP LLM E2E property `mcp.llm.ready-timeout-seconds` must be a positive integer, but was `invalid-number`."));
+    }
+    
+    @Test
+    void assertLoadWithNonPositiveIntegerProperty() {
+        System.setProperty("mcp.llm.ready-timeout-seconds", "0");
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, LLME2EConfiguration::load);
+        assertThat(actualException.getMessage(), is("MCP LLM E2E property `mcp.llm.ready-timeout-seconds` must be a positive integer, but was `0`."));
     }
     
     @Test
@@ -227,7 +234,6 @@ class LLME2EConfigurationTest {
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode, final Path artifactRoot) {
         return LLME2EConfiguration.builder()
                 .baseUrl("http://127.0.0.1:8080/v1")
-                .modelProvider("openai-compatible")
                 .modelName("ggml-org/Qwen3-1.7B-GGUF:Q4_K_M")
                 .apiKey("mcp-llm-score")
                 .readyTimeoutSeconds(600)

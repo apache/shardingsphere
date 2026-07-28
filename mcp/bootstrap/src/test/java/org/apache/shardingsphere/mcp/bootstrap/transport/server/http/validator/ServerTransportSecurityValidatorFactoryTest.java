@@ -100,4 +100,11 @@ class ServerTransportSecurityValidatorFactoryTest {
                 () -> validator.validateHeaders(Map.of("Mcp-Session-Id", List.of("session-id"))));
         assertThat(ex.getStatusCode(), is(400));
     }
+    
+    @Test
+    void assertCreateWithUnknownSessionSkipsProtocolVersionConstraint() {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        ServerTransportSecurityValidator actual = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", DISABLED_SESSION_ATTRIBUTION_RESOLVER);
+        assertDoesNotThrow(() -> actual.validateHeaders(Map.of("Mcp-Session-Id", List.of("unknown-session"))));
+    }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
 import java.util.LinkedList;
@@ -38,48 +39,48 @@ public final class EncryptAlgorithmRecommendationService {
      * Recommend encrypt algorithms.
      *
      * @param request workflow request
-     * @param encryptAlgorithms encrypt algorithm plugins
+     * @param algorithmResult encrypt algorithm query result
      * @param issues workflow issues
      * @return selected candidates
      */
     public List<AlgorithmCandidate> recommendEncryptAlgorithms(final EncryptWorkflowRequest request,
-                                                               final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues) {
+                                                               final WorkflowQueryResult algorithmResult, final List<WorkflowIssue> issues) {
         List<AlgorithmCandidate> result = new LinkedList<>();
-        String primaryType = resolvePrimaryEncryptAlgorithm(request, encryptAlgorithms, issues);
+        String primaryType = resolvePrimaryEncryptAlgorithm(request, algorithmResult, issues);
         if (!primaryType.isEmpty()) {
             result.add(createEncryptCandidate(EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY, primaryType, request));
         }
         if (Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter())) {
-            addAssistedQueryCandidate(result, request, encryptAlgorithms, issues);
+            addAssistedQueryCandidate(result, request, algorithmResult, issues);
         }
         if (Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery())) {
-            addLikeQueryCandidate(result, request, encryptAlgorithms, issues);
+            addLikeQueryCandidate(result, request, algorithmResult, issues);
         }
         return result;
     }
     
-    private String resolvePrimaryEncryptAlgorithm(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptAlgorithms,
+    private String resolvePrimaryEncryptAlgorithm(final EncryptWorkflowRequest request, final WorkflowQueryResult algorithmResult,
                                                   final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getAlgorithmType());
         if (!actualAlgorithmType.isEmpty()) {
-            return resolveSpecifiedPrimaryEncryptAlgorithm(request, encryptAlgorithms, issues, actualAlgorithmType);
+            return resolveSpecifiedPrimaryEncryptAlgorithm(request, algorithmResult, issues, actualAlgorithmType);
         }
         if (Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery())) {
-            for (Map<String, Object> each : encryptAlgorithms) {
+            for (Map<String, Object> each : algorithmResult.getRows()) {
                 if (Boolean.TRUE.equals(each.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_LIKE))) {
                     return WorkflowAlgorithmUtils.getAlgorithmType(each);
                 }
             }
         }
-        if (WorkflowAlgorithmUtils.containsAlgorithm(encryptAlgorithms, "AES")) {
+        if (WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), "AES")) {
             return "AES";
         }
-        return encryptAlgorithms.isEmpty() ? "" : WorkflowAlgorithmUtils.getAlgorithmType(encryptAlgorithms.getFirst());
+        return algorithmResult.getRows().isEmpty() ? "" : WorkflowAlgorithmUtils.getAlgorithmType(algorithmResult.getRows().getFirst());
     }
     
-    private String resolveSpecifiedPrimaryEncryptAlgorithm(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptAlgorithms,
+    private String resolveSpecifiedPrimaryEncryptAlgorithm(final EncryptWorkflowRequest request, final WorkflowQueryResult algorithmResult,
                                                            final List<WorkflowIssue> issues, final String algorithmType) {
-        if (!WorkflowAlgorithmUtils.containsAlgorithm(encryptAlgorithms, algorithmType)) {
+        if (algorithmResult.isAvailabilityConfirmed() && !WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), algorithmType)) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     String.format("Encrypt algorithm `%s` is not visible from the current Proxy.", algorithmType), "Choose an available encrypt algorithm.", false, Map.of()));
             return "";
@@ -94,8 +95,8 @@ public final class EncryptAlgorithmRecommendationService {
     }
     
     private void addAssistedQueryCandidate(final List<AlgorithmCandidate> candidates, final EncryptWorkflowRequest request,
-                                           final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues) {
-        String assistedQueryType = resolveAssistedQueryAlgorithm(request, encryptAlgorithms, issues);
+                                           final WorkflowQueryResult algorithmResult, final List<WorkflowIssue> issues) {
+        String assistedQueryType = resolveAssistedQueryAlgorithm(request, algorithmResult, issues);
         if (assistedQueryType.isEmpty()) {
             addCapabilityConflictIssue(issues, request.getOptions().getAssistedQueryAlgorithmType(),
                     "No assisted-query algorithm is available for the current requirement.", "Install or specify a supported assisted-query algorithm.");
@@ -106,8 +107,8 @@ public final class EncryptAlgorithmRecommendationService {
     }
     
     private void addLikeQueryCandidate(final List<AlgorithmCandidate> candidates, final EncryptWorkflowRequest request,
-                                       final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues) {
-        String likeQueryType = resolveLikeQueryAlgorithm(request, encryptAlgorithms, issues);
+                                       final WorkflowQueryResult algorithmResult, final List<WorkflowIssue> issues) {
+        String likeQueryType = resolveLikeQueryAlgorithm(request, algorithmResult, issues);
         if (likeQueryType.isEmpty()) {
             addCapabilityConflictIssue(issues, request.getOptions().getLikeQueryAlgorithmType(),
                     "No like-query algorithm is available for the current requirement.", "Install or specify a supported like-query algorithm.");
@@ -124,17 +125,17 @@ public final class EncryptAlgorithmRecommendationService {
         issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM, message, userAction, false, Map.of()));
     }
     
-    private String resolveAssistedQueryAlgorithm(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptAlgorithms,
+    private String resolveAssistedQueryAlgorithm(final EncryptWorkflowRequest request, final WorkflowQueryResult algorithmResult,
                                                  final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getOptions().getAssistedQueryAlgorithmType());
         if (!actualAlgorithmType.isEmpty()) {
-            return resolveSpecifiedAssistedQueryAlgorithm(encryptAlgorithms, issues, actualAlgorithmType);
+            return resolveSpecifiedAssistedQueryAlgorithm(algorithmResult, issues, actualAlgorithmType);
         }
-        return WorkflowAlgorithmUtils.containsAlgorithm(encryptAlgorithms, "MD5") ? "MD5" : "";
+        return WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), "MD5") ? "MD5" : "";
     }
     
-    private String resolveSpecifiedAssistedQueryAlgorithm(final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues, final String algorithmType) {
-        if (!WorkflowAlgorithmUtils.containsAlgorithm(encryptAlgorithms, algorithmType)) {
+    private String resolveSpecifiedAssistedQueryAlgorithm(final WorkflowQueryResult algorithmResult, final List<WorkflowIssue> issues, final String algorithmType) {
+        if (algorithmResult.isAvailabilityConfirmed() && !WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), algorithmType)) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     String.format("Assisted-query algorithm `%s` is not visible from the current Proxy.", algorithmType),
                     "Choose an available assisted-query algorithm.", false, Map.of()));
@@ -143,13 +144,13 @@ public final class EncryptAlgorithmRecommendationService {
         return algorithmType;
     }
     
-    private String resolveLikeQueryAlgorithm(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptAlgorithms,
+    private String resolveLikeQueryAlgorithm(final EncryptWorkflowRequest request, final WorkflowQueryResult algorithmResult,
                                              final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getOptions().getLikeQueryAlgorithmType());
         if (!actualAlgorithmType.isEmpty()) {
-            return resolveSpecifiedLikeQueryAlgorithm(encryptAlgorithms, issues, actualAlgorithmType);
+            return resolveSpecifiedLikeQueryAlgorithm(algorithmResult, issues, actualAlgorithmType);
         }
-        for (Map<String, Object> each : encryptAlgorithms) {
+        for (Map<String, Object> each : algorithmResult.getRows()) {
             if (Boolean.TRUE.equals(each.get(EncryptFeatureDefinition.ALGORITHM_CAPABILITY_LIKE))) {
                 return WorkflowAlgorithmUtils.getAlgorithmType(each);
             }
@@ -157,8 +158,8 @@ public final class EncryptAlgorithmRecommendationService {
         return "";
     }
     
-    private String resolveSpecifiedLikeQueryAlgorithm(final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues, final String algorithmType) {
-        if (!WorkflowAlgorithmUtils.containsAlgorithm(encryptAlgorithms, algorithmType)) {
+    private String resolveSpecifiedLikeQueryAlgorithm(final WorkflowQueryResult algorithmResult, final List<WorkflowIssue> issues, final String algorithmType) {
+        if (algorithmResult.isAvailabilityConfirmed() && !WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), algorithmType)) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     String.format("LIKE-query algorithm `%s` is not visible from the current Proxy.", algorithmType),
                     "Choose an available LIKE-query algorithm.", false, Map.of()));

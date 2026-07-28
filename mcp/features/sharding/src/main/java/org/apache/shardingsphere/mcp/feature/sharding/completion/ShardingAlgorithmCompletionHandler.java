@@ -77,8 +77,8 @@ public final class ShardingAlgorithmCompletionHandler implements MCPCompletionHa
     
     private List<Map<String, Object>> queryPlugins(final MCPFeatureRequestContext handlerContext, final MCPCompletionRequest request) {
         return KEY_GENERATOR_TYPE_FIELD.equals(request.getArgumentName())
-                ? inspectionService.queryKeyGenerateAlgorithmPlugins(handlerContext.getQueryFacade())
-                : inspectionService.queryAlgorithmPlugins(handlerContext.getQueryFacade());
+                ? inspectionService.queryKeyGenerateAlgorithmPlugins(handlerContext.getQueryFacade()).getRows()
+                : inspectionService.queryAlgorithmPlugins(handlerContext.getQueryFacade()).getRows();
     }
     
     private MCPCompletionCandidate createAlgorithmCandidate(final Map<String, Object> row, final String argumentName) {

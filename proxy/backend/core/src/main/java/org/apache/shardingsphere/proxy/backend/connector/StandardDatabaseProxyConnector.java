@@ -301,10 +301,12 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         int columnCount = getColumnCount(sqlStatementContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
-        Collection<ShardingSphereDatabase> databases = queryContext.getMetaData().getAllDatabases();
         ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(queryResultSample.getMetaData().getResultSetMetaData(), database, sqlStatementContext);
+        Optional<ResultSet> resultSetSample = cachedResultSets.stream().findFirst();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(createQueryHeader(queryHeaderBuilderEngine, sqlStatementContext, resultSetMetaData, database, databases, columnIndex));
+            result.add(resultSetSample.isPresent()
+                    ? queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, resultSetSample.get(), database, columnIndex)
+                    : queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, columnIndex));
         }
         return result;
     }
@@ -313,12 +315,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return containsDerivedProjections
                 ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
                 : queryResultSample.getMetaData().getColumnCount();
-    }
-    
-    private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final SQLStatementContext sqlStatementContext,
-                                          final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database,
-                                          final Collection<ShardingSphereDatabase> databases, final int columnIndex) throws SQLException {
-        return queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, databases, columnIndex);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {

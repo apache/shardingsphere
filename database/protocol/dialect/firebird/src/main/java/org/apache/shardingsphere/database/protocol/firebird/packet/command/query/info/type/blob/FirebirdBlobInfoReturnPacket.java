@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -39,15 +38,21 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     
     private final List<FirebirdInfoPacketType> infoItems;
     
+    private final int blobLength;
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         for (FirebirdInfoPacketType type : infoItems) {
+            if (FirebirdCommonInfoPacketType.END == type) {
+                continue;
+            }
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
             } else {
                 parseBlobInfo(payload, (FirebirdBlobInfoPacketType) type);
             }
         }
+        FirebirdCommonInfoPacketType.parseCommonInfo(payload, FirebirdCommonInfoPacketType.END);
     }
     
     private void parseBlobInfo(final FirebirdPacketPayload payload, final FirebirdBlobInfoPacketType type) {
@@ -74,11 +79,10 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     }
     
     private int getSegmentLength() {
-        byte[] segment = FirebirdBlobRegistry.getSegment();
-        return segment == null ? 0 : segment.length;
+        return blobLength;
     }
     
     private int getSegmentCount() {
-        return getSegmentLength() == 0 ? 0 : 1;
+        return 0 == blobLength ? 0 : 1;
     }
 }

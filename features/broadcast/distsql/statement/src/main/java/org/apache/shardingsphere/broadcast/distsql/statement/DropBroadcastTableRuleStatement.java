@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.D
 import java.util.Collection;
 
 /**
- * Drop broadcast table rules statement.
+ * Drop broadcast table rule statement.
  */
 @Getter
 public final class DropBroadcastTableRuleStatement extends DropRuleStatement {

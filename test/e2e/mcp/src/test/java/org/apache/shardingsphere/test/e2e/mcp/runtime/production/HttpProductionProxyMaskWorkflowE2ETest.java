@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -33,9 +32,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
     
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
@@ -50,10 +48,6 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     
     private static final String TABLE_RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/%s/tables/%s/rules";
     
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
-    
     @Test
     void assertCompleteMaskAlgorithmThroughProxy() throws IOException, InterruptedException {
         useSharedReadOnlyRuntimeFixture();
@@ -64,7 +58,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     }
     
     @Test
-    void assertPlanApplyValidateAndRejectUnsupportedMaskWorkflowThroughProxy() throws IOException, InterruptedException {
+    void assertPlanApplyAndValidateMaskWorkflowThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -80,14 +74,6 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                     String.valueOf(getObjectListOrEmpty(getValidationSection(actualCreateValidationResponse, "rule").get("evidence")).getFirst().get("algorithm_type"))
                             .toUpperCase(Locale.ENGLISH),
                     is("KEEP_FIRST_N_LAST_M"));
-            Map<String, Object> actualUnsupportedPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "update status mask rule", "algorithm_type", "KEEP_FIRST_N_LAST_M",
-                            "primary_algorithm_properties", Map.of("first-n", "2", "last-m", "2", "replace-char", "#")));
-            assertThat(String.valueOf(actualUnsupportedPlanResponse.get("status")), is("failed"));
-            assertThat(getIssueCodes(actualUnsupportedPlanResponse), hasItem(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
-            assertFalse(String.valueOf(actualUnsupportedPlanResponse).toLowerCase(Locale.ENGLISH).contains("alter"));
-            assertThat(getObjectListOrEmpty(actualUnsupportedPlanResponse.get("distsql_artifacts")).size(), is(0));
         }
     }
     

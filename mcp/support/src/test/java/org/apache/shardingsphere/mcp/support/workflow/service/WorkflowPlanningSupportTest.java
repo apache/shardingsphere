@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMe
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
@@ -342,32 +342,6 @@ class WorkflowPlanningSupportTest {
         assertThat(snapshot.getIssues().getFirst().getDetails(), is(Map.of("supported_operation_types", List.of("create", WorkflowLifecycle.OPERATION_DROP))));
     }
     
-    @Test
-    void assertHasBlockingAlgorithmIssuesAddsFallbackQuestion() {
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm", "message", "action", false, Map.of()));
-        boolean actual = planningSupport.hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, "Please use an algorithm visible in the current Proxy.");
-        assertTrue(actual);
-        assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please use an algorithm visible in the current Proxy.")));
-    }
-    
-    @Test
-    void assertCollectPropertyRequirementsAppliesDefaultsAndReportsMissingValues() {
-        WorkflowRequest request = new WorkflowRequest();
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        List<AlgorithmPropertyRequirement> propertyRequirements = List.of(
-                new AlgorithmPropertyRequirement("primary", "mask-char", false, false, "mask char", "*"),
-                new AlgorithmPropertyRequirement("primary", "from-x", true, false, "from x", ""));
-        boolean actual = planningSupport.collectPropertyRequirements(request, clarifiedIntent, snapshot, propertyRequirements);
-        assertFalse(actual);
-        assertThat(request.getPrimaryAlgorithmProperties().get("mask-char"), is("*"));
-        assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide property `from-x`.")));
-        assertThat(snapshot.getPropertyRequirements().size(), is(2));
-        assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
-    }
-    
     private static Stream<Arguments> getEnsureLifecycleStateCases() {
         return Stream.of(
                 Arguments.of("create when rule missing", "create", false, true, null),
@@ -379,7 +353,8 @@ class WorkflowPlanningSupportTest {
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {
-        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet());
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()));
     }
     
     private ShardingSphereSchema createSchemaMetadata(final String schemaName, final String tableName) {

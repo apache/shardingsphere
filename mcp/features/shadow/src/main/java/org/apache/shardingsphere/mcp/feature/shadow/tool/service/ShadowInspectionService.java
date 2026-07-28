@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
 import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
@@ -117,19 +118,19 @@ public final class ShadowInspectionService {
      * Query shadow algorithm plugin catalog.
      *
      * @param queryFacade query facade
-     * @return shadow algorithm plugin rows with built-in property guidance
+     * @return shadow algorithm plugin query result with built-in property guidance
      */
-    public List<Map<String, Object>> queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        return queryAlgorithmRows(queryFacade).stream().map(this::appendPropertyGuidance).toList();
+    public WorkflowQueryResult queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
+        WorkflowQueryResult result = queryAlgorithmRows(queryFacade);
+        return new WorkflowQueryResult(result.getRows().stream().map(this::appendPropertyGuidance).toList(), result.isAvailabilityConfirmed());
     }
     
-    private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
+    private WorkflowQueryResult queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
         try {
-            List<Map<String, Object>> result = queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS");
-            return null == result ? List.of(Map.of("type", "SQL_HINT"), Map.of("type", "REGEX_MATCH"), Map.of("type", "VALUE_MATCH")) : result;
+            return WorkflowQueryResult.confirmed(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS"));
         } catch (final MCPQueryFailedException ex) {
             if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return List.of(Map.of("type", "SQL_HINT"), Map.of("type", "REGEX_MATCH"), Map.of("type", "VALUE_MATCH"));
+                return WorkflowQueryResult.fallback(List.of(Map.of("type", "SQL_HINT"), Map.of("type", "REGEX_MATCH"), Map.of("type", "VALUE_MATCH")));
             }
             throw ex;
         }

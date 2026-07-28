@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlSessionAttributionSourceConfiguration;
-import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
+import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 import java.util.Objects;
 
 /**
@@ -68,7 +68,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         if (null == yamlConfig) {
             return new HttpTransportConfiguration(DEFAULT_BIND_HOST, DEFAULT_PORT, DEFAULT_ENDPOINT_PATH);
         }
-        MCPYamlConfigurationValidator.validate(yamlConfig, "MCP HTTP transport configuration");
+        MCPConfigurationValidator.validate(yamlConfig, "MCP HTTP transport configuration");
         return new HttpTransportConfiguration(getValueOrDefault(yamlConfig.getBindHost(), DEFAULT_BIND_HOST), null == yamlConfig.getPort() ? DEFAULT_PORT : yamlConfig.getPort(),
                 getValueOrDefault(yamlConfig.getEndpointPath(), DEFAULT_ENDPOINT_PATH), swapToObject(yamlConfig.getSessionAttributionSource()));
     }

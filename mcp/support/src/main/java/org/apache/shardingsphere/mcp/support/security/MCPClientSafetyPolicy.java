@@ -29,19 +29,6 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPClientSafetyPolicy {
     
-    public static final int DEFAULT_MAX_TOOL_CALLS_PER_SESSION = MCPRuntimeProtectionPolicy.DEFAULT_MAX_TOOL_CALLS_PER_SESSION;
-    
-    public static final String MAX_TOOL_CALLS_PER_SESSION_PROPERTY = MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY;
-    
-    /**
-     * Get maximum tool calls per MCP session.
-     *
-     * @return maximum tool calls per MCP session
-     */
-    public static int getMaxToolCallsPerSession() {
-        return MCPRuntimeProtectionPolicy.getMaxToolCallsPerSession();
-    }
-    
     /**
      * Create model-facing safety policy payload.
      *

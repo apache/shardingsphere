@@ -85,7 +85,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    username: demo\n"
                 + "    driverClassName: ''\n";
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
-        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains database `logic_db` property `driverClassName` is required."));
+        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases[logic_db].driverClassName` is required."));
     }
     
     @Test
@@ -252,8 +252,8 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    password: ''\n"
                 + "    driverClassName: com.mysql.cj.jdbc.Driver\n"
                 + "    unsupported: true\n";
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
-        assertThat(actual.getMessage(), is("MCP launch configuration property `runtimeDatabases` contains unsupported property `unsupported` for database `logic_db`."));
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
+        assertThat(actual.getMessage(), containsString("Unable to find property 'unsupported'"));
     }
     
     @Test
@@ -304,7 +304,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         databases.put("logic_db", new RuntimeDatabaseConfiguration("jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver"));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(MCPTransportType.HTTP, new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), databases);
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
-        assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("username")), is("demo"));
+        assertThat(actual.getRuntimeDatabases().get("logic_db").getUsername(), is("demo"));
         assertThat(actual.getTransport().getType(), is(MCPTransportType.HTTP));
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
     }

@@ -39,6 +39,7 @@ import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -79,7 +80,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     @Override
     public boolean isSameIdentifier(final String databaseName, final IdentifierScope identifierScope, final String identifier, final String existingIdentifier) {
-        return WorkflowSQLUtils.isSameIdentifier(getDatabaseCapability(databaseName).getIdentifierCasePolicySet().getPolicy(identifierScope), identifier, existingIdentifier);
+        return WorkflowSQLUtils.isSameIdentifier(getDatabaseCapability(databaseName).getIdentifierContext(), identifierScope, identifier, existingIdentifier);
     }
     
     private MCPDatabaseQueryFailedException createQueryFailedException(final String databaseName, final SQLException cause) {
@@ -108,7 +109,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
         while (resultSet.next()) {
             Map<String, Object> row = new LinkedHashMap<>(resultSetMetaData.getColumnCount(), 1F);
             for (int index = 1; index <= resultSetMetaData.getColumnCount(); index++) {
-                row.put(resultSetMetaData.getColumnLabel(index).toLowerCase(), resultSet.getObject(index));
+                row.put(resultSetMetaData.getColumnLabel(index).toLowerCase(Locale.ENGLISH), resultSet.getObject(index));
             }
             result.add(row);
         }

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPa
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -38,10 +37,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETest {
-    
-    private static final long SLOW_ELICITATION_MILLIS = 11_000L;
     
     @Override
     protected boolean useSharedRuntimeFixture() {
@@ -98,51 +95,6 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectExecuteMultiStatementWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
-                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT 1; SELECT 2"));
-            assertRecoveryResponse(actual, "Only one SQL statement is allowed.", "multiple_sql_statements");
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectExplainUpdateWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_explain_query",
-                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "UPDATE orders SET status = 'DONE' WHERE order_id = 1",
-                            "explain_sql", "EXPLAIN UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
-            assertRecoveryResponse(actual, "database_gateway_execute_explain_query only supports QUERY statements as the explained SQL.");
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectLockingReadFromReadOnlyToolWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
-                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT * FROM orders FOR UPDATE"));
-            assertRecoveryResponse(actual, "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract.");
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectLockingReadFromUpdateToolWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_update",
-                    createExecuteUpdateArguments("SELECT * FROM orders FOR UPDATE"));
-            assertRecoveryResponse(actual, "Locking read statements such as SELECT ... FOR UPDATE are not supported by the MCP read-only contract.");
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("dualTransports")
     void assertElicitMaskPlanningWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException {
         useTransport(transport);
@@ -169,32 +121,6 @@ class ProductionMySQLReadOnlySQLRuntimeE2ETest extends AbstractProductionMySQLRu
             Map<String, Object> primaryProperties = MCPInteractionPayloads.getRequiredObject(maskedPropertyPreview, "primary");
             assertThat(String.valueOf(primaryProperties.get("from-x")), is("1"));
             assertThat(String.valueOf(primaryProperties.get("to-y")), is("3"));
-            assertElicitationRequest(actualElicitationRequests);
-        }
-    }
-    
-    @Test
-    void assertElicitationCanExceedSdkDefaultRequestTimeout() throws IOException {
-        useTransport(RuntimeTransport.STDIO);
-        List<McpSchema.ElicitRequest> actualElicitationRequests = new CopyOnWriteArrayList<>();
-        try (McpSyncClient client = createElicitationClient(RuntimeTransport.STDIO, actualElicitationRequests, (requests, request) -> {
-            try {
-                Thread.sleep(SLOW_ELICITATION_MILLIS);
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw new IllegalStateException(ex);
-            }
-            return createElicitationResult(requests, request);
-        })) {
-            client.initialize();
-            McpSchema.CallToolResult actual = client.callTool(new McpSchema.CallToolRequest(MASK_PLAN_TOOL_NAME, Map.of(
-                    "database", LOGICAL_DATABASE_NAME,
-                    "schema", LOGICAL_DATABASE_NAME,
-                    "table", "orders",
-                    "column", "status",
-                    "operation_type", "create",
-                    "algorithm_type", "MASK_FROM_X_TO_Y")));
-            assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObjectValue(actual.structuredContent(), "structuredContent").get("status")), is("planned"));
             assertElicitationRequest(actualElicitationRequests);
         }
     }

@@ -19,10 +19,7 @@ package org.apache.shardingsphere.test.e2e.sql.framework;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.array.E2ETestParameterFactory;
-import org.apache.shardingsphere.test.e2e.sql.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.sql.framework.param.model.CaseTestParameter;
 import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParameter;
-import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
@@ -40,18 +37,9 @@ public final class SQLE2EITArgumentsProvider implements ArgumentsProvider {
     public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
         SQLE2EITSettings settings = context.getRequiredTestClass().getAnnotation(SQLE2EITSettings.class);
         Preconditions.checkNotNull(settings, "Annotation `%s` is required.", SQLE2EITSettings.class.getSimpleName());
-        return settings.batch() ? getBatchTestCaseArguments(settings.value()) : getSingleTestCaseArguments(settings.value());
-    }
-    
-    private Stream<Arguments> getBatchTestCaseArguments(final SQLCommandType type) {
-        Collection<E2ETestParameter> result = E2ETestParameterFactory.getCaseTestParameters(type);
-        // TODO make sure test case can not be null
-        return result.isEmpty() ? Stream.of(Arguments.of(new CaseTestParameter(null, null, null, null, null, null))) : result.stream().map(Arguments::of);
-    }
-    
-    private Stream<Arguments> getSingleTestCaseArguments(final SQLCommandType type) {
-        Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(type);
-        // TODO make sure test case can not be null
-        return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
+        Collection<? extends E2ETestParameter> testParams = settings.batch()
+                ? E2ETestParameterFactory.getCaseTestParameters(settings.value())
+                : E2ETestParameterFactory.getAssertionTestParameters(settings.value());
+        return testParams.stream().map(Arguments::of);
     }
 }

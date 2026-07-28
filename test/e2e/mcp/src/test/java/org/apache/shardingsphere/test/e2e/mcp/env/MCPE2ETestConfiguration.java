@@ -36,6 +36,16 @@ final class MCPE2ETestConfiguration {
     }
     
     boolean isDockerRunType() {
-        return EnvironmentPropertiesLoader.getListValue(props, "e2e.run.type").stream().map(each -> each.toUpperCase(Locale.ENGLISH)).anyMatch("DOCKER"::equals);
+        boolean result = false;
+        for (String each : EnvironmentPropertiesLoader.getListValue(props, "e2e.run.type")) {
+            String runType = each.toUpperCase(Locale.ENGLISH);
+            if (!"DOCKER".equals(runType) && !"NATIVE".equals(runType)) {
+                throw new IllegalStateException(String.format("Unsupported MCP E2E run type `%s`.", each));
+            }
+            if ("DOCKER".equals(runType)) {
+                result = true;
+            }
+        }
+        return result;
     }
 }

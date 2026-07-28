@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVaria
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -46,7 +47,8 @@ class LoadBalanceAlgorithmPluginsHandlerTest {
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
             MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
             when(requestContext.getQueryFacade()).thenReturn(queryFacade);
-            when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "ROUND_ROBIN")));
+            when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade))
+                    .thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "ROUND_ROBIN"))));
             MCPSuccessPayload actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of()));
             verify(inspectionService).queryLoadBalanceAlgorithmPlugins(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));

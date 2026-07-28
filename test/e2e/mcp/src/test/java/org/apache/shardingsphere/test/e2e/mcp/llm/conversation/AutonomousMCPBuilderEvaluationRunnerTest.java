@@ -59,7 +59,7 @@ class AutonomousMCPBuilderEvaluationRunnerTest {
         when(interactionClient.listTools()).thenReturn(createAdvertisedTools());
         when(interactionClient.call("database_gateway_execute_query", Map.of("database", "logic_db", "sql", "SELECT COUNT(*) FROM orders")))
                 .thenReturn(Map.of("columns", List.of("COUNT(*)"), "rows", List.of(List.of(2))));
-        EvaluationResult actual = new AutonomousMCPBuilderEvaluationRunner(8, modelClient, interactionClient, "provider", "model")
+        EvaluationResult actual = new AutonomousMCPBuilderEvaluationRunner(8, modelClient, interactionClient, "model")
                 .run(new EvaluationCase("q01", "aggregation", true, "Count orders and reply only with the integer.", "2"));
         assertTrue(actual.assertionReport().isSuccess());
         assertThat(actual.actualAnswer(), is("2"));
@@ -78,7 +78,7 @@ class AutonomousMCPBuilderEvaluationRunnerTest {
         when(modelClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(new LLMChatCompletion("2", List.of(), "raw-answer"));
         MCPInteractionClient interactionClient = mock(MCPInteractionClient.class);
         when(interactionClient.listTools()).thenReturn(createAdvertisedTools());
-        EvaluationResult actual = new AutonomousMCPBuilderEvaluationRunner(8, modelClient, interactionClient, "provider", "model")
+        EvaluationResult actual = new AutonomousMCPBuilderEvaluationRunner(8, modelClient, interactionClient, "model")
                 .run(new EvaluationCase("q01", "aggregation", true, "Count orders and reply only with the integer.", "2"));
         assertThat(actual.assertionReport().getFailureType(), is("missing_mcp_evidence"));
     }
@@ -93,7 +93,7 @@ class AutonomousMCPBuilderEvaluationRunnerTest {
         MCPInteractionClient interactionClient = mock(MCPInteractionClient.class);
         when(interactionClient.listTools()).thenReturn(createAdvertisedTools());
         when(interactionClient.readResource("shardingsphere://databases")).thenReturn(Map.of("items", List.of(Map.of("database", "logic_db"))));
-        EvaluationResult actual = new AutonomousMCPBuilderEvaluationRunner(8, modelClient, interactionClient, "provider", "model")
+        EvaluationResult actual = new AutonomousMCPBuilderEvaluationRunner(8, modelClient, interactionClient, "model")
                 .run(new EvaluationCase("q01", "metadata", true, "Name the database.", "logic_db"));
         assertTrue(actual.assertionReport().isSuccess());
         assertThat(actual.evidence().interactionTrace().get(1).getActionOrigin(), is(MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN));
@@ -106,7 +106,7 @@ class AutonomousMCPBuilderEvaluationRunnerTest {
                 new LLMChatCompletion("", List.of(new LLMToolCall("call-1", "mcp_read_resource", "{}")), "raw-tool-call"));
         MCPInteractionClient interactionClient = mock(MCPInteractionClient.class);
         when(interactionClient.listTools()).thenReturn(createAdvertisedTools());
-        EvaluationResult actual = new AutonomousMCPBuilderEvaluationRunner(8, modelClient, interactionClient, "provider", "model")
+        EvaluationResult actual = new AutonomousMCPBuilderEvaluationRunner(8, modelClient, interactionClient, "model")
                 .run(new EvaluationCase("q01", "metadata", true, "Name the database.", "logic_db"));
         assertThat(actual.assertionReport().getFailureType(), is("invalid_tool_arguments"));
         assertThat(actual.evidence().interactionTrace().get(1).getStructuredContent().get("error_code"), is("invalid_tool_arguments"));

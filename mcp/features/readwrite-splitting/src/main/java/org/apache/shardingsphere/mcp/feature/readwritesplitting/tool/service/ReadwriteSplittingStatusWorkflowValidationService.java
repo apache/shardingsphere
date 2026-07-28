@@ -43,18 +43,12 @@ public final class ReadwriteSplittingStatusWorkflowValidationService implements 
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final ReadwriteSplittingInspectionService inspectionService;
+    private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
-    private final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService;
+    private final ReadwriteSplittingStatusDistSQLPlanningService distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
-    
-    public ReadwriteSplittingStatusWorkflowValidationService() {
-        inspectionService = new ReadwriteSplittingInspectionService();
-        distSQLPlanningService = new ReadwriteSplittingStatusDistSQLPlanningService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
-                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
-    }
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,

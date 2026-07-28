@@ -65,14 +65,20 @@ class MetadataResourceResponseFactoryTest {
         assertThat(actual.get("object_scope"), is("logical-database"));
         assertThat(actual.get("items"), is(List.of(Map.of("database", "逻辑 库/2026?"))));
         String expectedSelfUri = "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F";
-        assertThat(((Map<?, ?>) actual.get("self_resource")).get("uri"), is(expectedSelfUri));
-        assertThat(((Map<?, ?>) actual.get("parent_resource")).get("uri"), is("shardingsphere://databases"));
+        Map<?, ?> actualSelfResource = (Map<?, ?>) actual.get("self_resource");
+        assertThat(actualSelfResource.get("uri"), is(expectedSelfUri));
+        assertThat(actualSelfResource.get("resource_kind"), is("logical-database"));
+        Map<?, ?> actualParentResource = (Map<?, ?>) actual.get("parent_resource");
+        assertThat(actualParentResource.get("uri"), is("shardingsphere://databases"));
+        assertThat(actualParentResource.get("resource_kind"), is("logical-database"));
         List<String> nextResourceUris = ((List<?>) actual.get("next_resources")).stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
         assertThat(nextResourceUris, is(List.of(
                 expectedSelfUri + "/schemas",
                 expectedSelfUri + "/storage-units",
                 expectedSelfUri + "/single-tables",
                 expectedSelfUri + "/single-table/default-storage-unit")));
+        List<String> nextResourceKinds = ((List<?>) actual.get("next_resources")).stream().map(each -> (String) ((Map<?, ?>) each).get("resource_kind")).toList();
+        assertThat(nextResourceKinds, is(List.of("schema", "storage-unit", "single-table", "single-table")));
     }
     
     @Test

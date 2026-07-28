@@ -54,15 +54,10 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final ShadowInspectionService inspectionService;
+    private final ShadowInspectionService inspectionService = new ShadowInspectionService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
-    
-    public ShadowWorkflowValidationService() {
-        inspectionService = new ShadowInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
-                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
-    }
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,

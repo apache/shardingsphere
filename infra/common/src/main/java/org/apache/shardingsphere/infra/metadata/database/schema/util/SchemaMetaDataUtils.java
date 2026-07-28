@@ -57,11 +57,9 @@ public final class SchemaMetaDataUtils {
      *
      * @param tableNames table name collection
      * @param material material
-     * @param isSameProtocolAndStorageTypes whether protocol and storage types are the same
      * @return meta data loader materials
      */
-    public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material,
-                                                                                final boolean isSameProtocolAndStorageTypes) {
+    public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         Collection<DatabaseType> unsupportedThreeTierStorageStructureDatabaseTypes = getUnsupportedThreeTierStorageStructureDatabaseTypes(material.getStorageUnits().values());
         DataNodes dataNodes = new DataNodes(material.getRules());
@@ -79,26 +77,22 @@ public final class SchemaMetaDataUtils {
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageUnits().get(entry.getKey()).getStorageType();
             String defaultSchemaName = new DatabaseTypeRegistry(storageType).getDefaultSchemaName(material.getDefaultSchemaName());
-            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize, isSameProtocolAndStorageTypes));
+            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize));
         }
         return result;
     }
     
     private static Collection<MetaDataLoaderMaterial> buildMaterials(final GenericSchemaBuilderMaterial material, final String dataSourceName, final Collection<String> actualTableNames,
-                                                                     final DatabaseType storageType, final String defaultSchemaName, final int loadTableMetadataBatchSize,
-                                                                     final boolean isSameProtocolAndStorageTypes) {
+                                                                     final DatabaseType storageType, final String defaultSchemaName, final int loadTableMetadataBatchSize) {
         Collection<MetaDataLoaderMaterial> result = new LinkedList<>();
         DataSource dataSource = getDataSource(material, dataSourceName);
         for (List<String> each : Lists.partition(new ArrayList<>(actualTableNames), loadTableMetadataBatchSize)) {
-            result.add(new MetaDataLoaderMaterial(normalize(each, material.getIdentifierContext(), isSameProtocolAndStorageTypes), dataSourceName, dataSource, storageType, defaultSchemaName));
+            result.add(new MetaDataLoaderMaterial(normalize(each, material.getIdentifierContext()), dataSourceName, dataSource, storageType, defaultSchemaName));
         }
         return result;
     }
     
-    private static Collection<String> normalize(final Collection<String> tableNames, final DatabaseIdentifierContext identifierContext, final boolean isSameProtocolAndStorageTypes) {
-        if (isSameProtocolAndStorageTypes) {
-            return tableNames;
-        }
+    private static Collection<String> normalize(final Collection<String> tableNames, final DatabaseIdentifierContext identifierContext) {
         return tableNames.stream().map(each -> identifierContext.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue(each))).collect(Collectors.toList());
     }
     

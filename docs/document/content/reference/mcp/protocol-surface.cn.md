@@ -223,7 +223,7 @@ Client 应在选择不确定的 database、schema、table、column、storage uni
 - `items`
 - `count`
 - `continuation_mode`
-- 存在后续结果时的 `next_page_token`
+- 支持偏移量续页时的 `has_more` 和 `next_offset`
 
 大结果 payload 会使用：
 

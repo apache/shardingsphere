@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 
@@ -59,26 +60,17 @@ public final class EncryptWorkflowPlanningService {
     
     private static final List<String> VALIDATION_LAYERS = List.of("rules");
     
-    private final WorkflowPlanningSupport planningSupport;
+    private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
-    private final EncryptWorkflowIntentResolver intentResolver;
+    private final EncryptWorkflowIntentResolver intentResolver = new EncryptWorkflowIntentResolver();
     
-    private final EncryptRuleInspectionService ruleInspectionService;
+    private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
-    private final EncryptAlgorithmRecommendationService algorithmRecommendationService;
+    private final EncryptAlgorithmRecommendationService algorithmRecommendationService = new EncryptAlgorithmRecommendationService();
     
-    private final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    private final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
     
-    private final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService;
-    
-    public EncryptWorkflowPlanningService() {
-        planningSupport = new WorkflowPlanningSupport();
-        intentResolver = new EncryptWorkflowIntentResolver();
-        ruleInspectionService = new EncryptRuleInspectionService();
-        algorithmRecommendationService = new EncryptAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
-        ruleDistSQLPlanningService = new EncryptRuleDistSQLPlanningService();
-    }
+    private final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = new EncryptRuleDistSQLPlanningService();
     
     /**
      * Plan encrypt workflow.
@@ -209,7 +201,7 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final EncryptWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
-        List<Map<String, Object>> encryptAlgorithms = ruleInspectionService.queryEncryptAlgorithms(queryFacade);
+        WorkflowQueryResult encryptAlgorithms = ruleInspectionService.queryEncryptAlgorithms(queryFacade);
         List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendEncryptAlgorithms(request, encryptAlgorithms, snapshot.getIssues());
         snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
         applyRecommendedAlgorithms(request, algorithmCandidates);

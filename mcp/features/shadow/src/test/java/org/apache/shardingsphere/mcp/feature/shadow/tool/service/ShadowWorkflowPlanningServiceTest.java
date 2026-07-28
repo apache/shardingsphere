@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
@@ -49,7 +51,8 @@ class ShadowWorkflowPlanningServiceTest {
     
     @BeforeEach
     void setUp() {
-        mockedInspectionServices = mockConstruction(ShadowInspectionService.class);
+        mockedInspectionServices = mockConstruction(ShadowInspectionService.class,
+                (mock, context) -> when(mock.queryAlgorithmPlugins(any())).thenReturn(WorkflowQueryResult.fallback(List.of())));
     }
     
     @AfterEach
@@ -173,7 +176,7 @@ class ShadowWorkflowPlanningServiceTest {
         request.getAlgorithmProperties().clear();
         ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
         ShadowInspectionService inspectionService = getInspectionService();
-        when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "SQL_HINT")));
+        when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "SQL_HINT"))));
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of());
         WorkflowContextSnapshot actual = service.planRule(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
@@ -200,7 +203,7 @@ class ShadowWorkflowPlanningServiceTest {
         ShadowDefaultAlgorithmWorkflowRequest request = createDefaultAlgorithmRequest();
         ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
         ShadowInspectionService inspectionService = getInspectionService();
-        when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "SQL_HINT")));
+        when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "SQL_HINT"))));
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of());
         WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
@@ -235,7 +238,7 @@ class ShadowWorkflowPlanningServiceTest {
         ShadowDefaultAlgorithmWorkflowRequest request = createDefaultAlgorithmRequest();
         ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
         ShadowInspectionService inspectionService = getInspectionService();
-        when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "SQL_HINT")));
+        when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "SQL_HINT"))));
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "default_shadow_algorithm")));
         WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
@@ -249,7 +252,7 @@ class ShadowWorkflowPlanningServiceTest {
         request.setOperationType("alter");
         ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
         ShadowInspectionService inspectionService = getInspectionService();
-        when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "SQL_HINT")));
+        when(inspectionService.queryAlgorithmPlugins(queryFacade)).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "SQL_HINT"))));
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "default_shadow_algorithm")));
         WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
@@ -263,7 +266,7 @@ class ShadowWorkflowPlanningServiceTest {
         request.setDatabase("logic_db");
         request.setAlgorithmType("VALUE_MATCH");
         ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
-        when(getInspectionService().queryAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "VALUE_MATCH")));
+        when(getInspectionService().queryAlgorithmPlugins(queryFacade)).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "VALUE_MATCH"))));
         WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));

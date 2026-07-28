@@ -84,7 +84,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
         sessionAttributionResolver = new SessionAttributionResolver(config.getSessionAttributionSource());
         securityValidator = ServerTransportSecurityValidatorFactory.create(sessionManager, config.getBindHost(), sessionAttributionResolver);
-        delegate = createDelegate(jsonMapper, config.getEndpointPath(), securityValidator);
+        delegate = createDelegate(jsonMapper, config.getEndpointPath());
         this.jsonMapper = jsonMapper;
         this.sessionManager = sessionManager;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
@@ -92,10 +92,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         lifecycleLock = new StampedLock();
     }
     
-    private static HttpServletStreamableServerTransportProvider createDelegate(final McpJsonMapper jsonMapper, final String endpointPath,
-                                                                               final ServerTransportSecurityValidator securityValidator) {
-        return HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath)
-                .securityValidator(securityValidator).build();
+    private static HttpServletStreamableServerTransportProvider createDelegate(final McpJsonMapper jsonMapper, final String endpointPath) {
+        return HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).build();
     }
     
     @Override

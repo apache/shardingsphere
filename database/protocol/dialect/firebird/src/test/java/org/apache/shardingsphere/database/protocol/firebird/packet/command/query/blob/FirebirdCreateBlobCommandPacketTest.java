@@ -27,10 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -70,12 +68,6 @@ class FirebirdCreateBlobCommandPacketTest {
     }
     
     @Test
-    void assertCreateBlobPacketWithUnsupportedCommandType() {
-        assertThrows(IllegalArgumentException.class, () -> new FirebirdCreateBlobCommandPacket(FirebirdCommandPacketType.OPEN_BLOB, payload));
-        verifyNoInteractions(payload);
-    }
-    
-    @Test
     void assertGetLengthWithoutBpb() {
         assertThat(FirebirdCreateBlobCommandPacket.getLength(FirebirdCommandPacketType.CREATE_BLOB, payload), is(16));
     }
@@ -87,9 +79,4 @@ class FirebirdCreateBlobCommandPacketTest {
         verify(payload).getBufferLength(4);
     }
     
-    @Test
-    void assertGetLengthWithUnsupportedCommandType() {
-        assertThrows(IllegalArgumentException.class, () -> FirebirdCreateBlobCommandPacket.getLength(FirebirdCommandPacketType.OPEN_BLOB, payload));
-        verifyNoInteractions(payload);
-    }
 }

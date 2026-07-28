@@ -23,8 +23,8 @@ import io.modelcontextprotocol.spec.HttpHeaders;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.SessionAttributionResolver;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.SessionRequiredTransportHeaderConstraint;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.OriginHeaderConstraint;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.ProtocolVersionHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 
 import java.util.List;
@@ -40,32 +40,25 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
     
     private final MCPSessionManager sessionManager;
     
-    private final List<TransportHeaderConstraint> constraints;
+    private final OriginHeaderConstraint originHeaderConstraint;
+    
+    private final ProtocolVersionHeaderConstraint protocolVersionHeaderConstraint;
     
     private final SessionAttributionResolver sessionAttributionResolver;
     
     @Override
     public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
-        validateConstraints(headers, false);
-        validateSessionIdentity(headers);
-        validateConstraints(headers, true);
-    }
-    
-    private void validateConstraints(final Map<String, List<String>> headers, final boolean sessionRequired) throws ServerTransportSecurityException {
-        for (TransportHeaderConstraint each : constraints) {
-            if ((each instanceof SessionRequiredTransportHeaderConstraint) != sessionRequired) {
-                continue;
-            }
-            if (sessionRequired && getSessionId(headers).isBlank()) {
-                continue;
-            }
-            each.validate(getFirstHeaderValue(headers, each.getConstraintKey()));
-        }
-    }
-    
-    private void validateSessionIdentity(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
+        originHeaderConstraint.validate(getFirstHeaderValue(headers, "Origin"));
         String sessionId = getSessionId(headers);
-        if (sessionId.isBlank() || !sessionAttributionResolver.isEnabled()) {
+        if (sessionId.isBlank() || !sessionManager.hasSession(sessionId)) {
+            return;
+        }
+        validateSessionIdentity(headers, sessionId);
+        protocolVersionHeaderConstraint.validate(getFirstHeaderValue(headers, HttpHeaders.PROTOCOL_VERSION));
+    }
+    
+    private void validateSessionIdentity(final Map<String, List<String>> headers, final String sessionId) throws ServerTransportSecurityException {
+        if (!sessionAttributionResolver.isEnabled()) {
             return;
         }
         Optional<MCPSessionIdentity> boundSessionIdentity = sessionManager.findSessionIdentity(sessionId);

@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -136,7 +137,11 @@ public final class Portal {
         int columnIndex = 0;
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
             PostgreSQLValueFormat valueFormat = determineValueFormat(columnIndex);
-            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName(), valueFormat.getCode()));
+            int currentColumnIndex = ++columnIndex;
+            Integer typeOID = (Integer) each.getProtocolAttributes().get(PostgreSQLQueryHeaderBuilder.TYPE_OID);
+            result.add(PostgreSQLValueFormat.TEXT == valueFormat && null != typeOID
+                    ? new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, typeOID, each.getColumnLength(), valueFormat.getCode())
+                    : new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName(), valueFormat.getCode()));
         }
         return result;
     }

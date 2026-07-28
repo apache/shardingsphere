@@ -98,8 +98,9 @@ TARGET_PLATFORM="${MCP_LLM_TARGET_PLATFORM:-$(read_optional_property "mcp.llm.ta
 if [ -z "${TARGET_PLATFORM}" ]; then
   TARGET_PLATFORM="$(detect_target_platform)"
 fi
-BASE_IMAGE="${MCP_LLM_BASE_SERVER_IMAGE:-$(read_required_property "mcp.llm.base-server-image")}"
-BASE_DIGEST="${MCP_LLM_BASE_SERVER_IMAGE_DIGEST:-$(read_optional_property "mcp.llm.base-server-image-digest")}"
+BASE_SERVER_IMAGE="${MCP_LLM_BASE_SERVER_IMAGE:-$(read_required_property "mcp.llm.base-server-image")}"
+BASE_SERVER_IMAGE_DIGEST="${MCP_LLM_BASE_SERVER_IMAGE_DIGEST:-$(read_optional_property "mcp.llm.base-server-image-digest")}"
+BASE_IMAGE="${BASE_SERVER_IMAGE}"
 MODEL_REPOSITORY="${MCP_LLM_MODEL_REPOSITORY:-$(read_required_property "mcp.llm.model-repository")}"
 MODEL_QUANTIZATION="${MCP_LLM_MODEL_QUANTIZATION:-$(read_required_property "mcp.llm.model-quantization")}"
 MODEL_REFERENCE="${MCP_LLM_MODEL:-$(read_required_property "mcp.llm.model")}"
@@ -111,8 +112,8 @@ case "${BASE_IMAGE}" in
   *@sha256:*)
     ;;
   *)
-    if [ -n "${BASE_DIGEST}" ]; then
-      BASE_IMAGE="${BASE_IMAGE}@${BASE_DIGEST}"
+    if [ -n "${BASE_SERVER_IMAGE_DIGEST}" ]; then
+      BASE_IMAGE="${BASE_IMAGE}@${BASE_SERVER_IMAGE_DIGEST}"
     fi
     ;;
 esac
@@ -120,6 +121,8 @@ esac
 if [ "--dry-run" = "${MODE}" ] || [ "--print" = "${MODE}" ]; then
   echo "target_platform=${TARGET_PLATFORM}"
   echo "base_image=${BASE_IMAGE}"
+  echo "base_server_image=${BASE_SERVER_IMAGE}"
+  echo "base_server_image_digest=${BASE_SERVER_IMAGE_DIGEST}"
   echo "model_repository=${MODEL_REPOSITORY}"
   echo "model_quantization=${MODEL_QUANTIZATION}"
   echo "model_reference=${MODEL_REFERENCE}"
@@ -140,6 +143,8 @@ fi
 docker build \
   --platform "${TARGET_PLATFORM}" \
   --build-arg "BASE_IMAGE=${BASE_IMAGE}" \
+  --build-arg "BASE_SERVER_IMAGE=${BASE_SERVER_IMAGE}" \
+  --build-arg "BASE_SERVER_IMAGE_DIGEST=${BASE_SERVER_IMAGE_DIGEST}" \
   --build-arg "MODEL_REPOSITORY=${MODEL_REPOSITORY}" \
   --build-arg "MODEL_QUANTIZATION=${MODEL_QUANTIZATION}" \
   --build-arg "MODEL_REFERENCE=${MODEL_REFERENCE}" \

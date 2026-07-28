@@ -36,8 +36,6 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * E2E-local MySQL-backed runtime test support.
@@ -83,10 +81,6 @@ public final class MySQLRuntimeTestSupport {
                 .withStartupTimeout(Duration.ofMinutes(2));
     }
     
-    static String getMySQLImage(final Properties props) {
-        return MySQLRuntimeDockerSupport.getMySQLImage(props);
-    }
-    
     /**
      * Check whether Docker is available for Testcontainers-backed tests.
      *
@@ -97,15 +91,6 @@ public final class MySQLRuntimeTestSupport {
     }
     
     /**
-     * Get Docker readiness diagnostic when Testcontainers cannot use Docker.
-     *
-     * @return Docker unavailable reason
-     */
-    public static Optional<String> getDockerUnavailableReason() {
-        return MySQLRuntimeDockerSupport.getDockerUnavailableReason();
-    }
-    
-    /**
      * Create Docker-required message with bounded readiness diagnostics.
      *
      * @param scenarioMessage scenario message
@@ -113,10 +98,6 @@ public final class MySQLRuntimeTestSupport {
      */
     public static String createDockerRequiredMessage(final String scenarioMessage) {
         return MySQLRuntimeDockerSupport.createDockerRequiredMessage(scenarioMessage);
-    }
-    
-    static String createDockerRequiredMessage(final String scenarioMessage, final String unavailableReason) {
-        return MySQLRuntimeDockerSupport.createDockerRequiredMessage(scenarioMessage, unavailableReason);
     }
     
     /**

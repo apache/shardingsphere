@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
+import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 
 /**
  * YAML MCP launch configuration swapper.
@@ -43,7 +43,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     
     @Override
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
-        MCPYamlConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
+        MCPConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
         YamlMCPTransportConfiguration yamlTransportConfig = yamlConfig.getTransport();
         return new MCPLaunchConfiguration(yamlTransportConfig.getType(), httpTransportConfigSwapper.swapToObject(yamlTransportConfig.getHttp()),
                 runtimeDatabasesSwapper.swapToObject(yamlConfig.getRuntimeDatabases()));

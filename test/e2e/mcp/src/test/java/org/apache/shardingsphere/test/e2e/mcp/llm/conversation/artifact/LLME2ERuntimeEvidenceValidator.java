@@ -23,7 +23,8 @@ import java.util.Map;
 final class LLME2ERuntimeEvidenceValidator {
     
     private static final List<String> REQUIRED_SCORE_EVIDENCE_KEYS = List.of(
-            "runtimeMode", "dockerOwned", "provider", "serverRuntime", "serverImage", "serverImageId", "baseServerImage", "modelReference", "servedModelId",
+            "runtimeMode", "dockerOwned", "provider", "serverRuntime", "serverImage", "serverImageId", "baseServerImage", "baseServerImageDigest",
+            "modelRepository", "modelReference", "servedModelId",
             "modelQuantization", "modelRevision", "modelFileName", "modelSha256", "modelPackaging", "contextWindowTokens", "baseUrlOwnedByTest");
     
     void validate(final Map<String, Object> runtimeEvidence) {

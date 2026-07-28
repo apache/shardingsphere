@@ -38,6 +38,8 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.capability.resource.MCP
 import org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool.MCPToolSpecificationFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.support.markdown.MCPMarkdownResourceLoader;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -52,6 +54,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
@@ -102,6 +105,13 @@ class MCPSyncServerFactoryTest {
         assertFalse(actualCapabilities.prompts().listChanged());
         assertNotNull(actualCapabilities.completions());
         actual.closeGracefully();
+    }
+    
+    @Test
+    void assertServerInstructionsReferenceRegisteredGuidanceResource() {
+        String actual = MCPMarkdownResourceLoader.load(MCPTransportConstants.SERVER_INSTRUCTIONS_RESOURCE, "server instruction");
+        assertTrue(actual.contains("`shardingsphere://guidance`"));
+        assertThat(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor("shardingsphere://guidance").getUriTemplate(), is("shardingsphere://guidance"));
     }
     
     private MCPSyncServerFactory createFactory() {

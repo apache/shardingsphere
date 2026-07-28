@@ -84,8 +84,8 @@ public final class ShardingAlgorithmResourceHandler extends AbstractShardingReso
     @Override
     protected List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         return switch (resourceKind) {
-            case ALGORITHM_PLUGINS -> getInspectionService().queryAlgorithmPlugins(requestContext.getQueryFacade());
-            case KEY_GENERATE_ALGORITHM_PLUGINS -> getInspectionService().queryKeyGenerateAlgorithmPlugins(requestContext.getQueryFacade());
+            case ALGORITHM_PLUGINS -> getInspectionService().queryAlgorithmPlugins(requestContext.getQueryFacade()).getRows();
+            case KEY_GENERATE_ALGORITHM_PLUGINS -> getInspectionService().queryKeyGenerateAlgorithmPlugins(requestContext.getQueryFacade()).getRows();
             case ALGORITHMS -> getInspectionService().queryAlgorithms(requestContext.getQueryFacade(), uriVariables.getValue("database"));
             case UNUSED_ALGORITHMS -> getInspectionService().queryUnusedAlgorithms(requestContext.getQueryFacade(), uriVariables.getValue("database"));
             case ALGORITHM_USED_TABLE_RULES -> getInspectionService().queryTableRulesUsedAlgorithm(

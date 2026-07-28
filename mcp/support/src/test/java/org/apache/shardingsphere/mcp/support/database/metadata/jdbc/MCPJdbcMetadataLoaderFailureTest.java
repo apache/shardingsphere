@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -72,6 +73,7 @@ class MCPJdbcMetadataLoaderFailureTest {
     }
     
     private static RuntimeDatabaseProfile createDatabaseProfile() {
-        return new RuntimeDatabaseProfile("logic_db", "Firebird", "", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet());
+        return new RuntimeDatabaseProfile("logic_db", "Firebird", "", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()));
     }
 }
