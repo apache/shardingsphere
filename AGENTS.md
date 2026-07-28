@@ -322,6 +322,9 @@ perform any authorized restoration through precise file edits.
 - Do not mix Mockito matchers with raw arguments in one invocation. Mock
   databases, caches, registries, network calls, time, and other heavy external
   dependencies instead of constructing deep unrelated object graphs.
+- Every unit-test class must be named `<ProductionClassName>Test`, using the
+  exact simple name of the production class it directly tests. This class-name
+  rule is mandatory and is independent of scenario-focused test-method naming.
 - Parameterized tests must set `name = "{0}"`. Keep test names concise and
   scenario-focused, following `CODE_OF_CONDUCT.md`; avoid `ReturnsXXX` and
   wording that restates the expected result instead of naming the scenario.
@@ -336,20 +339,30 @@ perform any authorized restoration through precise file edits.
 
 ## Specialized Workflows
 
-Use the matching repository Skill when its trigger applies:
+Use the matching Skill when its trigger applies:
 
 - Issue diagnosis and copy-ready maintainer replies: `$analyze-issue`.
 - Unit-test generation or systematic coverage work: `$gen-ut`.
 - PR correctness, side effects, mergeability, or GitHub review replies:
   `$review-pr`.
+- Implementation or review whose correctness depends on the current version of
+  an external framework or library: use `$source-driven-development`. Identify
+  the applicable version from repository dependency metadata, verify the
+  relevant decision against authoritative primary documentation, record the
+  source, and mark anything that cannot be verified as unverified. Do not invoke
+  it for version-independent local logic.
+- Designing, adding, or changing a public API, SPI, extension, loading or
+  registration contract, module boundary, externally visible interface, or
+  cross-module type contract: use `$api-and-interface-design` before
+  implementation. Apply it together with the Architecture change and Contract
+  and Impact gates; using the Skill does not authorize the change or expand the
+  confirmed scope.
 
 If a named Skill is unavailable, apply an equivalent manual checklist, record
 the fallback in the plan or final response, and continue without installing it.
 Do not create a new Skill merely to hold task-specific instructions.
 
-When implementation decisions depend on a current external framework or
-library, use authoritative documentation and record the relevant source. Do
-not include sensitive repository data in external searches.
+Do not include sensitive repository data in external searches.
 
 ## Contract and Impact Gates
 
