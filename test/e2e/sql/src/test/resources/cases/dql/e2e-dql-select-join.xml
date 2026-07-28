@@ -132,4 +132,10 @@
     <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id order by o.order_id, m.item_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT T.*, T.status status_new FROM t_order T WHERE T.order_id = 1000"
+               db-types="MySQL"
+               scenario-types="readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>
