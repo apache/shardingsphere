@@ -44,7 +44,7 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
                              final int columnIndex) throws SQLException {
         int columnType = resultSetMetaData.getColumnType(columnIndex);
-        final String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
+        String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
         return new QueryHeader(UNUSED_STRING_FIELD, UNUSED_STRING_FIELD, columnLabel, UNUSED_STRING_FIELD, columnType, columnTypeName, resultSetMetaData.getColumnDisplaySize(columnIndex),
                 UNUSED_INT_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD);
     }
