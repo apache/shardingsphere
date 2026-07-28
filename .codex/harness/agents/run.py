@@ -113,6 +113,9 @@ def load_cases(case_ids: list[str] | None) -> list[dict[str, Any]]:
         if "max_summary_chars" in each:
             if type(each["max_summary_chars"]) is not int or each["max_summary_chars"] <= 0:
                 raise ValueError(f"Maximum summary characters must be a positive integer for case: {each['id']}")
+        if "required_summary_prefix" in each:
+            if not isinstance(each["required_summary_prefix"], str) or not each["required_summary_prefix"]:
+                raise ValueError(f"Required summary prefix must be a non-empty string for case: {each['id']}")
     if not case_ids:
         return cases
     requested = set(case_ids)
@@ -181,6 +184,8 @@ def normalize_case_contracts(cases: list[dict[str, Any]]) -> list[dict[str, Any]
             contract["response_style"] = each["response_style"]
         if "max_summary_chars" in each:
             contract["max_summary_chars"] = each["max_summary_chars"]
+        if "required_summary_prefix" in each:
+            contract["required_summary_prefix"] = each["required_summary_prefix"]
         contracts.append(contract)
     return sorted(contracts, key=lambda each: each["id"])
 
@@ -361,13 +366,24 @@ def grade(cases: list[dict[str, Any]], actual: dict[str, Any]) -> list[dict[str,
                     f"response_style={actual_case['response_style']} expected={expected['response_style']}"
                 )
             summary = actual_case["summary"]
-            separator = "\n---\n"
-            if expected.get("response_style") == "concise" and separator in summary:
-                failures.append("concise response contains detail separator")
+            lines = summary.splitlines()
+            separators = [index for index, line in enumerate(lines) if line.strip() == "---"]
+            concise_answer = summary.strip()
+            if expected.get("response_style") == "concise" and separators:
+                failures.append("concise response contains detail separator line")
             if expected.get("response_style") == "layered":
-                sections = summary.split(separator)
-                if len(sections) != 2 or not all(each.strip() for each in sections):
-                    failures.append("layered response lacks two non-empty sections")
+                if len(separators) != 1:
+                    failures.append("layered response requires exactly one detail separator line")
+                else:
+                    separator = separators[0]
+                    concise_answer = "\n".join(lines[:separator]).strip()
+                    details = "\n".join(lines[separator + 1:]).strip()
+                    if not concise_answer or not details:
+                        failures.append("layered response lacks two non-empty sections")
+            if "required_summary_prefix" in expected and not concise_answer.startswith(expected["required_summary_prefix"]):
+                failures.append(
+                    f"summary does not start with required prefix={expected['required_summary_prefix']!r}"
+                )
             if "max_summary_chars" in expected and len(summary) > expected["max_summary_chars"]:
                 failures.append(
                     f"summary characters={len(summary)} maximum={expected['max_summary_chars']}"
