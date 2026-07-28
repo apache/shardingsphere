@@ -1,10 +1,9 @@
 # ShardingSphere Codex Development Guide
 
-This repository guide is written for Codex using GPT-5.6 Sol. Keep only stable,
-repository-wide rules here and rely on Codex for ordinary coding competence.
-Follow every explicit rule literally; do not replace a repository rule with
-model judgment unless that rule authorizes it. Paths are relative to the
-repository root.
+This repository guide is written for Codex. Keep only stable, repository-wide
+rules here and rely on Codex for ordinary coding competence. Follow every
+explicit rule literally; do not replace a repository rule with general judgment
+unless that rule authorizes it. Paths are relative to the repository root.
 
 ## Instruction Sources
 
@@ -33,7 +32,7 @@ For changes to this guide, use `.codex/harness/agents/` and:
 3. Reconcile every deleted or weakened rule explicitly. A replacement is
    equivalent only when it preserves the same trigger, required or forbidden
    action, scope, exceptions, and verification obligation. A positive general
-   rule does not replace a specific negative prohibition. Model competence,
+   rule does not replace a specific negative prohibition. Ordinary Codex competence,
    implication, nearby prose, a Skill, or a canary is not evidence that any
    explicit rule is preserved. Partial or implicit coverage is a regression.
 4. Never remove, weaken, merge away, or broaden an exception to a capability
@@ -91,17 +90,17 @@ while omitting every Git mutation.
   repository, deployment, production API, connector, cloud task, message, or
   other remote state. Perform a remote write only when the current request
   explicitly names the action and exact target.
-- Do not send credentials, tokens, private keys, private logs, proprietary
+- Do not transmit credentials, tokens, private keys, private logs, proprietary
   source, personal data, connection strings, or other sensitive repository data
-  to any model, website, search query, connector, plugin, MCP server, review
-  service, or external tool beyond the active user-authorized Codex/Sol task.
+  outside the active user-authorized Codex task, including to websites, search
+  queries, connectors, plugins, MCP servers, review services, or external tools.
   Redact sensitive values from commands, summaries, and retained artifacts.
-- Do not invoke a different model or cross-model review service. The policy
-  harness in `.codex/harness/agents/` is the only additional-model exception:
-  it may invoke the pinned GPT-5.6 Sol model only with synthetic, non-sensitive
-  policy cases in a read-only, ephemeral task. Do not include source, logs,
-  task data, or sensitive values in its prompt. Otherwise perform bounded
-  self-review in the active Codex/Sol task.
+- Do not invoke an additional Codex task or external review service. The policy
+  harness in `.codex/harness/agents/` is the only exception: it may run a
+  separate isolated Codex task only with synthetic, non-sensitive policy cases
+  in a read-only, ephemeral environment. Do not include source, logs, task data,
+  or sensitive values in its prompt. Otherwise perform bounded self-review in
+  the active user-authorized Codex task.
 
 ### Destructive and High-Risk Local Actions
 
@@ -391,7 +390,7 @@ Do not include sensitive repository data in external searches.
   test the complete external output when it could expose credentials, tokens,
   connection strings, SQL, paths, or user data.
 - Regenerate or verify affected snapshots, golden files, fingerprints, SQL
-  cases, descriptors, schemas, and model-visible metadata with the existing
+  cases, descriptors, schemas, and agent-visible metadata with the existing
   project tool.
 - Determine affected GitHub Actions from changed-file path filters and job
   commands. Run the local equivalent when practical; otherwise record the

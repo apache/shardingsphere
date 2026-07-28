@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Run synthetic AGENTS.md policy canaries with GPT-5.6 Sol."""
+"""Run synthetic AGENTS.md policy canaries."""
 
 from __future__ import annotations
 
@@ -30,7 +30,6 @@ import time
 import tomllib
 from typing import Any
 
-MODEL = "gpt-5.6-sol"
 ACTIONS = [
     "inspect_local",
     "edit_code",
@@ -274,8 +273,6 @@ def run_codex(
             "project_root_markers=[]",
             "--config",
             f"project_doc_max_bytes={max(len(policy), 32768)}",
-            "--model",
-            MODEL,
             "--output-schema",
             str(schema_path),
             "--output-last-message",
@@ -445,7 +442,6 @@ def main() -> int:
     if exit_code:
         print(json.dumps({
             "label": args.label,
-            "model": MODEL,
             "runner_exit_code": exit_code,
             "output_dir": str(output_dir),
         }, indent=2))
@@ -458,7 +454,6 @@ def main() -> int:
     passed = sum(1 for each in results if each["passed"])
     summary = {
         "label": args.label,
-        "model": MODEL,
         "policy_file": "AGENTS.md",
         "policy_sha256": policy_sha256,
         "case_contract_sha256": digest_json(case_contracts),
