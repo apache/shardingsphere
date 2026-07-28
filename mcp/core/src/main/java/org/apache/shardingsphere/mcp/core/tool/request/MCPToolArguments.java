@@ -96,32 +96,6 @@ public final class MCPToolArguments {
     }
     
     /**
-     * Get integer argument.
-     *
-     * @param name argument name
-     * @param defaultValue default value
-     * @return argument value
-     */
-    public int getIntegerArgument(final String name, final int defaultValue) {
-        Object result = arguments.get(name);
-        if (null == result) {
-            return defaultValue;
-        }
-        if (result instanceof Number) {
-            return ((Number) result).intValue();
-        }
-        String actualValue = result.toString().trim();
-        if (actualValue.isEmpty()) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(actualValue);
-        } catch (final NumberFormatException ignored) {
-            return defaultValue;
-        }
-    }
-    
-    /**
      * Get bounded integer argument.
      *
      * @param name argument name

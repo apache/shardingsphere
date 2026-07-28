@@ -275,6 +275,8 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
         when(result.query(eq("logic_db"), any())).thenReturn(rules);
+        when(result.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS"))
+                .thenReturn(List.of(Map.of("type", "RANDOM"), Map.of("type", "WEIGHT")));
         return result;
     }
     

@@ -46,7 +46,7 @@ public final class LoadBalanceAlgorithmPluginsHandler implements MCPResourceHand
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
-        return new MCPItemsPayload(inspectionService.queryLoadBalanceAlgorithmPlugins(requestContext.getQueryFacade()),
+        return new MCPItemsPayload(inspectionService.queryLoadBalanceAlgorithmPlugins(requestContext.getQueryFacade()).getRows(),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
 }

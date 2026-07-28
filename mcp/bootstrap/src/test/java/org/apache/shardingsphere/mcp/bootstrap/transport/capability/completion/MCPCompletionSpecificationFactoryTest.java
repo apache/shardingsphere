@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncCompletionSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
@@ -200,8 +201,10 @@ class MCPCompletionSpecificationFactoryTest {
     private MCPRuntimeContext createRuntimeContext(final WorkflowSessionContext workflowSessionContext) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.getDatabaseProfiles()).thenReturn(List.of(
-                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet()),
-                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
+                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                        new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet())),
+                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                        new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()))));
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
         sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
         MCPRuntimeContext result = mock(MCPRuntimeContext.class);

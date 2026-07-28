@@ -46,7 +46,7 @@ public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPFeatur
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
-        return new MCPItemsPayload(ruleInspectionService.queryMaskAlgorithms(requestContext.getQueryFacade()),
+        return new MCPItemsPayload(ruleInspectionService.queryMaskAlgorithms(requestContext.getQueryFacade()).getRows(),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
 }

@@ -45,8 +45,6 @@ public final class CaseTestParameter implements E2ETestParameter {
     
     @Override
     public String toString() {
-        String sql = null == testCaseContext ? null : testCaseContext.getTestCase().getSql();
-        String type = null == databaseType ? null : databaseType.getType();
-        return String.format("%s: %s -> %s -> %s", adapter, scenario, type, sql);
+        return String.format("%s: %s -> %s -> %s", adapter, scenario, databaseType.getType(), testCaseContext.getTestCase().getSql());
     }
 }

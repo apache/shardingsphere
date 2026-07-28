@@ -25,37 +25,27 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 ## Quality Standards
 
 ### Engineering Principles
-- **Architecture**: follow SOLID, DRY, separation of concerns, and YAGNI (build only what you need).
+- **Architecture**: preserve existing architecture by default; SOLID, DRY, symmetry, anticipated reuse, and testability do not by themselves justify an unrequested abstraction or architectural boundary.
 - **Code Quality**:
     - Use clear naming and reasonable abstractions.
-    - **Meaningful Code Gate**:
-        - **Purpose traceability**: every added line, identifier, literal, YAML anchor, helper, abstraction, and configuration entry must have a traceable purpose.
-          Before keeping AI-generated code, trace it back to one concrete need: production behavior, public contract, regression protection, user-facing diagnostics,
-          security or safety, readability, or removal of real duplication.
-          If the purpose cannot be explained in one specific sentence, remove it.
-        - **Meaningless code definition**: meaningless code is code that does not change or protect behavior, clarify a real contract,
-          reduce real duplication or complexity, improve diagnostics or safety, or make the code easier to read.
-          Code is also meaningless when it exists only for formal symmetry, complete-looking groups, tidy-looking structure, coverage appearance,
-          or possible future flexibility.
-          Do not keep code merely because it was generated, looks tidy, might be useful later, or makes a diff look more complete.
-        - **YAML anchor rule**: do not add YAML anchors unless they are actually reused in the same file and reduce meaningful duplication.
-          A YAML anchor with no aliases, an anticipatory anchor for possible future reuse, or an anchor that makes nearby YAML harder to read is forbidden.
-          Prefer repeating a small YAML block when repetition is clearer than indirection.
+    - **Code economy**: every added line, identifier, literal, helper, abstraction, and configuration entry must serve production behavior, a public contract,
+      regression protection, diagnostics, safety, readability, or removal of real duplication.
+      Do not add code for formal symmetry, coverage appearance, hypothetical reuse, structural completeness, or test convenience.
+      Avoid unnecessary locals, thin wrappers, helpers, collection copies, comments, guards, and abstractions; inline single-use locals unless reuse or readability justifies them.
+      Before adding an implementation, prove that direct reuse cannot satisfy the goal; then prefer composition or delegation, and use an existing extension point only when the earlier options cannot satisfy the goal within the confirmed boundary or the task requires that extension contract.
+      Every new abstraction must own independent production behavior, state, or contract that existing types cannot express; forwarding, renaming, type distinction, structural symmetry, shorter call sites, test convenience, and anticipated reuse are insufficient.
+      Reuse never authorizes changes to class or method `final`, visibility, inheritance, or shared-code ownership; follow the Architecture change gate when such a change is required.
+      Use the smallest clear implementation, and remove obsolete code within scope only after verifying its usages.
+    - **YAML anchor rule**: do not add YAML anchors unless they are reused in the same file and reduce meaningful duplication.
+      Prefer repeating a small block when an anchor has no aliases, anticipates future reuse, or obscures nearby YAML.
     - Do not introduce package-private top-level helper types by default.
       Keep very small, single-owner state or continuation helpers as private nested types, but avoid accumulating multiple nested collaborators inside one class.
-      When a helper has cohesive behavior, multiple callers, direct test value, or enough logic to distract from the owner class, split it into a public top-level type with a clear contract and direct tests.
+      Add a top-level or public helper only when existing types cannot reasonably own independent production behavior, state, or contract required by the task; multiple callers, readability, direct test value, symmetry, and anticipated reuse are insufficient.
       If neither private nor public fits, do not add a helper; keep the implementation in the approved owner or simplify the design within the declared boundary.
     - Every new public production type must have direct, focused tests.
       Broad workflow tests do not replace public contract tests unless they explicitly exercise that public type's behavior.
-    - Do not change production code solely for test convenience.
-      Test-only reuse, easier mocking, coverage convenience, fixture sharing, or test-only construction must not justify adding production types,
-      widening visibility, changing constructors, adding overloads, altering signatures, moving test helpers into production, or introducing abstractions.
-      Production changes must have an independent production reason, such as fixing behavior, clarifying a real contract, reducing production duplication,
-      or exposing a construction path that production code legitimately supports.
-      Prefer test-local fixtures, mocks, existing public constructors, factories, builders, SPI loaders, or production APIs when construction is incidental to the behavior under test.
-      Do not split a simple production class into a public no-argument constructor plus a package-private collaborator constructor merely to replace an internally created collaborator in tests.
-      For simple handlers, adapters, or payload builders with one or two locally created collaborators, keep the production construction shape and adapt or remove the test unless there is an independent production boundary reason.
-      If a change is only needed by tests, do not make the production change.
+    - Do not add production types or abstractions, widen visibility, or change constructors or signatures solely for test convenience.
+      Require an independent production reason and prefer test-local fixtures, mocks, existing public construction paths, builders, or SPI loaders.
     - New internal abstractions must reduce cognitive complexity instead of merely wrapping branches in more types.
       For simple internal two-path flows, avoid marker interfaces, multi-type result hierarchies, or extra DTO-style helpers.
       Add them only when they define a stable boundary, keep owner classes readable, or remove meaningful duplicated logic.
@@ -65,43 +55,23 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       For public constructors and accessors, verify the generated signature, access level, parameter order, annotations, and reflection or serialization behavior before replacing manual code.
       Keep manual members only when they contain real logic, annotations, documentation, validation, defaulting, side effects, compatibility requirements, framework or reflection semantics, or public-contract details that Lombok would change or obscure.
       Do not use broad Lombok annotations such as `@Data` unless every generated behavior is intentionally required.
-    - Do not add guard clauses, parameter checks, or exception throws only to make code appear safer.
-      Add a runtime guard only when it protects a real contract boundary, such as external input, public API usage, persisted or parsed configuration,
-      SPI or reflection input, invalid shared/asynchronous state, or an immediately diagnosable failure mode.
-      Treat the `CODE_OF_CONDUCT.md` rule that method parameters and return values are not allowed to be `null` as a design contract,
-      not as permission to scatter redundant `null` checks through private/internal call paths whose callers already own the invariant.
-      If an upstream parser, validator, factory, SPI loader, type contract, or public constructor already guarantees an invariant,
-      do not duplicate the check unless it improves a user-facing diagnostic or protects a later boundary; record that reason in the plan or final response.
-    - For production guard failures such as invalid state, invalid arguments, missing resources, or unsupported operations, prefer `ShardingSpherePreconditions` with lazy exception suppliers
-      over manual `if (...) { throw ...; }` guards.
-      Use manual throws only when the target module cannot depend on `infra/exception`, the check lives inside `ShardingSpherePreconditions` itself,
-      the surrounding API requires a different control flow, or the precondition form would obscure the semantics; record the reason in the plan or final response.
-    - Do not add or keep unnecessary `throws` declarations in method signatures.
-      Declare checked exceptions only when the exception is part of the caller-facing contract, required by an overridden or implemented method,
-      required by an external API or framework boundary, or intentionally preserved for public/source compatibility.
-      Do not widen signatures to generic `Exception` or `Throwable` when a narrower exception, local handling, or ShardingSphere exception conversion is the real contract.
-      Before adding or keeping a checked `throws`, verify the ownership chain: where the exception originates, who can act on it,
-      whether an existing boundary should catch and wrap it, and whether callers/tests actually depend on the declaration.
-      When changing code removes the last checked-exception source, remove stale `throws` from private and internal methods by default;
-      for public APIs, first apply the public contract propagation gate and document any compatibility reason for keeping the declaration.
+    - **Validation discipline**: add null, size, state, or other runtime guards only at real contract boundaries, such as external input, public APIs,
+      persisted or parsed configuration, SPI or reflection input, and shared or asynchronous state, or when they provide concrete diagnostic value.
+      Do not recheck invariants guaranteed by callers or upstream contracts; every added guard must map to a specific failure scenario or diagnostic benefit.
+      Prefer `ShardingSpherePreconditions` with lazy exception suppliers for production guards.
+      Use manual throws only when the module cannot depend on `infra/exception`, the check is inside `ShardingSpherePreconditions`,
+      or required control flow would otherwise be obscured; record the reason.
+      Remove stale checked `throws` from private and internal methods when their last exception source disappears.
+      Keep them on public or overridden methods only when required by a caller-facing, framework, external API, or compatibility contract; do not widen them to generic `Exception` or `Throwable`.
     - **Javadoc signal-to-noise gate**:
-      - Follow `CODE_OF_CONDUCT.md`: keep concise summaries and required `@param`, `@return`, and `@throws` tags for public APIs and SPIs; do not treat this baseline as meaningless repetition.
-      - Add prose beyond that baseline only for contracts not expressed by names, signatures, types, annotations, or repository conventions that affect caller or implementer behavior,
-        such as concurrency, lifecycle, blocking, state transitions, protocol or compatibility boundaries, and exception handling.
-      - Do not restate those visible facts or generic collection properties. In particular, do not add statements such as
-        `The returned collection may be empty, but must not be null or contain null elements.`
-      - Document an empty collection or another special return value only when it has domain meaning and requires the caller to act differently.
-      - Every extra sentence must map to a concrete caller action, implementer obligation, compatibility requirement, or failure-handling rule; otherwise remove it.
-        Review only Javadocs added or modified within the declared task scope.
-    - Do not add or keep Javadocs on methods that only override or implement a documented parent method.
-      Keep the public contract on the declaring API, SPI, or interface.
-      An overriding method should add Javadocs only when it documents implementation-specific behavior, stricter preconditions, side effects, exceptions, compatibility notes,
-      or semantics not already covered by the parent declaration.
-      When cleaning redundant override Javadocs, change comments only and verify no public contract information is lost.
+      - Keep the concise summaries and required tags mandated by `CODE_OF_CONDUCT.md` for public APIs and SPIs.
+      - Beyond that baseline, document only contracts not expressed by code that change caller or implementer behavior,
+        such as concurrency, lifecycle, state, protocol, compatibility, or failure handling.
+      - Do not restate names, signatures, visible collection properties, or parent contracts unless an override adds implementation-specific obligations.
+      - Review only Javadocs within scope, and remove any sentence that does not affect caller action, implementer obligation, compatibility, or failure handling.
     - Keep variable declarations adjacent to first use to satisfy Checkstyle VariableDeclarationUsageDistance; do not mark local variables as `final`,
       including ordinary local declarations, loop variables, enhanced `for` variables, and try-with-resources resources.
       For parameters, use `final` only on method parameters, constructor parameters and `catch` parameters; leave lambda parameters without `final` unless surrounding code style or tooling requires it.
-    - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
     - For collection declarations in production and test code, use the least-specific type that expresses the required contract.
       Prefer `Collection` for parameters, fields, local variables, and internal return values when the code only iterates, checks emptiness or size,
       or uses common collection operations.
@@ -110,28 +80,10 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       Use `Set` only when uniqueness, set semantics, set-specific APIs, or an external API or public contract requires `Set`.
       Do not declare implementation types such as `LinkedList`, `ArrayList`, or `HashSet` unless implementation-specific APIs are required.
       Choose concrete implementations according to `CODE_OF_CONDUCT.md`.
-    - Do not add defensive collection copies, concrete collection re-wrapping, or immutable wrappers by default.
-      Avoid patterns such as `Collections.unmodifiableList(new LinkedList<>(values))`, `Collections.unmodifiableSet(new LinkedHashSet<>(values))`,
-      `new LinkedList<>(values)`, `new ArrayList<>(values)`, `List.copyOf`, `Set.copyOf`, `Map.copyOf`,
-      `Collections.unmodifiableList`, `Collections.unmodifiableSet`, `Collections.unmodifiableMap`,
-      `Collectors.toUnmodifiableList`, `Collectors.toUnmodifiableSet`, `Collectors.toUnmodifiableMap`,
-      Guava `ImmutableList` / `ImmutableSet` / `ImmutableMap`, or similar explicit immutable copy/wrapper APIs
-      when the only reason is defensive programming, possible mutability, or possible ordering.
-    - Do not create semantics-free collection copies.
-      Before adding `new ArrayList<>(...)`, `new LinkedList<>(...)`, `new HashSet<>(...)`, `new LinkedHashSet<>(...)`, `new HashMap<>(...)`, or `new LinkedHashMap<>(...)`,
-      verify the concrete semantic reason.
-      Without such a reason, forbidden patterns include `new LinkedHashSet<>(List.of(...))`, `new LinkedList<>(List.of(...))`, `new LinkedHashMap<>(Map.of(...))`,
-      copying the fresh result of a loader, builder, parser, or factory that already returns an owned collection,
-      copying a local collection freshly created in the same method only to update its element contents,
-      or creating `new HashSet<>(values)` only for `contains` when an existing set already contains the same values.
-    - Ordinary collection literals or direct transformation results are allowed when they express data construction or transformation.
-      Do not flag `List.of`, `Set.of`, `Map.of`, or `Stream.toList()` by default, and do not replace `Stream.toList()` with a mutable collector
-      unless the code has a concrete mutability requirement.
-    - Explicit collection copies or wrappers are allowed only with a concrete semantic reason, such as enforcing a documented public API contract,
-      preserving a snapshot across shared ownership or asynchronous execution, protecting cached/global state from mutation,
-      isolating later local mutation, or satisfying an external API requirement.
-      In tests, wrap `List.of`, `Set.of`, or `Map.of` in a mutable implementation only when that exact instance is mutated or when mutability is the scenario under test.
-      Record the reason in the plan, review note, final response, or nearby code rationale.
+    - Do not copy, wrap, or re-materialize collections merely for defensive programming, possible mutability or ordering, concrete-type symmetry, or convenience.
+      A copy or wrapper requires a documented public contract, a snapshot of shared, asynchronous, or cached state, isolation for later mutation, or an external API requirement.
+      Ordinary collection literals and transformation results need no mutable replacement; in tests, use a mutable copy only when that instance is mutated or mutability is the scenario.
+      Record the concrete reason for any explicit copy or wrapper.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
 
 ### Dead Code Verification
@@ -158,6 +110,8 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
       protocol or payload contract generation, or another non-trivial behavior owned by the target class.
       If a method only passes data through, delegates directly, returns a constant, exposes a getter or setter, or wires an object without adding logic,
       do not add a dedicated unit test for that method unless the pass-through itself is a documented public contract or part of an externally visible protocol boundary.
+      Never add tests whose subject is a test class, test fixture, mock helper, or other test-only code; test only the production behavior it supports.
+      Test-support code distributed as an independent artifact with an external contract is production code for this rule.
     - A unit test is meaningful only if it would fail for a realistic bug that matters to users, callers, protocol clients, or maintainers of the class contract.
       If a test only proves that implementation structure remains the same, rather than proving behavior is correct, remove it.
     - Do not add unit tests that only assert constant literal values, enum names, field names, method names, YAML anchor names,
@@ -223,7 +177,16 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 Dangerous operation detected! Operation type: [specific action] Scope of impact: [affected area] Risk assessment: [potential consequence] Please confirm whether to continue. [Requires explicit “yes”, “confirm”, or “proceed”]
 
 ## Coding Execution Principles
-- **Think before coding**: inspect existing code, contracts, tests, and relevant standards before editing; do not guess, hide uncertainty, or invent unsupported facts.
+- **Reference-first implementation**: before coding, inspect the affected code, tests, contracts, configuration, registration paths, and module boundaries.
+  For each affected subsystem, follow the closest applicable, compliant, and maintained pattern for architecture, extension points, dependencies, naming, and tests.
+  When adding a database, dialect, plugin, or module, reuse applicable framework and extension mechanisms;
+  a database or dialect may be derived or entirely new, and derived dialects must keep shared behavior aligned and isolate only real differences.
+  If no applicable precedent exists, do not invent architecture; record the search evidence and follow the Architecture change gate before proposing a new boundary.
+  Do not use this analysis to expand the task or refactor unrelated code.
+- **Architecture change gate**: changes to class or method `final`, visibility, inheritance, public contracts, SPIs or extension points, loading or registration contracts, module or dependency boundaries, or shared-code ownership are architecture changes; local-variable `final` is only a style concern.
+  Before editing, report existing behavior and ownership, reuse analysis, compatibility impact, and the minimum affected files.
+  An exact architecture change explicitly requested by the user is authorized after that report; otherwise stop and obtain explicit confirmation.
+  Adding, changing, or removing an SPI is always an architecture change.
 - **Simple first**: solve the verified goal with the smallest clear implementation that preserves existing behavior.
 - **Precise modification**: change only the files and code paths required by the task; avoid drive-by refactors and unrelated cleanup.
 - **Path portability**: when writing code, tests, scripts, or skills, do not hard-code local machine paths or workspace-specific absolute paths.
@@ -231,13 +194,14 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Execution mode discipline**: in confirmation-only tasks, surface unclear boundaries, design conflicts, and rule conflicts as questions or recommendations before editing.
   In authorized implementation tasks, produce a compliant result directly when the issue can be resolved within the declared boundary; do not stop merely to ask permission or explain alternatives.
   Stop only for missing scope, required scope expansion, dangerous operations, external approvals, or true impasses that cannot be resolved from local evidence.
-- **Scope declaration gate**: before planning or editing, determine and declare the requested change boundary.
-  If the boundary is clear from the user request, state the inferred scope explicitly before making changes.
-  If the boundary is missing or ambiguous, pause and ask the developer to confirm it before making changes.
-  The boundary may be a module name, package name, class name, file path, public API, issue/PR scope, or specific behavior/test scenario.
-  Do not determine the scope after editing, and do not infer a broader scope from nearby code, unrelated failures, or cleanup opportunities.
-  The declared or confirmed boundary is the maximum allowed scope for production, test, documentation, and configuration changes.
-  If implementation evidence shows the declared or confirmed scope is insufficient, pause again and explain the required expansion before editing outside it.
+- **Scope declaration gate**: after reference analysis and before planning or editing, record the verifiable goal, non-goals, behavior owners and evidence, expected changed files, prohibited paths, reuse and architecture decisions, required production and test protection, scoped verification, and response constraints as the acceptance checklist.
+  If any item is missing or ambiguous, pause and ask the developer to confirm it before making changes.
+  The checklist is the maximum allowed scope for production, test, documentation, and configuration changes.
+  Every changed file and hunk must be necessary for a checklist item; prohibited files and modules must have zero diff.
+  Do not infer broader scope from nearby code, unrelated failures, cleanup opportunities, or rule compliance.
+  If implementation evidence proves the checklist insufficient, stop before editing outside it, explain the required expansion, and obtain confirmation.
+  If the actual diff instead contains unnecessary current-task changes, stop the current design, remove only those changes, preserve unrelated user changes, and restart diff review from the PR base or last confirmed baseline.
+- **Rejected design reset**: if the user rejects a design, stop patching it. Remove only changes provably introduced by the current task and rejected design, preserve unrelated changes, and redesign the smallest solution from the last confirmed baseline before coding again. If ownership is unclear, stop and request confirmation.
 - **Goal-driven execution**: convert the request into verifiable outcomes before implementation, then validate those outcomes with scoped checks.
 
 ## Coding Skill Guidance
@@ -257,7 +221,7 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - Use Sequential Thinking when tasks need decomposition: 6-10 steps (fallback 3-5), one sentence each, actionable.
 - Intake: choose the strategy for the task, confirm tool availability/fallbacks, capture constraints (forbidden APIs, output format, coverage/test expectations),
   and use `source-driven-development` when available, or equivalent source-checking, to verify facts that depend on authoritative sources.
-- Plan: inspect existing code with tools before edits, finish the plan before coding, use a bounded fresh-context or adversarial self-review for non-trivial decisions,
+- Plan: complete the required reference analysis and plan before coding, use a bounded fresh-context or adversarial self-review for non-trivial decisions,
   and set the quality/verification bar without invoking or offering cross-model review.
 - Implement: keep scope minimal, follow quality standards, record decisions, and handle edge cases; honor instruction precedence from Core Principle #7.
 - Validate: run the narrowest meaningful checks (see Verification & Commands) and prefer scoped runs; note any sandbox or limit blocks and alternatives.
@@ -310,20 +274,18 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
   If the boundary is clear from the request, state the inferred module, package, class, file path, public API, issue/PR scope, or behavior/test scenario.
   If the boundary is missing or ambiguous, ask the developer to confirm it before making changes.
 - **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
-- **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived.
+- **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived by the user.
 - **Report root-cause rule:** for report, audit, review, or analysis tasks, if a reported finding, verdict, or conclusion is challenged, disproved, or shown to be inaccurate,
   do not stop at patching the output artifact. First fix the highest-leverage root cause in rules, workflow, schema, validators, prompts, regression cases,
   or tests so the same class of error is less likely to recur. Update the report artifact afterward as a consequence of that root-cause fix, unless the user explicitly requests a one-off result correction only.
-- **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use without marking local variables `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
+- **Execution discipline:** keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use without marking local variables `final`; delete dead code and avoid placeholders/TODOs.
   Before handoff, inspect the Java diff for newly added `final` declarations and remove any new meaningless local-variable `final`.
   Verify code and skills do not contain local machine paths before handoff.
 - **Final semantic fix gate:** after finishing code, test, documentation, configuration, or generated-artifact changes and before considering the task complete,
-  inspect the final diff and surrounding changed context against every `AGENTS.md` and `CODE_OF_CONDUCT.md` rule that applies to the requested scope,
-  touched files, and changed behavior.
-  Do not rely on scripts, search output, Checkstyle, Spotless, tests, or compilation alone as proof that the change satisfies semantic rules.
-  Use tools such as `git diff`, `rg`, tests, Checkstyle, and Spotless to collect evidence and candidate violations,
-  then make an explicit semantic judgment from the code, contracts, existing patterns, and user request.
-  Verify that every actual change is simple, necessary, and directly tied to the user request or an explicitly applicable rule requirement.
+  inspect the final diff and surrounding changed context against the acceptance checklist and every applicable `AGENTS.md` and `CODE_OF_CONDUCT.md` rule.
+  Scripts, search output, Checkstyle, Spotless, tests, and compilation provide evidence, not proof of semantic compliance.
+  Make an explicit semantic judgment from the code, contracts, existing patterns, and user request.
+  Verify that every changed file and hunk maps to a checklist item; prohibited paths have zero diff; direct reuse was considered first; no unjustified abstraction or public type was added; class or method `final`, visibility, inheritance, and SPI changes were exactly authorized; and every test protects production behavior.
   Keep necessary formatting changes inside touched hunks, but remove unrelated file or hunk changes introduced by the current task.
   If an applicable rule is violated, or if a change is meaningless, speculative, cosmetic, convenience-only, or unnecessary, fix or remove the current-task edit before completion.
   Do not treat reporting a violation, waiver, or residual risk as a substitute for fixing an in-scope issue that can be fixed safely.
@@ -343,7 +305,8 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 - **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups; complete all applicable checks before replying and do not rely on users to find missed rule violations.
 - **End-of-task format/style gate:** for any task that edits files, run `./mvnw spotless:apply -Pcheck -T1C` after the final edit, then run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files are touched.
   Do not perform manual formatting or whitespace cleanup after the final Spotless run; if a later cleanup is required, repeat Spotless and then Checkstyle before the final response.
-- **Final response template:** include intent/why, changed files with paths, rationale per file/section, commands run (with exit codes), verification status, and remaining risks/next actions (if tests skipped, state reason and the exact command to run); include a concise self-check result statement confirming final clean status after fixes.
+- **Final response template:** lead with the shortest complete outcome; add detail only when requested or needed to resolve ambiguity, risk, or the next action, and never repeat information that does not change the decision.
+  Never omit required evidence, blockers, or validation failures. Include intent, changed files and rationale, commands with exit codes, verification status, remaining risks or next actions, and a concise self-check result; if a check was skipped, state why and give the exact command to run.
 
 ## Final Self-Iteration Gate
 - Apply this gate only to implementation tasks where the user has requested or authorized code or documentation edits.
@@ -352,7 +315,7 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
   whether the changed implementation can be simpler without changing behavior,
   whether existing public behavior and contracts are preserved, and whether `code-review-and-quality` or equivalent review still has in-scope required findings.
 - Use a bounded fresh-context or adversarial self-review to keep raising and resolving valuable in-scope questions until the stop condition is met.
-  Stop when no actionable findings remain, the same findings repeat, 3 doubt cycles complete, or the user explicitly overrides.
+  Stop only when no actionable findings remain. Repeated findings must be fixed or, when the fix would exceed the confirmed boundary, reported as a blocker requiring confirmation; cycle count is never a completion condition.
 - Before finishing any implementation task, compare the final diff against the declared or confirmed change boundary.
   Use `git diff` to verify the final changed file set and changed hunks against the declared or confirmed boundary.
   If any edit is outside that boundary and has no documented reason required by the task or an applicable rule,
@@ -360,6 +323,7 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
   Do not keep out-of-scope changes for convenience, and do not use destructive git commands or revert unrelated user changes.
   If the task cannot be completed after removing the out-of-scope edits, stop and ask the developer to confirm the required scope expansion.
 - If any answer reveals an in-scope, behavior-preserving, low-risk required fix, make the fix and rerun relevant checks.
+- Any file-changing fix invalidates the previous diff review and verification; rerun affected checks and restart the final review.
 - Repeat the review-fix-verify loop until no in-scope required findings remain.
 - Do not continue iterating for optional polish, broad cleanup, risky refactors, or unrelated code. Record those as follow-up suggestions instead of expanding the task.
 
@@ -415,7 +379,7 @@ Dangerous operation detected! Operation type: [specific action] Scope of impact:
 
 ## Mocking & SPI Guidance
 - Favor Mockito over bespoke fixtures; only add new fixture classes when mocks cannot express the scenario.
-- Use marker interfaces when distinct rule/attribute types are needed; reuse SPI types such as `ShardingSphereRule` where possible.
+- Reuse an existing SPI only when its contract matches the required behavior; one caller, one known implementation, code sharing, type distinction, symmetry, anticipated reuse, or test convenience does not establish a new SPI contract.
 - Name tests after the production method under test; never probe private helpers directly—document unreachable branches instead.
 - Mock heavy dependencies (database/cache/registry/network) and prefer mocking over building deep object graphs.
 - When static methods or constructors need mocking, prefer `@ExtendWith(AutoMockExtension.class)` with `@StaticMockSettings` (or the extension's constructor-mocking support); when a class is listed in `@StaticMockSettings`, do not call `mockStatic`/`mockConstruction` directly—stub via `when(...)` instead. Only if `AutoMockExtension` cannot be used and the reason is documented in the plan may you fall back to `mockStatic`/`mockConstruction`, wrapped in try-with-resources.

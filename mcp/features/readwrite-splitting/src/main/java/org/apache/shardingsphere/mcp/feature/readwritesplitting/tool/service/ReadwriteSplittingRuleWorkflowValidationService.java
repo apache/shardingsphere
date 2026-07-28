@@ -53,15 +53,10 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final ReadwriteSplittingInspectionService inspectionService;
+    private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
-    
-    public ReadwriteSplittingRuleWorkflowValidationService() {
-        inspectionService = new ReadwriteSplittingInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
-                WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
-    }
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,

@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
@@ -31,10 +30,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -78,7 +79,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertFalse(actual.get().supportsCrossSchemaSql());
         assertTrue(actual.get().supportsExplain());
-        assertFalse(actual.get().getIdentifierCasePolicySet().getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
+        assertFalse(actual.get().getIdentifierContext().matchesMetaData(IdentifierScope.TABLE, "phone", new IdentifierValue("Phone")));
     }
     
     @Test
@@ -111,9 +112,9 @@ class MCPDatabaseCapabilityProviderTest {
         CapabilityFixture capabilityFixture = new CapabilityFixture(true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA);
         MCPDatabaseCapabilityProvider provider = createCapabilityProvider(
                 Map.of("logic_db", createDatabaseProfile("logic_db", "MySQL", capabilityFixture, scopedPolicySet)), Map.of("MySQL", capabilityFixture));
-        IdentifierCasePolicySet actual = provider.provide("logic_db").orElseThrow().getIdentifierCasePolicySet();
-        assertFalse(actual.getPolicy(IdentifierScope.TABLE).matches("phone", "Phone", QuoteCharacter.NONE));
-        assertTrue(actual.getPolicy(IdentifierScope.COLUMN).matches("phone", "Phone", QuoteCharacter.NONE));
+        DatabaseIdentifierContext actual = provider.provide("logic_db").orElseThrow().getIdentifierContext();
+        assertFalse(actual.matchesMetaData(IdentifierScope.TABLE, "phone", new IdentifierValue("Phone")));
+        assertTrue(actual.matchesMetaData(IdentifierScope.COLUMN, "phone", new IdentifierValue("Phone")));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -187,7 +188,7 @@ class MCPDatabaseCapabilityProviderTest {
         TransactionCapability transactionCapability = capabilityFixture.transactionSupported
                 ? capabilityFixture.savepointSupported ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL
                 : TransactionCapability.NONE;
-        return new RuntimeDatabaseProfile(databaseName, databaseType, "", transactionCapability, identifierCasePolicySet);
+        return new RuntimeDatabaseProfile(databaseName, databaseType, "", transactionCapability, new DatabaseIdentifierContext(identifierCasePolicySet));
     }
     
     private static Stream<Arguments> provideCapabilityMatrixArguments() {

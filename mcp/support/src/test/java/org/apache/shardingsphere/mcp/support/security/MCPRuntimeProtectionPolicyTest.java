@@ -23,10 +23,12 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Map;
+import java.util.function.IntSupplier;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPRuntimeProtectionPolicyTest {
     
@@ -47,6 +49,12 @@ class MCPRuntimeProtectionPolicyTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("assertGetMaxToolCallsPerSessionWithInvalidValueCases")
+    void assertGetMaxToolCallsPerSessionWithInvalidValue(final String name, final String configuredValue) {
+        assertInvalidProperty(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, configuredValue, MCPRuntimeProtectionPolicy::getMaxToolCallsPerSession);
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("assertGetMaxCompletionRequestsPerMinuteCases")
     void assertGetMaxCompletionRequestsPerMinute(final String name, final String configuredValue, final int expectedMaxRequests) {
         String previous = System.getProperty(MCPRuntimeProtectionPolicy.MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY);
@@ -60,6 +68,13 @@ class MCPRuntimeProtectionPolicyTest {
         } finally {
             restoreProperty(MCPRuntimeProtectionPolicy.MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY, previous);
         }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertGetMaxCompletionRequestsPerMinuteWithInvalidValueCases")
+    void assertGetMaxCompletionRequestsPerMinuteWithInvalidValue(final String name, final String configuredValue) {
+        assertInvalidProperty(MCPRuntimeProtectionPolicy.MAX_COMPLETION_REQUESTS_PER_MINUTE_PROPERTY, configuredValue,
+                MCPRuntimeProtectionPolicy::getMaxCompletionRequestsPerMinute);
     }
     
     @Test
@@ -106,15 +121,32 @@ class MCPRuntimeProtectionPolicyTest {
     private static Stream<Arguments> assertGetMaxToolCallsPerSessionCases() {
         return Stream.of(
                 Arguments.of("configured value", "8", 8),
-                Arguments.of("non-positive value falls back to default", "0", MCPRuntimeProtectionPolicy.DEFAULT_MAX_TOOL_CALLS_PER_SESSION),
                 Arguments.of("missing value falls back to default", null, MCPRuntimeProtectionPolicy.DEFAULT_MAX_TOOL_CALLS_PER_SESSION));
+    }
+    
+    private static Stream<Arguments> assertGetMaxToolCallsPerSessionWithInvalidValueCases() {
+        return Stream.of(Arguments.of("malformed value", "foo"), Arguments.of("non-positive value", "0"));
     }
     
     private static Stream<Arguments> assertGetMaxCompletionRequestsPerMinuteCases() {
         return Stream.of(
                 Arguments.of("configured value", "120", 120),
-                Arguments.of("non-positive value falls back to default", "0", MCPRuntimeProtectionPolicy.DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE),
                 Arguments.of("missing value falls back to default", null, MCPRuntimeProtectionPolicy.DEFAULT_MAX_COMPLETION_REQUESTS_PER_MINUTE));
+    }
+    
+    private static Stream<Arguments> assertGetMaxCompletionRequestsPerMinuteWithInvalidValueCases() {
+        return Stream.of(Arguments.of("malformed value", "foo"), Arguments.of("non-positive value", "0"));
+    }
+    
+    private void assertInvalidProperty(final String propertyName, final String configuredValue, final IntSupplier action) {
+        String previous = System.getProperty(propertyName);
+        try {
+            System.setProperty(propertyName, configuredValue);
+            IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, action::getAsInt);
+            assertThat(actual.getMessage(), is(String.format("System property `%s` must be a positive integer, but was `%s`.", propertyName, configuredValue)));
+        } finally {
+            restoreProperty(propertyName, previous);
+        }
     }
     
     private void restoreProperty(final String propertyName, final String previous) {

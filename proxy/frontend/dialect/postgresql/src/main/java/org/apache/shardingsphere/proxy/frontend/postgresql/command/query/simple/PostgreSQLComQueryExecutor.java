@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
@@ -98,7 +100,11 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
-            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
+            int currentColumnIndex = ++columnIndex;
+            Integer typeOID = (Integer) each.getProtocolAttributes().get(PostgreSQLQueryHeaderBuilder.TYPE_OID);
+            result.add(null == typeOID
+                    ? new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName())
+                    : new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, typeOID, each.getColumnLength(), PostgreSQLValueFormat.TEXT.getCode()));
         }
         return result;
     }

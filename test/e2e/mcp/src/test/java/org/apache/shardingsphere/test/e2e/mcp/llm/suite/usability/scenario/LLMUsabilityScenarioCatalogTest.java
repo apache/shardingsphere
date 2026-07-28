@@ -39,15 +39,10 @@ class LLMUsabilityScenarioCatalogTest {
                 "SELECT COUNT(*) AS total_orders FROM orders", 2);
         Map<String, LLMUsabilityScenario> actualScenarios = actual.stream().collect(Collectors.toMap(LLMUsabilityScenario::getScenarioId, each -> each));
         assertThat(actualScenarios.keySet(), hasItems("natural-metadata-lookup-mysql", "natural-read-only-sql-mysql", "natural-side-effect-preview-mysql",
-                "natural-workflow-manual-export-mysql", "natural-mask-rule-md5-mysql", "natural-encrypt-rule-md5-mysql", "natural-table-resource-mysql"));
+                "natural-mask-rule-md5-mysql", "natural-encrypt-rule-md5-mysql", "natural-table-resource-mysql"));
         assertThat(actualScenarios.get("natural-side-effect-preview-mysql").getLlmScenario().getRequiredToolNames(), is(List.of("database_gateway_execute_update", "database_gateway_execute_query")));
         assertThat(actualScenarios.get("natural-table-resource-mysql").getExpectedResourceUris(),
                 is(List.of("shardingsphere://databases/logic_db/schemas/logic_db/tables/orders")));
-        assertThat(actualScenarios.get("natural-workflow-manual-export-mysql").getLlmScenario().getRequiredToolNames(),
-                is(List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_execute_query")));
-        assertThat(actualScenarios.get("natural-workflow-manual-export-mysql").getExpectedResourceUris(), is(List.of()));
-        assertThat(actualScenarios.get("natural-workflow-manual-export-mysql").getLlmScenario().getUserPrompt(),
-                containsString("table `orders`, and column `status`"));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getRequiredToolNames(),
                 is(List.of("database_gateway_plan_mask_rule", "database_gateway_apply_workflow", "database_gateway_validate_workflow", "database_gateway_execute_query")));
         assertThat(actualScenarios.get("natural-mask-rule-md5-mysql").getLlmScenario().getUserPrompt(), containsString("create a mask rule"));

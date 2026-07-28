@@ -40,7 +40,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -374,7 +373,7 @@ class ShardingWorkflowPlanningServiceTest {
         request.setColumn("order_id");
         request.setKeyGeneratorType("SNOWFLAKE");
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query(anyString(), eq("SHOW KEY GENERATE ALGORITHM PLUGINS"))).thenReturn(List.of(Map.of("type", "SNOWFLAKE")));
+        when(queryFacade.queryWithAnyDatabase("SHOW KEY GENERATE ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "SNOWFLAKE")));
         WorkflowContextSnapshot actual = planningService.planKeyGenerateStrategy(new TestWorkflowSessionContext(), queryFacade, request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getAlgorithmCandidates().getFirst().getAlgorithmType(), is("SNOWFLAKE"));
@@ -524,6 +523,9 @@ class ShardingWorkflowPlanningServiceTest {
     private MCPFeatureQueryFacade createQueryFacade(final List<Map<String, Object>> rows) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.query(anyString(), anyString())).thenReturn(rows);
+        when(result.queryWithAnyDatabase(anyString())).thenAnswer(invocation -> ((String) invocation.getArgument(0)).contains("KEY GENERATE")
+                ? List.of(Map.of("type", "SNOWFLAKE"), Map.of("type", "UUID"))
+                : List.of(Map.of("type", "INLINE"), Map.of("type", "MOD"), Map.of("type", "HASH_MOD"), Map.of("type", "CLASS_BASED")));
         return result;
     }
     

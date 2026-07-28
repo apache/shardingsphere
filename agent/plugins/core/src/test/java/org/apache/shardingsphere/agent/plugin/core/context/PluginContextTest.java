@@ -36,8 +36,6 @@ import static org.mockito.Mockito.when;
 
 class PluginContextTest {
     
-    private ContextManager originalPluginContextManager;
-    
     private boolean originalIsEnhancedForProxy;
     
     private ContextManager originalProxyContextManager;
@@ -46,23 +44,17 @@ class PluginContextTest {
     void setUp() throws ReflectiveOperationException {
         ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().clear();
         PluginContext pluginContext = PluginContext.getInstance();
-        Field contextManagerField = PluginContext.class.getDeclaredField("contextManager");
-        originalPluginContextManager = (ContextManager) Plugins.getMemberAccessor().get(contextManagerField, pluginContext);
-        Plugins.getMemberAccessor().set(contextManagerField, pluginContext, null);
-        Field isEnhancedForProxyField = PluginContext.class.getDeclaredField("isEnhancedForProxy");
-        originalIsEnhancedForProxy = (boolean) Plugins.getMemberAccessor().get(isEnhancedForProxyField, pluginContext);
-        Plugins.getMemberAccessor().set(isEnhancedForProxyField, pluginContext, false);
-        Field proxyContextManagerField = ProxyContext.class.getDeclaredField("contextManager");
-        originalProxyContextManager = (ContextManager) Plugins.getMemberAccessor().get(proxyContextManagerField, ProxyContext.getInstance());
-        Plugins.getMemberAccessor().set(proxyContextManagerField, ProxyContext.getInstance(), null);
+        originalIsEnhancedForProxy = pluginContext.isEnhancedForProxy();
+        pluginContext.setEnhancedForProxy(false);
+        Field contextManagerField = ProxyContext.class.getDeclaredField("contextManager");
+        originalProxyContextManager = (ContextManager) Plugins.getMemberAccessor().get(contextManagerField, ProxyContext.getInstance());
+        Plugins.getMemberAccessor().set(contextManagerField, ProxyContext.getInstance(), null);
     }
     
     @AfterEach
     void tearDown() throws ReflectiveOperationException {
         ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().clear();
-        PluginContext pluginContext = PluginContext.getInstance();
-        Plugins.getMemberAccessor().set(PluginContext.class.getDeclaredField("contextManager"), pluginContext, originalPluginContextManager);
-        Plugins.getMemberAccessor().set(PluginContext.class.getDeclaredField("isEnhancedForProxy"), pluginContext, originalIsEnhancedForProxy);
+        PluginContext.getInstance().setEnhancedForProxy(originalIsEnhancedForProxy);
         Plugins.getMemberAccessor().set(ProxyContext.class.getDeclaredField("contextManager"), ProxyContext.getInstance(), originalProxyContextManager);
     }
     
@@ -72,10 +64,10 @@ class PluginContextTest {
     }
     
     @Test
-    void assertIsPluginEnabledWithExistingContextManager() {
+    void assertIsPluginEnabledWithShardingSphereDataSourceContextEnabled() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED)).thenReturn(true);
-        PluginContext.getInstance().setContextManager(contextManager);
+        ShardingSphereDataSourceContextHolder.put("foo_instance", new ShardingSphereDataSourceContext("foo_db", contextManager));
         assertTrue(PluginContext.getInstance().isPluginEnabled());
     }
     
@@ -83,7 +75,7 @@ class PluginContextTest {
     void assertIsPluginEnabledWithShardingSphereDataSourceContextDisabled() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED)).thenReturn(false);
-        ShardingSphereDataSourceContextHolder.put("instance_1", new ShardingSphereDataSourceContext("logic_db", contextManager));
+        ShardingSphereDataSourceContextHolder.put("foo_instance", new ShardingSphereDataSourceContext("foo_db", contextManager));
         assertFalse(PluginContext.getInstance().isPluginEnabled());
     }
     

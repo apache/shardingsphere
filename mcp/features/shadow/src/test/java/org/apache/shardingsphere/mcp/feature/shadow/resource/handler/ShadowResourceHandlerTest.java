@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.service.ShadowInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -54,7 +55,7 @@ class ShadowResourceHandlerTest {
             when(mock.queryAlgorithms(any(), eq("logic_db"))).thenReturn(createRows("algorithms"));
             when(mock.queryDefaultAlgorithm(any(), eq("logic_db"))).thenReturn(createRows("default_algorithm"));
             when(mock.queryRuleCount(any(), eq("logic_db"))).thenReturn(createRows("rule_count"));
-            when(mock.queryAlgorithmPlugins(any())).thenReturn(createRows("algorithm_plugins"));
+            when(mock.queryAlgorithmPlugins(any())).thenReturn(WorkflowQueryResult.confirmed(createRows("algorithm_plugins")));
         })) {
             MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
             when(requestContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));

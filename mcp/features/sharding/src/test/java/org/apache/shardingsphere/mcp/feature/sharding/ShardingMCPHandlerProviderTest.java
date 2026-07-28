@@ -26,6 +26,8 @@ import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingA
 import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingGovernanceResourceHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingStrategyResourceHandler;
 import org.apache.shardingsphere.mcp.feature.sharding.resource.handler.ShardingTableResourceHandler;
+import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowApplyArtifactValidator;
+import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -73,6 +75,9 @@ class ShardingMCPHandlerProviderTest {
         assertThat(actual.stream().map(each -> each.getWorkflowKind().getValue()).toList(),
                 containsInAnyOrder("sharding.table.rule", "sharding.table.reference", "sharding.default.strategy",
                         "sharding.key.generator", "sharding.key.generate.strategy", "sharding.component.cleanup"));
+        assertTrue(actual.stream().allMatch(each -> each.getValidationHandler() instanceof ShardingWorkflowValidationService));
+        assertTrue(actual.stream().allMatch(each -> each.getApplySynchronizationHandler() instanceof ShardingWorkflowValidationService));
+        assertTrue(actual.stream().allMatch(each -> each.getApplyArtifactValidator() instanceof ShardingWorkflowApplyArtifactValidator));
     }
     
     @Test

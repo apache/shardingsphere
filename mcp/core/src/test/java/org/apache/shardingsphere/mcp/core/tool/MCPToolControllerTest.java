@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
-import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
+import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -170,9 +170,9 @@ class MCPToolControllerTest {
     }
     
     private MCPToolController createController(final int maxToolCallsPerSession) {
-        String previous = System.getProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
+        String previous = System.getProperty(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
         try {
-            System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, String.valueOf(maxToolCallsPerSession));
+            System.setProperty(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, String.valueOf(maxToolCallsPerSession));
             return new MCPToolController(createRuntimeContext());
         } finally {
             resetMaxToolCallsPerSessionProperty(previous);
@@ -181,9 +181,9 @@ class MCPToolControllerTest {
     
     private void resetMaxToolCallsPerSessionProperty(final String previous) {
         if (null == previous) {
-            System.clearProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
+            System.clearProperty(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY);
         } else {
-            System.setProperty(MCPClientSafetyPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, previous);
+            System.setProperty(MCPRuntimeProtectionPolicy.MAX_TOOL_CALLS_PER_SESSION_PROPERTY, previous);
         }
     }
     

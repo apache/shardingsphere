@@ -17,17 +17,22 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.response.header.query;
 
+import org.apache.shardingsphere.database.protocol.postgresql.type.PostgreSQLColumnTypeOIDLoader;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * Query header builder for PostgreSQL.
  */
 public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
+    
+    public static final String TYPE_OID = "typeOID";
     
     private static final int UNUSED_INT_FIELD = 0;
     
@@ -40,9 +45,16 @@ public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
                              final int columnIndex) throws SQLException {
         int columnType = resultSetMetaData.getColumnType(columnIndex);
         String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
-        int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
-        return new QueryHeader(UNUSED_STRING_FIELD, UNUSED_STRING_FIELD, columnLabel, UNUSED_STRING_FIELD, columnType, columnTypeName, columnLength,
+        return new QueryHeader(UNUSED_STRING_FIELD, UNUSED_STRING_FIELD, columnLabel, UNUSED_STRING_FIELD, columnType, columnTypeName, resultSetMetaData.getColumnDisplaySize(columnIndex),
                 UNUSED_INT_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD);
+    }
+    
+    @Override
+    public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
+        if (Types.STRUCT == queryHeader.getColumnType()) {
+            PostgreSQLColumnTypeOIDLoader.findTypeOID(resultSet.getStatement().getConnection(), queryHeader.getColumnTypeName())
+                    .ifPresent(optional -> queryHeader.getProtocolAttributes().put(TYPE_OID, optional));
+        }
     }
     
     @Override

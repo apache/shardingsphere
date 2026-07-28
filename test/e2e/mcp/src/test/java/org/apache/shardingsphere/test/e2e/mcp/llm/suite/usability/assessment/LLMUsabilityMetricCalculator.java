@@ -39,8 +39,6 @@ public final class LLMUsabilityMetricCalculator {
     
     private static final double NO_INVALID_CALL_WEIGHT = 10.0D;
     
-    private static final double QUERY_ANSWER_FIDELITY_WEIGHT = 10.0D;
-    
     private static final double NO_BOUNDARY_CONFUSION_WEIGHT = 10.0D;
     
     private static final double RESOURCE_HIT_WEIGHT = 10.0D;
@@ -84,7 +82,6 @@ public final class LLMUsabilityMetricCalculator {
             message = "Scenario expected one recoverable MCP error with category `" + scenario.getExpectedRecoveryCategory() + "` before final success.";
         }
         boolean recoveredAfterError = success && (!scenario.isRecoveryExpected() || expectedRecoveryObserved);
-        double queryAnswerFidelity = scenario.isQueryScenario() && success ? 1.0D : 0.0D;
         boolean nextActionFollowed = traceMetrics.isNextActionFollowed(interactionTrace);
         boolean approvalViolation = traceMetrics.hasApprovalViolation(interactionTrace);
         boolean nativeToolCallCoverage = traceMetrics.hasNativeRequiredToolCoverage(scenario.getLlmScenario().getRequiredToolNames(), interactionTrace);
@@ -102,7 +99,6 @@ public final class LLMUsabilityMetricCalculator {
                 .roundTripCount(interactionTrace.size())
                 .resourceHit(resourceHit)
                 .recoveredAfterError(recoveredAfterError)
-                .queryAnswerFidelity(queryAnswerFidelity)
                 .boundaryConfusion(boundaryConfusion)
                 .nextActionFollowed(nextActionFollowed)
                 .approvalViolation(approvalViolation)
@@ -122,36 +118,44 @@ public final class LLMUsabilityMetricCalculator {
      */
     public LLMUsabilityScorecard createScorecard(final String suiteId, final String runId, final List<LLMUsabilityScenarioResult> scenarioResults) {
         double taskSuccessRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isSuccess);
+        int naturalTaskSampleCount = countTag(scenarioResults, LLMUsabilityScenario.NATURAL_TASK_TAG);
         double naturalTaskSuccessRate = getTaggedSuccessRate(scenarioResults, LLMUsabilityScenario.NATURAL_TASK_TAG);
+        int protocolContractSampleCount = countTag(scenarioResults, LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG);
         double protocolContractSuccessRate = getTaggedSuccessRate(scenarioResults, LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG);
         double firstCorrectActionRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isFirstCorrectAction);
         double invalidCallRate = getInvalidCallRate(scenarioResults);
         double averageRoundTrips = getAverageRoundTrips(scenarioResults);
-        double queryAnswerFidelity = getQueryAnswerFidelity(scenarioResults);
         double boundaryConfusionRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isBoundaryConfusion);
+        int resourceHitSampleCount = countDimension(scenarioResults, LLMUsabilityDimension.RESOURCE);
         double resourceHitRate = getResourceHitRate(scenarioResults);
+        int recoverySampleCount = countDimension(scenarioResults, LLMUsabilityDimension.RECOVERY);
         double recoveryRate = getRecoveryRate(scenarioResults);
         double nextActionFollowRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isNextActionFollowed);
         double approvalViolationRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isApprovalViolation);
         double nativeToolCallRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isNativeToolCallCoverage);
         double harnessRecoveryRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isHarnessRecoveryUsed);
-        double overallScore = calculateOverallScore(taskSuccessRate, firstCorrectActionRate, invalidCallRate, queryAnswerFidelity,
-                boundaryConfusionRate, resourceHitRate, recoveryRate, nextActionFollowRate, approvalViolationRate);
+        double overallScore = scenarioResults.isEmpty() ? 0.0D
+                : calculateOverallScore(taskSuccessRate, firstCorrectActionRate, invalidCallRate, boundaryConfusionRate,
+                        resourceHitRate, resourceHitSampleCount, recoveryRate, recoverySampleCount, nextActionFollowRate, approvalViolationRate);
         return LLMUsabilityScorecard.builder()
                 .suiteId(suiteId)
                 .runId(runId)
                 .overallScore(overallScore)
-                .fullScore(isFullScore(overallScore, nativeToolCallRate, harnessRecoveryRate, naturalTaskSuccessRate, protocolContractSuccessRate))
+                .fullScore(isFullScore(overallScore, nativeToolCallRate, harnessRecoveryRate, naturalTaskSuccessRate, naturalTaskSampleCount,
+                        protocolContractSuccessRate, protocolContractSampleCount))
                 .taskSuccessRate(taskSuccessRate)
                 .naturalTaskSuccessRate(naturalTaskSuccessRate)
+                .naturalTaskSampleCount(naturalTaskSampleCount)
                 .protocolContractSuccessRate(protocolContractSuccessRate)
+                .protocolContractSampleCount(protocolContractSampleCount)
                 .firstCorrectActionRate(firstCorrectActionRate)
                 .invalidCallRate(invalidCallRate)
                 .averageRoundTrips(averageRoundTrips)
-                .queryAnswerFidelity(queryAnswerFidelity)
                 .boundaryConfusionRate(boundaryConfusionRate)
                 .resourceHitRate(resourceHitRate)
+                .resourceHitSampleCount(resourceHitSampleCount)
                 .recoveryRate(recoveryRate)
+                .recoverySampleCount(recoverySampleCount)
                 .nextActionFollowRate(nextActionFollowRate)
                 .approvalViolationRate(approvalViolationRate)
                 .nativeToolCallRate(nativeToolCallRate)
@@ -161,17 +165,26 @@ public final class LLMUsabilityMetricCalculator {
     }
     
     private double calculateOverallScore(final double taskSuccessRate, final double firstCorrectActionRate, final double invalidCallRate,
-                                         final double queryAnswerFidelity, final double boundaryConfusionRate, final double resourceHitRate,
-                                         final double recoveryRate, final double nextActionFollowRate, final double approvalViolationRate) {
-        return TASK_SUCCESS_WEIGHT * taskSuccessRate
+                                         final double boundaryConfusionRate, final double resourceHitRate, final int resourceHitSampleCount,
+                                         final double recoveryRate, final int recoverySampleCount, final double nextActionFollowRate,
+                                         final double approvalViolationRate) {
+        double weightedScore = TASK_SUCCESS_WEIGHT * taskSuccessRate
                 + FIRST_CORRECT_ACTION_WEIGHT * firstCorrectActionRate
                 + NO_INVALID_CALL_WEIGHT * invertRate(invalidCallRate)
-                + QUERY_ANSWER_FIDELITY_WEIGHT * queryAnswerFidelity
                 + NO_BOUNDARY_CONFUSION_WEIGHT * invertRate(boundaryConfusionRate)
-                + RESOURCE_HIT_WEIGHT * resourceHitRate
-                + RECOVERY_WEIGHT * recoveryRate
                 + NEXT_ACTION_FOLLOW_WEIGHT * nextActionFollowRate
                 + NO_APPROVAL_VIOLATION_WEIGHT * invertRate(approvalViolationRate);
+        double applicableWeight = TASK_SUCCESS_WEIGHT + FIRST_CORRECT_ACTION_WEIGHT + NO_INVALID_CALL_WEIGHT
+                + NO_BOUNDARY_CONFUSION_WEIGHT + NEXT_ACTION_FOLLOW_WEIGHT + NO_APPROVAL_VIOLATION_WEIGHT;
+        if (0 < resourceHitSampleCount) {
+            weightedScore += RESOURCE_HIT_WEIGHT * resourceHitRate;
+            applicableWeight += RESOURCE_HIT_WEIGHT;
+        }
+        if (0 < recoverySampleCount) {
+            weightedScore += RECOVERY_WEIGHT * recoveryRate;
+            applicableWeight += RECOVERY_WEIGHT;
+        }
+        return FULL_SCORE * weightedScore / applicableWeight;
     }
     
     private double invertRate(final double rate) {
@@ -179,9 +192,11 @@ public final class LLMUsabilityMetricCalculator {
     }
     
     private boolean isFullScore(final double overallScore, final double nativeToolCallRate, final double harnessRecoveryRate,
-                                final double naturalTaskSuccessRate, final double protocolContractSuccessRate) {
+                                final double naturalTaskSuccessRate, final int naturalTaskSampleCount,
+                                final double protocolContractSuccessRate, final int protocolContractSampleCount) {
         return 0 == Double.compare(FULL_SCORE, overallScore) && 0 == Double.compare(1.0D, nativeToolCallRate) && 0 == Double.compare(0.0D, harnessRecoveryRate)
-                && 0 == Double.compare(1.0D, naturalTaskSuccessRate) && 0 == Double.compare(1.0D, protocolContractSuccessRate);
+                && (0 == naturalTaskSampleCount || 0 == Double.compare(1.0D, naturalTaskSuccessRate))
+                && (0 == protocolContractSampleCount || 0 == Double.compare(1.0D, protocolContractSuccessRate));
     }
     
     private double calculateRate(final List<LLMUsabilityScenarioResult> scenarioResults, final Predicate<LLMUsabilityScenarioResult> matcher) {
@@ -204,28 +219,17 @@ public final class LLMUsabilityMetricCalculator {
                 taggedResults.add(each);
             }
         }
-        return taggedResults.isEmpty() ? 1.0D : calculateRate(taggedResults, LLMUsabilityScenarioResult::isSuccess);
+        return calculateRate(taggedResults, LLMUsabilityScenarioResult::isSuccess);
     }
     
-    private double getQueryAnswerFidelity(final List<LLMUsabilityScenarioResult> scenarioResults) {
-        List<LLMUsabilityScenarioResult> queryResults = new LinkedList<>();
+    private int countTag(final List<LLMUsabilityScenarioResult> scenarioResults, final String tag) {
+        int result = 0;
         for (LLMUsabilityScenarioResult each : scenarioResults) {
-            if (LLMUsabilityDimension.TOOL == each.getDimension() || LLMUsabilityDimension.RECOVERY == each.getDimension() || LLMUsabilityDimension.RESOURCE == each.getDimension()) {
-                queryResults.add(each);
+            if (each.getTags().contains(tag)) {
+                result++;
             }
         }
-        return getAverageQueryAnswerFidelity(queryResults);
-    }
-    
-    private double getAverageQueryAnswerFidelity(final List<LLMUsabilityScenarioResult> scenarioResults) {
-        if (scenarioResults.isEmpty()) {
-            return 1.0D;
-        }
-        double total = 0.0D;
-        for (LLMUsabilityScenarioResult each : scenarioResults) {
-            total += each.getQueryAnswerFidelity();
-        }
-        return total / scenarioResults.size();
+        return result;
     }
     
     private double getResourceHitRate(final List<LLMUsabilityScenarioResult> scenarioResults) {
@@ -235,7 +239,7 @@ public final class LLMUsabilityMetricCalculator {
                 resourceRequiredResults.add(each);
             }
         }
-        return resourceRequiredResults.isEmpty() ? 1.0D : calculateRate(resourceRequiredResults, LLMUsabilityScenarioResult::isResourceHit);
+        return calculateRate(resourceRequiredResults, LLMUsabilityScenarioResult::isResourceHit);
     }
     
     private double getRecoveryRate(final List<LLMUsabilityScenarioResult> scenarioResults) {
@@ -245,7 +249,17 @@ public final class LLMUsabilityMetricCalculator {
                 recoveryResults.add(each);
             }
         }
-        return recoveryResults.isEmpty() ? 1.0D : calculateRate(recoveryResults, LLMUsabilityScenarioResult::isRecoveredAfterError);
+        return calculateRate(recoveryResults, LLMUsabilityScenarioResult::isRecoveredAfterError);
+    }
+    
+    private int countDimension(final List<LLMUsabilityScenarioResult> scenarioResults, final LLMUsabilityDimension dimension) {
+        int result = 0;
+        for (LLMUsabilityScenarioResult each : scenarioResults) {
+            if (dimension == each.getDimension()) {
+                result++;
+            }
+        }
+        return result;
     }
     
     private double getInvalidCallRate(final List<LLMUsabilityScenarioResult> scenarioResults) {

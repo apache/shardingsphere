@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -52,7 +53,8 @@ class MetadataResourcePayloadMapperTest {
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
         List<?> actual = new MetadataResourcePayloadMapper(metadataQueryFacade, new MCPResourceURIVariables(Map.of()), true)
                 .map(createMetadata("logical-database"), List.of(
-                        new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
+                        new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                                new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()))));
         Map<?, ?> actualDatabase = (Map<?, ?>) actual.getFirst();
         assertThat(actualDatabase.get("database"), is("logic_db"));
         assertThat(actualDatabase.get("databaseType"), is("FixtureDB"));

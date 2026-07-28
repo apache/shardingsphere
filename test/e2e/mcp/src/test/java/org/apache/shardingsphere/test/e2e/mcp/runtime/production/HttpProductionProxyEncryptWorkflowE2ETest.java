@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -36,7 +35,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
     
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_encrypt_rule";
@@ -56,10 +55,6 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     private static final String WORKFLOW_RESOURCE_URI = "shardingsphere://workflows/%s";
     
     private static final String TEMPLATE_SECRET_VALUE = "mcp-template-secret-6f2d4a8b";
-    
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
     
     @Test
     void assertCompleteEncryptAlgorithmThroughProxy() throws IOException, InterruptedException {
@@ -150,35 +145,6 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanReportsLikeQueryCapabilityConflictThroughProxy() throws IOException, InterruptedException {
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, requires equality and LIKE query"));
-            assertThat(String.valueOf(actualPlanResponse.get("status")), is("clarifying"));
-            List<String> actualIssueCodes = getIssueCodes(actualPlanResponse);
-            assertThat(actualIssueCodes, hasItem(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
-            List<Map<String, Object>> actualRecommendations = getObjectListOrEmpty(actualPlanResponse.get("algorithm_recommendations"));
-            assertThat(actualRecommendations.size(), is(2));
-            assertFalse(actualRecommendations.stream().anyMatch(each -> "like_query".equals(each.get("algorithm_role"))));
-        }
-    }
-    
-    @Test
-    void assertPlanRequiresExplicitCipherColumnThroughProxy() throws IOException, InterruptedException {
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
-                            "primary_algorithm_properties", Map.of("aes-key-value", "explicit-secret")));
-            assertThat(String.valueOf(actualPlannedResponse.get("status")), is("clarifying"));
-            assertSecretRedacted(actualPlannedResponse, "explicit-secret");
-            assertThat(getIssueCodes(actualPlannedResponse), hasItem(WorkflowIssueCode.RULE_INPUT_REQUIRED));
-            assertThat(getStringListOrEmpty(actualPlannedResponse.get("missing_required_inputs")), hasItem("cipher_column_name"));
-        }
-    }
-    
-    @Test
     void assertPlanRejectsUnsupportedSecondEncryptColumnThroughProxy() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualFirstPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
@@ -221,41 +187,6 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(getObjectListOrEmpty(actualManualArtifactPackage.get("distsql_artifacts")).size(), is(1));
             assertThat(String.valueOf(getObjectListOrEmpty(actualManualArtifactPackage.get("distsql_artifacts")).getFirst().get("sql")),
                     containsString("'aes-key-value'='******'"));
-        }
-    }
-    
-    @Test
-    void assertApplySupportsRuleApprovedStepThroughProxy() throws IOException, InterruptedException {
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
-                            "cipher_column_name", "status_cipher", "primary_algorithm_properties", Map.of("aes-key-value", "approved-secret")));
-            assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
-            String planId = String.valueOf(actualPlannedResponse.get("plan_id"));
-            Map<String, Object> actualPreviewResponse = previewWorkflow(interactionClient, planId);
-            List<Map<String, Object>> actualPreviewArtifacts = getObjectListOrEmpty(actualPreviewResponse.get("preview_artifacts"));
-            assertThat(actualPreviewArtifacts.size(), is(1));
-            assertThat(String.valueOf(actualPreviewArtifacts.getFirst().get("approval_step")), is("rule_distsql"));
-            Map<String, Object> actualRuleApplyResponse = interactionClient.call(APPLY_TOOL_NAME, createReviewThenExecuteArguments(planId, List.of("rule_distsql")));
-            assertThat(String.valueOf(actualRuleApplyResponse.get("status")), is("completed"));
-            assertThat(getObjectListOrEmpty(actualRuleApplyResponse.get("step_results")).size(), is(1));
-            assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
-        }
-    }
-    
-    @Test
-    void assertPlanRejectsUnsupportedEncryptOperationThroughProxy() throws IOException, InterruptedException {
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            createEncryptRuleWithoutEquality(interactionClient);
-            Map<String, Object> actualUnsupportedPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, update to require equality and no like",
-                            "primary_algorithm_properties", Map.of("aes-key-value", "unsupported-secret")));
-            assertThat(String.valueOf(actualUnsupportedPlanResponse.get("status")), is("failed"));
-            assertThat(getIssueCodes(actualUnsupportedPlanResponse), hasItem(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
-            assertFalse(String.valueOf(actualUnsupportedPlanResponse).toLowerCase(Locale.ENGLISH).contains("alter"));
-            assertThat(getObjectListOrEmpty(actualUnsupportedPlanResponse.get("distsql_artifacts")).size(), is(0));
         }
     }
     

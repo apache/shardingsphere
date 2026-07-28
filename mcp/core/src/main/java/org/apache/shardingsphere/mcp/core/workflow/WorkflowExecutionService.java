@@ -47,6 +47,7 @@ import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifa
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -103,7 +104,7 @@ public final class WorkflowExecutionService {
         if (executionMode.isEmpty()) {
             throw new MCPExecutionModeRequiredException(WorkflowToolDescriptors.APPLY_TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
         }
-        String result = executionMode.toLowerCase();
+        String result = executionMode.toLowerCase(Locale.ENGLISH);
         if (!EXECUTION_MODES.contains(result)) {
             throw new MCPInvalidExecutionModeException(WorkflowToolDescriptors.APPLY_TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(snapshot));
         }

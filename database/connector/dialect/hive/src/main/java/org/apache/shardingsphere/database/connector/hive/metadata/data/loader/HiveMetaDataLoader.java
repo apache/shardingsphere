@@ -60,7 +60,7 @@ public final class HiveMetaDataLoader implements DialectMetaDataLoader {
             return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
         }
         for (String each : material.getActualTableNames()) {
-            TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType(), material.getTableIdentifierPolicy()).ifPresent(tableMetaData::add);
+            TableMetaDataLoader.loadNormalized(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
         }
         return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
     }

@@ -55,12 +55,6 @@ class MCPToolArgumentsTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getIntegerArgumentCases")
-    void assertGetIntegerArgument(final String name, final Map<String, Object> rawArguments, final int defaultValue, final int expectedValue) {
-        assertThat(new MCPToolArguments(rawArguments).getIntegerArgument("limit", defaultValue), is(expectedValue));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("getBoundedIntegerArgumentCases")
     void assertGetBoundedIntegerArgument(final String name, final Map<String, Object> rawArguments, final int expectedValue) {
         assertThat(new MCPToolArguments(rawArguments).getIntegerArgument("limit", 10, 0, 100), is(expectedValue));
@@ -102,15 +96,6 @@ class MCPToolArgumentsTest {
                 Arguments.of("missing string", Map.of(), ""),
                 Arguments.of("trimmed string", Map.of("name", " foo_name "), "foo_name"),
                 Arguments.of("number string", Map.of("name", 42), "42"));
-    }
-    
-    private static Stream<Arguments> getIntegerArgumentCases() {
-        return Stream.of(
-                Arguments.of("missing integer", Map.of(), 10, 10),
-                Arguments.of("number integer", Map.of("limit", 5), 10, 5),
-                Arguments.of("parsed integer", Map.of("limit", " 20 "), 10, 20),
-                Arguments.of("blank integer", Map.of("limit", "   "), 10, 10),
-                Arguments.of("invalid integer", Map.of("limit", "foo"), 10, 10));
     }
     
     private static Stream<Arguments> getBoundedIntegerArgumentCases() {

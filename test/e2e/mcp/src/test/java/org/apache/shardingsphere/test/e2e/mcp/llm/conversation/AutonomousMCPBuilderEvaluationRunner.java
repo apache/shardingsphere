@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatCom
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatMessage;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCall;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.MCPBuilderEvaluationCatalog.EvaluationCase;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
@@ -57,8 +58,6 @@ public final class AutonomousMCPBuilderEvaluationRunner {
     
     private final MCPInteractionClient mcpInteractionClient;
     
-    private final String modelProvider;
-    
     private final String modelName;
     
     private final LLMMCPToolDefinitionFactory toolDefinitionFactory = new LLMMCPToolDefinitionFactory();
@@ -68,11 +67,10 @@ public final class AutonomousMCPBuilderEvaluationRunner {
     private final LLMMCPActionExecutor actionExecutor;
     
     public AutonomousMCPBuilderEvaluationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
-                                                final String modelProvider, final String modelName) {
+                                                final String modelName) {
         this.maxTurns = maxTurns;
         this.llmChatClient = llmChatClient;
         this.mcpInteractionClient = mcpInteractionClient;
-        this.modelProvider = modelProvider;
         this.modelName = modelName;
         actionExecutor = new LLMMCPActionExecutor(mcpInteractionClient);
     }
@@ -94,12 +92,15 @@ public final class AutonomousMCPBuilderEvaluationRunner {
                     MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN, Map.of(), Map.of("tools", advertisedTools), 0L));
             return runTurns(evaluationCase, artifacts, toolDefinitions);
         } catch (final IOException ex) {
-            return artifacts.createResult(evaluationCase, modelProvider, modelName, LLME2EAssertionReport.failure("mcp_runtime_unavailable", ex.getMessage()));
+            return artifacts.createResult(evaluationCase, modelName,
+                    LLME2EAssertionReport.failure("mcp_runtime_unavailable", ex.getMessage()));
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
-            return artifacts.createResult(evaluationCase, modelProvider, modelName, LLME2EAssertionReport.failure("evaluation_interrupted", "Evaluation was interrupted."));
+            return artifacts.createResult(evaluationCase, modelName,
+                    LLME2EAssertionReport.failure("evaluation_interrupted", "Evaluation was interrupted."));
         } catch (final IllegalStateException ex) {
-            return artifacts.createResult(evaluationCase, modelProvider, modelName, LLME2EAssertionReport.failure("mcp_runtime_unavailable", ex.getMessage()));
+            return artifacts.createResult(evaluationCase, modelName,
+                    LLME2EAssertionReport.failure("mcp_runtime_unavailable", ex.getMessage()));
         } finally {
             closeInteractionClient();
         }
@@ -124,7 +125,7 @@ public final class AutonomousMCPBuilderEvaluationRunner {
             try {
                 completion = llmChatClient.complete(messages, toolDefinitions, "auto", false);
             } catch (final IOException | IllegalStateException ex) {
-                return artifacts.createResult(evaluationCase, modelProvider, modelName,
+                return artifacts.createResult(evaluationCase, modelName,
                         LLME2EAssertionReport.failure("model_service_unavailable", ex.getMessage()));
             }
             artifacts.addRawModelOutput(completion.getRawResponse());
@@ -137,7 +138,7 @@ public final class AutonomousMCPBuilderEvaluationRunner {
                 return failure.get();
             }
         }
-        return artifacts.createResult(evaluationCase, modelProvider, modelName,
+        return artifacts.createResult(evaluationCase, modelName,
                 LLME2EAssertionReport.failure("turn_limit_exhausted", "Model did not produce a final answer within the configured turn limit."));
     }
     
@@ -151,7 +152,7 @@ public final class AutonomousMCPBuilderEvaluationRunner {
             if (!availableToolNames.contains(each.getName())) {
                 artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", each.getName(),
                         Map.of("rawArgumentsJson", each.getArgumentsJson()), "unexpected_tool_requested"));
-                return Optional.of(artifacts.createResult(evaluationCase, modelProvider, modelName,
+                return Optional.of(artifacts.createResult(evaluationCase, modelName,
                         LLME2EAssertionReport.failure("unexpected_tool_requested", "Model requested a tool that was not advertised for this evaluation.")));
             }
             Map<String, Object> arguments;
@@ -160,7 +161,7 @@ public final class AutonomousMCPBuilderEvaluationRunner {
             } catch (final IllegalArgumentException ex) {
                 artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", each.getName(),
                         Map.of("rawArgumentsJson", each.getArgumentsJson()), "invalid_tool_arguments"));
-                return Optional.of(artifacts.createResult(evaluationCase, modelProvider, modelName,
+                return Optional.of(artifacts.createResult(evaluationCase, modelName,
                         LLME2EAssertionReport.failure("invalid_tool_arguments", "Model returned invalid tool arguments JSON.")));
             }
             long startTime = System.currentTimeMillis();
@@ -169,10 +170,10 @@ public final class AutonomousMCPBuilderEvaluationRunner {
                 response = actionExecutor.executeSafely(each.getName(), arguments);
             } catch (final IllegalArgumentException ex) {
                 artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", each.getName(), arguments, "invalid_tool_arguments"));
-                return Optional.of(artifacts.createResult(evaluationCase, modelProvider, modelName,
+                return Optional.of(artifacts.createResult(evaluationCase, modelName,
                         LLME2EAssertionReport.failure("invalid_tool_arguments", ex.getMessage())));
             } catch (final IllegalStateException ex) {
-                return Optional.of(artifacts.createResult(evaluationCase, modelProvider, modelName,
+                return Optional.of(artifacts.createResult(evaluationCase, modelName,
                         LLME2EAssertionReport.failure("mcp_runtime_unavailable", ex.getMessage())));
             }
             long latencyMillis = System.currentTimeMillis() - startTime;
@@ -188,12 +189,12 @@ public final class AutonomousMCPBuilderEvaluationRunner {
     private EvaluationResult createFinalResult(final EvaluationCase evaluationCase, final String actualAnswer, final EvaluationArtifacts artifacts) {
         artifacts.setActualAnswer(actualAnswer.trim());
         if (artifacts.getTrace().stream().noneMatch(each -> !MCPInteractionActionNames.LIST_TOOLS.equals(each.getTargetName()) && each.isValid())) {
-            return artifacts.createResult(evaluationCase, modelProvider, modelName,
+            return artifacts.createResult(evaluationCase, modelName,
                     LLME2EAssertionReport.failure("missing_mcp_evidence", "Model returned an answer without retrieving MCP evidence."));
         }
         return evaluationCase.answer().equals(artifacts.getActualAnswer())
-                ? artifacts.createResult(evaluationCase, modelProvider, modelName, LLME2EAssertionReport.success("Answer matched the live MCP evidence."))
-                : artifacts.createResult(evaluationCase, modelProvider, modelName,
+                ? artifacts.createResult(evaluationCase, modelName, LLME2EAssertionReport.success("Answer matched the live MCP evidence."))
+                : artifacts.createResult(evaluationCase, modelName,
                         LLME2EAssertionReport.failure("answer_mismatch", "Final answer did not match the expected value."));
     }
     
@@ -268,9 +269,8 @@ public final class AutonomousMCPBuilderEvaluationRunner {
             runtimeLogLines.add(runtimeLogLine);
         }
         
-        private EvaluationResult createResult(final EvaluationCase evaluationCase, final String modelProvider, final String modelName,
-                                              final LLME2EAssertionReport assertionReport) {
-            return new EvaluationResult(evaluationCase, SYSTEM_PROMPT, modelProvider, modelName, actualAnswer,
+        private EvaluationResult createResult(final EvaluationCase evaluationCase, final String modelName, final LLME2EAssertionReport assertionReport) {
+            return new EvaluationResult(evaluationCase, SYSTEM_PROMPT, LLME2EConfiguration.MODEL_PROVIDER, modelName, actualAnswer,
                     new EvaluationEvidence(rawModelOutputs, toolDefinitions, trace, runtimeLogLines), assertionReport);
         }
     }

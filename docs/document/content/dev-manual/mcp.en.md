@@ -20,7 +20,7 @@ The MCP path is organized as `api + support + features + core + bootstrap`:
 - `mcp/features/readwrite-splitting`: Readwrite-Splitting MCP feature.
 - `mcp/features/shadow`: Shadow MCP feature.
 - `mcp/features/sharding`: Sharding MCP feature.
-- `mcp/core`: handler discovery, registry, request context, session, SQL execution trace, metadata discovery, and runtime context.
+- `mcp/core`: handler discovery, registry, request context, session, metadata discovery, and runtime context.
 - `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP/STDIO transport, configuration loading, and lifecycle management.
 - `mcp/registry`: isolated distribution metadata validation tooling; it does not depend on MCP runtime modules.
 - `distribution/mcp`: standalone packaging, startup scripts, configuration, and Dockerfile.
@@ -29,8 +29,8 @@ The MCP path is organized as `api + support + features + core + bootstrap`:
 The production dependency direction is `api <- support <- core <- bootstrap` and `api <- support <- feature`.
 Feature modules do not depend on core, bootstrap, registry, or one another. `mcp/bootstrap` only publishes the aggregated protocol surface and does not hard-code concrete feature business logic.
 
-Public server capability contracts are organized under `org.apache.shardingsphere.mcp.api.capability.<capability>`, while ServiceLoader entry interfaces live in
-`org.apache.shardingsphere.mcp.spi`. Request contexts, sessions, transports, payloads, and exceptions are cross-capability or base-protocol contracts and stay outside capability packages.
+Public server capability contracts are organized under `org.apache.shardingsphere.mcp.api.capability.<capability>`, while the ServiceLoader entry interface is
+`org.apache.shardingsphere.mcp.api.MCPHandlerProvider`. Request contexts, sessions, transports, payloads, and exceptions are cross-capability or base-protocol contracts and stay outside capability packages.
 
 ## Add a Feature Plugin
 
@@ -43,7 +43,7 @@ Recommended path for a new feature:
 5. Implement `MCPHandlerProvider`.
 6. Return the feature's handlers from `getToolHandlers()` and `getResourceHandlers()`.
 7. If the feature owns workflow definitions, implement `MCPWorkflowDefinitionProvider` on the same provider.
-8. Register `org.apache.shardingsphere.mcp.spi.MCPHandlerProvider` under `src/main/resources/META-INF/services/`.
+8. Register `org.apache.shardingsphere.mcp.api.MCPHandlerProvider` under `src/main/resources/META-INF/services/`.
 9. Add descriptors under `META-INF/shardingsphere-mcp/mcp-descriptors`.
 
 If the feature should be shipped as an official default capability:

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.support.protocol;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -41,13 +41,13 @@ class MCPModelFacingPayloadContractTest {
     
     @Test
     void assertGetNextActionRequiredFields() {
-        assertThat(MCPModelFacingPayloadContract.getNextActionRequiredFields("tool_call"), is(Set.of("order", "type", "title", "tool_name", "arguments")));
+        assertThat(MCPModelFacingPayloadContract.getNextActionRequiredFields("tool_call"), is(List.of("order", "type", "title", "tool_name", "arguments")));
     }
     
     @Test
     void assertGetNextActionAllowedFields() {
         assertThat(MCPModelFacingPayloadContract.getNextActionAllowedFields("completion"),
-                is(Set.of("order", "type", "title", "ref", "argument", "context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on")));
+                is(List.of("order", "type", "title", "ref", "argument", "context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on")));
     }
     
     @Test

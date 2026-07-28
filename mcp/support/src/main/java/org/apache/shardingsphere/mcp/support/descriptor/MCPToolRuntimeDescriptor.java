@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 /**
  * MCP tool runtime descriptor.
  */
@@ -32,6 +30,4 @@ public final class MCPToolRuntimeDescriptor {
     private final String toolName;
     
     private final String workflowRole;
-    
-    private final Collection<String> sideEffectScope;
 }

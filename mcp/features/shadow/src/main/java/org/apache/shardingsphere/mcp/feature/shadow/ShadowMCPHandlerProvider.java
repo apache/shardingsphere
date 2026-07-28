@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow;
 
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
@@ -36,7 +35,7 @@ import java.util.List;
 /**
  * Shadow MCP handler provider.
  */
-public final class ShadowMCPHandlerProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
+public final class ShadowMCPHandlerProvider implements MCPWorkflowDefinitionProvider {
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {

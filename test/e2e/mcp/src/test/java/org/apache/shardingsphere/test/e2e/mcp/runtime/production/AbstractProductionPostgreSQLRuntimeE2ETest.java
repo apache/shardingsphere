@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.PostgreSQLRuntimeTestSupport;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.provider.Arguments;
 import org.testcontainers.containers.GenericContainer;
@@ -48,7 +46,9 @@ abstract class AbstractProductionPostgreSQLRuntimeE2ETest extends AbstractTransp
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(PostgreSQLRuntimeTestSupport.isDockerAvailable(), "Docker is required for the PostgreSQL-backed production runtime E2E test.");
+        if (!PostgreSQLRuntimeTestSupport.isDockerAvailable()) {
+            throw new IllegalStateException("Docker is required for the PostgreSQL-backed production runtime E2E test.");
+        }
         if (null != container) {
             return;
         }
@@ -77,11 +77,7 @@ abstract class AbstractProductionPostgreSQLRuntimeE2ETest extends AbstractTransp
         return Map.of("database", LOGICAL_DATABASE_NAME, "schema", schema, "sql", sql, "execution_mode", "execute");
     }
     
-    protected static boolean isEnabled() {
-        return MCPE2ECondition.isDockerEnabled();
-    }
-    
-    protected static Stream<Arguments> dualTransports() {
-        return ProductionRuntimeTransportCases.transports();
+    protected static Stream<Arguments> semanticPrimaryTransport() {
+        return ProductionRuntimeTransportCases.semanticPrimaryTransport();
     }
 }

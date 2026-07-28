@@ -73,7 +73,7 @@ class ResourceDefinitionRegistryTest {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
             Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ResourceDefinitionRegistry.class.getName(), false, createIsolatedResourceDefinitionRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
-                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedResources"), null));
+                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedResourceDescriptors"), null));
             assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
             Throwable actualCause = actual.getCause().getCause();
             assertThat(actualCause.getClass(), is(expectedCauseType));
@@ -82,8 +82,8 @@ class ResourceDefinitionRegistryTest {
     }
     
     @Test
-    void assertGetSupportedResources() {
-        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResources();
+    void assertGetSupportedResourceDescriptors() {
+        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).toList();
         assertThat(actual, is(List.of(
                 "shardingsphere://capabilities",
                 "shardingsphere://guidance",
@@ -112,12 +112,6 @@ class ResourceDefinitionRegistryTest {
                 "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}")));
-    }
-    
-    @Test
-    void assertGetSupportedResourceDescriptors() {
-        Collection<String> actual = ResourceDefinitionRegistry.getSupportedResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).toList();
-        assertThat(actual, is(ResourceDefinitionRegistry.getSupportedResources()));
     }
     
     private static Stream<Arguments> getSupportedResourcesFailureCases() {

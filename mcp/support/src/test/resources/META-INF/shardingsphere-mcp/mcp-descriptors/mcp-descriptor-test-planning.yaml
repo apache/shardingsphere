@@ -23,6 +23,27 @@ resources:
     shardingSphereMetadata:
       resourceKind: detail
 
+prompts:
+  - name: configure_encryption
+    title: Configure Encryption
+    description: "Test prompt whose name is intentionally independent from its planning tool."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/fixture-markdown-resource.md
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "Logical database used by the test prompt."
+        required: false
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_encrypt_rule
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after creating a reviewable test plan."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when required test input is unavailable."
+
 tools:
   - name: database_gateway_plan_encrypt_rule
     title: Plan Encrypt Rule

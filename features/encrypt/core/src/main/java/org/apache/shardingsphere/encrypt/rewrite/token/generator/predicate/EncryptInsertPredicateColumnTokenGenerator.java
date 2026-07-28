@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 
@@ -38,6 +39,8 @@ public final class EncryptInsertPredicateColumnTokenGenerator implements Collect
     
     private final EncryptRule rule;
     
+    private final DatabaseIdentifierContext identifierContext;
+    
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
@@ -46,7 +49,7 @@ public final class EncryptInsertPredicateColumnTokenGenerator implements Collect
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext sqlStatementContext) {
-        EncryptPredicateColumnTokenGenerator generator = new EncryptPredicateColumnTokenGenerator(rule);
+        EncryptPredicateColumnTokenGenerator generator = new EncryptPredicateColumnTokenGenerator(rule, identifierContext);
         return generator.generateSQLTokens(sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
     }
 }

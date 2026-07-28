@@ -54,8 +54,6 @@ public final class LLMUsabilityScenarioResult {
     
     private final boolean recoveredAfterError;
     
-    private final double queryAnswerFidelity;
-    
     private final boolean boundaryConfusion;
     
     private final boolean nextActionFollowed;

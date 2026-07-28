@@ -19,9 +19,11 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,18 +78,11 @@ final class MCPGuidancePayloadBuilder {
     
     static List<Map<String, Object>> createNextActionContract() {
         return List.of(
-                createNextActionContractEntry("resource_read", List.of("order", "type", "title", "resource_uri"),
-                        List.of("reason", "depends_on"), "Read an MCP resource before choosing another call."),
-                createNextActionContractEntry("tool_call", List.of("order", "type", "title", "tool_name", "arguments"),
-                        List.of("reason", "depends_on"), "Call another MCP tool with server-suggested arguments."),
-                createNextActionContractEntry("completion",
-                        List.of("order", "type", "title", "ref", "argument"),
-                        List.of("context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on"),
-                        "Use MCP completion for one argument before retrying."),
-                createNextActionContractEntry("ask_user", List.of("order", "type", "title", "question"),
-                        List.of("required_inputs", "depends_on"), "Ask the user for missing input."),
-                createNextActionContractEntry("terminal", List.of("order", "type", "title"),
-                        List.of("reason", "depends_on"), "Stop the current MCP flow and report the result."));
+                createNextActionContractEntry("resource_read", "Read an MCP resource before choosing another call."),
+                createNextActionContractEntry("tool_call", "Call another MCP tool with server-suggested arguments."),
+                createNextActionContractEntry("completion", "Use MCP completion for one argument before retrying."),
+                createNextActionContractEntry("ask_user", "Ask the user for missing input."),
+                createNextActionContractEntry("terminal", "Stop the current MCP flow and report the result."));
     }
     
     static List<Map<String, Object>> createCommonFlows() {
@@ -135,7 +130,9 @@ final class MCPGuidancePayloadBuilder {
         return result;
     }
     
-    private static Map<String, Object> createNextActionContractEntry(final String actionType, final List<String> requiredFields, final List<String> optionalFields, final String description) {
+    private static Map<String, Object> createNextActionContractEntry(final String actionType, final String description) {
+        Collection<String> requiredFields = MCPModelFacingPayloadContract.getNextActionRequiredFields(actionType);
+        List<String> optionalFields = MCPModelFacingPayloadContract.getNextActionAllowedFields(actionType).stream().filter(each -> !requiredFields.contains(each)).toList();
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("type", actionType);
         result.put("required_fields", requiredFields);

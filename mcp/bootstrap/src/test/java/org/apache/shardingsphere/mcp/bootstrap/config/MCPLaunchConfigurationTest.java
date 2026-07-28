@@ -21,7 +21,8 @@ import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -111,7 +112,7 @@ class MCPLaunchConfigurationTest {
     }
     
     private void validate(final YamlMCPLaunchConfiguration yamlConfig) {
-        MCPYamlConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
+        MCPConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
     }
     
     private YamlMCPLaunchConfiguration createYamlConfig(final MCPTransportType type, final YamlHttpTransportConfiguration http) {
@@ -132,11 +133,12 @@ class MCPLaunchConfigurationTest {
         return result;
     }
     
-    private Map<String, Map<String, Object>> createRuntimeDatabases() {
-        return Collections.singletonMap("logic_db", Map.of(
-                "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
-                "username", "demo",
-                "password", "",
-                "driverClassName", "com.mysql.cj.jdbc.Driver"));
+    private Map<String, YamlRuntimeDatabaseConfiguration> createRuntimeDatabases() {
+        YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
+        result.setJdbcUrl("jdbc:mysql://localhost:3306/logic_db");
+        result.setUsername("demo");
+        result.setPassword("");
+        result.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        return Collections.singletonMap("logic_db", result);
     }
 }

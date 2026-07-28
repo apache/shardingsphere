@@ -22,6 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResult
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -42,4 +43,14 @@ public interface QueryHeaderBuilder extends DatabaseTypedSPI {
      * @throws SQLException SQL exception
      */
     QueryHeader build(ShardingSphereResultSetMetaData resultSetMetaData, ShardingSphereDatabase database, String columnName, String columnLabel, int columnIndex) throws SQLException;
+    
+    /**
+     * Append protocol attributes to a query header built by this builder before it is published.
+     *
+     * @param queryHeader query header
+     * @param resultSet JDBC result set
+     * @throws SQLException SQL exception
+     */
+    default void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
+    }
 }

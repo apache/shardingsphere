@@ -169,18 +169,6 @@ public final class MCPInteractionPayloads {
     }
     
     /**
-     * Get an optional object field.
-     *
-     * @param payload parent payload
-     * @param fieldName field name
-     * @return object field, or an empty map when absent
-     * @throws IllegalStateException when the present field is not an object
-     */
-    public static Map<String, Object> getOptionalObject(final Map<String, Object> payload, final String fieldName) {
-        return payload.containsKey(fieldName) ? getRequiredObject(payload, fieldName) : Map.of();
-    }
-    
-    /**
      * Get a required object-list field.
      *
      * @param payload parent payload

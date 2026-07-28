@@ -81,15 +81,6 @@ public final class ToolDefinitionRegistry {
     }
     
     /**
-     * Get supported tools.
-     *
-     * @return supported tools
-     */
-    public static Collection<String> getSupportedTools() {
-        return REGISTERED_TOOL_DEFINITIONS.keySet().stream().toList();
-    }
-    
-    /**
      * Get supported tool descriptors.
      *
      * @return supported tool descriptors

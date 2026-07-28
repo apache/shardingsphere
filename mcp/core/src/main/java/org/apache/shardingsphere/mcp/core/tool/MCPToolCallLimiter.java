@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool;
 
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
-import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
+import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 
 import java.util.Map;
 import java.util.Objects;
@@ -30,13 +30,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class MCPToolCallLimiter {
     
-    private final int maxToolCallsPerSession;
+    private final int maxToolCallsPerSession = MCPRuntimeProtectionPolicy.getMaxToolCallsPerSession();
     
     private final Map<String, AtomicInteger> sessionToolCallCounts = new ConcurrentHashMap<>();
-    
-    public MCPToolCallLimiter() {
-        maxToolCallsPerSession = MCPClientSafetyPolicy.getMaxToolCallsPerSession();
-    }
     
     /**
      * Acquire one tool call budget slot.

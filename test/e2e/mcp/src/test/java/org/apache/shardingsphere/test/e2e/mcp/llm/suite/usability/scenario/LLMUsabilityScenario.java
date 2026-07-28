@@ -56,15 +56,6 @@ public final class LLMUsabilityScenario {
     private final String expectedRecoveryCategory;
     
     /**
-     * Is query scenario.
-     *
-     * @return query scenario
-     */
-    public boolean isQueryScenario() {
-        return LLMUsabilityDimension.TOOL == dimension || LLMUsabilityDimension.RECOVERY == dimension || LLMUsabilityDimension.RESOURCE == dimension;
-    }
-    
-    /**
      * Is natural task.
      *
      * @return natural task

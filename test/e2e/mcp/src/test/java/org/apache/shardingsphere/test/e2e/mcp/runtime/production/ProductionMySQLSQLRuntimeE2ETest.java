@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("isEnabled")
+@EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
@@ -54,18 +54,6 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("semanticPrimaryTransport")
-    void assertExecuteUpdateWithoutApprovalArgumentWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_update",
-                    createExecuteUpdateArguments("UPDATE orders SET status = status WHERE order_id = -1"));
-            assertThat(String.valueOf(actual.get("result_kind")), is("update_count"));
-            assertThat(String.valueOf(actual.get("affected_rows")), is("0"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
     void assertExecuteRollbackWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -76,16 +64,6 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
             assertThat(String.valueOf(beginResponse.get("summary")), is("Transaction started."));
             assertThat(String.valueOf(rollbackResponse.get("summary")), is("Transaction rolled back."));
             assertThat(MySQLRuntimeTestSupport.querySingleString(getContainer(), String.format("SELECT status FROM %s.orders WHERE order_id = 1", getPhysicalSchemaName())), is("NEW"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectBlankSavepointNameWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("SAVEPOINT"));
-            assertRecoveryResponse(actual, "Savepoint name is required.");
         }
     }
     

@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.fixture;
 
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.InspectImageCmd;
+import com.github.dockerjava.api.command.InspectImageResponse;
+import com.github.dockerjava.api.model.ContainerConfig;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
@@ -24,18 +28,23 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration.Run
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.testcontainers.DockerClientFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class LLMRuntimeSupportTest {
     
@@ -76,27 +85,60 @@ class LLMRuntimeSupportTest {
     }
     
     @Test
+    void assertPrepareRejectsMismatchedScoreImageLabel() {
+        LLME2EConfiguration config = createConfiguration(RuntimeMode.DOCKER, REQUIRED_MODEL, "http://127.0.0.1:1/v1");
+        InspectImageResponse image = new InspectImageResponse().withId("sha256:test").withConfig(new ContainerConfig().withLabels(
+                Map.of("org.apache.shardingsphere.mcp.llm.runtime", "unexpected-runtime")));
+        assertScoreImageRejected(config, image, "label `org.apache.shardingsphere.mcp.llm.runtime` must match non-empty configuration");
+    }
+    
+    @Test
+    void assertPrepareRejectsScoreImageWithoutImmutableId() {
+        LLME2EConfiguration config = createConfiguration(RuntimeMode.DOCKER, REQUIRED_MODEL, "http://127.0.0.1:1/v1");
+        InspectImageResponse image = new InspectImageResponse().withId("").withConfig(new ContainerConfig().withLabels(createScoreImageLabels(config)));
+        assertScoreImageRejected(config, image, "has no immutable image ID");
+    }
+    
+    private void assertScoreImageRejected(final LLME2EConfiguration config, final InspectImageResponse image, final String expectedMessage) {
+        DockerClientFactory dockerClientFactory = mock(DockerClientFactory.class);
+        DockerClient dockerClient = mock(DockerClient.class);
+        InspectImageCmd inspectImageCmd = mock(InspectImageCmd.class);
+        try (
+                MockedStatic<MySQLRuntimeTestSupport> mysqlRuntime = mockStatic(MySQLRuntimeTestSupport.class);
+                MockedStatic<DockerClientFactory> dockerClientFactoryStatic = mockStatic(DockerClientFactory.class)) {
+            mysqlRuntime.when(MySQLRuntimeTestSupport::isDockerAvailable).thenReturn(true);
+            dockerClientFactoryStatic.when(DockerClientFactory::instance).thenReturn(dockerClientFactory);
+            when(dockerClientFactory.client()).thenReturn(dockerClient);
+            when(dockerClient.inspectImageCmd(config.getServerImage())).thenReturn(inspectImageCmd);
+            when(inspectImageCmd.exec()).thenReturn(image);
+            IllegalStateException actual = assertThrows(IllegalStateException.class, () -> LLMRuntimeSupport.prepare(config));
+            assertThat(actual.getMessage(), containsString(expectedMessage));
+        }
+    }
+    
+    private Map<String, String> createScoreImageLabels(final LLME2EConfiguration config) {
+        return Map.ofEntries(
+                Map.entry("org.apache.shardingsphere.mcp.llm.runtime", "llama.cpp"),
+                Map.entry("org.apache.shardingsphere.mcp.llm.base-server-image", config.getBaseServerImage()),
+                Map.entry("org.apache.shardingsphere.mcp.llm.base-server-image-digest", config.getBaseServerImageDigest()),
+                Map.entry("org.apache.shardingsphere.mcp.llm.model-repository", config.getModelMetadata().getRepository()),
+                Map.entry("org.apache.shardingsphere.mcp.llm.model-quantization", config.getModelMetadata().getQuantization()),
+                Map.entry("org.apache.shardingsphere.mcp.llm.model-reference", config.getModelName()),
+                Map.entry("org.apache.shardingsphere.mcp.llm.model-revision", config.getModelMetadata().getRevision()),
+                Map.entry("org.apache.shardingsphere.mcp.llm.model-file-name", config.getModelMetadata().getFileName()),
+                Map.entry("org.apache.shardingsphere.mcp.llm.model-sha256", config.getModelSha256()));
+    }
+    
+    @Test
     void assertPrepareWithUnavailableExternalDebugRuntime() {
         IllegalStateException actualException = assertThrows(IllegalStateException.class,
                 () -> LLMRuntimeSupport.prepare(createConfiguration(RuntimeMode.EXTERNAL_DEBUG, "debug-model", "http://127.0.0.1:1/v1")));
         assertThat(actualException.getMessage(), is("MCP LLM external-debug mode requires a ready OpenAI-compatible endpoint."));
     }
     
-    @Test
-    void assertPrepareWithUnsupportedProvider() {
-        LLME2EConfiguration config = createConfiguration(RuntimeMode.DOCKER, REQUIRED_MODEL, "http://127.0.0.1:8080/v1").toBuilder()
-                .modelProvider("openai")
-                .readyTimeoutSeconds(600)
-                .requestTimeoutSeconds(240)
-                .build();
-        IllegalStateException actualException = assertThrows(IllegalStateException.class, () -> LLMRuntimeSupport.prepare(config));
-        assertThat(actualException.getMessage(), is("MCP LLM E2E requires provider openai-compatible."));
-    }
-    
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode, final String modelName, final String baseUrl) {
         return LLME2EConfiguration.builder()
                 .baseUrl(baseUrl)
-                .modelProvider("openai-compatible")
                 .modelName(modelName)
                 .apiKey("mcp-llm-score")
                 .readyTimeoutSeconds(2)

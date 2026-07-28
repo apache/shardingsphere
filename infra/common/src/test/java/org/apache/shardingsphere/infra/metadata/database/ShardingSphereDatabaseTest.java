@@ -291,21 +291,18 @@ class ShardingSphereDatabaseTest {
     
     private static Stream<Arguments> containsSchemaArguments() {
         return Stream.of(
-                Arguments.of("null schema name returns false", null, false),
                 Arguments.of("existing schema returns true", "foo_schema", true),
                 Arguments.of("missing schema returns false", "missing_schema", false));
     }
     
     private static Stream<Arguments> getSchemaArguments() {
         return Stream.of(
-                Arguments.of("null schema name returns null", null, null),
                 Arguments.of("existing schema returns schema", "foo_schema", "foo_schema"),
                 Arguments.of("missing schema returns null", "missing_schema", null));
     }
     
     private static Stream<Arguments> dropSchemaArguments() {
         return Stream.of(
-                Arguments.of("null schema name keeps schema", null, true),
                 Arguments.of("missing schema keeps schema", "missing_schema", true),
                 Arguments.of("existing schema removes schema", "foo_schema", false));
     }

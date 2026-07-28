@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import javax.sql.DataSource;
@@ -77,7 +77,7 @@ public final class MCPJdbcDatabaseProfileLoader {
             throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
         }
         return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion, transactionCapability,
-                resolveIdentifierCasePolicySet(databaseName, databaseType, runtimeDatabaseConfig));
+                createIdentifierContext(databaseName, databaseType, runtimeDatabaseConfig));
     }
     
     private TransactionCapability loadTransactionCapability(final DatabaseMetaData databaseMetaData) throws SQLException {
@@ -87,9 +87,9 @@ public final class MCPJdbcDatabaseProfileLoader {
         return databaseMetaData.supportsSavepoints() ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
     }
     
-    private IdentifierCasePolicySet resolveIdentifierCasePolicySet(final String databaseName, final DatabaseType databaseType,
-                                                                   final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
-        return IdentifierCasePolicyResolver.resolveStorage(databaseType, new RuntimeDatabaseDataSource(databaseName, runtimeDatabaseConfig));
+    private DatabaseIdentifierContext createIdentifierContext(final String databaseName, final DatabaseType databaseType,
+                                                              final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
+        return DatabaseIdentifierContextFactory.create(databaseType, new RuntimeDatabaseDataSource(databaseName, runtimeDatabaseConfig));
     }
     
     private DatabaseType loadDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {

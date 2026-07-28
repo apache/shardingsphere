@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationEx
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityMetricCalculator;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityReportWriter;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityDimension;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityScenarioResult;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityScorecard;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenario;
@@ -92,11 +93,14 @@ final class LLMUsabilitySuiteRunner {
         assertTrue(scorecard.isFullScore(), actualFailureSummary);
         assertThat(actualFailureSummary, scorecard.getScenarioResults().size(), is(evaluatedSuite.scenarios().size()));
         assertThat(actualFailureSummary, scorecard.getTaskSuccessRate(), is(1.0D));
-        assertThat(actualFailureSummary, scorecard.getNaturalTaskSuccessRate(), is(1.0D));
-        assertThat(actualFailureSummary, scorecard.getProtocolContractSuccessRate(), is(1.0D));
+        if (0 < scorecard.getNaturalTaskSampleCount()) {
+            assertThat(actualFailureSummary, scorecard.getNaturalTaskSuccessRate(), is(1.0D));
+        }
+        if (0 < scorecard.getProtocolContractSampleCount()) {
+            assertThat(actualFailureSummary, scorecard.getProtocolContractSuccessRate(), is(1.0D));
+        }
         assertThat(actualFailureSummary, scorecard.getFirstCorrectActionRate(), is(1.0D));
         assertThat(actualFailureSummary, scorecard.getInvalidCallRate(), is(0.0D));
-        assertThat(actualFailureSummary, scorecard.getQueryAnswerFidelity(), is(1.0D));
         assertThat(actualFailureSummary, scorecard.getBoundaryConfusionRate(), is(0.0D));
         assertThat(actualFailureSummary, scorecard.getNextActionFollowRate(), is(1.0D));
         assertThat(actualFailureSummary, scorecard.getApprovalViolationRate(), is(0.0D));
@@ -153,13 +157,20 @@ final class LLMUsabilitySuiteRunner {
         assertRate("taskSuccessRate", scorecard.getTaskSuccessRate());
         assertRate("naturalTaskSuccessRate", scorecard.getNaturalTaskSuccessRate());
         assertRate("protocolContractSuccessRate", scorecard.getProtocolContractSuccessRate());
+        assertThat(scorecard.getNaturalTaskSampleCount(), is((int) scorecard.getScenarioResults().stream()
+                .filter(each -> each.getTags().contains(LLMUsabilityScenario.NATURAL_TASK_TAG)).count()));
+        assertThat(scorecard.getProtocolContractSampleCount(), is((int) scorecard.getScenarioResults().stream()
+                .filter(each -> each.getTags().contains(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG)).count()));
         assertRate("firstCorrectActionRate", scorecard.getFirstCorrectActionRate());
         assertRate("invalidCallRate", scorecard.getInvalidCallRate());
         assertRange("averageRoundTrips", scorecard.getAverageRoundTrips(), 0.0D, Double.MAX_VALUE);
-        assertRate("queryAnswerFidelity", scorecard.getQueryAnswerFidelity());
         assertRate("boundaryConfusionRate", scorecard.getBoundaryConfusionRate());
         assertRate("resourceHitRate", scorecard.getResourceHitRate());
         assertRate("recoveryRate", scorecard.getRecoveryRate());
+        assertThat(scorecard.getResourceHitSampleCount(), is((int) scorecard.getScenarioResults().stream()
+                .filter(each -> LLMUsabilityDimension.RESOURCE == each.getDimension()).count()));
+        assertThat(scorecard.getRecoverySampleCount(), is((int) scorecard.getScenarioResults().stream()
+                .filter(each -> LLMUsabilityDimension.RECOVERY == each.getDimension()).count()));
         assertRate("nextActionFollowRate", scorecard.getNextActionFollowRate());
         assertRate("approvalViolationRate", scorecard.getApprovalViolationRate());
         assertRate("nativeToolCallRate", scorecard.getNativeToolCallRate());

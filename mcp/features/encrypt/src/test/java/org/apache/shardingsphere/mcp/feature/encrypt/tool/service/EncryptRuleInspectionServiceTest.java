@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -102,18 +103,19 @@ class EncryptRuleInspectionServiceTest {
     void assertQueryEncryptAlgorithms() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "AES"), Map.of("type", "CUSTOM")));
-        List<Map<String, Object>> actual = service.queryEncryptAlgorithms(queryFacade);
-        assertTrue((Boolean) actual.getFirst().get("supports_decrypt"));
-        assertTrue((Boolean) actual.getFirst().get("capability_confirmed"));
-        assertThat(actual.getFirst().get("required_properties"), is(List.of("aes-key-value")));
-        assertThat(actual.getFirst().get("optional_properties"), is(List.of("digest-algorithm-name")));
-        assertThat(actual.getFirst().get("secret_properties"), is(List.of("aes-key-value")));
-        List<?> propertyTemplates = (List<?>) actual.getFirst().get("property_templates");
+        WorkflowQueryResult actual = service.queryEncryptAlgorithms(queryFacade);
+        assertTrue((Boolean) actual.getRows().getFirst().get("supports_decrypt"));
+        assertTrue((Boolean) actual.getRows().getFirst().get("capability_confirmed"));
+        assertThat(actual.getRows().getFirst().get("required_properties"), is(List.of("aes-key-value")));
+        assertThat(actual.getRows().getFirst().get("optional_properties"), is(List.of("digest-algorithm-name")));
+        assertThat(actual.getRows().getFirst().get("secret_properties"), is(List.of("aes-key-value")));
+        List<?> propertyTemplates = (List<?>) actual.getRows().getFirst().get("property_templates");
         assertThat(((Map<?, ?>) propertyTemplates.getFirst()).get("property_key"), is("aes-key-value"));
-        assertThat(actual.get(1).get("type"), is("CUSTOM"));
-        assertNull(actual.get(1).get("supports_like"));
-        assertFalse((Boolean) actual.get(1).get("capability_confirmed"));
-        assertThat(actual.get(1).get("property_templates"), is(List.of()));
+        assertThat(actual.getRows().get(1).get("type"), is("CUSTOM"));
+        assertNull(actual.getRows().get(1).get("supports_like"));
+        assertFalse((Boolean) actual.getRows().get(1).get("capability_confirmed"));
+        assertThat(actual.getRows().get(1).get("property_templates"), is(List.of()));
+        assertTrue(actual.isAvailabilityConfirmed());
     }
     
     @Test
@@ -121,9 +123,10 @@ class EncryptRuleInspectionServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS"))
                 .thenThrow(new MCPQueryFailedException("syntax error near 'ENCRYPT ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
-        List<Map<String, Object>> actual = service.queryEncryptAlgorithms(queryFacade);
-        assertThat(actual.getFirst().get("type"), is("AES"));
-        assertThat(actual.getFirst().get("required_properties"), is(List.of("aes-key-value")));
+        WorkflowQueryResult actual = service.queryEncryptAlgorithms(queryFacade);
+        assertThat(actual.getRows().getFirst().get("type"), is("AES"));
+        assertThat(actual.getRows().getFirst().get("required_properties"), is(List.of("aes-key-value")));
+        assertFalse(actual.isAvailabilityConfirmed());
     }
     
     @Test

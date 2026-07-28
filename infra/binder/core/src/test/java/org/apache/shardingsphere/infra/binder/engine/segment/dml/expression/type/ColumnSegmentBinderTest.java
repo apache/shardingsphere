@@ -227,6 +227,20 @@ class ColumnSegmentBinderTest {
     }
     
     @Test
+    void assertBindProcedureRecordFieldVariable() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(TypedSPILoader.getService(DatabaseType.class, "MySQL")).build();
+        selectStatement.getVariableNames().add("v_record");
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        ColumnSegment columnSegment = new ColumnSegment(0, 20, new IdentifierValue("sensitive_a"));
+        columnSegment.setOwner(new OwnerSegment(0, 7, new IdentifierValue("v_record")));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertTrue(actual.isVariable());
+        assertTrue(actual.getOwner().isPresent());
+        assertThat(actual.getExpression(), is("v_record.sensitive_a"));
+        assertThat(actual.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+    }
+    
+    @Test
     void assertBindExcludedColumnInSetAssignment() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));

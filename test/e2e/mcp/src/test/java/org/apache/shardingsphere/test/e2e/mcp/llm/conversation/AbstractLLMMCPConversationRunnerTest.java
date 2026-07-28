@@ -70,7 +70,7 @@ abstract class AbstractLLMMCPConversationRunnerTest {
     }
     
     protected LLMMCPConversationRunner createRunner(final int maxTurns) {
-        return new LLMMCPConversationRunner(maxTurns, llmChatClient, mcpInteractionClient);
+        return new LLMMCPConversationRunner(maxTurns, llmChatClient, mcpInteractionClient, "test-model");
     }
     
     protected LLME2EScenario createScenario(final List<String> toolNames) {
@@ -135,21 +135,15 @@ abstract class AbstractLLMMCPConversationRunnerTest {
         return ArgumentCaptor.forClass((Class) List.class);
     }
     
-    protected List<List<LLMChatMessage>> captureRequiredChatMessages(final int expectedInvocations) throws IOException, InterruptedException {
+    protected List<List<LLMChatMessage>> captureAutoChatMessages(final int expectedInvocations) throws IOException, InterruptedException {
         ArgumentCaptor<List<LLMChatMessage>> result = createChatMessagesCaptor();
-        verify(llmChatClient, times(expectedInvocations)).complete(result.capture(), anyList(), eq("required"), eq(false));
+        verify(llmChatClient, times(expectedInvocations)).complete(result.capture(), anyList(), eq("auto"), eq(false));
         return result.getAllValues();
     }
     
-    protected List<List<Map<String, Object>>> captureRequiredToolDefinitions(final int expectedInvocations) throws IOException, InterruptedException {
+    protected List<List<Map<String, Object>>> captureAutoToolDefinitions(final int expectedInvocations) throws IOException, InterruptedException {
         ArgumentCaptor<List<Map<String, Object>>> result = createToolDefinitionsCaptor();
-        verify(llmChatClient, times(expectedInvocations)).complete(anyList(), result.capture(), eq("required"), eq(false));
-        return result.getAllValues();
-    }
-    
-    protected List<List<LLMChatMessage>> captureAutoChatMessages() throws IOException, InterruptedException {
-        ArgumentCaptor<List<LLMChatMessage>> result = createChatMessagesCaptor();
-        verify(llmChatClient).complete(result.capture(), anyList(), eq("auto"), eq(false));
+        verify(llmChatClient, times(expectedInvocations)).complete(anyList(), result.capture(), eq("auto"), eq(false));
         return result.getAllValues();
     }
     

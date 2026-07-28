@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -29,6 +30,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -102,14 +104,15 @@ class MaskRuleInspectionServiceTest {
     void assertQueryMaskAlgorithms() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y"), Map.of("type", "CUSTOM")));
-        List<Map<String, Object>> actual = service.queryMaskAlgorithms(queryFacade);
-        assertThat(actual.getFirst().get("type"), is("MASK_FROM_X_TO_Y"));
-        assertThat(actual.getFirst().get("required_properties"), is(List.of("from-x", "to-y", "replace-char")));
-        assertThat(actual.getFirst().get("optional_properties"), is(List.of()));
-        List<?> propertyTemplates = (List<?>) actual.get(0).get("property_templates");
+        WorkflowQueryResult actual = service.queryMaskAlgorithms(queryFacade);
+        assertThat(actual.getRows().getFirst().get("type"), is("MASK_FROM_X_TO_Y"));
+        assertThat(actual.getRows().getFirst().get("required_properties"), is(List.of("from-x", "to-y", "replace-char")));
+        assertThat(actual.getRows().getFirst().get("optional_properties"), is(List.of()));
+        List<?> propertyTemplates = (List<?>) actual.getRows().getFirst().get("property_templates");
         assertThat(((Map<?, ?>) propertyTemplates.getFirst()).get("property_key"), is("from-x"));
-        assertThat(actual.get(1).get("type"), is("CUSTOM"));
-        assertThat(actual.get(1).get("property_templates"), is(List.of()));
+        assertThat(actual.getRows().get(1).get("type"), is("CUSTOM"));
+        assertThat(actual.getRows().get(1).get("property_templates"), is(List.of()));
+        assertTrue(actual.isAvailabilityConfirmed());
     }
     
     @Test
@@ -117,9 +120,10 @@ class MaskRuleInspectionServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS"))
                 .thenThrow(new MCPQueryFailedException("syntax error near 'MASK ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
-        List<Map<String, Object>> actual = service.queryMaskAlgorithms(queryFacade);
-        assertThat(actual.getFirst().get("type"), is("KEEP_FIRST_N_LAST_M"));
-        assertThat(actual.getFirst().get("required_properties"), is(List.of("first-n", "last-m", "replace-char")));
+        WorkflowQueryResult actual = service.queryMaskAlgorithms(queryFacade);
+        assertThat(actual.getRows().getFirst().get("type"), is("KEEP_FIRST_N_LAST_M"));
+        assertThat(actual.getRows().getFirst().get("required_properties"), is(List.of("first-n", "last-m", "replace-char")));
+        assertFalse(actual.isAvailabilityConfirmed());
     }
     
     @Test

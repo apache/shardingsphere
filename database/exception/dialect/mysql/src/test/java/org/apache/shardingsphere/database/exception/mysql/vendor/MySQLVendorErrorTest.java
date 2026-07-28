@@ -39,6 +39,13 @@ class MySQLVendorErrorTest {
     }
     
     @Test
+    void assertBadFieldError() {
+        assertThat(MySQLVendorError.ER_BAD_FIELD_ERROR.getVendorCode(), is(1054));
+        assertThat(MySQLVendorError.ER_BAD_FIELD_ERROR.getSqlState().getValue(), is("42S22"));
+        assertThat(MySQLVendorError.ER_BAD_FIELD_ERROR.getReason(), is("Unknown column '%s' in '%s'"));
+    }
+    
+    @Test
     void assertErrorOnModifyingGtidExecutedTable() {
         assertThat(MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getVendorCode(), is(3176));
         assertThat(MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getSqlState().getValue(), is("HY000"));

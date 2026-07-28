@@ -62,7 +62,29 @@ class WorkflowSynchronizationSupportTest {
                 }));
         assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
         assertThat(actual.getMessage(), is("Rule metadata is not visible from Proxy DistSQL."));
-        assertThat(attempts.get(), is(3));
+        assertThat(attempts.get(), is(4));
+    }
+    
+    @Test
+    void assertSynchronizeWhenWindowIsNotDivisibleByPollInterval() {
+        AtomicInteger attempts = new AtomicInteger();
+        WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(Duration.ofNanos(5L), Duration.ofNanos(2L));
+        assertThrows(WorkflowSynchronizationException.class, () -> workflowSynchronizationSupport.synchronize(() -> {
+            attempts.incrementAndGet();
+            return createValidationReport(WorkflowLifecycle.STATUS_FAILED);
+        }));
+        assertThat(attempts.get(), is(4));
+    }
+    
+    @Test
+    void assertSynchronizeWhenPollIntervalExceedsWindow() {
+        AtomicInteger attempts = new AtomicInteger();
+        WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(Duration.ofNanos(1L), Duration.ofNanos(2L));
+        assertThrows(WorkflowSynchronizationException.class, () -> workflowSynchronizationSupport.synchronize(() -> {
+            attempts.incrementAndGet();
+            return createValidationReport(WorkflowLifecycle.STATUS_FAILED);
+        }));
+        assertThat(attempts.get(), is(2));
     }
     
     @Test
