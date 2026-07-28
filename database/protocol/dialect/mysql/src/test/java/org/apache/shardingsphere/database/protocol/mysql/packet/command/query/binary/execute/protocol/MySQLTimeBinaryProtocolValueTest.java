@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol;
 
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
@@ -67,9 +69,16 @@ class MySQLTimeBinaryProtocolValueTest {
     }
     
     @Test
+    void assertReadZeroLengthDoesNotConsumeNextParameterBytes() throws SQLException {
+        byte[] data = {0x00, (byte) 0xd2, 0x04, 0x00, 0x00};
+        MySQLPacketPayload realPayload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
+        assertThat(binaryProtocolValue.read(realPayload, false), is(new Timestamp(0L)));
+        assertThat(realPayload.readInt4(), is(1234));
+    }
+    
+    @Test
     void assertReadWithUnsupportedLength() {
-        when(payload.readInt1()).thenReturn(100, 0);
-        when(payload.readInt4()).thenReturn(0);
+        when(payload.readInt1()).thenReturn(100);
         SQLFeatureNotSupportedException actual = assertThrows(SQLFeatureNotSupportedException.class, () -> binaryProtocolValue.read(payload, false));
         assertThat(actual.getMessage(), is("Wrong length `100` of MYSQL_TYPE_DATE"));
     }
@@ -95,7 +104,6 @@ class MySQLTimeBinaryProtocolValueTest {
     
     private static Stream<Arguments> readArguments() {
         return Stream.of(
-                Arguments.of("zero_length", new int[]{0, 0, 0, 0, 0}, new int[]{0, 0}, new Timestamp(0L)),
                 Arguments.of("eight_bytes", new int[]{8, 0, 10, 59, 0}, new int[]{0, 0}, createTimestamp(0)),
                 Arguments.of("twelve_bytes", new int[]{12, 0, 10, 59, 0}, new int[]{0, 1000}, createTimestamp(1_000_000)),
                 Arguments.of("twelve_bytes_fractional_second", new int[]{12, 0, 10, 59, 0}, new int[]{0, 230000}, createTimestamp(230_000_000)));
