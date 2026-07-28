@@ -38,7 +38,8 @@ Classify the review focus before applying CI, mergeability, or GitHub Actions ga
 - `CI Review`: use when the user asks to inspect CI, checks, Actions, logs, or failures. Treat CI evidence as the primary target.
 
 Explicit user scope wins. Local Candidate Preflight Mode uses `Code Correctness Review` and excludes CI unless the user explicitly requests it.
-If the newest user message excludes CI or GitHub Actions, keep the result inside `Code Correctness Review` and state `CI not reviewed by request` in `Review Details`.
+If the newest user message excludes CI or GitHub Actions, keep the result inside `Code Correctness Review`.
+In Formal Review Mode, state `CI not reviewed by request` in `Review Details`.
 
 ## Trigger Scenarios
 Use when the user asks to review a PR, decide mergeability or root-cause repair, write committer feedback,
@@ -52,7 +53,8 @@ or when the repository completion loop requires pre-handoff review of a local im
 3. Enforce the `GitHub and Evidence Access` boundary before using or reporting evidence.
 4. Treat every issue as a candidate until it passes the `Blocker Proof Gate`.
    Do not convert reviewer uncertainty, tool failure, inaccessible GitHub data, or missing local verification into a PR blocker.
-   Use `Review Incomplete` in `Formal Review Mode`, or a clarification-style reply in `PR Discussion Reply Mode`, when required public facts cannot be checked or attributed.
+   When required public facts cannot be checked or attributed, use `Review Incomplete` in `Formal Review Mode`,
+   a clarification-style reply in `PR Discussion Reply Mode`, or `Local Preflight Result: Incomplete` in `Local Candidate Preflight Mode`.
 5. In `Formal Review Mode`, if public evidence confirms a wrong root-cause model, problem framing, expected behavior, ownership boundary, or solution direction,
    use `Review Result: Not Mergeable` with `Feedback Mode: Needs Discussion`.
 6. In Formal Review Mode and PR Discussion Reply Mode, review only the latest public PR code version and use GitHub PR metadata plus
@@ -62,7 +64,8 @@ or when the repository completion loop requires pre-handoff review of a local im
    blast-radius/shared-layer ownership, linked-issue completeness, implicit-state review, high-frequency `computeIfAbsent` review,
    focus-required CI evidence judgment, and local verification freshness.
    In `Code Correctness Review`, do not treat CI or check-run state as a triggered gate unless the user requested CI or mergeability review.
-9. Before final output, complete the `Pre-Publication Finding Audit`; do not expose intermediate findings, and output one consolidated review.
+9. Before final output, complete the `Pre-Publication Finding Audit`; do not expose intermediate findings,
+   and output one consolidated result for the selected mode.
 
 ## Verdict Matrix
 
@@ -97,7 +100,7 @@ If any check fails, downgrade the candidate to `Review Incomplete`, a non-blocki
 - CI success never replaces code review, root-cause review, scope review, or test adequacy review.
 - In `Code Correctness Review`, do not query or wait for CI, check-runs, workflow runs, or Actions logs, and do not turn pending, skipped,
   unavailable, inaccessible, or uninspected CI into `Review Incomplete` or `Not Mergeable`.
-  State `CI not reviewed by request` in `Review Details`.
+  In Formal Review Mode, state `CI not reviewed by request` in `Review Details`.
 - In `Mergeability Review` or `CI Review`, relevant CI failure means the PR cannot be `Mergeable`.
   If the failure is attributable to the PR, use `Not Mergeable`; if attribution is unclear, use `Review Incomplete`.
 - Inspect CI, check-runs, or workflow logs when the PR goal, linked issue, author/user statement, generated artifact, native image, E2E,
@@ -251,7 +254,7 @@ Choose the feedback mode from the `Verdict Matrix` before writing the GitHub-fac
 - Write internal review state only to the system temporary directory when `Full Coverage Ledger Mode` is active.
 - Do not place ledgers, scratch files, or validator artifacts in the repository unless the user explicitly asks for a persisted artifact.
 - Clean temporary ledger directories before ending a normally completed review. If cleanup fails, do not expose the temp path in GitHub-facing text.
-- If the user asks for console-only output, return the copy-ready review or reply in Codex chat only.
+- If the user asks for console-only output, return the selected mode's result in Codex chat only.
 
 ## Evidence Source Strategy
 
@@ -291,22 +294,22 @@ When this mode is active:
    before final output.
    A `confirmed` finding must record direct evidence, counter-evidence checked, necessity, scope proof, and `Blocker Proof Gate` result.
 5. Record each adversarial pass with its focus and new independent finding count. The final pass must have `new_findings` equal to `0`.
-6. Run `scripts/review_ledger.py validate` before drafting the final review or discussion reply.
-7. If ledger validation fails because coverage or evidence is incomplete, continue reviewing or output `Review Incomplete` in `Formal Review Mode`;
-   do not emit a complete review with hidden gaps.
+6. Run `scripts/review_ledger.py validate` before returning the selected mode's final result.
+7. If ledger validation fails because coverage or evidence is incomplete, continue reviewing or return the selected mode's incomplete outcome:
+   `Review Incomplete`, a clarification-style reply, or `Local Preflight Result: Incomplete`. Do not emit a complete result with hidden gaps.
 8. Do not use the fast-triage shortcut, early blocker exit, or "confirmed high-risk blockers only" behavior while this mode is active.
-9. In Codex chat, report only concise progress and the final review or reply.
+9. In Codex chat, report only concise progress and the selected mode's final result.
    Do not paste the ledger contents unless the user explicitly asks for the internal audit trail.
-10. Clean the temporary ledger directory with `scripts/review_ledger.py cleanup` after the final response has been prepared and before ending the task.
+10. Clean the temporary ledger directory with `scripts/review_ledger.py cleanup` after the final result has been prepared and before returning it.
 
 The ledger is an internal audit aid, not public evidence. GitHub-facing text must cite public files, public docs, public CI/logs,
 or sanitized verification summaries, never the temporary ledger path.
 
 ## Review Efficiency Rules
 
-- Prioritize `Summary`, blocking issues, and minimum next actions.
+- Prioritize the formal `Summary`, reply conclusion, or local status, plus blocking issues and minimum next actions.
 - If the PR is too large, suggest splitting first.
-- These rules do not override `Full Coverage Ledger Mode`; ledger validation or `Review Incomplete` still controls final output.
+- These rules do not override `Full Coverage Ledger Mode`; ledger validation or the selected mode's incomplete outcome still controls final output.
 
 ## Quick Triage
 
@@ -361,7 +364,7 @@ CI/check-run review is not a substitute for code review. Query and report CI onl
 
 ## Pre-Publication Finding Audit
 
-Before producing the final review, build and freeze an internal review inventory for the latest PR head.
+Before producing the selected mode's final result, build and freeze an internal review inventory for the latest PR head.
 Do not expose intermediate findings, draft issue lists, or candidate blockers unless the user explicitly asks for status or early high-risk blockers.
 When `Full Coverage Ledger Mode` is active, the inventory must be represented by a system-temporary ledger and pass `scripts/review_ledger.py validate`
 before final output.
@@ -391,8 +394,9 @@ Run an adversarial pass on the latest head that looks for missed root-cause gaps
 adjacent-feature regressions, ownership issues, release/doc impacts, and required verification gaps.
 If the pass finds any new actionable finding with an independent fix boundary, add it to the inventory, deduplicate and classify it, update the review result if needed, and repeat the pass.
 Stop only after one full adversarial pass finds no new actionable finding.
-If the inventory cannot be completed because public evidence required by the selected review focus is unavailable or unattributable, output `Review Result: Review Incomplete`.
-Produce one consolidated review with exactly one `Review Result`.
+If the inventory cannot be completed because public evidence required by the selected review focus is unavailable or unattributable,
+return the selected mode's incomplete outcome.
+Produce one consolidated result in the selected output mode.
 
 ## Root-Cause and Issue Gates
 
@@ -439,9 +443,9 @@ Apply this gate when shared modules, session/executor/connector state, cache con
 - Prefer tests that prove boundary-to-runtime propagation and adjacent valid values over adding defensive checks at every layer.
 - If boundary ownership is unclear, ask for production entry-path evidence and treat duplicate validation as a design question, not an automatic blocker.
 
-## Review Details Statement (Required in Every Review)
+## Review Details Statement (Required in Formal Review Mode)
 
-Each review must include a `Review Details` section with:
+Each Formal Review Mode output must include a `Review Details` section with:
 
 - `Review Focus`: `Code Correctness Review`, `Mergeability Review`, or `CI Review`.
   In `Code Correctness Review`, include the exact statement `CI not reviewed by request`; this is not an incomplete-evidence gap.

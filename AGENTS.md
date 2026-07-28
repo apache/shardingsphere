@@ -472,7 +472,8 @@ After the last file-changing action:
 
 ## Completion Loop
 
-For an authorized implementation:
+For an authorized change, build, implement, or fix request, excluding a
+standalone restoration or rollback:
 
 1. Compare the read-only `git diff` and surrounding context with the acceptance
    checklist.
