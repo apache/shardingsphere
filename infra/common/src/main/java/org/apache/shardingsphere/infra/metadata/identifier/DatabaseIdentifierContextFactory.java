@@ -144,13 +144,9 @@ public final class DatabaseIdentifierContextFactory {
             scopedPolicies.put(each, storagePolicySet.getPolicy(each));
         }
         IdentifierCasePolicy databasePolicy = IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.DATABASE);
-        IdentifierCasePolicy storageObjectPolicy = IdentifierCasePolicyFactory.newQuotedInsensitivePolicySet().getPolicy(IdentifierScope.COLUMN);
         scopedPolicies.put(IdentifierScope.DATABASE, databasePolicy);
         scopedPolicies.put(IdentifierScope.SCHEMA, protocolPolicySet.getPolicy(IdentifierScope.SCHEMA));
         scopedPolicies.put(IdentifierScope.LOGICAL_TABLE, protocolPolicySet.getPolicy(IdentifierScope.LOGICAL_TABLE));
-        scopedPolicies.put(IdentifierScope.COLUMN, storageObjectPolicy);
-        scopedPolicies.put(IdentifierScope.INDEX, storageObjectPolicy);
-        scopedPolicies.put(IdentifierScope.CONSTRAINT, storageObjectPolicy);
         return new IdentifierCasePolicySet(storagePolicySet.getPolicy(IdentifierScope.TABLE), scopedPolicies);
     }
     
