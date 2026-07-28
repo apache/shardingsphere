@@ -758,8 +758,10 @@ place
 partitionDefinitions
     // DORIS CHANGED BEGIN
     : LP_ partitionDefinitionItem (COMMA_ partitionDefinitionItem)* RP_
+    // DORIS CHANGED END
     ;
 
+// DORIS ADDED BEGIN
 partitionDefinitionItem
     : partitionDefinition | dorisMultiRangePartition
     ;
@@ -767,7 +769,7 @@ partitionDefinitionItem
 dorisMultiRangePartition
     : FROM LP_ expr RP_ TO LP_ expr RP_ INTERVAL expr intervalUnit?
     ;
-    // DORIS CHANGED END
+// DORIS ADDED END
 
 partitionDefinition
     // DORIS CHANGED BEGIN
