@@ -20,6 +20,14 @@ unless that rule authorizes it. Paths are relative to the repository root.
 4. Keep task-specific notes in the task, issue, or PR. Do not add session notes
    to this file.
 
+## Response Style
+
+- Use plain language and the shortest response that fully answers the request.
+- Do not add details unless the user requests them or they are necessary.
+- When details are necessary, put a self-contained concise answer above a line
+  containing only `---` and the details below it. Omit the separator when no
+  details follow.
+
 ### Changing This Guide
 
 For changes to this guide, use `.codex/harness/agents/` and:
