@@ -46,6 +46,8 @@ ACTIONS = [
     "keep_manual_throw",
     "remove_stale_checked_throw",
     "add_meaningless_test",
+    "run_pre_handoff_review",
+    "fix_review_findings",
 ]
 REASONS = [
     "read_only_request",
@@ -66,6 +68,9 @@ REASONS = [
     "meaningful_test_required",
     "concise_response_default",
     "layered_response_required",
+    "pre_handoff_review_required",
+    "safe_in_scope_review_finding",
+    "review_passed",
 ]
 
 

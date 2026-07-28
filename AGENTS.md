@@ -362,8 +362,9 @@ Use the matching Skill when its trigger applies:
 
 - Issue diagnosis and copy-ready maintainer replies: `$analyze-issue`.
 - Unit-test generation or systematic coverage work: `$gen-ut`.
-- PR correctness, side effects, mergeability, or GitHub review replies:
-  `$review-pr`.
+- PR correctness, side effects, mergeability, GitHub review replies, or the
+  pre-handoff review of an authorized implementation targeting an existing PR:
+  `$review-pr`. For pre-handoff review, use its Local Candidate Preflight Mode.
 - Implementation or review whose correctness depends on the current version of
   an external framework or library: use `$source-driven-development`. Identify
   the applicable version from repository dependency metadata, verify the
@@ -471,7 +472,8 @@ After the last file-changing action:
 
 ## Completion Loop
 
-For an authorized implementation:
+For an authorized change, build, implement, or fix request, excluding a
+standalone restoration or rollback:
 
 1. Compare the read-only `git diff` and surrounding context with the acceptance
    checklist.
@@ -488,8 +490,16 @@ For an authorized implementation:
    remove unnecessary complexity without changing behavior.
 5. Apply `$code-review-and-quality` when available, or an equivalent review,
    before handoff and fix every safe in-scope required finding.
-6. Rerun checks invalidated by a fix, then repeat the semantic diff review.
-7. Stop when no required in-scope finding remains. Do not iterate for optional
+6. When the implementation targets an existing PR, apply `$review-pr` in Local
+   Candidate Preflight Mode to the effective local candidate before handoff.
+7. Fix every safe in-scope required finding, rerun invalidated checks, and
+   repeat the applicable reviews. If a finding requires scope expansion, an
+   unresolved architecture choice, or a high-risk action, stop at its existing
+   authorization gate instead of fixing it automatically.
+8. Hand off and propose a commit message only after one complete applicable
+   review pass finds zero new required issues. Do not defer a locally
+   discoverable required finding to a later formal PR review.
+9. Stop when no required in-scope finding remains. Do not iterate for optional
    polish, broad cleanup, or risky refactoring.
 
 If a report or verdict is disproved, fix the highest-leverage rule, schema,
