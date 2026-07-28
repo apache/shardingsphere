@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
@@ -37,7 +36,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class LLMConversationExecutor {
     
-    @Getter
     private final LLME2EConfiguration configuration;
     
     private final Map<String, Object> runtimeEvidence;
@@ -61,15 +59,6 @@ public final class LLMConversationExecutor {
         Path artifactDirectory = configuration.createArtifactDirectory(scenarioId);
         artifactWriter.write(artifactDirectory, artifactBundle, runtimeEvidence);
         return new ConversationResult(artifactBundle, artifactDirectory);
-    }
-    
-    /**
-     * Assert model is ready before preparing expensive runtime fixtures.
-     *
-     * @throws InterruptedException interrupted exception
-     */
-    public void assertModelReady() throws InterruptedException {
-        new LLMChatModelClient(configuration, HttpClient.newHttpClient()).waitUntilReady();
     }
     
     /**

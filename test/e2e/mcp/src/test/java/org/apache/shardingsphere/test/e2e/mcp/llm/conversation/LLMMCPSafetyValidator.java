@@ -42,11 +42,11 @@ final class LLMMCPSafetyValidator {
         }
         if ("database_gateway_execute_update".equals(actionName) && !EXECUTION_MODE_PREVIEW.equals(Objects.toString(arguments.get("execution_mode"), ""))) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_execution_attempted",
-                    "Model attempted to execute side-effecting SQL in an LLM usability scenario."));
+                    "Model attempted to execute side-effecting SQL in an LLM E2E scenario."));
         }
         if ("database_gateway_apply_workflow".equals(actionName) && !isSafeWorkflowExecutionMode(arguments)) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_workflow_execution_attempted",
-                    "Model attempted to execute workflow side effects in an LLM usability scenario."));
+                    "Model attempted to execute workflow side effects in an LLM E2E scenario."));
         }
         return Optional.empty();
     }

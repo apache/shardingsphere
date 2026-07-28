@@ -92,9 +92,8 @@ class LLMStdioTransportE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     @Test
-    void assertStdioTransport() throws IOException, InterruptedException {
+    void assertStdioTransport() throws IOException {
         LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration(), getRequiredLLMRuntimeEvidence());
-        conversationExecutor.assertModelReady();
         prepareRuntimeFixture();
         LLMConversationExecutor.ConversationResult actualResult = conversationExecutor.runConversation(SUITE_ID, createScenario(), createInteractionClient());
         assertSuccess(actualResult);
