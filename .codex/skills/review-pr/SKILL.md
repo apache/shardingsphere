@@ -3,8 +3,9 @@ name: review-pr
 description: >-
   Review Apache ShardingSphere pull requests and PR discussions from public evidence.
   Use for code-correctness or mergeability decisions, CI-focused review, root-cause and
-  regression analysis, copy-ready committer feedback, challenged findings, multi-round
-  review, and the repository completion loop's Local Candidate Preflight Mode.
+  regression analysis, complete consolidated findings, copy-ready committer feedback,
+  challenged findings, multi-round review, and the repository completion loop's Local
+  Candidate Preflight Mode.
 ---
 
 # Review PR
@@ -58,9 +59,11 @@ fact—not CI—as the incomplete reason.
 5. Treat every concern as a candidate until it passes the Finding Proof Gate.
 6. Do not turn uncertainty, inaccessible evidence, tool failure, skipped
    verification, or uninspected counter-evidence into a blocker.
-7. Consolidate findings by independent fix boundary. Do not publish draft
-   findings or drip-feed issues unless the user asks for status or early
-   high-risk blockers.
+7. In Formal Review and Local Candidate Preflight, do not select a verdict,
+   stop at the first blocker, or publish findings before the Completion Gate.
+   Consolidate findings by independent fix boundary and return the complete
+   current-head set once. Only an explicit request for status, narrow review, or
+   early high-risk blockers authorizes a partial result.
 8. Follow `AGENTS.md` for repository authority, command execution, local
    verification, sensitive data, and completion-loop rules.
 
@@ -104,32 +107,17 @@ Classify failed candidates as an incomplete-evidence gap, non-blocking
 observation, clarification question, pre-existing issue, or no issue. Do not
 publish non-blocking observations unless they materially help the user.
 
-## Decision Contract
+## Behavior Clusters and Risk Triage
 
-Choose the result in this order:
+Before deep review, group the scope into the smallest independently meaningful
+behavior changes. A behavior cluster may cross several files, and one file may
+belong to several clusters. Map every substantive changed file to at least one
+cluster; treat churn-only files explicitly rather than silently dropping them.
 
-1. If public evidence disproves the problem model, expected behavior, ownership,
-   protocol or SQL semantics, compatibility assumption, or solution direction,
-   use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
-2. If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`
-   with `Feedback Mode: Change Request`.
-3. If no blocker is confirmed but a public fact required by the selected focus
-   is unavailable, stale, inaccessible, or unattributable, use
-   `Review Incomplete`.
-4. Otherwise use `Mergeable` for the selected focus.
-
-`Mergeable` in Code Correctness Review means code-scope readiness only. Required
-pending CI prevents Mergeable in Mergeability Review. A relevant CI failure is
-a blocker when attributable to the PR and an incomplete gap when attribution is
-unclear.
-
-When a confirmed blocker and an additional evidence gap coexist, keep
-`Not Mergeable` and disclose the unreviewed scope under `Coverage and Limits`.
-`Review Incomplete` is not a substitute for a proven blocker.
-
-## Review Criteria
-
-Apply only criteria triggered by the changed behavior:
+For every cluster, identify its root cause, behavior owner, entry paths,
+callers or consumers, contracts, changed conditions or state transitions, and
+validation points. Then consider every risk axis and deepen only the triggered
+ones:
 
 - Root cause and linked-issue completeness.
 - Functional behavior, important boundaries, disabled paths, adjacent features,
@@ -144,7 +132,8 @@ Apply only criteria triggered by the changed behavior:
 - Dependencies, licenses, packaging, native metadata, generated resources, and
   distribution impact.
 
-Read only the triggered sections in
+This triage is mandatory even when no risk is ultimately found. Read only the
+triggered sections in
 [high-risk-review.md](references/high-risk-review.md). For SQL grammar,
 visitors, parser tests, syntax documentation, dialect behavior, or parser
 baselines, also read
@@ -154,35 +143,74 @@ baselines, also read
 
 1. Select output mode and review focus.
 2. Establish the authoritative latest-head scope and linked requirements.
-3. Model the root cause and map every required behavior to changed code and a
-   validation point.
-4. Build the applicable risk inventory and search for counterexamples,
-   adjacent paths, compatibility changes, and unrelated substantive changes.
-5. Trace tests and verification through real entry paths; apply the Finding
-   Proof Gate to every candidate.
-6. Deduplicate findings, review the latest delta, and run one adversarial pass.
-   Stop only after a full pass finds no new independent actionable finding.
+3. Build behavior clusters and complete the mandatory risk triage.
+4. Discover candidates across the complete scope before choosing a verdict.
+   Use three distinct lenses:
+   - `Root Cause and Behavior`: intended fix, changed decisions, boundaries,
+     disabled paths, adjacent cases, and old-scenario regression.
+   - `Blast Radius and Contracts`: callers, consumers, shared state, public
+     contracts, compatibility, dependencies, packaging, and generated outputs.
+   - `Tests, Runtime, and Operations`: realistic regressions that can still
+     pass, error and lifecycle paths, runtime verification, diagnostics,
+     documentation, rollout, and rollback.
+5. Apply the Finding Proof Gate to every candidate. Keep discovery notes
+   private and classify every candidate before publication.
+6. Consolidate confirmed findings by independent fix boundary and identify any
+   evidence or coverage gap that could still change the blocker set.
+7. Review the latest delta and run a full-scope convergence pass after the most
+   recent candidate change. If it finds a new independent candidate, return to
+   step 5 and repeat. Select the verdict only after the Completion Gate passes.
 
 If the scope cannot be reviewed honestly, return the mode-appropriate incomplete
 result or request a split. Do not produce a complete verdict from a partial
 review.
 
-## Coverage Audit and Scripts
+## Completion Gate and Scripts
 
-Use Coverage Audit when the user requests complete or non-drip review, or when
-the triggered high-risk criteria make omission materially likely.
+Apply the Completion Gate to every Formal Review and Local Candidate Preflight.
+Apply it to a discussion reply only when the reply makes or changes an overall
+readiness conclusion.
 
-- Use `scripts/build_review_inventory.py` with local refs to establish a bounded
-  deterministic scope inventory.
-- Use `scripts/review_ledger.py` only to account for authoritative files,
-  finding classifications, and final audit passes.
+- Complete the behavior-cluster mapping and risk triage for every authoritative
+  file; classify churn-only files explicitly.
+- Finish all three discovery lenses and classify every candidate.
+- Leave no unresolved evidence or coverage gap that could change the blocker
+  set.
+- Require a full-scope convergence pass after the latest candidate change with
+  zero new independent candidates.
+- Use `scripts/build_review_inventory.py --format json` when local refs are
+  available. Its Markdown output is a bounded human summary, not the
+  authoritative file list.
+- Use `scripts/review_ledger.py` for multi-file, high-risk, or otherwise
+  omission-prone review. It mechanically accounts for files, clusters, risk
+  axes, finding classifications, proof fields, and review passes; it does not
+  judge semantic correctness.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
-- Treat script output as mechanical evidence, not semantic proof.
-- Before a complete result, require every authoritative file to have a final
-  coverage state, every finding to have a final classification, and the latest
-  audit pass to report zero new independent findings.
 - Keep temporary ledger data private and remove only the exact ledger created
   for the current review.
+
+If the gate cannot pass, return the mode-appropriate incomplete result. In
+Formal Review, when confirmed blockers coexist with a gap that could hide more
+blockers, list them as confirmed partial facts but do not present them as the
+complete change-request set.
+
+## Formal Decision Contract
+
+Apply this order to Formal Review only after the Completion Gate evaluation:
+
+1. If the gate fails, use `Review Incomplete`, even when some blockers are
+   already confirmed.
+2. If public evidence disproves the problem model, expected behavior, ownership,
+   protocol or SQL semantics, compatibility assumption, or solution direction,
+   use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
+3. If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`
+   with `Feedback Mode: Change Request`.
+4. Otherwise use `Mergeable` for the selected focus.
+
+`Mergeable` in Code Correctness Review means code-scope readiness only. Required
+pending CI prevents Mergeable in Mergeability Review. A relevant CI failure is
+a blocker when attributable to the PR and an incomplete gap when attribution is
+unclear.
 
 ## Local Candidate Preflight Mode
 
@@ -193,8 +221,8 @@ the triggered high-risk criteria make omission materially likely.
 - Review from the public PR merge-base through the working tree. Scope is the
   union of GitHub files and the authorized local delta; exclude unrelated local
   changes.
-- Apply Code Correctness Review, the same proof gate, triggered high-risk
-  criteria, and final adversarial pass.
+- Apply Code Correctness Review, the same proof and completion gates, triggered
+  high-risk criteria, and convergence loop.
 - Return exactly one status: `Local Preflight Result: Pass`, `Local Preflight
   Result: Changes Required`, or `Local Preflight Result: Incomplete`.
 - Keep this Skill review-only. The active implementation loop fixes safe
@@ -209,7 +237,9 @@ challenged.
 
 Always re-evaluate the latest head. Treat a prior finding as a hypothesis to
 disprove, inspect challenger-provided public evidence first, and withdraw or
-downgrade any unsupported blocker rather than defending it.
+downgrade any unsupported blocker rather than defending it. Classify every
+finding first reported after an earlier formal review as introduced by the
+latest commits, exposed by the previous fix, or missed in the previous review.
 
 ## Output Contract
 
@@ -226,14 +256,17 @@ logs, or emojis.
 
 ### Formal Review
 
-- `Mergeable`: `### Summary` with exactly one bold `Review Result: Mergeable`
-  line and a concise reason; `### Evidence`; `### Coverage and Limits`.
-- `Not Mergeable`: `### Summary` with exactly one bold
-  `Review Result: Not Mergeable` line, one `Feedback Mode`, and a concise
-  reason; `### Blocking Issues`; `### Coverage and Limits`.
-- `Review Incomplete`: `### Summary` with exactly one bold
+- `Mergeable`: `### Result` with exactly one bold
+  `Review Result: Mergeable` line and a concise reason; `### Evidence`;
+  `### Coverage`.
+- `Not Mergeable`: `### Result` with exactly one bold
+  `Review Result: Not Mergeable` line, one `Feedback Mode`, a bold
+  `Blocking Issues: N` line, and a concise reason; `### Blocking Issues`;
+  `### Coverage`.
+- `Review Incomplete`: `### Result` with exactly one bold
   `Review Result: Review Incomplete` line and a concise reason;
-  `### Verified Facts`; `### Required Evidence`; `### Coverage and Limits`.
+  `### Confirmed Issues` when any are already proven; `### Verified Facts`;
+  `### Required Evidence`; `### Coverage`.
 
 For each blocking issue include:
 
@@ -243,8 +276,10 @@ For each blocking issue include:
   Discussion.
 
 Do not add patch-level changes after selecting Needs Discussion. Do not include
-placeholder or optional headings. In Code Correctness Review, state that the
-result is code-scope only and CI was not reviewed.
+placeholder headings. In `### Coverage`, report the reviewed head, authoritative
+files accounted for, behavior clusters, completed discovery lenses, unresolved
+gaps, and CI scope. In Code Correctness Review, state that the result is
+code-scope only and CI was not reviewed.
 
 ### PR Discussion Reply
 
@@ -255,7 +290,7 @@ evidence and minimum next action. Do not force a formal verdict.
 ### Local Candidate Preflight
 
 Return `### Local Preflight`, exactly one bold Local Preflight Result line,
-confirmed required findings when present, and `### Coverage and Limits`.
+confirmed required findings when present, and `### Coverage`.
 
 ### Correction
 

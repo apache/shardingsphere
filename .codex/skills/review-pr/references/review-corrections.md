@@ -24,7 +24,7 @@ finding.
 ## Multi-Round Review
 
 Use public previous-round feedback only. Do not expose private review notes,
-local chat iterations, raw inventory, or internal accountability.
+local chat iterations, raw inventory, or internal scratch state.
 
 For every prior public finding, classify the latest head as:
 
@@ -42,6 +42,21 @@ the minimum remaining work.
 If the latest evidence shows that the direction itself must be reconsidered,
 switch to `Needs Discussion` and stop presenting previous patch-level requests
 as the main path.
+
+## Findings First Reported Later
+
+Classify every finding first reported after an earlier formal review:
+
+- `Introduced by latest commits`: the reviewed delta created the problem.
+- `Exposed by the previous fix`: the earlier fix made a different path newly
+  reachable or materially changed the evidence.
+- `Missed in the previous review`: the problem was already present in the
+  previously reviewed head.
+
+Prove the classification from the previous and current heads. Do not describe
+an earlier-head problem as newly introduced. For a previous-review miss,
+acknowledge it directly, rerun the full Completion Gate, and return the complete
+remaining blocker set rather than publishing only the late finding.
 
 ## Challenged Findings
 

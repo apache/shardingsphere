@@ -17,7 +17,8 @@
 
 interface:
   display_name: "Review PR"
-  short_description: "Evidence-backed PR review and reply drafting"
+  short_description: "Complete evidence-backed PR review"
   default_prompt: >-
-    Use $review-pr to review a ShardingSphere PR or PR discussion from current
-    public evidence and return one concise, copy-ready Markdown result.
+    Use $review-pr to complete a consolidated current-head review of a
+    ShardingSphere PR or PR discussion from public evidence and return one
+    concise, copy-ready Markdown result.
