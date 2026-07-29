@@ -1104,6 +1104,11 @@
     <select sql-case-id="hive_select_window_frame">
         <projections start-index="7" stop-index="98">
             <aggregation-projection type="SUM" expression="(amount) OVER (PARTITION BY user_id ORDER BY id ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)" start-index="7" stop-index="98">
+                <window-item start-index="24" stop-index="98">
+                    <order-by start-index="46" stop-index="56">
+                        <column-item name="id" order-direction="ASC" start-index="55" stop-index="56" />
+                    </order-by>
+                </window-item>
                 <parameter>
                     <column name="amount" start-index="11" stop-index="16" />
                 </parameter>
@@ -1249,7 +1254,7 @@
         <from>
             <simple-table name="t_order" start-index="39" stop-index="45" />
         </from>
-        <group-by>
+        <group-by contains-grouping-extension="true">
             <column-item name="status" start-index="56" stop-index="61" />
         </group-by>
     </select>
@@ -1263,9 +1268,12 @@
         <from>
             <simple-table name="t_order" start-index="42" stop-index="48" />
         </from>
-        <group-by>
+        <group-by contains-grouping-extension="true">
             <column-item name="status" start-index="59" stop-index="64" />
             <column-item name="merchant_id" start-index="67" stop-index="77" />
+            <column-item name="status" start-index="95" stop-index="100" />
+            <column-item name="merchant_id" start-index="103" stop-index="113" />
+            <column-item name="status" start-index="118" stop-index="123" />
         </group-by>
     </select>
 
