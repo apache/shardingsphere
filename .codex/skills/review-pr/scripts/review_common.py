@@ -66,6 +66,8 @@ def parse_name_status(output: str) -> list[ChangedFile]:
 def categorize(path: str) -> str:
     if "RELEASE-NOTES.md" == path:
         return "release-notes"
+    if "distribution" in path:
+        return "distribution"
     if "/src/main/java/" in path:
         return "production-java"
     if "/src/test/" in path:
@@ -74,8 +76,6 @@ def categorize(path: str) -> str:
         return "docs"
     if path.startswith(".github/") or path.endswith((".xml", ".properties", ".yml", ".yaml", ".toml", ".gradle")):
         return "build-config"
-    if "distribution" in path:
-        return "distribution"
     if "target/" in path or "/generated/" in path:
         return "generated"
     return "other"
