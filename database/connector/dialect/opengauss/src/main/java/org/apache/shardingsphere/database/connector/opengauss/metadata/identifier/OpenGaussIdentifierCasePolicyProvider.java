@@ -17,15 +17,10 @@
 
 package org.apache.shardingsphere.database.connector.opengauss.metadata.identifier;
 
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-
-import java.util.EnumMap;
-import java.util.Map;
 
 /**
  * openGauss provider of identifier case rules.
@@ -34,10 +29,7 @@ public final class OpenGaussIdentifierCasePolicyProvider implements IdentifierCa
     
     @Override
     public IdentifierCasePolicySet provide(final IdentifierCasePolicyProviderContext context) {
-        IdentifierCasePolicySet lowerCasePolicySet = IdentifierCasePolicyFactory.newLowerCasePolicySet();
-        Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
-        scopedRules.put(IdentifierScope.SCHEMA, IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.SCHEMA));
-        return new IdentifierCasePolicySet(lowerCasePolicySet.getPolicy(IdentifierScope.TABLE), scopedRules);
+        return IdentifierCasePolicyFactory.newLowerCasePolicySet();
     }
     
     @Override

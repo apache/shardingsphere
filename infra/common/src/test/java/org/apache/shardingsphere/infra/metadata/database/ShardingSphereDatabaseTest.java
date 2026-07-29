@@ -397,10 +397,10 @@ class ShardingSphereDatabaseTest {
     }
     
     @Test
-    void assertDefaultPropsUseInsensitiveLookup() {
+    void assertDefaultPropsUsePostgreSQLSchemaLookup() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", postgreSQLDatabaseType, createResourceMetaData(),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("foo_schema", postgreSQLDatabaseType)), new ConfigurationProperties(new Properties()));
-        assertTrue(database.containsSchema("FOO_SCHEMA"));
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("FOO_SCHEMA", postgreSQLDatabaseType)), new ConfigurationProperties(new Properties()));
+        assertFalse(database.containsSchema("foo_schema"));
     }
     
     @Test

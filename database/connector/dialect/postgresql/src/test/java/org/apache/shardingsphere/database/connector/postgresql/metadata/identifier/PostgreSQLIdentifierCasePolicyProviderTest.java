@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -49,13 +50,17 @@ class PostgreSQLIdentifierCasePolicyProviderTest {
     @Test
     void assertProvide() {
         IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(databaseType, null);
-        IdentifierCasePolicy tableRule = provider.provide(context).getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicySet actual = provider.provide(context);
+        IdentifierCasePolicy tableRule = actual.getPolicy(IdentifierScope.TABLE);
         assertThat(tableRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(tableRule.matches("foo", "FOO", QuoteCharacter.NONE));
         assertFalse(tableRule.matches("Foo", "foo", QuoteCharacter.NONE));
-        IdentifierCasePolicy schemaRule = provider.provide(context).getPolicy(IdentifierScope.SCHEMA);
+        IdentifierCasePolicy schemaRule = actual.getPolicy(IdentifierScope.SCHEMA);
         assertThat(schemaRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(schemaRule.matches("UPPER_SCHEMA", "upper_schema", QuoteCharacter.NONE));
+        assertThat(schemaRule.normalizeForDefinition("FooSchema", QuoteCharacter.NONE), is("fooschema"));
+        assertThat(schemaRule.normalizeForDefinition("FooSchema", QuoteCharacter.QUOTE), is("FooSchema"));
+        assertTrue(schemaRule.matches("lower_schema", "LOWER_SCHEMA", QuoteCharacter.NONE));
+        assertFalse(schemaRule.matches("UPPER_SCHEMA", "upper_schema", QuoteCharacter.NONE));
         assertFalse(schemaRule.matches("UPPER_SCHEMA", "upper_schema", QuoteCharacter.QUOTE));
     }
 }
