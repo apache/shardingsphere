@@ -45,5 +45,5 @@ Read this reference before reviewing PRs that touch SQL grammar, SQL visitor cla
 
 ## Output Requirements
 
-- In `Coverage and Limits`, name the target dialect, related trunk or branch dialects checked, official documentation pages used, and repo docs or examples checked.
+- In `Coverage`, name the target dialect, related trunk or branch dialects checked, official documentation pages used, and repo docs or examples checked.
 - If syntax evidence is missing or contradicted, classify the result using the main skill's evidence sufficiency rules instead of guessing.

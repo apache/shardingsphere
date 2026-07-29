@@ -36,11 +36,14 @@ from review_common import categorize, compare_github_files, final_paths, get_rep
 
 
 LEDGER_KIND = "review-pr-coverage-ledger"
-LEDGER_VERSION = 2
+LEDGER_VERSION = 3
 LEDGER_FILE_NAME = "ledger.json"
 FILE_STATUSES = frozenset({"pending", "reviewed", "churn-only", "test-only-reviewed", "not-applicable", "blocked"})
 FINAL_FILE_STATUSES = FILE_STATUSES - {"pending"}
+SUBSTANTIVE_FILE_STATUSES = frozenset({"reviewed", "test-only-reviewed"})
+EXPLAINED_FILE_STATUSES = frozenset({"churn-only", "not-applicable"})
 FINDING_STATUSES = frozenset({"candidate", "confirmed", "withdrawn", "review-incomplete-gap", "non-blocking", "out-of-scope"})
+PASS_FOCUSES = ("root-cause", "blast-radius", "tests-runtime", "convergence")
 
 
 def ledger_root() -> Path:
@@ -135,6 +138,7 @@ def cmd_init(args: argparse.Namespace) -> int:
         "version": LEDGER_VERSION,
         "created_at": now,
         "updated_at": now,
+        "review_revision": 0,
         "scope": {
             "repo": repo_root.name,
             "pr": args.pr,
@@ -152,8 +156,10 @@ def cmd_init(args: argparse.Namespace) -> int:
             "old_path": each.old_path,
             "category": categorize(each.path),
             "status": "pending",
+            "clusters": [],
             "risk_axes": [],
             "findings": [],
+            "reason": "",
         } for each in changed_files],
         "findings": [],
         "passes": [],
@@ -169,7 +175,10 @@ def cmd_mark_file(args: argparse.Namespace) -> int:
     ledger = read_ledger(ledger_file)
     entry = find_file_entry(ledger, args.path)
     entry["status"] = args.status
+    unique_extend(entry["clusters"], args.cluster or [])
     unique_extend(entry["risk_axes"], args.risk_axis or [])
+    entry["reason"] = args.reason or ""
+    ledger["review_revision"] += 1
     write_ledger(ledger_file, ledger)
     print(f"marked={args.path} status={args.status}")
     return 0
@@ -197,6 +206,7 @@ def cmd_add_finding(args: argparse.Namespace) -> int:
     else:
         ledger["findings"].append(finding)
     sync_file_findings(ledger)
+    ledger["review_revision"] += 1
     write_ledger(ledger_file, ledger)
     print(f"finding={args.id} status={args.status}")
     return 0
@@ -205,9 +215,13 @@ def cmd_add_finding(args: argparse.Namespace) -> int:
 def cmd_add_pass(args: argparse.Namespace) -> int:
     ledger_file = resolve_ledger_file(args.ledger)
     ledger = read_ledger(ledger_file)
+    if 0 > args.new_findings:
+        raise RuntimeError("New finding count must not be negative")
     ledger["passes"].append({
         "focus": args.focus,
         "new_findings": args.new_findings,
+        "review_revision": ledger["review_revision"],
+        "finding_count": len(ledger["findings"]),
         "created_at": int(time.time()),
     })
     write_ledger(ledger_file, ledger)
@@ -233,10 +247,29 @@ def validate_ledger(ledger: dict[str, Any]) -> list[str]:
     blocked_files = [each["path"] for each in ledger["files"] if "blocked" == each["status"]]
     if blocked_files:
         result.append(f"Blocked files require more evidence or an incomplete result: {len(blocked_files)}")
+    missing_clusters = [each["path"] for each in ledger["files"]
+                        if each["status"] in SUBSTANTIVE_FILE_STATUSES
+                        and (not each.get("clusters") or not all(each["clusters"]))]
+    if missing_clusters:
+        result.append(f"Substantive files missing behavior clusters: {len(missing_clusters)}")
+    missing_risk_axes = [each["path"] for each in ledger["files"]
+                         if each["status"] in SUBSTANTIVE_FILE_STATUSES
+                         and (not each.get("risk_axes") or not all(each["risk_axes"]))]
+    if missing_risk_axes:
+        result.append(f"Substantive files missing reviewed risk axes: {len(missing_risk_axes)}")
+    unexplained_files = [each["path"] for each in ledger["files"]
+                         if each["status"] in EXPLAINED_FILE_STATUSES and not each.get("reason")]
+    if unexplained_files:
+        result.append(f"Non-substantive file classifications missing reasons: {len(unexplained_files)}")
     finding_counts = Counter(each["id"] for each in ledger["findings"])
     duplicate_findings = [finding_id for finding_id, count in finding_counts.items() if 1 < count]
     if duplicate_findings:
         result.append(f"Duplicate finding ids remain: {len(duplicate_findings)}")
+    fix_boundary_counts = Counter(each["fix_boundary"] for each in ledger["findings"]
+                                  if "confirmed" == each["status"] and each["fix_boundary"])
+    duplicate_fix_boundaries = [fix_boundary for fix_boundary, count in fix_boundary_counts.items() if 1 < count]
+    if duplicate_fix_boundaries:
+        result.append(f"Confirmed findings share fix boundaries: {len(duplicate_fix_boundaries)}")
     finding_ids = set(finding_counts)
     scope_files = set(file_counts)
     for each in ledger["files"]:
@@ -268,12 +301,22 @@ def validate_ledger(ledger: dict[str, Any]) -> list[str]:
                 result.append(f"{each['id']} confirmed finding is missing scope proof")
             if not each["files"]:
                 result.append(f"{each['id']} confirmed finding is missing scope files")
-        if "review-incomplete-gap" == each["status"] and not each["reason"]:
-            result.append(f"{each['id']} incomplete gap is missing a reason")
-    if not ledger["passes"]:
-        result.append("No final adversarial pass was recorded")
-    elif 0 != ledger["passes"][-1].get("new_findings"):
-        result.append("Latest adversarial pass did not finish with zero new findings")
+        if "review-incomplete-gap" == each["status"]:
+            if not each["reason"]:
+                result.append(f"{each['id']} incomplete gap is missing a reason")
+            result.append(f"{each['id']} requires a Review Incomplete result")
+    pass_foci = {each.get("focus") for each in ledger["passes"]}
+    missing_passes = [each for each in PASS_FOCUSES if each not in pass_foci]
+    if missing_passes:
+        result.append(f"Required review passes missing: {', '.join(missing_passes)}")
+    if ledger["passes"]:
+        final_pass = ledger["passes"][-1]
+        if "convergence" != final_pass.get("focus"):
+            result.append("Latest review pass is not the convergence pass")
+        if 0 != final_pass.get("new_findings"):
+            result.append("Latest convergence pass did not finish with zero new findings")
+        if ledger["review_revision"] != final_pass.get("review_revision"):
+            result.append("Latest convergence pass predates a file or finding change")
     return result
 
 
@@ -292,9 +335,11 @@ def cmd_status(args: argparse.Namespace) -> int:
     ledger = read_ledger(args.ledger)
     file_counts = Counter(each["status"] for each in ledger["files"])
     finding_counts = Counter(each["status"] for each in ledger["findings"])
+    pass_counts = Counter(each["focus"] for each in ledger["passes"])
     print(f"files={dict(sorted(file_counts.items()))}")
     print(f"findings={dict(sorted(finding_counts.items()))}")
-    print(f"passes={len(ledger['passes'])}")
+    print(f"passes={dict(sorted(pass_counts.items()))}")
+    print(f"review_revision={ledger['review_revision']}")
     return 0
 
 
@@ -322,7 +367,9 @@ def build_parser() -> argparse.ArgumentParser:
     mark_file.add_argument("--ledger", required=True, help="Ledger file or directory")
     mark_file.add_argument("--path", required=True, help="Repository-relative changed file path")
     mark_file.add_argument("--status", required=True, choices=sorted(FILE_STATUSES), help="Coverage state")
+    mark_file.add_argument("--cluster", action="append", help="Behavior cluster containing this file")
     mark_file.add_argument("--risk-axis", action="append", help="Risk axis covered for this file")
+    mark_file.add_argument("--reason", help="Reason for a non-substantive file classification")
     mark_file.set_defaults(func=cmd_mark_file)
     finding = subparsers.add_parser("add-finding", help="Add or update one finding classification")
     finding.add_argument("--ledger", required=True, help="Ledger file or directory")
@@ -338,9 +385,9 @@ def build_parser() -> argparse.ArgumentParser:
     finding.add_argument("--file", action="append", help="Repository-relative scope file")
     finding.add_argument("--reason", help="Reason for an incomplete or non-blocking classification")
     finding.set_defaults(func=cmd_add_finding)
-    review_pass = subparsers.add_parser("add-pass", help="Record an adversarial review pass")
+    review_pass = subparsers.add_parser("add-pass", help="Record a required review pass")
     review_pass.add_argument("--ledger", required=True, help="Ledger file or directory")
-    review_pass.add_argument("--focus", required=True, help="Pass focus")
+    review_pass.add_argument("--focus", required=True, choices=PASS_FOCUSES, help="Pass focus")
     review_pass.add_argument("--new-findings", required=True, type=int, help="New independent findings")
     review_pass.set_defaults(func=cmd_add_pass)
     validate = subparsers.add_parser("validate", help="Validate mechanical coverage completion")

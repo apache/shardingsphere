@@ -17,9 +17,10 @@
 
 # High-Risk Review
 
-Read only the sections triggered by the changed behavior. Use Coverage Audit
-when the user requests complete, non-drip review or when the PR crosses several
-of these boundaries.
+Read the sections selected by the main Skill's mandatory risk triage. More than
+one section may apply to a behavior cluster; do not stop after the first
+recognized risk. Complete the main Skill's Completion Gate after applying the
+triggered guidance.
 
 ## Shared Ownership and Implicit State
 
