@@ -85,6 +85,8 @@ class ShadowSQLRouterTest {
         return Stream.of(
                 Arguments.of("skip route unit when production data source is absent", "foo_ds", null, Collections.emptyMap(), "foo_ds"),
                 Arguments.of("replace route unit with shadow data source", "foo_route_ds", "foo_prod_ds", Collections.singletonMap("foo_prod_ds", "foo_shadow_ds"), "foo_shadow_ds"),
+                Arguments.of("replace route unit with shadow data source after sharding routes to physical", "prod_ds_0", "prod_ds_0", Collections.singletonMap("prod_ds_0", "shadow_ds_0"),
+                        "shadow_ds_0"),
                 Arguments.of("replace route unit with production data source when shadow mapping is absent", "foo_route_ds", "foo_prod_ds", Collections.emptyMap(), "foo_prod_ds"));
     }
 }

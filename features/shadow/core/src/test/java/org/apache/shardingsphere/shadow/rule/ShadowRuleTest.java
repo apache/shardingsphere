@@ -199,4 +199,9 @@ class ShadowRuleTest {
     void assertGetOrder() {
         assertThat(rule.getOrder(), is(ShadowOrder.ORDER));
     }
+    
+    @Test
+    void assertFindProductionDataSourceNameByProductionNameSuccess() {
+        assertThat(rule.findProductionDataSourceName("prod_ds_0"), is(Optional.of("prod_ds_0")));
+    }
 }
