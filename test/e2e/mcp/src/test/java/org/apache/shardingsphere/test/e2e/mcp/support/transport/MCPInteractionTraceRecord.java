@@ -33,6 +33,8 @@ public final class MCPInteractionTraceRecord {
     
     private final int sequence;
     
+    private final int modelTurn;
+    
     private final String actionKind;
     
     private final String actionOrigin;
@@ -51,14 +53,15 @@ public final class MCPInteractionTraceRecord {
      * Create invalid action.
      *
      * @param sequence sequence
+     * @param modelTurn model turn
      * @param actionKind action kind
      * @param targetName target name
      * @param arguments arguments
      * @param failureType failure type
      * @return interaction trace record
      */
-    public static MCPInteractionTraceRecord createInvalidAction(final int sequence, final String actionKind, final String targetName,
+    public static MCPInteractionTraceRecord createInvalidAction(final int sequence, final int modelTurn, final String actionKind, final String targetName,
                                                                 final Map<String, Object> arguments, final String failureType) {
-        return new MCPInteractionTraceRecord(sequence, actionKind, MODEL_TOOL_CALL_ORIGIN, targetName, arguments, Map.of("error_code", failureType), false, 0L);
+        return new MCPInteractionTraceRecord(sequence, modelTurn, actionKind, MODEL_TOOL_CALL_ORIGIN, targetName, arguments, Map.of("error_code", failureType), false, 0L);
     }
 }

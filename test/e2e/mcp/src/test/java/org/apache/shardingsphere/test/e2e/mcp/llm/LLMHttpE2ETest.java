@@ -185,10 +185,11 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         if (0 > unscopedSearchIndex) {
             return LLME2EAssertionReport.failure("missing_unscoped_discovery", "The model did not discover metadata without database and schema scope.");
         }
+        int discoveryTurn = trace.get(unscopedSearchIndex).getModelTurn();
         Set<String> actualMetadataNames = new LinkedHashSet<>();
         for (int index = unscopedSearchIndex; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
-            if (isValidModelAction(each, "database_gateway_search_metadata")) {
+            if (isValidModelAction(each, "database_gateway_search_metadata") && (unscopedSearchIndex == index || each.getModelTurn() > discoveryTurn)) {
                 actualMetadataNames.addAll(getMetadataNames(each.getStructuredContent()));
             }
         }
@@ -245,7 +246,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         if (0 > recoveryResourceIndex) {
             return LLME2EAssertionReport.failure("missing_resource_recovery", "The model did not follow the stale response recovery action to a live resource containing orders.");
         }
-        Optional<Integer> actualCount = findQueryCount(trace, recoveryResourceIndex + 1);
+        Optional<Integer> actualCount = findQueryCount(trace, trace.get(recoveryResourceIndex).getModelTurn());
         if (actualCount.isEmpty() || getRequiredRuntimeFixture().totalOrders() != actualCount.get()) {
             return LLME2EAssertionReport.failure("query_evidence_mismatch", "The recovered conversation did not obtain the fixture row count from MCP.");
         }
@@ -267,20 +268,25 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private int findGuidedRecoveryResourceIndex(final List<MCPInteractionTraceRecord> trace, final int staleResourceIndex) {
-        List<Map<String, Object>> nextActions = getObjectList(trace.get(staleResourceIndex).getStructuredContent().get("next_actions"));
-        int recoveryResourceIndex = staleResourceIndex + 1;
-        if (nextActions.isEmpty() || recoveryResourceIndex >= trace.size()) {
+        MCPInteractionTraceRecord staleResource = trace.get(staleResourceIndex);
+        List<Map<String, Object>> nextActions = getObjectList(staleResource.getStructuredContent().get("next_actions"));
+        if (nextActions.isEmpty()) {
             return -1;
         }
         Map<String, Object> recoveryAction = nextActions.getFirst();
-        MCPInteractionTraceRecord recoveryResource = trace.get(recoveryResourceIndex);
-        if (!"resource_read".equals(recoveryAction.get("type"))
-                || !isValidModelAction(recoveryResource, "mcp_read_resource")
-                || !Objects.equals(recoveryAction.get("resource_uri"), recoveryResource.getArguments().get("uri"))
-                || !containsOrdersTable(recoveryResource.getStructuredContent())) {
+        if (!"resource_read".equals(recoveryAction.get("type"))) {
             return -1;
         }
-        return recoveryResourceIndex;
+        for (int index = staleResourceIndex + 1; index < trace.size(); index++) {
+            MCPInteractionTraceRecord each = trace.get(index);
+            if (each.getModelTurn() > staleResource.getModelTurn()
+                    && isValidModelAction(each, "mcp_read_resource")
+                    && Objects.equals(recoveryAction.get("resource_uri"), each.getArguments().get("uri"))
+                    && containsOrdersTable(each.getStructuredContent())) {
+                return index;
+            }
+        }
+        return -1;
     }
     
     private boolean containsOrdersTable(final Map<String, Object> structuredContent) {
@@ -294,10 +300,9 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 || expectedCategory.equals(recovery.get("category")) || expectedCategory.equals(recovery.get("recovery_category"));
     }
     
-    private Optional<Integer> findQueryCount(final List<MCPInteractionTraceRecord> trace, final int startIndex) {
-        for (int index = startIndex; index < trace.size(); index++) {
-            MCPInteractionTraceRecord each = trace.get(index);
-            if (!isValidModelAction(each, "database_gateway_execute_query") || !isOrdersCountQuery(each.getArguments())) {
+    private Optional<Integer> findQueryCount(final List<MCPInteractionTraceRecord> trace, final int previousModelTurn) {
+        for (MCPInteractionTraceRecord each : trace) {
+            if (each.getModelTurn() <= previousModelTurn || !isValidModelAction(each, "database_gateway_execute_query") || !isOrdersCountQuery(each.getArguments())) {
                 continue;
             }
             for (Map<String, Object> row : getObjectList(each.getStructuredContent().get("row_objects"))) {
@@ -375,6 +380,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private void assertTrace(final String scenarioId, final Collection<MCPInteractionTraceRecord> trace) {
         for (MCPInteractionTraceRecord each : trace) {
             assertTrue(0 < each.getSequence(), () -> "Trace sequence must be positive in " + scenarioId);
+            assertTrue(0 < each.getModelTurn(), () -> "Trace model turn must be positive in " + scenarioId);
             assertFalse(each.getActionKind().isBlank(), () -> "Trace action kind is blank in " + scenarioId);
             assertTrue(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN.equals(each.getActionOrigin()), () -> "Non-model trace action origin in " + scenarioId);
             assertFalse(each.getTargetName().isBlank(), () -> "Trace target name is blank in " + scenarioId);
