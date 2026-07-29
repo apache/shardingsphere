@@ -5010,6 +5010,28 @@
             </function-table>
         </from>
     </select>
+
+    <select sql-case-id="select_from_table_function_with_alias_columns">
+        <projections start-index="7" stop-index="9">
+            <column-projection name="r" start-index="7" stop-index="9">
+                <owner name="s" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <from start-index="16" stop-index="44">
+            <function-table start-index="16" stop-index="44" table-alias="s">
+                <table-function function-name="generate_series" text="generate_series(1, 3)" start-index="16" stop-index="36">
+                    <parameter>
+                        <literal-expression value="1" start-index="32" stop-index="32" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="3" start-index="35" stop-index="35" />
+                    </parameter>
+                </table-function>
+                <column name="r" start-index="43" stop-index="43" />
+            </function-table>
+        </from>
+    </select>
+
     <select sql-case-id="select_bitxor" db-types="Doris">
         <projections start-index="7" stop-index="17">
             <expression-projection text="BITXOR(3,5)" start-index="7" stop-index="17">

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Aggr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
@@ -74,6 +75,18 @@ class PostgreSQLStatementVisitorTest {
         Collection<ProjectionSegment> actualProjections = subqueryTableSegment.getSubquery().getSelect().getProjections().getProjections();
         assertThat(actualProjections.size(), is(3));
         actualProjections.forEach(each -> assertThat(each, isA(ExpressionProjectionSegment.class)));
+    }
+    
+    @Test
+    void assertVisitFunctionTableColumnAliases() {
+        SelectStatement statement = parseSelectStatement("SELECT s.r FROM generate_series(1, 3) AS s(r)");
+        assertTrue(statement.getFrom().isPresent());
+        assertThat(statement.getFrom().get(), isA(FunctionTableSegment.class));
+        FunctionTableSegment functionTableSegment = (FunctionTableSegment) statement.getFrom().get();
+        assertTrue(functionTableSegment.getAliasSegment().isPresent());
+        assertThat(functionTableSegment.getAliasSegment().get().getIdentifier().getValue(), is("s"));
+        Collection<String> actualColumns = functionTableSegment.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        assertThat(actualColumns, contains("r"));
     }
     
     @Test
