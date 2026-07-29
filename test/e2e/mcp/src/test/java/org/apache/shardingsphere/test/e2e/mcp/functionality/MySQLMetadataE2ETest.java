@@ -64,6 +64,21 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("httpTransportCase")
+    void assertReadUnknownDatabaseRecovery(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.readResource("shardingsphere://databases/missing_db");
+            assertTrue(getPayloadItems(actual).isEmpty());
+            assertThat(getObjectOrEmpty(actual.get("empty_state")).get("category"), is("unknown_database"));
+            assertThat(getObjectOrEmpty(actual.get("recovery")).get("category"), is("unknown_database"));
+            Map<String, Object> nextAction = getRequiredObjectList(actual.get("next_actions")).getFirst();
+            assertThat(nextAction.get("type"), is("resource_read"));
+            assertThat(nextAction.get("resource_uri"), is("shardingsphere://databases"));
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("singleMetadataResourceCases")
     void assertReadSingleMetadataResource(final String name, final RuntimeTransport transport,
                                           final String resourceUri, final String key, final String expectedValue) throws IOException, InterruptedException {
