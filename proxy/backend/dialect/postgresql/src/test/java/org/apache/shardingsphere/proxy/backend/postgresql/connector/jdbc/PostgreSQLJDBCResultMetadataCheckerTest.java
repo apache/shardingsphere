@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.connector.jdbc;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.DialectJDBCResultMetadataChecker;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -43,7 +47,8 @@ import static org.mockito.Mockito.when;
 
 class PostgreSQLJDBCResultMetadataCheckerTest {
     
-    private final PostgreSQLJDBCResultMetadataChecker checker = new PostgreSQLJDBCResultMetadataChecker();
+    private final DialectJDBCResultMetadataChecker checker = DatabaseTypedSPILoader.getService(
+            DialectJDBCResultMetadataChecker.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
     
     @Test
     void assertCheckSingleExecutionUnit() throws SQLException {
@@ -61,14 +66,23 @@ class PostgreSQLJDBCResultMetadataCheckerTest {
     }
     
     @Test
-    void assertCheckCompositeTypeAcrossExecutionUnits() throws SQLException {
+    void assertCheckMultipleExecutionUnitsInSameStorageUnit() throws SQLException {
+        PreparedStatement statement = mock(PreparedStatement.class);
+        ResultSetMetaData metaData = createMetaData(Types.STRUCT);
+        when(statement.getMetaData()).thenReturn(metaData);
+        assertDoesNotThrow(() -> checker.check(createExecutionUnits("ds_0", "ds_0"), statement, "SELECT record_value"));
+        verify(statement, never()).getMetaData();
+    }
+    
+    @Test
+    void assertCheckCompositeTypeAcrossStorageUnits() throws SQLException {
         PreparedStatement statement = mock(PreparedStatement.class);
         ResultSetMetaData metaData = createMetaData(Types.STRUCT);
         when(statement.getMetaData()).thenReturn(metaData);
         UnsupportedSQLOperationException actual =
-                assertThrows(UnsupportedSQLOperationException.class, () -> checker.check(createExecutionUnits("ds_0", "ds_0"), statement, "SELECT record_value"));
+                assertThrows(UnsupportedSQLOperationException.class, () -> checker.check(createExecutionUnits("ds_0", "ds_1"), statement, "SELECT record_value"));
         assertThat(actual.getMessage(), is(
-                "Unsupported SQL operation: PostgreSQL composite result columns cannot be returned when routed to multiple execution units."));
+                "Unsupported SQL operation: Composite result columns cannot be returned because the query is routed to multiple storage units."));
     }
     
     @Test

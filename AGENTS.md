@@ -1,10 +1,9 @@
 # ShardingSphere Codex Development Guide
 
-This repository guide is written for Codex using GPT-5.6 Sol. Keep only stable,
-repository-wide rules here and rely on Codex for ordinary coding competence.
-Follow every explicit rule literally; do not replace a repository rule with
-model judgment unless that rule authorizes it. Paths are relative to the
-repository root.
+This repository guide is written for Codex. Keep only stable, repository-wide
+rules here and rely on Codex for ordinary coding competence. Follow every
+explicit rule literally; do not replace a repository rule with general judgment
+unless that rule authorizes it. Paths are relative to the repository root.
 
 ## Instruction Sources
 
@@ -23,7 +22,10 @@ repository root.
 
 ### Changing This Guide
 
-For changes to this guide, use `.codex/harness/agents/` and:
+For changes to this guide, use `.codex/harness/agents/`. `cases.toml` is the
+source of the harness catalog: each case records its group, purpose, enforcement
+phase, and whether the ordinary completion loop rechecks it. Run
+`python3 .codex/harness/agents/run.py --list-cases` to render the table.
 
 1. Treat every explicit requirement, prohibition, exception, authorization
    boundary, and verification step as an independent policy capability.
@@ -33,7 +35,7 @@ For changes to this guide, use `.codex/harness/agents/` and:
 3. Reconcile every deleted or weakened rule explicitly. A replacement is
    equivalent only when it preserves the same trigger, required or forbidden
    action, scope, exceptions, and verification obligation. A positive general
-   rule does not replace a specific negative prohibition. Model competence,
+   rule does not replace a specific negative prohibition. Ordinary Codex competence,
    implication, nearby prose, a Skill, or a canary is not evidence that any
    explicit rule is preserved. Partial or implicit coverage is a regression.
 4. Never remove, weaken, merge away, or broaden an exception to a capability
@@ -45,12 +47,26 @@ For changes to this guide, use `.codex/harness/agents/` and:
    action and reason is present, and every action outside its complete
    allowed-action set is absent. A partial forbidden-action list is
    insufficient.
-7. Run all policy canaries and reject any critical regression.
+7. Run all policy canaries and reject any critical regression. When the user
+   explicitly authorizes a case-contract change, name only that case with
+   `--authorized-contract-change`; every other changed or removed critical
+   contract remains a regression.
 8. Compare pass rate, duration, input tokens, and uncached input tokens with V0.
    Accept only candidates that preserve correctness; efficiency improvements
    count only after quality gates pass.
 9. If the same failure appears twice, add a focused case instead of generic
    prose. Stop after five candidates or when no measurable improvement remains.
+10. After the canaries pass, complete the applicable simplification, internal
+    candidate review, finding-fix, and re-review steps in the Completion Loop
+    before handoff.
+
+## Response Style
+
+- Use plain language and the shortest response that fully answers the request.
+- Do not add details unless the user requests them or they are necessary.
+- When details are necessary, put a self-contained concise answer above a line
+  containing only `---` and the details below it. Omit the separator when no
+  details follow.
 
 ## Authority and Safety
 
@@ -65,25 +81,30 @@ For changes to this guide, use `.codex/harness/agents/` and:
 - Preserve unrelated working-tree changes. Inspect `git status --short` before
   editing and never discard work whose ownership is uncertain.
 
-### Git Is Read-Only
+### Git Is Read-Only by Default
 
 The user owns every Git state change. Codex may use read-only Git commands such
 as `status`, `diff`, `show`, `log`, `blame`, `grep`, and `ls-files`.
 
-Never run a Git command that changes the index, working tree, refs, remotes,
-branches, tags, stashes, worktrees, or submodules. This prohibition includes
-`add`, `commit`, `push`, `fetch`, `pull`, `merge`, `rebase`, `reset`, `restore`,
-`checkout`, `switch`, `clean`, `cherry-pick`, `revert`, branch or tag mutation,
-stash mutation, worktree mutation, and `submodule update`. Do not stage changes
-or use Git as a rollback mechanism.
+Codex may run a Git state-changing command only when the current request
+explicitly authorizes that exact operation and its exact target. The
+authorization applies only to that operation in the current task; it does not
+authorize prerequisite, follow-up, adjacent, or future Git writes. Resolve the
+target with read-only inspection first and report the completed operation.
 
-When asked to commit, push, restore, or otherwise mutate Git, do not perform the
-Git action. Complete any separately authorized local edits, then provide the
-user with a commit message or exact manual next step. Proceed with those allowed
-parts of the request; refuse the prohibited Git mutation, not the entire task.
-When the request explicitly supplies an allowed fallback such as providing only
-a commit message, classify and execute the task as proceeding with that fallback
-while omitting every Git mutation.
+Without that exact authorization, never run a Git command that changes the
+index, working tree, refs, remotes, branches, tags, stashes, worktrees, or
+submodules. This prohibition includes `add`, `commit`, `push`, `fetch`, `pull`,
+`merge`, `rebase`, `reset`, `restore`, `checkout`, `switch`, `clean`,
+`cherry-pick`, `revert`, branch or tag mutation, stash mutation, worktree
+mutation, and `submodule update`. Do not stage changes or use Git as a rollback
+mechanism.
+
+When a requested Git write lacks exact authorization, complete any separately
+authorized local work, then provide a commit message or exact manual next step.
+Proceed with the allowed parts of the request; omit the unauthorized Git
+mutation rather than refusing the entire task. A request for only a commit
+message is not authorization to commit.
 
 ### Remote Writes and Sensitive Data
 
@@ -91,23 +112,23 @@ while omitting every Git mutation.
   repository, deployment, production API, connector, cloud task, message, or
   other remote state. Perform a remote write only when the current request
   explicitly names the action and exact target.
-- Do not send credentials, tokens, private keys, private logs, proprietary
+- Do not transmit credentials, tokens, private keys, private logs, proprietary
   source, personal data, connection strings, or other sensitive repository data
-  to any model, website, search query, connector, plugin, MCP server, review
-  service, or external tool beyond the active user-authorized Codex/Sol task.
+  outside the active user-authorized Codex task, including to websites, search
+  queries, connectors, plugins, MCP servers, review services, or external tools.
   Redact sensitive values from commands, summaries, and retained artifacts.
-- Do not invoke a different model or cross-model review service. The policy
-  harness in `.codex/harness/agents/` is the only additional-model exception:
-  it may invoke the pinned GPT-5.6 Sol model only with synthetic, non-sensitive
-  policy cases in a read-only, ephemeral task. Do not include source, logs,
-  task data, or sensitive values in its prompt. Otherwise perform bounded
-  self-review in the active Codex/Sol task.
+- Do not invoke an additional Codex task or external review service. The policy
+  harness in `.codex/harness/agents/` is the only exception: it may run a
+  separate isolated Codex task only with synthetic, non-sensitive policy cases
+  in a read-only, ephemeral environment. Do not include source, logs, task data,
+  or sensitive values in its prompt. Otherwise perform bounded self-review in
+  the active user-authorized Codex task.
 
 ### Destructive and High-Risk Local Actions
 
 Before deleting files or data, bulk-editing non-code artifacts, removing Docker
-images or containers, changing global configuration, permissions, or packages,
-or performing another destructive local action:
+containers, changing global configuration, permissions, or packages, or
+performing another destructive local action:
 
 1. Resolve and inspect the exact targets with read-only commands.
 2. State the impact and whether recovery is reliable.
@@ -116,14 +137,17 @@ or performing another destructive local action:
 
 A reliable recovery path is a verified backup or source plus concrete restore
 steps, or a deterministic rebuild or re-download whose origin has been
-confirmed. Git is not a recovery path for Codex because Git writes are
-forbidden. If the only copy would be lost, the source is unknown, or recovery
-has not been verified, state that there is no reliable rollback and confirm
-again before acting. Never imply that an irreversible action is recoverable.
+confirmed. Git is a recovery path only when the current task separately
+authorizes the exact restore operation. If the only copy would be lost, the
+source is unknown, or recovery has not been verified, state that there is no
+reliable rollback and confirm again before acting. Never imply that an
+irreversible action is recoverable.
 
 For Docker cleanup, distinguish reproducible images and containers from
-persistent volumes or local data. Broad requests such as “clean whatever is
-unused” authorize inspection only, not deletion.
+persistent volumes or local data. When Docker cleanup is in scope, Codex may
+remove images that inspection proves unused and reproducible without another
+confirmation. This exception does not authorize removing containers, volumes,
+or local data, or an image whose source or reproducibility is uncertain.
 
 Use this prompt when confirmation is required:
 
@@ -174,30 +198,52 @@ changing, or removing an SPI always follows this gate.
 
 If the user rejects a design, stop patching it. Remove only current-task changes
 that are provably part of the rejected design, preserve unrelated work, and
-redesign from the last confirmed boundary. Because Git writes are forbidden,
-perform any authorized restoration through precise file edits.
+redesign from the last confirmed boundary. Restore through precise file edits
+unless the current task separately authorizes the exact Git restore operation.
 
 ## Implementation Rules
 
+### Codex Design Style
+
+Apply this section to every production, test, script, or other implementation
+created or changed within the authorized boundary. Treat an in-scope violation
+in the effective candidate as a required finding and fix it before handoff; do
+not expand scope or rewrite unrelated existing code.
+
+- Within already-authorized designs, resolve trade-offs in this order: semantic
+  and contract correctness; correct behavior and module ownership; verified
+  compatibility and real boundaries; minimal conceptual surface and local
+  readability; consistency with maintained nearby code and direct reuse;
+  testability; then optional extensibility, formal symmetry, or structural
+  completeness. A lower-priority concern must not compromise a higher-priority
+  one. This order does not override authority, safety, scope, or architecture
+  gates.
 - Preserve existing architecture by default. Prefer direct reuse, then
   composition or delegation, then an existing extension point. Do not invent a
   boundary when no maintained precedent exists.
-- Use the smallest clear implementation. Every added line, helper, abstraction,
-  identifier, literal, guard, copy, wrapper, and configuration entry must serve
-  production behavior, a public contract, regression protection, diagnostics,
-  safety, readability, or removal of real duplication. Do not add code for
-  formal symmetry, coverage appearance, structural completeness, hypothetical
-  reuse, or test convenience. Avoid unnecessary locals, thin wrappers, helpers,
-  comments, guards, and copies; inline single-use locals unless a name improves
-  readability.
+- Use the smallest clear implementation and minimize conceptual surface rather
+  than line count. Prefer one readable local flow with the fewest independently
+  meaningful types, states, representations, execution paths, and cross-file
+  hops. Every added line, helper, abstraction, identifier, literal, guard, copy,
+  wrapper, and configuration entry must serve production behavior, a public
+  contract, regression protection, diagnostics, safety, readability, or removal
+  of real duplication. Do not add code for formal symmetry, coverage appearance,
+  structural completeness, hypothetical reuse, or test convenience. Avoid
+  unnecessary locals, thin wrappers, helpers, comments, guards, and copies;
+  inline single-use locals unless a name improves readability. Keep a name,
+  local variable, or extraction when it materially clarifies intent; do not
+  compress code mechanically.
 - A new abstraction must own production behavior, state, or a contract that
-  existing types cannot express. Forwarding, renaming, multiple callers,
-  readability alone, direct test value, symmetry, type distinction, shorter
-  call sites, test convenience, and anticipated reuse are insufficient. Reuse
-  alone never authorizes changing `final`, visibility, inheritance, or
-  shared-code ownership. Do not wrap a simple internal two-path flow in marker
-  interfaces, result hierarchies, or DTO-style helpers unless they define a
-  stable boundary, keep the owner readable, or remove meaningful duplication.
+  existing types cannot express and must represent a real, stable variation or
+  boundary. Define the narrowest contract, keep common behavior in its owner,
+  and isolate only true implementation or dialect differences. Forwarding,
+  renaming, multiple callers, readability alone, direct test value, symmetry,
+  type distinction, shorter call sites, test convenience, and anticipated reuse
+  are insufficient. Reuse alone never authorizes changing `final`, visibility,
+  inheritance, or shared-code ownership. Do not wrap a simple internal two-path
+  flow in marker interfaces, result hierarchies, or DTO-style helpers unless
+  they define a stable boundary, keep the owner readable, or remove meaningful
+  duplication. This rule does not bypass the architecture-change gate.
 - Do not introduce package-private top-level helper types by default. Keep a
   small single-owner helper private and nested; add a top-level helper only when
   the approved production behavior, state, or contract cannot reasonably be
@@ -215,10 +261,14 @@ perform any authorized restoration through precise file edits.
   references, including method references, generated accessors, overrides,
   reflection, registrations, tests, E2E, and external consumers.
 - Inspect every usage match; a single regex or production-only search is not
-  sufficient evidence. Remove obsolete in-scope code and legacy compatibility
-  shims after verifying usages and contracts. Do not leave placeholders, TODO
-  implementations, speculative compatibility shims, or test-only production
-  hooks.
+  sufficient evidence. Make the change converge on one coherent model: correct
+  or replace the existing owner before adding a parallel path, then remove
+  superseded in-scope representations, paths, adapters, shims, tests,
+  configuration, and other obsolete code after verifying usages and contracts.
+  Keep coexistence only for a verified compatibility contract. If convergence
+  exceeds the acceptance checklist or file-type authorization, stop at the
+  existing gate. Do not leave placeholders, TODO implementations, speculative
+  compatibility shims, or test-only production hooks.
 - When adding a database, dialect, plugin, or module, reuse the applicable
   framework and extension mechanisms. Keep derived dialects aligned with shared
   behavior and isolate only real differences. If no maintained precedent
@@ -355,8 +405,9 @@ Use the matching Skill when its trigger applies:
 
 - Issue diagnosis and copy-ready maintainer replies: `$analyze-issue`.
 - Unit-test generation or systematic coverage work: `$gen-ut`.
-- PR correctness, side effects, mergeability, or GitHub review replies:
-  `$review-pr`.
+- PR correctness, side effects, mergeability, GitHub review replies, or the
+  pre-handoff review of an authorized implementation targeting an existing PR:
+  `$review-pr`. For pre-handoff review, use its Local Candidate Preflight Mode.
 - Implementation or review whose correctness depends on the current version of
   an external framework or library: use `$source-driven-development`. Identify
   the applicable version from repository dependency metadata, verify the
@@ -391,7 +442,7 @@ Do not include sensitive repository data in external searches.
   test the complete external output when it could expose credentials, tokens,
   connection strings, SQL, paths, or user data.
 - Regenerate or verify affected snapshots, golden files, fingerprints, SQL
-  cases, descriptors, schemas, and model-visible metadata with the existing
+  cases, descriptors, schemas, and agent-visible metadata with the existing
   project tool.
 - Determine affected GitHub Actions from changed-file path filters and job
   commands. Run the local equivalent when practical; otherwise record the
@@ -464,7 +515,8 @@ After the last file-changing action:
 
 ## Completion Loop
 
-For an authorized implementation:
+For an authorized change, build, implement, or fix request, excluding a
+standalone restoration or rollback:
 
 1. Compare the read-only `git diff` and surrounding context with the acceptance
    checklist.
@@ -479,10 +531,23 @@ For an authorized implementation:
    violation instead of reporting it as an accepted risk.
 4. Apply `$code-simplification` when available, or its equivalent checklist, to
    remove unnecessary complexity without changing behavior.
-5. Apply `$code-review-and-quality` when available, or an equivalent review,
-   before handoff and fix every safe in-scope required finding.
-6. Rerun checks invalidated by a fix, then repeat the semantic diff review.
-7. Stop when no required in-scope finding remains. Do not iterate for optional
+5. Review the effective local candidate against the same code-correctness gates
+   used by `$review-pr`: root cause and fix mapping, affected behavior, side
+   effects and regressions, contracts and architecture, test validity, and
+   adversarial cases. Apply `$code-review-and-quality` when available, or its
+   equivalent review, for the general quality axes; it does not replace these
+   shared correctness gates.
+6. When the implementation targets an existing PR, also apply `$review-pr` in
+   Local Candidate Preflight Mode before handoff. PR-specific public-head and
+   remote-evidence checks remain part of formal PR review.
+7. Fix every safe in-scope required finding, rerun invalidated checks, and
+   repeat the applicable reviews. If a finding requires scope expansion, an
+   unresolved architecture choice, or a high-risk action, stop at its existing
+   authorization gate instead of fixing it automatically.
+8. Hand off and propose a commit message only after one complete applicable
+   review pass finds zero new required issues. Do not defer a locally
+   discoverable required finding to a later formal PR review.
+9. Stop when no required in-scope finding remains. Do not iterate for optional
    polish, broad cleanup, or risky refactoring.
 
 If a report or verdict is disproved, fix the highest-leverage rule, schema,
@@ -491,5 +556,5 @@ the user explicitly requests a one-off correction.
 
 The final response must lead with the outcome and include changed files and
 rationale, commands with exit codes, verification status, remaining risks, and
-the next action only when one is still required. When changes are ready, provide
-a proposed Git commit message; never stage or commit them.
+the next action only when one is still required. When Git commit authorization
+is absent, provide a proposed commit message without staging or committing.
