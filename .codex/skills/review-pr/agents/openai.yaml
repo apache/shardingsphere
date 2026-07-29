@@ -17,7 +17,7 @@
 
 interface:
   display_name: "Review PR"
-  short_description: "Root-cause PR review and reply drafting"
+  short_description: "Evidence-backed PR review and reply drafting"
   default_prompt: >-
-    Use $review-pr to review a ShardingSphere PR or PR discussion with public
-    evidence, full-coverage ledger mode when needed, and committer-style output.
+    Use $review-pr to review a ShardingSphere PR or PR discussion from current
+    public evidence and return one concise, copy-ready Markdown result.
