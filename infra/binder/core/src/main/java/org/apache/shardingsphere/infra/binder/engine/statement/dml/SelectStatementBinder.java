@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.combine.CombineSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.FunctionExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.WindowItemSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyU
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
@@ -96,8 +98,9 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         HavingSegment boundHaving =
                 sqlStatement.getHaving().map(optional -> HavingSegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         WindowSegment boundWindow = sqlStatement.getWindow().map(optional -> bindWindowSegment(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        Collection<FunctionSegment> boundTransformSegments = bindTransformSegments(sqlStatement, binderContext, tableBinderContexts, outerTableBinderContexts);
         return copy(sqlStatement, boundWith, boundFrom.orElse(null), boundProjections, boundWhere,
-                boundHierarchicalQuery, boundCombine, boundLock, boundGroupBy, boundOrderBy, boundHaving, boundModel, boundWindow);
+                boundHierarchicalQuery, boundCombine, boundLock, boundGroupBy, boundOrderBy, boundHaving, boundModel, boundWindow, boundTransformSegments);
     }
     
     private ModelSegment bindModelSegment(final ModelSegment segment, final SQLStatementBinderContext binderContext,
@@ -185,12 +188,23 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     private SelectStatement copy(final SelectStatement sqlStatement, final WithSegment boundWith, final TableSegment boundFrom, final ProjectionsSegment boundProjections,
                                  final WhereSegment boundWhere, final HierarchicalQuerySegment boundHierarchicalQuery, final CombineSegment boundCombine,
                                  final LockSegment boundLock, final GroupBySegment boundGroupBy, final OrderBySegment boundOrderBy, final HavingSegment boundHaving,
-                                 final ModelSegment boundModel, final WindowSegment boundWindow) {
+                                 final ModelSegment boundModel, final WindowSegment boundWindow, final Collection<FunctionSegment> boundTransformSegments) {
         SelectStatement result = SelectStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).from(boundFrom).projections(boundProjections)
                 .where(boundWhere).hierarchicalQuery(boundHierarchicalQuery).combine(boundCombine).lock(boundLock).groupBy(boundGroupBy).orderBy(boundOrderBy).having(boundHaving)
                 .limit(sqlStatement.getLimit().orElse(null)).window(boundWindow).model(boundModel)
                 .subqueryType(sqlStatement.getSubqueryType().orElse(null)).build();
+        result.getTransformSegments().addAll(boundTransformSegments);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        return result;
+    }
+    
+    private Collection<FunctionSegment> bindTransformSegments(final SelectStatement sqlStatement, final SQLStatementBinderContext binderContext,
+                                                              final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                              final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        Collection<FunctionSegment> result = new LinkedList<>();
+        for (FunctionSegment each : sqlStatement.getTransformSegments()) {
+            result.add(FunctionExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts));
+        }
         return result;
     }
     

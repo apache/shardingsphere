@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.AggregationDistinctProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.AggregationProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
@@ -130,11 +131,8 @@ public final class ProjectionsSegmentBinder {
                                                                                           final SQLStatementBinderContext binderContext,
                                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(aggregationDistinctSegment.getStartIndex(), aggregationDistinctSegment.getStopIndex(),
-                aggregationDistinctSegment.getType(), aggregationDistinctSegment.getExpression(), aggregationDistinctSegment.getDistinctInnerExpression(),
-                aggregationDistinctSegment.getSeparator().orElse(null));
-        aggregationDistinctSegment.getParameters()
-                .forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        AggregationDistinctProjectionSegment result =
+                AggregationDistinctProjectionSegmentBinder.bind(aggregationDistinctSegment, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
         aggregationDistinctSegment.getAliasSegment().ifPresent(result::setAlias);
         return result;
     }
