@@ -184,6 +184,10 @@ def cmd_add_finding(args: argparse.Namespace) -> int:
         "origin": args.origin or "",
         "fix_boundary": args.fix_boundary or "",
         "evidence": args.evidence or [],
+        "full_path": args.full_path or [],
+        "counter_evidence": args.counter_evidence or [],
+        "necessity": args.necessity or "",
+        "scope_proof": args.scope_proof or "",
         "files": args.file or [],
         "reason": args.reason or "",
     }
@@ -254,6 +258,14 @@ def validate_ledger(ledger: dict[str, Any]) -> list[str]:
                 result.append(f"{each['id']} confirmed finding is missing fix boundary")
             if not each["evidence"]:
                 result.append(f"{each['id']} confirmed finding is missing evidence")
+            if not each.get("full_path"):
+                result.append(f"{each['id']} confirmed finding is missing full-path review")
+            if not each.get("counter_evidence"):
+                result.append(f"{each['id']} confirmed finding is missing counter-evidence review")
+            if not each.get("necessity"):
+                result.append(f"{each['id']} confirmed finding is missing necessity")
+            if not each.get("scope_proof"):
+                result.append(f"{each['id']} confirmed finding is missing scope proof")
             if not each["files"]:
                 result.append(f"{each['id']} confirmed finding is missing scope files")
         if "review-incomplete-gap" == each["status"] and not each["reason"]:
@@ -319,6 +331,10 @@ def build_parser() -> argparse.ArgumentParser:
     finding.add_argument("--origin", help="Finding origin classification")
     finding.add_argument("--fix-boundary", help="Minimum independent fix boundary")
     finding.add_argument("--evidence", action="append", help="Public or sanitized evidence anchor")
+    finding.add_argument("--full-path", action="append", help="Production or test path traced end to end")
+    finding.add_argument("--counter-evidence", action="append", help="Strongest counter-evidence checked")
+    finding.add_argument("--necessity", help="Why the change is required for safety or correctness")
+    finding.add_argument("--scope-proof", help="Why the PR owns the finding")
     finding.add_argument("--file", action="append", help="Repository-relative scope file")
     finding.add_argument("--reason", help="Reason for an incomplete or non-blocking classification")
     finding.set_defaults(func=cmd_add_finding)
