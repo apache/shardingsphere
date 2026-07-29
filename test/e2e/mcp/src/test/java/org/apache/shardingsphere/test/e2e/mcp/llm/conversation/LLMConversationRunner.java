@@ -125,7 +125,7 @@ public final class LLMConversationRunner {
                 .map(each -> LLMMCPJsonValues.castToMap(each.get("function")))
                 .map(each -> String.valueOf(each.get("name")))
                 .collect(Collectors.toSet());
-        for (int i = 0; i < maxTurns; i++) {
+        for (int turnIndex = 0; turnIndex < maxTurns; turnIndex++) {
             LLMChatCompletion completion;
             try {
                 completion = llmChatClient.complete(messages, toolDefinitions, "auto", false);
@@ -138,7 +138,7 @@ public final class LLMConversationRunner {
                 return createFinalResult(scenario, completion.getContent(), artifacts);
             }
             messages.add(LLMChatMessage.assistant(completion.getContent(), completion.getToolCalls()));
-            Optional<Result> failure = executeToolCalls(scenario, completion.getToolCalls(), messages, artifacts, availableToolNames);
+            Optional<Result> failure = executeToolCalls(scenario, turnIndex + 1, completion.getToolCalls(), messages, artifacts, availableToolNames);
             if (failure.isPresent()) {
                 return failure.get();
             }
@@ -147,11 +147,11 @@ public final class LLMConversationRunner {
                 LLME2EAssertionReport.failure("turn_limit_exhausted", "Model did not produce a final answer within the configured turn limit."));
     }
     
-    private Optional<Result> executeToolCalls(final Scenario scenario, final List<LLMToolCall> toolCalls, final List<LLMChatMessage> messages,
+    private Optional<Result> executeToolCalls(final Scenario scenario, final int modelTurn, final List<LLMToolCall> toolCalls, final List<LLMChatMessage> messages,
                                               final ConversationArtifacts artifacts, final Set<String> availableToolNames) throws InterruptedException {
         for (LLMToolCall each : toolCalls) {
             if (!availableToolNames.contains(each.getName())) {
-                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), TOOL_CALL_KIND, each.getName(),
+                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), modelTurn, TOOL_CALL_KIND, each.getName(),
                         Map.of("rawArgumentsJson", each.getArgumentsJson()), "unexpected_tool_requested"));
                 return Optional.of(artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("unexpected_tool_requested", "Model requested a tool that was not advertised for this scenario.")));
@@ -160,7 +160,7 @@ public final class LLMConversationRunner {
             try {
                 arguments = LLMMCPJsonValues.parseToolArguments(each.getArgumentsJson());
             } catch (final IllegalArgumentException ex) {
-                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), TOOL_CALL_KIND, each.getName(),
+                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), modelTurn, TOOL_CALL_KIND, each.getName(),
                         Map.of("rawArgumentsJson", each.getArgumentsJson()), "invalid_tool_arguments"));
                 return Optional.of(artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("invalid_tool_arguments", "Model returned invalid tool arguments JSON.")));
@@ -169,7 +169,7 @@ public final class LLMConversationRunner {
             if (validationFailure.isPresent()) {
                 LLMMCPToolCallValidationFailure failure = validationFailure.get();
                 artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(
-                        artifacts.nextSequence(), getActionKind(each.getName()), each.getName(), arguments, failure.getFailureType()));
+                        artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), each.getName(), arguments, failure.getFailureType()));
                 return Optional.of(artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure(failure.getFailureType(), failure.getMessage())));
             }
@@ -178,7 +178,8 @@ public final class LLMConversationRunner {
             try {
                 response = actionExecutor.executeSafely(each.getName(), arguments);
             } catch (final IllegalArgumentException ex) {
-                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), TOOL_CALL_KIND, each.getName(), arguments, "invalid_tool_arguments"));
+                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(
+                        artifacts.nextSequence(), modelTurn, TOOL_CALL_KIND, each.getName(), arguments, "invalid_tool_arguments"));
                 return Optional.of(artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("invalid_tool_arguments", ex.getMessage())));
             } catch (final IllegalStateException ex) {
@@ -187,7 +188,7 @@ public final class LLMConversationRunner {
             }
             long latencyMillis = System.currentTimeMillis() - startTime;
             artifacts.addTrace(new MCPInteractionTraceRecord(
-                    artifacts.nextSequence(), getActionKind(each.getName()), MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
+                    artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
                     each.getName(), getTraceArguments(each.getName(), arguments), response, true, latencyMillis));
             artifacts.addRuntimeLogLine("action=" + each.getName() + " args=" + JsonUtils.toJsonString(arguments));
             artifacts.addRuntimeLogLine("response=" + JsonUtils.toJsonString(response));

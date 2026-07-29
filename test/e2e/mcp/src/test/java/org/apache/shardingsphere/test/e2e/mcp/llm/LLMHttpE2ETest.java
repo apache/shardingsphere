@@ -72,7 +72,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String TABLE_NAME = "orders";
     
-    private static final String STALE_TABLE_RESOURCE_URI = "shardingsphere://databases/unknown/schemas/unknown/tables/orders";
+    private static final String STALE_TABLE_RESOURCE_URI = "shardingsphere://databases/logic_db/schemas/logic_db/tables/missing_orders";
     
     private static final Set<String> EXPECTED_METADATA_NAMES = Set.of("active_orders", "order_items", "orders");
     
@@ -181,25 +181,25 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private LLME2EAssertionReport evaluateMetadataDiscovery(final String answer, final List<MCPInteractionTraceRecord> trace) {
-        boolean unscopedSearchObserved = trace.stream()
-                .filter(each -> isValidModelAction(each, "database_gateway_search_metadata"))
-                .map(MCPInteractionTraceRecord::getArguments)
-                .anyMatch(each -> !each.containsKey("database") && !each.containsKey("schema"));
-        if (!unscopedSearchObserved) {
-            return LLME2EAssertionReport.failure("missing_unscoped_discovery", "The model did not start metadata discovery without database and schema scope.");
+        int unscopedSearchIndex = findUnscopedMetadataSearchIndex(trace);
+        if (0 > unscopedSearchIndex) {
+            return LLME2EAssertionReport.failure("missing_unscoped_discovery", "The model did not discover metadata without database and schema scope.");
         }
-        boolean matchingEvidenceObserved = trace.stream()
-                .filter(each -> isValidModelAction(each, "database_gateway_search_metadata"))
-                .map(MCPInteractionTraceRecord::getStructuredContent)
-                .map(this::getMetadataNames)
-                .anyMatch(EXPECTED_METADATA_NAMES::equals);
-        if (!matchingEvidenceObserved) {
-            return LLME2EAssertionReport.failure("metadata_evidence_mismatch", "No MCP metadata response contained the expected table and view set.");
+        int discoveryTurn = trace.get(unscopedSearchIndex).getModelTurn();
+        Set<String> actualMetadataNames = new LinkedHashSet<>();
+        for (int index = unscopedSearchIndex; index < trace.size(); index++) {
+            MCPInteractionTraceRecord each = trace.get(index);
+            if (isValidModelAction(each, "database_gateway_search_metadata") && (unscopedSearchIndex == index || each.getModelTurn() > discoveryTurn)) {
+                actualMetadataNames.addAll(getMetadataNames(each.getStructuredContent()));
+            }
+        }
+        if (!EXPECTED_METADATA_NAMES.equals(actualMetadataNames)) {
+            return LLME2EAssertionReport.failure("metadata_evidence_mismatch", "MCP metadata responses did not contain the expected table and view set.");
         }
         String normalizedAnswer = answer.toLowerCase(Locale.ENGLISH);
         return EXPECTED_METADATA_NAMES.stream().allMatch(each -> containsIdentifier(normalizedAnswer, each))
-                ? LLME2EAssertionReport.success("The answer named every object returned by the live MCP metadata search.")
-                : LLME2EAssertionReport.failure("answer_mismatch", "The answer omitted an object returned by the live MCP metadata search.");
+                ? LLME2EAssertionReport.success("The answer named every object returned by the live MCP metadata searches.")
+                : LLME2EAssertionReport.failure("answer_mismatch", "The answer omitted an object returned by the live MCP metadata searches.");
     }
     
     private LLME2EAssertionReport evaluateSideEffectPreview(final String answer, final List<MCPInteractionTraceRecord> trace, final String statusBefore) {
@@ -242,11 +242,11 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         if (0 > staleResourceIndex) {
             return LLME2EAssertionReport.failure("missing_stale_resource_error", "The model did not observe the stale resource error.");
         }
-        int liveResourceIndex = findLiveTableResourceIndex(trace, staleResourceIndex + 1);
-        if (0 > liveResourceIndex) {
-            return LLME2EAssertionReport.failure("missing_resource_recovery", "The model did not discover and read the live orders resource after the stale error.");
+        int recoveryResourceIndex = findGuidedRecoveryResourceIndex(trace, staleResourceIndex);
+        if (0 > recoveryResourceIndex) {
+            return LLME2EAssertionReport.failure("missing_resource_recovery", "The model did not follow the stale response recovery action to a live resource containing orders.");
         }
-        Optional<Integer> actualCount = findQueryCount(trace, liveResourceIndex + 1);
+        Optional<Integer> actualCount = findQueryCount(trace, trace.get(recoveryResourceIndex).getModelTurn());
         if (actualCount.isEmpty() || getRequiredRuntimeFixture().totalOrders() != actualCount.get()) {
             return LLME2EAssertionReport.failure("query_evidence_mismatch", "The recovered conversation did not obtain the fixture row count from MCP.");
         }
@@ -260,18 +260,28 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             MCPInteractionTraceRecord each = trace.get(index);
             if (isValidModelAction(each, "mcp_read_resource")
                     && STALE_TABLE_RESOURCE_URI.equals(each.getArguments().get("uri"))
-                    && hasRecoveryCategory(each.getStructuredContent(), "unknown_database")) {
+                    && hasRecoveryCategory(each.getStructuredContent(), "object_not_visible")) {
                 return index;
             }
         }
         return -1;
     }
     
-    private int findLiveTableResourceIndex(final List<MCPInteractionTraceRecord> trace, final int startIndex) {
-        for (int index = startIndex; index < trace.size(); index++) {
+    private int findGuidedRecoveryResourceIndex(final List<MCPInteractionTraceRecord> trace, final int staleResourceIndex) {
+        MCPInteractionTraceRecord staleResource = trace.get(staleResourceIndex);
+        List<Map<String, Object>> nextActions = getObjectList(staleResource.getStructuredContent().get("next_actions"));
+        if (nextActions.isEmpty()) {
+            return -1;
+        }
+        Map<String, Object> recoveryAction = nextActions.getFirst();
+        if (!"resource_read".equals(recoveryAction.get("type"))) {
+            return -1;
+        }
+        for (int index = staleResourceIndex + 1; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
-            if (isValidModelAction(each, "mcp_read_resource")
-                    && !STALE_TABLE_RESOURCE_URI.equals(each.getArguments().get("uri"))
+            if (each.getModelTurn() > staleResource.getModelTurn()
+                    && isValidModelAction(each, "mcp_read_resource")
+                    && Objects.equals(recoveryAction.get("resource_uri"), each.getArguments().get("uri"))
                     && containsOrdersTable(each.getStructuredContent())) {
                 return index;
             }
@@ -290,10 +300,9 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 || expectedCategory.equals(recovery.get("category")) || expectedCategory.equals(recovery.get("recovery_category"));
     }
     
-    private Optional<Integer> findQueryCount(final List<MCPInteractionTraceRecord> trace, final int startIndex) {
-        for (int index = startIndex; index < trace.size(); index++) {
-            MCPInteractionTraceRecord each = trace.get(index);
-            if (!isValidModelAction(each, "database_gateway_execute_query") || !isOrdersCountQuery(each.getArguments())) {
+    private Optional<Integer> findQueryCount(final List<MCPInteractionTraceRecord> trace, final int previousModelTurn) {
+        for (MCPInteractionTraceRecord each : trace) {
+            if (each.getModelTurn() <= previousModelTurn || !isValidModelAction(each, "database_gateway_execute_query") || !isOrdersCountQuery(each.getArguments())) {
                 continue;
             }
             for (Map<String, Object> row : getObjectList(each.getStructuredContent().get("row_objects"))) {
@@ -329,6 +338,18 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         return result;
     }
     
+    private int findUnscopedMetadataSearchIndex(final List<MCPInteractionTraceRecord> trace) {
+        for (int index = 0; index < trace.size(); index++) {
+            MCPInteractionTraceRecord each = trace.get(index);
+            if (isValidModelAction(each, "database_gateway_search_metadata")
+                    && !each.getArguments().containsKey("database") && !each.getArguments().containsKey("schema")
+                    && getObjectList(each.getStructuredContent().get("items")).stream().anyMatch(item -> DATABASE_NAME.equals(item.get("database")))) {
+                return index;
+            }
+        }
+        return -1;
+    }
+    
     private boolean isValidModelAction(final MCPInteractionTraceRecord traceRecord, final String actionName) {
         return traceRecord.isValid() && MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN.equals(traceRecord.getActionOrigin())
                 && actionName.equals(traceRecord.getTargetName());
@@ -359,6 +380,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private void assertTrace(final String scenarioId, final Collection<MCPInteractionTraceRecord> trace) {
         for (MCPInteractionTraceRecord each : trace) {
             assertTrue(0 < each.getSequence(), () -> "Trace sequence must be positive in " + scenarioId);
+            assertTrue(0 < each.getModelTurn(), () -> "Trace model turn must be positive in " + scenarioId);
             assertFalse(each.getActionKind().isBlank(), () -> "Trace action kind is blank in " + scenarioId);
             assertTrue(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN.equals(each.getActionOrigin()), () -> "Non-model trace action origin in " + scenarioId);
             assertFalse(each.getTargetName().isBlank(), () -> "Trace target name is blank in " + scenarioId);
