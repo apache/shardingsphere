@@ -152,21 +152,8 @@ public final class LLMChatModelClient {
         return castToList(payload.get("data")).stream().anyMatch(each -> config.getModelName().equals(Objects.toString(each.get("id"), "").trim()));
     }
     
-    boolean hasCompletionChoice(final String responseBody) {
-        return !castToList(parseJsonObject(responseBody, "Failed to parse readiness completion response.").get("choices")).isEmpty();
-    }
-    
     boolean hasToolCallChoice(final String responseBody) {
         return !createToolCalls(getFirstAssistantMessage(responseBody, "Failed to parse readiness tool-call response.").get("tool_calls")).isEmpty();
-    }
-    
-    boolean hasJsonCompletionChoice(final String responseBody) {
-        String content = Objects.toString(getFirstAssistantMessage(responseBody, "Failed to parse readiness JSON response.").get("content"), "").trim();
-        if (content.isEmpty()) {
-            return false;
-        }
-        parseJsonObject(content, "Failed to parse readiness JSON completion content.");
-        return true;
     }
     
     private Map<String, Object> getFirstAssistantMessage(final String responseBody, final String errorMessage) {

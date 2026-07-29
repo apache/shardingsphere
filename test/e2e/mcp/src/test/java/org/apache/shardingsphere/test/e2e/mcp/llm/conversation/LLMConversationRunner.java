@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatMes
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
@@ -32,24 +31,29 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
- * Run one autonomous LLM conversation without harness corrections.
+ * Run one LLM conversation without harness corrections.
  */
-public final class AutonomousLLMConversationRunner {
+public final class LLMConversationRunner {
+    
+    static final String READ_RESOURCE_TOOL_NAME = "mcp_read_resource";
+    
+    private static final String TOOL_CALL_KIND = "tool_call";
+    
+    private static final String RESOURCE_READ_KIND = "resource_read";
     
     private static final String SYSTEM_PROMPT = """
-            You are evaluating a live ShardingSphere MCP server in a read-only task. Use the available MCP functions to inspect current state.
+            You are evaluating a live ShardingSphere MCP server. Use the available MCP functions to inspect current state and complete the user's task.
             Choose tools from their advertised names, descriptions, and input schemas. Pass resource URIs only to mcp_read_resource, never as SQL.
-            Never guess, request a write, or stop before retrieving the requested value. Use function calls for every tool invocation rather than
-            printing a tool-call object as the answer. When you have enough evidence, follow the user's exact answer format and return only the answer
-            with no explanation or Markdown.
+            Never guess or stop before retrieving the requested evidence. Preview side effects without executing them. Use function calls for every
+            tool invocation rather than printing a tool-call object as the answer. When you have enough evidence, answer the user's question concisely.
             """;
-    
-    private static final List<String> BRIDGE_TOOL_NAMES = List.of(MCPInteractionActionNames.READ_RESOURCE);
     
     private final int maxTurns;
     
@@ -61,12 +65,12 @@ public final class AutonomousLLMConversationRunner {
     
     private final LLMMCPToolDefinitionFactory toolDefinitionFactory = new LLMMCPToolDefinitionFactory();
     
-    private final LLMMCPTraceRecordFactory traceRecordFactory = new LLMMCPTraceRecordFactory();
+    private final LLMMCPSafetyValidator safetyValidator = new LLMMCPSafetyValidator();
     
     private final LLMMCPActionExecutor actionExecutor;
     
-    public AutonomousLLMConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
-                                           final String modelName) {
+    public LLMConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
+                                 final String modelName) {
         this.maxTurns = maxTurns;
         this.llmChatClient = llmChatClient;
         this.mcpInteractionClient = mcpInteractionClient;
@@ -85,10 +89,8 @@ public final class AutonomousLLMConversationRunner {
         try {
             mcpInteractionClient.open();
             List<Map<String, Object>> advertisedTools = mcpInteractionClient.listTools();
-            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createReadOnlyFromRemote(advertisedTools, BRIDGE_TOOL_NAMES);
+            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createFromRemote(advertisedTools, scenario.allowsSideEffectPreview());
             artifacts.setToolDefinitions(toolDefinitions);
-            artifacts.addTrace(traceRecordFactory.createTraceRecord(artifacts.nextSequence(), MCPInteractionActionNames.LIST_TOOLS,
-                    MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN, Map.of(), Map.of("tools", advertisedTools), 0L));
             return runTurns(scenario, artifacts, toolDefinitions);
         } catch (final IOException ex) {
             return artifacts.createResult(scenario, modelName,
@@ -119,6 +121,10 @@ public final class AutonomousLLMConversationRunner {
         List<LLMChatMessage> messages = new LinkedList<>();
         messages.add(LLMChatMessage.system(SYSTEM_PROMPT));
         messages.add(LLMChatMessage.user(scenario.question()));
+        Set<String> availableToolNames = toolDefinitions.stream()
+                .map(each -> LLMMCPJsonValues.castToMap(each.get("function")))
+                .map(each -> String.valueOf(each.get("name")))
+                .collect(Collectors.toSet());
         for (int i = 0; i < maxTurns; i++) {
             LLMChatCompletion completion;
             try {
@@ -132,7 +138,7 @@ public final class AutonomousLLMConversationRunner {
                 return createFinalResult(scenario, completion.getContent(), artifacts);
             }
             messages.add(LLMChatMessage.assistant(completion.getContent(), completion.getToolCalls()));
-            Optional<Result> failure = executeToolCalls(scenario, completion.getToolCalls(), messages, artifacts, toolDefinitions);
+            Optional<Result> failure = executeToolCalls(scenario, completion.getToolCalls(), messages, artifacts, availableToolNames);
             if (failure.isPresent()) {
                 return failure.get();
             }
@@ -142,14 +148,10 @@ public final class AutonomousLLMConversationRunner {
     }
     
     private Optional<Result> executeToolCalls(final Scenario scenario, final List<LLMToolCall> toolCalls, final List<LLMChatMessage> messages,
-                                              final ConversationArtifacts artifacts, final List<Map<String, Object>> toolDefinitions) throws InterruptedException {
-        Set<String> availableToolNames = toolDefinitions.stream()
-                .map(each -> LLMMCPJsonValues.castToMap(each.get("function")))
-                .map(each -> String.valueOf(each.get("name")))
-                .collect(Collectors.toSet());
+                                              final ConversationArtifacts artifacts, final Set<String> availableToolNames) throws InterruptedException {
         for (LLMToolCall each : toolCalls) {
             if (!availableToolNames.contains(each.getName())) {
-                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", each.getName(),
+                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), TOOL_CALL_KIND, each.getName(),
                         Map.of("rawArgumentsJson", each.getArgumentsJson()), "unexpected_tool_requested"));
                 return Optional.of(artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("unexpected_tool_requested", "Model requested a tool that was not advertised for this scenario.")));
@@ -158,17 +160,25 @@ public final class AutonomousLLMConversationRunner {
             try {
                 arguments = LLMMCPJsonValues.parseToolArguments(each.getArgumentsJson());
             } catch (final IllegalArgumentException ex) {
-                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", each.getName(),
+                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), TOOL_CALL_KIND, each.getName(),
                         Map.of("rawArgumentsJson", each.getArgumentsJson()), "invalid_tool_arguments"));
                 return Optional.of(artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("invalid_tool_arguments", "Model returned invalid tool arguments JSON.")));
+            }
+            Optional<LLMMCPToolCallValidationFailure> validationFailure = safetyValidator.validate(each.getName(), arguments);
+            if (validationFailure.isPresent()) {
+                LLMMCPToolCallValidationFailure failure = validationFailure.get();
+                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(
+                        artifacts.nextSequence(), getActionKind(each.getName()), each.getName(), arguments, failure.getFailureType()));
+                return Optional.of(artifacts.createResult(scenario, modelName,
+                        LLME2EAssertionReport.failure(failure.getFailureType(), failure.getMessage())));
             }
             long startTime = System.currentTimeMillis();
             Map<String, Object> response;
             try {
                 response = actionExecutor.executeSafely(each.getName(), arguments);
             } catch (final IllegalArgumentException ex) {
-                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), "tool_call", each.getName(), arguments, "invalid_tool_arguments"));
+                artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(artifacts.nextSequence(), TOOL_CALL_KIND, each.getName(), arguments, "invalid_tool_arguments"));
                 return Optional.of(artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("invalid_tool_arguments", ex.getMessage())));
             } catch (final IllegalStateException ex) {
@@ -176,35 +186,51 @@ public final class AutonomousLLMConversationRunner {
                         LLME2EAssertionReport.failure("mcp_runtime_unavailable", ex.getMessage())));
             }
             long latencyMillis = System.currentTimeMillis() - startTime;
-            artifacts.addTrace(traceRecordFactory.createTraceRecord(artifacts.nextSequence(), each.getName(), MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
-                    arguments, response, latencyMillis));
+            artifacts.addTrace(new MCPInteractionTraceRecord(
+                    artifacts.nextSequence(), getActionKind(each.getName()), MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
+                    each.getName(), getTraceArguments(each.getName(), arguments), response, true, latencyMillis));
             artifacts.addRuntimeLogLine("action=" + each.getName() + " args=" + JsonUtils.toJsonString(arguments));
             artifacts.addRuntimeLogLine("response=" + JsonUtils.toJsonString(response));
-            messages.add(LLMChatMessage.tool(each.getId(), JsonUtils.toJsonString(response)));
+            messages.add(LLMChatMessage.tool(each.getId(), LLMMCPModelFacingToolResponseFormatter.format(response)));
         }
         return Optional.empty();
     }
     
+    private String getActionKind(final String toolName) {
+        return READ_RESOURCE_TOOL_NAME.equals(toolName) ? RESOURCE_READ_KIND : TOOL_CALL_KIND;
+    }
+    
+    private Map<String, Object> getTraceArguments(final String toolName, final Map<String, Object> arguments) {
+        return READ_RESOURCE_TOOL_NAME.equals(toolName)
+                ? Map.of("uri", Objects.toString(arguments.get("uri"), "").trim())
+                : arguments;
+    }
+    
     private Result createFinalResult(final Scenario scenario, final String actualAnswer, final ConversationArtifacts artifacts) {
         artifacts.setActualAnswer(actualAnswer.trim());
-        if (artifacts.getTrace().stream().noneMatch(each -> !MCPInteractionActionNames.LIST_TOOLS.equals(each.getTargetName()) && each.isValid())) {
+        if (artifacts.getTrace().stream().noneMatch(MCPInteractionTraceRecord::isValid)) {
             return artifacts.createResult(scenario, modelName,
                     LLME2EAssertionReport.failure("missing_mcp_evidence", "Model returned an answer without retrieving MCP evidence."));
         }
-        return scenario.expectedAnswer().equals(artifacts.getActualAnswer())
-                ? artifacts.createResult(scenario, modelName, LLME2EAssertionReport.success("Answer matched the live MCP evidence."))
-                : artifacts.createResult(scenario, modelName,
-                        LLME2EAssertionReport.failure("answer_mismatch", "Final answer did not match the expected value."));
+        LLME2EAssertionReport assertionReport;
+        try {
+            assertionReport = scenario.evaluator().apply(artifacts.getActualAnswer(), artifacts.getTrace());
+        } catch (final IllegalArgumentException | IllegalStateException | ClassCastException ex) {
+            assertionReport = LLME2EAssertionReport.failure("invalid_scenario_evidence", ex.getMessage());
+        }
+        return artifacts.createResult(scenario, modelName, assertionReport);
     }
     
     /**
-     * Autonomous LLM scenario.
+     * LLM scenario.
      *
      * @param id scenario ID
      * @param question question
-     * @param expectedAnswer expected answer
+     * @param allowsSideEffectPreview whether the scenario may expose update preview
+     * @param evaluator scenario evidence evaluator
      */
-    public record Scenario(String id, String question, String expectedAnswer) {
+    public record Scenario(String id, String question, boolean allowsSideEffectPreview,
+                           BiFunction<String, List<MCPInteractionTraceRecord>, LLME2EAssertionReport> evaluator) {
     }
     
     /**

@@ -55,7 +55,7 @@ final class LLMChatReadinessProbe {
     }
     
     private boolean isReadinessContractReady() throws IOException, InterruptedException {
-        return isModelListReady() && isCompletionProbeReady() && isRequiredToolProbeReady() && isAutoToolProbeReady() && isFinalAnswerProbeReady();
+        return isModelListReady() && isAutoToolProbeReady();
     }
     
     private boolean isModelListReady() throws IOException, InterruptedException {
@@ -66,38 +66,13 @@ final class LLMChatReadinessProbe {
         return client.containsModel(response.body());
     }
     
-    private boolean isCompletionProbeReady() throws IOException, InterruptedException {
-        HttpResponse<String> response = client.sendReadinessCompletionRequest(List.of(LLMChatMessage.user("Return ok.")), List.of(), "", false);
-        if (200 != response.statusCode()) {
-            throw new IllegalStateException(client.createHttpReadinessFailure("completion", response));
-        }
-        return client.hasCompletionChoice(response.body());
-    }
-    
-    private boolean isRequiredToolProbeReady() throws IOException, InterruptedException {
-        HttpResponse<String> response = client.sendReadinessCompletionRequest(List.of(LLMChatMessage.user("Call mcp_read_resource with uri mcp://readiness.")),
-                client.createReadinessTools(), "required", false);
-        if (200 != response.statusCode()) {
-            throw new IllegalStateException(client.createHttpReadinessFailure("tool-choice-required", response));
-        }
-        return client.hasToolCallChoice(response.body());
-    }
-    
     private boolean isAutoToolProbeReady() throws IOException, InterruptedException {
-        HttpResponse<String> response = client.sendReadinessCompletionRequest(List.of(LLMChatMessage.user("Return ok without calling tools.")), client.createReadinessTools(), "auto", false);
+        HttpResponse<String> response = client.sendReadinessCompletionRequest(List.of(
+                LLMChatMessage.user("Call mcp_read_resource with uri mcp://readiness.")), client.createReadinessTools(), "auto", false);
         if (200 != response.statusCode()) {
             throw new IllegalStateException(client.createHttpReadinessFailure("tool-choice-auto", response));
         }
-        return client.hasCompletionChoice(response.body());
-    }
-    
-    private boolean isFinalAnswerProbeReady() throws IOException, InterruptedException {
-        HttpResponse<String> response = client.sendReadinessCompletionRequest(List.of(LLMChatMessage.user(
-                "Respond with exactly {\"status\":\"ok\"} and no Markdown fences.")), List.of(), "none", true);
-        if (200 != response.statusCode()) {
-            throw new IllegalStateException(client.createHttpReadinessFailure("tool-choice-none-json", response));
-        }
-        return client.hasJsonCompletionChoice(response.body());
+        return client.hasToolCallChoice(response.body());
     }
     
     private boolean isNonRetryableReadinessFailure(final Exception cause) {

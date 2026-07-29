@@ -64,11 +64,8 @@ class LLMChatModelClientTest {
         HttpServer server = startModelServer(REQUIRED_MODEL, actualBodies);
         try {
             new LLMChatModelClient(createConfiguration(createBaseUrl(server), 1, 1), HttpClient.newHttpClient()).waitUntilReady();
-            assertThat(actualBodies.size(), is(4));
-            assertCoreCompletionPayload(readPayload(actualBodies.get(0)));
-            assertRequiredToolPayload(readPayload(actualBodies.get(1)));
-            assertAutoToolPayload(readPayload(actualBodies.get(2)));
-            assertFinalAnswerPayload(readPayload(actualBodies.get(3)));
+            assertThat(actualBodies.size(), is(1));
+            assertAutoToolPayload(readPayload(actualBodies.getFirst()));
         } finally {
             server.stop(0);
         }
@@ -86,7 +83,7 @@ class LLMChatModelClientTest {
         assertTrue(actualException.getMessage().startsWith(
                 String.format("Model service is not ready for `%s` after 1 readiness attempt(s), elapsedMillis=", REQUIRED_MODEL)));
         assertTrue(actualException.getMessage().endsWith(
-                "timeoutSeconds=600. Last readiness failure: completion readiness request returned HTTP 401 with error code `unauthorized`."));
+                "timeoutSeconds=600. Last readiness failure: tool-choice-auto readiness request returned HTTP 401 with error code `unauthorized`."));
         ArgumentCaptor<HttpRequest> requestCaptor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(httpClient, times(2)).send(requestCaptor.capture(), ArgumentMatchers.<HttpResponse.BodyHandler<String>>any());
         assertThat(requestCaptor.getAllValues().get(1).timeout().orElseThrow(), is(Duration.ofSeconds(300)));
@@ -138,22 +135,10 @@ class LLMChatModelClientTest {
         assertThat(actual.get("max_tokens"), is(maxTokens));
     }
     
-    private void assertRequiredToolPayload(final Map<String, Object> actual) {
-        assertCoreCompletionPayload(actual);
-        assertThat(actual.get("tool_choice"), is("required"));
-        assertThat(castToList(actual.get("tools")).size(), is(1));
-    }
-    
     private void assertAutoToolPayload(final Map<String, Object> actual) {
         assertCoreCompletionPayload(actual);
         assertThat(actual.get("tool_choice"), is("auto"));
         assertThat(castToList(actual.get("tools")).size(), is(1));
-    }
-    
-    private void assertFinalAnswerPayload(final Map<String, Object> actual) {
-        assertCoreCompletionPayload(actual);
-        assertThat(actual.get("tool_choice"), is("none"));
-        assertThat(castToMap(actual.get("response_format")).get("type"), is("json_object"));
     }
     
     private void assertCompletePayload(final Map<String, Object> actual) {
@@ -208,12 +193,10 @@ class LLMChatModelClientTest {
     }
     
     private String createReadinessResponse(final String requestBody) {
-        if (requestBody.contains("\"tool_choice\":\"required\"")) {
+        if (requestBody.contains("\"tool_choice\":\"auto\"")) {
             return createCompletionResponse("", true);
         }
-        return requestBody.contains("\"response_format\"")
-                ? "{\"choices\":[{\"message\":{\"content\":\"{\\\"status\\\":\\\"ok\\\"}\"}}]}"
-                : createCompletionResponse("ok", false);
+        return createCompletionResponse("ok", false);
     }
     
     private String createCompletionResponse(final String content, final boolean toolCall) {

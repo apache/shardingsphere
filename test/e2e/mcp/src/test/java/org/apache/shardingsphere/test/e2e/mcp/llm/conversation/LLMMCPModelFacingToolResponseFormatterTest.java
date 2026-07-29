@@ -205,6 +205,8 @@ class LLMMCPModelFacingToolResponseFormatterTest {
                         "ignored", "value")));
         assertThat(actual, is(Map.of(
                 "next_actions", List.of(
+                        Map.of("type", "tool_call", "tool_name", "database_gateway_execute_update", "title", "Execute", "reason", "approved",
+                                "arguments", Map.of("execution_mode", "execute")),
                         Map.of("type", "resource_read", "resource_uri", "shardingsphere://databases")),
                 "recovery", Map.of(
                         "recovery_category", "missing_context",
