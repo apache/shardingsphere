@@ -64,6 +64,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplemen
 import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorContext;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.memory.MemoryTableStatisticsBuilder;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
@@ -76,6 +77,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -91,11 +93,13 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -312,6 +316,89 @@ class EnumerableScanImplementorTest {
                 assertThat(connectionOffsets.get("ds_0"), is(1));
                 verify(preparedStatement).setObject(1, "bar_param");
                 assertFalse(mergeEngineMockedConstruction.constructed().isEmpty());
+            }
+        } finally {
+            ProcessRegistry.getInstance().remove("process_id");
+        }
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Test
+    void assertImplementWithJDBCEnumerableRepeatedEnumeratorCalls() throws SQLException {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(queryContext.isUseCache()).thenReturn(true);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(metaData.containsDatabase("foo_db")).thenReturn(true);
+        when(metaData.getDatabase("foo_db")).thenReturn(database);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(mock(RuleMetaData.class));
+        when(queryContext.getMetaData()).thenReturn(metaData);
+        when(queryContext.getParameters()).thenReturn(Collections.singletonList("param_0"));
+        SQLStatement sqlStatement = mock(SQLStatement.class);
+        CompilerContext compilerContext = mock(CompilerContext.class, RETURNS_DEEP_STUBS);
+        when(compilerContext.getSqlParserRule().getSQLParserEngine(databaseType).parse("SELECT ? FROM tbl", true)).thenReturn(sqlStatement);
+        SQLStatementContext boundStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(boundStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
+        when(boundStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        
+        ExecutorContext executorContext = mock(ExecutorContext.class);
+        Map<String, Integer> globalConnectionOffsets = new HashMap<>();
+        when(executorContext.getConnectionOffsets()).thenReturn(globalConnectionOffsets);
+        when(executorContext.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(executorContext.getProcessId()).thenReturn("process_id");
+        
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
+        when(executorContext.getPrepareEngine()).thenReturn(prepareEngine);
+        JDBCExecutor jdbcExecutor = mock(JDBCExecutor.class);
+        when(executorContext.getJdbcExecutor()).thenReturn(jdbcExecutor);
+        JDBCExecutorCallback<QueryResult> queryCallback = (JDBCExecutorCallback<QueryResult>) mock(JDBCExecutorCallback.class);
+        when(executorContext.getQueryCallback()).thenReturn((JDBCExecutorCallback) queryCallback);
+        
+        ExecutionUnit executionUnit = new ExecutionUnit("ds_0", new SQLUnit("SELECT 1", Collections.emptyList()));
+        ExecutionContext executionContext = mock(ExecutionContext.class);
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(executionUnit));
+        
+        JDBCExecutionUnit jdbcExecutionUnit = new JDBCExecutionUnit(executionUnit, ConnectionMode.MEMORY_STRICTLY, mock());
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
+                Collections.singleton(new ExecutionGroup<>(Collections.singletonList(jdbcExecutionUnit))), new ExecutionGroupReportContext("process_id", "foo_db"));
+        
+        doAnswer(invocation -> executionGroupContext).when(prepareEngine).prepare(anyString(), any(), anyMap(), anyCollection(), any());
+        when(jdbcExecutor.execute(executionGroupContext, queryCallback)).thenReturn(Collections.singletonList(mock(QueryResult.class)));
+        ProcessRegistry.getInstance().add(new Process(new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext("process_id", "foo_db"))));
+        
+        ScanImplementorContext scanContext = new ScanImplementorContext(mock(DataContext.class), "SELECT ? FROM tbl", new int[]{0});
+        ShardingSphereTable table = mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS);
+        when(table.getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, false, true, false)));
+        
+        try (
+                MockedConstruction<SQLBindEngine> ignoredSQLBindEngine = mockConstruction(SQLBindEngine.class,
+                        (constructed, context) -> when(constructed.bind(sqlStatement)).thenReturn(boundStatementContext));
+                MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (constructed, context) -> when(constructed.generateExecutionContext(any(), any(), any())).thenReturn(executionContext));
+                MockedConstruction<MergeEngine> mergeEngineMockedConstruction = mockConstruction(MergeEngine.class,
+                        (constructed, context) -> when(constructed.merge(anyList(), any(QueryContext.class))).thenReturn(mock(MergedResult.class)))) {
+            
+            Enumerable<Object> enumerable = new EnumerableScanImplementor(queryContext, compilerContext, executorContext).implement(table, scanContext);
+            
+            try (Enumerator<Object> ignored1 = enumerable.enumerator()) {
+                assertThat(globalConnectionOffsets.get("ds_0"), is(0));
+            }
+            
+            globalConnectionOffsets.put("ds_0", 5);
+            
+            try (Enumerator<Object> ignored2 = enumerable.enumerator()) {
+                ArgumentCaptor<Map<String, Integer>> captor = ArgumentCaptor.forClass(Map.class);
+                verify(prepareEngine, times(2)).prepare(eq("foo_db"), eq(executionContext), captor.capture(), anyCollection(), any());
+                
+                List<Map<String, Integer>> allSnapshotsPassed = captor.getAllValues();
+                
+                assertThat(allSnapshotsPassed.get(0).get("ds_0"), is(0));
+                assertThat(allSnapshotsPassed.get(1).get("ds_0"), is(0));
+                assertThat(globalConnectionOffsets.get("ds_0"), is(5));
             }
         } finally {
             ProcessRegistry.getInstance().remove("process_id");
