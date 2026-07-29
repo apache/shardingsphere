@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
@@ -34,7 +34,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
+class HttpProxyMaskWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
@@ -49,7 +49,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     private static final String TABLE_RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/%s/tables/%s/rules";
     
     @Test
-    void assertCompleteMaskAlgorithmThroughProxy() throws IOException, InterruptedException {
+    void assertCompleteMaskAlgorithm() throws IOException, InterruptedException {
         useSharedReadOnlyRuntimeFixture();
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_PROMPT_NAME), "algorithm_type", "KEEP", Map.of());
@@ -58,7 +58,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     }
     
     @Test
-    void assertPlanApplyAndValidateMaskWorkflowThroughProxy() throws IOException, InterruptedException {
+    void assertPlanApplyAndValidateMaskWorkflow() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -78,7 +78,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     }
     
     @Test
-    void assertPlanApplyAndValidateMaskDropWorkflowThroughProxy() throws IOException, InterruptedException {
+    void assertPlanApplyAndValidateMaskDropWorkflow() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             createMaskRule(interactionClient);
             Map<String, Object> actualDropPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
@@ -94,7 +94,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     }
     
     @Test
-    void assertPlanRejectsSecondMaskColumnThroughProxy() throws IOException, InterruptedException {
+    void assertPlanRejectsSecondMaskColumn() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             createMaskRule(interactionClient);
             Map<String, Object> actualSecondCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
@@ -108,7 +108,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     }
     
     @Test
-    void assertPlanRecommendApplyAndValidateMaskWorkflowFromNaturalLanguageThroughProxy() throws IOException, InterruptedException {
+    void assertPlanRecommendsApplyAndValidateMaskWorkflowFromNaturalLanguage() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualClarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -134,7 +134,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     }
     
     @Test
-    void assertPlanApplyValidateAndReadMaskResourcesWithCustomAlgorithmThroughProxy() throws IOException, InterruptedException {
+    void assertPlanApplyValidateAndReadMaskResourcesWithCustomAlgorithm() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",

@@ -138,7 +138,7 @@
     
     <profiles>
         <profile>
-            <id>e2e.mcp</id>
+            <id>e2e.mcp.functionality</id>
             <properties>
                 <e2e.run.type>DOCKER</e2e.run.type>
                 <mcp.e2e.container.image>apache/shardingsphere-mcp-e2e:local</mcp.e2e.container.image>

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProductionProxyWorkflowE2ETest {
+class HttpProxyFeatureWorkflowContractE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     
     private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     
@@ -83,7 +83,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
             "register storage unit", "alter storage unit", "unregister storage unit");
     
     @Test
-    void assertBroadcastWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
+    void assertBroadcastWorkflowCanBeAppliedAndValidated() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> arguments = Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "tables", "orders");
             Map<String, Object> actualPlanResponse = interactionClient.call(BROADCAST_PLAN_TOOL_NAME, arguments);
@@ -105,7 +105,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     }
     
     @Test
-    void assertReadwriteSplittingWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
+    void assertReadwriteSplittingWorkflowCanBeAppliedAndValidated() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             assertStorageUnitsExposeWorkflowTopology(interactionClient);
             planApplyAndValidateWorkflow(interactionClient, READWRITE_SPLITTING_PLAN_TOOL_NAME,
@@ -201,7 +201,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     }
     
     @Test
-    void assertShardingAutoTableAndAuditorCleanupThroughProxy() throws IOException, InterruptedException {
+    void assertShardingAutoTableAndAuditorCleanup() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             String unusedAuditorName = "fixture_unused_auditor";
             assertThat(findItemByField(getPayloadItems(interactionClient.readResource(String.format(
@@ -244,7 +244,7 @@ class HttpProductionProxyFeatureWorkflowContractE2ETest extends AbstractProducti
     }
     
     @Test
-    void assertShardingWorkflowCanBeAppliedAndValidatedThroughProxy() throws IOException, InterruptedException {
+    void assertShardingWorkflowCanBeAppliedAndValidated() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             applyAndValidateWorkflow(interactionClient, SHARDING_KEY_GENERATOR_PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "operation_type", "create", "key_generator", "snowflake_generator",

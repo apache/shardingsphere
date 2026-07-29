@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
+class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_encrypt_rule";
     
@@ -44,7 +44,7 @@ class HttpProductionProxySecretReferenceWorkflowE2ETest extends AbstractProducti
     private static final String RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/%s/rules";
     
     @Test
-    void assertSecretReferenceApplyRequiresManualExecutionThroughProxy() throws IOException, InterruptedException {
+    void assertSecretReferenceApplyRequiresManualExecution() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> planResponse = planSecretReferencedEncryptRule(interactionClient);
             String planId = String.valueOf(planResponse.get("plan_id"));

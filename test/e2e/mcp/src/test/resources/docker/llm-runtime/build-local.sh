@@ -49,7 +49,7 @@ DOCKERFILE_PATH="${SCRIPT_DIR}/Dockerfile"
 ENV_FILE="${SCRIPT_DIR}/../../env/e2e-env.properties"
 
 if [ ! -f "${ENV_FILE}" ]; then
-  echo "MCP E2E environment properties file is required: ${ENV_FILE}" >&2
+  echo "MCP LLM E2E environment properties file is required: ${ENV_FILE}" >&2
   exit 1
 fi
 
@@ -60,7 +60,7 @@ read_property() {
 read_required_property() {
   PROPERTY_VALUE="$(read_property "$1" || true)"
   if [ -z "${PROPERTY_VALUE}" ]; then
-    echo "MCP E2E property is required: $1" >&2
+    echo "MCP LLM E2E property is required: $1" >&2
     exit 1
   fi
   echo "${PROPERTY_VALUE}"

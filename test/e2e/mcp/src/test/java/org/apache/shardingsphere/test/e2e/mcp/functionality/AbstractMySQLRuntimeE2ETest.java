@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.spec.McpClientTransport;
@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
@@ -42,13 +43,14 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
+abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterizedE2ETest {
     
     protected static final String LOGICAL_DATABASE_NAME = "logic_db";
     
@@ -90,7 +92,7 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     protected void prepareRuntimeFixture() throws IOException {
         if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
             throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage(
-                    "Docker is required for the MySQL-backed production runtime E2E test."));
+                    "Docker is required for the MySQL-backed MCP Functionality E2E test."));
         }
         if (useSharedRuntimeFixture()) {
             prepareSharedRuntimeFixture();
@@ -146,20 +148,20 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
         return Map.of("database", databaseName, "schema", databaseName, "sql", sql, "execution_mode", "execute");
     }
     
-    protected static Stream<Arguments> dualTransports() {
-        return ProductionRuntimeTransportCases.transports();
+    protected static Stream<Arguments> allTransportCases() {
+        return FunctionalityTransportCases.allTransportCases();
     }
     
-    protected static Stream<Arguments> semanticPrimaryTransport() {
-        return ProductionRuntimeTransportCases.semanticPrimaryTransport();
+    protected static Stream<Arguments> httpTransportCase() {
+        return FunctionalityTransportCases.httpTransportCase();
     }
     
-    protected static Stream<Arguments> assertReadSingleMetadataResourceCases() {
-        return ProductionRuntimeTransportCases.assertReadSingleMetadataResourceCases(LOGICAL_DATABASE_NAME);
+    protected static Stream<Arguments> singleMetadataResourceCases() {
+        return FunctionalityTransportCases.singleMetadataResourceCases(LOGICAL_DATABASE_NAME);
     }
     
-    protected static Stream<Arguments> assertReadCollectionMetadataResourceCases() {
-        return ProductionRuntimeTransportCases.assertReadCollectionMetadataResourceCases(LOGICAL_DATABASE_NAME);
+    protected static Stream<Arguments> collectionMetadataResourceCases() {
+        return FunctionalityTransportCases.collectionMetadataResourceCases(LOGICAL_DATABASE_NAME);
     }
     
     protected Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases() throws IOException {
@@ -252,13 +254,13 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests) throws IOException {
-        return ProductionMCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, this::createElicitationResult);
+        return MCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, this::createElicitationResult);
     }
     
     private McpClientTransport createClientTransport(final RuntimeTransport transport) throws IOException {
         return RuntimeTransport.HTTP == transport
-                ? ProductionMCPClientTransportFactory.createHttpClientTransport(getHttpEndpointUri())
-                : ProductionMCPClientTransportFactory.createStdioClientTransport(getConfigFile());
+                ? MCPClientTransportFactory.createHttpClientTransport(getHttpEndpointUri())
+                : MCPClientTransportFactory.createStdioClientTransport(getConfigFile());
     }
     
     private McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,
@@ -271,7 +273,20 @@ abstract class AbstractProductionMySQLRuntimeE2ETest extends AbstractTransportPa
     }
     
     protected void assertElicitationRequest(final List<McpSchema.ElicitRequest> actualRequests) {
-        ProductionMCPClientTransportFactory.assertElicitationRequest(actualRequests);
+        assertThat(actualRequests.size(), is(1));
+        McpSchema.ElicitRequest actual = actualRequests.getFirst();
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.TOOL), is(MASK_PLAN_TOOL_NAME));
+        assertFalse(String.valueOf(actual.meta().get(MCPShardingSphereMetadataKeys.PLAN_ID)).isBlank());
+        Map<String, Object> actualRequestedSchema = actual.requestedSchema();
+        assertThat(actualRequestedSchema.get("type"), is("object"));
+        assertFalse((Boolean) actualRequestedSchema.get("additionalProperties"));
+        Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualRequestedSchema, "properties");
+        assertTrue(actualProperties.containsKey("field_1"));
+        assertTrue(actualProperties.containsKey("field_2"));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_1").get("description")), is("Please provide property `from-x`."));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_2").get("description")), is("Please provide property `to-y`."));
+        assertFalse(actualProperties.keySet().stream().map(String::valueOf).anyMatch(each -> each.contains("secret") || each.contains("password") || each.contains("token")));
+        assertThat(getRequiredStringList(actualRequestedSchema.get("required")), hasItems("field_1", "field_2"));
     }
     
     protected Map<String, Object> getObjectOrEmpty(final Object value) {

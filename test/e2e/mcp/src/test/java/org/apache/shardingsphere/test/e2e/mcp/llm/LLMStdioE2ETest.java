@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.suite.transport;
+package org.apache.shardingsphere.test.e2e.mcp.llm;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
@@ -45,9 +45,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("llm-e2e")
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class LLMStdioTransportE2ETest extends AbstractConfigBackedRuntimeE2ETest {
+class LLMStdioE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
-    private static final String SUITE_ID = "llm-stdio-transport";
+    private static final String SUITE_ID = "llm-stdio-autonomous-read-only-query";
     
     private static final String DATABASE_NAME = "logic_db";
     
@@ -92,7 +92,7 @@ class LLMStdioTransportE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     @Test
-    void assertStdioTransport() throws IOException {
+    void assertAutonomousReadOnlyQuery() throws IOException {
         LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration(), getRequiredLLMRuntimeEvidence());
         prepareRuntimeFixture();
         LLMConversationExecutor.ConversationResult actualResult = conversationExecutor.runConversation(SUITE_ID, createScenario(), createInteractionClient());
@@ -111,8 +111,8 @@ class LLMStdioTransportE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private void assertSuccess(final LLMConversationExecutor.ConversationResult actualResult) {
         LLME2EAssertionReport actualReport = actualResult.artifactBundle().getAssertionReport();
         assertTrue(actualReport.isSuccess(),
-                () -> String.format("LLM stdio transport scenario failed: %s - %s", actualReport.getFailureType(), actualReport.getMessage()));
-        assertFalse(actualResult.artifactBundle().getInteractionTrace().isEmpty(), "LLM stdio transport scenario must record at least one MCP interaction.");
+                () -> String.format("MCP LLM E2E stdio scenario failed: %s - %s", actualReport.getFailureType(), actualReport.getMessage()));
+        assertFalse(actualResult.artifactBundle().getInteractionTrace().isEmpty(), "MCP LLM E2E stdio scenario must record at least one MCP interaction.");
     }
     
     private static LLME2EConfiguration getRequiredLLMConfiguration() {
@@ -145,12 +145,12 @@ class LLMStdioTransportE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         if (null != currentRuntimeFixture) {
             return;
         }
-        currentRuntimeFixture = runtimeFixtureFactory.createMySQLFixture(DATABASE_NAME, "Docker is required for the MySQL-backed LLM stdio transport E2E test.");
+        currentRuntimeFixture = runtimeFixtureFactory.createMySQLFixture(DATABASE_NAME, "Docker is required for the MySQL-backed MCP LLM E2E stdio test.");
     }
     
     private Fixture getRequiredRuntimeFixture() {
         if (null == currentRuntimeFixture) {
-            throw new IllegalStateException("LLM stdio transport runtime fixture was not initialized.");
+            throw new IllegalStateException("MCP LLM E2E stdio runtime fixture was not initialized.");
         }
         return currentRuntimeFixture;
     }

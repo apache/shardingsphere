@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETest {
+class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
     
     @Override
     protected boolean useSharedRuntimeFixture() {
@@ -44,8 +44,8 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertReadCapabilitiesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertReadCapabilities(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.readResource("shardingsphere://databases/logic_db/capabilities");
@@ -55,8 +55,8 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertReadDatabasesResourceWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertReadDatabasesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             MCPPayloadAssertions.assertSingleItemValue(interactionClient.readResource("shardingsphere://databases"), "database", LOGICAL_DATABASE_NAME);
@@ -64,9 +64,9 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("assertReadSingleMetadataResourceCases")
-    void assertReadSingleMetadataResourceWithActualMySQLBackend(final String name, final RuntimeTransport transport,
-                                                                final String resourceUri, final String key, final String expectedValue) throws IOException, InterruptedException {
+    @MethodSource("singleMetadataResourceCases")
+    void assertReadSingleMetadataResource(final String name, final RuntimeTransport transport,
+                                          final String resourceUri, final String key, final String expectedValue) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             MCPPayloadAssertions.assertSingleItemValue(interactionClient.readResource(resourceUri), key, expectedValue);
@@ -74,9 +74,9 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("assertReadCollectionMetadataResourceCases")
-    void assertReadCollectionMetadataResourceWithActualMySQLBackend(final String name, final RuntimeTransport transport,
-                                                                    final String resourceUri, final String key, final List<String> expectedNames) throws IOException, InterruptedException {
+    @MethodSource("collectionMetadataResourceCases")
+    void assertReadCollectionMetadataResource(final String name, final RuntimeTransport transport,
+                                              final String resourceUri, final String key, final List<String> expectedNames) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             MCPPayloadAssertions.assertItemValues(interactionClient.readResource(resourceUri), key, expectedNames);
@@ -84,8 +84,8 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertReadTableDetailWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertReadTableDetail(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
@@ -99,8 +99,8 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertSearchMetadataTablesAndViewsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertSearchMetadataTablesAndViews(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.call("database_gateway_search_metadata",
@@ -110,8 +110,8 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertValidateRuntimeDatabaseWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertValidateRuntimeDatabase(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call(
@@ -126,8 +126,8 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertSearchMetadataPaginationWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertSearchMetadataPagination(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> firstPage = interactionClient.call("database_gateway_search_metadata",
@@ -146,8 +146,8 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertReadViewsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertReadViews(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
@@ -158,8 +158,8 @@ class ProductionMySQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETes
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertReadIndexesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertReadIndexes(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<String> actualIndexNames = getPayloadItems(interactionClient.readResource(

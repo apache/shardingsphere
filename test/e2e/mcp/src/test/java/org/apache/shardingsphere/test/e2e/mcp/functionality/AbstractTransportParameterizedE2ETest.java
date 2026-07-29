@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.AfterEach;
 
-abstract class AbstractTransportParameterizedProductionRuntimeE2ETest extends AbstractProductionRuntimeE2ETest {
+abstract class AbstractTransportParameterizedE2ETest extends AbstractFunctionalityE2ETest {
     
     private RuntimeTransport transport;
     
@@ -36,7 +36,7 @@ abstract class AbstractTransportParameterizedProductionRuntimeE2ETest extends Ab
     @Override
     protected final RuntimeTransport getTransport() {
         if (null == transport) {
-            throw new IllegalStateException("Runtime transport is not selected for current production E2E test.");
+            throw new IllegalStateException("Runtime transport is not selected for current MCP Functionality E2E test.");
         }
         return transport;
     }

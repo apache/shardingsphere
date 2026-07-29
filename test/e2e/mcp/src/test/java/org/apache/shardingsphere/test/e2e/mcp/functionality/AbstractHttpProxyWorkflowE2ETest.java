@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
@@ -39,7 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProductionRuntimeE2ETest {
+abstract class AbstractHttpProxyWorkflowE2ETest extends AbstractFunctionalityE2ETest {
     
     private ProxyWorkflowRuntimeFixture runtimeFixture;
     

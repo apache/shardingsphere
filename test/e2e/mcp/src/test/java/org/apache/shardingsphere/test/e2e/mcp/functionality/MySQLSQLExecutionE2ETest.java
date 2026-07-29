@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
@@ -37,11 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2ETest {
+class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertExecuteUpdateWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertExecuteUpdate(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_update",
@@ -53,8 +53,8 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertExecuteRollbackWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertExecuteRollback(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> beginResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
@@ -68,8 +68,8 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertExecuteSavepointFlowWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertExecuteSavepointFlow(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
@@ -88,8 +88,8 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertExecuteReleaseSavepointWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertExecuteReleaseSavepoint(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
@@ -103,8 +103,8 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertExecuteDdlRefreshesMetadataWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertExecuteDdlRefreshesMetadata(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> executeResponse = interactionClient.call("database_gateway_execute_update",
@@ -117,8 +117,8 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertCloseRollsBackPendingTransactionWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertCloseRollsBackPendingTransaction(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
@@ -130,8 +130,8 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertListDatabasesWithMultipleRuntimeDatabasesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertListDatabasesWithMultipleRuntimeDatabases(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient(createPreparedProgrammaticRuntimeDatabases())) {
             List<String> actualDatabaseNames = getPayloadItems(interactionClient.readResource("shardingsphere://databases")).stream()
@@ -141,8 +141,8 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRefreshMetadataVisibleForTargetDatabaseOnlyWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertRefreshMetadataVisibleForTargetDatabaseOnly(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient firstInteractionClient = createOpenedInteractionClient(createPreparedProgrammaticRuntimeDatabases())) {
             firstInteractionClient.call("database_gateway_execute_update",
@@ -160,8 +160,8 @@ class ProductionMySQLSQLRuntimeE2ETest extends AbstractProductionMySQLRuntimeE2E
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertRejectCrossDatabaseTransactionSwitchWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertRejectCrossDatabaseTransactionSwitch(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient(createPreparedProgrammaticRuntimeDatabases())) {
             interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments(LOGICAL_DATABASE_NAME, "BEGIN"));

@@ -134,8 +134,8 @@ jobs:
           docker-images: |
             ${{ steps.mcp-llm-runtime-image.outputs.image_tag }}=mcp-llm-runtime-image.tar
 
-  e2e-mcp-core:
-    name: E2E - MCP Core
+  e2e-mcp-functionality:
+    name: E2E - MCP Functionality
     if: github.repository == 'apache/shardingsphere'
     needs: e2e-mcp-build-images
     runs-on: ubuntu-latest
@@ -160,13 +160,13 @@ jobs:
           set -euo pipefail
           mkdir -p distribution/mcp/target
           tar -xzf "${RUNNER_TEMP}/mcp-e2e-build-artifacts/mcp-distribution-home.tar.gz" -C distribution/mcp/target
-      - name: Run MCP Core E2E
-        run: ./mvnw -pl test/e2e/mcp test -Pe2e.mcp -Dmcp.e2e.container.image=${{ env.MCP_DISTRIBUTION_IMAGE }} -DskipITs -Dspotless.skip=true -B -ntp
-      - name: Upload MCP Core E2E Artifacts
+      - name: Run MCP Functionality E2E
+        run: ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.functionality -Dmcp.e2e.container.image=${{ env.MCP_DISTRIBUTION_IMAGE }} -DskipITs -Dspotless.skip=true -B -ntp
+      - name: Upload MCP Functionality E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: e2e-mcp-core-${{ github.run_id }}-${{ github.run_attempt }}
+          name: e2e-mcp-functionality-${{ github.run_id }}-${{ github.run_attempt }}
           path: test/e2e/mcp/target/surefire-reports
           if-no-files-found: warn
 
@@ -185,7 +185,7 @@ jobs:
           artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
           restore-maven-repository: 'false'
           docker-image-archives: mcp-distribution-image.tar
-      - name: Checkout Fixed MCP Conformance Source
+      - name: Checkout Pinned MCP Conformance Runner
         uses: actions/checkout@v6.0.1
         with:
           repository: modelcontextprotocol/conformance
@@ -196,12 +196,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: .mcp-conformance/package-lock.json
-      - name: Build Fixed MCP Conformance Runner
+      - name: Build MCP Conformance Runner
         working-directory: .mcp-conformance
         run: |
           npm ci
           npm run build
-      - name: Run Applicable MCP 2025-11-25 Server Scenarios
+      - name: Run MCP 2025-11-25 Conformance Scenarios
         shell: bash
         run: |
           set -euo pipefail
@@ -271,19 +271,19 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - id: stdio-transport
-            test: LLMStdioTransportE2ETest#assertStdioTransport
-          - id: autonomous-read-only-query
+          - id: stdio-autonomous-read-only-query
+            test: LLMStdioE2ETest#assertAutonomousReadOnlyQuery
+          - id: http-autonomous-read-only-query
             test: LLMHttpE2ETest#assertAutonomousReadOnlyQuery
-          - id: autonomous-metadata-discovery
+          - id: http-autonomous-metadata-discovery
             test: LLMHttpE2ETest#assertAutonomousMetadataDiscovery
-          - id: side-effect-preview
+          - id: http-side-effect-preview
             test: LLMHttpE2ETest#assertSideEffectPreview
-          - id: runtime-resource-navigation
+          - id: http-runtime-resource-navigation
             test: LLMHttpE2ETest#assertRuntimeResourceNavigation
-          - id: missing-database-scope-discovery
+          - id: http-missing-database-scope-discovery
             test: LLMHttpE2ETest#assertMissingDatabaseScopeDiscovery
-          - id: invalid-resource-recovery
+          - id: http-invalid-resource-recovery
             test: LLMHttpE2ETest#assertInvalidResourceRecovery
     steps:
       - uses: actions/checkout@v6.0.1

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
+class HttpProxyEncryptWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     
     private static final String PLAN_TOOL_NAME = "database_gateway_plan_encrypt_rule";
     
@@ -57,7 +57,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     private static final String TEMPLATE_SECRET_VALUE = "mcp-template-secret-6f2d4a8b";
     
     @Test
-    void assertCompleteEncryptAlgorithmThroughProxy() throws IOException, InterruptedException {
+    void assertCompleteEncryptAlgorithm() throws IOException, InterruptedException {
         useSharedReadOnlyRuntimeFixture();
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_PROMPT_NAME), "algorithm_type", "AE", Map.of());
@@ -66,7 +66,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanApplyAndValidateEncryptWorkflowThroughProxy() throws IOException, InterruptedException {
+    void assertPlanApplyAndValidateEncryptWorkflow() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> clarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
@@ -107,7 +107,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanRecommendsAssistedQueryEncryptWorkflowThroughProxy() throws IOException, InterruptedException {
+    void assertPlanRecommendsAssistedQueryEncryptWorkflow() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualClarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -145,7 +145,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanRejectsUnsupportedSecondEncryptColumnThroughProxy() throws IOException, InterruptedException {
+    void assertPlanRejectsUnsupportedSecondEncryptColumn() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualFirstPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -171,7 +171,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertApplySupportsManualOnlyExecutionModeThroughProxy() throws IOException, InterruptedException {
+    void assertApplySupportsManualOnlyExecutionMode() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -191,7 +191,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanApplyAndValidateEncryptDropWorkflowThroughProxy() throws IOException, InterruptedException {
+    void assertPlanApplyAndValidateEncryptDropWorkflow() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             createEncryptRuleWithoutEquality(interactionClient);
             Map<String, Object> actualDropPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
@@ -211,7 +211,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanApplyValidateAndReadEncryptResourcesWithCustomAlgorithmThroughProxy() throws IOException, InterruptedException {
+    void assertPlanApplyValidateAndReadEncryptResourcesWithCustomAlgorithm() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPa
 import java.util.List;
 import java.util.Map;
 
-abstract class AbstractProductionRuntimeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
+abstract class AbstractFunctionalityE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
         return MCPInteractionPayloads.getRequiredObjectList(payload, "items");

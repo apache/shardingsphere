@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,8 +29,6 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.ProtocolVersions;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPStdioLogbackConfiguration;
 
 import java.io.IOException;
@@ -39,28 +37,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiFunction;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class ProductionMCPClientTransportFactory {
+final class MCPClientTransportFactory {
     
-    private static final String STDIO_LOGBACK_CONFIG_FILE_NAME = "mcp-e2e-sdk-stdio-logback.xml";
-    
-    private static final String MASK_PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
+    private static final String STDIO_LOGBACK_CONFIG_FILE_NAME = "mcp-functionality-e2e-sdk-stdio-logback.xml";
     
     private static final List<String> SUPPORTED_PROTOCOL_VERSIONS = List.of(ProtocolVersions.MCP_2025_11_25);
     
     static McpSyncClient createElicitationClient(final McpClientTransport clientTransport, final List<McpSchema.ElicitRequest> elicitationRequests,
                                                  final BiFunction<List<McpSchema.ElicitRequest>, McpSchema.ElicitRequest, McpSchema.ElicitResult> elicitationHandler) {
         return McpClient.sync(clientTransport)
-                .clientInfo(new McpSchema.Implementation("mcp-e2e-elicitation", "MCP E2E Elicitation", "1.0.0"))
+                .clientInfo(new McpSchema.Implementation("mcp-functionality-e2e-elicitation", "MCP Functionality E2E Elicitation", "1.0.0"))
                 .capabilities(McpSchema.ClientCapabilities.builder().elicitation().build())
                 .requestTimeout(Duration.ofSeconds(30L))
                 .initializationTimeout(Duration.ofSeconds(30L))
@@ -78,27 +67,6 @@ final class ProductionMCPClientTransportFactory {
                 .args("-Dlogback.configurationFile=" + MCPStdioLogbackConfiguration.createForConfig(configFile, STDIO_LOGBACK_CONFIG_FILE_NAME),
                         "-cp", System.getProperty("java.class.path"), MCPBootstrap.class.getName(), configFile.toString())
                 .build());
-    }
-    
-    static void assertElicitationRequest(final List<McpSchema.ElicitRequest> actualRequests) {
-        assertThat(actualRequests.size(), is(1));
-        McpSchema.ElicitRequest actual = actualRequests.getFirst();
-        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.TOOL), is(MASK_PLAN_TOOL_NAME));
-        assertFalse(String.valueOf(actual.meta().get(MCPShardingSphereMetadataKeys.PLAN_ID)).isBlank());
-        Map<String, Object> actualRequestedSchema = actual.requestedSchema();
-        assertThat(actualRequestedSchema.get("type"), is("object"));
-        assertFalse((Boolean) actualRequestedSchema.get("additionalProperties"));
-        Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualRequestedSchema, "properties");
-        assertTrue(actualProperties.containsKey("field_1"));
-        assertTrue(actualProperties.containsKey("field_2"));
-        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_1").get("description")), is("Please provide property `from-x`."));
-        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_2").get("description")), is("Please provide property `to-y`."));
-        assertFalse(actualProperties.keySet().stream().map(String::valueOf).anyMatch(each -> each.contains("secret") || each.contains("password") || each.contains("token")));
-        assertThat(getRequiredStringList(actualRequestedSchema.get("required")), hasItems("field_1", "field_2"));
-    }
-    
-    private static List<String> getRequiredStringList(final Object value) {
-        return ((List<?>) value).stream().map(String::valueOf).toList();
     }
     
     private static final class ProtocolAwareStdioClientTransport extends StdioClientTransport {
