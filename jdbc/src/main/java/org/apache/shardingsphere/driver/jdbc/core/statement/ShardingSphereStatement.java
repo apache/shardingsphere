@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEn
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
+import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchStatementExecutor;
 import org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
@@ -116,7 +117,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             prepareExecute(queryContext);
             ShardingSphereDatabase usedDatabase = metaData.getDatabase(usedDatabaseName);
             currentResultSet = driverExecutorFacade.executeQuery(usedDatabase, metaData, queryContext, this, null,
-                    (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
+                    (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), createReplayCallback());
             return currentResultSet;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException | SQLException ex) {
@@ -187,7 +188,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         prepareExecute(queryContext);
         ShardingSphereDatabase usedDatabase = metaData.getDatabase(usedDatabaseName);
         return driverExecutorFacade.executeUpdate(usedDatabase, metaData, queryContext,
-                updateCallback, (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
+                updateCallback, (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), createReplayCallback());
     }
     
     @Override
@@ -249,7 +250,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         prepareExecute(queryContext);
         ShardingSphereDatabase usedDatabase = metaData.getDatabase(usedDatabaseName);
         return driverExecutorFacade.execute(usedDatabase, metaData, queryContext, statementExecuteCallback,
-                (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
+                (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), createReplayCallback());
     }
     
     private QueryContext createQueryContext(final String originSQL) throws SQLException {
@@ -277,6 +278,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             each.close();
         }
         statements.clear();
+    }
+    
+    private StatementReplayCallback createReplayCallback() {
+        return this::replay;
     }
     
     private void replay() throws SQLException {
