@@ -13,7 +13,7 @@ MCP E2E workflow 包含三个相互独立的测试套件：
 
 - MCP Functionality E2E 验证发行包启动和配置、基于真实 MySQL、PostgreSQL 和 Proxy 的 HTTP 与 STDIO runtime、Tool、resource、prompt 和 completion 的跨进程发现与执行，以及 Encrypt、Mask、Broadcast、Readwrite-Splitting、Shadow 和 Sharding workflow。
 - MCP Conformance E2E 使用官方 runner 验证适用于当前 server capability 的 MCP 协议场景。
-- MCP LLM E2E 验证真实模型通过 HTTP 或 STDIO 使用 MCP 完成只读查询、元数据发现、资源导航、带副作用操作的 preview 和错误恢复。
+- MCP LLM E2E 验证真实模型通过 HTTP 使用 MCP 完成只读查询、元数据发现、带副作用操作的 preview 和无效资源恢复。
 
 不需要 Docker 的 HTTP 协议、会话和安全边界由 `mcp/bootstrap` 的 `StreamableHttpMCPServerIT` 覆盖，不属于 E2E。
 
@@ -93,7 +93,7 @@ MCP E2E 运行配置集中在 `test/e2e/mcp/src/test/resources/env/e2e-env.prope
 ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm
 ```
 
-`LLMHttpE2ETest` 覆盖 HTTP 场景，`LLMStdioE2ETest` 覆盖 STDIO 自主只读查询。每个场景都使用实时 `tools/list` response，并保留模型 response、MCP structured response、interaction trace 和断言报告。选中 `llm-e2e` lane 后，如果 Docker、模型、数据库或 MCP 基础设施缺失，测试直接失败，不把失败转换成 skip。
+`LLMHttpE2ETest` 覆盖四个自主 HTTP 场景：只读查询、元数据发现、带副作用操作的 preview 和无效资源恢复。每个场景都使用实时 `tools/list` response，并保留模型 response、MCP structured response、interaction trace 和断言报告。选中 `llm-e2e` lane 后，如果 Docker、模型、数据库或 MCP 基础设施缺失，测试直接失败，不把失败转换成 skip。
 
 ## MCP Conformance E2E
 
@@ -119,7 +119,7 @@ MCP LLM E2E artifact 写入：
 test/e2e/mcp/target/llm-e2e/
 ```
 
-每个场景都记录问题、期望与实际答案、原始模型 response、MCP interaction trace、实时 tool definitions、runtime evidence 和 assertion report。Artifact 写入会脱敏 secret-shaped 值；如果发现未脱敏 secret pattern 或已知模型 API key，测试直接失败。
+每个场景都记录问题、实际答案、原始模型 response、MCP interaction trace、实时 tool definitions、runtime evidence 和 assertion report。Artifact 写入会脱敏 secret-shaped 值；如果发现未脱敏 secret pattern 或已知模型 API key，测试直接失败。
 
 GitHub Actions 入口：
 
