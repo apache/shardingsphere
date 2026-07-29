@@ -83,7 +83,7 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
         if (null == sessionId) {
             return;
         }
-        HttpRequest request = HttpRequest.newBuilder(endpointUri)
+        HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(endpointUri)
                 .header("MCP-Session-Id", sessionId)
                 .header("MCP-Protocol-Version", actualProtocolVersion)
                 .DELETE()

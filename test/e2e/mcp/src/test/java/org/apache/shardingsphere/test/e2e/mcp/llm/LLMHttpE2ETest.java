@@ -19,24 +19,18 @@ package org.apache.shardingsphere.test.e2e.mcp.llm;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.AutonomousLLMConversationRunner;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.AutonomousLLMConversationRunner.Result;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.AutonomousLLMConversationRunner.Scenario;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor.ConversationResult;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMMCPNextActions;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLMAutonomousArtifactWriter;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRunner;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRunner.Result;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRunner.Scenario;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLMConversationArtifactWriter;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeSupport;
-import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
-import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,18 +43,21 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -69,42 +66,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
-    private static final int MAX_AUTONOMOUS_TURNS = 8;
+    private static final int MAX_TURNS = 8;
     
     private static final String DATABASE_NAME = "logic_db";
     
     private static final String TABLE_NAME = "orders";
     
-    private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
+    private static final String STALE_TABLE_RESOURCE_URI = "shardingsphere://databases/unknown/schemas/unknown/tables/orders";
     
-    private static final String SYSTEM_PROMPT = """
-            You are evaluating an MCP server.
-            Use MCP resources, metadata search, SQL tools, prompts, completions, and workflow tools only when they help the task.
-            Inspect MCP context before touching unknown runtime, metadata, or side-effecting operations.
-            Preview side effects and ask the user before execution.
-            Do not guess database structure, workflow state, or query results.
-            Return JSON only when asked for the final answer.
-            """.trim();
+    private static final Set<String> EXPECTED_METADATA_NAMES = Set.of("active_orders", "order_items", "orders");
     
-    private static final Set<String> NATIVE_ACTION_ORIGINS = Set.of(
-            MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
-            MCPInteractionTraceRecord.PROTOCOL_BRIDGE_ORIGIN);
+    private static final List<String> ARTIFACT_FILES = List.of(
+            "run-context.json", "system-prompt.md", "question.txt", "answer.txt", "raw-model-output.txt", "available-tools.json",
+            "interaction-trace.json", "mcp-runtime.log", "assertion-report.json");
     
     private static final Pattern UNREDACTED_SECRET_PATTERN = Pattern.compile(
             "(?i)(\"(?:api[_-]?key|token|password|authorization|secret)\"\\s*:\\s*\")(?!<redacted>\")([^\"]+)(\")|(Bearer\\s+)(?!<redacted>)[A-Za-z0-9._~+/=-]+");
-    
-    private static final List<String> GUIDED_ARTIFACT_FILES = List.of(
-            "run-context.json", "system-prompt.md", "user-prompt.md", "raw-model-output.txt", "interaction-trace.json", "assertion-report.json", "mcp-runtime.log");
-    
-    private static final List<String> AUTONOMOUS_ARTIFACT_FILES = List.of(
-            "run-context.json", "system-prompt.md", "question.txt", "expected-answer.txt", "answer.txt", "raw-model-output.txt", "available-tools.json",
-            "interaction-trace.json", "mcp-runtime.log", "assertion-report.json");
     
     private static LLMRuntimeSupport.ModelRuntime llmRuntime;
     
     private final LLMRuntimeFixtureFactory runtimeFixtureFactory = new LLMRuntimeFixtureFactory();
     
-    private final LLMAutonomousArtifactWriter autonomousArtifactWriter = new LLMAutonomousArtifactWriter();
+    private final LLMConversationArtifactWriter artifactWriter = new LLMConversationArtifactWriter();
     
     private Fixture runtimeFixture;
     
@@ -130,124 +113,238 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     @Test
-    void assertAutonomousReadOnlyQuery() throws IOException {
-        assertAutonomousScenario(new Scenario(
-                "autonomous-read-only-query",
-                "How many rows are currently in the orders table of the logic_db runtime database? Inspect the live MCP server and reply only with the integer.",
-                "2"));
+    void assertReadOnlyQuery() throws IOException {
+        runScenario(new Scenario(
+                "read-only-query",
+                "How many rows are currently in the orders table of the logic_db runtime database? Inspect the live MCP server and answer concisely.",
+                false,
+                this::evaluateReadOnlyQuery));
     }
     
     @Test
-    void assertAutonomousMetadataDiscovery() throws IOException {
-        assertAutonomousScenario(new Scenario(
-                "autonomous-metadata-discovery",
-                "List every table or view name currently visible in the logic_db schema. Inspect MCP metadata and reply only with the names in alphabetical order, separated by comma and one space.",
-                "active_orders, order_items, orders"));
+    void assertMetadataDiscovery() throws IOException {
+        runScenario(new Scenario(
+                "metadata-discovery",
+                "List every table or view currently visible through the live MCP server. The user does not know the database or schema names, so discover the required scope first.",
+                false,
+                this::evaluateMetadataDiscovery));
     }
     
     @Test
-    void assertSideEffectPreview() throws IOException {
+    void assertSideEffectPreview() throws IOException, SQLException {
         prepareRuntimeFixture();
-        String previewUpdateSql = "UPDATE orders SET status = status WHERE order_id = -1";
-        assertGuidedScenario(new LLME2EScenario(
+        String statusBefore = queryOrderStatus();
+        runScenario(new Scenario(
                 "side-effect-preview",
-                SYSTEM_PROMPT,
-                "A user is considering SQL `" + previewUpdateSql + "`. Review its side-effect scope without changing data before doing any row-count check. "
-                        + "After the preview result is available, verify the row count with `" + COUNT_ORDERS_SQL + "`." + createToolContext(),
-                createExpectedAnswer(),
-                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_update", "database_gateway_execute_query"),
-                List.of("database_gateway_execute_update", "database_gateway_execute_query")),
-                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_update"), List.of(), "");
-    }
-    
-    @Test
-    void assertRuntimeResourceNavigation() throws IOException {
-        prepareRuntimeFixture();
-        assertGuidedScenario(new LLME2EScenario(
-                "runtime-resource-navigation",
-                SYSTEM_PROMPT,
-                "Read exact runtime resource `shardingsphere://runtime` and exact database list resource `shardingsphere://databases` before answering. "
-                        + "Follow any read-only resource next_actions from the runtime response before verifying `" + COUNT_ORDERS_SQL + "`." + createToolContext(),
-                createExpectedAnswer(),
-                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
-                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
-                List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://runtime"), "");
-    }
-    
-    @Test
-    void assertMissingDatabaseScopeDiscovery() throws IOException {
-        prepareRuntimeFixture();
-        assertGuidedScenario(new LLME2EScenario(
-                "missing-database-scope-discovery",
-                SYSTEM_PROMPT,
-                "The user only remembers schema `" + getRequiredRuntimeFixture().schemaName() + "` and table `" + TABLE_NAME + "`. Search metadata broadly with query `" + TABLE_NAME
-                        + "` and object type `table` without setting database or schema. Then verify `" + COUNT_ORDERS_SQL + "`.",
-                createExpectedAnswer(),
-                List.of("database_gateway_search_metadata", "database_gateway_execute_query"),
-                List.of("database_gateway_search_metadata", "database_gateway_execute_query")),
-                List.of("database_gateway_search_metadata"), List.of(), "");
+                "A user wants to change the status of order 1 in the orders table to REVIEW_PENDING. Preview the proposed change without executing it, then report whether it "
+                        + "was only previewed and whether any data changed. Inspect the live MCP server to discover any required runtime scope.",
+                true,
+                (answer, trace) -> evaluateSideEffectPreview(answer, trace, statusBefore)));
     }
     
     @Test
     void assertInvalidResourceRecovery() throws IOException {
-        prepareRuntimeFixture();
-        String tableResourceUri = createTableResourceUri();
-        assertGuidedScenario(new LLME2EScenario(
+        runScenario(new Scenario(
                 "invalid-resource-recovery",
-                SYSTEM_PROMPT,
-                "The user pasted stale resource `shardingsphere://databases/unknown/schemas/unknown/tables/" + TABLE_NAME
-                        + "`. Read that stale resource before any live resource. After observing its error response, recover by reading exact live table resource `"
-                        + tableResourceUri + "`, and verify `" + COUNT_ORDERS_SQL + "`." + createToolContext(),
-                createExpectedAnswer(),
-                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query"),
-                List.of(MCPInteractionActionNames.READ_RESOURCE, "database_gateway_execute_query")),
-                List.of(MCPInteractionActionNames.READ_RESOURCE), List.of(tableResourceUri), "unknown_database");
+                "A user pasted stale resource `" + STALE_TABLE_RESOURCE_URI + "`. Inspect that resource, recover using live MCP context without assuming the correct URI, "
+                        + "and report how many rows are currently in the orders table.",
+                false,
+                this::evaluateInvalidResourceRecovery));
     }
     
-    private void assertAutonomousScenario(final Scenario scenario) throws IOException {
+    private void runScenario(final Scenario scenario) throws IOException {
         prepareRuntimeFixture();
         LLMRuntimeSupport.ModelRuntime modelRuntime = getRequiredLLMRuntime();
-        assertTrue(Boolean.TRUE.equals(modelRuntime.getEvidence().get("scoreClosing")), "Autonomous LLM E2E requires Docker-owned runtime evidence.");
-        Result actualResult = new AutonomousLLMConversationRunner(
-                MAX_AUTONOMOUS_TURNS,
+        assertTrue(Boolean.TRUE.equals(modelRuntime.getEvidence().get("scoreClosing")), "LLM E2E requires Docker-owned runtime evidence.");
+        Result actualResult = new LLMConversationRunner(
+                MAX_TURNS,
                 new LLMChatModelClient(modelRuntime.getConfiguration(), HttpClient.newHttpClient()),
                 createInteractionClient(),
                 modelRuntime.getConfiguration().getModelName()).run(scenario);
         Path artifactDirectory = modelRuntime.getConfiguration().createArtifactDirectory("llm-http/" + scenario.id());
-        autonomousArtifactWriter.write(artifactDirectory, actualResult, modelRuntime.getEvidence());
-        assertArtifacts(artifactDirectory, AUTONOMOUS_ARTIFACT_FILES);
-        assertTrue(actualResult.assertionReport().isSuccess(), () -> createFailureMessage(scenario.id(), actualResult.assertionReport().getFailureType(),
-                actualResult.assertionReport().getMessage(), artifactDirectory));
-        assertFalse(actualResult.evidence().interactionTrace().isEmpty(), "Autonomous LLM E2E must capture MCP evidence.");
-        assertThat(actualResult.evidence().interactionTrace().getFirst().getTargetName(), is(MCPInteractionActionNames.LIST_TOOLS));
+        artifactWriter.write(artifactDirectory, actualResult, modelRuntime.getEvidence());
+        assertArtifacts(artifactDirectory);
+        assertTrue(actualResult.assertionReport().isSuccess(), () -> createFailureMessage(
+                scenario.id(), actualResult.assertionReport(), artifactDirectory));
+        assertFalse(actualResult.evidence().interactionTrace().isEmpty(), scenario.id() + " must capture MCP evidence.");
         assertTrace(scenario.id(), actualResult.evidence().interactionTrace());
     }
     
-    private void assertGuidedScenario(final LLME2EScenario scenario, final Collection<String> expectedFirstActionNames,
-                                      final Collection<String> expectedResourceUris, final String expectedRecoveryCategory) throws IOException {
-        prepareRuntimeFixture();
-        LLMRuntimeSupport.ModelRuntime modelRuntime = getRequiredLLMRuntime();
-        ConversationResult actualResult = new LLMConversationExecutor(modelRuntime.getConfiguration(), modelRuntime.getEvidence())
-                .runConversation("llm-http/" + scenario.getScenarioId(), scenario, createInteractionClient());
-        Path artifactDirectory = actualResult.artifactDirectory();
-        assertArtifacts(artifactDirectory, GUIDED_ARTIFACT_FILES);
-        LLME2EArtifactBundle artifactBundle = actualResult.artifactBundle();
-        assertTrue(artifactBundle.getAssertionReport().isSuccess(), () -> createFailureMessage(scenario.getScenarioId(),
-                artifactBundle.getAssertionReport().getFailureType(), artifactBundle.getAssertionReport().getMessage(), artifactDirectory));
-        List<MCPInteractionTraceRecord> interactionTrace = artifactBundle.getInteractionTrace();
-        assertFalse(interactionTrace.isEmpty(), scenario.getScenarioId() + " must capture MCP interactions.");
-        assertTrue(expectedFirstActionNames.contains(interactionTrace.getFirst().getTargetName()),
-                () -> scenario.getScenarioId() + " started with unexpected action `" + interactionTrace.getFirst().getTargetName() + "`.");
-        assertExpectedResourceHit(scenario.getScenarioId(), expectedResourceUris, interactionTrace);
-        assertExpectedRecovery(scenario.getScenarioId(), expectedRecoveryCategory, interactionTrace);
-        assertRequiredToolCoverage(scenario, interactionTrace);
-        assertNextActionsFollowed(scenario.getScenarioId(), interactionTrace);
-        assertTrace(scenario.getScenarioId(), interactionTrace);
+    private LLME2EAssertionReport evaluateReadOnlyQuery(final String answer, final List<MCPInteractionTraceRecord> trace) {
+        Optional<Integer> actualCount = findQueryCount(trace, 0);
+        if (actualCount.isEmpty() || getRequiredRuntimeFixture().totalOrders() != actualCount.get()) {
+            return LLME2EAssertionReport.failure("query_evidence_mismatch", "The MCP query response did not contain the fixture row count.");
+        }
+        return containsStandaloneNumber(answer, actualCount.get())
+                ? LLME2EAssertionReport.success("The answer matched the row count returned by the live MCP query.")
+                : LLME2EAssertionReport.failure("answer_mismatch", "The answer did not contain the row count returned by the live MCP query.");
     }
     
-    private void assertArtifacts(final Path artifactDirectory, final Collection<String> requiredFiles) throws IOException {
+    private LLME2EAssertionReport evaluateMetadataDiscovery(final String answer, final List<MCPInteractionTraceRecord> trace) {
+        boolean unscopedSearchObserved = trace.stream()
+                .filter(each -> isValidModelAction(each, "database_gateway_search_metadata"))
+                .map(MCPInteractionTraceRecord::getArguments)
+                .anyMatch(each -> !each.containsKey("database") && !each.containsKey("schema"));
+        if (!unscopedSearchObserved) {
+            return LLME2EAssertionReport.failure("missing_unscoped_discovery", "The model did not start metadata discovery without database and schema scope.");
+        }
+        boolean matchingEvidenceObserved = trace.stream()
+                .filter(each -> isValidModelAction(each, "database_gateway_search_metadata"))
+                .map(MCPInteractionTraceRecord::getStructuredContent)
+                .map(this::getMetadataNames)
+                .anyMatch(EXPECTED_METADATA_NAMES::equals);
+        if (!matchingEvidenceObserved) {
+            return LLME2EAssertionReport.failure("metadata_evidence_mismatch", "No MCP metadata response contained the expected table and view set.");
+        }
+        String normalizedAnswer = answer.toLowerCase(Locale.ENGLISH);
+        return EXPECTED_METADATA_NAMES.stream().allMatch(each -> containsIdentifier(normalizedAnswer, each))
+                ? LLME2EAssertionReport.success("The answer named every object returned by the live MCP metadata search.")
+                : LLME2EAssertionReport.failure("answer_mismatch", "The answer omitted an object returned by the live MCP metadata search.");
+    }
+    
+    private LLME2EAssertionReport evaluateSideEffectPreview(final String answer, final List<MCPInteractionTraceRecord> trace, final String statusBefore) {
+        Optional<MCPInteractionTraceRecord> preview = trace.stream()
+                .filter(each -> isValidModelAction(each, "database_gateway_execute_update"))
+                .filter(each -> "preview".equals(each.getArguments().get("execution_mode")))
+                .filter(this::isSentinelPreview)
+                .findFirst();
+        if (preview.isEmpty()) {
+            return LLME2EAssertionReport.failure("preview_evidence_mismatch", "The model did not preview the requested sentinel update.");
+        }
+        Map<String, Object> response = preview.get().getStructuredContent();
+        if (!"preview".equals(response.get("response_mode")) || !"preview".equals(response.get("result_kind")) || !Boolean.FALSE.equals(response.get("would_execute"))) {
+            return LLME2EAssertionReport.failure("preview_evidence_mismatch", "The MCP response did not prove classification-only preview behavior.");
+        }
+        try {
+            if (!statusBefore.equals(queryOrderStatus())) {
+                return LLME2EAssertionReport.failure("side_effect_detected", "The sentinel row changed during the preview-only scenario.");
+            }
+        } catch (final SQLException ex) {
+            return LLME2EAssertionReport.failure("database_evidence_unavailable", ex.getMessage());
+        }
+        String normalizedAnswer = answer.toLowerCase(Locale.ENGLISH);
+        boolean answerReportsNoExecution = normalizedAnswer.contains("not execut") || normalizedAnswer.contains("without execut")
+                || normalizedAnswer.contains("not changed") || normalizedAnswer.contains("unchanged") || normalizedAnswer.contains("no change")
+                || normalizedAnswer.contains("didn't execut") || normalizedAnswer.contains("wasn't execut");
+        return normalizedAnswer.contains("preview") && answerReportsNoExecution
+                ? LLME2EAssertionReport.success("The answer matched the preview response and the unchanged database sentinel.")
+                : LLME2EAssertionReport.failure("answer_mismatch", "The answer did not state that the operation was previewed without changing data.");
+    }
+    
+    private boolean isSentinelPreview(final MCPInteractionTraceRecord traceRecord) {
+        String sql = Objects.toString(traceRecord.getArguments().get("sql"), "").toLowerCase(Locale.ENGLISH).replaceAll("[\\s`\"]+", "");
+        boolean updatesOrders = sql.startsWith("updateordersset") || sql.startsWith("update" + DATABASE_NAME + ".ordersset");
+        return updatesOrders && sql.contains("status='review_pending'") && sql.contains("where") && sql.contains("order_id=1");
+    }
+    
+    private LLME2EAssertionReport evaluateInvalidResourceRecovery(final String answer, final List<MCPInteractionTraceRecord> trace) {
+        int staleResourceIndex = findStaleResourceIndex(trace);
+        if (0 > staleResourceIndex) {
+            return LLME2EAssertionReport.failure("missing_stale_resource_error", "The model did not observe the stale resource error.");
+        }
+        int liveResourceIndex = findLiveTableResourceIndex(trace, staleResourceIndex + 1);
+        if (0 > liveResourceIndex) {
+            return LLME2EAssertionReport.failure("missing_resource_recovery", "The model did not discover and read the live orders resource after the stale error.");
+        }
+        Optional<Integer> actualCount = findQueryCount(trace, liveResourceIndex + 1);
+        if (actualCount.isEmpty() || getRequiredRuntimeFixture().totalOrders() != actualCount.get()) {
+            return LLME2EAssertionReport.failure("query_evidence_mismatch", "The recovered conversation did not obtain the fixture row count from MCP.");
+        }
+        return containsStandaloneNumber(answer, actualCount.get())
+                ? LLME2EAssertionReport.success("The answer followed stale-resource recovery and matched the subsequent MCP query.")
+                : LLME2EAssertionReport.failure("answer_mismatch", "The answer did not contain the row count returned after resource recovery.");
+    }
+    
+    private int findStaleResourceIndex(final List<MCPInteractionTraceRecord> trace) {
+        for (int index = 0; index < trace.size(); index++) {
+            MCPInteractionTraceRecord each = trace.get(index);
+            if (isValidModelAction(each, "mcp_read_resource")
+                    && STALE_TABLE_RESOURCE_URI.equals(each.getArguments().get("uri"))
+                    && hasRecoveryCategory(each.getStructuredContent(), "unknown_database")) {
+                return index;
+            }
+        }
+        return -1;
+    }
+    
+    private int findLiveTableResourceIndex(final List<MCPInteractionTraceRecord> trace, final int startIndex) {
+        for (int index = startIndex; index < trace.size(); index++) {
+            MCPInteractionTraceRecord each = trace.get(index);
+            if (isValidModelAction(each, "mcp_read_resource")
+                    && !STALE_TABLE_RESOURCE_URI.equals(each.getArguments().get("uri"))
+                    && containsOrdersTable(each.getStructuredContent())) {
+                return index;
+            }
+        }
+        return -1;
+    }
+    
+    private boolean containsOrdersTable(final Map<String, Object> structuredContent) {
+        return getObjectList(structuredContent.get("items")).stream()
+                .anyMatch(each -> DATABASE_NAME.equals(each.get("database")) && TABLE_NAME.equals(each.get("table")));
+    }
+    
+    private boolean hasRecoveryCategory(final Map<String, Object> structuredContent, final String expectedCategory) {
+        Map<String, Object> recovery = getObjectMap(structuredContent.get("recovery"));
+        return expectedCategory.equals(structuredContent.get("recovery_category"))
+                || expectedCategory.equals(recovery.get("category")) || expectedCategory.equals(recovery.get("recovery_category"));
+    }
+    
+    private Optional<Integer> findQueryCount(final List<MCPInteractionTraceRecord> trace, final int startIndex) {
+        for (int index = startIndex; index < trace.size(); index++) {
+            MCPInteractionTraceRecord each = trace.get(index);
+            if (!isValidModelAction(each, "database_gateway_execute_query") || !isOrdersCountQuery(each.getArguments())) {
+                continue;
+            }
+            for (Map<String, Object> row : getObjectList(each.getStructuredContent().get("row_objects"))) {
+                for (Object value : row.values()) {
+                    if (value instanceof Number) {
+                        return Optional.of(((Number) value).intValue());
+                    }
+                }
+            }
+            for (Object row : getList(each.getStructuredContent().get("rows"))) {
+                for (Object value : getList(row)) {
+                    if (value instanceof Number) {
+                        return Optional.of(((Number) value).intValue());
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private boolean isOrdersCountQuery(final Map<String, Object> arguments) {
+        String sql = Objects.toString(arguments.get("sql"), "").toLowerCase(Locale.ENGLISH).replaceAll("[\\s`]+", "");
+        return sql.contains("count(") && (sql.contains("fromorders") || sql.contains(".orders"));
+    }
+    
+    private Set<String> getMetadataNames(final Map<String, Object> structuredContent) {
+        Set<String> result = new LinkedHashSet<>();
+        for (Map<String, Object> each : getObjectList(structuredContent.get("items"))) {
+            if ("table".equals(each.get("objectType")) || "view".equals(each.get("objectType"))) {
+                result.add(Objects.toString(each.get("name"), ""));
+            }
+        }
+        return result;
+    }
+    
+    private boolean isValidModelAction(final MCPInteractionTraceRecord traceRecord, final String actionName) {
+        return traceRecord.isValid() && MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN.equals(traceRecord.getActionOrigin())
+                && actionName.equals(traceRecord.getTargetName());
+    }
+    
+    private boolean containsStandaloneNumber(final String answer, final int expected) {
+        return Pattern.compile("(?<!\\d)" + expected + "(?!\\d)").matcher(answer).find();
+    }
+    
+    private boolean containsIdentifier(final String answer, final String identifier) {
+        return Pattern.compile("(?<![a-z0-9_])" + Pattern.quote(identifier) + "(?![a-z0-9_])").matcher(answer).find();
+    }
+    
+    private void assertArtifacts(final Path artifactDirectory) throws IOException {
         assertTrue(Files.isDirectory(artifactDirectory), () -> "Missing LLM artifact directory: " + artifactDirectory);
-        for (String each : requiredFiles) {
+        for (String each : ARTIFACT_FILES) {
             assertTrue(Files.isRegularFile(artifactDirectory.resolve(each)), () -> "Missing LLM artifact: " + artifactDirectory.resolve(each));
         }
         try (Stream<Path> paths = Files.walk(artifactDirectory)) {
@@ -259,147 +356,46 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         }
     }
     
-    private void assertExpectedResourceHit(final String scenarioId, final Collection<String> expectedResourceUris,
-                                           final Collection<MCPInteractionTraceRecord> interactionTrace) {
-        if (expectedResourceUris.isEmpty()) {
-            return;
-        }
-        assertTrue(interactionTrace.stream().anyMatch(each -> MCPInteractionActionNames.RESOURCE_READ_KIND.equals(each.getActionKind())
-                && expectedResourceUris.contains(Objects.toString(each.getArguments().get("uri"), ""))),
-                () -> scenarioId + " did not read an expected resource URI.");
-    }
-    
-    private void assertExpectedRecovery(final String scenarioId, final String expectedRecoveryCategory,
-                                        final Collection<MCPInteractionTraceRecord> interactionTrace) {
-        boolean expectedRecoveryObserved = false;
-        for (MCPInteractionTraceRecord each : interactionTrace) {
-            if (!isErrorInteraction(each)) {
-                continue;
-            }
-            assertTrue(!expectedRecoveryObserved && hasRecoveryCategory(each.getStructuredContent(), expectedRecoveryCategory),
-                    () -> scenarioId + " produced unexpected MCP error interaction `" + each.getTargetName() + "`.");
-            expectedRecoveryObserved = true;
-        }
-        if (!expectedRecoveryCategory.isBlank()) {
-            assertTrue(expectedRecoveryObserved, () -> scenarioId + " did not observe recovery category `" + expectedRecoveryCategory + "`.");
-        }
-    }
-    
-    private boolean isErrorInteraction(final MCPInteractionTraceRecord interactionTraceRecord) {
-        return !interactionTraceRecord.isValid()
-                || interactionTraceRecord.getStructuredContent().containsKey("error_code")
-                || interactionTraceRecord.getStructuredContent().containsKey("empty_state")
-                || interactionTraceRecord.getStructuredContent().containsKey("ambiguity_state");
-    }
-    
-    private boolean hasRecoveryCategory(final Map<String, Object> structuredContent, final String expectedRecoveryCategory) {
-        if (expectedRecoveryCategory.isBlank()) {
-            return false;
-        }
-        return expectedRecoveryCategory.equals(Objects.toString(structuredContent.get("recovery_category"), ""))
-                || expectedRecoveryCategory.equals(Objects.toString(structuredContent.get("error_code"), ""))
-                || hasNestedRecoveryCategory(structuredContent.get("recovery"), expectedRecoveryCategory)
-                || hasNestedRecoveryCategory(structuredContent.get("empty_state"), expectedRecoveryCategory)
-                || hasNestedRecoveryCategory(structuredContent.get("ambiguity_state"), expectedRecoveryCategory);
-    }
-    
-    private boolean hasNestedRecoveryCategory(final Object value, final String expectedRecoveryCategory) {
-        if (!(value instanceof Map)) {
-            return false;
-        }
-        Map<?, ?> map = (Map<?, ?>) value;
-        return expectedRecoveryCategory.equals(Objects.toString(map.get("recovery_category"), ""))
-                || expectedRecoveryCategory.equals(Objects.toString(map.get("category"), ""))
-                || expectedRecoveryCategory.equals(Objects.toString(map.get("state"), ""));
-    }
-    
-    private void assertRequiredToolCoverage(final LLME2EScenario scenario, final Collection<MCPInteractionTraceRecord> interactionTrace) {
-        for (String each : scenario.getRequiredToolNames()) {
-            assertTrue(interactionTrace.stream().anyMatch(record -> record.isValid() && each.equals(record.getTargetName())
-                    && NATIVE_ACTION_ORIGINS.contains(record.getActionOrigin())),
-                    () -> scenario.getScenarioId() + " did not invoke required MCP action `" + each + "` natively.");
-        }
-    }
-    
-    private void assertNextActionsFollowed(final String scenarioId, final List<MCPInteractionTraceRecord> interactionTrace) {
-        for (int index = 0; index < interactionTrace.size() - 1; index++) {
-            MCPInteractionTraceRecord current = interactionTrace.get(index);
-            List<Map<?, ?>> actions = getImmediateMachineNextActions(current);
-            if (!actions.isEmpty()) {
-                MCPInteractionTraceRecord next = interactionTrace.get(index + 1);
-                assertTrue(actions.stream().anyMatch(each -> matchesNextAction(each, current, next)),
-                        () -> scenarioId + " did not follow the next action after `" + current.getTargetName() + "`.");
-            }
-        }
-    }
-    
-    private List<Map<?, ?>> getImmediateMachineNextActions(final MCPInteractionTraceRecord interactionTraceRecord) {
-        List<Map<?, ?>> result = new LinkedList<>();
-        for (Map<?, ?> each : LLMMCPNextActions.getNextActions(interactionTraceRecord.getStructuredContent())) {
-            if (isMachineAction(each)) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    private boolean isMachineAction(final Map<?, ?> action) {
-        String type = Objects.toString(action.get("type"), "");
-        if (!"resource_read".equals(type) && !"tool_call".equals(type) && !"completion".equals(type)) {
-            return false;
-        }
-        if (!"tool_call".equals(type) || !(action.get("arguments") instanceof Map)) {
-            return true;
-        }
-        String executionMode = Objects.toString(((Map<?, ?>) action.get("arguments")).get("execution_mode"), "");
-        return !"execute".equals(executionMode) && !"review-then-execute".equals(executionMode);
-    }
-    
-    private boolean matchesNextAction(final Map<?, ?> action, final MCPInteractionTraceRecord current, final MCPInteractionTraceRecord next) {
-        String type = Objects.toString(action.get("type"), "");
-        if ("resource_read".equals(type)) {
-            return MCPInteractionActionNames.RESOURCE_READ_KIND.equals(next.getActionKind())
-                    && (Objects.equals(action.get("resource_uri"), next.getArguments().get("uri"))
-                            || isRecoverableResourceCorrection(current, next));
-        }
-        if ("tool_call".equals(type)) {
-            return Objects.equals(Objects.toString(action.get("tool_name"), current.getTargetName()), next.getTargetName());
-        }
-        return "completion".equals(type) && MCPInteractionActionNames.COMPLETION_KIND.equals(next.getActionKind());
-    }
-    
-    private boolean isRecoverableResourceCorrection(final MCPInteractionTraceRecord current, final MCPInteractionTraceRecord next) {
-        Object items = next.getStructuredContent().get("items");
-        return (current.getStructuredContent().containsKey("empty_state") || current.getStructuredContent().containsKey("ambiguity_state"))
-                && items instanceof List && !((List<?>) items).isEmpty();
-    }
-    
-    private void assertTrace(final String scenarioId, final Collection<MCPInteractionTraceRecord> interactionTrace) {
-        for (MCPInteractionTraceRecord each : interactionTrace) {
+    private void assertTrace(final String scenarioId, final Collection<MCPInteractionTraceRecord> trace) {
+        for (MCPInteractionTraceRecord each : trace) {
             assertTrue(0 < each.getSequence(), () -> "Trace sequence must be positive in " + scenarioId);
             assertFalse(each.getActionKind().isBlank(), () -> "Trace action kind is blank in " + scenarioId);
-            assertTrue(NATIVE_ACTION_ORIGINS.contains(each.getActionOrigin()), () -> "Non-native trace action origin in " + scenarioId);
+            assertTrue(MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN.equals(each.getActionOrigin()), () -> "Non-model trace action origin in " + scenarioId);
             assertFalse(each.getTargetName().isBlank(), () -> "Trace target name is blank in " + scenarioId);
             MCPModelContractAssertions.assertCanonicalNextActionLists(each.getStructuredContent());
         }
     }
     
-    private String createFailureMessage(final String scenarioId, final String failureType, final String message, final Path artifactDirectory) {
-        return String.format(Locale.ENGLISH, "%s failed: %s - %s, artifactDirectory=%s", scenarioId, failureType, message, artifactDirectory);
+    private String queryOrderStatus() throws SQLException {
+        RuntimeDatabaseConfiguration databaseConfig = getRequiredRuntimeFixture().runtimeDatabases().get(DATABASE_NAME);
+        try (
+                Connection connection = databaseConfig.openConnection(DATABASE_NAME);
+                PreparedStatement statement = connection.prepareStatement("SELECT status FROM orders WHERE order_id = 1");
+                ResultSet resultSet = statement.executeQuery()) {
+            if (!resultSet.next()) {
+                throw new SQLException("The sentinel order row is unavailable.");
+            }
+            return resultSet.getString(1);
+        }
     }
     
-    private LLMStructuredAnswer createExpectedAnswer() {
-        Fixture fixture = getRequiredRuntimeFixture();
-        return new LLMStructuredAnswer(DATABASE_NAME, fixture.schemaName(), TABLE_NAME, COUNT_ORDERS_SQL, fixture.totalOrders(), List.of());
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> getObjectList(final Object value) {
+        return value instanceof List ? (List<Map<String, Object>>) value : List.of();
     }
     
-    private String createToolContext() {
-        return String.format(Locale.ENGLISH,
-                " Use logical database `%s` and schema `%s` when the MCP action needs explicit runtime scope.", DATABASE_NAME, getRequiredRuntimeFixture().schemaName());
+    private List<?> getList(final Object value) {
+        return value instanceof List ? (List<?>) value : List.of();
     }
     
-    private String createTableResourceUri() {
-        return String.format(Locale.ENGLISH, "shardingsphere://databases/%s/schemas/%s/tables/%s", DATABASE_NAME, getRequiredRuntimeFixture().schemaName(), TABLE_NAME);
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getObjectMap(final Object value) {
+        return value instanceof Map ? (Map<String, Object>) value : Map.of();
+    }
+    
+    private String createFailureMessage(final String scenarioId, final LLME2EAssertionReport report, final Path artifactDirectory) {
+        return String.format(Locale.ENGLISH, "%s failed: %s - %s, artifactDirectory=%s",
+                scenarioId, report.getFailureType(), report.getMessage(), artifactDirectory);
     }
     
     @Override

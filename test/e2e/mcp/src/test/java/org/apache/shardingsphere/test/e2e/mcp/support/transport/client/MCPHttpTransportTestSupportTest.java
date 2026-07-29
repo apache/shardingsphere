@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,6 +42,7 @@ class MCPHttpTransportTestSupportTest {
         assertThat(actual.uri(), is(URI.create("http://127.0.0.1:8080/mcp")));
         assertThat(actual.headers().firstValue("Content-Type").orElse(""), is("application/json"));
         assertThat(actual.headers().firstValue("Accept").orElse(""), is("application/json, text/event-stream"));
+        assertThat(actual.timeout().orElseThrow(), is(Duration.ofSeconds(30L)));
     }
     
     @Test

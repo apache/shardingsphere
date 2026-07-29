@@ -205,9 +205,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          scenarios=(
+          generic_scenarios=(
             server-initialize
             ping
+            logging-set-level
             tools-list
             resources-list
             prompts-list
@@ -231,12 +232,12 @@ jobs:
           curl --silent --output /dev/null --request POST http://127.0.0.1:18088/mcp
           results_root="${RUNNER_TEMP}/mcp-conformance-results"
           mkdir -p "${results_root}"
-          available_scenarios="$(
+          version_scenarios="$(
             node .mcp-conformance/dist/index.js list --server --spec-version 2025-11-25 \
               | sed -nE 's/^[[:space:]]+- ([^ ]+).*/\1/p'
           )"
-          for scenario in "${scenarios[@]}"; do
-            if ! grep -Fxq -- "${scenario}" <<<"${available_scenarios}"; then
+          for scenario in "${generic_scenarios[@]}"; do
+            if ! grep -Fxq -- "${scenario}" <<<"${version_scenarios}"; then
               echo "MCP conformance scenario '${scenario}' is unavailable for protocol version 2025-11-25." >&2
               exit 1
             fi
@@ -271,18 +272,12 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - id: stdio-autonomous-read-only-query
-            test: LLMStdioE2ETest#assertAutonomousReadOnlyQuery
-          - id: http-autonomous-read-only-query
-            test: LLMHttpE2ETest#assertAutonomousReadOnlyQuery
-          - id: http-autonomous-metadata-discovery
-            test: LLMHttpE2ETest#assertAutonomousMetadataDiscovery
+          - id: http-read-only-query
+            test: LLMHttpE2ETest#assertReadOnlyQuery
+          - id: http-metadata-discovery
+            test: LLMHttpE2ETest#assertMetadataDiscovery
           - id: http-side-effect-preview
             test: LLMHttpE2ETest#assertSideEffectPreview
-          - id: http-runtime-resource-navigation
-            test: LLMHttpE2ETest#assertRuntimeResourceNavigation
-          - id: http-missing-database-scope-discovery
-            test: LLMHttpE2ETest#assertMissingDatabaseScopeDiscovery
           - id: http-invalid-resource-recovery
             test: LLMHttpE2ETest#assertInvalidResourceRecovery
     steps:

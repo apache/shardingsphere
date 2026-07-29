@@ -31,10 +31,6 @@ public final class MCPInteractionTraceRecord {
     
     public static final String MODEL_TOOL_CALL_ORIGIN = "model_tool_call";
     
-    public static final String PROTOCOL_BRIDGE_ORIGIN = "protocol_bridge";
-    
-    public static final String HARNESS_TEXT_RECOVERY_ORIGIN = "harness_text_recovery";
-    
     private final int sequence;
     
     private final String actionKind;
@@ -50,35 +46,6 @@ public final class MCPInteractionTraceRecord {
     private final boolean valid;
     
     private final long latencyMillis;
-    
-    /**
-     * Create resource read.
-     *
-     * @param sequence sequence
-     * @param resourceUri resource URI
-     * @param structuredContent structured content
-     * @param latencyMillis latency millis
-     * @return interaction trace record
-     */
-    public static MCPInteractionTraceRecord createResourceRead(final int sequence, final String resourceUri, final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_READ_KIND, PROTOCOL_BRIDGE_ORIGIN, MCPInteractionActionNames.READ_RESOURCE,
-                Map.of("uri", resourceUri), structuredContent, true, latencyMillis);
-    }
-    
-    /**
-     * Create completion.
-     *
-     * @param sequence sequence
-     * @param arguments completion arguments
-     * @param structuredContent structured content
-     * @param latencyMillis latency millis
-     * @return interaction trace record
-     */
-    public static MCPInteractionTraceRecord createCompletion(final int sequence, final Map<String, Object> arguments,
-                                                             final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.COMPLETION_KIND, PROTOCOL_BRIDGE_ORIGIN, MCPInteractionActionNames.COMPLETE,
-                arguments, structuredContent, true, latencyMillis);
-    }
     
     /**
      * Create invalid action.

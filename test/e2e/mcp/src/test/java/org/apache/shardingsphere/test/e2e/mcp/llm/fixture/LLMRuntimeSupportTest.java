@@ -166,11 +166,8 @@ class LLMRuntimeSupportTest {
     }
     
     private String createCompletionResponse(final String requestBody) {
-        if (requestBody.contains("\"tool_choice\":\"required\"")) {
+        if (requestBody.contains("\"tool_choice\":\"auto\"")) {
             return createToolCallResponse();
-        }
-        if (requestBody.contains("\"response_format\"")) {
-            return "{\"choices\":[{\"message\":{\"content\":\"{\\\"status\\\":\\\"ok\\\"}\"}}]}";
         }
         return "{\"choices\":[{\"message\":{\"content\":\"ok\"}}]}";
     }

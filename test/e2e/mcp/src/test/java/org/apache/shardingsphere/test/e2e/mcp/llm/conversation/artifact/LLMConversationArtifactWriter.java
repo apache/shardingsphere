@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.AutonomousLLMConversationRunner.Result;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRunner.Result;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,16 +26,16 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /**
- * Autonomous LLM conversation artifact writer.
+ * LLM conversation artifact writer.
  */
-public final class LLMAutonomousArtifactWriter {
+public final class LLMConversationArtifactWriter {
     
     private final LLME2EArtifactRedactor redactor = new LLME2EArtifactRedactor();
     
     private final LLME2ERuntimeEvidenceValidator runtimeEvidenceValidator = new LLME2ERuntimeEvidenceValidator();
     
     /**
-     * Write one autonomous conversation result.
+     * Write one conversation result.
      *
      * @param artifactDirectory artifact directory
      * @param conversationResult conversation result
@@ -47,7 +47,6 @@ public final class LLMAutonomousArtifactWriter {
         writeContent(artifactDirectory.resolve("run-context.json"), JsonUtils.toJsonString(createRunContext(conversationResult, runtimeEvidence)));
         writeContent(artifactDirectory.resolve("system-prompt.md"), conversationResult.systemPrompt());
         writeContent(artifactDirectory.resolve("question.txt"), conversationResult.scenario().question());
-        writeContent(artifactDirectory.resolve("expected-answer.txt"), conversationResult.scenario().expectedAnswer());
         writeContent(artifactDirectory.resolve("answer.txt"), conversationResult.actualAnswer());
         writeContent(artifactDirectory.resolve("raw-model-output.txt"),
                 String.join(System.lineSeparator() + System.lineSeparator(), conversationResult.evidence().rawModelOutputs()));

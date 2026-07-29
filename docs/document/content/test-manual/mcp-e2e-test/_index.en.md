@@ -13,7 +13,7 @@ The MCP E2E workflow contains three independent test suites:
 
 - MCP Functionality E2E validates distribution startup and configuration, HTTP and STDIO runtimes backed by real MySQL, PostgreSQL, and Proxy processes, cross-process discovery and execution of tools, resources, prompts, and completions, and the Encrypt, Mask, Broadcast, Readwrite-Splitting, Shadow, and Sharding workflows.
 - MCP Conformance E2E uses the official runner to validate MCP protocol scenarios applicable to the published server capabilities.
-- MCP LLM E2E validates that a real model can use MCP over HTTP or STDIO for read-only queries, metadata discovery, resource navigation, side-effect previews, and error recovery.
+- MCP LLM E2E validates that a real model can use MCP over HTTP for read-only queries, metadata discovery, side-effect previews, and invalid-resource recovery.
 
 The `StreamableHttpMCPServerIT` in `mcp/bootstrap` covers HTTP protocol, session, and security boundaries that require neither Docker nor an external service.
 
@@ -93,7 +93,7 @@ This test starts the real HTTP server without connecting to Docker, a database, 
 ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm
 ```
 
-`LLMHttpE2ETest` covers the HTTP scenarios, and `LLMStdioE2ETest` covers an autonomous read-only query over STDIO. Each scenario uses the live `tools/list` response and preserves the model response, structured MCP response, interaction trace, and assertion report. Missing Docker, model, database, or MCP infrastructure fails the selected `llm-e2e` lane instead of converting the failure into a skipped case.
+`LLMHttpE2ETest` covers four autonomous HTTP scenarios: read-only query, metadata discovery, side-effect preview, and invalid-resource recovery. Each scenario uses the live `tools/list` response and preserves the model response, structured MCP response, interaction trace, and assertion report. Missing Docker, model, database, or MCP infrastructure fails the selected `llm-e2e` lane instead of converting the failure into a skipped case.
 
 ## MCP Conformance E2E
 
@@ -119,7 +119,7 @@ MCP LLM E2E artifacts are written under:
 test/e2e/mcp/target/llm-e2e/
 ```
 
-Each scenario records the question, expected and actual answer, raw model response, MCP interaction trace, live tool definitions, runtime evidence, and assertion report. Artifact writing redacts secret-shaped values, and the test fails if an unredacted secret pattern or the known model API key is present.
+Each scenario records the question, actual answer, raw model response, MCP interaction trace, live tool definitions, runtime evidence, and assertion report. Artifact writing redacts secret-shaped values, and the test fails if an unredacted secret pattern or the known model API key is present.
 
 GitHub Actions entry points:
 
