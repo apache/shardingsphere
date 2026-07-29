@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,22 +26,22 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class ProductionRuntimeTransportCases {
+final class FunctionalityTransportCases {
     
-    static Stream<Arguments> transports() {
-        return runtimeTransports().map(each -> Arguments.of(getTransportName(each), each));
+    static Stream<Arguments> allTransportCases() {
+        return allTransports().map(each -> Arguments.of(getTransportName(each), each));
     }
     
-    static Stream<Arguments> semanticPrimaryTransport() {
-        return semanticPrimaryRuntimeTransports().map(each -> Arguments.of(getTransportName(each), each));
+    static Stream<Arguments> httpTransportCase() {
+        return httpTransports().map(each -> Arguments.of(getTransportName(each), each));
     }
     
-    static Stream<Arguments> assertReadSingleMetadataResourceCases(final String logicalDatabaseName) {
-        return semanticPrimaryRuntimeTransports().flatMap(each -> createSingleMetadataResourceCases(logicalDatabaseName, each));
+    static Stream<Arguments> singleMetadataResourceCases(final String logicalDatabaseName) {
+        return httpTransports().flatMap(each -> createSingleMetadataResourceCases(logicalDatabaseName, each));
     }
     
-    static Stream<Arguments> assertReadCollectionMetadataResourceCases(final String logicalDatabaseName) {
-        return semanticPrimaryRuntimeTransports().flatMap(each -> Stream.of(
+    static Stream<Arguments> collectionMetadataResourceCases(final String logicalDatabaseName) {
+        return httpTransports().flatMap(each -> Stream.of(
                 Arguments.of(getTransportName(each) + " schemas list", each, "shardingsphere://databases/" + logicalDatabaseName + "/schemas", "schema", List.of(logicalDatabaseName)),
                 Arguments.of(getTransportName(each) + " tables list", each,
                         "shardingsphere://databases/" + logicalDatabaseName + "/schemas/" + logicalDatabaseName + "/tables", "table", List.of("order_items", "orders")),
@@ -51,7 +51,7 @@ final class ProductionRuntimeTransportCases {
                         "shardingsphere://databases/" + logicalDatabaseName + "/schemas/" + logicalDatabaseName + "/views/active_orders/columns", "column", List.of("order_id", "status"))));
     }
     
-    static Stream<RuntimeTransport> runtimeTransports() {
+    static Stream<RuntimeTransport> allTransports() {
         return Stream.of(RuntimeTransport.HTTP, RuntimeTransport.STDIO);
     }
     
@@ -59,7 +59,7 @@ final class ProductionRuntimeTransportCases {
         return RuntimeTransport.HTTP == transport ? "http" : "stdio";
     }
     
-    private static Stream<RuntimeTransport> semanticPrimaryRuntimeTransports() {
+    private static Stream<RuntimeTransport> httpTransports() {
         return Stream.of(RuntimeTransport.HTTP);
     }
     

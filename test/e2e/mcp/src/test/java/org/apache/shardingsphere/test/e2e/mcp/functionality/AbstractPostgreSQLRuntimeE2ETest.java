@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.PostgreSQLRuntimeTestSupport;
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-abstract class AbstractProductionPostgreSQLRuntimeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
+abstract class AbstractPostgreSQLRuntimeE2ETest extends AbstractTransportParameterizedE2ETest {
     
     protected static final String LOGICAL_DATABASE_NAME = "postgres_db";
     
@@ -47,7 +47,7 @@ abstract class AbstractProductionPostgreSQLRuntimeE2ETest extends AbstractTransp
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         if (!PostgreSQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException("Docker is required for the PostgreSQL-backed production runtime E2E test.");
+            throw new IllegalStateException("Docker is required for the PostgreSQL-backed MCP Functionality E2E test.");
         }
         if (null != container) {
             return;
@@ -77,7 +77,7 @@ abstract class AbstractProductionPostgreSQLRuntimeE2ETest extends AbstractTransp
         return Map.of("database", LOGICAL_DATABASE_NAME, "schema", schema, "sql", sql, "execution_mode", "execute");
     }
     
-    protected static Stream<Arguments> semanticPrimaryTransport() {
-        return ProductionRuntimeTransportCases.semanticPrimaryTransport();
+    protected static Stream<Arguments> httpTransportCase() {
+        return FunctionalityTransportCases.httpTransportCase();
     }
 }

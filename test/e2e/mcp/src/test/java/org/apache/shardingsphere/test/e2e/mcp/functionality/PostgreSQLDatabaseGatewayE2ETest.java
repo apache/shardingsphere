@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
+package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
@@ -36,11 +36,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
-class ProductionPostgreSQLRuntimeE2ETest extends AbstractProductionPostgreSQLRuntimeE2ETest {
+class PostgreSQLDatabaseGatewayE2ETest extends AbstractPostgreSQLRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("semanticPrimaryTransport")
-    void assertPostgreSQLRuntimeContract(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+    @MethodSource("httpTransportCase")
+    void assertDatabaseGatewayContract(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             assertMetadata(interactionClient);
