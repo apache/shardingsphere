@@ -67,13 +67,13 @@ class MCPJdbcMetadataLoaderSequenceTest extends AbstractMCPJdbcMetadataLoaderTes
     }
     
     @Test
-    void assertLoadWithTrimmedSequenceMetadata() throws SQLException {
-        Connection connection = createConnectionWithSequenceMetadata("PostgreSQL", " public ", " order_seq ");
+    void assertLoadWithWhitespaceInSequenceName() throws SQLException {
+        Connection connection = createConnectionWithSequenceMetadata("PostgreSQL", "public", " order_seq ");
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(connection);
         MCPSequenceMetadata actual = load(Map.of("logic_db", runtimeDatabaseConfiguration)).findSnapshot("logic_db").orElseThrow()
                 .getSequences("public").iterator().next();
         assertThat(actual.getSchema(), is("public"));
-        assertThat(actual.getSequence(), is("order_seq"));
+        assertThat(actual.getSequence(), is(" order_seq "));
     }
     
     @Test

@@ -191,7 +191,7 @@ public final class MCPJdbcMetadataLoader {
                 if (databaseDialect.isSystemSchema(schemaName)) {
                     continue;
                 }
-                String sequenceName = Objects.toString(sequences.getString("SEQUENCE_NAME"), "").trim();
+                String sequenceName = Objects.toString(sequences.getString("SEQUENCE_NAME"), "");
                 if (!sequenceName.isEmpty()) {
                     accumulator.getSchemaAccumulator(normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName)).addSequence(sequenceName);
                 }
