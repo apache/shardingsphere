@@ -54,7 +54,6 @@ public final class LLMConversationArtifactWriter {
                 String.join(System.lineSeparator() + System.lineSeparator(), conversationResult.evidence().rawModelOutputs()), sensitiveValues);
         writeContent(artifactDirectory.resolve("available-tools.json"), JsonUtils.toJsonString(conversationResult.evidence().toolDefinitions()), sensitiveValues);
         writeContent(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(conversationResult.evidence().interactionTrace()), sensitiveValues);
-        writeContent(artifactDirectory.resolve("mcp-runtime.log"), String.join(System.lineSeparator(), conversationResult.evidence().runtimeLogLines()), sensitiveValues);
         writeContent(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(conversationResult.assertionReport()), sensitiveValues);
     }
     

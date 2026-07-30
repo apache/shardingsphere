@@ -78,7 +78,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final List<String> ARTIFACT_FILES = List.of(
             "run-context.json", "system-prompt.md", "question.txt", "answer.txt", "raw-model-output.txt", "available-tools.json",
-            "interaction-trace.json", "mcp-runtime.log", "assertion-report.json");
+            "interaction-trace.json", "assertion-report.json");
     
     private static final Pattern UNREDACTED_SECRET_PATTERN = Pattern.compile(
             "(?i)(?<![a-z0-9_])\"?(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"?\\s*[:=]\\s*[\"']?(?!<redacted>)[^\\s,\"'}]+"

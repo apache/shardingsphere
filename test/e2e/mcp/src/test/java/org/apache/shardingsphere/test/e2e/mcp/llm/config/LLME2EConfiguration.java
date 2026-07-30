@@ -66,8 +66,6 @@ public final class LLME2EConfiguration {
     
     private final int requestTimeoutSeconds;
     
-    private final int maxTurns;
-    
     private final Path artifactRoot;
     
     private final String runId;
@@ -97,7 +95,6 @@ public final class LLME2EConfiguration {
                 .apiKey(readString(props, "mcp.llm.api-key", DEFAULT_API_KEY))
                 .readyTimeoutSeconds(readInteger(props, "mcp.llm.ready-timeout-seconds", 600))
                 .requestTimeoutSeconds(readInteger(props, "mcp.llm.request-timeout-seconds", 600))
-                .maxTurns(readInteger(props, "mcp.llm.max-turns", 10))
                 .artifactRoot(Paths.get(readString(props, "mcp.llm.artifact-root", "target/llm-e2e")))
                 .runId(readString(props, "mcp.llm.run-id", createDefaultRunId()))
                 .runtimeMode(runtimeMode)
