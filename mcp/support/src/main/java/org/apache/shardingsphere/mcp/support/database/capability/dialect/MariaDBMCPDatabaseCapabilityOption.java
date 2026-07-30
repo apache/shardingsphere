@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
+import java.util.Optional;
+
 /**
  * MCP database capability option for MariaDB.
  */
@@ -27,6 +29,11 @@ public final class MariaDBMCPDatabaseCapabilityOption implements MCPDatabaseCapa
     @Override
     public boolean isExplainSupported() {
         return true;
+    }
+    
+    @Override
+    public Optional<String> getSequenceQuery() {
+        return Optional.of("SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'");
     }
     
     @Override

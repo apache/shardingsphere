@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence;
+package org.apache.shardingsphere.mcp.support.database.metadata.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Dialect sequence option.
+ * MCP sequence metadata.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DialectSequenceOption {
+public final class MCPSequenceMetadata {
     
-    private final String sequenceMetadataQuerySQL;
+    private final String database;
+    
+    private final String schema;
+    
+    private final String sequence;
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -77,26 +76,27 @@ class MCPDatabaseDialectTest {
     }
     
     @Test
-    void assertIsSequenceSupported() {
+    void assertGetSequenceQuery() {
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
-            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
-            when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(Optional.of(new DialectSequenceOption("SELECT 1")));
-            assertTrue(MCPDatabaseDialect.of("Fixture").isSequenceSupported());
+            mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            MCPDatabaseCapabilityOption capabilityOption = mock(MCPDatabaseCapabilityOption.class);
+            when(capabilityOption.getSequenceQuery()).thenReturn(Optional.of("SELECT 1"));
+            typedSPILoader.when(() -> TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, "Fixture")).thenReturn(Optional.of(capabilityOption));
+            assertThat(MCPDatabaseDialect.of("Fixture").getSequenceQuery(), is(Optional.of("SELECT 1")));
         }
     }
     
     @Test
-    void assertIsSequenceSupportedAbsent() {
+    void assertGetSequenceQueryAbsent() {
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
-            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
-            when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(Optional.empty());
-            assertFalse(MCPDatabaseDialect.of("Fixture").isSequenceSupported());
+            mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
+            assertThat(MCPDatabaseDialect.of("Fixture").getSequenceQuery(), is(Optional.empty()));
         }
     }
     

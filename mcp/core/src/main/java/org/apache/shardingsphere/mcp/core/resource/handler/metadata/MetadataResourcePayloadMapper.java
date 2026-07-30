@@ -21,11 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 
@@ -74,8 +75,8 @@ public final class MetadataResourcePayloadMapper {
         if (item instanceof ShardingSphereIndex) {
             return createIndexPayload((ShardingSphereIndex) item);
         }
-        if (item instanceof ShardingSphereSequence) {
-            return createSequencePayload((ShardingSphereSequence) item);
+        if (item instanceof MCPSequenceMetadata) {
+            return createSequencePayload((MCPSequenceMetadata) item);
         }
         return item;
     }
@@ -104,8 +105,9 @@ public final class MetadataResourcePayloadMapper {
                         .map(each -> createViewPayload(database, schema.getName(), each, false)).toList()
                 : List.of());
         result.put("sequences", detail
-                ? schema.getAllSequences().stream().sorted(Comparator.comparing(ShardingSphereSequence::getName)).map(each -> createSequencePayload(database, schema.getName(), each)).toList()
-                : List.of());
+                && metadataQueryFacade.isSupportedMetadataObjectType(database, SupportedMCPMetadataObjectType.SEQUENCE)
+                        ? metadataQueryFacade.querySequences(database, schema.getName()).stream().map(this::createSequencePayload).toList()
+                        : List.of());
         return result;
     }
     
@@ -169,15 +171,11 @@ public final class MetadataResourcePayloadMapper {
         return result;
     }
     
-    private Map<String, Object> createSequencePayload(final ShardingSphereSequence sequence) {
-        return createSequencePayload(getDatabase(), getSchema(), sequence);
-    }
-    
-    private Map<String, Object> createSequencePayload(final String database, final String schema, final ShardingSphereSequence sequence) {
+    private Map<String, Object> createSequencePayload(final MCPSequenceMetadata sequence) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("database", database);
-        result.put("schema", schema);
-        result.put("sequence", sequence.getName());
+        result.put("database", sequence.getDatabase());
+        result.put("schema", sequence.getSchema());
+        result.put("sequence", sequence.getSequence());
         return result;
     }
     

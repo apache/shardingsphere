@@ -25,7 +25,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -36,7 +35,6 @@ import org.apache.shardingsphere.database.connector.postgresql.metadata.database
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLSchemaOption;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Database meta data of PostgreSQL.
@@ -78,11 +76,6 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     @Override
     public DialectFunctionOption getFunctionOption() {
         return new PostgreSQLFunctionOption();
-    }
-    
-    @Override
-    public Optional<DialectSequenceOption> getSequenceOption() {
-        return Optional.of(new DialectSequenceOption("SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences"));
     }
     
     @Override

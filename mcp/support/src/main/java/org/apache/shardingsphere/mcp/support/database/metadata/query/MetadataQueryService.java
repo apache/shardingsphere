@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMet
 import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 
 import java.util.Collection;
@@ -172,21 +172,21 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
     }
     
     @Override
-    public List<ShardingSphereSequence> querySequences(final String databaseName, final String schemaName) {
+    public List<MCPSequenceMetadata> querySequences(final String databaseName, final String schemaName) {
         ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SEQUENCE),
                 () -> new MCPUnsupportedException("Sequence resources are not supported for the current database."));
-        return findSchema(databaseName, schemaName).map(optional -> sortSequences(optional.getAllSequences())).orElse(Collections.emptyList());
+        return metadataContext.loadSequences(databaseName, schemaName).map(this::sortSequences).orElse(Collections.emptyList());
     }
     
     @Override
-    public Optional<ShardingSphereSequence> querySequence(final String databaseName, final String schemaName, final String sequenceName) {
+    public Optional<MCPSequenceMetadata> querySequence(final String databaseName, final String schemaName, final String sequenceName) {
         ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SEQUENCE),
                 () -> new MCPUnsupportedException("Sequence resources are not supported for the current database."));
         return findSequence(querySequences(databaseName, schemaName), sequenceName);
     }
     
-    private List<ShardingSphereSequence> sortSequences(final Collection<ShardingSphereSequence> sequences) {
-        return sequences.stream().sorted(Comparator.comparing(ShardingSphereSequence::getName)).toList();
+    private List<MCPSequenceMetadata> sortSequences(final Collection<MCPSequenceMetadata> sequences) {
+        return sequences.stream().sorted(Comparator.comparing(MCPSequenceMetadata::getSequence)).toList();
     }
     
     private Optional<ShardingSphereSchema> findSchema(final String databaseName, final String schemaName) {
@@ -205,8 +205,8 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         return indexes.stream().filter(each -> indexName.equals(each.getName())).findFirst();
     }
     
-    private Optional<ShardingSphereSequence> findSequence(final Collection<ShardingSphereSequence> sequences, final String sequenceName) {
-        return sequences.stream().filter(each -> sequenceName.equals(each.getName())).findFirst();
+    private Optional<MCPSequenceMetadata> findSequence(final Collection<MCPSequenceMetadata> sequences, final String sequenceName) {
+        return sequences.stream().filter(each -> sequenceName.equals(each.getSequence())).findFirst();
     }
     
     @Override

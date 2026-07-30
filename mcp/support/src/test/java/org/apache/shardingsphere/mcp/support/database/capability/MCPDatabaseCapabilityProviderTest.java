@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapabi
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -97,7 +96,7 @@ class MCPDatabaseCapabilityProviderTest {
     
     @Test
     void assertProvideWithoutCapabilityOption() {
-        MCPDatabaseCapabilityProvider provider = createCapabilityProvider("FixtureDB", new CapabilityFixture(false, false, false, DialectSchemaSemantics.NATIVE_SCHEMA));
+        MCPDatabaseCapabilityProvider provider = createCapabilityProvider("FixtureDB", new CapabilityFixture(false, false, DialectSchemaSemantics.NATIVE_SCHEMA));
         assertThat(provider.findDatabaseProfile("logic_db").orElseThrow().getDatabaseType(), is("FixtureDB"));
         assertFalse(provider.provide("logic_db").isPresent());
     }
@@ -109,7 +108,7 @@ class MCPDatabaseCapabilityProviderTest {
                 insensitivePolicySet.getPolicy(IdentifierScope.TABLE),
                 Map.of(IdentifierScope.TABLE, IdentifierCasePolicyFactory.newSensitivePolicySet().getPolicy(IdentifierScope.TABLE),
                         IdentifierScope.COLUMN, insensitivePolicySet.getPolicy(IdentifierScope.COLUMN)));
-        CapabilityFixture capabilityFixture = new CapabilityFixture(true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA);
+        CapabilityFixture capabilityFixture = new CapabilityFixture(true, true, DialectSchemaSemantics.DATABASE_AS_SCHEMA);
         MCPDatabaseCapabilityProvider provider = createCapabilityProvider(
                 Map.of("logic_db", createDatabaseProfile("logic_db", "MySQL", capabilityFixture, scopedPolicySet)), Map.of("MySQL", capabilityFixture));
         DatabaseIdentifierContext actual = provider.provide("logic_db").orElseThrow().getIdentifierContext();
@@ -122,7 +121,7 @@ class MCPDatabaseCapabilityProviderTest {
     void assertProvideWithCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,
                                            final boolean expectedSavepoint, final boolean expectedSequenceSupport,
                                            final SchemaExecutionSemantics expectedSchemaExecutionSemantics, final boolean expectedExplainSupport) {
-        CapabilityFixture capabilityFixture = new CapabilityFixture(expectedTransactionControl, expectedSavepoint, expectedSequenceSupport,
+        CapabilityFixture capabilityFixture = new CapabilityFixture(expectedTransactionControl, expectedSavepoint,
                 SchemaExecutionSemantics.FIXED_TO_DATABASE == expectedSchemaExecutionSemantics ? DialectSchemaSemantics.DATABASE_AS_SCHEMA : DialectSchemaSemantics.NATIVE_SCHEMA);
         Optional<MCPDatabaseCapability> actual = createCapabilityProvider(databaseType, capabilityFixture).provide("logic_db");
         assertTrue(actual.isPresent());
@@ -137,8 +136,8 @@ class MCPDatabaseCapabilityProviderTest {
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
         Map<String, CapabilityFixture> capabilityFixtures = Map.of(
-                "MySQL", new CapabilityFixture(true, true, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA),
-                "Hive", new CapabilityFixture(false, false, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA));
+                "MySQL", new CapabilityFixture(true, true, DialectSchemaSemantics.DATABASE_AS_SCHEMA),
+                "Hive", new CapabilityFixture(false, false, DialectSchemaSemantics.DATABASE_AS_SCHEMA));
         Map<String, RuntimeDatabaseProfile> databaseProfiles = new LinkedHashMap<>(2, 1F);
         databaseProfiles.put("logic_db", createDatabaseProfile("logic_db", "MySQL", capabilityFixtures.get("MySQL"), IdentifierCasePolicyFactory.newSensitivePolicySet()));
         databaseProfiles.put("warehouse", createDatabaseProfile("warehouse", "Hive", capabilityFixtures.get("Hive"), IdentifierCasePolicyFactory.newSensitivePolicySet()));
@@ -178,8 +177,6 @@ class MCPDatabaseCapabilityProviderTest {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(
                 new DefaultSchemaOption(false, null, capabilityFixture.schemaSemantics));
-        when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(
-                capabilityFixture.sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
     }
     
@@ -211,8 +208,6 @@ class MCPDatabaseCapabilityProviderTest {
         private final boolean transactionSupported;
         
         private final boolean savepointSupported;
-        
-        private final boolean sequenceSupported;
         
         private final DialectSchemaSemantics schemaSemantics;
         

@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContex
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.mockito.MockedStatic;
 
@@ -230,10 +230,13 @@ public final class ResourceTestDataFactory {
         when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
         typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
         typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, databaseType)).thenReturn(databaseTypeFromSPI);
+        MCPDatabaseCapabilityOption capabilityOption = mock(MCPDatabaseCapabilityOption.class);
+        when(capabilityOption.getType()).thenReturn(databaseType);
+        when(capabilityOption.getSequenceQuery()).thenReturn(
+                sequenceSupported ? Optional.of("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES") : Optional.empty());
+        typedSPILoader.when(() -> TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType)).thenReturn(Optional.of(capabilityOption));
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(new DefaultSchemaOption(true, null, DialectSchemaSemantics.NATIVE_SCHEMA));
-        when(dialectDatabaseMetaData.getSequenceOption()).thenReturn(
-                sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(Optional.of(dialectDatabaseMetaData));
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseTypeFromSPI)).thenReturn(dialectDatabaseMetaData);
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseTypeFromSPI)).thenReturn(Optional.empty());

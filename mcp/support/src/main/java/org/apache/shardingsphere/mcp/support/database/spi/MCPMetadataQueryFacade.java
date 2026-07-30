@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mcp.support.database.spi;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 
 import java.util.List;
 import java.util.Optional;
@@ -182,7 +182,7 @@ public interface MCPMetadataQueryFacade {
      * @param schemaName schema name
      * @return sequence metadata list
      */
-    List<ShardingSphereSequence> querySequences(String databaseName, String schemaName);
+    List<MCPSequenceMetadata> querySequences(String databaseName, String schemaName);
     
     /**
      * Query one sequence in a schema.
@@ -192,7 +192,7 @@ public interface MCPMetadataQueryFacade {
      * @param sequenceName sequence name
      * @return sequence metadata
      */
-    Optional<ShardingSphereSequence> querySequence(String databaseName, String schemaName, String sequenceName);
+    Optional<MCPSequenceMetadata> querySequence(String databaseName, String schemaName, String sequenceName);
     
     /**
      * Check whether the database supports the specified metadata object type.

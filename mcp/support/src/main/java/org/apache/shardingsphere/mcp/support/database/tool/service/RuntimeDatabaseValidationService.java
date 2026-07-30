@@ -85,7 +85,7 @@ public final class RuntimeDatabaseValidationService {
         }
         Collection<ShardingSphereSchema> schemas;
         try {
-            schemas = metadataLoader.load(database, runtimeDatabaseConfig.get(), databaseProfile);
+            schemas = metadataLoader.load(database, runtimeDatabaseConfig.get(), databaseProfile).getSchemas();
             checks.add(RuntimeDatabaseValidationCheckResult.passed("metadata_read", "Read metadata through the configured JDBC connection."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(RuntimeDatabaseValidationCheckResult.failed("metadata_read", ex.getCategory(), "Failed to read metadata through the configured JDBC connection."));

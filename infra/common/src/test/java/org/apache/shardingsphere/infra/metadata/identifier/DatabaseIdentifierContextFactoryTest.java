@@ -571,7 +571,6 @@ class DatabaseIdentifierContextFactoryTest {
                 Arguments.of("view", IdentifierScope.VIEW, LookupMode.EXACT, false),
                 Arguments.of("column", IdentifierScope.COLUMN, LookupMode.NORMALIZED, true),
                 Arguments.of("index", IdentifierScope.INDEX, LookupMode.NORMALIZED, true),
-                Arguments.of("sequence", IdentifierScope.SEQUENCE, LookupMode.EXACT, false),
                 Arguments.of("constraint", IdentifierScope.CONSTRAINT, LookupMode.NORMALIZED, true));
     }
     
