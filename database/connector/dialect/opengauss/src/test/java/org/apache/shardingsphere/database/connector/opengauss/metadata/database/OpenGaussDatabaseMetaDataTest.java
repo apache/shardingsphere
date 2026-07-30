@@ -33,6 +33,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussDataTypeOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSchemaOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLFunctionOption;
+import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLSQLOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -118,6 +119,12 @@ class OpenGaussDatabaseMetaDataTest {
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.opengauss.xa.PGXADataSource"));
+    }
+    
+    @Test
+    void assertGetSQLOption() {
+        assertThat(dialectDatabaseMetaData.getSQLOption(), isA(PostgreSQLSQLOption.class));
+        assertTrue(dialectDatabaseMetaData.getSQLOption().isSupportWholeRowProjection());
     }
     
     @Test
