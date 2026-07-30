@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.resultset;
 
 import org.apache.calcite.avatica.SqlType;
+import org.apache.calcite.avatica.util.ByteString;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeFactoryImpl.JavaType;
@@ -38,6 +39,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSetMetaData;
 import java.sql.Types;
@@ -408,7 +410,12 @@ class SQLFederationResultSetMetaDataTest {
                 Arguments.of("bigint", SqlTypeName.BIGINT, Long.class.getName()),
                 Arguments.of("float", SqlTypeName.FLOAT, Double.class.getName()),
                 Arguments.of("real", SqlTypeName.REAL, Float.class.getName()),
-                Arguments.of("double", SqlTypeName.DOUBLE, Double.class.getName()));
+                Arguments.of("double", SqlTypeName.DOUBLE, Double.class.getName()),
+                Arguments.of("decimal", SqlTypeName.DECIMAL, BigDecimal.class.getName()),
+                Arguments.of("date", SqlTypeName.DATE, Integer.class.getName()),
+                Arguments.of("timestamp", SqlTypeName.TIMESTAMP, Long.class.getName()),
+                Arguments.of("varbinary", SqlTypeName.VARBINARY, ByteString.class.getName()),
+                Arguments.of("any_fallback", SqlTypeName.ANY, Object.class.getName()));
     }
     
     private RelDataType createRowType(final boolean nullable, final int precision, final int scale) {
