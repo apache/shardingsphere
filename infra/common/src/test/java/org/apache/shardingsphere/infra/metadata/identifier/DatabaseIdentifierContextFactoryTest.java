@@ -137,6 +137,7 @@ class DatabaseIdentifierContextFactoryTest {
         assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
         assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
         assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalizeForLookup("Foo"), is("foo"));
+        assertTrue(actual.matchesMetaData(IdentifierScope.SCHEMA, "Foo", new IdentifierValue("foo")));
     }
     
     @Test
@@ -147,6 +148,7 @@ class DatabaseIdentifierContextFactoryTest {
         assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
         assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
         assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalizeForLookup("Foo"), is("foo"));
+        assertTrue(actual.matchesMetaData(IdentifierScope.SCHEMA, "Foo", new IdentifierValue("foo")));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -178,6 +180,34 @@ class DatabaseIdentifierContextFactoryTest {
         IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateUsesProtocolRuleForSchemaWhenProtocolSchemaUnavailable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(
+                MYSQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.SCHEMA).matches("FOO_SCHEMA", "foo_schema", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesProtocolRuleForSchemaWhenProtocolSchemaUnavailable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.SCHEMA).matches("FOO_SCHEMA", "foo_schema", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateUsesProtocolRuleForSchemaWhenStorageSchemaUnavailable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(
+                POSTGRESQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesProtocolRuleForSchemaWhenStorageSchemaUnavailable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, POSTGRESQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE));
     }
     
     @Test
@@ -439,8 +469,10 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithSupportedDatabaseSchemaLookupArguments() {
         return Stream.of(
                 createNormalizedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
-                createInsensitiveQuotedExactLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
-                createInsensitiveQuotedExactLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseLookupArguments("postgresql protocol openGauss storage schema", POSTGRESQL_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseLookupArguments("openGauss protocol postgresql storage schema", OPEN_GAUSS_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
                 createUpperCaseLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
     }
@@ -489,8 +521,10 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithMixedStoredCaseSchemaLookupArguments() {
         return Stream.of(
                 createNormalizedMixedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
-                createInsensitiveQuotedExactMixedLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
-                createInsensitiveQuotedExactMixedLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseMixedLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseMixedLookupArguments("postgresql protocol openGauss storage schema", POSTGRESQL_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseMixedLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseMixedLookupArguments("openGauss protocol postgresql storage schema", OPEN_GAUSS_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
                 createUpperCaseMixedLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
     }
@@ -553,29 +587,6 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static Optional<String> getExpectedResult(final String expectedName) {
         return null == expectedName ? Optional.empty() : Optional.of(expectedName);
-    }
-    
-    private static Stream<Arguments> createInsensitiveQuotedExactLookupArguments(final String databaseName, final DatabaseType protocolType,
-                                                                                 final ResourceMetaData resourceMetaData, final String lowerActualName,
-                                                                                 final String quoteCharacter) {
-        String upperActualName = lowerActualName.toUpperCase(Locale.ENGLISH);
-        return Stream.of(
-                createLookupArgument(databaseName + " finds lower actual by unquoted lower lookup",
-                        protocolType, resourceMetaData, lowerActualName, lowerActualName, false, quoteCharacter, lowerActualName),
-                createLookupArgument(databaseName + " finds lower actual by unquoted upper lookup",
-                        protocolType, resourceMetaData, lowerActualName, upperActualName, false, quoteCharacter, lowerActualName),
-                createLookupArgument(databaseName + " finds lower actual by quoted lower lookup",
-                        protocolType, resourceMetaData, lowerActualName, lowerActualName, true, quoteCharacter, lowerActualName),
-                createLookupArgument(databaseName + " does not find lower actual by quoted upper lookup",
-                        protocolType, resourceMetaData, lowerActualName, upperActualName, true, quoteCharacter, null),
-                createLookupArgument(databaseName + " finds upper actual by unquoted lower lookup",
-                        protocolType, resourceMetaData, upperActualName, lowerActualName, false, quoteCharacter, upperActualName),
-                createLookupArgument(databaseName + " finds upper actual by unquoted upper lookup",
-                        protocolType, resourceMetaData, upperActualName, upperActualName, false, quoteCharacter, upperActualName),
-                createLookupArgument(databaseName + " does not find upper actual by quoted lower lookup",
-                        protocolType, resourceMetaData, upperActualName, lowerActualName, true, quoteCharacter, null),
-                createLookupArgument(databaseName + " finds upper actual by quoted upper lookup",
-                        protocolType, resourceMetaData, upperActualName, upperActualName, true, quoteCharacter, upperActualName));
     }
     
     private static Stream<Arguments> createNormalizedLookupArguments(final String databaseName, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
@@ -642,17 +653,6 @@ class DatabaseIdentifierContextFactoryTest {
                         protocolType, resourceMetaData, upperActualName, lowerActualName, true, quoteCharacter, null),
                 createLookupArgument(databaseName + " finds upper actual by quoted upper lookup",
                         protocolType, resourceMetaData, upperActualName, upperActualName, true, quoteCharacter, upperActualName));
-    }
-    
-    private static Stream<Arguments> createInsensitiveQuotedExactMixedLookupArguments(final String databaseName, final DatabaseType protocolType,
-                                                                                      final ResourceMetaData resourceMetaData, final String lowerActualName,
-                                                                                      final String quoteCharacter) {
-        String upperActualName = lowerActualName.toUpperCase(Locale.ENGLISH);
-        return Stream.of(
-                createMixedLookupArgument(databaseName + " finds lower actual by quoted lower lookup", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, lowerActualName),
-                createMixedLookupArgument(databaseName + " finds upper actual by quoted upper lookup", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, upperActualName),
-                createMixedLookupArgument(databaseName + " finds lower actual by unquoted lower lookup", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, lowerActualName),
-                createMixedLookupArgument(databaseName + " finds upper actual by unquoted upper lookup", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, upperActualName));
     }
     
     private static Stream<Arguments> createNormalizedMixedLookupArguments(final String databaseName, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
