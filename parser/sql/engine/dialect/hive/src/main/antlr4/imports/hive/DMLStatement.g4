@@ -20,7 +20,7 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : INSERT insertSpecification INTO? tableName partitionNames? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause?
+    : withClause? INSERT insertSpecification INTO? tableName partitionNames? (insertSelectClause | insertValuesClause | setAssignmentsClause) onDuplicateKeyClause?
     | insertDataIntoTablesFromQueries
     | writingDataIntoFileSystem
     | insertingValuesIntoTables
@@ -48,6 +48,10 @@ tableWild
 
 insertSelectClause
     : valueReference? (LP_ fields? RP_)? select
+    ;
+
+insertSelectColumns
+    : LP_ fields? RP_
     ;
 
 onDuplicateKeyClause
@@ -442,7 +446,7 @@ insertDataIntoTablesFromQueries
 
 standardSyntax
     : INSERT OVERWRITE TABLE tableName partitionClause? select
-    | INSERT INTO TABLE tableName partitionSpec? select
+    | INSERT INTO TABLE tableName partitionSpec? insertSelectColumns? select
     ;
 
 multipleInserts
@@ -450,7 +454,7 @@ multipleInserts
     ;
 
 dynamicPartitionInserts
-    : INSERT (OVERWRITE | INTO) TABLE tableName dynamicPartitionClause select
+    : INSERT (OVERWRITE | INTO) TABLE tableName dynamicPartitionClause insertSelectColumns? select
     ;
 
 hiveMultipleInserts
@@ -459,7 +463,7 @@ hiveMultipleInserts
 
 hiveInsertStatement
     : INSERT OVERWRITE TABLE tableName partitionClause? select
-    | INSERT INTO TABLE tableName partitionSpec? select
+    | INSERT INTO TABLE tableName partitionSpec? insertSelectColumns? select
     ;
 
 dynamicPartitionClause
@@ -476,7 +480,12 @@ partitionClause
 
 writingDataIntoFileSystem
     : insertOverwriteStandardSyntax
-    | fromClause insertOverwriteStandardSyntax+
+    | fromClause hiveFileSystemInsertStatement+
+    ;
+
+hiveFileSystemInsertStatement
+    : insertOverwriteStandardSyntax
+    | hiveInsertStatement
     ;
 
 insertOverwriteStandardSyntax

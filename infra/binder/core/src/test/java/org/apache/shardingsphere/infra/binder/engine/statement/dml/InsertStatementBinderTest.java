@@ -72,9 +72,11 @@ class InsertStatementBinderTest {
                         new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))))
                 .values(Collections.singletonList(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                         new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK")))))
+                .overwrite(true)
                 .build();
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
         assertThat(actual, not(insertStatement));
+        assertTrue(actual.isOverwrite());
         assertTrue(actual.getTable().isPresent());
         assertTrue(insertStatement.getTable().isPresent());
         assertThat(actual.getTable().get().getTableName(), not(insertStatement.getTable().get().getTableName()));

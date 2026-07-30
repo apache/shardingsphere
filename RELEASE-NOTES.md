@@ -71,6 +71,7 @@
 1. SQL Parser: Support oracle insert into returning into item statement parse - [#38902](https://github.com/apache/shardingsphere/pull/38902)
 1. SQL Parser: Enhance Hive SQL parser to support CTE, lateral view, table sampling, transform and set operations - [#39008](https://github.com/apache/shardingsphere/pull/39008)
 1. SQL Parser: Add Hive CTAS and window function parsing - [#39188](https://github.com/apache/shardingsphere/pull/39188)
+1. SQL Parser: Support Hive parser and binder for insert select columns and transform expressions - [#39269](https://github.com/apache/shardingsphere/pull/39269)
 1. SQL Parser: Support SQLServer table variable declaration parse - [#38904](https://github.com/apache/shardingsphere/pull/38904)
 1. SQL Parser: Support Oracle procedure parser and binder - [#39231](https://github.com/apache/shardingsphere/pull/39231)
 1. SQL Parser: Support function table alias column parsing for PostgreSQL and openGauss - [#39268](https://github.com/apache/shardingsphere/pull/39268)

@@ -192,6 +192,24 @@ class SelectStatementBinderTest {
     }
     
     @Test
+    void assertBindTransformSegments() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        FunctionSegment transformSegment = new FunctionSegment(0, 0, "TRANSFORM", "TRANSFORM(user_name)");
+        transformSegment.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("user_name")));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        selectStatement.getTransformSegments().add(transformSegment);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        FunctionSegment actualTransformSegment = actual.getTransformSegments().iterator().next();
+        assertThat(actualTransformSegment, not(transformSegment));
+        ColumnSegment actualParameter = (ColumnSegment) actualTransformSegment.getParameters().iterator().next();
+        assertThat(actualParameter.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        assertThat(actualParameter.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_name"));
+    }
+    
+    @Test
     void assertBindWithLikeSubquery() {
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
         subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("email"))));
