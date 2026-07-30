@@ -82,21 +82,10 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
         return handlePlaceHolder(inlineExpression);
     }
     
-    /**
-     * Replace all inline expression placeholders.
-     *
-     * @param inlineExpression inline expression with {@code $->}
-     * @return result inline expression with {@code $}
-     */
     private String handlePlaceHolder(final String inlineExpression) {
         return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\${") : inlineExpression;
     }
     
-    /**
-     * Split and Evaluate inline expression. This function will replace all inline expression placeholders.
-     *
-     * @return result inline expression with {@code $}
-     */
     @Override
     public List<String> splitAndEvaluate() {
         if (Strings.isNullOrEmpty(inlineExpression)) {
@@ -108,11 +97,6 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
         return flatten(evaluate(GroovyUtils.split(handlePlaceHolder(inlineExpression))));
     }
     
-    /**
-     * Turn inline expression into Groovy Closure. This function will replace all inline expression placeholders.
-     * For compatibility reasons, it does not check whether the unit of the input parameter map is null.
-     * @return The result of the Groovy Closure pattern.
-     */
     @Override
     public String evaluateWithArgs(final Map<String, Comparable<?>> map) {
         if (isConstantExpression(inlineExpression)) {

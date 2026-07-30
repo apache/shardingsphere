@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -45,8 +46,8 @@ class MCPDescriptorCatalogLoaderTest {
         Set<String> actualToolNames = actual.getProtocolDescriptors().getToolDescriptors().stream().map(MCPToolDescriptor::getName).collect(Collectors.toSet());
         assertToolNames(actualToolNames);
         assertOutputProperties(actual, "database_gateway_apply_workflow", Set.of(
-                "response_mode", "summary", "plan_id", "execution_mode", "next_actions", "manual_artifact_package", "manual_artifact_summary", "manual_follow_up", "argument_provenance",
-                "review_summary", "review_focus", "category", "message", "secret_reference_summary"));
+                "response_mode", "summary", "plan_id", "execution_mode", "next_actions", "manual_artifact_package", "manual_artifact_summary", "argument_provenance",
+                "review_focus", "category", "secret_reference_summary"));
         assertOutputProperties(actual, "database_gateway_validate_workflow", Set.of("response_mode", "summary", "plan_id", "status", "recovery_guidance", "next_actions", "sections", "mismatches"));
         assertPublicToolAnnotations(actual);
         assertPlanningToolAnnotations(actual);
@@ -158,9 +159,8 @@ class MCPDescriptorCatalogLoaderTest {
     }
     
     private void assertNoToolExecutionPayload(final MCPDescriptorCatalog catalog) {
-        Map<String, Object> payload = MCPDescriptorCatalogPayloadBuilder.build(catalog, List.of(), List.of(), List.of());
-        for (Object each : (List<?>) payload.get("tools")) {
-            assertFalse(((Map<?, ?>) each).containsKey("execution"));
+        for (MCPToolDescriptor each : catalog.getProtocolDescriptors().getToolDescriptors()) {
+            assertFalse(each.getMeta().containsKey("execution"));
         }
     }
     

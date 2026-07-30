@@ -70,10 +70,10 @@ class FirebirdNonFixedLengthColumnSizeLoaderTest {
         when(columnsResultSet.getInt("DATA_TYPE")).thenReturn(dataType);
         when(columnsResultSet.getString("COLUMN_NAME")).thenReturn(columnName);
         when(columnsResultSet.getInt("COLUMN_SIZE")).thenReturn(columnSize);
-        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "logic_ds", dataSource, databaseType, "schema");
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("FOO_TBL"), "logic_ds", dataSource, databaseType, "schema");
         Map<String, Map<String, Integer>> actual = new FirebirdNonFixedLengthColumnSizeLoader(material).load();
-        assertThat(actual, hasKey("foo_tbl"));
-        assertThat(actual.get("foo_tbl"), is(expected));
+        assertThat(actual, hasKey("FOO_TBL"));
+        assertThat(actual.get("FOO_TBL"), is(expected));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -95,10 +95,10 @@ class FirebirdNonFixedLengthColumnSizeLoaderTest {
         if (stubWasNull) {
             when(columnsResultSet.wasNull()).thenReturn(wasNull);
         }
-        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "logic_ds", dataSource, databaseType, "schema");
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("FOO_TBL"), "logic_ds", dataSource, databaseType, "schema");
         Map<String, Map<String, Integer>> actual = new FirebirdNonFixedLengthColumnSizeLoader(material).load();
-        assertThat(actual, hasKey("foo_tbl"));
-        assertTrue(actual.get("foo_tbl").isEmpty());
+        assertThat(actual, hasKey("FOO_TBL"));
+        assertTrue(actual.get("FOO_TBL").isEmpty());
     }
     
     @Test

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
@@ -28,14 +27,10 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -51,20 +46,6 @@ class MCPDatabaseDialectTest {
     @Test
     void assertOfWithEmptyDatabaseType() {
         assertThrows(ServiceProviderNotFoundException.class, () -> MCPDatabaseDialect.of(""));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getIdentifierQuoteCharacterArguments")
-    void assertGetIdentifierQuoteCharacter(final String name, final String databaseType, final QuoteCharacter expected) {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseTypeFromSPI = mockDatabaseType(databaseType, typedSPILoader);
-            DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(databaseTypeFromSPI, databaseTypedSPILoader);
-            when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(expected);
-            QuoteCharacter actual = MCPDatabaseDialect.of(databaseType).getIdentifierQuoteCharacter();
-            assertThat(actual, is(expected));
-        }
     }
     
     @Test
@@ -92,18 +73,6 @@ class MCPDatabaseDialectTest {
             DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.empty());
             assertThrows(ServiceProviderNotFoundException.class, () -> MCPDatabaseDialect.of("Fixture"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getTransactionCapabilityArguments")
-    void assertGetTransactionCapability(final String name, final boolean transactionSupported, final boolean savepointSupported, final TransactionCapability expected) {
-        try (
-                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
-                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            DatabaseType databaseType = mockDatabaseType("Fixture", typedSPILoader);
-            mockDialectDatabaseMetaData(databaseType, databaseTypedSPILoader);
-            assertThat(MCPDatabaseDialect.of("Fixture").getTransactionCapability(transactionSupported, savepointSupported), is(expected));
         }
     }
     
@@ -184,13 +153,6 @@ class MCPDatabaseDialectTest {
         }
     }
     
-    private static Stream<Arguments> getIdentifierQuoteCharacterArguments() {
-        return Stream.of(
-                Arguments.of("back quote", "FixtureBackQuote", QuoteCharacter.BACK_QUOTE),
-                Arguments.of("brackets", "FixtureBrackets", QuoteCharacter.BRACKETS),
-                Arguments.of("quote", "FixtureQuote", QuoteCharacter.QUOTE));
-    }
-    
     private static DatabaseType mockDatabaseType(final String databaseType, final MockedStatic<TypedSPILoader> typedSPILoader) {
         DatabaseType result = mock(DatabaseType.class);
         typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(result));
@@ -207,13 +169,6 @@ class MCPDatabaseDialectTest {
         DialectSystemDatabase result = mock(DialectSystemDatabase.class);
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType)).thenReturn(Optional.of(result));
         return result;
-    }
-    
-    private static Stream<Arguments> getTransactionCapabilityArguments() {
-        return Stream.of(
-                Arguments.of("not supported", false, false, TransactionCapability.NONE),
-                Arguments.of("local only", true, false, TransactionCapability.LOCAL),
-                Arguments.of("local with savepoint", true, true, TransactionCapability.LOCAL_WITH_SAVEPOINT));
     }
     
 }

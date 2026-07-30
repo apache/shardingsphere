@@ -24,10 +24,15 @@ import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,6 +51,18 @@ class OpenGaussStatementVisitorTest {
         assertTrue(aggregationProjection.getWindow().isPresent());
         WindowItemSegment windowItem = aggregationProjection.getWindow().get();
         assertThat(windowItem.getOrderBySegment().getOrderByItems().size(), is(1));
+    }
+    
+    @Test
+    void assertVisitFunctionTableColumnAliases() {
+        SelectStatement statement = parseSelectStatement("SELECT s.r FROM generate_series(1, 3) AS s(r)");
+        assertTrue(statement.getFrom().isPresent());
+        assertThat(statement.getFrom().get(), isA(FunctionTableSegment.class));
+        FunctionTableSegment functionTableSegment = (FunctionTableSegment) statement.getFrom().get();
+        assertTrue(functionTableSegment.getAliasSegment().isPresent());
+        assertThat(functionTableSegment.getAliasSegment().get().getIdentifier().getValue(), is("s"));
+        Collection<String> actualColumns = functionTableSegment.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        assertThat(actualColumns, contains("r"));
     }
     
     private SelectStatement parseSelectStatement(final String sql) {

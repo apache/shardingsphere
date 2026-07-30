@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
@@ -58,14 +57,10 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final MaskRuleInspectionService ruleInspectionService;
+    private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
-    
-    public MaskWorkflowValidationService() {
-        ruleInspectionService = new MaskRuleInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
-    }
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
@@ -78,9 +73,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     public List<Map<String, Object>> validate(final WorkflowContextSnapshot snapshot, final Collection<ExecutableWorkflowArtifact> artifacts) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (ExecutableWorkflowArtifact each : artifacts) {
-            if (each.ruleDistSql()) {
-                addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
-            }
+            addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
         }
         return result;
     }
@@ -229,8 +222,8 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private void addPropertyMismatch(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final Object expected, final Object actual) {
-        Map<String, String> expectedProperties = WorkflowSQLUtils.createPropertyMap(expected);
-        Map<String, String> actualProperties = WorkflowSQLUtils.createPropertyMap(actual);
+        Map<String, String> expectedProperties = WorkflowAlgorithmUtils.createPropertyMap(expected);
+        Map<String, String> actualProperties = WorkflowAlgorithmUtils.createPropertyMap(actual);
         if (WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(expectedProperties, actualProperties, snapshot.getRequest(), "primary")) {
             return;
         }
@@ -244,7 +237,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : rules) {
             Map<String, Object> rule = new LinkedHashMap<>(each);
-            rule.put("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("algorithm_props")), snapshot.getPropertyRequirements(),
+            rule.put("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowAlgorithmUtils.createPropertyMap(each.get("algorithm_props")), snapshot.getPropertyRequirements(),
                     snapshot.getRequest(), "primary"));
             result.add(rule);
         }

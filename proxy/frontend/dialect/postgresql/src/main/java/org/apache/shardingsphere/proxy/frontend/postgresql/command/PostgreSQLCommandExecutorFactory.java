@@ -30,6 +30,8 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
+import org.apache.shardingsphere.database.protocol.postgresql.type.PostgreSQLColumnTypeOIDResolver;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
@@ -55,6 +57,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class PostgreSQLCommandExecutorFactory {
+    
+    private static final ColumnTypeOIDResolver COLUMN_TYPE_OID_RESOLVER = new PostgreSQLColumnTypeOIDResolver();
     
     /**
      * Create new instance of command executor.
@@ -115,7 +119,7 @@ public final class PostgreSQLCommandExecutorFactory {
             case BIND_COMMAND:
                 return new PostgreSQLComBindExecutor(portalContext, (PostgreSQLComBindPacket) commandPacket, connectionSession);
             case DESCRIBE_COMMAND:
-                return new PostgreSQLComDescribeExecutor(portalContext, (PostgreSQLComDescribePacket) commandPacket, connectionSession);
+                return new PostgreSQLComDescribeExecutor(portalContext, (PostgreSQLComDescribePacket) commandPacket, connectionSession, COLUMN_TYPE_OID_RESOLVER);
             case EXECUTE_COMMAND:
                 return new PostgreSQLComExecuteExecutor(portalContext, (PostgreSQLComExecutePacket) commandPacket);
             case SYNC_COMMAND:

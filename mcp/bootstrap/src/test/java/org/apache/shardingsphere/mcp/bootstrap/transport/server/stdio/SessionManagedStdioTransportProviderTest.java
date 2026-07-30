@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperF
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,7 +44,7 @@ class SessionManagedStdioTransportProviderTest {
     
     @Test
     void assertProtocolVersions() {
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(new MCPSessionManager(Collections.emptyMap()), MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(new MCPSessionManager(Collections.emptyMap()));
         List<String> actual = provider.protocolVersions();
         assertThat(actual, is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
     }
@@ -55,7 +56,7 @@ class SessionManagedStdioTransportProviderTest {
         McpServerSession session = mock(McpServerSession.class);
         when(sessionFactory.create(any(McpServerTransport.class))).thenReturn(session);
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         assertTrue(sessionManager.hasSession("session-id"));
     }
@@ -73,7 +74,7 @@ class SessionManagedStdioTransportProviderTest {
             return session;
         });
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         transport.get().closeGracefully().block();
         assertThat(actualClosedSessionIds, is(List.of("session-id")));
@@ -102,7 +103,7 @@ class SessionManagedStdioTransportProviderTest {
         });
         when(firstSession.getId()).thenReturn("session-id-1");
         when(secondSession.getId()).thenReturn("session-id-2");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         firstTransport.get().close();
         provider.setSessionFactory(sessionFactory);
@@ -125,7 +126,7 @@ class SessionManagedStdioTransportProviderTest {
             return session;
         });
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         transport.get().close();
         assertThat(actualClosedSessionIds, is(List.of("session-id")));
@@ -145,11 +146,21 @@ class SessionManagedStdioTransportProviderTest {
             return session;
         });
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         transport.get().close();
         transport.get().closeGracefully().block();
         assertThat(actualClosedSessionIds, is(List.of("session-id")));
         assertFalse(sessionManager.hasSession("session-id"));
+    }
+    
+    private SessionManagedStdioTransportProvider createProvider(final MCPSessionManager sessionManager) {
+        InputStream originalInput = System.in;
+        try {
+            System.setIn(InputStream.nullInputStream());
+            return new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        } finally {
+            System.setIn(originalInput);
+        }
     }
 }

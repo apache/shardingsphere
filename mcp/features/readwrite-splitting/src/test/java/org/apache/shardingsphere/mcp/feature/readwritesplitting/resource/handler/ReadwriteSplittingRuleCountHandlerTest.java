@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -44,13 +44,13 @@ class ReadwriteSplittingRuleCountHandlerTest {
             ReadwriteSplittingRuleCountHandler handler = new ReadwriteSplittingRuleCountHandler();
             ReadwriteSplittingInspectionService inspectionService = mocked.constructed().getFirst();
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-            when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+            when(requestContext.getQueryFacade()).thenReturn(queryFacade);
             when(inspectionService.queryRuleCount(queryFacade, "logic_db")).thenReturn(List.of(Map.of("rule_count", 1)));
-            MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db")));
+            MCPSuccessPayload actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of("database", "logic_db")));
             verify(inspectionService).queryRuleCount(queryFacade, "logic_db");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/readwrite-splitting/databases/logic_db/rule-count"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/readwrite-splitting/databases/logic_db/rule-count"));
             assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is("shardingsphere://features/readwrite-splitting/databases/logic_db/rules"));
         }
     }

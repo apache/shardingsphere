@@ -156,10 +156,12 @@ class SimpleTableSegmentBinderTest {
     @Test
     void assertBindTableSampleExpression() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 6, new IdentifierValue("t_order")));
+        simpleTableSegment.setTableSampled(true);
         simpleTableSegment.setTableSampleExpression(new ColumnSegment(31, 38, new IdentifierValue("order_id")));
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(
                 createMetaData(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts);
+        assertTrue(actual.isTableSampled());
         assertTrue(actual.getTableSampleExpression().isPresent());
         assertTrue(actual.getTableSampleExpression().get() instanceof ColumnSegment);
         ColumnSegment actualExpression = (ColumnSegment) actual.getTableSampleExpression().get();

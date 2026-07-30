@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+
 /**
  * MCP database capability option for MySQL.
  */
-public final class MySQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class MySQLMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public MySQLMCPDatabaseCapabilityOption() {
-        super("MySQL", true);
+    @Override
+    public boolean isExplainSupported() {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

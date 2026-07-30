@@ -61,16 +61,20 @@ public final class BroadcastWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId,
-                                        final BroadcastWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final BroadcastWorkflowRequest request) {
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         BroadcastWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
+        if (!request.getTable().isEmpty() && !request.getTables().isEmpty()) {
+            result.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_CONFLICT, "error", WorkflowLifecycle.STEP_INTAKING,
+                    "Broadcast workflow accepts table or tables, but not both in the same request.",
+                    "Choose one target input mode and start a new plan without plan_id.", false, Map.of("conflicting_inputs", List.of("table", "tables"))));
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+        }
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
@@ -97,19 +101,19 @@ public final class BroadcastWorkflowPlanningService {
     private boolean ensurePlanningContext(final BroadcastWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (request.getDatabase().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Database is required before planning broadcast rule DistSQL.", "Provide the logical database name.", true, Map.of()));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!planningSupport.ensureSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, "discovering")
-                || !planningSupport.ensureSupportedIdentifiers("tables", request.getTargetTables(), snapshot, "discovering")) {
+        if (!planningSupport.ensureSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, WorkflowLifecycle.STEP_DISCOVERING)
+                || !planningSupport.ensureSupportedIdentifiers("tables", request.getTargetTables(), snapshot, WorkflowLifecycle.STEP_DISCOVERING)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
         if (request.getTargetTables().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide one or more logical table names for broadcast rule planning.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Broadcast rule DistSQL requires at least one logical table.", "Provide tables as a comma-separated list or table as a single value.", true,
                     Map.of("missing_inputs", List.of(BroadcastFeatureDefinition.TABLES_FIELD))));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
@@ -134,7 +138,7 @@ public final class BroadcastWorkflowPlanningService {
         if (!ruleExists) {
             return true;
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", WorkflowLifecycle.STEP_DISCOVERING,
                 String.format("Broadcast rule already contains table `%s`.", tableName), "Remove existing table from the create request or choose drop.", false, Map.of("table", tableName)));
         return false;
     }
@@ -143,7 +147,7 @@ public final class BroadcastWorkflowPlanningService {
         if (ruleExists) {
             return true;
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", "discovering",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", WorkflowLifecycle.STEP_DISCOVERING,
                 String.format("Broadcast rule does not contain table `%s`.", tableName), "Confirm target table or skip the drop request.", false, Map.of("table", tableName)));
         return false;
     }

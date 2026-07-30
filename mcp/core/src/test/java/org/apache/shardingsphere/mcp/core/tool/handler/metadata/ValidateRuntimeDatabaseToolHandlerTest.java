@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationCheckResult;
-import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationResult;
+import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
+import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationResult;
 import org.apache.shardingsphere.mcp.support.database.tool.service.RuntimeDatabaseValidationService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -49,16 +48,16 @@ class ValidateRuntimeDatabaseToolHandlerTest {
     void assertHandle() {
         try (
                 MockedConstruction<RuntimeDatabaseValidationService> mocked =
-                        mockConstruction(RuntimeDatabaseValidationService.class, (mock, context) -> when(mock.validate(any(), any(), any())).thenReturn(RuntimeDatabaseValidationResult.ready(
+                        mockConstruction(RuntimeDatabaseValidationService.class, (mock, context) -> when(mock.validate(any(), any())).thenReturn(RuntimeDatabaseValidationResult.ready(
                                 "logic_db", List.of(RuntimeDatabaseValidationCheckResult.passed("configuration", "Validated the request.")))))) {
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
             RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-            when(databaseContext.findRuntimeDatabaseConfiguration("logic_db")).thenReturn(Optional.of(runtimeDatabaseConfig));
-            MCPResponse actual = new ValidateRuntimeDatabaseToolHandler().handle(databaseContext, new MCPToolCall("session-1", Map.of("database", "logic_db")));
+            when(requestContext.findRuntimeDatabaseConfiguration("logic_db")).thenReturn(Optional.of(runtimeDatabaseConfig));
+            MCPSuccessPayload actual = new ValidateRuntimeDatabaseToolHandler().handle(requestContext, Map.of("database", "logic_db"));
             assertThat(actual.toPayload().get("response_mode"), is("validation"));
             ArgumentCaptor<RuntimeDatabaseValidationRequest> requestCaptor = ArgumentCaptor.forClass(RuntimeDatabaseValidationRequest.class);
             ArgumentCaptor<Function<String, Optional<RuntimeDatabaseConfiguration>>> resolverCaptor = ArgumentCaptor.forClass(Function.class);
-            verify(mocked.constructed().getFirst()).validate(requestCaptor.capture(), resolverCaptor.capture(), any());
+            verify(mocked.constructed().getFirst()).validate(requestCaptor.capture(), resolverCaptor.capture());
             assertThat(requestCaptor.getValue().getDatabase(), is("logic_db"));
             assertThat(resolverCaptor.getValue().apply("logic_db"), is(Optional.of(runtimeDatabaseConfig)));
         }

@@ -149,4 +149,53 @@
             <parameter-marker-expression parameter-index="1" start-index="96" stop-index="96" />
         </parameters>
     </update>
+    <update sql-case-id="update_with_target_table_alias_oracle">
+        <table start-index="7" stop-index="15">
+            <simple-table name="t_order" start-index="7" stop-index="15" alias="o">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="FOO_DB_1" />
+                </table-bound>
+            </simple-table>
+        </table>
+        <set start-index="17" stop-index="35">
+            <assignment start-index="21" stop-index="35">
+                <column name="status" start-index="21" stop-index="28">
+                    <owner name="o" start-index="21" stop-index="21" />
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="FOO_DB_1" />
+                        <original-table name="t_order" />
+                        <original-column name="status" start-delimiter="&quot;" end-delimiter="&quot;" />
+                        <table-source-type name="PHYSICAL_TABLE"/>
+                    </column-bound>
+                </column>
+                <assignment-value>
+                    <literal-expression value="OK" start-index="32" stop-index="35" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="37" stop-index="56">
+            <expr>
+                <binary-operation-expression start-index="43" stop-index="56">
+                    <left>
+                        <column name="order_id" start-index="43" stop-index="52">
+                            <owner name="o" start-index="43" stop-index="43" />
+                            <column-bound>
+                                <original-database name="foo_db_1" />
+                                <original-schema name="FOO_DB_1" />
+                                <original-table name="t_order" />
+                                <original-column name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+                                <table-source-type name="PHYSICAL_TABLE"/>
+                            </column-bound>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="56" stop-index="56" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
 </sql-parser-test-cases>

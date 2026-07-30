@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -41,15 +42,15 @@ class MaskAlgorithmsHandlerTest {
     @Test
     void assertHandle() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+        MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+        when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         try (
                 MockedConstruction<MaskRuleInspectionService> mockedConstruction = mockConstruction(MaskRuleInspectionService.class,
-                        (mock, context) -> when(mock.queryMaskAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "MD5"))))) {
-            MCPResponse actual = new MaskAlgorithmsHandler().handle(databaseContext, new MCPUriVariables(Map.of()));
+                        (mock, context) -> when(mock.queryMaskAlgorithms(queryFacade)).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "MD5")))))) {
+            MCPSuccessPayload actual = new MaskAlgorithmsHandler().handle(requestContext, new MCPResourceURIVariables(Map.of()));
             verify(mockedConstruction.constructed().getFirst()).queryMaskAlgorithms(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/mask/algorithms"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/mask/algorithms"));
         }
     }
 }

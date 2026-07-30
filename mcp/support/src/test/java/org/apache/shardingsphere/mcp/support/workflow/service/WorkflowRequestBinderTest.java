@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
@@ -87,5 +87,19 @@ class WorkflowRequestBinderTest {
                 (request, structuredIntentEvidence) -> {
                 }));
         assertThat(actual.getMessage(), is("structured_intent_evidence must be an object."));
+    }
+    
+    @Test
+    void assertApplyStringField() {
+        AtomicReference<String> actual = new AtomicReference<>();
+        WorkflowRequestBinder.applyStringField(Map.of("field", 42), "field", actual::set);
+        assertThat(actual.get(), is("42"));
+    }
+    
+    @Test
+    void assertApplyStringFieldIgnoresMissingField() {
+        AtomicReference<String> actual = new AtomicReference<>("unchanged");
+        WorkflowRequestBinder.applyStringField(Map.of(), "field", actual::set);
+        assertThat(actual.get(), is("unchanged"));
     }
 }

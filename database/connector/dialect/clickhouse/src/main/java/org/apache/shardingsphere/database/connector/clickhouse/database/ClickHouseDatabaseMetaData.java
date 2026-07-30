@@ -46,11 +46,6 @@ public final class ClickHouseDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
-    public boolean isCaseSensitive() {
-        return true;
-    }
-    
-    @Override
     public DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, null, DialectSchemaSemantics.DATABASE_AS_SCHEMA);
     }

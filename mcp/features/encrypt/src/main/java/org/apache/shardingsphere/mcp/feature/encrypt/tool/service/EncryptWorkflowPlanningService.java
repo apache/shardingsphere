@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 
@@ -45,7 +46,7 @@ import java.util.Map;
  */
 public final class EncryptWorkflowPlanningService {
     
-    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of("create", WorkflowLifecycle.OPERATION_DROP);
+    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of(WorkflowLifecycle.OPERATION_CREATE, WorkflowLifecycle.OPERATION_DROP);
     
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, table, column and target operation",
@@ -59,26 +60,17 @@ public final class EncryptWorkflowPlanningService {
     
     private static final List<String> VALIDATION_LAYERS = List.of("rules");
     
-    private final WorkflowPlanningSupport planningSupport;
+    private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
-    private final EncryptWorkflowIntentResolver intentResolver;
+    private final EncryptWorkflowIntentResolver intentResolver = new EncryptWorkflowIntentResolver();
     
-    private final EncryptRuleInspectionService ruleInspectionService;
+    private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
-    private final EncryptAlgorithmRecommendationService algorithmRecommendationService;
+    private final EncryptAlgorithmRecommendationService algorithmRecommendationService = new EncryptAlgorithmRecommendationService();
     
-    private final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    private final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
     
-    private final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService;
-    
-    public EncryptWorkflowPlanningService() {
-        planningSupport = new WorkflowPlanningSupport();
-        intentResolver = new EncryptWorkflowIntentResolver();
-        ruleInspectionService = new EncryptRuleInspectionService();
-        algorithmRecommendationService = new EncryptAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
-        ruleDistSQLPlanningService = new EncryptRuleDistSQLPlanningService();
-    }
+    private final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = new EncryptRuleDistSQLPlanningService();
     
     /**
      * Plan encrypt workflow.
@@ -86,13 +78,12 @@ public final class EncryptWorkflowPlanningService {
      * @param workflowSessionContext workflow session context
      * @param metadataQueryFacade metadata query facade
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
-                                        final String sessionId, final EncryptWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+                                        final EncryptWorkflowRequest request) {
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         EncryptWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
@@ -179,7 +170,7 @@ public final class EncryptWorkflowPlanningService {
         snapshot.getClarifiedIntent().getClarificationMessages().add(
                 "Current Proxy DistSQL cannot automatically rewrite an existing encrypt table rule with a partial column set. "
                         + "Recreate the rule manually during a maintenance window.");
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED, "error", "planning-artifacts",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED, "error", WorkflowLifecycle.STEP_PLANNING_ARTIFACTS,
                 "Encrypt planning cannot automatically rewrite an existing table rule while preserving other columns.",
                 "Manually recreate the encrypt rule with the complete column set after reviewing data impact.", true, Map.of("requires_table_rule_rewrite", true)));
         return false;
@@ -190,7 +181,7 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private void addDropLifecycleWarnings(final WorkflowContextSnapshot snapshot) {
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED, "warning", "planning-artifacts",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED, "warning", WorkflowLifecycle.STEP_PLANNING_ARTIFACTS,
                 "Encrypt drop only removes the rule. MCP will not restore historical plaintext data.", "Review business impact before execution.", true, Map.of()));
     }
     
@@ -210,7 +201,7 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final EncryptWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
-        List<Map<String, Object>> encryptAlgorithms = ruleInspectionService.queryEncryptAlgorithms(queryFacade);
+        WorkflowQueryResult encryptAlgorithms = ruleInspectionService.queryEncryptAlgorithms(queryFacade);
         List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendEncryptAlgorithms(request, encryptAlgorithms, snapshot.getIssues());
         snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
         applyRecommendedAlgorithms(request, algorithmCandidates);
@@ -253,7 +244,7 @@ public final class EncryptWorkflowPlanningService {
         for (String each : missingInputs) {
             clarifiedIntent.getClarificationMessages().add(String.format("Please provide `%s` for encrypt rule DistSQL.", each));
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", "collecting-rule-inputs",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", WorkflowLifecycle.STEP_COLLECTING_RULE_INPUTS,
                 "Encrypt rule DistSQL requires explicit rule column and query algorithm inputs.", "Provide the missing rule inputs and retry planning.", true,
                 Map.of("missing_inputs", missingInputs)));
         return false;

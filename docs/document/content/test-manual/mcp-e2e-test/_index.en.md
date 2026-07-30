@@ -5,19 +5,17 @@ weight = 5
 chapter = true
 +++
 
-This chapter describes ShardingSphere-MCP end-to-end contract validation and LLM usability validation.
+This chapter describes the ShardingSphere-MCP Functionality, Conformance, and LLM end-to-end test suites.
 
 ## Scope
 
-`test/e2e/mcp` covers:
+The MCP E2E workflow contains three independent test suites:
 
-- Distribution startup and configuration.
-- HTTP runtime.
-- STDIO runtime.
-- MCP baseline contract.
-- Tool/resource/prompt/completion discovery.
-- Real-model MCP usability.
-- Encrypt and Mask workflow usability validation.
+- MCP Functionality E2E validates distribution startup and configuration, HTTP and STDIO runtimes backed by real MySQL, PostgreSQL, and Proxy processes, cross-process discovery and execution of tools, resources, prompts, and completions, and the Encrypt, Mask, Broadcast, Readwrite-Splitting, Shadow, and Sharding workflows.
+- MCP Conformance E2E uses the official runner to validate MCP protocol scenarios applicable to the published server capabilities.
+- MCP LLM E2E validates that a real model can use MCP over HTTP for read-only queries, metadata discovery, side-effect previews, and invalid-resource recovery.
+
+The `StreamableHttpMCPServerIT` in `mcp/bootstrap` covers HTTP protocol, session, and security boundaries that require neither Docker nor an external service.
 
 ## Feature template acceptance
 
@@ -32,24 +30,23 @@ For the Encrypt workflow, template-level acceptance should include at least:
 - Plan, workflow resource, preview, apply, validate, recovery, and trace-visible outputs do not leak sensitive properties.
 - Custom algorithms or algorithms with unknown capabilities are marked as unconfirmed instead of being treated as known-capability algorithms.
 - Drop scenarios validate rule removal semantics and do not use physical cleanup as a success condition.
-- Unsupported alter expansion returns a clear limitation instead of generating an incomplete workflow.
+- Encrypt, Mask, and Sharding ALTER expansion, physical DDL, migration, and backfill remain excluded commercial-edition capabilities.
 - Apply must be preceded by preview and must validate user-approved steps.
 
 Test reuse should stay in local helpers under `test/e2e/mcp`; do not add a test jar or a cross-module test-support module for template acceptance.
 
 ## Local preparation
 
-Install MCP E2E dependency modules into the local repository first:
+Build and install the MCP E2E dependencies and distribution:
 
 ```bash
-./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+./mvnw -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
 ```
 
-Package the MCP distribution and build the local distribution image:
+Build the local distribution image:
 
 ```bash
-./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
-docker build -f distribution/mcp/Dockerfile -t apache/shardingsphere-mcp-e2e:local distribution/mcp/target
+docker build --platform "$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}')" -f distribution/mcp/Dockerfile -t apache/shardingsphere-mcp-e2e:local distribution/mcp/target
 ```
 
 ## LLM Runtime
@@ -73,54 +70,60 @@ Build the local runtime image:
 sh test/e2e/mcp/src/test/resources/docker/llm-runtime/build-local.sh
 ```
 
-## Run MCP Runtime E2E
+## Run MCP Functionality E2E
 
 MCP E2E runtime configuration is centralized in `test/e2e/mcp/src/test/resources/env/e2e-env.properties`.
 For local runs, edit that file or override the same keys with `-D` system properties.
 
 ```bash
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-  -Dtest='*E2ETest' \
-  -Dsurefire.failIfNoSpecifiedTests=true \
-  -De2e.run.type=DOCKER \
-  -Dmcp.e2e.container.image=apache/shardingsphere-mcp-e2e:local
+./mvnw -pl test/e2e/mcp test -Pe2e.mcp.functionality
 ```
 
-## Run LLM Usability Suite
+## Run MCP HTTP IT
+
+This test starts the real HTTP server without connecting to Docker, a database, or a model:
 
 ```bash
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-  -Dtest=LLMUsabilitySuiteE2ETest \
-  -Dsurefire.failIfNoSpecifiedTests=true \
-  -De2e.run.type=DOCKER
+./mvnw -pl mcp/bootstrap verify
 ```
+
+## Run MCP LLM E2E
+
+```bash
+./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm
+```
+
+`LLMHttpE2ETest` covers four autonomous HTTP scenarios: read-only query, metadata discovery, side-effect preview, and invalid-resource recovery. Each scenario uses the live `tools/list` response and preserves the model response, structured MCP response, interaction trace, and assertion report. Missing Docker, model, database, or MCP infrastructure fails the selected `llm-e2e` lane instead of converting the failure into a skipped case.
+
+## MCP Conformance E2E
+
+The CI conformance lane pins `modelcontextprotocol/conformance` to commit `21a9a2febd7100d7c17ac1021ee7f2ed9f66a1e0`, passes protocol version `2025-11-25`, and executes only the applicable generic server scenarios declared in the workflow.
+Upstream calls tied to fixed `test_*` tools or resources, unadvertised optional capabilities, and scenarios outside the fixed HTTP transport surface do not apply to this project. Product capabilities remain covered by deterministic E2E tests, and no production test hooks are added for upstream fixtures.
+The packaged server runs with its loopback HTTP configuration so the DNS rebinding scenario validates the loopback Origin policy rather than the separate Docker remote-binding policy.
 
 ## External Debug
 
 For local debugging only, connect to an already running OpenAI-compatible endpoint:
 
 ```bash
-./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-  -Dtest=LLMUsabilitySuiteE2ETest \
-  -De2e.run.type=DOCKER \
-  -Dmcp.llm.runtime-mode=external-debug \
-  -Dmcp.llm.base-url=http://127.0.0.1:8080/v1 \
-  -Dsurefire.failIfNoSpecifiedTests=true
+./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm -Dtest=LLMHttpE2ETest -Dmcp.llm.runtime-mode=external-debug -Dmcp.llm.base-url=http://127.0.0.1:8080/v1
 ```
 
 External debug endpoints cannot be used as score-closing evidence.
 
 ## Artifacts
 
-LLM artifacts are written under:
+MCP LLM E2E artifacts are written under:
 
 ```text
 test/e2e/mcp/target/llm-e2e/
 ```
 
+Each scenario records the question, actual answer, raw model response, MCP interaction trace, live tool definitions, runtime evidence, and assertion report. Artifact writing redacts secret-shaped values, and the test fails if an unredacted secret pattern or the known model API key is present.
+
 GitHub Actions entry points:
 
 - `.github/workflows/e2e-mcp.yml`
 
-This workflow is the mandatory MCP runtime E2E entry point.
+This workflow is the shared entry point for all three MCP E2E suites.
 If a very large PR misses a path-filter match, use `workflow_dispatch` to add manual evidence.

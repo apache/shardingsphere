@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -74,6 +76,10 @@ public final class WorkflowPlanningSupport {
     public <T extends WorkflowRequest> T prepareSnapshot(final WorkflowContextSnapshot snapshot, final WorkflowKind workflowKind, final T request, final WorkflowFeatureData featureData,
                                                          final ClarifiedIntent clarifiedIntent, final String summary,
                                                          final List<String> interactionSteps, final List<String> validationLayers) {
+        WorkflowKind existingWorkflowKind = snapshot.getWorkflowKind();
+        ShardingSpherePreconditions.checkState(null == existingWorkflowKind || existingWorkflowKind.equals(workflowKind),
+                () -> new MCPInvalidRequestException(String.format("plan_id `%s` belongs to workflow kind `%s`; call the matching planning tool or omit plan_id to start `%s`.",
+                        snapshot.getPlanId(), existingWorkflowKind, workflowKind)));
         request.setExecutionMode(WorkflowIntentResolverSupport.resolveExecutionMode(request, clarifiedIntent));
         snapshot.setWorkflowKind(workflowKind);
         snapshot.setRequest(request);
@@ -96,19 +102,19 @@ public final class WorkflowPlanningSupport {
     public boolean ensureLifecycleState(final String ruleLabel, final ClarifiedIntent clarifiedIntent,
                                         final boolean ruleExists, final WorkflowContextSnapshot snapshot) {
         String actualOperationType = clarifiedIntent.getOperationType().toLowerCase(Locale.ENGLISH);
-        if ("create".equals(actualOperationType) && ruleExists) {
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
+        if (WorkflowLifecycle.OPERATION_CREATE.equals(actualOperationType) && ruleExists) {
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", WorkflowLifecycle.STEP_DISCOVERING,
                     String.format("%s already exists for the target column.", ruleLabel), "Use a supported change path for the existing rule, or drop it before creating a replacement.", false,
                     Map.of()));
             return false;
         }
-        if ("alter".equals(actualOperationType) && !ruleExists) {
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
+        if (WorkflowLifecycle.OPERATION_ALTER.equals(actualOperationType) && !ruleExists) {
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", WorkflowLifecycle.STEP_DISCOVERING,
                     String.format("%s does not exist for the target column.", ruleLabel), "Use create or confirm the target column.", false, Map.of()));
             return false;
         }
-        if ("drop".equals(actualOperationType) && !ruleExists) {
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", "discovering",
+        if (WorkflowLifecycle.OPERATION_DROP.equals(actualOperationType) && !ruleExists) {
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", WorkflowLifecycle.STEP_DISCOVERING,
                     String.format("%s does not exist for the target column.", ruleLabel), "Confirm target table and column or skip the drop request.", false, Map.of()));
             return false;
         }
@@ -127,7 +133,7 @@ public final class WorkflowPlanningSupport {
         if (containsOperationType(supportedOperationTypes, clarifiedIntent.getOperationType())) {
             return true;
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.WORKFLOW_STATUS_INVALID, "error", "intaking",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.WORKFLOW_STATUS_INVALID, "error", WorkflowLifecycle.STEP_INTAKING,
                 "Unsupported workflow operation type.", String.format("Use one of: %s.", String.join(", ", supportedOperationTypes)), false,
                 Map.of("supported_operation_types", supportedOperationTypes)));
         clarifiedIntent.getInferredValues().remove(WorkflowFieldNames.OPERATION_TYPE);
@@ -146,32 +152,6 @@ public final class WorkflowPlanningSupport {
             }
         }
         return false;
-    }
-    
-    /**
-     * Add one fallback clarification question when algorithm selection is blocked.
-     *
-     * @param clarifiedIntent clarified intent
-     * @param snapshot workflow snapshot
-     * @param fallbackQuestion fallback question
-     * @return whether there is any blocking algorithm issue
-     */
-    public boolean hasBlockingAlgorithmIssues(final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String fallbackQuestion) {
-        return requirementCollector.hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, fallbackQuestion);
-    }
-    
-    /**
-     * Collect required algorithm properties and emit missing-property clarification prompts.
-     *
-     * @param request workflow request
-     * @param clarifiedIntent clarified intent
-     * @param snapshot workflow snapshot
-     * @param propertyRequirements property requirements
-     * @return whether all required properties are present
-     */
-    public boolean collectPropertyRequirements(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent,
-                                               final WorkflowContextSnapshot snapshot, final List<AlgorithmPropertyRequirement> propertyRequirements) {
-        return requirementCollector.collectPropertyRequirements(request, clarifiedIntent, snapshot, propertyRequirements);
     }
     
     /**

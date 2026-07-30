@@ -233,7 +233,8 @@ class SQLFederationResultSetMetaDataTest {
     
     @Test
     void assertGetPrecisionWithAutoProjectionAndMatchedTable() {
-        Schema schema = createSchemaWithTable("", createRowType(false, 7, 0));
+        RelDataType rowType = createRowType(false, 7, 0);
+        Schema schema = createSchemaWithTable("", rowType);
         SQLFederationResultSetMetaData metaData = new SQLFederationResultSetMetaData(
                 schema, Collections.emptyList(), databaseType, createResultType(new String[]{"foo_col"}, mock(RelDataType.class)), Collections.singletonMap(1, "foo_label"), mock());
         assertThat(metaData.getPrecision(1), is(7));

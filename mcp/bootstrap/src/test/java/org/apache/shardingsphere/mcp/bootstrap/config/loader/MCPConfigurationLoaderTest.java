@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.loader;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,7 +40,7 @@ class MCPConfigurationLoaderTest {
     
     private static final String HTTP_CONFIGURATION_YAML = """
             transport:
-              type: STREAMABLE_HTTP
+              type: HTTP
               http:
                 bindHost: 127.0.0.1
                 port: 9090
@@ -97,7 +97,7 @@ class MCPConfigurationLoaderTest {
             createConfigFile(searchBaseDirectory, "conf/mcp-http.yaml", HTTP_CONFIGURATION_YAML);
             String actualConfigPath = searchBaseDirectory.getFileName().resolve("conf").resolve("mcp-http.yaml").toString();
             MCPLaunchConfiguration actual = MCPConfigurationLoader.load(actualConfigPath);
-            assertThat(actual.getTransportType(), is(MCPTransportType.STREAMABLE_HTTP));
+            assertThat(actual.getTransportType(), is(MCPTransportType.HTTP));
             assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
             assertThat(actual.getHttpTransport().getPort(), is(9090));
             assertThat(actual.getDatabases().size(), is(1));

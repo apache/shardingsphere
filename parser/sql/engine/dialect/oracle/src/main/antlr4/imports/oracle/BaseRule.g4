@@ -364,11 +364,13 @@ logGroupName
     ;
 
 columnNames
-    : LP_? columnName (COMMA_ columnName)* RP_?
+    : LP_ columnName (COMMA_ columnName)* RP_
+    | columnName (COMMA_ columnName)*
     ;
 
 tableNames
-    : LP_? tableName (COMMA_ tableName)* RP_?
+    : LP_ tableName (COMMA_ tableName)* RP_
+    | tableName (COMMA_ tableName)*
     ;
 
 oracleId
@@ -403,7 +405,6 @@ exprList
     : LP_ exprs RP_
     ;
 
-// TODO comb expr
 expr
     : expr andOperator expr
     | expr orOperator expr

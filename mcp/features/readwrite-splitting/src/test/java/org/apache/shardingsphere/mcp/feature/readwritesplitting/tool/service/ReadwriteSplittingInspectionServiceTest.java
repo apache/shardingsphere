@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -29,6 +30,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,25 +41,40 @@ import static org.mockito.Mockito.when;
 class ReadwriteSplittingInspectionServiceTest {
     
     @Test
+    void assertQueryProxyMode() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "SHOW COMPUTE NODE INFO")).thenReturn(List.of(Map.of("mode_type", "Cluster")));
+        assertThat(new ReadwriteSplittingInspectionService().queryProxyMode(queryFacade, "logic_db"), is("Cluster"));
+    }
+    
+    @Test
+    void assertQueryProxyModeWhenComputeNodeInfoIsEmpty() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("logic_db", "SHOW COMPUTE NODE INFO")).thenReturn(List.of());
+        assertThat(new ReadwriteSplittingInspectionService().queryProxyMode(queryFacade, "logic_db"), is("unknown"));
+    }
+    
+    @Test
     void assertQueryRules() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         new ReadwriteSplittingInspectionService().queryRules(queryFacade, "logic_db");
-        verify(queryFacade).query(eq("logic_db"), eq(""), eq("SHOW READWRITE_SPLITTING RULES FROM logic_db"));
+        verify(queryFacade).query(eq("logic_db"), eq("SHOW READWRITE_SPLITTING RULES FROM logic_db"));
     }
     
     @Test
     void assertQueryRuleStatus() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         new ReadwriteSplittingInspectionService().queryRuleStatus(queryFacade, "logic_db", "readwrite_ds");
-        verify(queryFacade).query(eq("logic_db"), eq(""), eq("SHOW STATUS FROM READWRITE_SPLITTING RULE readwrite_ds FROM logic_db"));
+        verify(queryFacade).query(eq("logic_db"), eq("SHOW STATUS FROM READWRITE_SPLITTING RULE readwrite_ds FROM logic_db"));
     }
     
     @Test
     void assertQueryLoadBalanceAlgorithmPlugins() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "WEIGHT")));
-        List<Map<String, Object>> actual = new ReadwriteSplittingInspectionService().queryLoadBalanceAlgorithmPlugins(queryFacade);
-        assertThat(actual.getFirst().get("property_guidance").toString(), containsString("numeric property"));
+        WorkflowQueryResult actual = new ReadwriteSplittingInspectionService().queryLoadBalanceAlgorithmPlugins(queryFacade);
+        assertThat(actual.getRows().getFirst().get("property_guidance").toString(), containsString("numeric property"));
+        assertTrue(actual.isAvailabilityConfirmed());
     }
     
     @Test
@@ -65,9 +82,10 @@ class ReadwriteSplittingInspectionServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS"))
                 .thenThrow(new MCPQueryFailedException("syntax error near 'LOAD BALANCE ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
-        List<Map<String, Object>> actual = new ReadwriteSplittingInspectionService().queryLoadBalanceAlgorithmPlugins(queryFacade);
-        assertTrue(actual.stream().anyMatch(each -> "ROUND_ROBIN".equals(each.get("type"))));
-        assertTrue(actual.stream().anyMatch(each -> "ROUND_ROBIN".equals(each.get("type")) && "No required properties.".equals(each.get("property_guidance"))));
+        WorkflowQueryResult actual = new ReadwriteSplittingInspectionService().queryLoadBalanceAlgorithmPlugins(queryFacade);
+        assertTrue(actual.getRows().stream().anyMatch(each -> "ROUND_ROBIN".equals(each.get("type"))));
+        assertTrue(actual.getRows().stream().anyMatch(each -> "ROUND_ROBIN".equals(each.get("type")) && "No required properties.".equals(each.get("property_guidance"))));
+        assertFalse(actual.isAvailabilityConfirmed());
     }
     
     @Test
@@ -81,7 +99,7 @@ class ReadwriteSplittingInspectionServiceTest {
     @Test
     void assertQueryRuleCount() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query(eq("logic_db"), eq(""), eq("COUNT READWRITE_SPLITTING RULE FROM logic_db"))).thenReturn(List.of(Map.of("count", 1)));
+        when(queryFacade.query(eq("logic_db"), eq("COUNT READWRITE_SPLITTING RULE FROM logic_db"))).thenReturn(List.of(Map.of("count", 1)));
         assertThat(new ReadwriteSplittingInspectionService().queryRuleCount(queryFacade, "logic_db"), is(List.of(Map.of("count", 1))));
     }
 }

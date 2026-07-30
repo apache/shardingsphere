@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.database.connector.postgresql.metadata.database
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -95,11 +95,10 @@ class PostgreSQLDatabaseMetaDataTest {
     void assertGetTransactionOption() {
         DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
         assertFalse(actual.isSupportGlobalCSN());
-        assertFalse(actual.isDDLNeedImplicitCommit());
+        assertThat(actual.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertFalse(actual.isSupportAutoCommitInNestedTransaction());
         assertTrue(actual.isSupportDDLInXATransaction());
         assertFalse(actual.isSupportMetaDataRefreshInTransaction());
-        assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
         assertTrue(actual.isReturnRollbackStatementWhenCommitFailed());
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
@@ -109,11 +108,6 @@ class PostgreSQLDatabaseMetaDataTest {
     @Test
     void assertGetProtocolVersionOption() {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is("12.3"));
-    }
-    
-    @Test
-    void assertIsCaseSensitive() {
-        assertTrue(dialectDatabaseMetaData.isCaseSensitive());
     }
     
     @Test

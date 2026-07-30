@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowIntentResolverSupport;
 
 import java.util.Locale;
@@ -94,7 +95,7 @@ final class EncryptWorkflowIntentResolver {
     }
     
     private boolean isDropWorkflow(final ClarifiedIntent clarifiedIntent) {
-        return "drop".equalsIgnoreCase(clarifiedIntent.getOperationType());
+        return WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(clarifiedIntent.getOperationType());
     }
     
     private Boolean inferOption(final ClarifiedIntent clarifiedIntent, final String fieldName, final boolean value) {

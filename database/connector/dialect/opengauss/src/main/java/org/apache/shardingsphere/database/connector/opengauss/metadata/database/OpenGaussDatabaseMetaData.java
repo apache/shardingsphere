@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussDataTypeOption;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.database.connector.opengauss.metadata.database.
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSchemaOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLFunctionOption;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -92,17 +92,13 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(true, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED, true, true, Collections.singleton("org.opengauss.xa.PGXADataSource"));
+        return new DialectTransactionOption(true, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, false, true, true,
+                Collections.singleton("org.opengauss.xa.PGXADataSource"));
     }
     
     @Override
     public DialectProtocolVersionOption getProtocolVersionOption() {
         return new DialectProtocolVersionOption("9.2.4");
-    }
-    
-    @Override
-    public boolean isCaseSensitive() {
-        return true;
     }
     
     @Override

@@ -18,26 +18,14 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter(AccessLevel.PACKAGE)
 final class LLMMCPToolCallValidationFailure {
-    
-    private final String traceKind;
     
     private final String failureType;
     
     private final String message;
-    
-    String traceKind() {
-        return traceKind;
-    }
-    
-    String failureType() {
-        return failureType;
-    }
-    
-    String message() {
-        return message;
-    }
 }

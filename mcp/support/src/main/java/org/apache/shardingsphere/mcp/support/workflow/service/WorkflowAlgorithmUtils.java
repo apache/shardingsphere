@@ -25,9 +25,13 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Properties;
 
 /**
  * Workflow algorithm utilities.
@@ -79,6 +83,58 @@ public final class WorkflowAlgorithmUtils {
     }
     
     /**
+     * Create properties with trimmed string values.
+     *
+     * @param entries property entries
+     * @return created properties
+     */
+    public static Properties createProperties(final Map<String, String> entries) {
+        Properties result = new Properties();
+        for (Entry<String, String> entry : entries.entrySet()) {
+            result.setProperty(entry.getKey(), trimToEmpty(entry.getValue()));
+        }
+        return result;
+    }
+    
+    /**
+     * Create a property map from supported property carrier types.
+     *
+     * @param value property carrier value
+     * @return normalized property map
+     */
+    public static Map<String, String> createPropertyMap(final Object value) {
+        if (null == value) {
+            return Map.of();
+        }
+        if (value instanceof Properties) {
+            return createPropertyMap((Properties) value);
+        }
+        if (value instanceof Map) {
+            return createPropertyMap((Map<?, ?>) value);
+        }
+        return parsePropertyString(String.valueOf(value));
+    }
+    
+    private static Map<String, String> createPropertyMap(final Properties props) {
+        Map<String, String> result = new LinkedHashMap<>(props.size(), 1F);
+        for (String each : props.stringPropertyNames()) {
+            result.put(each, trimToEmpty(props.getProperty(each)));
+        }
+        return result;
+    }
+    
+    private static Map<String, String> createPropertyMap(final Map<?, ?> props) {
+        Map<String, String> result = new LinkedHashMap<>(props.size(), 1F);
+        for (Entry<?, ?> entry : props.entrySet()) {
+            String key = trimToEmpty(Objects.toString(entry.getKey(), ""));
+            if (!key.isEmpty()) {
+                result.put(key, trimToEmpty(Objects.toString(entry.getValue(), "")));
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Check whether an algorithm service can be used by workflow generated artifacts.
      *
      * @param serviceInterface typed SPI service interface
@@ -96,7 +152,7 @@ public final class WorkflowAlgorithmUtils {
             return containsServiceType(serviceInterface, actualAlgorithmType);
         }
         try {
-            TypedSPILoader.checkService(serviceInterface, actualAlgorithmType, WorkflowSQLUtils.createProperties(properties));
+            TypedSPILoader.checkService(serviceInterface, actualAlgorithmType, createProperties(properties));
             return true;
         } catch (final ShardingSphereExternalException | IllegalArgumentException ignored) {
             return false;
@@ -105,6 +161,61 @@ public final class WorkflowAlgorithmUtils {
     
     private static boolean hasSecretReference(final Map<String, String> properties) {
         return properties.values().stream().anyMatch(each -> Objects.toString(each, "").startsWith(SECRET_REFERENCE_PREFIX));
+    }
+    
+    private static Map<String, String> parsePropertyString(final String value) {
+        String actualValue = trimToEmpty(value);
+        if (actualValue.isEmpty() || "{}".equals(actualValue)) {
+            return Map.of();
+        }
+        String normalizedValue = actualValue;
+        if (normalizedValue.startsWith("{") && normalizedValue.endsWith("}")) {
+            normalizedValue = normalizedValue.substring(1, normalizedValue.length() - 1);
+        }
+        Collection<String> entries = List.of(normalizedValue.split(","));
+        Map<String, String> result = new LinkedHashMap<>(entries.size(), 1F);
+        for (Entry<String, String> entry : parsePropertyEntries(entries).entrySet()) {
+            result.put(stripQuotes(entry.getKey()), stripQuotes(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private static Map<String, String> parsePropertyEntries(final Collection<String> entries) {
+        Map<String, String> result = new LinkedHashMap<>(entries.size(), 1F);
+        for (String each : entries) {
+            int separatorIndex = findPropertySeparatorIndex(each);
+            if (-1 == separatorIndex) {
+                continue;
+            }
+            String key = each.substring(0, separatorIndex).trim();
+            String propertyValue = each.substring(separatorIndex + 1).trim();
+            if (!key.isEmpty()) {
+                result.put(key, propertyValue);
+            }
+        }
+        return result;
+    }
+    
+    private static int findPropertySeparatorIndex(final String propertyEntry) {
+        int equalsIndex = propertyEntry.indexOf('=');
+        return -1 == equalsIndex ? propertyEntry.indexOf(':') : equalsIndex;
+    }
+    
+    private static String stripQuotes(final String value) {
+        String actualValue = trimToEmpty(value);
+        if (2 > actualValue.length()) {
+            return actualValue;
+        }
+        char first = actualValue.charAt(0);
+        char last = actualValue.charAt(actualValue.length() - 1);
+        if ('\'' == first && '\'' == last || '"' == first && '"' == last) {
+            return actualValue.substring(1, actualValue.length() - 1);
+        }
+        return actualValue;
+    }
+    
+    private static String trimToEmpty(final String value) {
+        return null == value ? "" : value.trim();
     }
     
     private static <T extends TypedSPI> boolean containsServiceType(final Class<T> serviceInterface, final String algorithmType) {

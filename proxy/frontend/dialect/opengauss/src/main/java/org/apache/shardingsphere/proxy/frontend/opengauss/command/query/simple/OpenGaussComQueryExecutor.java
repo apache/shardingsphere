@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -93,7 +95,11 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
-            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
+            int currentColumnIndex = ++columnIndex;
+            Integer typeOID = (Integer) each.getProtocolAttributes().get(PostgreSQLQueryHeaderBuilder.TYPE_OID);
+            result.add(null == typeOID
+                    ? new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName())
+                    : new PostgreSQLColumnDescription(each.getColumnLabel(), currentColumnIndex, typeOID, each.getColumnLength(), PostgreSQLValueFormat.TEXT.getCode()));
         }
         return result;
     }

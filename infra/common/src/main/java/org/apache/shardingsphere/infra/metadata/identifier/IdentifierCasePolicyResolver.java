@@ -17,44 +17,48 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
-import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 
 import javax.sql.DataSource;
 
 /**
  * Resolver of identifier case policy.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IdentifierCasePolicyResolver {
     
     /**
-     * Resolve identifier case policy.
+     * Resolve protocol identifier case policy.
      *
-     * @param databaseType database type
-     * @param props configuration properties
-     * @param dataSource data source
+     * @param protocolType protocol type
      * @return identifier case policy set
      */
-    public IdentifierCasePolicySet resolve(final DatabaseType databaseType, final ConfigurationProperties props, final DataSource dataSource) {
-        if (null == databaseType || null == databaseType.getType()) {
-            return IdentifierCasePolicyFactory.newInsensitivePolicySet();
-        }
-        MetadataIdentifierCaseSensitivity configuredCaseSensitivity = new TemporaryConfigurationProperties(props.getProps())
-                .getValue(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
-        if (MetadataIdentifierCaseSensitivity.INSENSITIVE == configuredCaseSensitivity) {
-            return IdentifierCasePolicyFactory.newInsensitivePolicySet();
-        }
+    public static IdentifierCasePolicySet resolveProtocol(final DatabaseType protocolType) {
+        return resolve(protocolType, null);
+    }
+    
+    /**
+     * Resolve storage identifier case policy.
+     *
+     * @param storageType storage type
+     * @param dataSource storage data source
+     * @return identifier case policy set
+     */
+    public static IdentifierCasePolicySet resolveStorage(final DatabaseType storageType, final DataSource dataSource) {
+        return resolve(storageType, dataSource);
+    }
+    
+    private static IdentifierCasePolicySet resolve(final DatabaseType databaseType, final DataSource dataSource) {
         IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(databaseType, dataSource);
         return DatabaseTypedSPILoader.findService(IdentifierCasePolicyProvider.class, databaseType)
-                .flatMap(each -> each.provide(context))
+                .map(each -> each.provide(context))
                 .orElseGet(IdentifierCasePolicyFactory::newInsensitivePolicySet);
     }
 }

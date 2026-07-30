@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,26 +42,11 @@ class WorkflowGuidanceResourceHintProviderTest {
     }
     
     @Test
-    void assertCreateResourcesToReadWithGovernanceResources() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("sharding.table.rule", "logic_db", "", "t_order")));
-        assertThat(actual, is(List.of(
-                "shardingsphere://databases/logic_db/storage-units",
-                "shardingsphere://databases/logic_db/single-tables",
-                "shardingsphere://databases/logic_db/single-tables/t_order")));
-    }
-    
-    @Test
-    void assertCreateResourcesToReadWithColumnWorkflow() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("encrypt.table", "logic_db", "public", "t_order")));
-        assertThat(actual, is(List.of("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns")));
-    }
-    
-    private List<String> extractResourceUris(final List<Map<String, Object>> resourcesToRead) {
-        List<String> result = new LinkedList<>();
-        for (Map<String, Object> each : resourcesToRead) {
-            result.add((String) each.get("uri"));
-        }
-        return result;
+    void assertCreateResourcesToReadWithSnapshotResources() {
+        WorkflowContextSnapshot snapshot = createSnapshot("test.workflow", "logic_db", "", "t_order");
+        snapshot.getResourceUriTemplates().add("shardingsphere://workflow/test-resource");
+        List<Map<String, Object>> actual = new WorkflowGuidanceResourceHintProvider().createResourcesToRead(snapshot);
+        assertThat(actual.getFirst().get("uri"), is("shardingsphere://workflow/test-resource"));
     }
     
     private WorkflowContextSnapshot createSnapshot(final String workflowKind, final String database, final String schema, final String table) {

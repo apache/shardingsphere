@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.database.spi;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 
 import java.util.List;
 import java.util.Optional;
@@ -111,7 +111,7 @@ public interface MCPMetadataQueryFacade {
      * @param tableName table name
      * @return column metadata list
      */
-    List<ShardingSphereColumn> queryTableColumns(String databaseName, String schemaName, String tableName);
+    List<MCPColumnMetadata> queryTableColumns(String databaseName, String schemaName, String tableName);
     
     /**
      * Query one table column.
@@ -122,7 +122,7 @@ public interface MCPMetadataQueryFacade {
      * @param columnName column name
      * @return column metadata
      */
-    Optional<ShardingSphereColumn> queryTableColumn(String databaseName, String schemaName, String tableName, String columnName);
+    Optional<MCPColumnMetadata> queryTableColumn(String databaseName, String schemaName, String tableName, String columnName);
     
     /**
      * Query view columns.
@@ -132,7 +132,7 @@ public interface MCPMetadataQueryFacade {
      * @param viewName view name
      * @return column metadata list
      */
-    List<ShardingSphereColumn> queryViewColumns(String databaseName, String schemaName, String viewName);
+    List<MCPColumnMetadata> queryViewColumns(String databaseName, String schemaName, String viewName);
     
     /**
      * Query one view column.
@@ -143,7 +143,16 @@ public interface MCPMetadataQueryFacade {
      * @param columnName column name
      * @return column metadata
      */
-    Optional<ShardingSphereColumn> queryViewColumn(String databaseName, String schemaName, String viewName, String columnName);
+    Optional<MCPColumnMetadata> queryViewColumn(String databaseName, String schemaName, String viewName, String columnName);
+    
+    /**
+     * Query all table and view columns in a schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return column metadata list
+     */
+    List<MCPColumnMetadata> querySchemaColumns(String databaseName, String schemaName);
     
     /**
      * Query table indexes.

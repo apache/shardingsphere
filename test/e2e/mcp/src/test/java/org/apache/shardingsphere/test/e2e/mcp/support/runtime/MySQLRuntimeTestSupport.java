@@ -36,8 +36,6 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * E2E-local MySQL-backed runtime test support.
@@ -83,10 +81,6 @@ public final class MySQLRuntimeTestSupport {
                 .withStartupTimeout(Duration.ofMinutes(2));
     }
     
-    static String getMySQLImage(final Properties props) {
-        return MySQLRuntimeDockerSupport.getMySQLImage(props);
-    }
-    
     /**
      * Check whether Docker is available for Testcontainers-backed tests.
      *
@@ -97,15 +91,6 @@ public final class MySQLRuntimeTestSupport {
     }
     
     /**
-     * Get Docker readiness diagnostic when Testcontainers cannot use Docker.
-     *
-     * @return Docker unavailable reason
-     */
-    public static Optional<String> getDockerUnavailableReason() {
-        return MySQLRuntimeDockerSupport.getDockerUnavailableReason();
-    }
-    
-    /**
      * Create Docker-required message with bounded readiness diagnostics.
      *
      * @param scenarioMessage scenario message
@@ -113,10 +98,6 @@ public final class MySQLRuntimeTestSupport {
      */
     public static String createDockerRequiredMessage(final String scenarioMessage) {
         return MySQLRuntimeDockerSupport.createDockerRequiredMessage(scenarioMessage);
-    }
-    
-    static String createDockerRequiredMessage(final String scenarioMessage, final String unavailableReason) {
-        return MySQLRuntimeDockerSupport.createDockerRequiredMessage(scenarioMessage, unavailableReason);
     }
     
     /**
@@ -165,13 +146,17 @@ public final class MySQLRuntimeTestSupport {
      * @throws SQLException SQL exception
      */
     public static LLMMySQLRuntimeFixture createLLMRuntimeFixture(final String logicalDatabase) throws SQLException {
-        GenericContainer<?> container = createContainer();
-        container.start();
-        initializeDatabase(container);
-        String schemaName = detectSchema(container);
-        String physicalSchemaName = schemaName.isEmpty() ? DATABASE_NAME : schemaName;
-        int totalOrders = querySingleInt(container, String.format(COUNT_ORDERS_SQL, physicalSchemaName));
-        return new LLMMySQLRuntimeFixture(container, logicalDatabase, totalOrders, createRuntimeDatabases(container, logicalDatabase));
+        try (ContainerStartupGuard startupGuard = new ContainerStartupGuard(createContainer())) {
+            GenericContainer<?> container = startupGuard.container;
+            container.start();
+            initializeDatabase(container);
+            String jdbcMetadataSchemaName = detectSchema(container);
+            String resolvedPhysicalSchemaName = jdbcMetadataSchemaName.isEmpty() ? DATABASE_NAME : jdbcMetadataSchemaName;
+            int totalOrders = querySingleInt(container, String.format(COUNT_ORDERS_SQL, resolvedPhysicalSchemaName));
+            LLMMySQLRuntimeFixture result = new LLMMySQLRuntimeFixture(container, logicalDatabase, totalOrders, createRuntimeDatabases(container, logicalDatabase));
+            startupGuard.complete();
+            return result;
+        }
     }
     
     /**
@@ -357,7 +342,26 @@ public final class MySQLRuntimeTestSupport {
         }
     }
     
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static final class ContainerStartupGuard implements AutoCloseable {
+        
+        private final GenericContainer<?> container;
+        
+        private boolean completed;
+        
+        private void complete() {
+            completed = true;
+        }
+        
+        @Override
+        public void close() {
+            if (!completed) {
+                container.stop();
+            }
+        }
+    }
+    
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
     public static final class LLMMySQLRuntimeFixture implements AutoCloseable {
         

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.completion;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +35,17 @@ public final class MCPCompletionResult {
     
     private final int total;
     
+    @Getter(AccessLevel.NONE)
     private final boolean hasMore;
     
     private final Map<String, Object> meta;
+    
+    /**
+     * Judge whether more completion values are available.
+     *
+     * @return whether more completion values are available
+     */
+    public boolean hasMore() {
+        return hasMore;
+    }
 }

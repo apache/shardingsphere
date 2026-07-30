@@ -143,8 +143,25 @@ class LoadSingleTableExecutorTest {
     void assertCheckBeforeUpdateWithDifferentProtocolAndStorageTypes() {
         when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("FOO_DB", Collections.singleton("foo_tbl")));
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockStorageDatabaseTypeRegistry()) {
-            assertDoesNotThrow(() -> executor.checkBeforeUpdate(new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("foo_ds", "foo_tbl")))));
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("foo_ds", "foo_tbl")))));
+    }
+    
+    @Test
+    void assertCheckBeforeUpdateWithExplicitSchemaAndDifferentProtocolAndStorageTypes() {
+        when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("foo_schema", Collections.singleton("foo_tbl")));
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaSupportedDatabaseTypeRegistry()) {
+            assertDoesNotThrow(() -> executor.checkBeforeUpdate(new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl")))));
+        }
+    }
+    
+    @Test
+    void assertCheckBeforeUpdateWithMismatchedExplicitSchemaAndDifferentProtocolAndStorageTypes() {
+        when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("FOO_SCHEMA", Collections.singleton("foo_tbl")));
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaSupportedDatabaseTypeRegistry()) {
+            assertThrows(TableNotFoundException.class,
+                    () -> executor.checkBeforeUpdate(new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl")))));
         }
     }
     
@@ -202,15 +219,6 @@ class LoadSingleTableExecutorTest {
         when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("foo_schema"));
         return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
             when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_schema");
-            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-        });
-    }
-    
-    private MockedConstruction<DatabaseTypeRegistry> mockStorageDatabaseTypeRegistry() {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
-            when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_db");
-            when(mock.formatIdentifierPattern("foo_db")).thenReturn("FOO_DB");
             when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
         });
     }

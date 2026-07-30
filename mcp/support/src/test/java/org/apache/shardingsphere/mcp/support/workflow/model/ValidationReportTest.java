@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ValidationReportTest {
     
@@ -33,10 +33,10 @@ class ValidationReportTest {
         validationReport.setRuleValidation(new ValidationSection("passed", Map.of(), "ok"));
         validationReport.setOverallStatus("passed");
         Map<String, Object> actual = validationReport.toMap();
-        assertFalse(actual.containsKey("ddl_validation"));
-        assertFalse(actual.containsKey("logical_metadata_validation"));
-        assertFalse(actual.containsKey("sql_executability_validation"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        List<?> sections = (List<?>) actual.get("sections");
+        assertThat(sections.size(), is(1));
+        assertThat(((Map<?, ?>) sections.getFirst()).get("layer"), is("rule"));
+        assertThat(((Map<?, ?>) sections.getFirst()).get("status"), is("passed"));
         assertThat(actual.get("overall_status"), is("passed"));
     }
 }

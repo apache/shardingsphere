@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
+import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 
 /**
  * YAML runtime database configuration swapper.
@@ -39,7 +39,7 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     
     @Override
     public RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig) {
-        MCPYamlConfigurationValidator.validate(yamlConfig, "MCP runtime database configuration");
+        MCPConfigurationValidator.validate(yamlConfig, "MCP runtime database configuration");
         return new RuntimeDatabaseConfiguration(yamlConfig.getJdbcUrl(), yamlConfig.getUsername(), null == yamlConfig.getPassword() ? "" : yamlConfig.getPassword(), yamlConfig.getDriverClassName());
     }
 }

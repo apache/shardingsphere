@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastRuleInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -44,14 +44,14 @@ class BroadcastRulesHandlerTest {
             BroadcastRulesHandler handler = new BroadcastRulesHandler();
             BroadcastRuleInspectionService ruleInspectionService = mocked.constructed().getFirst();
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-            when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+            when(requestContext.getQueryFacade()).thenReturn(queryFacade);
             when(ruleInspectionService.queryBroadcastRules(queryFacade, "logic_db"))
                     .thenReturn(List.of(Map.of("broadcast_table", "t_order"), Map.of("broadcast_table", "t_order_item")));
-            MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db")));
+            MCPSuccessPayload actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of("database", "logic_db")));
             verify(ruleInspectionService).queryBroadcastRules(queryFacade, "logic_db");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(2));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/broadcast/databases/logic_db/rules"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/broadcast/databases/logic_db/rules"));
         }
     }
 }

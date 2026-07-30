@@ -17,13 +17,18 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.completion;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncCompletionSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionStore;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
@@ -34,7 +39,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +47,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +54,7 @@ class MCPCompletionSpecificationFactoryTest {
     
     @Test
     void assertCompleteDatabaseValues() {
-        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(createWorkflowSessionContext())).createCompletionSpecifications(),
                 new McpSchema.PromptReference("inspect_metadata"));
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "logic")));
@@ -60,13 +63,13 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.RESPONSE_MODE), is("list"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.DIAGNOSTIC), is("ok"));
         assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MATCH_STRATEGY), is("prefix"));
-        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.MATCHED_CANDIDATE_COUNT), is(1));
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.CANDIDATE_COUNT), is(2));
         assertThat(((List<?>) actual.meta().get(MCPShardingSphereMetadataKeys.VALUE_DETAILS)).size(), is(1));
     }
     
     @Test
     void assertCompleteDatabaseValuesWithContainsFallback() {
-        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(createWorkflowSessionContext())).createCompletionSpecifications(),
                 new McpSchema.PromptReference("inspect_metadata"));
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "house")));
@@ -78,7 +81,7 @@ class MCPCompletionSpecificationFactoryTest {
     @Test
     void assertCompleteTableValuesWithMissingContextDiagnostic() {
         McpSchema.ResourceReference reference = new McpSchema.ResourceReference("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}");
-        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(createWorkflowSessionContext())).createCompletionSpecifications(),
                 reference);
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(reference, new McpSchema.CompleteRequest.CompleteArgument("table", "ord")));
@@ -93,7 +96,7 @@ class MCPCompletionSpecificationFactoryTest {
     
     @Test
     void assertRejectUndeclaredPromptCompletionArgument() {
-        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(createWorkflowSessionContext())).createCompletionSpecifications(),
                 new McpSchema.PromptReference("inspect_metadata"));
         McpError actual = assertThrows(McpError.class, () -> completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("table", "ord"))));
@@ -104,7 +107,7 @@ class MCPCompletionSpecificationFactoryTest {
     @Test
     void assertRejectUndeclaredResourceCompletionArgument() {
         McpSchema.ResourceReference reference = new McpSchema.ResourceReference("shardingsphere://databases/{database}");
-        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(createWorkflowSessionContext())).createCompletionSpecifications(),
                 reference);
         McpError actual = assertThrows(McpError.class, () -> completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(reference, new McpSchema.CompleteRequest.CompleteArgument("column", "id"))));
@@ -114,7 +117,7 @@ class MCPCompletionSpecificationFactoryTest {
     
     @Test
     void assertCompleteDatabaseValuesWithPrefixFilteredDiagnostic() {
-        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(createWorkflowSessionContext())).createCompletionSpecifications(),
                 new McpSchema.PromptReference("inspect_metadata"));
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "zzz")));
@@ -127,7 +130,7 @@ class MCPCompletionSpecificationFactoryTest {
     
     @Test
     void assertCompletePlanIdsWithNoCandidatesDiagnostic() {
-        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(createWorkflowSessionContext())).createCompletionSpecifications(),
                 new McpSchema.PromptReference("recover_workflow"));
         McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("recover_workflow"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "")));
@@ -140,9 +143,8 @@ class MCPCompletionSpecificationFactoryTest {
     
     @Test
     void assertCompleteCurrentSessionPlanIds() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext();
         workflowSessionContext.save(createSnapshot("plan-1", "session-1", WorkflowLifecycle.STATUS_PLANNED));
-        workflowSessionContext.save(createSnapshot("plan-2", "session-2", WorkflowLifecycle.STATUS_PLANNED));
         workflowSessionContext.save(createSnapshot("plan-3", "session-1", WorkflowLifecycle.STATUS_CLARIFYING));
         SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(workflowSessionContext)).createCompletionSpecifications(),
                 new McpSchema.PromptReference("recover_workflow"));
@@ -155,7 +157,7 @@ class MCPCompletionSpecificationFactoryTest {
     
     @Test
     void assertCompletePlanIdsByPromptWorkflowKind() {
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext();
         workflowSessionContext.save(createSnapshot("encrypt-plan", "session-1", "encrypt.rule", WorkflowLifecycle.STATUS_PLANNED));
         workflowSessionContext.save(createSnapshot("mask-plan", "session-1", "mask.rule", WorkflowLifecycle.STATUS_PLANNED));
         SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(workflowSessionContext)).createCompletionSpecifications(),
@@ -169,7 +171,7 @@ class MCPCompletionSpecificationFactoryTest {
     @Test
     void assertCompletePlanIdsWithExactMatchFirst() {
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
-        when(workflowSessionContext.list("session-1")).thenReturn(List.of(
+        when(workflowSessionContext.list()).thenReturn(List.of(
                 createSnapshot("plan-a1", "session-1", WorkflowLifecycle.STATUS_PLANNED, Instant.parse("2026-05-04T12:00:00Z")),
                 createSnapshot("plan-a", "session-1", WorkflowLifecycle.STATUS_PLANNED, Instant.parse("2026-05-04T11:00:00Z"))));
         SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(workflowSessionContext)).createCompletionSpecifications(),
@@ -182,7 +184,7 @@ class MCPCompletionSpecificationFactoryTest {
     @Test
     void assertCompletePlanIdsWithRecentPlanFirst() {
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
-        when(workflowSessionContext.list("session-1")).thenReturn(List.of(
+        when(workflowSessionContext.list()).thenReturn(List.of(
                 createSnapshot("plan-old", "session-1", WorkflowLifecycle.STATUS_PLANNED, Instant.parse("2026-05-04T11:00:00Z")),
                 createSnapshot("plan-new", "session-1", WorkflowLifecycle.STATUS_PLANNED, Instant.parse("2026-05-04T12:00:00Z"))));
         SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(workflowSessionContext)).createCompletionSpecifications(),
@@ -199,13 +201,21 @@ class MCPCompletionSpecificationFactoryTest {
     private MCPRuntimeContext createRuntimeContext(final WorkflowSessionContext workflowSessionContext) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.getDatabaseProfiles()).thenReturn(List.of(
-                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet()),
-                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
-        MCPRuntimeContext result = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+                new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                        new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet())),
+                new RuntimeDatabaseProfile("warehouse", "FixtureWarehouseDB", "2.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                        new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()))));
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
+        sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
+        MCPRuntimeContext result = mock(MCPRuntimeContext.class);
         when(result.getDatabaseCapabilityProvider()).thenReturn(databaseCapabilityProvider);
-        when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(result.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+        when(result.getSessionManager()).thenReturn(sessionManager);
+        when(result.getWorkflowSessionContext("session-1")).thenReturn(workflowSessionContext);
         return result;
+    }
+    
+    private WorkflowSessionContext createWorkflowSessionContext() {
+        return new InMemoryWorkflowSessionStore().getSessionContext("session-1");
     }
     
     private McpSyncServerExchange createExchange(final String sessionId) {

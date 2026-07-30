@@ -2265,6 +2265,385 @@
         </select>
     </create-view>
 
+    <create-view sql-case-id="create_view_of_xmltype_with_element" view-definition="SELECT XMLtransform(OBJECT_VALUE, x.col1) FROM purchaseorder p, xsl_tab x">
+        <view name="hr_po_tab" start-index="23" stop-index="31" />
+        <select>
+            <projections start-index="101" stop-index="134">
+                <expression-projection text="XMLtransform(OBJECT_VALUE, x.col1)" start-index="101" stop-index="134">
+                    <expr>
+                        <function function-name="XMLtransform" text="XMLtransform(OBJECT_VALUE, x.col1)" start-index="101" stop-index="134">
+                            <parameter>
+                                <column name="OBJECT_VALUE" start-index="114" stop-index="125" />
+                            </parameter>
+                            <parameter>
+                                <column name="col1" start-index="128" stop-index="133">
+                                    <owner name="x" start-index="128" stop-index="128" />
+                                </column>
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <simple-table name="purchaseorder" alias="p" start-index="141" stop-index="155" />
+                    </left>
+                    <right>
+                        <simple-table name="xsl_tab" alias="x" start-index="158" stop-index="166" />
+                    </right>
+                </join-table>
+            </from>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_or_replace_view_union_all_with_dual" view-definition="(SELECT * FROM edge_time UNION ALL SELECT '2001-13_2', 2001, 5, '2001-05', 13, '2001-13', null, null, 8 FROM DUAL)">
+        <view name="time_c" start-index="23" stop-index="28" />
+        <select>
+            <projections start-index="41" stop-index="41">
+                <shorthand-projection start-index="41" stop-index="41" />
+            </projections>
+            <from>
+                <simple-table name="edge_time" start-index="48" stop-index="56" />
+            </from>
+            <combine combine-type="UNION_ALL" start-index="34" stop-index="145">
+                <left>
+                    <projections start-index="41" stop-index="41">
+                        <shorthand-projection start-index="41" stop-index="41" />
+                    </projections>
+                    <from>
+                        <simple-table name="edge_time" start-index="48" stop-index="56" />
+                    </from>
+                </left>
+                <right>
+                    <projections start-index="75" stop-index="135">
+                        <expression-projection text="2001-13_2" start-index="75" stop-index="85" />
+                        <expression-projection text="2001" start-index="88" stop-index="91" />
+                        <expression-projection text="5" start-index="94" stop-index="94" />
+                        <expression-projection text="2001-05" start-index="97" stop-index="105" />
+                        <expression-projection text="13" start-index="108" stop-index="109" />
+                        <expression-projection text="2001-13" start-index="112" stop-index="120" />
+                        <expression-projection start-index="123" stop-index="126" />
+                        <expression-projection start-index="129" stop-index="132" />
+                        <expression-projection text="8" start-index="135" stop-index="135" />
+                    </projections>
+                    <from>
+                        <simple-table name="DUAL" start-index="142" stop-index="145" />
+                    </from>
+                </right>
+            </combine>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_or_replace_view_with_where_less_than" view-definition="SELECT * FROM employees WHERE employee_id &lt; 150">
+        <view name="v1" start-index="23" stop-index="24" />
+        <select>
+            <projections start-index="36" stop-index="36">
+                <shorthand-projection start-index="36" stop-index="36" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="43" stop-index="51" />
+            </from>
+            <where start-index="53" stop-index="75">
+                <expr>
+                    <binary-operation-expression start-index="59" stop-index="75">
+                        <left>
+                            <column name="employee_id" start-index="59" stop-index="69" />
+                        </left>
+                        <right>
+                            <literal-expression value="150" start-index="73" stop-index="75" />
+                        </right>
+                        <operator>&lt;</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_or_replace_view_with_comma_join" view-definition="SELECT v1.employee_id employee_id, departments.department_id department_id FROM v1, departments WHERE v1.department_id = departments.department_id">
+        <view name="v2" start-index="23" stop-index="24" />
+        <select>
+            <projections start-index="36" stop-index="102">
+                <column-projection name="employee_id" alias="employee_id" start-index="36" stop-index="61">
+                    <owner name="v1" start-index="36" stop-index="37" />
+                </column-projection>
+                <column-projection name="department_id" alias="department_id" start-index="64" stop-index="102">
+                    <owner name="departments" start-index="64" stop-index="74" />
+                </column-projection>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <simple-table name="v1" start-index="109" stop-index="110" />
+                    </left>
+                    <right>
+                        <simple-table name="departments" start-index="113" stop-index="123" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="125" stop-index="174">
+                <expr>
+                    <binary-operation-expression start-index="131" stop-index="174">
+                        <left>
+                            <column name="department_id" start-index="131" stop-index="146">
+                                <owner name="v1" start-index="131" stop-index="132" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="department_id" start-index="150" stop-index="174">
+                                <owner name="departments" start-index="150" stop-index="160" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_or_replace_view_with_subquery_and_group_by" view-definition="SELECT e1.first_name, e1.last_name, j.job_id, sum(e2.salary) total_sal FROM employees e1, (SELECT * FROM employees e3) e2, job_history j WHERE e1.employee_id = e2.manager_id AND e1.employee_id = j.employee_id AND e1.hire_date = j.start_date AND e1.salary = ( SELECT max(e2.salary) FROM employees e2 WHERE e2.department_id = e1.department_id ) GROUP BY e1.first_name, e1.last_name, j.job_id ORDER BY total_sal">
+        <view name="v_emp_job_history" start-index="23" stop-index="39" />
+        <select>
+            <projections start-index="51" stop-index="113">
+                <column-projection name="first_name" start-index="51" stop-index="63">
+                    <owner name="e1" start-index="51" stop-index="52" />
+                </column-projection>
+                <column-projection name="last_name" start-index="66" stop-index="77">
+                    <owner name="e1" start-index="66" stop-index="67" />
+                </column-projection>
+                <column-projection name="job_id" start-index="80" stop-index="87">
+                    <owner name="j" start-index="80" stop-index="80" />
+                </column-projection>
+                <aggregation-projection type="SUM" alias="total_sal" expression="sum(e2.salary)" start-index="90" stop-index="103">
+                    <parameter>
+                        <column name="salary" start-index="94" stop-index="102">
+                            <owner name="e2" start-index="94" stop-index="95" />
+                        </column>
+                    </parameter>
+                </aggregation-projection>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <join-table join-type="COMMA">
+                            <left>
+                                <simple-table name="employees" alias="e1" start-index="120" stop-index="131" />
+                            </left>
+                            <right>
+                                <subquery-table alias="e2" start-index="134" stop-index="164">
+                                    <subquery>
+                                        <select>
+                                            <projections start-index="142" stop-index="142">
+                                                <shorthand-projection start-index="142" stop-index="142" />
+                                            </projections>
+                                            <from>
+                                                <simple-table name="employees" alias="e3" start-index="149" stop-index="160" />
+                                            </from>
+                                        </select>
+                                    </subquery>
+                                </subquery-table>
+                            </right>
+                        </join-table>
+                    </left>
+                    <right>
+                        <simple-table name="job_history" alias="j" start-index="167" stop-index="179" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="181" stop-index="385">
+                <expr>
+                    <binary-operation-expression start-index="187" stop-index="385">
+                        <left>
+                            <binary-operation-expression start-index="187" stop-index="283">
+                                <left>
+                                    <binary-operation-expression start-index="187" stop-index="251">
+                                        <left>
+                                            <binary-operation-expression start-index="187" stop-index="216">
+                                                <left>
+                                                    <column name="employee_id" start-index="187" stop-index="200">
+                                                        <owner name="e1" start-index="187" stop-index="188" />
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <column name="manager_id" start-index="204" stop-index="216">
+                                                        <owner name="e2" start-index="204" stop-index="205" />
+                                                    </column>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <right>
+                                            <binary-operation-expression start-index="222" stop-index="251">
+                                                <left>
+                                                    <column name="employee_id" start-index="222" stop-index="235">
+                                                        <owner name="e1" start-index="222" stop-index="223" />
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <column name="employee_id" start-index="239" stop-index="251">
+                                                        <owner name="j" start-index="239" stop-index="239" />
+                                                    </column>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </right>
+                                        <operator>AND</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="257" stop-index="283">
+                                        <left>
+                                            <column name="hire_date" start-index="257" stop-index="268">
+                                                <owner name="e1" start-index="257" stop-index="258" />
+                                            </column>
+                                        </left>
+                                        <right>
+                                            <column name="start_date" start-index="272" stop-index="283">
+                                                <owner name="j" start-index="272" stop-index="272" />
+                                            </column>
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>AND</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="289" stop-index="385">
+                                <left>
+                                    <column name="salary" start-index="289" stop-index="297">
+                                        <owner name="e1" start-index="289" stop-index="290" />
+                                    </column>
+                                </left>
+                                <right>
+                                    <subquery start-index="301" stop-index="385">
+                                        <select>
+                                            <projections start-index="310" stop-index="323">
+                                                <aggregation-projection type="MAX" expression="max(e2.salary)" start-index="310" stop-index="323">
+                                                    <parameter>
+                                                        <column name="salary" start-index="314" stop-index="322">
+                                                            <owner name="e2" start-index="314" stop-index="315" />
+                                                        </column>
+                                                    </parameter>
+                                                </aggregation-projection>
+                                            </projections>
+                                            <from>
+                                                <simple-table name="employees" alias="e2" start-index="330" stop-index="341" />
+                                            </from>
+                                            <where start-index="343" stop-index="383">
+                                                <expr>
+                                                    <binary-operation-expression start-index="349" stop-index="383">
+                                                        <left>
+                                                            <column name="department_id" start-index="349" stop-index="364">
+                                                                <owner name="e2" start-index="349" stop-index="350" />
+                                                            </column>
+                                                        </left>
+                                                        <right>
+                                                            <column name="department_id" start-index="368" stop-index="383">
+                                                                <owner name="e1" start-index="368" stop-index="369" />
+                                                            </column>
+                                                        </right>
+                                                        <operator>=</operator>
+                                                    </binary-operation-expression>
+                                                </expr>
+                                            </where>
+                                        </select>
+                                    </subquery>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>AND</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="first_name" start-index="396" stop-index="408">
+                    <owner name="e1" start-index="396" stop-index="397" />
+                </column-item>
+                <column-item name="last_name" start-index="411" stop-index="422">
+                    <owner name="e1" start-index="411" stop-index="412" />
+                </column-item>
+                <column-item name="job_id" start-index="425" stop-index="432">
+                    <owner name="j" start-index="425" stop-index="425" />
+                </column-item>
+            </group-by>
+            <order-by>
+                <column-item name="total_sal" order-direction="ASC" start-index="443" stop-index="451" />
+            </order-by>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_or_replace_view_with_sum_expression" view-definition="SELECT l.product_id, SUM(l.quantity*unit_price) revenue, o.order_id, o.customer_id FROM orders o, order_items l WHERE o.order_id = l.order_id GROUP BY l.product_id, o.order_id, o.customer_id">
+        <view name="v_orders" start-index="23" stop-index="30" />
+        <select>
+            <projections start-index="42" stop-index="116">
+                <column-projection name="product_id" start-index="42" stop-index="53">
+                    <owner name="l" start-index="42" stop-index="42" />
+                </column-projection>
+                <aggregation-projection type="SUM" alias="revenue" expression="SUM(l.quantity*unit_price)" start-index="56" stop-index="81">
+                    <parameter>
+                        <binary-operation-expression start-index="60" stop-index="80">
+                            <left>
+                                <column name="quantity" start-index="60" stop-index="69">
+                                    <owner name="l" start-index="60" stop-index="60" />
+                                </column>
+                            </left>
+                            <right>
+                                <column name="unit_price" start-index="71" stop-index="80" />
+                            </right>
+                            <operator>*</operator>
+                        </binary-operation-expression>
+                    </parameter>
+                </aggregation-projection>
+                <column-projection name="order_id" start-index="92" stop-index="101">
+                    <owner name="o" start-index="92" stop-index="92" />
+                </column-projection>
+                <column-projection name="customer_id" start-index="104" stop-index="116">
+                    <owner name="o" start-index="104" stop-index="104" />
+                </column-projection>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <simple-table name="orders" alias="o" start-index="123" stop-index="130" />
+                    </left>
+                    <right>
+                        <simple-table name="order_items" alias="l" start-index="133" stop-index="145" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="147" stop-index="175">
+                <expr>
+                    <binary-operation-expression start-index="153" stop-index="175">
+                        <left>
+                            <column name="order_id" start-index="153" stop-index="162">
+                                <owner name="o" start-index="153" stop-index="153" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="order_id" start-index="166" stop-index="175">
+                                <owner name="l" start-index="166" stop-index="166" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="product_id" start-index="186" stop-index="197">
+                    <owner name="l" start-index="186" stop-index="186" />
+                </column-item>
+                <column-item name="order_id" start-index="200" stop-index="209">
+                    <owner name="o" start-index="200" stop-index="200" />
+                </column-item>
+                <column-item name="customer_id" start-index="212" stop-index="224">
+                    <owner name="o" start-index="212" stop-index="212" />
+                </column-item>
+            </group-by>
+        </select>
+    </create-view>
+
     <create-view sql-case-id="create_view_hive" view-definition="CREATE VIEW onion_referrers(url COMMENT 'URL of Referring page') COMMENT 'Referrers to The Onion website' AS SELECT DISTINCT referrer_url FROM page_view WHERE page_url='http://www.theonion.com'">
         <view name="onion_referrers" start-index="12" stop-index="26">
             <column name="url" comment="URL of Referring page" start-index="29" stop-index="31" />

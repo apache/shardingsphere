@@ -310,10 +310,7 @@ class ShardingSphereSchemaTest {
     void assertContainsTableByLogicalTableIndexWhenHeterogeneousLookupEnabled() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
-        Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
-        scopedRules.put(IdentifierScope.LOGICAL_TABLE, IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE));
-        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCasePolicySet(IdentifierCasePolicyFactory.newUpperCasePolicySet()
-                .getPolicy(IdentifierScope.TABLE), scopedRules), true);
+        DatabaseIdentifierContext context = createHeterogeneousIdentifierContext();
         schema.refreshIdentifierContext(context);
         assertTrue(schema.containsTable("FOO_TBL"));
         assertThat(schema.getTable("FOO_TBL"), is(table));
@@ -324,10 +321,7 @@ class ShardingSphereSchemaTest {
         ShardingSphereTable lowerCaseTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereTable upperCaseTable = new ShardingSphereTable("FOO_TBL", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Arrays.asList(lowerCaseTable, upperCaseTable), Collections.emptyList());
-        Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
-        scopedRules.put(IdentifierScope.LOGICAL_TABLE, IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE));
-        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCasePolicySet(IdentifierCasePolicyFactory.newUpperCasePolicySet()
-                .getPolicy(IdentifierScope.TABLE), scopedRules), true);
+        DatabaseIdentifierContext context = createHeterogeneousIdentifierContext();
         schema.refreshIdentifierContext(context);
         assertThat(schema.getTable("FOO_TBL"), is(upperCaseTable));
     }
@@ -336,10 +330,7 @@ class ShardingSphereSchemaTest {
     void assertRemoveTableByLogicalTableIndexWhenHeterogeneousLookupEnabled() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
-        Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
-        scopedRules.put(IdentifierScope.LOGICAL_TABLE, IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE));
-        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCasePolicySet(IdentifierCasePolicyFactory.newUpperCasePolicySet()
-                .getPolicy(IdentifierScope.TABLE), scopedRules), true);
+        DatabaseIdentifierContext context = createHeterogeneousIdentifierContext();
         schema.refreshIdentifierContext(context);
         schema.removeTable("FOO_TBL");
         assertNull(schema.getTable("foo_tbl"));
@@ -359,10 +350,7 @@ class ShardingSphereSchemaTest {
         ShardingSphereTable lowerCaseTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereTable upperCaseTable = new ShardingSphereTable("FOO_TBL", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Arrays.asList(lowerCaseTable, upperCaseTable), Collections.emptyList());
-        Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
-        scopedRules.put(IdentifierScope.LOGICAL_TABLE, IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE));
-        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCasePolicySet(IdentifierCasePolicyFactory.newUpperCasePolicySet()
-                .getPolicy(IdentifierScope.TABLE), scopedRules), true);
+        DatabaseIdentifierContext context = createHeterogeneousIdentifierContext();
         schema.refreshIdentifierContext(context);
         schema.removeTable("FOO_TBL");
         assertThat(schema.getTable("FOO_TBL"), is(lowerCaseTable));
@@ -375,5 +363,12 @@ class ShardingSphereSchemaTest {
         schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
         schema.removeView("Foo_View");
         assertTrue(schema.getAllViews().isEmpty());
+    }
+    
+    private DatabaseIdentifierContext createHeterogeneousIdentifierContext() {
+        Map<IdentifierScope, IdentifierCasePolicy> scopedRules = new EnumMap<>(IdentifierScope.class);
+        scopedRules.put(IdentifierScope.LOGICAL_TABLE, IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE));
+        IdentifierCasePolicySet policySet = new IdentifierCasePolicySet(IdentifierCasePolicyFactory.newUpperCasePolicySet().getPolicy(IdentifierScope.TABLE), scopedRules);
+        return new DatabaseIdentifierContext(policySet, policySet, policySet, true);
     }
 }

@@ -125,7 +125,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
-      objectScope: rule
+      objectScope: algorithm
       feature: shadow
       relatedTools:
         - database_gateway_plan_default_shadow_algorithm
@@ -238,7 +238,7 @@ prompts:
         required: false
       - name: algorithm_type
         title: Algorithm Type
-        description: "Default shadow algorithm type."
+        description: "Default shadow algorithm type. ShardingSphere requires SQL_HINT for the default algorithm."
         required: false
       - name: plan_id
         title: Workflow Plan ID
@@ -409,7 +409,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Existing workflow plan identifier used only to continue or revise a previous shadow plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+          description: "Existing workflow plan identifier used only to continue the same shadow.rule workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the shadow rule."
@@ -449,23 +449,30 @@ tools:
           properties:
             rule:
               type: string
+              description: "Shadow rule name extracted from the user request."
             source_storage_unit:
               type: string
+              description: "Source storage unit extracted from the user request."
             shadow_storage_unit:
               type: string
+              description: "Shadow storage unit extracted from the user request."
             table:
               type: string
+              description: "Logical table extracted from the user request."
             algorithm_type:
               type: string
+              description: "Shadow algorithm type extracted from the user request."
           required: []
           additionalProperties: false
         delivery_mode:
           type: string
+          description: "Preferred delivery mode for the generated workflow plan."
           enum:
             - all-at-once
             - step-by-step
         execution_mode:
           type: string
+          description: "Preferred apply mode recorded in the workflow plan."
           enum:
             - review-then-execute
             - manual-only
@@ -589,6 +596,9 @@ tools:
         - plan_id
         - workflow_kind
         - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       additionalProperties: true
       examples:
         - response_mode: planning
@@ -616,7 +626,7 @@ tools:
       title: Plan Shadow Rule
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime:
       workflowRole: plan
@@ -644,36 +654,50 @@ tools:
       properties:
         plan_id:
           type: string
+          description: "Existing workflow plan identifier used only to continue the same shadow.default workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
+          description: "ShardingSphere logical database that owns the default shadow algorithm."
         operation_type:
           type: string
+          description: "Default shadow algorithm lifecycle operation."
           enum:
             - create
             - alter
             - drop
         algorithm_type:
           type: string
+          enum:
+            - SQL_HINT
+          description: "Default shadow algorithm type. ShardingSphere requires SQL_HINT."
         algorithm_properties:
           type: object
+          description: "Default shadow algorithm properties."
           additionalProperties:
             type: string
         natural_language_intent:
           type: string
+          description: "User request in natural language."
         structured_intent_evidence:
           type: object
+          description: "Default shadow algorithm intent extracted from the user request."
           properties:
             algorithm_type:
               type: string
+              description: "Default shadow algorithm type extracted from the user request."
+              enum:
+                - SQL_HINT
           required: []
           additionalProperties: false
         delivery_mode:
           type: string
+          description: "Preferred delivery mode for the generated workflow plan."
           enum:
             - all-at-once
             - step-by-step
         execution_mode:
           type: string
+          description: "Preferred apply mode recorded in the workflow plan."
           enum:
             - review-then-execute
             - manual-only
@@ -706,7 +730,7 @@ tools:
       title: Plan Default Shadow Algorithm
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime:
       workflowRole: plan
@@ -733,26 +757,34 @@ tools:
       properties:
         plan_id:
           type: string
+          description: "Existing workflow plan identifier used only to continue the same shadow.cleanup workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
+          description: "ShardingSphere logical database that owns the shadow algorithm."
         algorithm_name:
           type: string
+          description: "Unused shadow algorithm to remove."
         natural_language_intent:
           type: string
+          description: "User request in natural language."
         structured_intent_evidence:
           type: object
+          description: "Shadow algorithm cleanup intent extracted from the user request."
           properties:
             algorithm_name:
               type: string
+              description: "Shadow algorithm name extracted from the user request."
           required: []
           additionalProperties: false
         delivery_mode:
           type: string
+          description: "Preferred delivery mode for the generated workflow plan."
           enum:
             - all-at-once
             - step-by-step
         execution_mode:
           type: string
+          description: "Preferred apply mode recorded in the workflow plan."
           enum:
             - review-then-execute
             - manual-only
@@ -785,7 +817,7 @@ tools:
       title: Plan Shadow Algorithm Cleanup
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime:
       workflowRole: plan

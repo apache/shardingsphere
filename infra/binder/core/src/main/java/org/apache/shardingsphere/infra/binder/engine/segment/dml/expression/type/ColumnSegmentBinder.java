@@ -204,7 +204,7 @@ public final class ColumnSegmentBinder {
             ColumnSegment inputColumnSegment = findInputColumnSegmentFromExternalTables(segment, binderContext.getExternalTableBinderContexts()).orElse(null);
             result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
         }
-        if (isNotFoundInputColumn(result, segment)) {
+        if (isNeedFindInputColumnByVariables(result, segment, binderContext.getSqlStatement().getVariableNames())) {
             result = new ColumnSegmentInfo(findInputColumnSegmentByVariables(segment, binderContext.getSqlStatement().getVariableNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         if (isNotFoundInputColumn(result, segment)) {
@@ -224,6 +224,10 @@ public final class ColumnSegmentBinder {
     
     private static boolean isNotFoundInputColumn(final ColumnSegmentInfo segmentInfo, final ColumnSegment segment) {
         return !segmentInfo.getInputColumnSegment().isPresent() && !segment.getOwner().isPresent();
+    }
+    
+    private static boolean isNeedFindInputColumnByVariables(final ColumnSegmentInfo segmentInfo, final ColumnSegment segment, final Collection<String> variableNames) {
+        return !segmentInfo.getInputColumnSegment().isPresent() && (!segment.getOwner().isPresent() || isVariableOwner(segment, variableNames));
     }
     
     private static ColumnSegmentInfo getInputInfoFromTableBinderContexts(final Collection<TableSegmentBinderContext> tableBinderContexts,
@@ -309,12 +313,25 @@ public final class ColumnSegmentBinder {
         if (variableNames.isEmpty()) {
             return Optional.empty();
         }
-        if (variableNames.contains(segment.getIdentifier().getValue())) {
-            ColumnSegment result = new ColumnSegment(0, 0, segment.getIdentifier());
-            result.setVariable(true);
-            return Optional.of(result);
+        if (!segment.getOwner().isPresent() && containsVariableName(variableNames, segment.getIdentifier().getValue()) || isVariableOwner(segment, variableNames)) {
+            return Optional.of(createVariableColumnSegment(segment));
         }
         return Optional.empty();
+    }
+    
+    private static boolean isVariableOwner(final ColumnSegment segment, final Collection<String> variableNames) {
+        return segment.getOwner().isPresent() && containsVariableName(variableNames, segment.getOwner().get().getIdentifier().getValue());
+    }
+    
+    private static boolean containsVariableName(final Collection<String> variableNames, final String variableName) {
+        return variableNames.stream().anyMatch(each -> each.equalsIgnoreCase(variableName));
+    }
+    
+    private static ColumnSegment createVariableColumnSegment(final ColumnSegment segment) {
+        ColumnSegment result = copy(segment);
+        segment.getOwner().ifPresent(result::setOwner);
+        result.setVariable(true);
+        return result;
     }
     
     private static boolean isSkipColumnBind(final Collection<TableSegmentBinderContext> tableBinderContexts, final Collection<TableSegmentBinderContext> outerBinderContexts) {

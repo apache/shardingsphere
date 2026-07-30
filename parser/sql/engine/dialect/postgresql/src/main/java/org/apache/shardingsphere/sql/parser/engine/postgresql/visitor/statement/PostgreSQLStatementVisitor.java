@@ -1343,7 +1343,15 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     private FunctionTableSegment getFunctionTableSegment(final TableReferenceContext ctx) {
         FunctionSegment functionSegment = (FunctionSegment) visit(ctx.functionTable().functionExprWindowless().funcApplication());
-        return new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionSegment);
+        FunctionTableSegment result = new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionSegment);
+        if (null != ctx.funcAliasClause() && null != ctx.funcAliasClause().aliasClause()) {
+            AliasClauseContext aliasClause = ctx.funcAliasClause().aliasClause();
+            result.setAlias((AliasSegment) visit(aliasClause));
+            if (null != aliasClause.nameList()) {
+                result.getColumns().addAll(generateUsingColumn(aliasClause.nameList()));
+            }
+        }
+        return result;
     }
     
     @Override

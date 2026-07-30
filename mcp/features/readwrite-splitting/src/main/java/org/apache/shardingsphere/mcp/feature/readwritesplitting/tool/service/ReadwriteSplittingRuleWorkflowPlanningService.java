@@ -70,13 +70,12 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId,
+    public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                         final ReadwriteSplittingRuleWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ReadwriteSplittingRuleWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
@@ -101,28 +100,33 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
     
     private ReadwriteSplittingRuleWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final ReadwriteSplittingRuleWorkflowRequest request) {
         ReadwriteSplittingRuleWorkflowRequest result = ReadwriteSplittingRuleWorkflowRequest.merge(snapshot.getRequest(), request);
-        return planningSupport.prepareSnapshot(snapshot, ReadwriteSplittingFeatureDefinition.RULE_WORKFLOW_KIND, result, null,
+        planningSupport.prepareSnapshot(snapshot, ReadwriteSplittingFeatureDefinition.RULE_WORKFLOW_KIND, result, null,
                 intentResolver.resolveRuleIntent(result), "Readwrite-splitting rule workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+        snapshot.getResourceUriTemplates().add(ReadwriteSplittingFeatureDefinition.STORAGE_UNITS_RESOURCE_URI);
+        return result;
     }
     
     private boolean ensurePlanningContext(final ReadwriteSplittingRuleWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (request.getDatabase().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Database is required before planning readwrite-splitting rule DistSQL.", "Provide the logical database name.", true, Map.of()));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!planningSupport.ensureOptionalSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, "intaking")
-                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.RULE_FIELD, List.of(request.getRuleName()), snapshot, "intaking")
-                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.WRITE_STORAGE_UNIT_FIELD, List.of(request.getWriteStorageUnit()), snapshot, "intaking")
-                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request.getReadStorageUnits(), snapshot, "intaking")) {
+        if (!planningSupport.ensureOptionalSupportedIdentifiers("database", List.of(request.getDatabase()), snapshot, WorkflowLifecycle.STEP_INTAKING)
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.RULE_FIELD, List.of(request.getRuleName()),
+                        snapshot, WorkflowLifecycle.STEP_INTAKING)
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.WRITE_STORAGE_UNIT_FIELD, List.of(request.getWriteStorageUnit()),
+                        snapshot, WorkflowLifecycle.STEP_INTAKING)
+                || !planningSupport.ensureOptionalSupportedIdentifiers(ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request.getReadStorageUnits(),
+                        snapshot, WorkflowLifecycle.STEP_INTAKING)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
         addMissingInputs(request, clarifiedIntent, snapshot);
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
-            return !request.getDatabase().isEmpty() && !request.getRuleName().isEmpty();
+            return !request.getRuleName().isEmpty();
         }
         return !request.getRuleName().isEmpty() && !request.getWriteStorageUnit().isEmpty() && !request.getReadStorageUnits().isEmpty()
                 && !request.getTransactionalReadQueryStrategy().isEmpty();
@@ -140,7 +144,7 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
         }
         if (!missingInputs.isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide readwrite-splitting rule name, storage units and strategy fields required by DistSQL.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Readwrite-splitting rule DistSQL requires explicit structured inputs.", "Provide the missing fields instead of relying on inferred storage units.", true,
                     Map.of("missing_inputs", missingInputs)));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
@@ -157,18 +161,18 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
                                          final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         boolean ruleExists = containsRule(rules, queryFacade, request.getDatabase(), request.getRuleName());
         String operationType = clarifiedIntent.getOperationType().toLowerCase(Locale.ENGLISH);
-        if ("create".equals(operationType) && ruleExists) {
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
+        if (WorkflowLifecycle.OPERATION_CREATE.equals(operationType) && ruleExists) {
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", WorkflowLifecycle.STEP_DISCOVERING,
                     String.format("Readwrite-splitting rule `%s` already exists.", request.getRuleName()), "Use alter instead of create.", false, Map.of("rule", request.getRuleName())));
             return false;
         }
-        if ("alter".equals(operationType) && !ruleExists) {
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
+        if (WorkflowLifecycle.OPERATION_ALTER.equals(operationType) && !ruleExists) {
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", WorkflowLifecycle.STEP_DISCOVERING,
                     String.format("Readwrite-splitting rule `%s` does not exist.", request.getRuleName()), "Use create instead of alter.", false, Map.of("rule", request.getRuleName())));
             return false;
         }
         if (WorkflowLifecycle.OPERATION_DROP.equals(operationType) && !ruleExists) {
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", "discovering",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", WorkflowLifecycle.STEP_DISCOVERING,
                     String.format("Readwrite-splitting rule `%s` does not exist.", request.getRuleName()), "Confirm target rule or skip the drop request.", false,
                     Map.of("rule", request.getRuleName())));
             return false;
@@ -196,7 +200,7 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
     private void addRuleArtifact(final WorkflowContextSnapshot snapshot, final ReadwriteSplittingRuleWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
             snapshot.getRuleArtifacts().add(distSQLPlanningService.planDropRule(request.getRuleName()));
-        } else if ("alter".equalsIgnoreCase(operationType)) {
+        } else if (WorkflowLifecycle.OPERATION_ALTER.equalsIgnoreCase(operationType)) {
             snapshot.getRuleArtifacts().add(distSQLPlanningService.planAlterRule(request));
         } else {
             snapshot.getRuleArtifacts().add(distSQLPlanningService.planCreateRule(request));

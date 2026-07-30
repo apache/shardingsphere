@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,6 +35,20 @@ class WorkflowPlanningArgumentsTest {
     @MethodSource("getStringArgumentCases")
     void assertGetStringArgument(final String name, final Map<String, Object> rawArguments, final String expectedValue) {
         assertThat(new WorkflowPlanningArguments(rawArguments).getStringArgument("name"), is(expectedValue));
+    }
+    
+    @Test
+    void assertApplyStringArgument() {
+        AtomicReference<String> actual = new AtomicReference<>("unchanged");
+        new WorkflowPlanningArguments(Map.of("name", " foo_name ")).applyStringArgument("name", actual::set);
+        assertThat(actual.get(), is("foo_name"));
+    }
+    
+    @Test
+    void assertApplyStringArgumentWithMissingArgument() {
+        AtomicReference<String> actual = new AtomicReference<>("unchanged");
+        new WorkflowPlanningArguments(Map.of()).applyStringArgument("name", actual::set);
+        assertThat(actual.get(), is("unchanged"));
     }
     
     @ParameterizedTest(name = "{0}")

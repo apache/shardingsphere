@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+
 /**
  * MCP database capability option for ClickHouse.
  */
-public final class ClickHouseMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class ClickHouseMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public ClickHouseMCPDatabaseCapabilityOption() {
-        super("ClickHouse", true);
+    @Override
+    public boolean isExplainSupported() {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "ClickHouse";
     }
 }

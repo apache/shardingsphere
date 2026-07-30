@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public final class MaskRuleStatementConverter {
      */
     public static MaskRuleConfiguration convert(final Collection<MaskRuleSegment> ruleSegments) {
         Collection<MaskTableRuleConfiguration> tables = new LinkedList<>();
-        Map<String, AlgorithmConfiguration> algorithms = new HashMap<>();
+        Map<String, AlgorithmConfiguration> algorithms = new LinkedHashMap<>();
         for (MaskRuleSegment each : ruleSegments) {
             tables.add(createMaskTableRuleConfiguration(each));
             algorithms.putAll(createMaskAlgorithmConfigurations(each));

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.LinkedList;
@@ -33,33 +34,17 @@ import java.util.Map;
  */
 public final class WorkflowAlgorithmRequirementCollector {
     
-    /**
-     * Add one fallback clarification question when algorithm selection is blocked.
-     *
-     * @param clarifiedIntent clarified intent
-     * @param snapshot workflow snapshot
-     * @param fallbackQuestion fallback question
-     * @return whether there is any blocking algorithm issue
-     */
-    public boolean hasBlockingAlgorithmIssues(final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String fallbackQuestion) {
-        boolean result = snapshot.getIssues().stream().anyMatch(each -> "selecting-algorithm".equals(each.getStage()) && "error".equals(each.getSeverity()));
+    private boolean addFallbackQuestionForBlockingAlgorithmIssues(final ClarifiedIntent clarifiedIntent,
+                                                                  final WorkflowContextSnapshot snapshot, final String fallbackQuestion) {
+        boolean result = snapshot.getIssues().stream().anyMatch(each -> WorkflowLifecycle.STEP_SELECTING_ALGORITHM.equals(each.getStage()) && "error".equals(each.getSeverity()));
         if (result && clarifiedIntent.getClarificationMessages().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add(fallbackQuestion);
         }
         return result;
     }
     
-    /**
-     * Collect required algorithm properties and emit missing-property clarification prompts.
-     *
-     * @param request workflow request
-     * @param clarifiedIntent clarified intent
-     * @param snapshot workflow snapshot
-     * @param propertyRequirements property requirements
-     * @return whether all required properties are present
-     */
-    public boolean collectPropertyRequirements(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent,
-                                               final WorkflowContextSnapshot snapshot, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+    private boolean collectPropertyRequirements(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent,
+                                                final WorkflowContextSnapshot snapshot, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         snapshot.getPropertyRequirements().addAll(propertyRequirements);
         applyDefaultProperties(request, propertyRequirements);
         List<String> missingRequiredProperties = findMissingRequiredProperties(request, propertyRequirements);
@@ -69,7 +54,7 @@ public final class WorkflowAlgorithmRequirementCollector {
         for (String each : missingRequiredProperties) {
             clarifiedIntent.getClarificationMessages().add(String.format("Please provide property `%s`.", each));
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING, "error", "collecting-properties",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING, "error", WorkflowLifecycle.STEP_COLLECTING_PROPERTIES,
                 "Required algorithm properties are still missing.", "Provide all required algorithm properties.", true, Map.of("missing_properties", missingRequiredProperties)));
         return false;
     }
@@ -86,7 +71,7 @@ public final class WorkflowAlgorithmRequirementCollector {
      */
     public boolean isReadyForArtifactPlanning(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot,
                                               final List<AlgorithmPropertyRequirement> propertyRequirements, final String fallbackQuestion) {
-        if (hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, fallbackQuestion) || !clarifiedIntent.getClarificationMessages().isEmpty()) {
+        if (addFallbackQuestionForBlockingAlgorithmIssues(clarifiedIntent, snapshot, fallbackQuestion) || !clarifiedIntent.getClarificationMessages().isEmpty()) {
             return false;
         }
         return collectPropertyRequirements(request, clarifiedIntent, snapshot, propertyRequirements);

@@ -178,7 +178,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Existing workflow plan identifier used only to continue or revise a previous mask plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
+          description: "Existing workflow plan identifier used only to continue the same mask.rule workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the target table."
@@ -364,6 +364,14 @@ tools:
         resources_to_read:
           type: array
           description: "Typed resources the model should read when more rule or algorithm context is useful."
+      required:
+        - response_mode
+        - plan_id
+        - workflow_kind
+        - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       examples:
         - response_mode: planning
           summary: Workflow plan `mask-rule-20260505-001` for mask.rule is ready for preview.

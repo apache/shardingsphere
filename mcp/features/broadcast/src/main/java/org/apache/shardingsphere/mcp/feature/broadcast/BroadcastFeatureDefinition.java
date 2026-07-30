@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.feature.broadcast;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
@@ -32,7 +31,7 @@ public final class BroadcastFeatureDefinition {
     
     public static final String PLAN_PROMPT_NAME = "plan_broadcast_rule";
     
-    public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf(WorkflowKindDescriptors.BROADCAST_RULE);
+    public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf("broadcast.rule");
     
     public static final String TABLES_FIELD = "tables";
     

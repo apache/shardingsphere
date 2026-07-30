@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public final class EncryptRuleDistSQLPlanningService {
      */
     public List<RuleArtifact> planEncryptRule(final EncryptWorkflowRequest request) {
         validateEncryptIdentifiers(request);
-        return List.of(new RuleArtifact("create", createEncryptRuleSql(request.getTable(), List.of(createTargetEncryptColumnSegment(request)))));
+        return List.of(new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, createEncryptRuleSql(request.getTable(), List.of(createTargetEncryptColumnSegment(request)))));
     }
     
     /**
@@ -47,7 +48,7 @@ public final class EncryptRuleDistSQLPlanningService {
      */
     public List<RuleArtifact> planEncryptDropRule(final EncryptWorkflowRequest request) {
         validateEncryptDropIdentifiers(request);
-        return List.of(new RuleArtifact("drop", createDropRuleSql(request.getTable())));
+        return List.of(new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, createDropRuleSql(request.getTable())));
     }
     
     private String createDropRuleSql(final String tableName) {

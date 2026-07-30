@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.database.connector.oracle.metadata.database.opt
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -102,11 +102,10 @@ class OracleDatabaseMetaDataTest {
     void assertGetTransactionOption() {
         DialectTransactionOption actualTransactionOption = dialectDatabaseMetaData.getTransactionOption();
         assertFalse(actualTransactionOption.isSupportGlobalCSN());
-        assertFalse(actualTransactionOption.isDDLNeedImplicitCommit());
+        assertThat(actualTransactionOption.getDDLCommitPolicy(), is(DDLCommitPolicy.NO_ADDITIONAL_COMMIT));
         assertFalse(actualTransactionOption.isSupportAutoCommitInNestedTransaction());
         assertFalse(actualTransactionOption.isSupportDDLInXATransaction());
         assertTrue(actualTransactionOption.isSupportMetaDataRefreshInTransaction());
-        assertThat(actualTransactionOption.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
         assertFalse(actualTransactionOption.isReturnRollbackStatementWhenCommitFailed());
         assertFalse(actualTransactionOption.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actualTransactionOption.getXaDriverClassNames(), is(Collections.singleton("oracle.jdbc.xa.client.OracleXADataSource")));

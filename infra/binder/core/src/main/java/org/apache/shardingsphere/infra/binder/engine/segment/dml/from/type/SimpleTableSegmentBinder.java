@@ -111,6 +111,7 @@ public final class SimpleTableSegmentBinder {
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         segment.getOwner().ifPresent(result::setOwner);
         segment.getAliasSegment().ifPresent(result::setAlias);
+        result.setTableSampled(segment.isTableSampled());
         segment.getTableSampleExpression().map(optional -> ExpressionSegmentBinder.bind(optional, SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create()))
                 .ifPresent(result::setTableSampleExpression);
         tableBinderContext.flatMap(context -> segment.getPivot()
@@ -238,6 +239,7 @@ public final class SimpleTableSegmentBinder {
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         fromTableOwner.ifPresent(result::setOwner);
         result.setAlias(segment.getAliasSegment().orElseGet(() -> new AliasSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName)));
+        result.setTableSampled(segment.isTableSampled());
         segment.getTableSampleExpression().map(optional -> ExpressionSegmentBinder.bind(optional, SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create()))
                 .ifPresent(result::setTableSampleExpression);
         return result;

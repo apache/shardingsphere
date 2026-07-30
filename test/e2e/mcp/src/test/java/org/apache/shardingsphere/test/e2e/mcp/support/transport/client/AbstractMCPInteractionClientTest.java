@@ -85,6 +85,15 @@ class AbstractMCPInteractionClientTest {
     }
     
     @Test
+    void assertSendRawNotification() throws IOException, InterruptedException {
+        FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of());
+        client.sendRawNotification("notifications/cancelled", Map.of("requestId", "id", "reason", "not needed"));
+        assertThat(client.method, is("notifications/cancelled"));
+        assertThat(client.params, is(Map.of("requestId", "id", "reason", "not needed")));
+        assertThat(client.openCount, is(1));
+    }
+    
+    @Test
     void assertListPrompts() throws IOException, InterruptedException {
         FakeMCPInteractionClient client = new FakeMCPInteractionClient(Map.of("result", Map.of("prompts", List.of(Map.of("name", "inspect_metadata")))));
         assertThat(client.listPrompts(), is(Map.of("prompts", List.of(Map.of("name", "inspect_metadata")))));
@@ -166,6 +175,12 @@ class AbstractMCPInteractionClientTest {
             this.method = method;
             this.params = params;
             return response;
+        }
+        
+        @Override
+        protected void sendNotification(final String method, final Map<String, Object> params) {
+            this.method = method;
+            this.params = params;
         }
     }
 }

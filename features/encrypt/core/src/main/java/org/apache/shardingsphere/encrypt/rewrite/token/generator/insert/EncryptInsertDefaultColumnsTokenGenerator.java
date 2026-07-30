@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.checker.cryptographic.InsertSelectColumnsEncryptorChecker;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -64,13 +65,22 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
     
     @Override
     public UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext) {
-        String tableName = insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+        String tableName = getTableName(insertStatementContext);
+        EncryptTable encryptTable = findEncryptTable(insertStatementContext).orElseThrow(() -> new EncryptTableNotFoundException(tableName));
         Optional<UseDefaultInsertColumnsToken> previousSQLToken = findInsertColumnsToken();
         if (previousSQLToken.isPresent()) {
-            processPreviousSQLToken(previousSQLToken.get(), insertStatementContext, tableName);
+            processPreviousSQLToken(previousSQLToken.get(), insertStatementContext, encryptTable);
             return previousSQLToken.get();
         }
-        return generateNewSQLToken(insertStatementContext, tableName);
+        return generateNewSQLToken(insertStatementContext, encryptTable);
+    }
+    
+    private Optional<EncryptTable> findEncryptTable(final InsertStatementContext insertStatementContext) {
+        return rule.findEncryptTable(getTableName(insertStatementContext));
+    }
+    
+    private String getTableName(final InsertStatementContext insertStatementContext) {
+        return insertStatementContext.getSqlStatement().getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
     }
     
     private Optional<UseDefaultInsertColumnsToken> findInsertColumnsToken() {
@@ -82,13 +92,13 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
         return Optional.empty();
     }
     
-    private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertStatementContext insertStatementContext, final String tableName) {
-        List<String> columnNames = getColumnNames(insertStatementContext, rule.getEncryptTable(tableName), previousSQLToken.getColumns());
+    private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertStatementContext insertStatementContext, final EncryptTable encryptTable) {
+        List<String> columnNames = getColumnNames(insertStatementContext, encryptTable, previousSQLToken.getColumns());
         previousSQLToken.getColumns().clear();
         previousSQLToken.getColumns().addAll(columnNames);
     }
     
-    private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertStatementContext insertStatementContext, final String tableName) {
+    private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertStatementContext insertStatementContext, final EncryptTable encryptTable) {
         Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
         if (null != insertStatementContext.getInsertSelectContext()) {
@@ -99,7 +109,7 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
         }
         QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         return new UseDefaultInsertColumnsToken(
-                insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, rule.getEncryptTable(tableName), insertStatementContext.getColumnNames()), quoteCharacter);
+                insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, encryptTable, insertStatementContext.getColumnNames()), quoteCharacter);
     }
     
     private List<String> getColumnNames(final InsertStatementContext sqlStatementContext, final EncryptTable encryptTable, final List<String> currentColumnNames) {

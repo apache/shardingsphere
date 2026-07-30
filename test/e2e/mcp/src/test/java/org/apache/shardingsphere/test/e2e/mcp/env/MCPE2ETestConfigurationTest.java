@@ -21,7 +21,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPE2ETestConfigurationTest {
@@ -54,6 +57,15 @@ class MCPE2ETestConfigurationTest {
         props.setProperty("e2e.run.type", "NATIVE");
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(props);
         assertFalse(config.isDockerRunType());
+    }
+    
+    @Test
+    void assertInvalidRunType() {
+        Properties props = new Properties();
+        props.setProperty("e2e.run.type", "DOCKER, REMOTE");
+        MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(props);
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, config::isDockerRunType);
+        assertThat(actualException.getMessage(), is("Unsupported MCP E2E run type `REMOTE`."));
     }
     
 }

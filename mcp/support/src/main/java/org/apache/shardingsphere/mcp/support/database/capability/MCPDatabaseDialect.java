@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
@@ -56,35 +55,12 @@ public final class MCPDatabaseDialect {
     }
     
     /**
-     * Get identifier quote character.
-     *
-     * @return identifier quote character
-     */
-    public QuoteCharacter getIdentifierQuoteCharacter() {
-        return dialectDatabaseMetaData.getQuoteCharacter();
-    }
-    
-    /**
      * Get default schema semantics.
      *
      * @return default schema semantics
      */
     public DialectSchemaSemantics getDefaultSchemaSemantics() {
         return dialectDatabaseMetaData.getSchemaOption().getSchemaSemantics();
-    }
-    
-    /**
-     * Get transaction capability.
-     *
-     * @param supportsTransaction whether transaction is supported
-     * @param supportsSavepoint whether savepoint is supported
-     * @return transaction capability
-     */
-    public TransactionCapability getTransactionCapability(final boolean supportsTransaction, final boolean supportsSavepoint) {
-        if (!supportsTransaction) {
-            return TransactionCapability.NONE;
-        }
-        return supportsSavepoint ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
     }
     
     /**

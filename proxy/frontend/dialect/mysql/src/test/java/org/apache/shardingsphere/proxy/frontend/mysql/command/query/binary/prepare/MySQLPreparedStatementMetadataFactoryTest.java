@@ -115,7 +115,7 @@ class MySQLPreparedStatementMetadataFactoryTest {
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getDatabaseNames()).thenReturn(Collections.singleton("foo_db"));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        return new MySQLServerPreparedStatement("SELECT 1", sqlStatementContext, new HintValueContext(), Collections.emptyList());
+        return new MySQLServerPreparedStatement("SELECT 1", sqlStatementContext, new HintValueContext());
     }
     
     private void mockMetaData() {

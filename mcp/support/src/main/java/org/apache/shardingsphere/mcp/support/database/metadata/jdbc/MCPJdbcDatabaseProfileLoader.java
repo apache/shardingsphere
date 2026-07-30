@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -35,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -63,31 +62,34 @@ public final class MCPJdbcDatabaseProfileLoader {
      * @param databaseName database name
      * @param runtimeDatabaseConfig runtime database configuration
      * @return runtime database profile
-     * @throws RuntimeDatabaseConnectionException when runtime database connection or configuration fails
-     * @throws RuntimeDatabaseConnectionException when profile metadata loading fails
+     * @throws RuntimeDatabaseConnectionException when runtime database profile loading fails
      */
     public RuntimeDatabaseProfile load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
         DatabaseType databaseType;
         String databaseVersion;
-        boolean supportsTransaction;
-        boolean supportsSavepoint;
+        TransactionCapability transactionCapability;
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             databaseType = loadDatabaseType(databaseName, databaseMetaData);
             databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-            supportsTransaction = databaseMetaData.supportsTransactions();
-            supportsSavepoint = supportsTransaction && databaseMetaData.supportsSavepoints();
+            transactionCapability = loadTransactionCapability(databaseMetaData);
         } catch (final SQLException ex) {
             throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
         }
-        return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion, supportsTransaction, supportsSavepoint,
-                resolveIdentifierCasePolicySet(databaseName, databaseType, runtimeDatabaseConfig));
+        return new RuntimeDatabaseProfile(databaseName, databaseType.getType(), databaseVersion, transactionCapability,
+                createIdentifierContext(databaseName, databaseType, runtimeDatabaseConfig));
     }
     
-    private IdentifierCasePolicySet resolveIdentifierCasePolicySet(final String databaseName, final DatabaseType databaseType,
-                                                                   final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
-        return new IdentifierCasePolicyResolver().resolve(databaseType, new ConfigurationProperties(new Properties()),
-                new RuntimeDatabaseDataSource(databaseName, runtimeDatabaseConfig));
+    private TransactionCapability loadTransactionCapability(final DatabaseMetaData databaseMetaData) throws SQLException {
+        if (!databaseMetaData.supportsTransactions()) {
+            return TransactionCapability.NONE;
+        }
+        return databaseMetaData.supportsSavepoints() ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
+    }
+    
+    private DatabaseIdentifierContext createIdentifierContext(final String databaseName, final DatabaseType databaseType,
+                                                              final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
+        return DatabaseIdentifierContextFactory.create(databaseType, new RuntimeDatabaseDataSource(databaseName, runtimeDatabaseConfig));
     }
     
     private DatabaseType loadDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {

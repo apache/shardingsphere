@@ -30,13 +30,13 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.MockedStatic;
@@ -59,6 +59,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -104,6 +105,53 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
                 result.put(entry.getKey(), metadataLoader.load(entry.getKey(), entry.getValue(), databaseProfiles.get(entry.getKey())));
             }
             return new LoadedMetadataCatalog(result);
+        }
+    }
+    
+    protected List<MCPColumnMetadata> loadColumns(final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final String schemaName, final String relationName) {
+        return loadMetadataDetail(runtimeDatabaseConfig, Map.of(),
+                (loader, profile) -> loader.loadColumns("logic_db", runtimeDatabaseConfig, profile, schemaName, relationName));
+    }
+    
+    protected List<MCPColumnMetadata> loadColumns(final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final String schemaName, final String relationName,
+                                                  final Map<String, DialectSchemaSemantics> schemaSemantics) {
+        return loadMetadataDetail(runtimeDatabaseConfig, schemaSemantics,
+                (loader, profile) -> loader.loadColumns("logic_db", runtimeDatabaseConfig, profile, schemaName, relationName));
+    }
+    
+    protected List<MCPColumnMetadata> loadSchemaColumns(final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final String schemaName) {
+        return loadMetadataDetail(runtimeDatabaseConfig, Map.of(),
+                (loader, profile) -> loader.loadSchemaColumns("logic_db", runtimeDatabaseConfig, profile, schemaName));
+    }
+    
+    protected List<MCPColumnMetadata> loadSchemaColumns(final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final String schemaName,
+                                                        final Map<String, DialectSchemaSemantics> schemaSemantics) {
+        return loadMetadataDetail(runtimeDatabaseConfig, schemaSemantics,
+                (loader, profile) -> loader.loadSchemaColumns("logic_db", runtimeDatabaseConfig, profile, schemaName));
+    }
+    
+    protected List<ShardingSphereIndex> loadIndexes(final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final String schemaName, final String tableName) {
+        return loadMetadataDetail(runtimeDatabaseConfig, Map.of(),
+                (loader, profile) -> loader.loadIndexes("logic_db", runtimeDatabaseConfig, profile, schemaName, tableName));
+    }
+    
+    protected List<ShardingSphereIndex> loadIndexes(final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final String schemaName, final String tableName,
+                                                    final Map<String, DialectSchemaSemantics> schemaSemantics) {
+        return loadMetadataDetail(runtimeDatabaseConfig, schemaSemantics,
+                (loader, profile) -> loader.loadIndexes("logic_db", runtimeDatabaseConfig, profile, schemaName, tableName));
+    }
+    
+    private <T> T loadMetadataDetail(final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
+                                     final Map<String, DialectSchemaSemantics> schemaSemantics,
+                                     final BiFunction<MCPJdbcMetadataLoader, RuntimeDatabaseProfile, T> operation) {
+        try (
+                MockedStatic<DatabaseTypeFactory> ignored = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
+                MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = Map.of("logic_db", runtimeDatabaseConfig);
+            RuntimeDatabaseProfile databaseProfile = new MCPJdbcDatabaseProfileLoader().load(runtimeDatabases).get("logic_db");
+            mockDatabaseTypedSPI(List.of(databaseProfile), List.of("PostgreSQL"), Map.of(), schemaSemantics, typedSPILoader, databaseTypedSPILoader);
+            return operation.apply(new MCPJdbcMetadataLoader(), databaseProfile);
         }
     }
     
@@ -153,8 +201,6 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
                 Arguments.of("table orders", SupportedMCPMetadataObjectType.TABLE, "orders"),
                 Arguments.of("table order_items", SupportedMCPMetadataObjectType.TABLE, "order_items"),
                 Arguments.of("view active_orders", SupportedMCPMetadataObjectType.VIEW, "active_orders"),
-                Arguments.of("column status", SupportedMCPMetadataObjectType.COLUMN, "status"),
-                Arguments.of("index idx_orders_status", SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"),
                 Arguments.of("sequence order_seq", SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
     }
     
@@ -318,24 +364,40 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
         return result;
     }
     
-    protected ResultSet mockSingleRowResultSet(final Map<String, String> values) throws SQLException {
+    protected ResultSet mockSingleRowResultSet(final Map<String, ?> values) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
-        for (Entry<String, String> entry : values.entrySet()) {
-            when(result.getString(entry.getKey())).thenReturn(entry.getValue());
+        for (Entry<String, ?> entry : values.entrySet()) {
+            when(result.getString(entry.getKey())).thenReturn(null == entry.getValue() ? null : entry.getValue().toString());
         }
         return result;
     }
     
-    protected ResultSet mockMultiRowResultSet(final List<Map<String, String>> values) throws SQLException {
+    protected ResultSet mockMultiRowResultSet(final List<? extends Map<String, ?>> values) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         AtomicInteger rowIndex = new AtomicInteger(-1);
         when(result.next()).thenAnswer(invocation -> rowIndex.incrementAndGet() < values.size());
         when(result.getString(anyString())).thenAnswer(invocation -> {
             int currentRowIndex = rowIndex.get();
-            return 0 <= currentRowIndex && currentRowIndex < values.size() ? values.get(currentRowIndex).get(invocation.getArgument(0)) : null;
+            Object value = 0 <= currentRowIndex && currentRowIndex < values.size() ? values.get(currentRowIndex).get(invocation.getArgument(0)) : null;
+            return null == value ? null : value.toString();
+        });
+        when(result.getInt(anyString())).thenAnswer(invocation -> getNumber(values, rowIndex.get(), invocation.getArgument(0)).intValue());
+        when(result.getShort(anyString())).thenAnswer(invocation -> getNumber(values, rowIndex.get(), invocation.getArgument(0)).shortValue());
+        when(result.getBoolean(anyString())).thenAnswer(invocation -> {
+            Object value = getValue(values, rowIndex.get(), invocation.getArgument(0));
+            return value instanceof Boolean ? value : Boolean.parseBoolean(String.valueOf(value));
         });
         return result;
+    }
+    
+    private Number getNumber(final List<? extends Map<String, ?>> values, final int rowIndex, final String columnName) {
+        Object value = getValue(values, rowIndex, columnName);
+        return value instanceof Number ? (Number) value : 0;
+    }
+    
+    private Object getValue(final List<? extends Map<String, ?>> values, final int rowIndex, final String columnName) {
+        return 0 <= rowIndex && rowIndex < values.size() ? values.get(rowIndex).get(columnName) : null;
     }
     
     protected String getMetadataJdbcUrl(final String databaseType) {
@@ -364,28 +426,6 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
                 result++;
             }
             if (SupportedMCPMetadataObjectType.VIEW == objectType && TableType.VIEW == each.getType() && objectName.equals(each.getName())) {
-                result++;
-            }
-            result += countColumnMetadata(each.getAllColumns(), objectType, objectName);
-            result += countIndexMetadata(each.getAllIndexes(), objectType, objectName);
-        }
-        return result;
-    }
-    
-    private int countColumnMetadata(final Collection<ShardingSphereColumn> columns, final SupportedMCPMetadataObjectType objectType, final String objectName) {
-        int result = 0;
-        for (ShardingSphereColumn each : columns) {
-            if (SupportedMCPMetadataObjectType.COLUMN == objectType && objectName.equals(each.getName())) {
-                result++;
-            }
-        }
-        return result;
-    }
-    
-    private int countIndexMetadata(final Collection<ShardingSphereIndex> indexes, final SupportedMCPMetadataObjectType objectType, final String objectName) {
-        int result = 0;
-        for (ShardingSphereIndex each : indexes) {
-            if (SupportedMCPMetadataObjectType.INDEX == objectType && objectName.equals(each.getName())) {
                 result++;
             }
         }

@@ -62,6 +62,13 @@ class RuntimeDatabaseConnectionExceptionTest {
     }
     
     @Test
+    void assertConnectionFailedAsDialectAuthorization() {
+        RuntimeDatabaseConnectionException actual = RuntimeDatabaseConnectionException.connectionFailed(
+                "logic_db", "Firebird", new SQLException("permission denied", "28000", 335544352));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_AUTHORIZATION_FAILED));
+    }
+    
+    @Test
     void assertConnectionFailedAsDatabaseUnavailable() {
         RuntimeDatabaseConnectionException actual = RuntimeDatabaseConnectionException.connectionFailed("logic_db", new SQLException("Connection refused", "08001"));
         assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE));
@@ -70,6 +77,12 @@ class RuntimeDatabaseConnectionExceptionTest {
     @Test
     void assertConnectionFailed() {
         RuntimeDatabaseConnectionException actual = RuntimeDatabaseConnectionException.connectionFailed("logic_db", new SQLException("Broken connection"));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED));
+    }
+    
+    @Test
+    void assertConnectionFailedDoesNotInspectMessage() {
+        RuntimeDatabaseConnectionException actual = RuntimeDatabaseConnectionException.connectionFailed("logic_db", new SQLException("Access denied because the operation timed out"));
         assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED));
     }
     

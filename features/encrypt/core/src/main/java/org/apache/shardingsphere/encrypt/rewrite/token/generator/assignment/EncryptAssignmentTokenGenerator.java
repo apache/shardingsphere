@@ -106,7 +106,7 @@ public final class EncryptAssignmentTokenGenerator {
     
     private String getColumnName(final ColumnSegment columnSegment, final EncryptDerivedColumnSuffix derivedColumnSuffix, final String actualColumnName) {
         return TableSourceType.TEMPORARY_TABLE == columnSegment.getColumnBoundInfo().getTableSourceType()
-                ? derivedColumnSuffix.getDerivedColumnName(columnSegment.getIdentifier().getValue(), databaseType)
+                ? derivedColumnSuffix.getDerivedColumnName(columnSegment.getIdentifier().getValue(), database.getIdentifierContext())
                 : actualColumnName;
     }
     

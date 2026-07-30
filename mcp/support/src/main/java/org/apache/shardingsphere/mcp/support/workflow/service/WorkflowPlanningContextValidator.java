@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
@@ -85,14 +85,14 @@ public final class WorkflowPlanningContextValidator {
                                          final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (isEmptyIdentifier(request.getDatabase())) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Database is required before planning.", "Provide the logical database name.", true, Map.of()));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
-        if (!ensureSupportedIdentifiers(WorkflowFieldNames.DATABASE, List.of(request.getDatabase()), snapshot, "discovering")
-                || !ensureSupportedIdentifiers(WorkflowFieldNames.TABLE, List.of(request.getTable()), snapshot, "discovering")
-                || !ensureSupportedIdentifiers(WorkflowFieldNames.COLUMN, List.of(request.getColumn()), snapshot, "discovering")) {
+        if (!ensureSupportedIdentifiers(WorkflowFieldNames.DATABASE, List.of(request.getDatabase()), snapshot, WorkflowLifecycle.STEP_DISCOVERING)
+                || !ensureSupportedIdentifiers(WorkflowFieldNames.TABLE, List.of(request.getTable()), snapshot, WorkflowLifecycle.STEP_DISCOVERING)
+                || !ensureSupportedIdentifiers(WorkflowFieldNames.COLUMN, List.of(request.getColumn()), snapshot, WorkflowLifecycle.STEP_DISCOVERING)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -101,7 +101,7 @@ public final class WorkflowPlanningContextValidator {
         queryFacade.checkDatabaseCapability(databaseName);
         List<ShardingSphereSchema> schemas = isEmptyIdentifier(request.getSchema()) ? metadataQueryFacade.querySchemas(databaseName) : List.of();
         request.setSchema(resolveSchema(schemas, request, clarifiedIntent, queryFacade, databaseName));
-        if (!ensureSupportedIdentifiers(WorkflowFieldNames.SCHEMA, List.of(request.getSchema()), snapshot, "discovering")) {
+        if (!ensureSupportedIdentifiers(WorkflowFieldNames.SCHEMA, List.of(request.getSchema()), snapshot, WorkflowLifecycle.STEP_DISCOVERING)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
@@ -113,16 +113,24 @@ public final class WorkflowPlanningContextValidator {
         if (schemas.isEmpty()) {
             schemas = metadataQueryFacade.querySchemas(databaseName);
         }
-        Optional<ShardingSphereTable> table = findTable(schemas, request, queryFacade, databaseName);
+        Optional<ShardingSphereSchema> schema = findSchema(schemas, request, queryFacade, databaseName);
+        Optional<ShardingSphereTable> table = findTable(schema, request, queryFacade, databaseName);
         if (!ensureTableExists(table, request, snapshot)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
-        if (!ensureColumnExists(table.orElseThrow(), request, snapshot, queryFacade, databaseName)) {
+        if (!ensureColumnExists(metadataQueryFacade.queryTableColumns(databaseName, schema.orElseThrow().getName(), table.orElseThrow().getName()),
+                request, snapshot, queryFacade, databaseName)) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
         return true;
+    }
+    
+    private Optional<ShardingSphereSchema> findSchema(final Collection<ShardingSphereSchema> schemas, final WorkflowRequest request,
+                                                      final MCPFeatureQueryFacade queryFacade, final String databaseName) {
+        return schemas.stream().filter(each -> matchesMetadataIdentifier(
+                queryFacade, databaseName, IdentifierScope.SCHEMA, request.getSchema(), each.getName())).findFirst();
     }
     
     private boolean ensureIdentifiers(final String fieldName, final Collection<String> identifiers, final WorkflowContextSnapshot snapshot, final String issueStage, final boolean allowEmpty) {
@@ -149,7 +157,7 @@ public final class WorkflowPlanningContextValidator {
     private void addMissingTableQuestion(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String message) {
         if (isEmptyIdentifier(request.getTable())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target table.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     message, "Provide the logical table name.", true, Map.of()));
         }
     }
@@ -157,7 +165,7 @@ public final class WorkflowPlanningContextValidator {
     private void addMissingColumnQuestion(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String message) {
         if (isEmptyIdentifier(request.getColumn())) {
             clarifiedIntent.getClarificationMessages().add("Please specify target column.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     message, "Provide the logical column name.", true, Map.of()));
         }
     }
@@ -226,13 +234,12 @@ public final class WorkflowPlanningContextValidator {
         return schema;
     }
     
-    private Optional<ShardingSphereTable> findTable(final Collection<ShardingSphereSchema> schemas, final WorkflowRequest request,
+    private Optional<ShardingSphereTable> findTable(final Optional<ShardingSphereSchema> schema, final WorkflowRequest request,
                                                     final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return schemas.stream().filter(each -> matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.SCHEMA, request.getSchema(), each.getName())).findFirst()
-                .flatMap(schema -> schema.getAllTables().stream()
-                        .filter(each -> TableType.TABLE == each.getType()
-                                && matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.TABLE, request.getTable(), each.getName()))
-                        .findFirst());
+        return schema.flatMap(optional -> optional.getAllTables().stream()
+                .filter(each -> TableType.TABLE == each.getType()
+                        && matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.TABLE, request.getTable(), each.getName()))
+                .findFirst());
     }
     
     private boolean matchesMetadataIdentifier(final MCPFeatureQueryFacade queryFacade, final String databaseName, final IdentifierScope identifierScope,
@@ -246,19 +253,19 @@ public final class WorkflowPlanningContextValidator {
         if (table.isPresent()) {
             return true;
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_NOT_FOUND, "error", "discovering",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.TABLE_NOT_FOUND, "error", WorkflowLifecycle.STEP_DISCOVERING,
                 String.format("Table `%s` does not exist in Proxy logical metadata.", request.getTable()), "Check database, schema and table name.", false, Map.of()));
         return false;
     }
     
-    private boolean ensureColumnExists(final ShardingSphereTable table, final WorkflowRequest request, final WorkflowContextSnapshot snapshot,
+    private boolean ensureColumnExists(final Collection<MCPColumnMetadata> columns, final WorkflowRequest request, final WorkflowContextSnapshot snapshot,
                                        final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        for (ShardingSphereColumn each : table.getAllColumns()) {
+        for (MCPColumnMetadata each : columns) {
             if (matchesMetadataIdentifier(queryFacade, databaseName, IdentifierScope.COLUMN, request.getColumn(), each.getName())) {
                 return true;
             }
         }
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_NOT_FOUND, "error", "discovering",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_NOT_FOUND, "error", WorkflowLifecycle.STEP_DISCOVERING,
                 String.format("Column `%s` does not exist in Proxy logical metadata.", request.getColumn()), "Check column name.", false, Map.of()));
         return false;
     }

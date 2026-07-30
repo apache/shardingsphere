@@ -21,14 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
+import org.apache.shardingsphere.mcp.core.handler.MCPRequestContextTypes;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 
@@ -58,7 +57,7 @@ public final class ToolDefinitionRegistry {
         for (MCPToolHandler<?> each : handlers) {
             String toolName = each.getToolName();
             ShardingSpherePreconditions.checkNotEmpty(toolName, () -> new IllegalArgumentException(String.format("Tool name is required for `%s`.", each.getClass().getName())));
-            MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
+            MCPRequestContextTypes.validateContextType(each.getContextType(), each.getClass());
             MCPToolDefinition previousDefinition = result.get(toolName);
             ShardingSpherePreconditions.checkState(null == previousDefinition, () -> new IllegalArgumentException(
                     String.format("Duplicate tool name `%s` with `%s` and `%s`.", toolName, previousDefinition.getHandler().getClass().getName(), each.getClass().getName())));
@@ -79,15 +78,6 @@ public final class ToolDefinitionRegistry {
             ShardingSpherePreconditions.checkState(REGISTERED_TOOL_DEFINITIONS.containsKey(each.getName()),
                     () -> new IllegalStateException(String.format("MCP tool descriptor `%s` has no registered handler.", each.getName())));
         }
-    }
-    
-    /**
-     * Get supported tools.
-     *
-     * @return supported tools
-     */
-    public static Collection<String> getSupportedTools() {
-        return REGISTERED_TOOL_DEFINITIONS.keySet().stream().toList();
     }
     
     /**
@@ -112,19 +102,19 @@ public final class ToolDefinitionRegistry {
     /**
      * Dispatch tool call to tool definition.
      *
-     * @param requestScope request scope
+     * @param requestContext request context
      * @param definition tool definition
-     * @param sessionId session identifier
      * @param arguments tool arguments
-     * @return tool response
+     * @return successful tool payload
      */
-    public static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolDefinition definition, final String sessionId, final Map<String, Object> arguments) {
+    public static MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPToolDefinition definition, final Map<String, Object> arguments) {
         MCPToolDescriptor descriptor = definition.getDescriptor();
         new MCPToolArgumentContract(descriptor.getName(), descriptor.getInputSchema()).validate(arguments);
-        return dispatch(requestScope, definition.getHandler(), new MCPToolCall(sessionId, arguments));
+        return dispatch(requestContext, definition.getHandler(), arguments);
     }
     
-    private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> handler, final MCPToolCall toolCall) {
-        return handler.handle(handler.getContextType().cast(requestScope), toolCall);
+    private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPToolHandler<T> handler,
+                                                                            final Map<String, Object> arguments) {
+        return handler.handle(handler.getContextType().cast(requestContext), arguments);
     }
 }

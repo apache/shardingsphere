@@ -19,21 +19,24 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -58,19 +61,20 @@ final class MetadataSearchCollector {
     private List<MetadataSearchHit> collect(final String databaseName, final String schemaName, final Set<SupportedMCPMetadataObjectType> searchObjectTypes) {
         List<MetadataSearchHit> result = new LinkedList<>();
         for (SupportedMCPMetadataObjectType each : searchObjectTypes) {
-            if (SupportedMCPMetadataObjectType.DATABASE == each) {
-                metadataQueryFacade.queryDatabase(databaseName).ifPresent(optional -> result.add(createSearchHit(optional)));
-                continue;
-            }
-            if (SupportedMCPMetadataObjectType.STORAGE_UNIT == each) {
-                result.addAll(queryStorageUnitSearchHits(databaseName));
-                continue;
-            }
-            if (metadataQueryFacade.isSupportedMetadataObjectType(databaseName, each)) {
-                result.addAll(querySearchHits(databaseName, each, schemaName));
-            }
+            result.addAll(collect(databaseName, schemaName, each));
         }
         return result;
+    }
+    
+    private List<MetadataSearchHit> collect(final String databaseName, final String schemaName, final SupportedMCPMetadataObjectType objectType) {
+        return switch (objectType) {
+            case DATABASE -> metadataQueryFacade.queryDatabase(databaseName).map(each -> List.of(createSearchHit(each))).orElseGet(List::of);
+            case STORAGE_UNIT -> queryStorageUnitSearchHits(databaseName);
+            case SCHEMA, TABLE, VIEW, COLUMN, INDEX, SEQUENCE -> metadataQueryFacade.isSupportedMetadataObjectType(databaseName, objectType)
+                    ? querySearchHits(databaseName, objectType, schemaName)
+                    : List.of();
+            case MATERIALIZED_VIEW, ROUTINE, TRIGGER, EVENT, SYNONYM, DATABASE_SPECIFIC -> List.of();
+        };
     }
     
     List<MetadataSearchHit> collectDatabases() {
@@ -78,20 +82,20 @@ final class MetadataSearchCollector {
     }
     
     private List<MetadataSearchHit> querySearchHits(final String databaseName, final SupportedMCPMetadataObjectType objectType, final String schemaName) {
+        return switch (objectType) {
+            case SCHEMA -> querySchemaSearchHits(databaseName, schemaName);
+            case TABLE -> queryTables(databaseName, schemaName).stream().map(each -> createTableSearchHit(databaseName, each)).toList();
+            case VIEW -> queryViews(databaseName, schemaName).stream().map(each -> createViewSearchHit(databaseName, each)).toList();
+            case COLUMN -> queryColumnSearchHits(databaseName, schemaName);
+            case INDEX -> queryIndexSearchHits(databaseName, schemaName);
+            case SEQUENCE -> querySequenceSearchHits(databaseName, schemaName);
+            case DATABASE, STORAGE_UNIT, MATERIALIZED_VIEW, ROUTINE, TRIGGER, EVENT, SYNONYM, DATABASE_SPECIFIC -> List.of();
+        };
+    }
+    
+    private List<MetadataSearchHit> querySchemaSearchHits(final String databaseName, final String schemaName) {
         List<MetadataSearchHit> result = new LinkedList<>();
-        if (SupportedMCPMetadataObjectType.SCHEMA == objectType) {
-            addSchemaSearchHits(result, databaseName, schemaName);
-        } else if (SupportedMCPMetadataObjectType.TABLE == objectType) {
-            queryTables(databaseName, schemaName).forEach(each -> result.add(createTableSearchHit(databaseName, each)));
-        } else if (SupportedMCPMetadataObjectType.VIEW == objectType) {
-            queryViews(databaseName, schemaName).forEach(each -> result.add(createViewSearchHit(databaseName, each)));
-        } else if (SupportedMCPMetadataObjectType.COLUMN == objectType) {
-            result.addAll(queryColumnSearchHits(databaseName, schemaName));
-        } else if (SupportedMCPMetadataObjectType.INDEX == objectType) {
-            result.addAll(queryIndexSearchHits(databaseName, schemaName));
-        } else {
-            result.addAll(querySequenceSearchHits(databaseName, schemaName));
-        }
+        addSchemaSearchHits(result, databaseName, schemaName);
         return result;
     }
     
@@ -127,16 +131,27 @@ final class MetadataSearchCollector {
     
     private List<MetadataSearchHit> queryColumnSearchHits(final String databaseName, final String schemaName) {
         List<MetadataSearchHit> result = new LinkedList<>();
-        for (TableSearchScope each : queryTables(databaseName, schemaName)) {
-            for (ShardingSphereColumn column : metadataQueryFacade.queryTableColumns(databaseName, each.schema, each.table.getName())) {
-                result.add(createColumnSearchHit(databaseName, each.schema, each.table.getName(), "", column));
+        List<String> schemaNames = schemaName.isEmpty()
+                ? metadataQueryFacade.querySchemas(databaseName).stream().map(ShardingSphereSchema::getName).toList()
+                : List.of(schemaName);
+        for (String each : schemaNames) {
+            Map<String, TableType> relationTypes = createRelationTypes(databaseName, each);
+            for (MCPColumnMetadata column : metadataQueryFacade.querySchemaColumns(databaseName, each)) {
+                TableType relationType = relationTypes.get(column.getRelationName());
+                if (TableType.TABLE == relationType) {
+                    result.add(createColumnSearchHit(databaseName, each, column.getRelationName(), "", column));
+                } else if (TableType.VIEW == relationType) {
+                    result.add(createColumnSearchHit(databaseName, each, "", column.getRelationName(), column));
+                }
             }
         }
-        for (TableSearchScope each : queryViews(databaseName, schemaName)) {
-            for (ShardingSphereColumn column : metadataQueryFacade.queryViewColumns(databaseName, each.schema, each.table.getName())) {
-                result.add(createColumnSearchHit(databaseName, each.schema, "", each.table.getName(), column));
-            }
-        }
+        return result;
+    }
+    
+    private Map<String, TableType> createRelationTypes(final String databaseName, final String schemaName) {
+        Map<String, TableType> result = new LinkedHashMap<>();
+        metadataQueryFacade.queryTables(databaseName, schemaName).forEach(each -> result.put(each.getName(), TableType.TABLE));
+        metadataQueryFacade.queryViews(databaseName, schemaName).forEach(each -> result.put(each.getName(), TableType.VIEW));
         return result;
     }
     
@@ -160,44 +175,59 @@ final class MetadataSearchCollector {
         for (Map<String, Object> each : governanceMetadataQueryService.queryStorageUnits(queryFacade, databaseName)) {
             String storageUnitName = Objects.toString(each.get("name"), "");
             if (!storageUnitName.isEmpty()) {
-                result.add(createSearchHit(databaseName, "", "storage_unit", "", "", storageUnitName));
+                result.add(createSearchHit(databaseName, "", SupportedMCPMetadataObjectType.STORAGE_UNIT, "", "", storageUnitName));
             }
         }
         return result;
     }
     
     private MetadataSearchHit createSearchHit(final RuntimeDatabaseProfile databaseProfile) {
-        return createSearchHit(databaseProfile.getDatabase(), "", "database", "", "", databaseProfile.getDatabase());
+        return createSearchHit(databaseProfile.getDatabase(), "", SupportedMCPMetadataObjectType.DATABASE, "", "", databaseProfile.getDatabase());
     }
     
     private MetadataSearchHit createSearchHit(final String database, final ShardingSphereSchema schema) {
-        return createSearchHit(database, schema.getName(), "schema", "", "", schema.getName());
+        return createSearchHit(database, schema.getName(), SupportedMCPMetadataObjectType.SCHEMA, "", "", schema.getName());
     }
     
     private MetadataSearchHit createSearchHit(final String database, final String schema, final ShardingSphereSequence sequence) {
-        return createSearchHit(database, schema, "sequence", "", "", sequence.getName());
+        return createSearchHit(database, schema, SupportedMCPMetadataObjectType.SEQUENCE, "", "", sequence.getName());
     }
     
-    private MetadataSearchHit createSearchHit(final String database, final String schema, final String objectType, final String table, final String view, final String name) {
+    private MetadataSearchHit createSearchHit(final String database, final String schema, final SupportedMCPMetadataObjectType objectType,
+                                              final String table, final String view, final String name) {
         MetadataSearchResourceUriFactory.MetadataResourceUris resourceUris = resourceUriFactory.create(database, schema, objectType, table, view, name);
-        return new MetadataSearchHit(database, schema, objectType, table, view, name, resourceUris.resource(), resourceUris.parentResource(), resourceUris.nextResources(),
-                resourceUris.derivationStatus(), resourceUris.derivationReason(), "", List.of(), "");
+        return MetadataSearchHit.builder()
+                .database(database)
+                .schema(schema)
+                .objectType(objectType.name().toLowerCase(Locale.ENGLISH))
+                .table(table)
+                .view(view)
+                .name(name)
+                .resource(resourceUris.resource())
+                .parentResource(resourceUris.parentResource())
+                .nextResources(resourceUris.nextResources())
+                .derivationStatus(resourceUris.derivationStatus())
+                .derivationReason(resourceUris.derivationReason())
+                .matchKind("")
+                .matchedFields(List.of())
+                .matchedValue("")
+                .build();
     }
     
     private MetadataSearchHit createTableSearchHit(final String database, final TableSearchScope table) {
-        return createSearchHit(database, table.schema, "table", table.table.getName(), "", table.table.getName());
+        return createSearchHit(database, table.schema, SupportedMCPMetadataObjectType.TABLE, table.table.getName(), "", table.table.getName());
     }
     
     private MetadataSearchHit createViewSearchHit(final String database, final TableSearchScope view) {
-        return createSearchHit(database, view.schema, "view", "", view.table.getName(), view.table.getName());
+        return createSearchHit(database, view.schema, SupportedMCPMetadataObjectType.VIEW, "", view.table.getName(), view.table.getName());
     }
     
-    private MetadataSearchHit createColumnSearchHit(final String database, final String schema, final String table, final String view, final ShardingSphereColumn column) {
-        return createSearchHit(database, schema, "column", table, view, column.getName());
+    private MetadataSearchHit createColumnSearchHit(final String database, final String schema, final String table, final String view, final MCPColumnMetadata column) {
+        return createSearchHit(database, schema, SupportedMCPMetadataObjectType.COLUMN, table, view, column.getName());
     }
     
     private MetadataSearchHit createIndexSearchHit(final String database, final String schema, final String table, final ShardingSphereIndex index) {
-        return createSearchHit(database, schema, "index", table, "", index.getName());
+        return createSearchHit(database, schema, SupportedMCPMetadataObjectType.INDEX, table, "", index.getName());
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

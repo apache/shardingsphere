@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -44,30 +45,34 @@ public final class SearchMetadataPayloadBuilder {
     /**
      * Build search metadata payload metadata.
      *
-     * @param databaseContext database handler context
+     * @param requestContext database handler context
      * @param request metadata search request
      * @param searchResult metadata search result
      * @param toolName search metadata tool name
      * @return search metadata payload metadata
      */
-    public static Map<String, Object> build(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request,
+    public static Map<String, Object> build(final MCPFeatureRequestContext requestContext, final MetadataSearchRequest request,
                                             final MetadataSearchResult searchResult, final String toolName) {
-        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put(MCPPayloadFieldNames.SUMMARY, createSummary(searchResult));
         result.put("search_context", searchResult.getSearchContext());
         result.put("total_match_count", searchResult.getTotalMatchCount());
-        result.put("returned_count", searchResult.getReturnedCount());
         result.put("truncated", searchResult.isTruncated());
+        result.put("has_more", searchResult.isTruncated());
+        result.put("continuation_mode", searchResult.isTruncated() ? "pagination" : "none");
         if (searchResult.isTruncated()) {
+            result.put("next_offset", request.getOffset() + searchResult.getReturnedCount());
+        }
+        if (searchResult.isTruncated() && searchResult.getTotalMatchCount() > searchResult.getLargeResultThreshold()) {
             result.put("large_result_guidance", createLargeResultGuidance(searchResult));
         }
-        if (searchResult.getItems().isEmpty()) {
-            result.put("empty_state", createEmptyState(databaseContext, request));
+        if (0 == searchResult.getTotalMatchCount()) {
+            result.put("empty_state", createEmptyState(requestContext, request));
             result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(createEmptySearchNextAction(request, toolName)));
             return result;
         }
         List<String> duplicatedNames = findDuplicatedNames(searchResult.getItems(), request.getQuery());
-        List<Map<String, Object>> nextActions = createResultNextActions(searchResult, duplicatedNames);
+        List<Map<String, Object>> nextActions = createResultNextActions(request, searchResult, duplicatedNames, toolName);
         if (!nextActions.isEmpty()) {
             result.put(MCPPayloadFieldNames.NEXT_ACTIONS, nextActions);
         }
@@ -86,25 +91,44 @@ public final class SearchMetadataPayloadBuilder {
         result.put("state", "metadata_search_result_truncated");
         result.put("threshold", searchResult.getLargeResultThreshold());
         result.put("narrowing_arguments", List.of("database", "schema", "query", "object_types"));
-        result.put(MCPPayloadFieldNames.REASON, "Search matched more metadata objects than returned; narrow the search before reading specific resources.");
+        result.put(MCPPayloadFieldNames.REASON, "Search matched more metadata objects than the maximum page size; continue pagination or narrow the search before reading specific resources.");
         return result;
     }
     
-    private static List<Map<String, Object>> createResultNextActions(final MetadataSearchResult searchResult, final List<String> duplicatedNames) {
+    private static List<Map<String, Object>> createResultNextActions(final MetadataSearchRequest request, final MetadataSearchResult searchResult,
+                                                                     final List<String> duplicatedNames, final String toolName) {
         List<Map<String, Object>> result = new LinkedList<>();
         if (isBroadSearchGuarded(searchResult)) {
             result.add(MCPNextActionUtils.askUser("Blank cross-database metadata search listed databases only. Choose a database, query, or object type before searching deeper metadata.",
                     List.of("database", "query", "object_types")));
         }
-        if (searchResult.isTruncated() && !isBroadSearchGuarded(searchResult)) {
-            result.add(MCPNextActionUtils.askUser("Metadata search results were truncated. Choose database, schema, query, or object type before reading specific resources.",
-                    List.of("database", "schema", "query", "object_types")));
+        if (searchResult.isTruncated()) {
+            result.add(MCPNextActionUtils.callTool(toolName, "Read the next deterministically ordered metadata search page.", createNextPageArguments(request, searchResult)));
         }
         if (!duplicatedNames.isEmpty()) {
             result.add(MCPNextActionUtils.askUser("Multiple metadata hits share the same name. Ask the user to choose database, schema, or object type before using a specific resource.",
                     List.of("database", "schema", "object_types")));
         }
         return MCPNextActionUtils.ordered(result);
+    }
+    
+    private static Map<String, Object> createNextPageArguments(final MetadataSearchRequest request, final MetadataSearchResult searchResult) {
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        putIfNotEmpty(result, "database", request.getDatabase());
+        putIfNotEmpty(result, "schema", request.getSchema());
+        putIfNotEmpty(result, "query", request.getQuery());
+        if (!request.getObjectTypes().isEmpty()) {
+            result.put("object_types", request.getObjectTypes().stream().map(each -> each.name().toLowerCase(Locale.ENGLISH)).sorted().toList());
+        }
+        result.put("limit", request.getLimit());
+        result.put("offset", request.getOffset() + searchResult.getReturnedCount());
+        return result;
+    }
+    
+    private static void putIfNotEmpty(final Map<String, Object> target, final String key, final String value) {
+        if (!value.isEmpty()) {
+            target.put(key, value);
+        }
     }
     
     private static boolean isBroadSearchGuarded(final MetadataSearchResult searchResult) {
@@ -182,8 +206,8 @@ public final class SearchMetadataPayloadBuilder {
         return result;
     }
     
-    private static Map<String, Object> createEmptyState(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request) {
-        String category = resolveEmptyStateCategory(databaseContext, request);
+    private static Map<String, Object> createEmptyState(final MCPFeatureRequestContext requestContext, final MetadataSearchRequest request) {
+        String category = resolveEmptyStateCategory(requestContext, request);
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("state", request.getQuery().isEmpty() ? "no_items" : "no_match");
         result.put("category", category);
@@ -191,29 +215,29 @@ public final class SearchMetadataPayloadBuilder {
         return result;
     }
     
-    private static String resolveEmptyStateCategory(final MCPDatabaseHandlerContext databaseContext, final MetadataSearchRequest request) {
-        if (!hasRuntimeDatabase(databaseContext)) {
+    private static String resolveEmptyStateCategory(final MCPFeatureRequestContext requestContext, final MetadataSearchRequest request) {
+        if (!hasRuntimeDatabase(requestContext)) {
             return MCPDiagnosticCategory.NO_RUNTIME_DATABASE;
         }
-        if (!request.getDatabase().isEmpty() && !isKnownDatabase(databaseContext, request.getDatabase())) {
+        if (!request.getDatabase().isEmpty() && !isKnownDatabase(requestContext, request.getDatabase())) {
             return MCPDiagnosticCategory.UNKNOWN_DATABASE;
         }
-        if (!request.getSchema().isEmpty() && !isKnownSchema(databaseContext, request.getDatabase(), request.getSchema())) {
+        if (!request.getSchema().isEmpty() && !isKnownSchema(requestContext, request.getDatabase(), request.getSchema())) {
             return MCPDiagnosticCategory.SCHEMA_NOT_VISIBLE;
         }
         return request.getQuery().isEmpty() ? MCPDiagnosticCategory.EMPTY_SCOPE : MCPDiagnosticCategory.OBJECT_NOT_VISIBLE;
     }
     
-    private static boolean isKnownDatabase(final MCPDatabaseHandlerContext databaseContext, final String databaseName) {
-        return Optional.ofNullable(databaseContext.getCapabilityFacade()).flatMap(capabilityFacade -> capabilityFacade.findDatabaseProfile(databaseName)).isPresent();
+    private static boolean isKnownDatabase(final MCPFeatureRequestContext requestContext, final String databaseName) {
+        return Optional.ofNullable(requestContext.getCapabilityFacade()).flatMap(capabilityFacade -> capabilityFacade.findDatabaseProfile(databaseName)).isPresent();
     }
     
-    private static boolean isKnownSchema(final MCPDatabaseHandlerContext databaseContext, final String databaseName, final String schemaName) {
-        return databaseContext.getMetadataQueryFacade().querySchema(databaseName, schemaName).isPresent();
+    private static boolean isKnownSchema(final MCPFeatureRequestContext requestContext, final String databaseName, final String schemaName) {
+        return requestContext.getMetadataQueryFacade().querySchema(databaseName, schemaName).isPresent();
     }
     
-    private static boolean hasRuntimeDatabase(final MCPDatabaseHandlerContext databaseContext) {
-        return !databaseContext.getMetadataQueryFacade().queryDatabases().isEmpty();
+    private static boolean hasRuntimeDatabase(final MCPFeatureRequestContext requestContext) {
+        return !requestContext.getMetadataQueryFacade().queryDatabases().isEmpty();
     }
     
     private static String createEmptyStateReason(final String category, final MetadataSearchRequest request) {

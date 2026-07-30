@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+
 /**
  * MCP database capability option for SQLServer.
  */
-public final class SQLServerMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
+public final class SQLServerMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    public SQLServerMCPDatabaseCapabilityOption() {
-        super("SQLServer", false);
+    @Override
+    public boolean isExplainSupported() {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "SQLServer";
     }
 }

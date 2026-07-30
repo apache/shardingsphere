@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
@@ -49,7 +52,7 @@ class SearchMetadataPayloadBuilderTest {
     void assertBuildsLargeResultGuidance() {
         MetadataSearchResult searchResult = new MetadataSearchResult(List.of(createHit("logic_db", "public", "orders", List.of("name"))),
                 Map.of("object_types", List.of("table")), 101, 100, true, 100);
-        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPDatabaseHandlerContext.class), createRequest("", "", ""), searchResult, TOOL_NAME);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPFeatureRequestContext.class), createRequest("", "", ""), searchResult, TOOL_NAME);
         assertThat(actual.get("summary"), is("Metadata search returned 100 of 101 matches."));
         assertTrue((Boolean) actual.get("truncated"));
         Map<?, ?> actualLargeResultGuidance = (Map<?, ?>) actual.get("large_result_guidance");
@@ -58,10 +61,40 @@ class SearchMetadataPayloadBuilderTest {
     }
     
     @Test
+    void assertBuildsPaginationNavigation() {
+        MetadataSearchResult searchResult = new MetadataSearchResult(List.of(createHit("logic_db", "public", "orders", List.of("name"))),
+                Map.of("object_types", List.of("table")), 3, 1, true, 100);
+        MetadataSearchRequest request = new MetadataSearchRequest("logic_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.TABLE), 1, 1);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPFeatureRequestContext.class), request, searchResult, TOOL_NAME);
+        assertTrue((Boolean) actual.get("has_more"));
+        assertThat(actual.get("next_offset"), is(2));
+        assertThat(actual.get("continuation_mode"), is("pagination"));
+        assertFalse(actual.containsKey("large_result_guidance"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is(TOOL_NAME));
+        assertThat(actualNextAction.get("arguments"), is(Map.of(
+                "database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("table"), "limit", 1, "offset", 2)));
+    }
+    
+    @Test
+    void assertBuildsLastPage() {
+        MetadataSearchResult searchResult = new MetadataSearchResult(List.of(createHit("logic_db", "public", "orders", List.of("name"))),
+                Map.of("object_types", List.of("table")), 101, 1, false, 100);
+        MetadataSearchRequest request = new MetadataSearchRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.TABLE), 2, 100);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPFeatureRequestContext.class), request, searchResult, TOOL_NAME);
+        assertFalse((Boolean) actual.get("has_more"));
+        assertFalse(actual.containsKey("next_offset"));
+        assertFalse(actual.containsKey("large_result_guidance"));
+        assertFalse(actual.containsKey("empty_state"));
+        assertFalse(actual.containsKey("next_actions"));
+    }
+    
+    @Test
     void assertBuildsEmptyStateWithBroadenedSearchAction() {
-        MCPDatabaseHandlerContext databaseContext = createDatabaseContext();
+        MCPFeatureRequestContext requestContext = createDatabaseContext();
         MetadataSearchResult searchResult = new MetadataSearchResult(List.of(), Map.of(), 0, 0, false, 100);
-        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(databaseContext, createRequest("logic_db", "public", "missing"), searchResult, TOOL_NAME);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(requestContext, createRequest("logic_db", "public", "missing"), searchResult, TOOL_NAME);
         Map<?, ?> actualEmptyState = (Map<?, ?>) actual.get("empty_state");
         assertThat(actualEmptyState.get("category"), is("object_not_visible"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
@@ -78,7 +111,7 @@ class SearchMetadataPayloadBuilderTest {
                 createHit("baz_db", "public", "orders", List.of("name")),
                 createHit("foo_db", "public", "orders_archive", List.of("name"))),
                 Map.of(), 3, 3, false, 100);
-        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPDatabaseHandlerContext.class), createRequest("", "", "orders"), searchResult, TOOL_NAME);
+        Map<String, Object> actual = SearchMetadataPayloadBuilder.build(mock(MCPFeatureRequestContext.class), createRequest("", "", "orders"), searchResult, TOOL_NAME);
         Map<?, ?> actualAmbiguityState = (Map<?, ?>) actual.get("ambiguity_state");
         assertTrue((Boolean) actualAmbiguityState.get("ambiguous"));
         assertThat(actualAmbiguityState.get("ambiguous_by"), is(List.of("name", "database")));
@@ -89,21 +122,25 @@ class SearchMetadataPayloadBuilderTest {
     }
     
     private MetadataSearchRequest createRequest(final String database, final String schema, final String query) {
-        return new MetadataSearchRequest(database, schema, query, Set.of(SupportedMCPMetadataObjectType.TABLE));
+        return new MetadataSearchRequest(database, schema, query, Set.of(SupportedMCPMetadataObjectType.TABLE), 100, 0);
     }
     
     private MetadataSearchHit createHit(final String database, final String schema, final String name, final List<String> matchedFields) {
-        return new MetadataSearchHit(database, schema, "table", name, "", name, Map.of(), Map.of(), List.of(), "complete", "", "exact", matchedFields, name);
+        return MetadataSearchHit.builder()
+                .database(database).schema(schema).objectType("table").table(name).view("").name(name)
+                .resource(Map.of()).parentResource(Map.of()).nextResources(List.of()).derivationStatus("complete").derivationReason("")
+                .matchKind("exact").matchedFields(matchedFields).matchedValue(name).build();
     }
     
-    private MCPDatabaseHandlerContext createDatabaseContext() {
-        MCPDatabaseHandlerContext result = mock(MCPDatabaseHandlerContext.class);
+    private MCPFeatureRequestContext createDatabaseContext() {
+        MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureCapabilityFacade capabilityFacade = mock(MCPFeatureCapabilityFacade.class);
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(result.getCapabilityFacade()).thenReturn(capabilityFacade);
         when(metadataQueryFacade.queryDatabases()).thenReturn(
-                List.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet())));
+                List.of(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                        new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()))));
         when(metadataQueryFacade.querySchema("logic_db", "public")).thenReturn(Optional.of(mock(ShardingSphereSchema.class)));
         when(capabilityFacade.findDatabaseProfile("logic_db")).thenReturn(Optional.of(mock(RuntimeDatabaseProfile.class)));
         return result;

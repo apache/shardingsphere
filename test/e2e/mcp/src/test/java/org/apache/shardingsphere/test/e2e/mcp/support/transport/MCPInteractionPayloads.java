@@ -102,7 +102,13 @@ public final class MCPInteractionPayloads {
             return getJsonRpcErrorPayload(payload);
         }
         Map<String, Object> result = getRequiredJsonRpcResult(payload);
-        getRequiredObjectList(result, "content");
+        List<Map<String, Object>> contents = getRequiredObjectList(result, "content");
+        if (Boolean.TRUE.equals(result.get("isError"))) {
+            if (contents.isEmpty() || !"text".equals(contents.getFirst().get("type"))) {
+                throw new IllegalStateException("MCP tool error must include JSON text content.");
+            }
+            return parseJsonText(getRequiredString(contents.getFirst(), "text"));
+        }
         return getRequiredObject(result, "structuredContent");
     }
     
@@ -160,18 +166,6 @@ public final class MCPInteractionPayloads {
             throw new IllegalStateException(String.format("MCP payload field `%s` must be an object.", fieldPath));
         }
         return (Map<String, Object>) value;
-    }
-    
-    /**
-     * Get an optional object field.
-     *
-     * @param payload parent payload
-     * @param fieldName field name
-     * @return object field, or an empty map when absent
-     * @throws IllegalStateException when the present field is not an object
-     */
-    public static Map<String, Object> getOptionalObject(final Map<String, Object> payload, final String fieldName) {
-        return payload.containsKey(fieldName) ? getRequiredObject(payload, fieldName) : Map.of();
     }
     
     /**

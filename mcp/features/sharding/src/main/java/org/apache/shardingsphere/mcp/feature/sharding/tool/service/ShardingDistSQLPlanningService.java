@@ -42,9 +42,9 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planTableRule(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP SHARDING TABLE RULE %s", format(request.getTable())));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING TABLE RULE %s", format(request.getTable())));
         }
-        return new RuleArtifact("create", String.format("CREATE SHARDING TABLE RULE %s(%s)", format(request.getTable()), createTableRuleBody(request)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, String.format("CREATE SHARDING TABLE RULE %s(%s)", format(request.getTable()), createTableRuleBody(request)));
     }
     
     /**
@@ -56,9 +56,10 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planTableReferenceRule(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP SHARDING TABLE REFERENCE RULE %s", format(request.getRuleName())));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING TABLE REFERENCE RULE %s", format(request.getRuleName())));
         }
-        return new RuleArtifact("create", String.format("CREATE SHARDING TABLE REFERENCE RULE %s(%s)", format(request.getRuleName()), joinIdentifiers(request.getReferenceTables())));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE,
+                String.format("CREATE SHARDING TABLE REFERENCE RULE %s(%s)", format(request.getRuleName()), joinIdentifiers(request.getReferenceTables())));
     }
     
     /**
@@ -70,9 +71,9 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planDefaultStrategy(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP DEFAULT SHARDING %s STRATEGY", request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH)));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP DEFAULT SHARDING %s STRATEGY", request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH)));
         }
-        return new RuleArtifact("create", String.format("CREATE DEFAULT SHARDING %s STRATEGY (%s)",
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, String.format("CREATE DEFAULT SHARDING %s STRATEGY (%s)",
                 request.getDefaultStrategyType().toUpperCase(Locale.ENGLISH), createShardingStrategy(request)));
     }
     
@@ -85,9 +86,10 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planKeyGenerator(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP SHARDING KEY GENERATOR %s", format(request.getKeyGeneratorName())));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING KEY GENERATOR %s", format(request.getKeyGeneratorName())));
         }
-        return new RuleArtifact("create", String.format("CREATE SHARDING KEY GENERATOR %s(%s)", format(request.getKeyGeneratorName()), createKeyGeneratorFragment(request)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE,
+                String.format("CREATE SHARDING KEY GENERATOR %s(%s)", format(request.getKeyGeneratorName()), createKeyGeneratorFragment(request)));
     }
     
     /**
@@ -99,9 +101,9 @@ public final class ShardingDistSQLPlanningService {
      */
     public RuleArtifact planKeyGenerateStrategy(final ShardingWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
-            return new RuleArtifact("drop", String.format("DROP SHARDING KEY GENERATE STRATEGY %s", format(request.getKeyGenerateStrategyName())));
+            return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING KEY GENERATE STRATEGY %s", format(request.getKeyGenerateStrategyName())));
         }
-        return new RuleArtifact("create", String.format("CREATE SHARDING KEY GENERATE STRATEGY %s(%s)",
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, String.format("CREATE SHARDING KEY GENERATE STRATEGY %s(%s)",
                 format(request.getKeyGenerateStrategyName()), createKeyGenerateStrategyBody(request)));
     }
     
@@ -114,13 +116,13 @@ public final class ShardingDistSQLPlanningService {
     public RuleArtifact planComponentCleanup(final ShardingWorkflowRequest request) {
         switch (normalizeComponentType(request.getComponentType())) {
             case "algorithm":
-                return new RuleArtifact("drop", String.format("DROP SHARDING ALGORITHM %s", format(request.getComponentName())));
+                return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING ALGORITHM %s", format(request.getComponentName())));
             case "key-generator":
-                return new RuleArtifact("drop", String.format("DROP SHARDING KEY GENERATOR %s", format(request.getComponentName())));
+                return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING KEY GENERATOR %s", format(request.getComponentName())));
             case "auditor":
-                return new RuleArtifact("drop", String.format("DROP SHARDING AUDITOR %s", format(request.getComponentName())));
+                return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP SHARDING AUDITOR %s", format(request.getComponentName())));
             default:
-                return new RuleArtifact("drop", "");
+                return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, "");
         }
     }
     

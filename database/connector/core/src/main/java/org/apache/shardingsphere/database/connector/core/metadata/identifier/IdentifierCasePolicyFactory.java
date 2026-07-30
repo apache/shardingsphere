@@ -19,7 +19,6 @@ package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 
 import java.util.Locale;
 import java.util.function.UnaryOperator;
@@ -36,8 +35,8 @@ public final class IdentifierCasePolicyFactory {
      * @return lower-case policy set
      */
     public static IdentifierCasePolicySet newLowerCasePolicySet() {
-        return new IdentifierCasePolicySet(new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, IdentifierCasePolicyFactory::toLowerCase,
-                IdentifierCasePolicyFactory::isLowerCase));
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, UnaryOperator.identity(),
+                IdentifierCasePolicyFactory::toLowerCase, IdentifierCasePolicyFactory::toLowerCase, IdentifierCasePolicyFactory::isLowerCase));
     }
     
     /**
@@ -46,8 +45,8 @@ public final class IdentifierCasePolicyFactory {
      * @return upper-case policy set
      */
     public static IdentifierCasePolicySet newUpperCasePolicySet() {
-        return new IdentifierCasePolicySet(new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, IdentifierCasePolicyFactory::toUpperCase,
-                IdentifierCasePolicyFactory::isUpperCase));
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, UnaryOperator.identity(),
+                IdentifierCasePolicyFactory::toUpperCase, IdentifierCasePolicyFactory::toUpperCase, IdentifierCasePolicyFactory::isUpperCase));
     }
     
     /**
@@ -56,7 +55,8 @@ public final class IdentifierCasePolicyFactory {
      * @return case-sensitive policy set
      */
     public static IdentifierCasePolicySet newSensitivePolicySet() {
-        return new IdentifierCasePolicySet(new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT, UnaryOperator.identity(), each -> true));
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT,
+                UnaryOperator.identity(), UnaryOperator.identity(), UnaryOperator.identity(), each -> true));
     }
     
     /**
@@ -65,7 +65,28 @@ public final class IdentifierCasePolicyFactory {
      * @return case-insensitive policy set
      */
     public static IdentifierCasePolicySet newInsensitivePolicySet() {
-        return new IdentifierCasePolicySet(new StandardIdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, IdentifierCasePolicyFactory::toLowerCase, each -> true));
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, UnaryOperator.identity(),
+                IdentifierCasePolicyFactory::toLowerCase, IdentifierCasePolicyFactory::toLowerCase, each -> true));
+    }
+    
+    /**
+     * Create case-preserving and case-insensitive policy set.
+     *
+     * @return case-preserving and case-insensitive policy set
+     */
+    public static IdentifierCasePolicySet newCasePreservingInsensitivePolicySet() {
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
+                UnaryOperator.identity(), UnaryOperator.identity(), IdentifierCasePolicyFactory::toLowerCase, each -> true));
+    }
+    
+    /**
+     * Create lower-case and case-insensitive policy set.
+     *
+     * @return lower-case and case-insensitive policy set
+     */
+    public static IdentifierCasePolicySet newLowerCaseInsensitivePolicySet() {
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
+                IdentifierCasePolicyFactory::toLowerCase, IdentifierCasePolicyFactory::toLowerCase, IdentifierCasePolicyFactory::toLowerCase, each -> true));
     }
     
     /**
@@ -74,35 +95,8 @@ public final class IdentifierCasePolicyFactory {
      * @return quoted and unquoted case-insensitive policy set
      */
     public static IdentifierCasePolicySet newQuotedInsensitivePolicySet() {
-        return new IdentifierCasePolicySet(new StandardIdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED, IdentifierCasePolicyFactory::toLowerCase, each -> true));
-    }
-    
-    /**
-     * Create MySQL case-insensitive policy set.
-     *
-     * @return MySQL case-insensitive policy set
-     */
-    public static IdentifierCasePolicySet newMySQLInsensitivePolicySet() {
-        return newQuotedInsensitivePolicySet();
-    }
-    
-    /**
-     * Create dialect default policy set.
-     *
-     * @param identifierPatternType identifier pattern type
-     * @param caseSensitive case-sensitive flag
-     * @return dialect default policy set
-     */
-    public static IdentifierCasePolicySet newDialectDefaultPolicySet(final IdentifierPatternType identifierPatternType, final boolean caseSensitive) {
-        switch (identifierPatternType) {
-            case LOWER_CASE:
-                return newLowerCasePolicySet();
-            case UPPER_CASE:
-                return newUpperCasePolicySet();
-            case KEEP_ORIGIN:
-            default:
-                return caseSensitive ? newSensitivePolicySet() : newInsensitivePolicySet();
-        }
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED, UnaryOperator.identity(),
+                IdentifierCasePolicyFactory::toLowerCase, IdentifierCasePolicyFactory::toLowerCase, each -> true));
     }
     
     private static String toLowerCase(final String value) {

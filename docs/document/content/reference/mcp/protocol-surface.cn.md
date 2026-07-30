@@ -8,7 +8,8 @@ MCP runtime 使用这些 descriptors 发布 tools、resources、resource templat
 
 ## 协议能力
 
-ShardingSphere-MCP 面向 MCP protocol revision `2025-11-25`。
+ShardingSphere-MCP 固定使用 MCP Java SDK `1.1.2`，并且只暴露 MCP protocol revision `2025-11-25`。
+SDK 和 protocol revision 是本实现固定的兼容性边界，不作为依赖升级或多版本兼容目标。
 
 已启用：
 
@@ -29,7 +30,9 @@ ShardingSphere-MCP 面向 MCP protocol revision `2025-11-25`。
 - `progress`。
 - `notifications/cancelled`。
 - task-augmented requests。
-- MCP `icons` 和 `Tool.execution` 字段，等待 MCP Java SDK 边界支持。
+- 固定 MCP Java SDK `1.1.2` 边界未暴露的 `Tool.execution`。
+
+MCP `icons` 在当前服务中没有消费场景，因此是明确的非目标。
 
 `roots` 和 `sampling` 是 client capabilities。
 ShardingSphere-MCP 不要求 roots，也不会发送 `sampling/createMessage` 请求。
@@ -39,8 +42,9 @@ ShardingSphere-MCP 不要求 roots，也不会发送 `sampling/createMessage` �
 `database_gateway_search_metadata`
 
 - 搜索逻辑库 metadata。
-- 可按 `database`、`schema`、`query`、`object_types` 收窄范围。
+- 可按 `database`、`schema`、`query`、`object_types` 收窄范围，再通过 `offset` 和 `limit` 返回确定性排序的分页结果。
 - `object_types` 支持 `database`、`schema`、`storage_unit`、`table`、`view`、`column`、`index`、`sequence`。
+- `limit` 默认值为 `100`，范围是 `1..100`；`offset` 默认值为 `0`。当 `has_more=true` 时，应保持相同搜索范围并使用返回的 `next_offset` 继续查询。
 
 `database_gateway_validate_runtime_database`
 
@@ -218,19 +222,18 @@ Client 应在选择不确定的 database、schema、table、column、storage uni
 
 - `items`
 - `count`
-- `has_more`
 - `continuation_mode`
+- 支持偏移量续页时的 `has_more` 和 `next_offset`
 
 大结果 payload 会使用：
 
 - `truncated`
 - `total_count`
-- `returned_count`
 - `large_result_guidance`
 
-可恢复错误 payload 保留 `message`，并增加 `recovery` 提示。
+可恢复错误 payload 使用 `summary`、`error_id` 和结构化 `recovery` 提示。
 常见恢复场景包括缺失参数、不支持的 tool/resource、非法枚举、workflow 状态错误和 SQL tool 选错。
-需要继续操作的模型可见业务 payload 会包含顶层 `summary` 和结构化 `next_actions`。
+需要继续操作的模型可见业务 payload 会包含顶层 `summary` 和唯一的顶层 `next_actions`。
 Workflow 规划、执行、人工执行包导出和校验响应使用这些字段，引导下一次 tool call、用户补问、resource read、completion call 或终止。
 
 JSON-RPC 数字错误码属于 MCP 协议错误契约。

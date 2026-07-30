@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.workflow;
 
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
@@ -29,13 +29,13 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloa
 /**
  * Handler for workflow plan resource URI.
  */
-public final class WorkflowPlanHandler implements MCPResourceHandler<MCPWorkflowHandlerContext> {
+public final class WorkflowPlanHandler implements MCPResourceHandler<MCPFeatureRequestContext> {
     
     private static final String URI_PATTERN = "shardingsphere://workflows/{plan_id}";
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -44,8 +44,8 @@ public final class WorkflowPlanHandler implements MCPResourceHandler<MCPWorkflow
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext handlerContext, final MCPUriVariables uriVariables) {
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext handlerContext, final MCPResourceURIVariables uriVariables) {
         WorkflowContextSnapshot snapshot = handlerContext.getWorkflowSessionContext().getRequired(uriVariables.getValue(WorkflowFieldNames.PLAN_ID));
-        return new MCPMapResponse(WorkflowPlanPayloadBuilder.build(snapshot));
+        return new MCPMapPayload(WorkflowPlanPayloadBuilder.build(snapshot));
     }
 }

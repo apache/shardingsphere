@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -45,6 +43,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMappe
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -231,7 +230,7 @@ class ShardingSphereDatabaseTest {
         database.refreshIdentifierContext(new ConfigurationProperties(
                 PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name()))));
         DatabaseIdentifierContext actualIdentifierContext = getIdentifierContext(database);
-        assertThat(actualIdentifierContext.getPolicy(IdentifierScope.SCHEMA).getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertTrue(actualIdentifierContext.matchesMetaData(IdentifierScope.SCHEMA, "foo_schema", new IdentifierValue("FOO_SCHEMA")));
         assertThat(getIdentifierContext(schema), is(actualIdentifierContext));
     }
     
@@ -292,21 +291,18 @@ class ShardingSphereDatabaseTest {
     
     private static Stream<Arguments> containsSchemaArguments() {
         return Stream.of(
-                Arguments.of("null schema name returns false", null, false),
                 Arguments.of("existing schema returns true", "foo_schema", true),
                 Arguments.of("missing schema returns false", "missing_schema", false));
     }
     
     private static Stream<Arguments> getSchemaArguments() {
         return Stream.of(
-                Arguments.of("null schema name returns null", null, null),
                 Arguments.of("existing schema returns schema", "foo_schema", "foo_schema"),
                 Arguments.of("missing schema returns null", "missing_schema", null));
     }
     
     private static Stream<Arguments> dropSchemaArguments() {
         return Stream.of(
-                Arguments.of("null schema name keeps schema", null, true),
                 Arguments.of("missing schema keeps schema", "missing_schema", true),
                 Arguments.of("existing schema removes schema", "foo_schema", false));
     }
@@ -401,10 +397,10 @@ class ShardingSphereDatabaseTest {
     }
     
     @Test
-    void assertDefaultPropsUseInsensitiveLookup() {
+    void assertDefaultPropsUsePostgreSQLSchemaLookup() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", postgreSQLDatabaseType, createResourceMetaData(),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("foo_schema", postgreSQLDatabaseType)), new ConfigurationProperties(new Properties()));
-        assertTrue(database.containsSchema("FOO_SCHEMA"));
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("FOO_SCHEMA", postgreSQLDatabaseType)), new ConfigurationProperties(new Properties()));
+        assertFalse(database.containsSchema("foo_schema"));
     }
     
     @Test

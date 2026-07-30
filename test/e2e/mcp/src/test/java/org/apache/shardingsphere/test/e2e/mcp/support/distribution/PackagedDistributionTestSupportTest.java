@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
@@ -48,7 +47,7 @@ class PackagedDistributionTestSupportTest {
     
     private static final String HTTP_CONFIGURATION = """
             transport:
-              type: STREAMABLE_HTTP
+              type: HTTP
             runtimeDatabases:
               orders:
                 jdbcUrl: "jdbc:mysql://127.0.0.1:3306/orders"
@@ -152,10 +151,8 @@ class PackagedDistributionTestSupportTest {
             MCPLaunchConfiguration actualConfig = MCPConfigurationLoader.load(actual.configFile().toString());
             assertThat(actualConfig.getTransportType(), is(expectedTransportType));
             if (RuntimeTransport.HTTP == transport) {
-                assertThat(actual.httpPort(), greaterThan(0));
-                assertThat(actualConfig.getHttpTransport().getPort(), is(actual.httpPort()));
+                assertThat(actualConfig.getHttpTransport().getPort(), is(0));
             } else {
-                assertThat(actual.httpPort(), is(-1));
                 assertThat(actualConfig.getHttpTransport().getPort(), is(18088));
             }
         } finally {
@@ -186,7 +183,7 @@ class PackagedDistributionTestSupportTest {
     
     private static Stream<Arguments> transportCases() {
         return Stream.of(
-                Arguments.of("http transport", RuntimeTransport.HTTP, MCPTransportType.STREAMABLE_HTTP),
+                Arguments.of("http transport", RuntimeTransport.HTTP, MCPTransportType.HTTP),
                 Arguments.of("stdio transport", RuntimeTransport.STDIO, MCPTransportType.STDIO));
     }
     

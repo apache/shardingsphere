@@ -31,11 +31,9 @@ public final class MCPInteractionTraceRecord {
     
     public static final String MODEL_TOOL_CALL_ORIGIN = "model_tool_call";
     
-    public static final String PROTOCOL_BRIDGE_ORIGIN = "protocol_bridge";
-    
-    public static final String HARNESS_TEXT_RECOVERY_ORIGIN = "harness_text_recovery";
-    
     private final int sequence;
+    
+    private final int modelTurn;
     
     private final String actionKind;
     
@@ -52,46 +50,18 @@ public final class MCPInteractionTraceRecord {
     private final long latencyMillis;
     
     /**
-     * Create resource read.
-     *
-     * @param sequence sequence
-     * @param resourceUri resource URI
-     * @param structuredContent structured content
-     * @param latencyMillis latency millis
-     * @return interaction trace record
-     */
-    public static MCPInteractionTraceRecord createResourceRead(final int sequence, final String resourceUri, final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_READ_KIND, PROTOCOL_BRIDGE_ORIGIN, MCPInteractionActionNames.READ_RESOURCE,
-                Map.of("uri", resourceUri), structuredContent, true, latencyMillis);
-    }
-    
-    /**
-     * Create completion.
-     *
-     * @param sequence sequence
-     * @param arguments completion arguments
-     * @param structuredContent structured content
-     * @param latencyMillis latency millis
-     * @return interaction trace record
-     */
-    public static MCPInteractionTraceRecord createCompletion(final int sequence, final Map<String, Object> arguments,
-                                                             final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.COMPLETION_KIND, PROTOCOL_BRIDGE_ORIGIN, MCPInteractionActionNames.COMPLETE,
-                arguments, structuredContent, true, latencyMillis);
-    }
-    
-    /**
      * Create invalid action.
      *
      * @param sequence sequence
+     * @param modelTurn model turn
      * @param actionKind action kind
      * @param targetName target name
      * @param arguments arguments
      * @param failureType failure type
      * @return interaction trace record
      */
-    public static MCPInteractionTraceRecord createInvalidAction(final int sequence, final String actionKind, final String targetName,
+    public static MCPInteractionTraceRecord createInvalidAction(final int sequence, final int modelTurn, final String actionKind, final String targetName,
                                                                 final Map<String, Object> arguments, final String failureType) {
-        return new MCPInteractionTraceRecord(sequence, actionKind, MODEL_TOOL_CALL_ORIGIN, targetName, arguments, Map.of("error_code", failureType), false, 0L);
+        return new MCPInteractionTraceRecord(sequence, modelTurn, actionKind, MODEL_TOOL_CALL_ORIGIN, targetName, arguments, Map.of("error_code", failureType), false, 0L);
     }
 }

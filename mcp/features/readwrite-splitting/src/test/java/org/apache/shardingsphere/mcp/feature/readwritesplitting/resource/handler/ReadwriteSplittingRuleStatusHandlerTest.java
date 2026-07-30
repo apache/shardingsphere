@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -44,13 +44,13 @@ class ReadwriteSplittingRuleStatusHandlerTest {
             ReadwriteSplittingRuleStatusHandler handler = new ReadwriteSplittingRuleStatusHandler();
             ReadwriteSplittingInspectionService inspectionService = mocked.constructed().getFirst();
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-            when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+            when(requestContext.getQueryFacade()).thenReturn(queryFacade);
             when(inspectionService.queryRuleStatus(queryFacade, "logic_db", "readwrite_ds")).thenReturn(List.of(Map.of("storage_unit", "read_ds_0")));
-            MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of("database", "logic_db", "rule", "readwrite_ds")));
+            MCPSuccessPayload actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of("database", "logic_db", "rule", "readwrite_ds")));
             verify(inspectionService).queryRuleStatus(queryFacade, "logic_db", "readwrite_ds");
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));
-            assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/readwrite-splitting/databases/logic_db/rules/readwrite_ds/status"));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is("shardingsphere://features/readwrite-splitting/databases/logic_db/rules/readwrite_ds/status"));
             assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is("shardingsphere://features/readwrite-splitting/databases/logic_db/status"));
         }
     }

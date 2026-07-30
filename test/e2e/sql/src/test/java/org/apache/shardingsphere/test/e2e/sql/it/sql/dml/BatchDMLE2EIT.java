@@ -40,14 +40,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @SQLE2EITSettings(value = SQLCommandType.DML, batch = true)
 class BatchDMLE2EIT extends BaseDMLE2EIT {
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
     void assertExecuteBatch(final CaseTestParameter testParam) throws SQLException, JAXBException, IOException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
         init(testParam);
         try {
             int[] actualUpdateCounts;
@@ -98,14 +94,10 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
         preparedStatement.addBatch();
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertClearBatch(final CaseTestParameter testParam) throws SQLException, JAXBException, IOException {
-        // TODO make sure test case can not be null
-        if (null == testParam.getTestCaseContext()) {
-            return;
-        }
+    void assertClearBatch(final CaseTestParameter testParam) throws SQLException {
         try (
                 Connection connection = getEnvironmentEngine().getTargetDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {

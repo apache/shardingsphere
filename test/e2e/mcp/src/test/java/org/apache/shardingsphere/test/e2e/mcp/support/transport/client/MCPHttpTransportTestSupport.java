@@ -22,11 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,6 +40,8 @@ public final class MCPHttpTransportTestSupport {
     
     private static final String ACCEPT = "application/json, text/event-stream";
     
+    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30L);
+    
     /**
      * Create a JSON request builder for the given MCP endpoint.
      *
@@ -48,6 +50,7 @@ public final class MCPHttpTransportTestSupport {
      */
     public static HttpRequest.Builder createJsonRequestBuilder(final URI endpointUri) {
         return HttpRequest.newBuilder(endpointUri)
+                .timeout(REQUEST_TIMEOUT)
                 .header("Content-Type", CONTENT_TYPE)
                 .header("Accept", ACCEPT);
     }
@@ -91,7 +94,7 @@ public final class MCPHttpTransportTestSupport {
      * @throws InterruptedException interrupted exception
      */
     public static HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final URI endpointUri, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpointUri).DELETE();
+        HttpRequest.Builder requestBuilder = createJsonRequestBuilder(endpointUri).DELETE();
         applyHeaders(requestBuilder, headers);
         return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
     }
@@ -125,26 +128,9 @@ public final class MCPHttpTransportTestSupport {
      * @throws InterruptedException interrupted exception
      */
     public static HttpResponse<String> openEventStream(final HttpClient httpClient, final URI endpointUri, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpointUri).GET();
+        HttpRequest.Builder requestBuilder = createJsonRequestBuilder(endpointUri).GET();
         applyHeaders(requestBuilder, headers);
         return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-    }
-    
-    /**
-     * Open an event stream without waiting for the whole response body.
-     *
-     * @param httpClient HTTP client
-     * @param endpointUri MCP endpoint URI
-     * @param headers request headers
-     * @return HTTP response
-     * @throws IOException I/O exception
-     * @throws InterruptedException interrupted exception
-     */
-    public static HttpResponse<InputStream> openEventStreamInputStream(final HttpClient httpClient, final URI endpointUri,
-                                                                       final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpointUri).GET();
-        applyHeaders(requestBuilder, headers);
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
     }
     
     /**

@@ -33,11 +33,6 @@ public final class MySQLFunctionOption implements DialectFunctionOption {
             "LOCALTIMESTAMP", "SESSION_USER", "SYSTEM_USER", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP"));
     
     @Override
-    public String getIfNullFunctionName() {
-        return "IFNULL";
-    }
-    
-    @Override
     public Collection<String> getUnparenthesizedFunctionNames() {
         return UNPARENTHESIZED_FUNCTION_NAMES;
     }

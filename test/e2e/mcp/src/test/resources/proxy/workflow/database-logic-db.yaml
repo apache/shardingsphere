@@ -56,3 +56,11 @@ rules:
 - !SINGLE
   tables:
     - "*.*"
+- !SHADOW
+  shadowAlgorithms:
+    fixture_unused_algorithm:
+      type: SQL_HINT
+- !SHARDING
+  auditors:
+    fixture_unused_auditor:
+      type: DML_SHARDING_CONDITIONS

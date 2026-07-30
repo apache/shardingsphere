@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
@@ -34,15 +32,9 @@ import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureD
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 
 import java.util.List;
 import java.util.Map;
@@ -52,27 +44,13 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
 
 class EncryptWorkflowValidationServiceTest {
-    
-    private MockedStatic<TypedSPILoader> typedSPILoader;
-    
-    @BeforeEach
-    void setUp() {
-        typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
-    }
-    
-    @AfterEach
-    void tearDown() {
-        typedSPILoader.close();
-    }
     
     @Test
     void assertValidateRejectsDifferentSession() {
@@ -99,60 +77,29 @@ class EncryptWorkflowValidationServiceTest {
                 .validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(actual.get("overall_status"), is("passed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
         assertFalse(actual.containsKey("ddl_validation"));
-        assertFalse(actual.containsKey("logical_metadata_validation"));
-        assertFalse(actual.containsKey("sql_executability_validation"));
+        assertTrue(getValidationSection(actual, "logical_metadata").isEmpty());
+        assertTrue(getValidationSection(actual, "sql_executability").isEmpty());
         verifyNoInteractions(metadataQueryFacade);
         verifyNoInteractions(executionFacade);
     }
     
     @Test
-    void assertValidateApplyArtifactsRejectsInvalidGeneratedEncryptRuleArtifact() {
-        String sql = "CREATE ENCRYPT RULE t_user (COLUMNS((NAME=name, CIPHER=name_cipher, "
-                + "ENCRYPT_ALGORITHM(TYPE(NAME=AES, PROPERTIES('aes-key-value'='123456'))))))";
-        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(),
-                List.of(createRuleDistSQLArtifact(sql, sql.replace("123456", "******"))));
-        assertThat(actual.size(), is(3));
-        assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
-        assertThat(actual.getFirst().get("message"), is("Generated encrypt DistSQL uses reserved logical column identifier `name` without DistSQL quoting."));
-        assertFalse(String.valueOf(actual).contains("123456"));
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsAllowsNamePrefixColumn() {
-        String sql = "CREATE ENCRYPT RULE t_user (COLUMNS((NAME=name_cipher, CIPHER=name_cipher_value, "
-                + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456', 'digest-algorithm-name'='SHA-1'))))))";
-        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(),
-                List.of(createRuleDistSQLArtifact(sql, sql.replace("123456", "******"))));
-        assertTrue(actual.isEmpty());
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsRejectsUnavailableEncryptAlgorithm() {
-        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
-        request.setAlgorithmType("AES");
-        request.getPrimaryAlgorithmProperties().put("aes-key-value", "raw-secret");
-        request.getPrimaryAlgorithmProperties().put("digest-algorithm-name", "SHA-1");
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setRequest(request);
-        String sql = "CREATE ENCRYPT RULE `t_user` (COLUMNS((NAME=`phone`, CIPHER=`phone_cipher`, "
-                + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='******', 'digest-algorithm-name'='SHA-1'))))))";
-        typedSPILoader.when(() -> TypedSPILoader.checkService(EncryptAlgorithm.class, "AES", WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties())))
-                .thenThrow(new IllegalArgumentException("raw-secret"));
-        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact(sql, sql)));
-        assertThat(actual.size(), is(1));
-        assertThat(actual.getFirst().get("message"), is("Generated encrypt DistSQL references encrypt algorithm `AES`, "
-                + "but it cannot be loaded or initialized by EncryptAlgorithm SPI."));
-        assertFalse(String.valueOf(actual).contains("raw-secret"));
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsIgnoresNonEncryptRuleArtifacts() {
-        String sql = "CREATE MASK RULE orders (COLUMNS((NAME=name, "
-                + "MASK_ALGORITHM(TYPE(NAME=AES, PROPERTIES('description'='CREATE ENCRYPT RULE', 'aes-key-value'='123456'))))))";
-        List<Map<String, Object>> actual = new EncryptWorkflowValidationService().validate(new WorkflowContextSnapshot(), List.of(createRuleDistSQLArtifact(sql, sql)));
-        assertTrue(actual.isEmpty());
+    void assertValidateUsesColumnIdentifierPolicy() {
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
+        workflowSessionContext.save(snapshot);
+        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
+                "logic_column", "phone",
+                "cipher_column", "PHONE_CIPHER",
+                "encryptor_type", "AES")));
+        MCPFeatureQueryFacade queryFacade = createQueryFacade();
+        when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone_cipher", "PHONE_CIPHER")).thenReturn(true);
+        Map<String, Object> actual = createService(ruleInspectionService)
+                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
+        assertThat(actual.get("status"), is("validated"));
     }
     
     @Test
@@ -177,7 +124,7 @@ class EncryptWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(ruleInspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
     }
     
     @Test
@@ -207,7 +154,7 @@ class EncryptWorkflowValidationServiceTest {
         Map<String, Object> actual = createService(ruleInspectionService)
                 .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
+        assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("cipher_column=phone_cipher"));
     }
     
@@ -375,7 +322,7 @@ class EncryptWorkflowValidationServiceTest {
                 "encryptor_type", "AES");
     }
     
-    private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql, final String displaySql) {
-        return new ExecutableWorkflowArtifact(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, sql, displaySql, true);
+    private Map<?, ?> getValidationSection(final Map<String, Object> payload, final String layer) {
+        return ((List<?>) payload.get("sections")).stream().map(each -> (Map<?, ?>) each).filter(each -> layer.equals(each.get("layer"))).findFirst().orElse(Map.of());
     }
 }

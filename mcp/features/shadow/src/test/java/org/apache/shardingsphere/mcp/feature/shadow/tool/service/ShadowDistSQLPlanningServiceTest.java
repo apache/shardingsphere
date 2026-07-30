@@ -66,8 +66,16 @@ class ShadowDistSQLPlanningServiceTest {
         ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
         request.setAlgorithmType("SQL_HINT");
         String actual = new ShadowDistSQLPlanningService().planCreateDefaultAlgorithm(request).getSql();
-        assertThat(actual, is("CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME='sql_hint')"));
+        assertThat(actual, is("CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME='SQL_HINT')"));
         assertFalse(actual.contains(" FROM "));
+    }
+    
+    @Test
+    void assertPlanAlterDefaultAlgorithm() {
+        ShadowDefaultAlgorithmWorkflowRequest request = new ShadowDefaultAlgorithmWorkflowRequest();
+        request.setAlgorithmType("SQL_HINT");
+        assertThat(new ShadowDistSQLPlanningService().planAlterDefaultAlgorithm(request).getSql(),
+                is("ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME='SQL_HINT')"));
     }
     
     @Test

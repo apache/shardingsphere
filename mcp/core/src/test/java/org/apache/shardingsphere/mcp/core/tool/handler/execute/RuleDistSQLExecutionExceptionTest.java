@@ -31,7 +31,7 @@ class RuleDistSQLExecutionExceptionTest {
     @Test
     void assertRuleDistSQLExecutionException() {
         ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.DDL, "CREATE",
-                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))", "", List.of());
+                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'))", "", List.of(), true);
         SQLSyntaxErrorException cause = new SQLSyntaxErrorException("syntax error");
         RuleDistSQLExecutionException actual = new RuleDistSQLExecutionException("sharding_db", classificationResult, cause);
         assertThat(actual.getMessage(),

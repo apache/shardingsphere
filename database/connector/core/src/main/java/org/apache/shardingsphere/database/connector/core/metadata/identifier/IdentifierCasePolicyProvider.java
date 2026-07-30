@@ -20,8 +20,6 @@ package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.util.Optional;
-
 /**
  * Provider of identifier case policies.
  */
@@ -32,7 +30,7 @@ public interface IdentifierCasePolicyProvider extends DatabaseTypedSPI {
      * Provide identifier case rules.
      *
      * @param context provider context
-     * @return identifier case rules
+     * @return identifier case rules, or insensitive rules if they cannot be determined
      */
-    Optional<IdentifierCasePolicySet> provide(IdentifierCasePolicyProviderContext context);
+    IdentifierCasePolicySet provide(IdentifierCasePolicyProviderContext context);
 }

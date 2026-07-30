@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -29,7 +28,7 @@ class PluginFixturePingToolHandlerTest {
     
     @Test
     void assertHandle() {
-        assertThat(new PluginFixturePingToolHandler().handle(null, new MCPToolCall("session", Map.of("message", "hello"))).toPayload(),
+        assertThat(new PluginFixturePingToolHandler().handle(null, Map.of("message", "hello")).toPayload(),
                 is(Map.of("status", "ready", "echo", "hello")));
     }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQL
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,8 +48,17 @@ class PostgreSQLComStartupPacketTest {
         assertThat(byteBuf.writerIndex(), is(packetMessageLength));
     }
     
+    @Test
+    void assertGetConnectionAttributes() {
+        Map<String, String> parametersMap = createParametersMap();
+        parametersMap.put("application_name", "foo_app");
+        int packetMessageLength = getPacketMessageLength(parametersMap);
+        PostgreSQLPacketPayload payload = createPayload(parametersMap, packetMessageLength, ByteBufTestUtils.createByteBuf(packetMessageLength));
+        assertThat(new PostgreSQLComStartupPacket(payload).getConnectionAttributes(), is(Collections.singletonMap("application_name", "foo_app")));
+    }
+    
     private Map<String, String> createParametersMap() {
-        Map<String, String> result = new LinkedHashMap<>(2, 1F);
+        Map<String, String> result = new LinkedHashMap<>(3, 1F);
         result.put("database", "test_db");
         result.put("user", "postgres");
         result.put("client_encoding", "UTF8");

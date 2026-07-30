@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -55,9 +56,9 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -102,8 +103,10 @@ class OpenGaussComQueryExecutorTest {
     @Test
     void assertExecuteQueryReturnsRowDescription() throws SQLException, ReflectiveOperationException {
         QueryHeader queryHeader = new QueryHeader("schema", "table", "label", "column", 1, "type", 2, 3, true, true, true, true);
+        QueryHeader compositeQueryHeader = new QueryHeader("schema", "table", "composite_label", "composite_column", Types.STRUCT, "record_type", 4, 5, true, true, true, true);
+        compositeQueryHeader.getProtocolAttributes().put(PostgreSQLQueryHeaderBuilder.TYPE_OID, 2249);
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
-        when(queryResponseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
+        when(queryResponseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, compositeQueryHeader));
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket> actualPackets = queryExecutor.execute();
         List<DatabasePacket> actualPacketList = new LinkedList<>(actualPackets);
@@ -112,9 +115,14 @@ class OpenGaussComQueryExecutorTest {
         assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));
         Collection<?> columnDescriptions = (Collection<?>) Plugins.getMemberAccessor()
                 .get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), actualPacket);
-        PostgreSQLColumnDescription actualColumn = (PostgreSQLColumnDescription) columnDescriptions.iterator().next();
+        List<?> actualColumns = new LinkedList<>(columnDescriptions);
+        PostgreSQLColumnDescription actualColumn = (PostgreSQLColumnDescription) actualColumns.get(0);
         assertThat(actualColumn.getColumnName(), is("label"));
         assertThat(actualColumn.getColumnIndex(), is(1));
+        PostgreSQLColumnDescription actualCompositeColumn = (PostgreSQLColumnDescription) actualColumns.get(1);
+        assertThat(actualCompositeColumn.getColumnName(), is("composite_label"));
+        assertThat(actualCompositeColumn.getColumnIndex(), is(2));
+        assertThat(actualCompositeColumn.getTypeOID(), is(2249));
     }
     
     @Test

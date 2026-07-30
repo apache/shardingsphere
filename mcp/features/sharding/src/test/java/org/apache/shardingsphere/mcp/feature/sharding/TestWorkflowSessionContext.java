@@ -17,52 +17,43 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class TestWorkflowSessionContext implements WorkflowSessionContext {
     
+    private static final String SESSION_ID = "session-1";
+    
     private final Map<String, WorkflowContextSnapshot> contexts = new ConcurrentHashMap<>();
     
     @Override
-    public String createPlanId() {
-        return "plan-" + UUID.randomUUID();
-    }
-    
-    @Override
-    public WorkflowContextSnapshot getOrCreate(final String sessionId, final String planId) {
+    public WorkflowContextSnapshot getOrCreate(final String planId) {
         if (null != planId && !planId.isBlank()) {
             return getRequired(planId);
         }
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
-        result.setPlanId(createPlanId());
-        result.setSessionId(sessionId);
+        result.setPlanId("plan-" + UUID.randomUUID());
+        result.setSessionId(SESSION_ID);
         result.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
         return result;
     }
     
     @Override
     public void save(final WorkflowContextSnapshot snapshot) {
+        snapshot.setSessionId(SESSION_ID);
         contexts.put(snapshot.getPlanId(), snapshot.copy());
     }
     
     @Override
-    public Optional<WorkflowContextSnapshot> find(final String planId) {
-        return Optional.ofNullable(contexts.get(planId)).map(WorkflowContextSnapshot::copy);
-    }
-    
-    @Override
-    public List<WorkflowContextSnapshot> list(final String sessionId) {
-        return contexts.values().stream().filter(each -> Objects.equals(sessionId, each.getSessionId())).map(WorkflowContextSnapshot::copy).toList();
+    public List<WorkflowContextSnapshot> list() {
+        return contexts.values().stream().map(WorkflowContextSnapshot::copy).toList();
     }
     
     @Override
@@ -77,16 +68,11 @@ public final class TestWorkflowSessionContext implements WorkflowSessionContext 
     
     @Override
     public WorkflowContextSnapshot getRequired(final String planId) {
-        return find(planId).orElseThrow(() -> new MCPInvalidRequestException(String.format("Unknown plan_id `%s`.", planId)));
+        WorkflowContextSnapshot result = contexts.get(planId);
+        if (null == result) {
+            throw new MCPInvalidRequestException(String.format("Unknown plan_id `%s`.", planId));
+        }
+        return result.copy();
     }
     
-    @Override
-    public void remove(final String planId) {
-        contexts.remove(planId);
-    }
-    
-    @Override
-    public void removeBySessionId(final String sessionId) {
-        contexts.entrySet().removeIf(each -> Objects.equals(sessionId, each.getValue().getSessionId()));
-    }
 }

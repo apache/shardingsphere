@@ -37,12 +37,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.sql.Connection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -65,15 +65,6 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return identifier pattern type
      */
     IdentifierPatternType getIdentifierPatternType();
-    
-    /**
-     * Whether identifier is case-sensitive.
-     *
-     * @return is case-sensitive or insensitive
-     */
-    default boolean isCaseSensitive() {
-        return false;
-    }
     
     /**
      * Get default nulls order type.
@@ -143,7 +134,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return transaction option
      */
     default DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.emptyList());
+        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, true, false, false, Collections.emptyList());
     }
     
     /**

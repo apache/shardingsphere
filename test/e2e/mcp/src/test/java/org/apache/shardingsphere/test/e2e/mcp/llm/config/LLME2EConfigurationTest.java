@@ -151,13 +151,21 @@ class LLME2EConfigurationTest {
     @Test
     void assertLoadWithInvalidIntegerProperty() {
         System.setProperty("mcp.llm.ready-timeout-seconds", "invalid-number");
-        LLME2EConfiguration actual = LLME2EConfiguration.load();
-        assertThat(actual.getReadyTimeoutSeconds(), is(600));
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, LLME2EConfiguration::load);
+        assertThat(actualException.getMessage(), is("MCP LLM E2E property `mcp.llm.ready-timeout-seconds` must be a positive integer, but was `invalid-number`."));
+    }
+    
+    @Test
+    void assertLoadWithNonPositiveIntegerProperty() {
+        System.setProperty("mcp.llm.ready-timeout-seconds", "0");
+        IllegalStateException actualException = assertThrows(IllegalStateException.class, LLME2EConfiguration::load);
+        assertThat(actualException.getMessage(), is("MCP LLM E2E property `mcp.llm.ready-timeout-seconds` must be a positive integer, but was `0`."));
     }
     
     @Test
     void assertLoadWithConfiguredServerImage() {
         System.setProperty("mcp.llm.runtime-mode", "docker");
+        System.setProperty("mcp.llm.model", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M");
         System.setProperty("mcp.llm.server-image", "test/mcp-llm-runtime:test");
         System.setProperty("mcp.llm.base-server-image", "test/llama.cpp:test");
         System.setProperty("mcp.llm.base-server-image-digest", "test-base-server-image-digest");
@@ -224,10 +232,22 @@ class LLME2EConfigurationTest {
     }
     
     private LLME2EConfiguration createConfiguration(final RuntimeMode runtimeMode, final Path artifactRoot) {
-        return new LLME2EConfiguration("http://127.0.0.1:8080/v1", "openai-compatible", "ggml-org/Qwen3-1.7B-GGUF:Q4_K_M", "mcp-llm-score", 600, 240, 10,
-                artifactRoot, "run-id", runtimeMode, "apache/shardingsphere-mcp-llm-runtime:local", "ghcr.io/ggml-org/llama.cpp:server-b9191", "",
-                new LLME2EConfiguration.ModelMetadata("ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M", "daeb8e2d528a760970442092f6bf1e55c3b659eb",
-                        "configured-model-sha256"));
+        return LLME2EConfiguration.builder()
+                .baseUrl("http://127.0.0.1:8080/v1")
+                .modelName("ggml-org/Qwen3-1.7B-GGUF:Q4_K_M")
+                .apiKey("mcp-llm-score")
+                .readyTimeoutSeconds(600)
+                .requestTimeoutSeconds(240)
+                .maxTurns(10)
+                .artifactRoot(artifactRoot)
+                .runId("run-id")
+                .runtimeMode(runtimeMode)
+                .serverImage("apache/shardingsphere-mcp-llm-runtime:local")
+                .baseServerImage("ghcr.io/ggml-org/llama.cpp:server-b9191")
+                .baseServerImageDigest("")
+                .modelMetadata(new LLME2EConfiguration.ModelMetadata("ggml-org/Qwen3-1.7B-GGUF", "Qwen3-1.7B-Q4_K_M.gguf", "Q4_K_M",
+                        "daeb8e2d528a760970442092f6bf1e55c3b659eb", "configured-model-sha256"))
+                .build();
     }
     
     private void restoreProperty(final String name, final String value) {

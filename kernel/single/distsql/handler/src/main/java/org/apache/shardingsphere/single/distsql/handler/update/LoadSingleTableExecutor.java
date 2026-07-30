@@ -19,6 +19,9 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
@@ -110,6 +113,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
                 String.join(",", invalidDataSources), String.join(",", aggregatedDataSourceMap.keySet()))));
         Map<String, DatabaseType> storageUnitDatabaseTypes = getStorageUnitDatabaseTypes(storageUnitNames, aggregatedDataSourceMap);
         Map<String, Map<String, Collection<String>>> actualTableNodes = getActualTableNodes(storageUnitNames, aggregatedDataSourceMap, storageUnitDatabaseTypes);
+        Map<String, IdentifierCasePolicy> schemaPolicies = new LinkedHashMap<>(actualTableNodes.size());
         for (SingleTableSegment each : sqlStatement.getTables()) {
             String tableName = each.getTableName();
             if (!SingleTableConstants.ASTERISK.equals(tableName)) {
@@ -117,13 +121,24 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
                 ShardingSpherePreconditions.checkState(actualTableNodes.containsKey(storageUnitName),
                         () -> new TableNotFoundException(tableName, storageUnitName));
                 DatabaseType storageUnitDatabaseType = storageUnitDatabaseTypes.get(storageUnitName);
-                String actualSchemaName = isSameDatabaseType(database.getProtocolType(), storageUnitDatabaseType) ? defaultSchemaName
-                        : new DatabaseTypeRegistry(storageUnitDatabaseType).formatIdentifierPattern(defaultSchemaName);
-                String schemaName = each.getSchemaName().isPresent() ? each.getSchemaName().get() : actualSchemaName;
-                ShardingSpherePreconditions.checkState(actualTableNodes.get(storageUnitName).get(schemaName).contains(tableName),
-                        () -> new TableNotFoundException(tableName, storageUnitName));
+                Map<String, Collection<String>> schemaTableNames = actualTableNodes.get(storageUnitName);
+                Collection<String> actualTableNames = each.getSchemaName().map(schemaName -> schemaTableNames.getOrDefault(schemaName, Collections.emptySet()))
+                        .orElseGet(() -> getDefaultSchemaTableNames(schemaTableNames, defaultSchemaName, storageUnitName, storageUnitDatabaseType,
+                                aggregatedDataSourceMap.get(storageUnitName), schemaPolicies));
+                ShardingSpherePreconditions.checkState(actualTableNames.contains(tableName), () -> new TableNotFoundException(tableName, storageUnitName));
             }
         }
+    }
+    
+    private Collection<String> getDefaultSchemaTableNames(final Map<String, Collection<String>> schemaTableNames, final String schemaName, final String storageUnitName,
+                                                          final DatabaseType storageUnitDatabaseType, final DataSource dataSource,
+                                                          final Map<String, IdentifierCasePolicy> schemaPolicies) {
+        if (isSameDatabaseType(database.getProtocolType(), storageUnitDatabaseType)) {
+            return schemaTableNames.getOrDefault(schemaName, Collections.emptySet());
+        }
+        IdentifierCasePolicy schemaPolicy =
+                schemaPolicies.computeIfAbsent(storageUnitName, ignored -> IdentifierNormalizeEngine.resolvePolicy(storageUnitDatabaseType, dataSource, IdentifierScope.SCHEMA));
+        return IdentifierNormalizeEngine.findMatchedIdentifier(schemaTableNames.keySet(), schemaPolicy, schemaName).map(schemaTableNames::get).orElseGet(Collections::emptySet);
     }
     
     private Map<String, Map<String, Collection<String>>> getActualTableNodes(final Collection<String> storageUnitNames, final Map<String, DataSource> aggregatedDataSourceMap,

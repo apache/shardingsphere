@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.spi;
 
+import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
+
 import java.util.Collection;
 
 /**
  * Workflow runtime definition provider.
  */
-public interface MCPWorkflowDefinitionProvider {
+public interface MCPWorkflowDefinitionProvider extends MCPHandlerProvider {
     
     /**
      * Get workflow runtime definitions.

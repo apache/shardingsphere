@@ -47,9 +47,9 @@ public class WorkflowRequest implements WorkflowPropertySource {
     
     private String fieldSemantics = "";
     
-    private String deliveryMode = "all-at-once";
+    private String deliveryMode = WorkflowLifecycle.DELIVERY_MODE_ALL_AT_ONCE;
     
-    private String executionMode = "review-then-execute";
+    private String executionMode = WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE;
     
     private String algorithmType = "";
     

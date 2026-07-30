@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
+
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
@@ -37,6 +41,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +64,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -84,7 +90,7 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanRejectsMissingPlanningContext() {
         EncryptWorkflowPlanningService service = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class));
-        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), createQueryFacade(), "session-1",
+        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), createQueryFacade(),
                 new EncryptWorkflowRequest());
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
@@ -96,7 +102,7 @@ class EncryptWorkflowPlanningServiceTest {
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class));
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.setDatabase("logic_db");
-        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", request);
+        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), request);
         assertThat(actual.getStatus(), is("clarifying"));
         assertTrue(actual.getClarifiedIntent().getClarificationMessages().contains("Please specify target table."));
         assertTrue(actual.getClarifiedIntent().getClarificationMessages().contains("Please specify target column."));
@@ -109,9 +115,10 @@ class EncryptWorkflowPlanningServiceTest {
         MCPMetadataQueryFacade metadataQueryFacade = createMetadataQueryFacade();
         when(metadataQueryFacade.querySchemas(any())).thenReturn(List.of(
                 new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(new ShardingSphereTable("orders", List.of(), List.of(), List.of(), TableType.TABLE)), List.of())));
+        when(metadataQueryFacade.queryTableColumns(any(), any(), any())).thenReturn(List.of());
         EncryptWorkflowPlanningService service = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class));
-        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), metadataQueryFacade, createQueryFacade(), "session-1", createRequest("create"));
+        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), metadataQueryFacade, createQueryFacade(), createRequest("create"));
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.COLUMN_NOT_FOUND));
     }
@@ -123,7 +130,7 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptWorkflowPlanningService service = createService(ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class));
         EncryptWorkflowRequest request = createRequest("create");
-        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", request);
+        WorkflowContextSnapshot actual = service.plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), request);
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
@@ -136,13 +143,11 @@ class EncryptWorkflowPlanningServiceTest {
         when(ruleDistSQLPlanningService.planEncryptDropRule(any())).thenReturn(List.of(new RuleArtifact("drop", "DROP ENCRYPT RULE `orders`")));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), ruleDistSQLPlanningService)
-                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", createRequest("drop"));
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), createRequest("drop"));
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getRuleArtifacts().size(), is(1));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED));
         assertThat(actual.getIssues().size(), is(1));
-        assertTrue(actual.getDdlArtifacts().isEmpty());
-        assertTrue(actual.getIndexPlans().isEmpty());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -151,12 +156,12 @@ class EncryptWorkflowPlanningServiceTest {
                                                 final String expectedOperationType, final String expectedFieldSemantics, final String expectedStatus) {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("logic_column", "phone")) : List.of());
-        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(Map.of("type", "AES", "supports_like", false)));
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(WorkflowQueryResult.confirmed(List.of(Map.of("type", "AES", "supports_like", false))));
         EncryptWorkflowRequest request = createNaturalLanguageRequest(naturalLanguageIntent);
         request.getOptions().setCipherColumnName("phone_cipher");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
         WorkflowContextSnapshot actual = createService(ruleInspectionService, new EncryptAlgorithmRecommendationService(), new EncryptAlgorithmPropertyTemplateService(),
-                new EncryptRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", request);
+                new EncryptRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), request);
         assertThat(actual.getClarifiedIntent().getOperationType(), is(expectedOperationType));
         assertThat(actual.getClarifiedIntent().getFieldSemantics(), is(expectedFieldSemantics));
         assertThat(actual.getStatus(), is(expectedStatus));
@@ -169,7 +174,7 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanStopsOnBlockingAlgorithmIssue() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(WorkflowQueryResult.confirmed(List.of()));
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any())).thenAnswer(invocation -> {
             List<WorkflowIssue> issues = invocation.getArgument(2);
@@ -177,7 +182,7 @@ class EncryptWorkflowPlanningServiceTest {
             return List.of();
         });
         WorkflowContextSnapshot actual = createService(ruleInspectionService, algorithmRecommendationService, mock(EncryptAlgorithmPropertyTemplateService.class),
-                mock(EncryptRuleDistSQLPlanningService.class)).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1",
+                mock(EncryptRuleDistSQLPlanningService.class)).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(),
                         createRequest("create"));
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getClarifiedIntent().getClarificationMessages().getFirst(), is("Please use an encrypt algorithm that is visible in the current Proxy and satisfies the requirements."));
@@ -209,16 +214,16 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanDoesNotApplyLikeQueryCandidateWithoutExplicitInput() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(WorkflowQueryResult.confirmed(List.of(
                 Map.of("type", "AES", "supports_like", false),
-                Map.of("type", "FPE", "supports_like", true)));
+                Map.of("type", "FPE", "supports_like", true))));
         EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements(any(), any(), any())).thenReturn(List.of());
         EncryptWorkflowRequest request = createRequest("create");
         request.getOptions().setRequiresLikeQuery(true);
         request.getOptions().setLikeQueryColumnName("phone_like_query");
         WorkflowContextSnapshot actual = createService(ruleInspectionService, new EncryptAlgorithmRecommendationService(), propertyTemplateService, new EncryptRuleDistSQLPlanningService())
-                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", request);
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), request);
         assertThat(actual.getStatus(), is("planned"));
         assertThat(((EncryptWorkflowRequest) actual.getRequest()).getOptions().getLikeQueryAlgorithmType(), is("FPE"));
     }
@@ -229,8 +234,6 @@ class EncryptWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = planWithPrimaryCandidate(request);
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getRuleArtifacts().size(), is(1));
-        assertTrue(actual.getDdlArtifacts().isEmpty());
-        assertTrue(actual.getIndexPlans().isEmpty());
     }
     
     @Test
@@ -243,9 +246,9 @@ class EncryptWorkflowPlanningServiceTest {
         request.getOptions().setCipherColumnName("name_cipher");
         MCPMetadataQueryFacade metadataQueryFacade = createMetadataQueryFacade();
         when(metadataQueryFacade.querySchemas(any())).thenReturn(List.of(new ShardingSphereSchema(
-                "public", mock(DatabaseType.class), List.of(createTableMetadata("t_user", "name")), List.of())));
+                "public", mock(DatabaseType.class), List.of(createTableMetadata("t_user")), List.of())));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), new EncryptAlgorithmPropertyTemplateService(),
-                new EncryptRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), metadataQueryFacade, createQueryFacade(), "session-1", request);
+                new EncryptRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), metadataQueryFacade, createQueryFacade(), request);
         String actualSQL = actual.getRuleArtifacts().getFirst().getSql();
         assertThat(actual.getStatus(), is("planned"));
         assertTrue(actualSQL.startsWith("CREATE ENCRYPT RULE `t_user`"));
@@ -263,7 +266,7 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptWorkflowRequest request = createRequest("create");
         request.setColumn("phone");
         WorkflowContextSnapshot actual = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), createEmptyPropertyTemplateService(), new EncryptRuleDistSQLPlanningService())
-                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", request);
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), request);
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED));
         assertTrue(actual.getRuleArtifacts().isEmpty());
@@ -277,7 +280,7 @@ class EncryptWorkflowPlanningServiceTest {
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), new EncryptRuleDistSQLPlanningService())
-                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", createRequest("drop"));
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), createRequest("drop"));
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED));
         assertTrue(actual.getRuleArtifacts().isEmpty());
@@ -288,7 +291,7 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptWorkflowRequest request = createRequest("replace");
         WorkflowContextSnapshot actual = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class))
-                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", request);
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), request);
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getClarifiedIntent().getOperationType(), is(""));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
@@ -303,7 +306,7 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements(any(), any(), any())).thenReturn(List.of(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", "")));
         WorkflowContextSnapshot actual = createService(ruleInspectionService, createPrimaryCandidateRecommendation(), propertyTemplateService, mock(EncryptRuleDistSQLPlanningService.class))
-                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", createRequestWithoutProperties());
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), createRequestWithoutProperties());
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
         assertThat(actual.getClarifiedIntent().getClarificationMessages().getFirst(), is("Please provide property `aes-key-value`."));
@@ -313,12 +316,14 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         return createService(ruleInspectionService, createPrimaryCandidateRecommendation(), createEmptyPropertyTemplateService(), new EncryptRuleDistSQLPlanningService())
-                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), "session-1", request);
+                .plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), request);
     }
     
     private EncryptAlgorithmRecommendationService createPrimaryCandidateRecommendation() {
         EncryptAlgorithmRecommendationService result = mock(EncryptAlgorithmRecommendationService.class);
-        when(result.recommendEncryptAlgorithms(any(), any(), any())).thenReturn(List.of(new AlgorithmCandidate("primary", "AES", true, true, false, 100, "reason", "")));
+        when(result.recommendEncryptAlgorithms(any(), any(), any())).thenReturn(List.of(AlgorithmCandidate.builder()
+                .algorithmRole("primary").algorithmType("AES").supportsDecrypt(true).supportsEquivalentFilter(true).supportsLike(false)
+                .recommendationScore(100).recommendationReason("reason").riskNotes("").build()));
         return result;
     }
     
@@ -370,11 +375,15 @@ class EncryptWorkflowPlanningServiceTest {
         MCPMetadataQueryFacade result = mock(MCPMetadataQueryFacade.class);
         when(result.queryDatabase(any())).thenReturn(Optional.of(createDatabaseMetadata()));
         when(result.querySchemas(any())).thenReturn(List.of(createSchemaMetadata()));
+        when(result.queryTableColumns(any(), any(), eq("orders"))).thenReturn(List.of(
+                createColumnMetadata("orders", "phone"), createColumnMetadata("orders", "email")));
+        when(result.queryTableColumns(any(), any(), eq("t_user"))).thenReturn(List.of(createColumnMetadata("t_user", "name")));
         return result;
     }
     
     private RuntimeDatabaseProfile createDatabaseMetadata() {
-        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", true, true, IdentifierCasePolicyFactory.newInsensitivePolicySet());
+        return new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
+                new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()));
     }
     
     private ShardingSphereSchema createSchemaMetadata() {
@@ -382,15 +391,15 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private ShardingSphereTable createTableMetadata() {
-        return createTableMetadata("orders", "phone");
+        return createTableMetadata("orders");
     }
     
-    private ShardingSphereTable createTableMetadata(final String tableName, final String columnName) {
-        return new ShardingSphereTable(tableName, List.of(createColumnMetadata(columnName)), List.of(), List.of(), TableType.TABLE);
+    private ShardingSphereTable createTableMetadata(final String tableName) {
+        return new ShardingSphereTable(tableName, List.of(), List.of(), List.of(), TableType.TABLE);
     }
     
-    private ShardingSphereColumn createColumnMetadata(final String columnName) {
-        return new ShardingSphereColumn(columnName, java.sql.Types.OTHER, false, false, false, true, false, true);
+    private MCPColumnMetadata createColumnMetadata(final String tableName, final String columnName) {
+        return new MCPColumnMetadata(tableName, columnName, 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
     
     private EncryptWorkflowPlanningService createService(final EncryptRuleInspectionService ruleInspectionService,
@@ -411,12 +420,12 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     private void assertRuleDistSQLOnlyPayloadDoesNotExpose(final WorkflowContextSnapshot snapshot, final String term) {
-        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         assertFalse(String.valueOf(actualPayload).toLowerCase(Locale.ENGLISH).contains(term));
     }
     
     private void assertRuleDistSQLOnlyPayloadClearsOperationType(final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         Map<?, ?> actualIntentInference = (Map<?, ?>) actualPayload.get("intent_inference");
         assertThat(actualIntentInference.get(WorkflowFieldNames.OPERATION_TYPE), is(""));
         assertFalse(((Map<?, ?>) actualIntentInference.get("inferred_values")).containsKey(WorkflowFieldNames.OPERATION_TYPE));

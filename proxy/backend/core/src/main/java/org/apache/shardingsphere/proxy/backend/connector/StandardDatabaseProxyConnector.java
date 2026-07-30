@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -237,7 +238,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         List<ExecuteResult> executeResults = advancedExecutors.isEmpty()
                 ? proxySQLExecutor.execute(executionContext)
                 : advancedExecutors.iterator().next().execute(executionContext, contextManager, database, this);
-        if (isNeedImplicitCommit(queryContext.getSqlStatementContext().getSqlStatement())) {
+        if (isCurrentTransactionCommitRequired(queryContext.getSqlStatementContext().getSqlStatement())) {
             ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
             transactionManager.commit();
         }
@@ -252,9 +253,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                 : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
     }
     
-    private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
+    private boolean isCurrentTransactionCommitRequired(final SQLStatement sqlStatement) {
         DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
-        return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatement instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
+        return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatement instanceof DDLStatement
+                && DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION == transactionOption.getDDLCommitPolicy();
     }
     
     private ResponseHeader doExecuteFederation() throws SQLException {
@@ -299,10 +301,12 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         int columnCount = getColumnCount(sqlStatementContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
-        Collection<ShardingSphereDatabase> databases = queryContext.getMetaData().getAllDatabases();
         ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(queryResultSample.getMetaData().getResultSetMetaData(), database, sqlStatementContext);
+        Optional<ResultSet> resultSetSample = cachedResultSets.stream().findFirst();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(createQueryHeader(queryHeaderBuilderEngine, sqlStatementContext, resultSetMetaData, database, databases, columnIndex));
+            result.add(resultSetSample.isPresent()
+                    ? queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, resultSetSample.get(), database, columnIndex)
+                    : queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, columnIndex));
         }
         return result;
     }
@@ -311,12 +315,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return containsDerivedProjections
                 ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
                 : queryResultSample.getMetaData().getColumnCount();
-    }
-    
-    private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final SQLStatementContext sqlStatementContext,
-                                          final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database,
-                                          final Collection<ShardingSphereDatabase> databases, final int columnIndex) throws SQLException {
-        return queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, databases, columnIndex);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {

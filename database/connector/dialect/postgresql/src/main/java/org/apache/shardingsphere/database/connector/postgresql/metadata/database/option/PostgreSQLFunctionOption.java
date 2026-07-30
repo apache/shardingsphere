@@ -33,12 +33,6 @@ public final class PostgreSQLFunctionOption implements DialectFunctionOption {
             "CURRENT_TIMESTAMP", "CURRENT_USER", "LOCALTIME", "LOCALTIMESTAMP", "SESSION_USER", "USER"));
     
     @Override
-    public String getIfNullFunctionName() {
-        // TODO `COALESCE` can support more features, `IFNULL` can not full cover. It should add `COALESCE` support, and map `IFNULL` on `COALESCE` @duanzhengqiang
-        return "COALESCE";
-    }
-    
-    @Override
     public Collection<String> getUnparenthesizedFunctionNames() {
         return UNPARENTHESIZED_FUNCTION_NAMES;
     }

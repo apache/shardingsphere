@@ -17,30 +17,38 @@
 
 package org.apache.shardingsphere.mcp.core.resource;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 
 /**
  * MCP resource controller.
  */
-@RequiredArgsConstructor
 public final class MCPResourceController {
     
     private final MCPRuntimeContext runtimeContext;
     
+    private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
+    
+    public MCPResourceController(final MCPRuntimeContext runtimeContext) {
+        this.runtimeContext = runtimeContext;
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager());
+    }
+    
     /**
      * Handle resource URI.
      *
+     * @param sessionId session identifier
      * @param resourceUri resource URI
-     * @return MCP response
+     * @return successful resource payload
      */
-    public MCPResponse handle(final String resourceUri) {
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            return ResourceDefinitionRegistry.dispatch(requestScope, resourceUri).orElseThrow(() -> new UnsupportedResourceUriException(resourceUri));
-        }
+    public MCPSuccessPayload handle(final String sessionId, final String resourceUri) {
+        MCPFeatureRuntimeRequestContext requestContext = sessionExecutionCoordinator.executeWithSessionLock(sessionId,
+                () -> new MCPFeatureRuntimeRequestContext(runtimeContext, runtimeContext.getSessionManager().getRequiredSessionIdentity(sessionId)));
+        return ResourceDefinitionRegistry.dispatch(requestContext, resourceUri)
+                .orElseThrow(() -> new UnsupportedResourceUriException(resourceUri));
     }
 }

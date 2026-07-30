@@ -58,8 +58,6 @@ public final class ConnectionSession {
     
     private volatile boolean readOnly;
     
-    private TransactionIsolationLevel defaultIsolationLevel;
-    
     private TransactionIsolationLevel isolationLevel;
     
     private final ProxyDatabaseConnectionManager databaseConnectionManager;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 
 /**
  * Exception for queries that should return a result set but do not.

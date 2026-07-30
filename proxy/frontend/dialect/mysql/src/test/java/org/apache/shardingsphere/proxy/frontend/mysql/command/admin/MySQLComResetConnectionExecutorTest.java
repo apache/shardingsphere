@@ -33,7 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -55,12 +54,11 @@ class MySQLComResetConnectionExecutorTest {
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         int statementId = 1;
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement("", null, new HintValueContext(), Collections.emptyList()));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement("", null, new HintValueContext()));
         Collection<DatabasePacket> actual = new MySQLComResetConnectionExecutor(connectionSession).execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), isA(MySQLOKPacket.class));
         verify(connectionSession).setAutoCommit(true);
-        verify(connectionSession).setDefaultIsolationLevel(null);
         verify(connectionSession).setIsolationLevel(null);
         assertNull(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId));
     }

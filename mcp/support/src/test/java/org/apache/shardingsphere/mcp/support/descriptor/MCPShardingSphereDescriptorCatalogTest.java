@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -59,7 +60,7 @@ class MCPShardingSphereDescriptorCatalogTest {
     
     @Test
     void assertGetToolRuntimeDescriptors() {
-        Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors = List.of(new MCPToolRuntimeDescriptor("database_gateway_test_tool", "plan", List.of("metadata")));
+        Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors = List.of(new MCPToolRuntimeDescriptor("database_gateway_test_tool", "plan"));
         MCPShardingSphereDescriptorCatalog actual = new MCPShardingSphereDescriptorCatalog(List.of(), List.of(), List.of(), List.of(), toolRuntimeDescriptors);
         assertThat(actual.getToolRuntimeDescriptors(), is(toolRuntimeDescriptors));
     }

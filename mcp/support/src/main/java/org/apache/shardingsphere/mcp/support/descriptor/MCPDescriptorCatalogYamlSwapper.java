@@ -19,12 +19,13 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPDescriptorCatalog;
@@ -37,7 +38,7 @@ import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolDescript
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolRuntimeDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPUriVariableDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlShardingSphereMCPResourceMetadata;
-import org.apache.shardingsphere.mcp.support.yaml.MCPYamlConfigurationValidator;
+import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -60,7 +61,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors = new LinkedList<>();
         Collection<MCPToolRuntimeDescriptor> toolRuntimeDescriptors = new LinkedList<>();
         for (YamlMCPDescriptorCatalog each : yamlCatalogs) {
-            MCPYamlConfigurationValidator.validate(each, "MCP descriptor catalog");
+            MCPConfigurationValidator.validate(each, "MCP descriptor catalog");
             swapFixedResourceDescriptors(each.getResources(), resourceDescriptors, shardingSphereResourceMetadata);
             swapResourceTemplateDescriptors(each.getResourceTemplates(), resourceTemplateDescriptors, shardingSphereResourceMetadata);
             toolDescriptors.addAll(swapToolDescriptors(each.getTools()));
@@ -173,21 +174,27 @@ final class MCPDescriptorCatalogYamlSwapper {
     }
     
     private static MCPToolAnnotations swapToolAnnotations(final YamlMCPToolAnnotations yamlAnnotations) {
-        return new MCPToolAnnotations(yamlAnnotations.getTitle(), Boolean.TRUE.equals(yamlAnnotations.getReadOnlyHint()), Boolean.TRUE.equals(yamlAnnotations.getDestructiveHint()),
-                Boolean.TRUE.equals(yamlAnnotations.getIdempotentHint()), Boolean.TRUE.equals(yamlAnnotations.getOpenWorldHint()));
+        return MCPToolAnnotations.builder()
+                .title(yamlAnnotations.getTitle())
+                .readOnlyHint(Boolean.TRUE.equals(yamlAnnotations.getReadOnlyHint()))
+                .destructiveHint(Boolean.TRUE.equals(yamlAnnotations.getDestructiveHint()))
+                .idempotentHint(Boolean.TRUE.equals(yamlAnnotations.getIdempotentHint()))
+                .openWorldHint(Boolean.TRUE.equals(yamlAnnotations.getOpenWorldHint()))
+                .build();
     }
     
     private static Collection<MCPToolRuntimeDescriptor> swapToolRuntimeDescriptors(final Collection<YamlMCPToolDescriptor> yamlDescriptors) {
         Collection<MCPToolRuntimeDescriptor> result = new LinkedList<>();
         for (YamlMCPToolDescriptor each : emptyIfNull(yamlDescriptors)) {
-            result.add(swapToolRuntimeDescriptor(each.getName(), each.getRuntime()));
+            if (null != each.getRuntime()) {
+                result.add(swapToolRuntimeDescriptor(each.getName(), each.getRuntime()));
+            }
         }
         return result;
     }
     
     private static MCPToolRuntimeDescriptor swapToolRuntimeDescriptor(final String toolName, final YamlMCPToolRuntimeDescriptor yamlRuntime) {
-        return null == yamlRuntime ? new MCPToolRuntimeDescriptor(toolName, "", List.of())
-                : new MCPToolRuntimeDescriptor(toolName, yamlRuntime.getWorkflowRole(), emptyIfNull(yamlRuntime.getSideEffectScope()));
+        return new MCPToolRuntimeDescriptor(toolName, null == yamlRuntime.getWorkflowRole() ? "" : yamlRuntime.getWorkflowRole());
     }
     
     private static <T> Collection<T> emptyIfNull(final Collection<T> values) {

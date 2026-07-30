@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -127,16 +128,7 @@ public final class WorkflowArtifactMaskUtils {
         result.put("marker", "******");
         result.put("redacted_properties", redactedProperties);
         result.put("redacted_count", redactedProperties.size());
-        result.put("redaction_summary", createRedactionSummary(redactedProperties));
-        result.put("secret_reference_summary", createSecretReferenceSummary(propertySource));
-        return result;
-    }
-    
-    private static Map<String, Object> createRedactionSummary(final List<String> redactedProperties) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("categories", redactedProperties.stream().map(WorkflowArtifactMaskUtils::createRedactedCategory).distinct().toList());
-        result.put("marker", "******");
-        result.put("redacted_count", redactedProperties.size());
         return result;
     }
     
@@ -187,7 +179,7 @@ public final class WorkflowArtifactMaskUtils {
                 return true;
             }
         }
-        String actualPropertyKey = propertyKey.toLowerCase();
+        String actualPropertyKey = propertyKey.toLowerCase(Locale.ENGLISH);
         return actualPropertyKey.contains("password") || actualPropertyKey.contains("secret") || actualPropertyKey.contains("token")
                 || "key".equals(actualPropertyKey) || actualPropertyKey.contains("-key") || actualPropertyKey.contains("key-")
                 || actualPropertyKey.contains("_key") || actualPropertyKey.contains("key_");

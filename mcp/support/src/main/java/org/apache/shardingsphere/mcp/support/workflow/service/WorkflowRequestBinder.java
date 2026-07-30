@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
@@ -67,6 +67,20 @@ public final class WorkflowRequestBinder {
                                                       final BiConsumer<WorkflowRequest, WorkflowPlanningArguments> featureArgumentBinder,
                                                       final BiConsumer<WorkflowRequest, Map<String, Object>> structuredIntentBinder) {
         return bindPlanningRequest(WorkflowRequest::new, arguments, featureArgumentBinder, structuredIntentBinder);
+    }
+    
+    /**
+     * Apply a present structured intent string field without changing its representation.
+     *
+     * @param values structured intent values
+     * @param fieldName field name
+     * @param consumer field consumer
+     */
+    public static void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
+        Object value = values.get(fieldName);
+        if (null != value) {
+            consumer.accept(String.valueOf(value));
+        }
     }
     
     private static void bindCommonPlanningFields(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

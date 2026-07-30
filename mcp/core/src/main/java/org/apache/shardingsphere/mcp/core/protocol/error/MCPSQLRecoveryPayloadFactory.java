@@ -53,7 +53,6 @@ final class MCPSQLRecoveryPayloadFactory {
         cause.getClassificationResult().getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
         result.put("suggested_arguments", cause.getSuggestedArguments());
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(cause.getTargetTool(), createSQLToolMismatchActionReason(cause), cause.getSuggestedArguments())));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     
@@ -71,7 +70,6 @@ final class MCPSQLRecoveryPayloadFactory {
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_execute_explain_query",
                         "Regenerate explain_sql from sql without changing sql, then retry the explain tool with the generated explain_sql.",
                         createExplainRetryArguments(cause)), 1)));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     
@@ -96,7 +94,6 @@ final class MCPSQLRecoveryPayloadFactory {
         result.put("secret_safe", true);
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createRuleDistSQLExecutionResources(cause.getDatabase()));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createRuleDistSQLExecutionNextActions(cause.getDatabase()));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     
@@ -137,7 +134,6 @@ final class MCPSQLRecoveryPayloadFactory {
         Map<String, Object> suggestedArguments = createMetadataSearchArguments(cause.getStatementType());
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createMetadataIntrospectionNextActions(resourcesToRead, suggestedArguments));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     
@@ -193,7 +189,6 @@ final class MCPSQLRecoveryPayloadFactory {
     static Map<String, Object> createMultipleStatementsRecovery() {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "multiple_sql_statements", "Split the user intent into separate MCP calls and handle each statement independently.");
-        result.put("ask_user_when_uncertain", true);
         result.put("suggested_arguments", Map.of(MCPPayloadFieldNames.EXECUTION_MODE, "preview"));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.askUser(
                 "Ask the user which single statement should be handled first.", List.of("single_sql_statement"))));
@@ -206,7 +201,6 @@ final class MCPSQLRecoveryPayloadFactory {
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read supported SQL statement classes before retrying."));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read supported statement classes before retrying.")));
-        result.put("ask_user_when_uncertain", true);
         return result;
     }
     
@@ -217,7 +211,6 @@ final class MCPSQLRecoveryPayloadFactory {
                 "shardingsphere://capabilities", "capability", "Read supported safe alternatives before asking the user."));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.askUser(
                 "Ask for a safer supported operation instead of executing the banned SQL.", List.of("safe_sql_or_metadata_request"))));
-        result.put("ask_user_when_uncertain", true);
         return result;
     }
     

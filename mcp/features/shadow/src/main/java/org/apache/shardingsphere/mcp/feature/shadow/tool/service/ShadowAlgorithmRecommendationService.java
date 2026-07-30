@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
@@ -35,26 +37,25 @@ public final class ShadowAlgorithmRecommendationService {
      * Recommend shadow algorithm.
      *
      * @param request workflow request
-     * @param algorithmRows algorithm rows
+     * @param algorithmResult algorithm query result
      * @param issues workflow issues
      * @return selected candidates
      */
-    public List<AlgorithmCandidate> recommendShadowAlgorithms(final WorkflowRequest request, final List<Map<String, Object>> algorithmRows,
+    public List<AlgorithmCandidate> recommendShadowAlgorithms(final WorkflowRequest request, final WorkflowQueryResult algorithmResult,
                                                               final List<WorkflowIssue> issues) {
-        List<Map<String, Object>> actualAlgorithmRows = null == algorithmRows ? List.of() : algorithmRows;
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getAlgorithmType());
         if (!actualAlgorithmType.isEmpty()) {
-            if (actualAlgorithmRows.isEmpty() || WorkflowAlgorithmUtils.containsAlgorithm(actualAlgorithmRows, actualAlgorithmType, "type", "name")) {
+            if (!algorithmResult.isAvailabilityConfirmed() || WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate(actualAlgorithmType, 100, "User specified shadow algorithm."));
             }
-            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     String.format("Shadow algorithm `%s` is not visible from the current Proxy.", actualAlgorithmType),
                     "Choose an available shadow algorithm.", false, Map.of()));
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(actualAlgorithmRows);
+        String recommendedType = resolveRecommendedAlgorithm(algorithmResult.getRows());
         if (recommendedType.isEmpty()) {
-            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     "No shadow algorithm is available from the current Proxy.", "Install or expose at least one shadow algorithm.", false, Map.of()));
             return List.of();
         }
@@ -62,7 +63,7 @@ public final class ShadowAlgorithmRecommendationService {
     }
     
     private AlgorithmCandidate createCandidate(final String algorithmType, final int score, final String reason) {
-        return new AlgorithmCandidate("primary", algorithmType, null, null, null, score, reason, "");
+        return AlgorithmCandidate.builder().algorithmRole("primary").algorithmType(algorithmType).recommendationScore(score).recommendationReason(reason).riskNotes("").build();
     }
     
     private String resolveRecommendedAlgorithm(final List<Map<String, Object>> algorithmRows) {

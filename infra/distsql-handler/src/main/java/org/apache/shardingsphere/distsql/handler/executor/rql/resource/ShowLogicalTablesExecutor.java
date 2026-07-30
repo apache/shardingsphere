@@ -61,12 +61,14 @@ public final class ShowLogicalTablesExecutor implements DistSQLQueryExecutor<Sho
         if (null == database.getSchema(schemaName)) {
             return Collections.emptyList();
         }
-        return getTables(schemaName, sqlStatement).stream().map(each -> getRow(schemaName, each, sqlStatement)).collect(Collectors.toList());
+        return getTables(schemaName, sqlStatement).stream().map(each -> getRow(schemaName, each, sqlStatement, dialectDatabaseMetaData)).collect(Collectors.toList());
     }
     
-    private LocalDataQueryResultRow getRow(final IdentifierValue schemaName, final ShardingSphereTable table, final ShowLogicalTablesStatement sqlStatement) {
-        if (new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
-            return sqlStatement.isContainsFull() ? new LocalDataQueryResultRow(table.getName(), table.getType(), schemaName.getValue())
+    private LocalDataQueryResultRow getRow(final IdentifierValue schemaName, final ShardingSphereTable table, final ShowLogicalTablesStatement sqlStatement,
+                                           final DialectDatabaseMetaData dialectDatabaseMetaData) {
+        if (dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()) {
+            return sqlStatement.isContainsFull()
+                    ? new LocalDataQueryResultRow(table.getName(), table.getType(), schemaName.getValue())
                     : new LocalDataQueryResultRow(table.getName(), schemaName.getValue());
         }
         return sqlStatement.isContainsFull() ? new LocalDataQueryResultRow(table.getName(), table.getType()) : new LocalDataQueryResultRow(table.getName());

@@ -69,7 +69,7 @@ final class MCPRecoveryPayloadFactory {
             new RecoveryMapping(UnsupportedResourceUriException.class,
                     cause -> MCPBasicRecoveryPayloadFactory.createUnsupportedResourceRecovery(((UnsupportedResourceUriException) cause).getResourceUri())),
             new RecoveryMapping(RuntimeDatabaseConnectionException.class,
-                    cause -> MCPBasicRecoveryPayloadFactory.createRuntimeDatabaseConnectionRecovery((RuntimeDatabaseConnectionException) cause)),
+                    cause -> MCPRuntimeDatabaseRecoveryPayloadFactory.create((RuntimeDatabaseConnectionException) cause)),
             new RecoveryMapping(MCPToolCallLimitExceededException.class,
                     cause -> MCPBasicRecoveryPayloadFactory.createToolCallLimitRecovery((MCPToolCallLimitExceededException) cause)),
             new RecoveryMapping(MCPInvalidToolArgumentException.class, cause -> MCPBasicRecoveryPayloadFactory.createInvalidToolArgumentRecovery((MCPInvalidToolArgumentException) cause)),

@@ -17,15 +17,31 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure;
 
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+
+import java.util.Optional;
 
 /**
  * Drop procedure statement.
  */
+@Setter
 public final class DropProcedureStatement extends DDLStatement {
+    
+    private FunctionNameSegment procedureName;
     
     public DropProcedureStatement(final DatabaseType databaseType) {
         super(databaseType);
+    }
+    
+    /**
+     * Get procedure name segment.
+     *
+     * @return procedure name segment
+     */
+    public Optional<FunctionNameSegment> getProcedureName() {
+        return Optional.ofNullable(procedureName);
     }
 }

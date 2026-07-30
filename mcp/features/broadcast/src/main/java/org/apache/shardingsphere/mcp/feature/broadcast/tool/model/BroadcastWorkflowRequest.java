@@ -88,6 +88,9 @@ public final class BroadcastWorkflowRequest extends WorkflowRequest {
             if (!currentRequest.tables.isEmpty()) {
                 result.tables.clear();
                 result.tables.addAll(currentRequest.tables);
+                result.setTable(currentRequest.tables.getFirst());
+            } else if (!currentRequest.getTable().isEmpty()) {
+                result.tables.clear();
             }
         }
         return result;

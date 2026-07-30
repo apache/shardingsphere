@@ -19,7 +19,8 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 
 import java.util.LinkedHashSet;
@@ -45,18 +46,18 @@ public final class MCPDatabaseCapability {
     
     private final SchemaExecutionSemantics schemaExecutionSemantics;
     
-    private final IdentifierCasePolicySet identifierCasePolicySet;
+    private final DatabaseIdentifierContext identifierContext;
     
     MCPDatabaseCapability(final RuntimeDatabaseProfile databaseProfile, final MCPDatabaseCapabilityOption option) {
         databaseName = databaseProfile.getDatabase();
         databaseType = option.getType();
         MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
         supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(databaseDialect);
-        transactionCapability = databaseDialect.getTransactionCapability(databaseProfile.isSupportsTransaction(), databaseProfile.isSupportsSavepoint());
+        transactionCapability = databaseProfile.getTransactionCapability();
         supportedStatementClasses = createSupportedStatementClasses(transactionCapability, option.isExplainSupported());
         defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
         schemaExecutionSemantics = createSchemaExecutionSemantics(defaultSchemaSemantics);
-        identifierCasePolicySet = databaseProfile.getIdentifierCasePolicySet();
+        identifierContext = databaseProfile.getIdentifierContext();
     }
     
     private static SchemaExecutionSemantics createSchemaExecutionSemantics(final DialectSchemaSemantics defaultSchemaSemantics) {
@@ -99,7 +100,7 @@ public final class MCPDatabaseCapability {
      *
      * @return whether transaction control is supported
      */
-    public boolean isSupportsTransactionControl() {
+    public boolean supportsTransactionControl() {
         return TransactionCapability.NONE != transactionCapability;
     }
     
@@ -108,7 +109,7 @@ public final class MCPDatabaseCapability {
      *
      * @return whether savepoint is supported
      */
-    public boolean isSupportsSavepoint() {
+    public boolean supportsSavepoint() {
         return TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability;
     }
     
@@ -117,7 +118,7 @@ public final class MCPDatabaseCapability {
      *
      * @return whether EXPLAIN query is supported
      */
-    public boolean isSupportsExplain() {
+    public boolean supportsExplain() {
         return supportedStatementClasses.contains(SupportedMCPStatement.EXPLAIN);
     }
     
@@ -126,7 +127,7 @@ public final class MCPDatabaseCapability {
      *
      * @return whether cross-schema SQL is supported
      */
-    public boolean isSupportsCrossSchemaSql() {
+    public boolean supportsCrossSchemaSql() {
         return SchemaExecutionSemantics.BEST_EFFORT == schemaExecutionSemantics;
     }
 }

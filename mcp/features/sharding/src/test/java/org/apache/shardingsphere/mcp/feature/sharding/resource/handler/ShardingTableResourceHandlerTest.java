@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -44,16 +44,16 @@ class ShardingTableResourceHandlerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertHandleArguments")
-    void assertHandle(final String name, final Supplier<ShardingTableResourceHandler> handlerSupplier, final MCPUriVariables uriVariables,
+    void assertHandle(final String name, final Supplier<ShardingTableResourceHandler> handlerSupplier, final MCPResourceURIVariables uriVariables,
                       final List<Map<String, Object>> rows, final String expectedSelfUri) {
         try (
                 MockedConstruction<ShardingInspectionService> ignored = mockConstruction(
                         ShardingInspectionService.class, (mock, context) -> stubInspectionService(mock, rows))) {
-            MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
-            when(databaseContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
-            MCPResponse actual = handlerSupplier.get().handle(databaseContext, uriVariables);
+            MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+            when(requestContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
+            MCPSuccessPayload actual = handlerSupplier.get().handle(requestContext, uriVariables);
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));
-            assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
+            assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is(expectedSelfUri));
         }
     }
     
@@ -76,7 +76,7 @@ class ShardingTableResourceHandlerTest {
     
     private static Arguments createArguments(final String name, final Supplier<ShardingTableResourceHandler> handlerSupplier,
                                              final Map<String, String> uriVariables, final List<Map<String, Object>> rows, final String expectedSelfUri) {
-        return Arguments.of(name, handlerSupplier, new MCPUriVariables(uriVariables), rows, expectedSelfUri);
+        return Arguments.of(name, handlerSupplier, new MCPResourceURIVariables(uriVariables), rows, expectedSelfUri);
     }
     
     private static void stubInspectionService(final ShardingInspectionService inspectionService, final List<Map<String, Object>> rows) {
