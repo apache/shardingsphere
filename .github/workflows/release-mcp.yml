@@ -129,6 +129,8 @@ jobs:
           context: distribution/mcp/target
           file: distribution/mcp/Dockerfile
           push: true
+          provenance: mode=max
+          sbom: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.release-version.outputs.tags }}
           build-args: |
