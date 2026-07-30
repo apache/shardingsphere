@@ -260,4 +260,61 @@ class ColumnSegmentBinderTest {
         assertThrows(ColumnNotFoundException.class,
                 () -> ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create()));
     }
+    
+    @Test
+    void assertBindWithTableVariableAfterPhysicalTableSkipsColumnExistenceCheck() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("e"), createEmployeeBinderContext());
+        SimpleTableSegmentBinderContext tableVariableBinderContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        tableVariableBinderContext.setContainsTableVariable(true);
+        tableBinderContexts.put(CaseInsensitiveString.of("target"), tableVariableBinderContext);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("NewVacationHours"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("NewVacationHours"));
+    }
+    
+    @Test
+    void assertBindWithTableVariableBeforePhysicalTableSkipsColumnExistenceCheck() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegmentBinderContext tableVariableBinderContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        tableVariableBinderContext.setContainsTableVariable(true);
+        tableBinderContexts.put(CaseInsensitiveString.of("target"), tableVariableBinderContext);
+        tableBinderContexts.put(CaseInsensitiveString.of("e"), createEmployeeBinderContext());
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("NewVacationHours"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("NewVacationHours"));
+    }
+    
+    @Test
+    void assertBindWithOwnerAndWrongColumnOnPhysicalTableThrowsColumnNotFoundException() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("e"), createEmployeeBinderContext());
+        SimpleTableSegmentBinderContext tableVariableBinderContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        tableVariableBinderContext.setContainsTableVariable(true);
+        tableBinderContexts.put(CaseInsensitiveString.of("target"), tableVariableBinderContext);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("WrongCol"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("e")));
+        assertThrows(ColumnNotFoundException.class,
+                () -> ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create()));
+    }
+    
+    @Test
+    void assertBindWithDBLinkAfterPhysicalTableSkipsColumnExistenceCheck() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
+                new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.PHYSICAL_TABLE));
+        SimpleTableSegmentBinderContext dbLinkBinderContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        dbLinkBinderContext.setContainsDBLink(true);
+        tableBinderContexts.put(CaseInsensitiveString.of("remote_table"), dbLinkBinderContext);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("unknown_column"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("unknown_column"));
+    }
+    
+    private SimpleTableSegmentBinderContext createEmployeeBinderContext() {
+        ColumnSegment vacationHoursColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationHours"));
+        vacationHoursColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("HumanResources")),
+                new IdentifierValue("Employee"), new IdentifierValue("VacationHours"), TableSourceType.PHYSICAL_TABLE));
+        return new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(vacationHoursColumn)), TableSourceType.PHYSICAL_TABLE);
+    }
 }

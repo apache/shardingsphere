@@ -123,9 +123,17 @@ public final class TableExtractor {
     }
     
     private void extractTablesFromTableSegment(final TableSegment tableSegment) {
+        extractTablesFromTableSegment(tableSegment, Optional.empty());
+    }
+    
+    private void extractTablesFromTableSegment(final TableSegment tableSegment, final Optional<SimpleTableSegment> skipSimpleTableSegment) {
         if (tableSegment instanceof SimpleTableSegment) {
+            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) tableSegment;
+            if (skipSimpleTableSegment.isPresent() && skipSimpleTableSegment.get() == simpleTableSegment) {
+                return;
+            }
             tableContext.add(tableSegment);
-            rewriteTables.add((SimpleTableSegment) tableSegment);
+            rewriteTables.add(simpleTableSegment);
         }
         if (tableSegment instanceof SubqueryTableSegment) {
             tableContext.add(tableSegment);
@@ -136,7 +144,7 @@ public final class TableExtractor {
         }
         if (tableSegment instanceof JoinTableSegment) {
             joinTables.add((JoinTableSegment) tableSegment);
-            extractTablesFromJoinTableSegment((JoinTableSegment) tableSegment);
+            extractTablesFromJoinTableSegment((JoinTableSegment) tableSegment, skipSimpleTableSegment);
         }
         if (tableSegment instanceof DeleteMultiTableSegment) {
             DeleteMultiTableSegment deleteMultiTableSegment = (DeleteMultiTableSegment) tableSegment;
@@ -149,9 +157,9 @@ public final class TableExtractor {
         }
     }
     
-    private void extractTablesFromJoinTableSegment(final JoinTableSegment tableSegment) {
-        extractTablesFromTableSegment(tableSegment.getLeft());
-        extractTablesFromTableSegment(tableSegment.getRight());
+    private void extractTablesFromJoinTableSegment(final JoinTableSegment tableSegment, final Optional<SimpleTableSegment> skipSimpleTableSegment) {
+        extractTablesFromTableSegment(tableSegment.getLeft(), skipSimpleTableSegment);
+        extractTablesFromTableSegment(tableSegment.getRight(), skipSimpleTableSegment);
         extractTablesFromExpression(tableSegment.getCondition());
     }
     
@@ -320,22 +328,67 @@ public final class TableExtractor {
         if (!updateStatement.isTargetTableIsFromAlias() && !isVariableTableTarget(updateStatement)) {
             extractTablesFromTableSegment(updateStatement.getTable());
         }
-        updateStatement.getFrom().ifPresent(this::extractTablesFromTableSegment);
+        Optional<SimpleTableSegment> skipVariableSource = updateStatement.getFrom().flatMap(from -> findAliasedVariableTableSource(updateStatement, from));
+        updateStatement.getFrom().ifPresent(from -> extractTablesFromTableSegment(from, skipVariableSource));
         updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumns().get(0)));
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }
     }
     
+    private Optional<SimpleTableSegment> findAliasedVariableTableSource(final UpdateStatement updateStatement, final TableSegment fromSegment) {
+        if (!updateStatement.isTargetTableIsFromAlias() || !(updateStatement.getTable() instanceof SimpleTableSegment)) {
+            return Optional.empty();
+        }
+        SimpleTableSegment targetTable = (SimpleTableSegment) updateStatement.getTable();
+        String targetName = targetTable.getTableName().getIdentifier().getValue();
+        return findFromTableSegmentByAliasTarget(fromSegment, targetTable, targetName).filter(each -> isVariableTable(updateStatement, each));
+    }
+    
+    private Optional<SimpleTableSegment> findFromTableSegmentByAliasTarget(final TableSegment fromSegment, final SimpleTableSegment targetTable, final String targetName) {
+        if (fromSegment instanceof SimpleTableSegment) {
+            SimpleTableSegment fromSimpleTable = (SimpleTableSegment) fromSegment;
+            return isAliasTargetMatch(targetTable, targetName, fromSimpleTable) ? Optional.of(fromSimpleTable) : Optional.empty();
+        }
+        if (fromSegment instanceof JoinTableSegment) {
+            JoinTableSegment joinTableSegment = (JoinTableSegment) fromSegment;
+            Optional<SimpleTableSegment> leftResult = findFromTableSegmentByAliasTarget(joinTableSegment.getLeft(), targetTable, targetName);
+            return leftResult.isPresent() ? leftResult : findFromTableSegmentByAliasTarget(joinTableSegment.getRight(), targetTable, targetName);
+        }
+        return Optional.empty();
+    }
+    
+    private boolean isAliasTargetMatch(final SimpleTableSegment targetTable, final String targetName, final SimpleTableSegment fromTable) {
+        if (targetName.equalsIgnoreCase(fromTable.getAliasName().orElse(null))) {
+            return !targetTable.getOwner().isPresent();
+        }
+        return fromTable.getAliasName().isPresent()
+                && targetName.equalsIgnoreCase(fromTable.getTableName().getIdentifier().getValue())
+                && isSameOwner(targetTable, fromTable);
+    }
+    
+    private boolean isSameOwner(final SimpleTableSegment left, final SimpleTableSegment right) {
+        if (!left.getOwner().isPresent() && !right.getOwner().isPresent()) {
+            return true;
+        }
+        if (left.getOwner().isPresent() && right.getOwner().isPresent()) {
+            return left.getOwner().get().getIdentifier().getValue().equalsIgnoreCase(right.getOwner().get().getIdentifier().getValue());
+        }
+        return false;
+    }
+    
     private boolean isVariableTableTarget(final UpdateStatement updateStatement) {
         if (!(updateStatement.getTable() instanceof SimpleTableSegment)) {
             return false;
         }
-        SimpleTableSegment targetTable = (SimpleTableSegment) updateStatement.getTable();
-        if (targetTable.getOwner().isPresent()) {
+        return isVariableTable(updateStatement, (SimpleTableSegment) updateStatement.getTable());
+    }
+    
+    private boolean isVariableTable(final UpdateStatement updateStatement, final SimpleTableSegment tableSegment) {
+        if (tableSegment.getOwner().isPresent()) {
             return false;
         }
-        IdentifierValue tableName = targetTable.getTableName().getIdentifier();
+        IdentifierValue tableName = tableSegment.getTableName().getIdentifier();
         if (QuoteCharacter.NONE != tableName.getQuoteCharacter()) {
             return false;
         }
