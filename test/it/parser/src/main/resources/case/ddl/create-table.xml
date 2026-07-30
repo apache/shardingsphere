@@ -2245,6 +2245,58 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_partition_with_storage_policy_doris" db-types="Doris">
+        <table name="create_table_partion_use_created_policy" start-index="13" stop-index="51" />
+        <column-definition type="DATE" start-index="54" stop-index="60">
+            <column name="k1" start-index="54" stop-index="55" />
+        </column-definition>
+        <column-definition type="INT" start-index="63" stop-index="68">
+            <column name="k2" start-index="63" stop-index="64" />
+        </column-definition>
+        <column-definition type="VARCHAR" agg-type="REPLACE" start-index="71" stop-index="94">
+            <column name="V1" start-index="71" stop-index="72" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_multi_range_partition_date_doris" db-types="Doris">
+        <table name="create_table_multi_partion_date" start-index="13" stop-index="43" />
+        <column-definition type="DATE" start-index="46" stop-index="52">
+            <column name="k1" start-index="46" stop-index="47" />
+        </column-definition>
+        <column-definition type="INT" start-index="55" stop-index="60">
+            <column name="k2" start-index="55" stop-index="56" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="63" stop-index="76">
+            <column name="V1" start-index="63" stop-index="64" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_multi_range_partition_hour_doris" db-types="Doris">
+        <table name="create_table_multi_partion_date_hour" start-index="13" stop-index="48" />
+        <column-definition type="DATETIME" start-index="51" stop-index="61">
+            <column name="k1" start-index="51" stop-index="52" />
+        </column-definition>
+        <column-definition type="INT" start-index="64" stop-index="69">
+            <column name="k2" start-index="64" stop-index="65" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="72" stop-index="85">
+            <column name="V1" start-index="72" stop-index="73" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_multi_range_partition_integer_doris" db-types="Doris">
+        <table name="create_table_multi_partion_integer" start-index="13" stop-index="46" />
+        <column-definition type="BIGINT" start-index="49" stop-index="57">
+            <column name="k1" start-index="49" stop-index="50" />
+        </column-definition>
+        <column-definition type="INT" start-index="60" stop-index="65">
+            <column name="k2" start-index="60" stop-index="61" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="68" stop-index="81">
+            <column name="V1" start-index="68" stop-index="69" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_select_without_query" db-types="Oracle">
         <table name="t_order_new" start-index="13" stop-index="23"/>
     </create-table>
