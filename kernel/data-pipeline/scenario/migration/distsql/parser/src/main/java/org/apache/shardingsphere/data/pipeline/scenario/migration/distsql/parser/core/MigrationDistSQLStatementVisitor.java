@@ -253,7 +253,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
             return result;
         }
         for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(QuoteCharacter.unwrapAndTrimText(each.key.getText()), QuoteCharacter.unwrapAndTrimText(each.value.getText()));
+            result.setProperty(QuoteCharacter.unwrapText(each.key.getText()), QuoteCharacter.unwrapText(each.value.getText()));
         }
         return result;
     }
