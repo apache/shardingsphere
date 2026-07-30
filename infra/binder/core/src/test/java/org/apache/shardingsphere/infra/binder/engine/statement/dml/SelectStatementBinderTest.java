@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
@@ -59,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -319,6 +321,41 @@ class SelectStatementBinderTest {
         List<ProjectionSegment> actualProjectionSegments = new ArrayList<>(((ShorthandProjectionSegment) actualProjection).getActualProjectionSegments());
         assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(1)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
         assertThat(((ColumnProjectionSegment) actualProjectionSegments.get(1)).getColumn().getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+    }
+    
+    @Test
+    void assertBindWithCaseWhenLiteralBranchExpressionInSubquery() {
+        ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
+        subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        ExpressionProjectionSegment caseWhenProjection = new ExpressionProjectionSegment(0, 0, "CASE WHEN user_id <= 10 THEN '' ELSE user_name END",
+                new CaseWhenExpression(0, 0, null, Collections.singleton(new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")),
+                        new LiteralExpressionSegment(0, 0, 10), "<=", "user_id <= 10")),
+                        Collections.singleton(new LiteralExpressionSegment(0, 0, "")), new ColumnSegment(0, 0, new IdentifierValue("user_name")),
+                        "CASE WHEN user_id <= 10 THEN '' ELSE user_name END"));
+        caseWhenProjection.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
+        subqueryProjections.getProjections().add(caseWhenProjection);
+        SelectStatement subquerySelectStatement = SelectStatement.builder().databaseType(databaseType).projections(subqueryProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, subquerySelectStatement, ""));
+        subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("text")));
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        BinaryOperationExpression whereExpression =
+                new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("a")), new LiteralExpressionSegment(0, 0, ""), "=", "a = ''");
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).from(subqueryTableSegment)
+                .where(new WhereSegment(0, 0, whereExpression)).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        ProjectionSegment actualProjection = actual.getProjections().getProjections().iterator().next();
+        List<ProjectionSegment> actualProjectionSegments = new ArrayList<>(((ShorthandProjectionSegment) actualProjection).getActualProjectionSegments());
+        ColumnSegment actualCaseWhenProjection = ((ColumnProjectionSegment) actualProjectionSegments.get(1)).getColumn();
+        assertThat(actualCaseWhenProjection.getColumnBoundInfo().getOriginalTable().getValue(), is(""));
+        assertThat(actualCaseWhenProjection.getColumnBoundInfo().getOriginalColumn().getValue(), is("a"));
+        assertThat(actualCaseWhenProjection.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+        ColumnSegment actualWhereColumn = (ColumnSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft();
+        assertThat(actualWhereColumn.getColumnBoundInfo().getOriginalTable().getValue(), is(""));
+        assertThat(actualWhereColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("a"));
+        assertThat(actualWhereColumn.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
     }
     
     @Test
