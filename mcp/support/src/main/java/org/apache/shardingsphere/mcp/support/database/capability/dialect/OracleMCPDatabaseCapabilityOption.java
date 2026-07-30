@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
+import java.util.Optional;
+
 /**
  * MCP database capability option for Oracle.
  */
@@ -27,6 +29,11 @@ public final class OracleMCPDatabaseCapabilityOption implements MCPDatabaseCapab
     @Override
     public boolean isExplainSupported() {
         return false;
+    }
+    
+    @Override
+    public Optional<String> getSequenceQuery() {
+        return Optional.of("SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES");
     }
     
     @Override

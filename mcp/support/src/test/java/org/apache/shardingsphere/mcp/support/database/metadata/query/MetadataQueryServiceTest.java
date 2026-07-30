@@ -21,23 +21,23 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,30 +65,25 @@ import static org.mockito.Mockito.when;
 
 class MetadataQueryServiceTest {
     
-    private Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
-    
     private MockedStatic<DatabaseTypeFactory> databaseTypeFactory;
     
     private MockedStatic<TypedSPILoader> typedSPILoader;
     
     private MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader;
     
-    private RequestScopedMetadataContext metadataContext;
-    
     private MetadataQueryService metadataQueryService;
     
     @BeforeEach
     void setUp() {
-        runtimeDatabases = DatabaseTestDataFactory.createRuntimeDatabases();
         databaseTypeFactory = SupportDatabaseTypeFactoryMocker.mockByConnectionMetadata();
         typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS);
         databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class);
         mockDatabaseType("MySQL", false);
         mockDatabaseType("PostgreSQL", true);
         mockDatabaseType("Hive", false);
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = DatabaseTestDataFactory.createRuntimeDatabases();
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(runtimeDatabases);
-        metadataContext = new RequestScopedMetadataContext(runtimeDatabases, databaseCapabilityProvider);
-        metadataQueryService = new MetadataQueryService(databaseCapabilityProvider, metadataContext);
+        metadataQueryService = new MetadataQueryService(databaseCapabilityProvider, new RequestScopedMetadataContext(runtimeDatabases, databaseCapabilityProvider));
     }
     
     @AfterEach
@@ -104,15 +99,18 @@ class MetadataQueryServiceTest {
         when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
         typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
         typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, databaseType)).thenReturn(databaseTypeFromSPI);
-        mockDialectDatabaseMetaData(databaseTypeFromSPI, sequenceSupported);
+        MCPDatabaseCapabilityOption capabilityOption = mock(MCPDatabaseCapabilityOption.class);
+        when(capabilityOption.getType()).thenReturn(databaseType);
+        when(capabilityOption.getSequenceQuery()).thenReturn(
+                sequenceSupported ? Optional.of("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES") : Optional.empty());
+        typedSPILoader.when(() -> TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType)).thenReturn(Optional.of(capabilityOption));
+        mockDialectDatabaseMetaData(databaseTypeFromSPI);
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseTypeFromSPI)).thenReturn(Optional.empty());
     }
     
-    private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final boolean sequenceSupported) {
+    private void mockDialectDatabaseMetaData(final DatabaseType databaseType) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
         when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, DialectSchemaSemantics.NATIVE_SCHEMA));
-        when(result.getSequenceOption()).thenReturn(
-                sequenceSupported ? Optional.of(new DialectSequenceOption("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM TEST_SEQUENCES")) : Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(result));
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(result);
     }
@@ -321,9 +319,11 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQuerySequences() {
-        List<ShardingSphereSequence> actual = metadataQueryService.querySequences("runtime_db", "public");
+        List<MCPSequenceMetadata> actual = metadataQueryService.querySequences("runtime_db", "public");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getName(), is("order_seq"));
+        assertThat(actual.get(0).getDatabase(), is("runtime_db"));
+        assertThat(actual.get(0).getSchema(), is("public"));
+        assertThat(actual.get(0).getSequence(), is("order_seq"));
     }
     
     @Test
@@ -334,9 +334,9 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQuerySequence() {
-        Optional<ShardingSphereSequence> actual = metadataQueryService.querySequence("runtime_db", "public", "order_seq");
+        Optional<MCPSequenceMetadata> actual = metadataQueryService.querySequence("runtime_db", "public", "order_seq");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getName(), is("order_seq"));
+        assertThat(actual.get().getSequence(), is("order_seq"));
     }
     
     @Test

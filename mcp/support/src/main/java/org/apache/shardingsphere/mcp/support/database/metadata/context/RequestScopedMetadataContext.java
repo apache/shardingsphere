@@ -25,6 +25,8 @@ import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetad
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPMetadataSnapshot;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -44,7 +46,7 @@ public final class RequestScopedMetadataContext {
     
     private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
     
-    private final Map<String, Collection<ShardingSphereSchema>> loadedSchemas = new LinkedHashMap<>(4, 1F);
+    private final Map<String, MCPMetadataSnapshot> loadedMetadata = new LinkedHashMap<>(4, 1F);
     
     private final Map<RelationKey, List<MCPColumnMetadata>> loadedColumns = new LinkedHashMap<>(16, 1F);
     
@@ -59,17 +61,32 @@ public final class RequestScopedMetadataContext {
      * @return schema metadata
      */
     public Optional<Collection<ShardingSphereSchema>> loadSchemas(final String databaseName) {
-        Collection<ShardingSphereSchema> loadedMetadata = loadedSchemas.get(databaseName);
-        if (null != loadedMetadata) {
-            return Optional.of(loadedMetadata);
+        return loadMetadata(databaseName).map(MCPMetadataSnapshot::getSchemas);
+    }
+    
+    /**
+     * Load sequence metadata lazily within the current request.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return sequence metadata
+     */
+    public Optional<Collection<MCPSequenceMetadata>> loadSequences(final String databaseName, final String schemaName) {
+        return loadMetadata(databaseName).map(each -> each.getSequences(schemaName));
+    }
+    
+    private Optional<MCPMetadataSnapshot> loadMetadata(final String databaseName) {
+        MCPMetadataSnapshot loadedSnapshot = loadedMetadata.get(databaseName);
+        if (null != loadedSnapshot) {
+            return Optional.of(loadedSnapshot);
         }
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = runtimeDatabases.get(databaseName);
         Optional<RuntimeDatabaseProfile> databaseProfile = databaseCapabilityProvider.findDatabaseProfile(databaseName);
         if (null == runtimeDatabaseConfig || databaseProfile.isEmpty()) {
             return Optional.empty();
         }
-        Collection<ShardingSphereSchema> result = metadataLoader.load(databaseName, runtimeDatabaseConfig, databaseProfile.get());
-        loadedSchemas.put(databaseName, result);
+        MCPMetadataSnapshot result = metadataLoader.load(databaseName, runtimeDatabaseConfig, databaseProfile.get());
+        loadedMetadata.put(databaseName, result);
         return Optional.of(result);
     }
     

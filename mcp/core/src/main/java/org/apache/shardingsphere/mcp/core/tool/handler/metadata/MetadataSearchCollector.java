@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 
@@ -189,8 +189,8 @@ final class MetadataSearchCollector {
         return createSearchHit(database, schema.getName(), SupportedMCPMetadataObjectType.SCHEMA, "", "", schema.getName());
     }
     
-    private MetadataSearchHit createSearchHit(final String database, final String schema, final ShardingSphereSequence sequence) {
-        return createSearchHit(database, schema, SupportedMCPMetadataObjectType.SEQUENCE, "", "", sequence.getName());
+    private MetadataSearchHit createSearchHit(final String database, final String schema, final MCPSequenceMetadata sequence) {
+        return createSearchHit(database, schema, SupportedMCPMetadataObjectType.SEQUENCE, "", "", sequence.getSequence());
     }
     
     private MetadataSearchHit createSearchHit(final String database, final String schema, final SupportedMCPMetadataObjectType objectType,

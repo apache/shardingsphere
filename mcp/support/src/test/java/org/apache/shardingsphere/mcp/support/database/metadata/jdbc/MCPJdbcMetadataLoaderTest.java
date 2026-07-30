@@ -61,7 +61,7 @@ class MCPJdbcMetadataLoaderTest extends AbstractMCPJdbcMetadataLoaderTest {
     @MethodSource("loadTypedMetadataArguments")
     void assertLoadWithTypedMetadata(final String name, final SupportedMCPMetadataObjectType objectType, final String objectName) throws SQLException {
         LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration(createStandardPostgreSQLMetadataConnection())));
-        assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), objectType, objectName));
+        assertTrue(containsMetadata(actual.findSnapshot("logic_db").orElseThrow(), objectType, objectName));
     }
     
     @Test

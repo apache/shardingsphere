@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPMetadataSnapshot;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -253,8 +254,8 @@ class RuntimeDatabaseValidationServiceTest {
         return new RuntimeDatabaseConfiguration("jdbc:test:profile", "demo", "", "com.mysql.cj.jdbc.Driver");
     }
     
-    private static List<ShardingSphereSchema> createMetadata(final String schemaName) {
-        return List.of(new ShardingSphereSchema(schemaName, mock(DatabaseType.class)));
+    private static MCPMetadataSnapshot createMetadata(final String schemaName) {
+        return new MCPMetadataSnapshot(List.of(new ShardingSphereSchema(schemaName, mock(DatabaseType.class))), Map.of());
     }
     
     private static final class InvisibleDatabaseDriver implements Driver {

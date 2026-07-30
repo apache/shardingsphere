@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
+import java.util.Optional;
+
 /**
  * MCP database capability option for SQLServer.
  */
@@ -27,6 +29,12 @@ public final class SQLServerMCPDatabaseCapabilityOption implements MCPDatabaseCa
     @Override
     public boolean isExplainSupported() {
         return false;
+    }
+    
+    @Override
+    public Optional<String> getSequenceQuery() {
+        return Optional.of(
+                "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id");
     }
     
     @Override

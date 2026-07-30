@@ -34,7 +34,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DefaultSQLOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
@@ -163,15 +162,6 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return generated key option
      */
     default Optional<DialectGeneratedKeyOption> getGeneratedKeyOption() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Get sequence option.
-     *
-     * @return sequence option
-     */
-    default Optional<DialectSequenceOption> getSequenceOption() {
         return Optional.empty();
     }
     

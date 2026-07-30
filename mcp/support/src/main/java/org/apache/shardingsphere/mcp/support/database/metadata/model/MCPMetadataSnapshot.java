@@ -15,19 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.model;
+package org.apache.shardingsphere.mcp.support.database.metadata.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * ShardingSphere sequence.
+ * MCP metadata snapshot.
  */
 @RequiredArgsConstructor
-@Getter
-@ToString
-public final class ShardingSphereSequence {
+public final class MCPMetadataSnapshot {
     
-    private final String name;
+    @Getter
+    private final Collection<ShardingSphereSchema> schemas;
+    
+    private final Map<String, Collection<MCPSequenceMetadata>> sequences;
+    
+    /**
+     * Get sequence metadata in a schema.
+     *
+     * @param schemaName schema name
+     * @return sequence metadata
+     */
+    public Collection<MCPSequenceMetadata> getSequences(final String schemaName) {
+        return sequences.getOrDefault(schemaName, Collections.emptyList());
+    }
 }

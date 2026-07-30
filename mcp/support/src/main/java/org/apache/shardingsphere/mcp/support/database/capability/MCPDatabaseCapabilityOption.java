@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
+import java.util.Optional;
+
 /**
  * MCP database capability option.
  */
@@ -32,6 +34,15 @@ public interface MCPDatabaseCapabilityOption extends TypedSPI {
      * @return whether MCP EXPLAIN execution is supported
      */
     boolean isExplainSupported();
+    
+    /**
+     * Get sequence metadata query.
+     *
+     * @return sequence metadata query
+     */
+    default Optional<String> getSequenceQuery() {
+        return Optional.empty();
+    }
     
     @Override
     String getType();
