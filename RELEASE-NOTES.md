@@ -77,6 +77,7 @@
 1. SQL Parser: Support function table alias column parsing for PostgreSQL and openGauss - [#39268](https://github.com/apache/shardingsphere/pull/39268)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
+1. SQL Binder: Support PostgreSQL whole-row projection binding - [#39276](https://github.com/apache/shardingsphere/pull/39276)
 1. Metadata: Support Oracle dictionary views by adding SYS default system schema and YAML definitions - [#38388](https://github.com/apache/shardingsphere/pull/38388)
 1. Metadata: Support parsing query properties from Oracle JDBC URLs - [#38901](https://github.com/apache/shardingsphere/pull/38901)
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)

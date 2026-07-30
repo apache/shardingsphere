@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.database.connector.opengauss.metadata.database.
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSchemaOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLFunctionOption;
+import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLSQLOption;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -94,6 +96,11 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     public DialectTransactionOption getTransactionOption() {
         return new DialectTransactionOption(true, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, false, true, true,
                 Collections.singleton("org.opengauss.xa.PGXADataSource"));
+    }
+    
+    @Override
+    public DialectSQLOption getSQLOption() {
+        return new PostgreSQLSQLOption();
     }
     
     @Override

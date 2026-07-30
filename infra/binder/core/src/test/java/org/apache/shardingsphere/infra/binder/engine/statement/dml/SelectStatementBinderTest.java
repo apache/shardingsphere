@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -59,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -72,8 +77,10 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class SelectStatementBinderTest {
@@ -119,6 +126,27 @@ class SelectStatementBinderTest {
         assertThat(((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next(), isA(ColumnSegment.class));
         assertThat(((ColumnSegment) ((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next())
                 .getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindWholeRowProjection() {
+        DatabaseType protocolType = mock(DatabaseType.class);
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, CALLS_REAL_METHODS);
+        DialectSQLOption sqlOption = mock(DialectSQLOption.class);
+        when(sqlOption.isSupportWholeRowProjection()).thenReturn(true);
+        when(dialectDatabaseMetaData.getSQLOption()).thenReturn(sqlOption);
+        when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(QuoteCharacter.NONE);
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("o"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(protocolType).projections(projections).from(createAliasedSimpleTableSegment("t_order", "o")).build();
+        try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, protocolType)).thenReturn(dialectDatabaseMetaData);
+            SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                    new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+            ProjectionSegment actualProjection = actual.getProjections().getProjections().iterator().next();
+            assertThat(actualProjection, isA(ExpressionProjectionSegment.class));
+            assertThat(((ExpressionProjectionSegment) actualProjection).getText(), is("o"));
+        }
     }
     
     @Test

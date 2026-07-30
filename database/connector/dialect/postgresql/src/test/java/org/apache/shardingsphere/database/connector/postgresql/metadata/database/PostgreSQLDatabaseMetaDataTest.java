@@ -30,6 +30,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLFunctionOption;
+import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLSQLOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -103,6 +104,12 @@ class PostgreSQLDatabaseMetaDataTest {
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.postgresql.xa.PGXADataSource"));
+    }
+    
+    @Test
+    void assertGetSQLOption() {
+        assertThat(dialectDatabaseMetaData.getSQLOption(), isA(PostgreSQLSQLOption.class));
+        assertTrue(dialectDatabaseMetaData.getSQLOption().isSupportWholeRowProjection());
     }
     
     @Test
