@@ -25,11 +25,11 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRu
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLMConversationArtifactWriter;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
-import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
-import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.junit.jupiter.api.AfterAll;
@@ -81,15 +81,14 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             "interaction-trace.json", "mcp-runtime.log", "assertion-report.json");
     
     private static final Pattern UNREDACTED_SECRET_PATTERN = Pattern.compile(
-            "(?i)(\"(?:api[_-]?key|token|password|authorization|secret)\"\\s*:\\s*\")(?!<redacted>\")([^\"]+)(\")|(Bearer\\s+)(?!<redacted>)[A-Za-z0-9._~+/=-]+");
+            "(?i)(?<![a-z0-9_])\"?(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"?\\s*[:=]\\s*[\"']?(?!<redacted>)[^\\s,\"'}]+"
+                    + "|(Bearer\\s+)(?!<redacted>)[A-Za-z0-9._~+/=-]+|jdbc:");
     
     private static LLMRuntimeSupport.ModelRuntime llmRuntime;
     
-    private final LLMRuntimeFixtureFactory runtimeFixtureFactory = new LLMRuntimeFixtureFactory();
-    
     private final LLMConversationArtifactWriter artifactWriter = new LLMConversationArtifactWriter();
     
-    private Fixture runtimeFixture;
+    private LLMMySQLRuntimeFixture runtimeFixture;
     
     @BeforeAll
     static void prepareLLMRuntime() throws InterruptedException {
@@ -162,8 +161,9 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 createInteractionClient(),
                 modelRuntime.getConfiguration().getModelName()).run(scenario);
         Path artifactDirectory = modelRuntime.getConfiguration().createArtifactDirectory("llm-http/" + scenario.id());
-        artifactWriter.write(artifactDirectory, actualResult, modelRuntime.getEvidence());
-        assertArtifacts(artifactDirectory);
+        Collection<String> sensitiveValues = getArtifactSensitiveValues();
+        artifactWriter.write(artifactDirectory, actualResult, modelRuntime.getEvidence(), sensitiveValues);
+        assertArtifacts(artifactDirectory, sensitiveValues);
         assertTrue(actualResult.assertionReport().isSuccess(), () -> createFailureMessage(
                 scenario.id(), actualResult.assertionReport(), artifactDirectory));
         assertFalse(actualResult.evidence().interactionTrace().isEmpty(), scenario.id() + " must capture MCP evidence.");
@@ -172,7 +172,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private LLME2EAssertionReport evaluateReadOnlyQuery(final String answer, final List<MCPInteractionTraceRecord> trace) {
         Optional<Integer> actualCount = findQueryCount(trace, 0);
-        if (actualCount.isEmpty() || getRequiredRuntimeFixture().totalOrders() != actualCount.get()) {
+        if (actualCount.isEmpty() || getRequiredRuntimeFixture().getTotalOrders() != actualCount.get()) {
             return LLME2EAssertionReport.failure("query_evidence_mismatch", "The MCP query response did not contain the fixture row count.");
         }
         return containsStandaloneNumber(answer, actualCount.get())
@@ -247,7 +247,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             return LLME2EAssertionReport.failure("missing_resource_recovery", "The model did not follow the stale response recovery action to a live resource containing orders.");
         }
         Optional<Integer> actualCount = findQueryCount(trace, trace.get(recoveryResourceIndex).getModelTurn());
-        if (actualCount.isEmpty() || getRequiredRuntimeFixture().totalOrders() != actualCount.get()) {
+        if (actualCount.isEmpty() || getRequiredRuntimeFixture().getTotalOrders() != actualCount.get()) {
             return LLME2EAssertionReport.failure("query_evidence_mismatch", "The recovered conversation did not obtain the fixture row count from MCP.");
         }
         return containsStandaloneNumber(answer, actualCount.get())
@@ -363,7 +363,23 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         return Pattern.compile("(?<![a-z0-9_])" + Pattern.quote(identifier) + "(?![a-z0-9_])").matcher(answer).find();
     }
     
-    private void assertArtifacts(final Path artifactDirectory) throws IOException {
+    private Collection<String> getArtifactSensitiveValues() {
+        Set<String> result = new LinkedHashSet<>();
+        addArtifactSensitiveValue(result, getRequiredLLMRuntime().getConfiguration().getApiKey());
+        for (RuntimeDatabaseConfiguration each : getRequiredRuntimeFixture().getRuntimeDatabases().values()) {
+            addArtifactSensitiveValue(result, each.getJdbcUrl());
+            addArtifactSensitiveValue(result, each.getPassword());
+        }
+        return result;
+    }
+    
+    private void addArtifactSensitiveValue(final Collection<String> sensitiveValues, final String value) {
+        if (8 <= value.length()) {
+            sensitiveValues.add(value);
+        }
+    }
+    
+    private void assertArtifacts(final Path artifactDirectory, final Collection<String> sensitiveValues) throws IOException {
         assertTrue(Files.isDirectory(artifactDirectory), () -> "Missing LLM artifact directory: " + artifactDirectory);
         for (String each : ARTIFACT_FILES) {
             assertTrue(Files.isRegularFile(artifactDirectory.resolve(each)), () -> "Missing LLM artifact: " + artifactDirectory.resolve(each));
@@ -372,7 +388,9 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             for (Path each : paths.filter(Files::isRegularFile).toList()) {
                 String content = Files.readString(each);
                 assertFalse(UNREDACTED_SECRET_PATTERN.matcher(content).find(), () -> "Unredacted secret-like value in LLM artifact: " + each);
-                assertFalse(content.contains(getRequiredLLMRuntime().getConfiguration().getApiKey()), () -> "Known model API key leaked into LLM artifact: " + each);
+                for (String sensitiveValue : sensitiveValues) {
+                    assertFalse(content.contains(sensitiveValue), () -> "Known sensitive value leaked into LLM artifact: " + each);
+                }
             }
         }
     }
@@ -389,7 +407,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private String queryOrderStatus() throws SQLException {
-        RuntimeDatabaseConfiguration databaseConfig = getRequiredRuntimeFixture().runtimeDatabases().get(DATABASE_NAME);
+        RuntimeDatabaseConfiguration databaseConfig = getRequiredRuntimeFixture().getRuntimeDatabases().get(DATABASE_NAME);
         try (
                 Connection connection = databaseConfig.openConnection(DATABASE_NAME);
                 PreparedStatement statement = connection.prepareStatement("SELECT status FROM orders WHERE order_id = 1");
@@ -427,17 +445,25 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return getRequiredRuntimeFixture().runtimeDatabases();
+        return getRequiredRuntimeFixture().getRuntimeDatabases();
     }
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        if (null == runtimeFixture) {
-            runtimeFixture = runtimeFixtureFactory.createMySQLFixture(DATABASE_NAME, "Docker is required for the MySQL-backed LLM E2E test.");
+        if (null != runtimeFixture) {
+            return;
+        }
+        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
+            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed LLM E2E test."));
+        }
+        try {
+            runtimeFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture(DATABASE_NAME);
+        } catch (final SQLException ex) {
+            throw new IOException(ex);
         }
     }
     
-    private Fixture getRequiredRuntimeFixture() {
+    private LLMMySQLRuntimeFixture getRequiredRuntimeFixture() {
         if (null == runtimeFixture) {
             throw new IllegalStateException("LLM E2E runtime fixture was not initialized.");
         }
