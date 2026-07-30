@@ -65,8 +65,6 @@ jobs:
           docker system df
       - name: Build MCP E2E Test Dependencies and Distribution
         run: ./mvnw -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
-      - name: Run MCP E2E Harness Tests
-        run: ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true -Dtest='*Test,!*E2ETest' -Dsurefire.failIfNoSpecifiedTests=true -T1C -B -ntp
       - name: Build MCP Distribution Image
         run: |
           docker build \

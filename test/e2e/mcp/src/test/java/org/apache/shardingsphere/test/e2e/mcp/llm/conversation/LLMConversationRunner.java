@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatCompletion;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatMessage;
@@ -190,8 +189,6 @@ public final class LLMConversationRunner {
             artifacts.addTrace(new MCPInteractionTraceRecord(
                     artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
                     each.getName(), getTraceArguments(each.getName(), arguments), response, true, latencyMillis));
-            artifacts.addRuntimeLogLine("action=" + each.getName() + " args=" + JsonUtils.toJsonString(arguments));
-            artifacts.addRuntimeLogLine("response=" + JsonUtils.toJsonString(response));
             messages.add(LLMChatMessage.tool(each.getId(), LLMMCPModelFacingToolResponseFormatter.format(response)));
         }
         return Optional.empty();
@@ -255,10 +252,9 @@ public final class LLMConversationRunner {
      * @param rawModelOutputs raw model outputs
      * @param toolDefinitions tool definitions derived from MCP discovery
      * @param interactionTrace interaction trace
-     * @param runtimeLogLines runtime log lines
      */
     public record Evidence(List<String> rawModelOutputs, List<Map<String, Object>> toolDefinitions,
-                           List<MCPInteractionTraceRecord> interactionTrace, List<String> runtimeLogLines) {
+                           List<MCPInteractionTraceRecord> interactionTrace) {
     }
     
     private static final class ConversationArtifacts {
@@ -270,8 +266,6 @@ public final class LLMConversationRunner {
         private List<Map<String, Object>> toolDefinitions = List.of();
         
         private final List<MCPInteractionTraceRecord> trace = new LinkedList<>();
-        
-        private final List<String> runtimeLogLines = new LinkedList<>();
         
         private int nextSequence() {
             return trace.size() + 1;
@@ -301,13 +295,9 @@ public final class LLMConversationRunner {
             return trace;
         }
         
-        private void addRuntimeLogLine(final String runtimeLogLine) {
-            runtimeLogLines.add(runtimeLogLine);
-        }
-        
         private Result createResult(final Scenario scenario, final String modelName, final LLME2EAssertionReport assertionReport) {
             return new Result(scenario, SYSTEM_PROMPT, LLME2EConfiguration.MODEL_PROVIDER, modelName, actualAnswer,
-                    new Evidence(rawModelOutputs, toolDefinitions, trace, runtimeLogLines), assertionReport);
+                    new Evidence(rawModelOutputs, toolDefinitions, trace), assertionReport);
         }
     }
 }
