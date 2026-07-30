@@ -70,9 +70,9 @@ public final class SubqueryTableBindUtils {
             } else if (each instanceof ShorthandProjectionSegment) {
                 result.addAll(createSubqueryProjections(((ShorthandProjectionSegment) each).getActualProjectionSegments(), subqueryTableName, databaseType, tableSourceType));
             } else if (each instanceof ExpressionProjectionSegment) {
-                result.add(createColumnProjection((ExpressionProjectionSegment) each, subqueryTableName, databaseType));
+                result.add(createColumnProjection((ExpressionProjectionSegment) each, subqueryTableName, databaseType, tableSourceType));
             } else if (each instanceof AggregationProjectionSegment) {
-                result.add(createColumnProjection((AggregationProjectionSegment) each, subqueryTableName, databaseType));
+                result.add(createColumnProjection((AggregationProjectionSegment) each, subqueryTableName, databaseType, tableSourceType));
             } else {
                 result.add(each);
             }
@@ -94,11 +94,14 @@ public final class SubqueryTableBindUtils {
         return result;
     }
     
-    private static ColumnProjectionSegment createColumnProjection(final ExpressionSegment expressionSegment, final IdentifierValue subqueryTableName, final DatabaseType databaseType) {
+    private static ColumnProjectionSegment createColumnProjection(final ExpressionSegment expressionSegment, final IdentifierValue subqueryTableName, final DatabaseType databaseType,
+                                                                  final TableSourceType tableSourceType) {
         ColumnSegment newColumnSegment = new ColumnSegment(0, 0,
                 new IdentifierValue(getColumnNameFromExpression(expressionSegment, databaseType), new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter()));
         if (isReturnedColumnDerivedExpression(expressionSegment)) {
             setColumnBoundInfo(newColumnSegment, expressionSegment);
+        } else {
+            setColumnBoundInfo(newColumnSegment, tableSourceType);
         }
         if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
             newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
@@ -112,10 +115,30 @@ public final class SubqueryTableBindUtils {
         if (expressionSegment instanceof ExpressionProjectionSegment) {
             return isReturnedColumnDerivedExpression(((ExpressionProjectionSegment) expressionSegment).getExpr());
         }
+        if (expressionSegment instanceof CaseWhenExpression) {
+            return isReturnedColumnDerivedCaseWhenExpression((CaseWhenExpression) expressionSegment);
+        }
         if (expressionSegment instanceof FunctionSegment) {
             return RETURNED_COLUMN_DERIVED_FUNCTION_NAMES.contains(((FunctionSegment) expressionSegment).getFunctionName().toUpperCase());
         }
-        return expressionSegment instanceof CaseWhenExpression;
+        return false;
+    }
+    
+    private static boolean isReturnedColumnDerivedCaseWhenExpression(final CaseWhenExpression expressionSegment) {
+        if (!(expressionSegment.getElseExpr() instanceof ColumnSegment)) {
+            return false;
+        }
+        for (ExpressionSegment each : expressionSegment.getThenExprs()) {
+            if (!(each instanceof ColumnSegment)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static void setColumnBoundInfo(final ColumnSegment columnSegment, final TableSourceType tableSourceType) {
+        TableSourceType columnTableSourceType = TableSourceType.MIXED_TABLE == tableSourceType ? TableSourceType.TEMPORARY_TABLE : tableSourceType;
+        columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(null, null), new IdentifierValue(""), columnSegment.getIdentifier(), columnTableSourceType));
     }
     
     private static void setColumnBoundInfo(final ColumnSegment columnSegment, final ExpressionSegment expressionSegment) {

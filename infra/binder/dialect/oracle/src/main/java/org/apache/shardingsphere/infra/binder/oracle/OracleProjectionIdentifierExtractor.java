@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.binder.oracle;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -39,6 +41,12 @@ public final class OracleProjectionIdentifierExtractor implements DialectProject
     
     @Override
     public String getColumnNameFromExpression(final ExpressionSegment expressionSegment) {
+        if (expressionSegment instanceof ExpressionProjectionSegment && ((ExpressionProjectionSegment) expressionSegment).getExpr() instanceof LiteralExpressionSegment) {
+            Object literal = ((LiteralExpressionSegment) ((ExpressionProjectionSegment) expressionSegment).getExpr()).getLiterals();
+            if (literal instanceof String) {
+                return String.format("'%s'", literal.toString().replace("'", "''"));
+            }
+        }
         return expressionSegment.getText().replace(" ", "").toUpperCase();
     }
     
