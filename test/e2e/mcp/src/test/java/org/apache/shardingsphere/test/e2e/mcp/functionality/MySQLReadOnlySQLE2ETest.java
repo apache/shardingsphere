@@ -138,7 +138,7 @@ class MySQLReadOnlySQLE2ETest extends AbstractMySQLRuntimeE2ETest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
+    @MethodSource("allTransportCases")
     void assertAiNativeDeterministicInteractionLoop(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {

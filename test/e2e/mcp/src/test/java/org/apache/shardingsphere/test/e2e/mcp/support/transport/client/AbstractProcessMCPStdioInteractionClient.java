@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 
@@ -277,6 +278,7 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
         writer = null;
         stdErrorCollector = null;
         initializePayload = Map.of();
+        MCPArtifactUtils.writeRuntimeLogIfConfigured(getClientName() + "-", stdErrorMessages);
         stdErrorMessages.clear();
     }
     

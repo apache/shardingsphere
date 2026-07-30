@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
-import org.apache.shardingsphere.test.e2e.mcp.support.fixture.MCPWorkflowSecretReferenceFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -43,6 +42,10 @@ class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE
     
     private static final String RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/%s/rules";
     
+    private static final String SECRET_REF = "placeholder://secret-value-1";
+    
+    private static final String INPUT_LABEL = "placeholder-secret-1";
+    
     @Test
     void assertSecretReferenceApplyRequiresManualExecution() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -57,7 +60,7 @@ class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE
             assertThat(String.valueOf(applyResponse.get("category")), is(MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
             assertModelFacingPayloadContract(applyResponse);
             assertThat(getObjectListOrEmpty(applyResponse.get("step_results")).size(), is(0));
-            MCPWorkflowSecretReferenceFixture.assertSecretReferenceRedacted(applyResponse);
+            assertSecretReferenceRedacted(applyResponse);
             assertTrue(getPayloadItems(interactionClient.readResource(String.format(RULES_RESOURCE_URI, getLogicalDatabaseName()))).isEmpty());
         }
     }
@@ -67,7 +70,7 @@ class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE
                 Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
                         "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
                         "cipher_column_name", "status_cipher",
-                        "primary_algorithm_properties", Map.of("aes-key-value", MCPWorkflowSecretReferenceFixture.createSecretReferenceInput())));
+                        "primary_algorithm_properties", Map.of("aes-key-value", Map.of("secret_ref", SECRET_REF, "label", INPUT_LABEL))));
     }
     
     private void assertPlannedSecretReferencePayload(final Map<String, Object> planResponse) {
@@ -81,7 +84,7 @@ class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE
         assertThat(String.valueOf(secretReference.get("property_key")), is("aes-key-value"));
         assertThat(String.valueOf(secretReference.get("label")), is("secret_placeholder:primary.aes-key-value"));
         assertThat(String.valueOf(secretReference.get("manual_placeholder")), is("<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>"));
-        MCPWorkflowSecretReferenceFixture.assertSecretReferenceRedacted(planResponse);
+        assertSecretReferenceRedacted(planResponse);
     }
     
     private void assertSecretReferencedPreview(final Map<String, Object> previewResponse) {
@@ -91,6 +94,12 @@ class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE
         assertThat(previewArtifacts.size(), is(1));
         assertThat(String.valueOf(previewArtifacts.getFirst().get("sql")), containsString("'aes-key-value'='<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>'"));
         assertFalse(String.valueOf(previewArtifacts.getFirst().get("sql")).contains("secret_reference:primary.aes-key-value"));
-        MCPWorkflowSecretReferenceFixture.assertSecretReferenceRedacted(previewResponse);
+        assertSecretReferenceRedacted(previewResponse);
+    }
+    
+    private void assertSecretReferenceRedacted(final Object payload) {
+        String actual = String.valueOf(payload);
+        assertFalse(actual.contains(SECRET_REF));
+        assertFalse(actual.contains(INPUT_LABEL));
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
 import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
 
 import java.io.BufferedReader;
@@ -123,6 +124,8 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
             } catch (final InterruptedException ignored) {
                 Thread.currentThread().interrupt();
             } finally {
+                MCPArtifactUtils.writeRuntimeLogIfConfigured(outputCollectorThreadName + "-process-", outputMessages);
+                MCPArtifactUtils.copyRuntimeLogIfConfigured(outputCollectorThreadName + "-server-", distributionHome.resolve("logs/mcp.log"));
                 process = null;
                 outputCollector = null;
                 outputMessages.clear();

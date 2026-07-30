@@ -27,15 +27,8 @@ on:
       - ready_for_review
     paths:
       - '.github/workflows/e2e-mcp.yml'
-      - '.github/workflows/resources/actions/download-e2e-artifacts/**'
-      - '.github/workflows/resources/actions/setup-build-environment/**'
-      - '.github/workflows/resources/actions/upload-e2e-artifacts/**'
-      - 'pom.xml'
-      - 'database/connector/**'
       - 'distribution/mcp/**'
       - 'mcp/**'
-      - 'test/e2e/pom.xml'
-      - 'test/e2e/env/**'
       - 'test/e2e/mcp/**'
   schedule:
     - cron: '0 19 * * 1-5'
@@ -161,13 +154,15 @@ jobs:
           mkdir -p distribution/mcp/target
           tar -xzf "${RUNNER_TEMP}/mcp-e2e-build-artifacts/mcp-distribution-home.tar.gz" -C distribution/mcp/target
       - name: Run MCP Functionality E2E
-        run: ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.functionality -Dmcp.e2e.container.image=${{ env.MCP_DISTRIBUTION_IMAGE }} -DskipITs -Dspotless.skip=true -B -ntp
+        run: ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.functionality -Dmcp.e2e.container.image=${{ env.MCP_DISTRIBUTION_IMAGE }} -Dmcp.e2e.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/functionality-e2e" -DskipITs -Dspotless.skip=true -B -ntp
       - name: Upload MCP Functionality E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: e2e-mcp-functionality-${{ github.run_id }}-${{ github.run_attempt }}
-          path: test/e2e/mcp/target/surefire-reports
+          path: |
+            test/e2e/mcp/target/surefire-reports
+            test/e2e/mcp/target/functionality-e2e
           if-no-files-found: warn
 
   e2e-mcp-conformance:

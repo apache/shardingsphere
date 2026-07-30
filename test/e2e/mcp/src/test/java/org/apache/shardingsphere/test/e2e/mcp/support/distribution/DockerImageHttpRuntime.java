@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe.ReadinessResult;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
@@ -95,6 +96,7 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
         } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
         } finally {
+            MCPArtifactUtils.writeRuntimeLogIfConfigured("docker-image-http-", outputMessages);
             process = null;
             outputCollector = null;
             httpPort = 0;

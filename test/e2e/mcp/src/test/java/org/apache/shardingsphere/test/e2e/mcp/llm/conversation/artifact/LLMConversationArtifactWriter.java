@@ -19,18 +19,18 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRunner.Result;
+import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * LLM conversation artifact writer.
  */
 public final class LLMConversationArtifactWriter {
-    
-    private final LLME2EArtifactRedactor redactor = new LLME2EArtifactRedactor();
     
     private final LLME2ERuntimeEvidenceValidator runtimeEvidenceValidator = new LLME2ERuntimeEvidenceValidator();
     
@@ -40,20 +40,22 @@ public final class LLMConversationArtifactWriter {
      * @param artifactDirectory artifact directory
      * @param conversationResult conversation result
      * @param runtimeEvidence runtime evidence
+     * @param sensitiveValues concrete sensitive values
      * @throws IOException IO exception
      */
-    public void write(final Path artifactDirectory, final Result conversationResult, final Map<String, Object> runtimeEvidence) throws IOException {
+    public void write(final Path artifactDirectory, final Result conversationResult, final Map<String, Object> runtimeEvidence,
+                      final Collection<String> sensitiveValues) throws IOException {
         runtimeEvidenceValidator.validate(runtimeEvidence);
-        writeContent(artifactDirectory.resolve("run-context.json"), JsonUtils.toJsonString(createRunContext(conversationResult, runtimeEvidence)));
-        writeContent(artifactDirectory.resolve("system-prompt.md"), conversationResult.systemPrompt());
-        writeContent(artifactDirectory.resolve("question.txt"), conversationResult.scenario().question());
-        writeContent(artifactDirectory.resolve("answer.txt"), conversationResult.actualAnswer());
+        writeContent(artifactDirectory.resolve("run-context.json"), JsonUtils.toJsonString(createRunContext(conversationResult, runtimeEvidence)), sensitiveValues);
+        writeContent(artifactDirectory.resolve("system-prompt.md"), conversationResult.systemPrompt(), sensitiveValues);
+        writeContent(artifactDirectory.resolve("question.txt"), conversationResult.scenario().question(), sensitiveValues);
+        writeContent(artifactDirectory.resolve("answer.txt"), conversationResult.actualAnswer(), sensitiveValues);
         writeContent(artifactDirectory.resolve("raw-model-output.txt"),
-                String.join(System.lineSeparator() + System.lineSeparator(), conversationResult.evidence().rawModelOutputs()));
-        writeContent(artifactDirectory.resolve("available-tools.json"), JsonUtils.toJsonString(conversationResult.evidence().toolDefinitions()));
-        writeContent(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(conversationResult.evidence().interactionTrace()));
-        writeContent(artifactDirectory.resolve("mcp-runtime.log"), String.join(System.lineSeparator(), conversationResult.evidence().runtimeLogLines()));
-        writeContent(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(conversationResult.assertionReport()));
+                String.join(System.lineSeparator() + System.lineSeparator(), conversationResult.evidence().rawModelOutputs()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("available-tools.json"), JsonUtils.toJsonString(conversationResult.evidence().toolDefinitions()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(conversationResult.evidence().interactionTrace()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("mcp-runtime.log"), String.join(System.lineSeparator(), conversationResult.evidence().runtimeLogLines()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(conversationResult.assertionReport()), sensitiveValues);
     }
     
     private Map<String, Object> createRunContext(final Result conversationResult, final Map<String, Object> runtimeEvidence) {
@@ -65,8 +67,8 @@ public final class LLMConversationArtifactWriter {
                 "failureType", conversationResult.assertionReport().getFailureType());
     }
     
-    private void writeContent(final Path file, final String content) throws IOException {
+    private void writeContent(final Path file, final String content, final Collection<String> sensitiveValues) throws IOException {
         Files.createDirectories(file.getParent());
-        Files.writeString(file, redactor.redact(content));
+        Files.writeString(file, MCPArtifactUtils.redact(content, sensitiveValues));
     }
 }
