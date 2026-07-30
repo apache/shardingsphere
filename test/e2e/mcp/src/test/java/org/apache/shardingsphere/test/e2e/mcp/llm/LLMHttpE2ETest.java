@@ -146,8 +146,8 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     void assertInvalidResourceRecovery() throws IOException {
         runScenario(new Scenario(
                 "invalid-resource-recovery",
-                "A user pasted stale resource `" + STALE_TABLE_RESOURCE_URI + "`. Inspect that resource, recover using live MCP context without assuming the correct URI, "
-                        + "and report how many rows are currently in the orders table.",
+                "A user pasted stale resource `" + STALE_TABLE_RESOURCE_URI + "`. Inspect that resource, then follow the first safe read-only action in its top-level "
+                        + "`next_actions` by reading its `resource_uri` exactly. Do not guess another URI. Then report how many rows are currently in the orders table.",
                 false,
                 this::evaluateInvalidResourceRecovery));
     }
