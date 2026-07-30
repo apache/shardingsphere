@@ -207,6 +207,26 @@ class UpdateStatementBinderTest {
         assertFalse(updateStatementContext.getTablesContext().getTableNames().contains("@MyTableVar"));
     }
     
+    @Test
+    void assertBindAliasedTableVariableTarget() {
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(tableVariable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        assertThat(((SimpleTableSegment) actual.getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
+        assertThat(((SimpleTableSegment) actual.getTable()).getAliasName().get(), is("target"));
+        assertTrue(actual.isTargetTableIsFromAlias());
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertFalse(updateStatementContext.getTablesContext().getTableNames().contains("@MyTableVar"));
+    }
+    
     private WithSegment createWithSegment() {
         return new WithSegment(0, 0, new LinkedList<>(Collections.singletonList(
                 new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("combined_users")),

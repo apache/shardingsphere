@@ -426,6 +426,7 @@ public final class SimpleTableSegmentBinder {
         segment.getDbLink().ifPresent(optional -> result.setContainsDBLink(true));
         if (isVariableTable(binderContext, segment)) {
             result.setContainsTableVariable(true);
+            result.setOriginalTableName(tableName);
         }
         return Optional.of(result);
     }
