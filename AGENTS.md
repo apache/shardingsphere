@@ -175,6 +175,30 @@ Before editing:
 4. Convert these items into a compact acceptance checklist and a 3–10 step plan
    for non-trivial work.
 
+### Unused and Removal Conclusions
+
+Apply this gate to every analysis or change that classifies code, dependencies,
+configuration, resources, test support, or another repository artifact as
+unused or removable.
+
+1. Distinguish absence of direct references from complete unused evidence. A
+   single text or regex search, or a production-only search, proves at most that
+   no direct reference was found and cannot justify a removal recommendation.
+2. Inspect semantic and indirect consumers appropriate to the artifact,
+   including reflection, generated code, registrations, SPI and `ServiceLoader`,
+   JDBC driver discovery, Maven scopes, profiles, plugins and transitive
+   dependencies, build/test/runtime classpaths, test JARs, packaging and
+   distributions, tests, E2E, and external consumers.
+3. Inspect Git history and linked issue, pull-request, CI, and failure evidence
+   for prior additions, removals, and restorations. A prior removal failure
+   makes the artifact indirectly required unless same-boundary evidence proves
+   that the failure was unrelated or that the dependency is obsolete.
+4. Classify each examined artifact as directly used, indirectly required,
+   purpose unresolved, or a verified removal candidate. Use purpose unresolved
+   when evidence is incomplete. Use verified removal candidate only after a
+   controlled removal experiment, or equivalent existing evidence, covers the
+   affected compilation, tests, packaging, and runtime paths.
+
 When the request makes the boundary clear, infer and record it without asking
 the user to repeat it. The checklist is the maximum change boundary. Every
 changed file and hunk must satisfy it; nearby cleanup and unrelated failures do

@@ -65,6 +65,9 @@ ACTIONS = [
 ]
 REASONS = [
     "read_only_request",
+    "direct_reference_absence_insufficient",
+    "prior_failure_requires_resolution",
+    "same_boundary_removal_evidence_complete",
     "local_code_authorized",
     "explicit_non_code_authorization",
     "git_read_only",
