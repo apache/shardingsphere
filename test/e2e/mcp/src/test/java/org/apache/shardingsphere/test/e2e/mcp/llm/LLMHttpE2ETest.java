@@ -81,7 +81,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             "interaction-trace.json", "mcp-runtime.log", "assertion-report.json");
     
     private static final Pattern UNREDACTED_SECRET_PATTERN = Pattern.compile(
-            "(?i)\"?(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"?\\s*[:=]\\s*[\"']?(?!<redacted>)[^\\s,\"'}]+"
+            "(?i)(?<![a-z0-9_])\"?(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"?\\s*[:=]\\s*[\"']?(?!<redacted>)[^\\s,\"'}]+"
                     + "|(Bearer\\s+)(?!<redacted>)[A-Za-z0-9._~+/=-]+|jdbc:");
     
     private static LLMRuntimeSupport.ModelRuntime llmRuntime;

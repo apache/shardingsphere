@@ -21,12 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -41,11 +38,13 @@ public final class MCPArtifactUtils {
     
     private static final int MAX_RUNTIME_LOG_CHARS = 4096;
     
+    private static final String TRUNCATION_MARKER = "...<truncated>";
+    
     private static final Pattern JSON_SECRET_FIELD_PATTERN = Pattern.compile(
-            "(?i)(\"(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"\\s*:\\s*\")([^\"]+)(\")");
+            "(?i)(\"(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"\\s*:\\s*\")((?:\\\\.|[^\"\\\\])*)(\")");
     
     private static final Pattern SECRET_ASSIGNMENT_PATTERN = Pattern.compile(
-            "(?i)((?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\\s*[:=]\\s*[\"']?)([^\\s,\"'}]+)");
+            "(?i)(?<![a-z0-9_])((?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\\s*[:=]\\s*)([^\\r\\n]+)");
     
     private static final Pattern BEARER_TOKEN_PATTERN = Pattern.compile("(?i)(Bearer\\s+)[A-Za-z0-9._~+/=-]+");
     
@@ -86,11 +85,7 @@ public final class MCPArtifactUtils {
             return;
         }
         try {
-            String content = String.join(System.lineSeparator(), outputMessages);
-            String boundedContent = content.length() <= MAX_RUNTIME_LOG_CHARS
-                    ? content
-                    : "...<truncated>" + content.substring(content.length() - MAX_RUNTIME_LOG_CHARS);
-            writeArtifact(Path.of(artifactRoot), filePrefix, boundedContent);
+            writeArtifact(Path.of(artifactRoot), filePrefix, redactAndBoundRuntimeLog(String.join(System.lineSeparator(), outputMessages)));
         } catch (final IOException ignored) {
         }
     }
@@ -107,28 +102,20 @@ public final class MCPArtifactUtils {
             return;
         }
         try {
-            writeArtifact(Path.of(artifactRoot), filePrefix, readBoundedTail(runtimeLog));
+            writeArtifact(Path.of(artifactRoot), filePrefix, redactAndBoundRuntimeLog(Files.readString(runtimeLog, StandardCharsets.UTF_8)));
         } catch (final IOException ignored) {
         }
     }
     
     private static void writeArtifact(final Path artifactDirectory, final String filePrefix, final String content) throws IOException {
         Files.createDirectories(artifactDirectory);
-        Files.writeString(Files.createTempFile(artifactDirectory, filePrefix, ".log"), redact(content, List.of()));
+        Files.writeString(Files.createTempFile(artifactDirectory, filePrefix, ".log"), content);
     }
     
-    private static String readBoundedTail(final Path runtimeLog) throws IOException {
-        long fileSize = Files.size(runtimeLog);
-        int byteCount = (int) Math.min(fileSize, MAX_RUNTIME_LOG_CHARS);
-        ByteBuffer buffer = ByteBuffer.allocate(byteCount);
-        try (SeekableByteChannel channel = Files.newByteChannel(runtimeLog, StandardOpenOption.READ)) {
-            channel.position(fileSize - byteCount);
-            while (buffer.hasRemaining()) {
-                if (0 >= channel.read(buffer)) {
-                    break;
-                }
-            }
-        }
-        return new String(buffer.array(), StandardCharsets.UTF_8);
+    private static String redactAndBoundRuntimeLog(final String content) {
+        String redactedContent = redact(content, List.of());
+        return redactedContent.length() <= MAX_RUNTIME_LOG_CHARS
+                ? redactedContent
+                : TRUNCATION_MARKER + redactedContent.substring(redactedContent.length() - MAX_RUNTIME_LOG_CHARS);
     }
 }
