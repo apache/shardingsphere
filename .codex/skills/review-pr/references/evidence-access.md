@@ -17,8 +17,9 @@
 
 # Evidence Access
 
-Read this reference when a formal review or PR discussion requires current
-GitHub facts, or when the selected review focus requires CI or Actions evidence.
+Read this reference when a Formal Review, Local Candidate Preflight targeting
+an existing PR, or PR Discussion Reply requires current GitHub facts, or when
+the selected review focus requires CI or Actions evidence.
 
 ## Public Evidence Boundary
 
@@ -48,13 +49,21 @@ failure of one secondary endpoint does not make all GitHub evidence unavailable.
 Do not print or retain token values, redirect URLs, auth details, or raw large
 responses.
 
-For formal reviews:
+For Formal Review and Local Candidate Preflight targeting an existing PR:
 
 - Record the latest public head SHA, base ref and SHA, merge-base when local Git
   is used, and the authoritative changed-file list.
-- Compare the local triple-dot file list with GitHub `/pulls/{number}/files`
-  when both are available.
+- Resolve the same linked public requirements and relevant public comments and
+  reviews for Code Correctness Review.
+- Compare the public-head triple-dot file list with GitHub
+  `/pulls/{number}/files` when both are available.
 - Treat a mismatch or stale head as an incomplete scope, not as a PR blocker.
+
+For Local Candidate Preflight, apply the authorized local delta only after
+establishing that public context. Treat local implementation narratives and
+previous Local or Formal results as neither evidence nor conclusions to match.
+When an explicit local requirement extends the public PR scope, record it
+separately rather than presenting it as public evidence.
 
 For discussion replies, record the latest public head and fetch the complete
 thread, relevant prior review, and affected paths. Fetch the authoritative
