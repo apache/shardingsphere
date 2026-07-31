@@ -67,7 +67,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
-    private static final int MAX_TURNS = 8;
+    private static final int MAX_TURNS = 4;
     
     private static final String DATABASE_NAME = "logic_db";
     
@@ -148,6 +148,8 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 "mask-planning",
                 "The target metadata has already been verified, so do not run separate metadata discovery. Create a reviewable Mask rule plan, without applying it, "
                         + "for the status column of the orders table in the logic_db database and logic_db schema. "
+                        + "Pass database, schema, table, column, operation_type, algorithm_type, and primary_algorithm_properties directly to the planning tool; "
+                        + "omit natural_language_intent and structured_intent_evidence. "
                         + "Use the create operation, KEEP_FIRST_N_LAST_M algorithm, and primary properties first-n=1, last-m=1, replace-char=*. "
                         + "Report the plan ID and explicitly confirm that nothing was applied.",
                 Set.of(PLAN_MASK_RULE_TOOL_NAME),
@@ -268,8 +270,10 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 primaryProperties.putAll(getObjectMap(each.getArguments().get("primary_algorithm_properties")));
             }
         }
-        return DATABASE_NAME.equals(arguments.get("database")) && TABLE_NAME.equals(arguments.get("table")) && "status".equals(arguments.get("column"))
+        return DATABASE_NAME.equals(arguments.get("database")) && DATABASE_NAME.equals(arguments.get("schema"))
+                && TABLE_NAME.equals(arguments.get("table")) && "status".equals(arguments.get("column"))
                 && "create".equals(arguments.get("operation_type")) && "KEEP_FIRST_N_LAST_M".equals(arguments.get("algorithm_type"))
+                && !arguments.containsKey("natural_language_intent") && !arguments.containsKey("structured_intent_evidence")
                 && "1".equals(Objects.toString(primaryProperties.get("first-n"), ""))
                 && "1".equals(Objects.toString(primaryProperties.get("last-m"), ""))
                 && "*".equals(primaryProperties.get("replace-char"));
