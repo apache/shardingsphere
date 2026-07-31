@@ -32,11 +32,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 public final class CreateMaterializedViewStatement extends DDLStatement {
     
     private SimpleTableSegment view;
-
+    
     private String viewDefinition;
-
+    
     private SelectStatement select;
-
+    
     public CreateMaterializedViewStatement(final DatabaseType databaseType) {
         super(databaseType);
     }

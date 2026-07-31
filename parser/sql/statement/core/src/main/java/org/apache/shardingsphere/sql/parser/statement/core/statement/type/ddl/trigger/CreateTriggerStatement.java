@@ -44,23 +44,23 @@ import java.util.Optional;
 public final class CreateTriggerStatement extends DDLStatement {
     
     private FunctionNameSegment triggerName;
-
+    
     private final List<SQLStatementSegment> sqlStatements = new ArrayList<>();
-
+    
     private final List<ProcedureCallNameSegment> procedureCallNames = new ArrayList<>();
-
+    
     private final List<ProcedureBodyEndNameSegment> triggerBodyEndNameSegments = new ArrayList<>();
-
+    
     private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
-
+    
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
-
+    
     private final SQLStatementAttributes attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
-
+    
     public CreateTriggerStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
-
+    
     /**
      * Get trigger name segment.
      *
@@ -69,7 +69,7 @@ public final class CreateTriggerStatement extends DDLStatement {
     public Optional<FunctionNameSegment> getTriggerName() {
         return Optional.ofNullable(triggerName);
     }
-
+    
     /**
      * Set trigger table.
      *

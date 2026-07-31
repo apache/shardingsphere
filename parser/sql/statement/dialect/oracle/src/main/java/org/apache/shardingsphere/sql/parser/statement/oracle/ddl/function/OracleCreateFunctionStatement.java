@@ -37,7 +37,7 @@ public final class OracleCreateFunctionStatement extends CreateFunctionStatement
                                          final FunctionNameSegment functionName, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
         this(databaseType, sqlStatements, procedureCallNames, Collections.emptyList(), functionName, dynamicSqlStatementExpressions);
     }
-
+    
     public OracleCreateFunctionStatement(final DatabaseType databaseType, final List<SQLStatementSegment> sqlStatements, final List<ProcedureCallNameSegment> procedureCallNames,
                                          final List<ProcedureBodyEndNameSegment> functionBodyEndNameSegments, final FunctionNameSegment functionName,
                                          final List<ExpressionSegment> dynamicSqlStatementExpressions) {

@@ -45,11 +45,11 @@ public class CreateFunctionStatement extends DDLStatement {
     private final RoutineBodySegment routineBody;
     
     private final List<SQLStatementSegment> sqlStatements;
-
+    
     private final List<ProcedureCallNameSegment> procedureCallNames;
-
+    
     private final List<ProcedureBodyEndNameSegment> functionBodyEndNameSegments;
-
+    
     private final List<ExpressionSegment> dynamicSqlStatementExpressions;
     
     private final SQLStatementAttributes attributes;
@@ -58,7 +58,7 @@ public class CreateFunctionStatement extends DDLStatement {
                                    final FunctionNameSegment functionName, final RoutineBodySegment routineBody, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
         this(databaseType, functionName, routineBody, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), dynamicSqlStatementExpressions);
     }
-
+    
     public CreateFunctionStatement(final DatabaseType databaseType, final FunctionNameSegment functionName, final RoutineBodySegment routineBody,
                                    final List<SQLStatementSegment> sqlStatements, final List<ProcedureCallNameSegment> procedureCallNames,
                                    final List<ProcedureBodyEndNameSegment> functionBodyEndNameSegments, final List<ExpressionSegment> dynamicSqlStatementExpressions) {

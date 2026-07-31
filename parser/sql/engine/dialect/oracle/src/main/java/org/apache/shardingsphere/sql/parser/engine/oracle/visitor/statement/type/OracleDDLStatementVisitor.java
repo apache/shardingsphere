@@ -838,7 +838,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
         return result;
     }
-
+    
     private Optional<SimpleTableSegment> findTriggerTable(final PlsqlTriggerSourceContext ctx) {
         if (null != ctx.simpleDmlTrigger()) {
             return Optional.of((SimpleTableSegment) visit(ctx.simpleDmlTrigger().dmlEventClause().viewName()));
@@ -848,7 +848,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         }
         return null == ctx.systemTrigger().tableName() ? Optional.empty() : Optional.of((SimpleTableSegment) visit(ctx.systemTrigger().tableName()));
     }
-
+    
     private void addTriggerBodyEndName(final PlsqlTriggerSourceContext ctx) {
         if (null != ctx.compoundDmlTrigger()) {
             TriggerNameContext triggerName = ctx.compoundDmlTrigger().compoundTriggerBlock().triggerName();
@@ -868,7 +868,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     new IdentifierValue(body.identifier().getText())));
         }
     }
-
+    
     private FunctionNameSegment visitTriggerName(final PlsqlTriggerSourceContext ctx) {
         TriggerNameContext triggerNameContext = ctx.triggerName();
         IdentifierValue triggerName = (IdentifierValue) visit(triggerNameContext.name().identifier());
@@ -880,7 +880,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         result.setOwner(owner);
         return result;
     }
-
+    
     private OwnerSegment getTriggerOwner(final PlsqlTriggerSourceContext ctx, final TriggerNameContext triggerNameContext) {
         if (null != ctx.schemaName()) {
             return new OwnerSegment(ctx.schemaName().start.getStartIndex(), ctx.schemaName().stop.getStopIndex(), (IdentifierValue) visit(ctx.schemaName().identifier()));
@@ -1552,26 +1552,27 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitProcedureCall(final ProcedureCallContext ctx) {
-        int startIndex = ctx.procedureName().start.getStartIndex();
-        PackageSegment packageSegment = null;
-        if (null != ctx.packageName()) {
-            startIndex = ctx.packageName().start.getStartIndex();
-            packageSegment = (PackageSegment) visit(ctx.packageName());
-        }
-        ProcedureCallNameSegment result = new ProcedureCallNameSegment(startIndex, ctx.procedureName().stop.getStopIndex(), (IdentifierValue) visit(ctx.procedureName().identifier()));
-        result.setPackageSegment(packageSegment);
-        getProcedureCallNames().add(result);
+        PackageSegment packageSegment = null == ctx.packageName() ? null : (PackageSegment) visit(ctx.packageName());
+        getProcedureCallNames().add(createProcedureCallNameSegment(ctx.procedureName(), packageSegment));
         return defaultResult();
     }
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        ProcedureCallNameSegment result = new ProcedureCallNameSegment(ctx.procedureName().start.getStartIndex(), ctx.procedureName().stop.getStopIndex(),
-                (IdentifierValue) visit(ctx.procedureName().identifier()));
-        getProcedureCallNames().add(result);
+        PackageSegment packageSegment = null == ctx.schemaName()
+                ? null
+                : new PackageSegment(ctx.schemaName().start.getStartIndex(), ctx.schemaName().stop.getStopIndex(), (IdentifierValue) visit(ctx.schemaName().identifier()));
+        getProcedureCallNames().add(createProcedureCallNameSegment(ctx.procedureName(), packageSegment));
         return defaultResult();
     }
-
+    
+    private ProcedureCallNameSegment createProcedureCallNameSegment(final ProcedureNameContext procedureName, final PackageSegment packageSegment) {
+        int startIndex = null == packageSegment ? procedureName.start.getStartIndex() : packageSegment.getStartIndex();
+        ProcedureCallNameSegment result = new ProcedureCallNameSegment(startIndex, procedureName.stop.getStopIndex(), (IdentifierValue) visit(procedureName.identifier()));
+        result.setPackageSegment(packageSegment);
+        return result;
+    }
+    
     @Override
     public ASTNode visitCursorForLoopStatement(final CursorForLoopStatementContext ctx) {
         SQLStatement relatedCursorStatement;

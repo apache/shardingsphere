@@ -542,7 +542,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
         IndexNameSegment indexName = new IndexNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.name()));
