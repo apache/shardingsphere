@@ -17,36 +17,35 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 final class LLMMCPToolDefinitionFactory {
     
-    private static final String EXECUTE_UPDATE_TOOL_NAME = "database_gateway_execute_update";
-    
-    List<Map<String, Object>> createFromRemote(final List<Map<String, Object>> advertisedTools, final boolean includeUpdatePreview) {
+    List<Map<String, Object>> createFromRemote(final List<Map<String, Object>> advertisedTools, final Set<String> allowedNonReadOnlyToolNames) {
         List<Map<String, Object>> result = new LinkedList<>();
         result.add(createReadResourceToolDefinition());
         boolean readOnlyToolFound = false;
-        boolean updatePreviewToolFound = false;
+        Set<String> missingAllowedToolNames = new LinkedHashSet<>(allowedNonReadOnlyToolNames);
         for (Map<String, Object> each : advertisedTools) {
             String toolName = Objects.toString(each.get("name"), "").trim();
             boolean readOnly = isReadOnly(each);
-            boolean updatePreview = includeUpdatePreview && EXECUTE_UPDATE_TOOL_NAME.equals(toolName);
-            if (!readOnly && !updatePreview) {
+            if (!readOnly && !allowedNonReadOnlyToolNames.contains(toolName)) {
                 continue;
             }
             result.add(createRemoteToolDefinition(each, toolName));
             readOnlyToolFound |= readOnly;
-            updatePreviewToolFound |= updatePreview;
+            missingAllowedToolNames.remove(toolName);
         }
         if (!readOnlyToolFound) {
             throw new IllegalStateException("MCP runtime did not advertise any read-only tools.");
         }
-        if (includeUpdatePreview && !updatePreviewToolFound) {
-            throw new IllegalStateException("MCP runtime did not advertise required preview tool: " + EXECUTE_UPDATE_TOOL_NAME);
+        if (!missingAllowedToolNames.isEmpty()) {
+            throw new IllegalStateException("MCP runtime did not advertise required scenario tools: " + missingAllowedToolNames);
         }
         return result;
     }

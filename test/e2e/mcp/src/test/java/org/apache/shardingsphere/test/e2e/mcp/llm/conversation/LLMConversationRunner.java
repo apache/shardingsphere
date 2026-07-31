@@ -50,8 +50,9 @@ public final class LLMConversationRunner {
     private static final String SYSTEM_PROMPT = """
             You are evaluating a live ShardingSphere MCP server. Use the available MCP functions to inspect current state and complete the user's task.
             Choose tools from their advertised names, descriptions, and input schemas. Pass resource URIs only to mcp_read_resource, never as SQL.
-            Never guess or stop before retrieving the requested evidence. Preview side effects without executing them. Use function calls for every
-            tool invocation rather than printing a tool-call object as the answer. When you have enough evidence, answer the user's question concisely.
+            Never guess or stop before retrieving the requested evidence. When target metadata is explicitly marked as already verified, use the requested
+            planning response as evidence instead of repeating metadata discovery. Preview side effects without executing them. Use function calls for
+            every tool invocation rather than printing a tool-call object as the answer. When you have enough evidence, answer the user's question concisely.
             """;
     
     private final int maxTurns;
@@ -88,7 +89,7 @@ public final class LLMConversationRunner {
         try {
             mcpInteractionClient.open();
             List<Map<String, Object>> advertisedTools = mcpInteractionClient.listTools();
-            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createFromRemote(advertisedTools, scenario.allowsSideEffectPreview());
+            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createFromRemote(advertisedTools, scenario.allowedNonReadOnlyToolNames());
             artifacts.setToolDefinitions(toolDefinitions);
             return runTurns(scenario, artifacts, toolDefinitions);
         } catch (final IOException ex) {
@@ -224,10 +225,10 @@ public final class LLMConversationRunner {
      *
      * @param id scenario ID
      * @param question question
-     * @param allowsSideEffectPreview whether the scenario may expose update preview
+     * @param allowedNonReadOnlyToolNames non-read-only tools exposed only to this scenario
      * @param evaluator scenario evidence evaluator
      */
-    public record Scenario(String id, String question, boolean allowsSideEffectPreview,
+    public record Scenario(String id, String question, Set<String> allowedNonReadOnlyToolNames,
                            BiFunction<String, List<MCPInteractionTraceRecord>, LLME2EAssertionReport> evaluator) {
     }
     
