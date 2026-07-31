@@ -76,7 +76,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          artifact_dir="${RUNNER_TEMP}/mcp-e2e-build-artifacts"
+          artifact_dir="${RUNNER_TEMP}/mcp-e2e-distribution"
           mkdir -p "${artifact_dir}"
           distribution_home="$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)"
           if [[ -z "${distribution_home}" ]]; then
@@ -84,11 +84,18 @@ jobs:
             exit 1
           fi
           tar -czf "${artifact_dir}/mcp-distribution-home.tar.gz" -C distribution/mcp/target "$(basename "${distribution_home}")"
-      - name: Upload MCP E2E Build Artifacts
+      - name: Upload MCP Maven Repository
         uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-build-artifacts
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
+          artifact-name: mcp-e2e-maven-repository
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
+          docker-images: ''
+      - name: Upload MCP Distribution
+        uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+        with:
+          artifact-name: mcp-e2e-distribution
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
+          include-maven-repository: 'false'
           docker-images: |
             ${{ env.MCP_DISTRIBUTION_IMAGE }}=mcp-distribution-image.tar
 
@@ -139,18 +146,25 @@ jobs:
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - name: Download MCP E2E Build Artifacts
+      - name: Download MCP Maven Repository
         uses: ./.github/workflows/resources/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-build-artifacts
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
+          artifact-name: mcp-e2e-maven-repository
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
+          load-docker-image: 'false'
+      - name: Download MCP Distribution
+        uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        with:
+          artifact-name: mcp-e2e-distribution
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
+          restore-maven-repository: 'false'
           docker-image-archives: mcp-distribution-image.tar
       - name: Restore MCP Distribution Home
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p distribution/mcp/target
-          tar -xzf "${RUNNER_TEMP}/mcp-e2e-build-artifacts/mcp-distribution-home.tar.gz" -C distribution/mcp/target
+          tar -xzf "${RUNNER_TEMP}/mcp-e2e-distribution/mcp-distribution-home.tar.gz" -C distribution/mcp/target
       - name: Run MCP Functionality E2E
         run: ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.functionality -Dmcp.e2e.container.image=${{ env.MCP_DISTRIBUTION_IMAGE }} -Dmcp.e2e.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/functionality-e2e" -DskipITs -Dspotless.skip=true -B -ntp
       - name: Upload MCP Functionality E2E Artifacts
@@ -171,11 +185,11 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6.0.1
-      - name: Download MCP E2E Build Artifacts
+      - name: Download MCP Distribution
         uses: ./.github/workflows/resources/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-build-artifacts
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
+          artifact-name: mcp-e2e-distribution
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
           restore-maven-repository: 'false'
           docker-image-archives: mcp-distribution-image.tar
       - name: Checkout Pinned MCP Conformance Runner
@@ -283,11 +297,11 @@ jobs:
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - name: Download MCP E2E Build Artifacts
+      - name: Download MCP Maven Repository
         uses: ./.github/workflows/resources/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-build-artifacts
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
+          artifact-name: mcp-e2e-maven-repository
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
           load-docker-image: 'false'
       - name: Download MCP LLM Runtime Image
         uses: ./.github/workflows/resources/actions/download-e2e-artifacts
