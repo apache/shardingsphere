@@ -2786,7 +2786,7 @@ javaDeclaration
 cDeclaration
     : (LANGUAGE SINGLE_C | EXTERNAL)
     ((NAME name)? LIBRARY libName| LIBRARY libName (NAME name)?)
-    (AGENT IN RP_ argument (COMMA_ argument)* LP_)?
+    (AGENT IN LP_ argument (COMMA_ argument)* RP_)?
     (WITH CONTEXT)?
     (PARAMETERS LP_ externalParameter (COMMA_ externalParameter)* RP_)?
     ;

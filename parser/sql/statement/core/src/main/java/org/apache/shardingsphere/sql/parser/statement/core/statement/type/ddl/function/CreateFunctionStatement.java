@@ -23,6 +23,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtrac
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
@@ -41,15 +44,30 @@ public class CreateFunctionStatement extends DDLStatement {
     
     private final RoutineBodySegment routineBody;
     
+    private final List<SQLStatementSegment> sqlStatements;
+
+    private final List<ProcedureCallNameSegment> procedureCallNames;
+
+    private final List<ProcedureBodyEndNameSegment> functionBodyEndNameSegments;
+
     private final List<ExpressionSegment> dynamicSqlStatementExpressions;
     
     private final SQLStatementAttributes attributes;
     
     public CreateFunctionStatement(final DatabaseType databaseType,
                                    final FunctionNameSegment functionName, final RoutineBodySegment routineBody, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
+        this(databaseType, functionName, routineBody, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), dynamicSqlStatementExpressions);
+    }
+
+    public CreateFunctionStatement(final DatabaseType databaseType, final FunctionNameSegment functionName, final RoutineBodySegment routineBody,
+                                   final List<SQLStatementSegment> sqlStatements, final List<ProcedureCallNameSegment> procedureCallNames,
+                                   final List<ProcedureBodyEndNameSegment> functionBodyEndNameSegments, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
         super(databaseType);
         this.functionName = functionName;
         this.routineBody = routineBody;
+        this.sqlStatements = sqlStatements;
+        this.procedureCallNames = procedureCallNames;
+        this.functionBodyEndNameSegments = functionBodyEndNameSegments;
         this.dynamicSqlStatementExpressions = dynamicSqlStatementExpressions;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(null == routineBody ? Collections.emptyList() : new TableExtractor().extractExistTableFromRoutineBody(routineBody)));
     }

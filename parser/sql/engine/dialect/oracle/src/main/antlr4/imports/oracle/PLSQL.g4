@@ -87,10 +87,8 @@ plsqlFunctionSource
     | deterministicClause
     | parallelEnableClause
     | resultCacheClause
-    | aggregateClause
-    | pipelinedClause
     | sqlMacroClause)*
-    (IS | AS) (callSpec | declareSection? body)
+    (aggregateClause SEMI_? | PIPELINED USING implementationType SEMI_? | pipelinedClause? (IS | AS) (callSpec | declareSection? body))
     ;
 
 returnDateType
@@ -652,15 +650,39 @@ seriallyReusablePragma
     ;
 
 plsqlTriggerSource
-    : (schemaName DOT_)? triggerName sharingClause? defaultCollationClause? (simpleDmlTrigger | systemTrigger)
+    : (schemaName DOT_)? triggerName sharingClause? defaultCollationClause? (simpleDmlTrigger | compoundDmlTrigger | systemTrigger)
     ;
 
 simpleDmlTrigger
-    : (BEFORE | AFTER) dmlEventClause (FOR EACH ROW)? triggerBody
+    : (BEFORE | AFTER | INSTEAD OF) dmlEventClause referencingClause? (FOR EACH ROW)? triggerEditionClause? triggerOrderingClause? (ENABLE | DISABLE)? triggerWhenClause? triggerBody
+    ;
+
+compoundDmlTrigger
+    : FOR dmlEventClause referencingClause? triggerEditionClause? triggerOrderingClause? (ENABLE | DISABLE)? triggerWhenClause? compoundTriggerBlock
+    ;
+
+compoundTriggerBlock
+    : COMPOUND TRIGGER declareSection? compoundTriggerSection+ END triggerName? SEMI_?
+    ;
+
+compoundTriggerSection
+    : compoundTriggerTimingPoint IS compoundTriggerBody
+    ;
+
+compoundTriggerTimingPoint
+    : BEFORE STATEMENT
+    | BEFORE EACH ROW
+    | AFTER STATEMENT
+    | AFTER EACH ROW
+    | INSTEAD OF EACH ROW
+    ;
+
+compoundTriggerBody
+    : BEGIN plsqlStatements? (EXCEPTION exceptionHandler+)? END compoundTriggerTimingPoint? SEMI_?
     ;
 
 dmlEventClause
-    : dmlEventElement (OR dmlEventElement)* ON viewName
+    : dmlEventElement (OR dmlEventElement)* ON (NESTED TABLE columnName OF)? viewName
     ;
 
 dmlEventElement
@@ -668,7 +690,27 @@ dmlEventElement
     ;
 
 systemTrigger
-    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)* | dmlEvent) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA?) tableName? triggerBody
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)* | dmlEvent) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA?) tableName? triggerOrderingClause? triggerBody
+    ;
+
+referencingClause
+    : REFERENCING referencingItem+
+    ;
+
+referencingItem
+    : (OLD | NEW | PARENT) AS? name
+    ;
+
+triggerEditionClause
+    : (FORWARD | REVERSE) CROSSEDITION
+    ;
+
+triggerOrderingClause
+    : (FOLLOWS | PRECEDES) triggerName (COMMA_ triggerName)*
+    ;
+
+triggerWhenClause
+    : WHEN LP_ expr RP_
     ;
 
 ddlEvent
@@ -716,5 +758,5 @@ dmlEvent
     ;
 
 triggerBody
-    : plsqlBlock
+    : plsqlBlock | call
     ;
