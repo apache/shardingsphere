@@ -486,7 +486,15 @@ partitionedTable
     ;
 
 domainIndexClause
-    : indexTypeName localDomainIndexClause? parallelClause? (PARAMETERS LP_ SQ_ odciParameters SQ_ RP_)?
+    : indexTypeName localDomainIndexClause? parallelClause? domainIndexFilterByClause? domainIndexOrderByClause? (PARAMETERS LP_ STRING_ RP_)?
+    ;
+
+domainIndexFilterByClause
+    : FILTER BY columnName (COMMA_ columnName)*
+    ;
+
+domainIndexOrderByClause
+    : ORDER BY columnName (ASC | DESC)? (COMMA_ columnName (ASC | DESC)?)*
     ;
 
 localDomainIndexClause
