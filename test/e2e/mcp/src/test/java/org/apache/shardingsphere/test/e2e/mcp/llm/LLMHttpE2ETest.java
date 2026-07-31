@@ -48,6 +48,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -74,14 +75,26 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String STALE_TABLE_RESOURCE_URI = "shardingsphere://databases/logic_db/schemas/logic_db/tables/missing_orders";
     
+    private static final String READ_RESOURCE_TOOL_NAME = "mcp_read_resource";
+    
+    private static final String SEARCH_METADATA_TOOL_NAME = "database_gateway_search_metadata";
+    
+    private static final String EXECUTE_QUERY_TOOL_NAME = "database_gateway_execute_query";
+    
+    private static final String EXECUTE_UPDATE_TOOL_NAME = "database_gateway_execute_update";
+    
+    private static final String PLAN_MASK_RULE_TOOL_NAME = "database_gateway_plan_mask_rule";
+    
     private static final Set<String> EXPECTED_METADATA_NAMES = Set.of("active_orders", "order_items", "orders");
     
     private static final List<String> ARTIFACT_FILES = List.of(
             "run-context.json", "system-prompt.md", "question.txt", "answer.txt", "raw-model-output.txt", "available-tools.json",
             "interaction-trace.json", "assertion-report.json");
     
+    // JSON boolean and null literals are metadata rather than credential values.
     private static final Pattern UNREDACTED_SECRET_PATTERN = Pattern.compile(
-            "(?i)(?<![a-z0-9_])\"?(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"?\\s*[:=]\\s*[\"']?(?!<redacted>)[^\\s,\"'}]+"
+            "(?i)(?<![a-z0-9_])\"?(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"?\\s*[:=]\\s*"
+                    + "(?!(?:true|false|null)(?:\\s*[,}\\]]|\\s*$))[\"']?(?!<redacted>)[^\\s,\"'}]+"
                     + "|(Bearer\\s+)(?!<redacted>)[A-Za-z0-9._~+/=-]+|jdbc:");
     
     private static LLMRuntimeSupport.ModelRuntime llmRuntime;
@@ -116,7 +129,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         runScenario(new Scenario(
                 "read-only-query",
                 "How many rows are currently in the orders table of the logic_db runtime database? Inspect the live MCP server and answer concisely.",
-                false,
+                Set.of(EXECUTE_QUERY_TOOL_NAME),
                 this::evaluateReadOnlyQuery));
     }
     
@@ -125,8 +138,20 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         runScenario(new Scenario(
                 "metadata-discovery",
                 "List every table or view currently visible through the live MCP server. The user does not know the database or schema names, so discover the required scope first.",
-                false,
+                Set.of(SEARCH_METADATA_TOOL_NAME),
                 this::evaluateMetadataDiscovery));
+    }
+    
+    @Test
+    void assertMaskPlanning() throws IOException {
+        runScenario(new Scenario(
+                "mask-planning",
+                "The target metadata has already been verified, so do not run separate metadata discovery. Create a reviewable Mask rule plan, without applying it, "
+                        + "for the status column of the orders table in the logic_db database and logic_db schema. "
+                        + "Use the create operation, KEEP_FIRST_N_LAST_M algorithm, and primary properties first-n=1, last-m=1, replace-char=*. "
+                        + "Report the plan ID and explicitly confirm that nothing was applied.",
+                Set.of(PLAN_MASK_RULE_TOOL_NAME),
+                this::evaluateMaskPlanning));
     }
     
     @Test
@@ -137,7 +162,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 "side-effect-preview",
                 "A user wants to change the status of order 1 in the orders table to REVIEW_PENDING. Preview the proposed change without executing it, then report whether it "
                         + "was only previewed and whether any data changed. Inspect the live MCP server to discover any required runtime scope.",
-                true,
+                Set.of(SEARCH_METADATA_TOOL_NAME, EXECUTE_UPDATE_TOOL_NAME),
                 (answer, trace) -> evaluateSideEffectPreview(answer, trace, statusBefore)));
     }
     
@@ -147,7 +172,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 "invalid-resource-recovery",
                 "A user pasted stale resource `" + STALE_TABLE_RESOURCE_URI + "`. Inspect that resource, then follow the first safe read-only action in its top-level "
                         + "`next_actions` by reading its `resource_uri` exactly. Do not guess another URI. Then report how many rows are currently in the orders table.",
-                false,
+                Set.of(READ_RESOURCE_TOOL_NAME, EXECUTE_QUERY_TOOL_NAME),
                 this::evaluateInvalidResourceRecovery));
     }
     
@@ -189,7 +214,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         Set<String> actualMetadataNames = new LinkedHashSet<>();
         for (int index = unscopedSearchIndex; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
-            if (isValidModelAction(each, "database_gateway_search_metadata") && (unscopedSearchIndex == index || each.getModelTurn() > discoveryTurn)) {
+            if (isValidModelAction(each, SEARCH_METADATA_TOOL_NAME) && (unscopedSearchIndex == index || each.getModelTurn() > discoveryTurn)) {
                 actualMetadataNames.addAll(getMetadataNames(each.getStructuredContent()));
             }
         }
@@ -202,9 +227,57 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 : LLME2EAssertionReport.failure("answer_mismatch", "The answer omitted an object returned by the live MCP metadata searches.");
     }
     
+    private LLME2EAssertionReport evaluateMaskPlanning(final String answer, final List<MCPInteractionTraceRecord> trace) {
+        Optional<MCPInteractionTraceRecord> plannedAction = trace.stream()
+                .filter(each -> isValidModelAction(each, PLAN_MASK_RULE_TOOL_NAME))
+                .filter(each -> "planned".equals(each.getStructuredContent().get("status")))
+                .findFirst();
+        if (plannedAction.isEmpty()) {
+            return LLME2EAssertionReport.failure("missing_mask_plan", "The model did not produce a planned Mask workflow.");
+        }
+        if (!hasExpectedMaskPlanArguments(trace)) {
+            return LLME2EAssertionReport.failure("mask_plan_arguments_mismatch", "The model did not send the requested Mask rule inputs.");
+        }
+        Map<String, Object> response = plannedAction.get().getStructuredContent();
+        String planId = Objects.toString(response.get("plan_id"), "").trim();
+        List<Map<String, Object>> distSQLArtifacts = getObjectList(response.get("distsql_artifacts"));
+        Map<String, Object> primaryProperties = getObjectMap(getObjectMap(response.get("masked_property_preview")).get("primary"));
+        if (planId.isEmpty() || !"mask.rule".equals(response.get("workflow_kind")) || !"review".equals(response.get("current_step"))
+                || !getList(response.get("missing_required_inputs")).isEmpty() || distSQLArtifacts.isEmpty()
+                || !Objects.toString(distSQLArtifacts.getFirst().get("sql"), "").startsWith("CREATE MASK RULE `orders`")
+                || !"1".equals(Objects.toString(primaryProperties.get("first-n"), ""))
+                || !"1".equals(Objects.toString(primaryProperties.get("last-m"), ""))
+                || !"*".equals(primaryProperties.get("replace-char"))) {
+            return LLME2EAssertionReport.failure("mask_plan_evidence_mismatch", "The MCP response did not contain the requested reviewable Mask plan.");
+        }
+        String normalizedAnswer = answer.toLowerCase(Locale.ENGLISH);
+        boolean answerReportsNoApplication = normalizedAnswer.contains("not applied") || normalizedAnswer.contains("not been applied")
+                || normalizedAnswer.contains("nothing was applied") || normalizedAnswer.contains("without applying")
+                || normalizedAnswer.contains("not executed") || normalizedAnswer.contains("no changes were applied");
+        return answer.contains(planId) && answerReportsNoApplication
+                ? LLME2EAssertionReport.success("The answer reported the live Mask plan ID and confirmed that it was not applied.")
+                : LLME2EAssertionReport.failure("answer_mismatch", "The answer did not report the Mask plan ID and confirm that it was not applied.");
+    }
+    
+    private boolean hasExpectedMaskPlanArguments(final List<MCPInteractionTraceRecord> trace) {
+        Map<String, Object> arguments = new LinkedHashMap<>();
+        Map<String, Object> primaryProperties = new LinkedHashMap<>();
+        for (MCPInteractionTraceRecord each : trace) {
+            if (isValidModelAction(each, PLAN_MASK_RULE_TOOL_NAME)) {
+                arguments.putAll(each.getArguments());
+                primaryProperties.putAll(getObjectMap(each.getArguments().get("primary_algorithm_properties")));
+            }
+        }
+        return DATABASE_NAME.equals(arguments.get("database")) && TABLE_NAME.equals(arguments.get("table")) && "status".equals(arguments.get("column"))
+                && "create".equals(arguments.get("operation_type")) && "KEEP_FIRST_N_LAST_M".equals(arguments.get("algorithm_type"))
+                && "1".equals(Objects.toString(primaryProperties.get("first-n"), ""))
+                && "1".equals(Objects.toString(primaryProperties.get("last-m"), ""))
+                && "*".equals(primaryProperties.get("replace-char"));
+    }
+    
     private LLME2EAssertionReport evaluateSideEffectPreview(final String answer, final List<MCPInteractionTraceRecord> trace, final String statusBefore) {
         Optional<MCPInteractionTraceRecord> preview = trace.stream()
-                .filter(each -> isValidModelAction(each, "database_gateway_execute_update"))
+                .filter(each -> isValidModelAction(each, EXECUTE_UPDATE_TOOL_NAME))
                 .filter(each -> "preview".equals(each.getArguments().get("execution_mode")))
                 .filter(this::isSentinelPreview)
                 .findFirst();
@@ -258,7 +331,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private int findStaleResourceIndex(final List<MCPInteractionTraceRecord> trace) {
         for (int index = 0; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
-            if (isValidModelAction(each, "mcp_read_resource")
+            if (isValidModelAction(each, READ_RESOURCE_TOOL_NAME)
                     && STALE_TABLE_RESOURCE_URI.equals(each.getArguments().get("uri"))
                     && hasRecoveryCategory(each.getStructuredContent(), "object_not_visible")) {
                 return index;
@@ -280,7 +353,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         for (int index = staleResourceIndex + 1; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
             if (each.getModelTurn() > staleResource.getModelTurn()
-                    && isValidModelAction(each, "mcp_read_resource")
+                    && isValidModelAction(each, READ_RESOURCE_TOOL_NAME)
                     && Objects.equals(recoveryAction.get("resource_uri"), each.getArguments().get("uri"))
                     && containsOrdersTable(each.getStructuredContent())) {
                 return index;
@@ -302,7 +375,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private Optional<Integer> findQueryCount(final List<MCPInteractionTraceRecord> trace, final int previousModelTurn) {
         for (MCPInteractionTraceRecord each : trace) {
-            if (each.getModelTurn() <= previousModelTurn || !isValidModelAction(each, "database_gateway_execute_query") || !isOrdersCountQuery(each.getArguments())) {
+            if (each.getModelTurn() <= previousModelTurn || !isValidModelAction(each, EXECUTE_QUERY_TOOL_NAME) || !isOrdersCountQuery(each.getArguments())) {
                 continue;
             }
             for (Map<String, Object> row : getObjectList(each.getStructuredContent().get("row_objects"))) {
@@ -341,7 +414,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private int findUnscopedMetadataSearchIndex(final List<MCPInteractionTraceRecord> trace) {
         for (int index = 0; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
-            if (isValidModelAction(each, "database_gateway_search_metadata")
+            if (isValidModelAction(each, SEARCH_METADATA_TOOL_NAME)
                     && !each.getArguments().containsKey("database") && !each.getArguments().containsKey("schema")
                     && getObjectList(each.getStructuredContent().get("items")).stream().anyMatch(item -> DATABASE_NAME.equals(item.get("database")))) {
                 return index;

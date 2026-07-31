@@ -269,6 +269,8 @@ jobs:
             test: LLMHttpE2ETest#assertReadOnlyQuery
           - id: http-metadata-discovery
             test: LLMHttpE2ETest#assertMetadataDiscovery
+          - id: http-mask-planning
+            test: LLMHttpE2ETest#assertMaskPlanning
           - id: http-side-effect-preview
             test: LLMHttpE2ETest#assertSideEffectPreview
           - id: http-invalid-resource-recovery
