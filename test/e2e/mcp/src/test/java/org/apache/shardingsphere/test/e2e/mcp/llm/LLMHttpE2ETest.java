@@ -67,7 +67,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
-    private static final int MAX_TURNS = 8;
+    private static final int MAX_TURNS = 4;
     
     private static final String DATABASE_NAME = "logic_db";
     
@@ -148,6 +148,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 "mask-planning",
                 "The target metadata has already been verified, so do not run separate metadata discovery. Create a reviewable Mask rule plan, without applying it, "
                         + "for the status column of the orders table in the logic_db database and logic_db schema. "
+                        + "Pass only database, schema, table, column, operation_type, algorithm_type, and primary_algorithm_properties to the planning tool. "
                         + "Use the create operation, KEEP_FIRST_N_LAST_M algorithm, and primary properties first-n=1, last-m=1, replace-char=*. "
                         + "Report the plan ID and explicitly confirm that nothing was applied.",
                 Set.of(PLAN_MASK_RULE_TOOL_NAME),
