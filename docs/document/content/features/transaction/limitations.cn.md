@@ -11,6 +11,8 @@ Apache ShardingSphere 希望能够将分布式事务的选择权交给使用者�
 ### 不支持项
 
 * 不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库宕机，则只有第二个库数据提交，且无法回滚。
+* ShardingSphere-Proxy 使用 PostgreSQL 或 openGauss 时，不支持在事务中执行会改变元数据的 DDL 语句（如 `CREATE`、`ALTER` 和 `DROP`）。
+  此类语句会在执行前以 SQLSTATE `0A000` 拒绝，避免事务回滚后存储数据库与 ShardingSphere 元数据不一致。
 
 ## XA 事务
 
@@ -19,6 +21,7 @@ Apache ShardingSphere 希望能够将分布式事务的选择权交给使用者�
 * 服务宕机后，在其它机器上恢复提交/回滚中的数据；
 * MySQL 事务块内，SQL 执行出现异常，执行 `Commit`，数据保持一致；
 * 配置 XA 事务后，存储单元名称最大长度不超过45个字符。
+* PostgreSQL 和 openGauss 同样受 LOCAL 事务中所述的元数据变更 DDL 限制。
 
 ## BASE 事务
 

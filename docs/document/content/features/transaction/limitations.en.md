@@ -12,6 +12,8 @@ The Apache ShardingSphere community chose instead to give the users the ability 
 ### Unsupported
 
 * Does not support the cross-database transactions caused by network or hardware crash. For example, when updating two databases in transaction, if one database crashes before commit, then only the data of the other database can commit.
+* When ShardingSphere-Proxy uses PostgreSQL or openGauss, metadata-changing DDL statements such as `CREATE`, `ALTER`, and `DROP` are not supported in transactions.
+  Such statements are rejected before execution with SQLSTATE `0A000` to prevent inconsistencies between storage and ShardingSphere metadata after a transaction rollback.
 
 ## XA Transaction
 
@@ -20,6 +22,7 @@ The Apache ShardingSphere community chose instead to give the users the ability 
 * Recover committing and rolling back in other machines after the service is down.
 * MySQL, in the transaction block, the SQL execution is abnormal, and run `Commit`, and data remains consistent.
 * After XA transactions are configured, the maximum length of the storage unit name cannot exceed 45 characters.
+* PostgreSQL and openGauss have the same metadata-changing DDL restriction described for LOCAL transactions.
 
 ## BASE Transaction
 

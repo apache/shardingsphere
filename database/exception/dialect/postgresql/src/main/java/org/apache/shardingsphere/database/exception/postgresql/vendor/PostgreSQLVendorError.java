@@ -41,6 +41,9 @@ public enum PostgreSQLVendorError implements VendorError {
     
     FEATURE_NOT_SUPPORTED(XOpenSQLState.FEATURE_NOT_SUPPORTED, "feature_not_supported"),
     
+    METADATA_CHANGING_DDL_IN_TRANSACTION_NOT_SUPPORTED(
+            XOpenSQLState.FEATURE_NOT_SUPPORTED, "DDL statements that modify metadata are not supported in transactions by ShardingSphere-Proxy."),
+    
     DUPLICATE_DATABASE(PostgreSQLState.DUPLICATE_DATABASE, "Database '%s' already exists"),
     
     DUPLICATE_TABLE(PostgreSQLState.DUPLICATE_TABLE, "Table '%s' already exists"),

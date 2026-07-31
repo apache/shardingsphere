@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.database.exception.postgresql.exception.PostgreSQLException;
 import org.apache.shardingsphere.database.exception.postgresql.exception.authority.EmptyUsernameException;
@@ -95,6 +96,8 @@ class PostgreSQLDialectExceptionMapperTest {
                 Arguments.of("database_create_exists", DatabaseCreateExistsException.class, PostgreSQLVendorError.DUPLICATE_DATABASE, "FATAL"),
                 Arguments.of("no_such_table", NoSuchTableException.class, PostgreSQLVendorError.NO_SUCH_TABLE, "FATAL"),
                 Arguments.of("table_exists", TableExistsException.class, PostgreSQLVendorError.DUPLICATE_TABLE, "ERROR"),
+                Arguments.of("table_modify_in_transaction", TableModifyInTransactionException.class,
+                        PostgreSQLVendorError.METADATA_CHANGING_DDL_IN_TRANSACTION_NOT_SUPPORTED, "ERROR"),
                 Arguments.of("in_transaction", InTransactionException.class, PostgreSQLVendorError.TRANSACTION_STATE_INVALID, "ERROR"),
                 Arguments.of("insert_columns_and_values_mismatched", InsertColumnsAndValuesMismatchedException.class, PostgreSQLVendorError.WRONG_VALUE_COUNT_ON_ROW, "ERROR"),
                 Arguments.of("invalid_parameter_value", InvalidParameterValueException.class, PostgreSQLVendorError.INVALID_PARAMETER_VALUE, "ERROR"),
