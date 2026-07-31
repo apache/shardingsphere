@@ -236,7 +236,6 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
-        // TODO The table name needs to be in uppercase, otherwise the index cannot be found.
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
