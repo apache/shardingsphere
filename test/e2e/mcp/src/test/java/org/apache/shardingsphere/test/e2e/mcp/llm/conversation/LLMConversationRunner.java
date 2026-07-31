@@ -164,13 +164,13 @@ public final class LLMConversationRunner {
                 return Optional.of(artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("invalid_tool_arguments", "Model returned invalid tool arguments JSON.")));
             }
-            Optional<LLMMCPToolCallValidationFailure> validationFailure = safetyValidator.validate(each.getName(), arguments);
+            Optional<LLMMCPSafetyValidator.ValidationFailure> validationFailure = safetyValidator.validate(each.getName(), arguments);
             if (validationFailure.isPresent()) {
-                LLMMCPToolCallValidationFailure failure = validationFailure.get();
+                LLMMCPSafetyValidator.ValidationFailure failure = validationFailure.get();
                 artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(
-                        artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), each.getName(), arguments, failure.getFailureType()));
+                        artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), each.getName(), arguments, failure.failureType()));
                 return Optional.of(artifacts.createResult(scenario, modelName,
-                        LLME2EAssertionReport.failure(failure.getFailureType(), failure.getMessage())));
+                        LLME2EAssertionReport.failure(failure.failureType(), failure.message())));
             }
             long startTime = System.currentTimeMillis();
             Map<String, Object> response;

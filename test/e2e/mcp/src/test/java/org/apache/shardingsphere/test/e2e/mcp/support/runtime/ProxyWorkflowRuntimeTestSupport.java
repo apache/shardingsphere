@@ -122,15 +122,16 @@ public final class ProxyWorkflowRuntimeTestSupport {
      * Proxy-backed runtime fixture.
      */
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    @Getter
     public static final class ProxyWorkflowRuntimeFixture implements AutoCloseable {
         
         private final List<GenericContainer<?>> supportingContainers;
         
         private final ShardingSphereProxyEmbeddedContainer proxyContainer;
         
+        @Getter
         private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
         
+        @Getter
         private final String logicalDatabaseName = LOGICAL_DATABASE_NAME;
         
         @Override

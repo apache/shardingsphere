@@ -46,13 +46,6 @@ public interface MCPInteractionClient extends AutoCloseable {
     Map<String, Object> call(String actionName, Map<String, Object> arguments) throws IOException, InterruptedException;
     
     /**
-     * Get initialize payload.
-     *
-     * @return raw initialize JSON-RPC payload
-     */
-    Map<String, Object> getInitializePayload();
-    
-    /**
      * List tools.
      *
      * @return MCP tool list payload
@@ -78,15 +71,6 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @throws InterruptedException interrupted exception
      */
     Map<String, Object> listResourceTemplates() throws IOException, InterruptedException;
-    
-    /**
-     * List prompts.
-     *
-     * @return MCP prompts payload
-     * @throws IOException IO exception
-     * @throws InterruptedException interrupted exception
-     */
-    Map<String, Object> listPrompts() throws IOException, InterruptedException;
     
     /**
      * Get prompt.
@@ -122,28 +106,6 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @throws InterruptedException interrupted exception
      */
     Map<String, Object> readResource(String resourceUri) throws IOException, InterruptedException;
-    
-    /**
-     * Send raw JSON-RPC request.
-     *
-     * @param requestId request id
-     * @param method method name
-     * @param params request params
-     * @return raw JSON-RPC payload
-     * @throws IOException IO exception
-     * @throws InterruptedException interrupted exception
-     */
-    Map<String, Object> sendRawRequest(String requestId, String method, Map<String, Object> params) throws IOException, InterruptedException;
-    
-    /**
-     * Send raw JSON-RPC notification.
-     *
-     * @param method method name
-     * @param params notification params
-     * @throws IOException IO exception
-     * @throws InterruptedException interrupted exception
-     */
-    void sendRawNotification(String method, Map<String, Object> params) throws IOException, InterruptedException;
     
     @Override
     void close() throws IOException, InterruptedException;

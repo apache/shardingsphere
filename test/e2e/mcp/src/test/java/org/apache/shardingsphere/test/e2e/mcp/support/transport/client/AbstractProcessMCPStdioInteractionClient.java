@@ -64,8 +64,6 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     
     private BufferedReader reader;
     
-    private Map<String, Object> initializePayload = Map.of();
-    
     @Override
     public final void open() throws IOException, InterruptedException {
         if (null != process) {
@@ -117,13 +115,8 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
         return readResponse(requestId);
     }
     
-    @Override
-    public final Map<String, Object> getInitializePayload() {
-        return initializePayload;
-    }
-    
     private void initializeSession() throws IOException, InterruptedException {
-        initializePayload = sendRequest(INITIALIZE_REQUEST_ID, "initialize",
+        Map<String, Object> initializePayload = sendRequest(INITIALIZE_REQUEST_ID, "initialize",
                 MCPInteractionProtocolSupport.createInitializeRequestParams(getClientName()));
         if (MCPInteractionPayloads.hasJsonRpcError(initializePayload)) {
             throw createRuntimeFailureException("Failed to initialize STDIO MCP session: "
@@ -277,7 +270,6 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
         reader = null;
         writer = null;
         stdErrorCollector = null;
-        initializePayload = Map.of();
         MCPArtifactUtils.writeRuntimeLogIfConfigured(getClientName() + "-", stdErrorMessages);
         stdErrorMessages.clear();
     }

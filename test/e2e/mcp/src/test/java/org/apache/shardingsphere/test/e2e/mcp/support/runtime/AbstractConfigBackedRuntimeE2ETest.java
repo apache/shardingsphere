@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
@@ -55,7 +54,6 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
         SLF4JBridgeHandler.install();
     }
     
-    @Getter
     @TempDir
     private Path tempDir;
     
@@ -94,7 +92,7 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
         return createInteractionClient(configFile, httpServer);
     }
     
-    protected final MCPInteractionClient createInteractionClient(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
+    private MCPInteractionClient createInteractionClient(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
         prepareRuntimeFixtureIfNeeded();
         Path actualConfigFile = createConfigurationFile(String.format("mcp-custom-%d.yaml", customConfigurationSequence++), runtimeDatabases);
         if (RuntimeTransport.HTTP == getTransport()) {
@@ -172,7 +170,7 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     }
     
     private URI getEndpointUri(final StreamableHttpMCPServer httpServer) {
-        return URI.create(String.format("http://%s:%d%s", LOOPBACK_BIND_HOST, httpServer.getLocalPort(), getHttpEndpointPath()));
+        return URI.create(String.format("http://%s:%d%s", LOOPBACK_BIND_HOST, httpServer.getLocalPort(), ENDPOINT_PATH));
     }
     
     private Path createConfigurationFile(final String fileName, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
@@ -185,14 +183,6 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
         RuntimeTransport transport = getTransport();
         MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.HTTP : MCPTransportType.STDIO;
         return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(
-                new MCPLaunchConfiguration(transportType, createHttpTransportConfiguration(), runtimeDatabases)));
-    }
-    
-    protected HttpTransportConfiguration createHttpTransportConfiguration() {
-        return new HttpTransportConfiguration(LOOPBACK_BIND_HOST, 0, getHttpEndpointPath());
-    }
-    
-    protected String getHttpEndpointPath() {
-        return ENDPOINT_PATH;
+                new MCPLaunchConfiguration(transportType, new HttpTransportConfiguration(LOOPBACK_BIND_HOST, 0, ENDPOINT_PATH), runtimeDatabases)));
     }
 }
