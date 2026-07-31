@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingReq
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -59,7 +58,8 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement) {
-        return !Collections.disjoint(new CaseInsensitiveSet<>(rule.getConfiguration().getTables()), sqlStatement.getTables());
+        Collection<String> currentTableNames = new CaseInsensitiveSet<>(rule.getConfiguration().getTables());
+        return sqlStatement.getTables().stream().anyMatch(currentTableNames::contains);
     }
     
     @Override
