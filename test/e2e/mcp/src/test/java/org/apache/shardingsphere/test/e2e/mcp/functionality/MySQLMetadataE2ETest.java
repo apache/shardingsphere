@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,10 +43,8 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
         return true;
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertReadCapabilities(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertReadCapabilities() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.readResource("shardingsphere://databases/logic_db/capabilities");
             assertThat(String.valueOf(actual.get("databaseType")), is("MySQL"));
@@ -54,19 +52,15 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertReadDatabasesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertReadDatabasesResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             MCPPayloadAssertions.assertSingleItemValue(interactionClient.readResource("shardingsphere://databases"), "database", LOGICAL_DATABASE_NAME);
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertReadUnknownDatabaseRecovery(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertReadUnknownDatabaseRecovery() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.readResource("shardingsphere://databases/missing_db");
             assertTrue(getPayloadItems(actual).isEmpty());
@@ -80,9 +74,7 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("singleMetadataResourceCases")
-    void assertReadSingleMetadataResource(final String name, final RuntimeTransport transport,
-                                          final String resourceUri, final String key, final String expectedValue) throws IOException, InterruptedException {
-        useTransport(transport);
+    void assertReadSingleMetadataResource(final String name, final String resourceUri, final String key, final String expectedValue) throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             MCPPayloadAssertions.assertSingleItemValue(interactionClient.readResource(resourceUri), key, expectedValue);
         }
@@ -90,18 +82,14 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("collectionMetadataResourceCases")
-    void assertReadCollectionMetadataResource(final String name, final RuntimeTransport transport,
-                                              final String resourceUri, final String key, final List<String> expectedNames) throws IOException, InterruptedException {
-        useTransport(transport);
+    void assertReadCollectionMetadataResource(final String name, final String resourceUri, final String key, final List<String> expectedNames) throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             MCPPayloadAssertions.assertItemValues(interactionClient.readResource(resourceUri), key, expectedNames);
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertReadTableDetail(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertReadTableDetail() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/tables/orders", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)));
@@ -113,10 +101,8 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertSearchMetadataTablesAndViews(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertSearchMetadataTablesAndViews() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "order", "object_types", List.of("table", "view"))));
@@ -124,10 +110,8 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertValidateRuntimeDatabase(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertValidateRuntimeDatabase() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call(
                     "database_gateway_validate_runtime_database", Map.of("database", LOGICAL_DATABASE_NAME));
@@ -140,10 +124,8 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertSearchMetadataPagination(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertSearchMetadataPagination() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> firstPage = interactionClient.call("database_gateway_search_metadata",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "order",
@@ -160,10 +142,8 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertReadViews(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertReadViews() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/views", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)));
@@ -172,10 +152,8 @@ class MySQLMetadataE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertReadIndexes(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertReadIndexes() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<String> actualIndexNames = getPayloadItems(interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/tables/orders/indexes", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)))

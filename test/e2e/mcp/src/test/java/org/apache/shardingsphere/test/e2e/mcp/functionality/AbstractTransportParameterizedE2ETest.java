@@ -22,22 +22,19 @@ import org.junit.jupiter.api.AfterEach;
 
 abstract class AbstractTransportParameterizedE2ETest extends AbstractFunctionalityE2ETest {
     
-    private RuntimeTransport transport;
+    private RuntimeTransport transport = RuntimeTransport.HTTP;
     
     protected final void useTransport(final RuntimeTransport transport) {
         this.transport = transport;
     }
     
     @AfterEach
-    void clearTransport() {
-        transport = null;
+    void resetTransport() {
+        transport = RuntimeTransport.HTTP;
     }
     
     @Override
     protected final RuntimeTransport getTransport() {
-        if (null == transport) {
-            throw new IllegalStateException("Runtime transport is not selected for current MCP Functionality E2E test.");
-        }
         return transport;
     }
 }
