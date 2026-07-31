@@ -133,6 +133,22 @@ class AlterEncryptRuleExecutorTest {
     }
     
     @Test
+    void assertBuildToBeDroppedRuleConfigurationWhenAlteredTableNameCaseDiffers() {
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfigurationWithGeneratedEncryptors());
+        AlterEncryptRuleExecutor executor = new AlterEncryptRuleExecutor();
+        executor.setRule(rule);
+        EncryptColumnRuleConfiguration alteredColumn = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "foo_cipher"));
+        EncryptRuleConfiguration toBeAlteredRuleConfig = new EncryptRuleConfiguration(
+                Collections.singleton(new EncryptTableRuleConfiguration("T_ENCRYPT", Collections.singleton(alteredColumn))), Collections.emptyMap());
+        EncryptRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
+        assertTrue(actual.getTables().isEmpty());
+        assertThat(actual.getEncryptors().size(), is(2));
+        assertTrue(actual.getEncryptors().containsKey("foo_assisted"));
+        assertTrue(actual.getEncryptors().containsKey("foo_like"));
+    }
+    
+    @Test
     void assertBuildToBeDroppedRuleConfigurationWhenColumnDefinitionUnchanged() {
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(createCurrentRuleConfigurationWithGeneratedEncryptors());
