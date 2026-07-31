@@ -68,6 +68,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditTraditionalContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditUnifiedContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BodyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CollectionVariableDeclContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnClausesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
@@ -187,6 +188,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlB
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlFunctionSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlProcedureSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlStatementsContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlTriggerSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PurgeContext;
@@ -200,6 +202,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Statem
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SwitchContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TriggerBodyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TriggerNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VariableNameContext;
@@ -820,7 +824,71 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new CreateTriggerStatement(getDatabaseType());
+        visit(ctx.plsqlTriggerSource());
+        addTriggerBodyEndName(ctx.plsqlTriggerSource());
+        getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
+        getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
+        getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
+        CreateTriggerStatement result = new CreateTriggerStatement(getDatabaseType());
+        result.setTriggerName(visitTriggerName(ctx.plsqlTriggerSource()));
+        findTriggerTable(ctx.plsqlTriggerSource()).ifPresent(result::setTable);
+        result.getSqlStatements().addAll(getSqlStatementsInPlsql());
+        result.getProcedureCallNames().addAll(getProcedureCallNames());
+        result.getTriggerBodyEndNameSegments().addAll(getProcedureBodyEndNameSegments());
+        result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
+        return result;
+    }
+    
+    private Optional<SimpleTableSegment> findTriggerTable(final PlsqlTriggerSourceContext ctx) {
+        if (null != ctx.simpleDmlTrigger()) {
+            return Optional.of((SimpleTableSegment) visit(ctx.simpleDmlTrigger().dmlEventClause().viewName()));
+        }
+        if (null != ctx.compoundDmlTrigger()) {
+            return Optional.of((SimpleTableSegment) visit(ctx.compoundDmlTrigger().dmlEventClause().viewName()));
+        }
+        return null == ctx.systemTrigger().tableName() ? Optional.empty() : Optional.of((SimpleTableSegment) visit(ctx.systemTrigger().tableName()));
+    }
+    
+    private void addTriggerBodyEndName(final PlsqlTriggerSourceContext ctx) {
+        if (null != ctx.compoundDmlTrigger()) {
+            TriggerNameContext triggerName = ctx.compoundDmlTrigger().compoundTriggerBlock().triggerName();
+            if (null != triggerName) {
+                getProcedureBodyEndNameSegments().add(new ProcedureBodyEndNameSegment(triggerName.name().start.getStartIndex(), triggerName.name().stop.getStopIndex(),
+                        new IdentifierValue(triggerName.name().getText())));
+            }
+            return;
+        }
+        TriggerBodyContext triggerBody = null == ctx.simpleDmlTrigger() ? ctx.systemTrigger().triggerBody() : ctx.simpleDmlTrigger().triggerBody();
+        if (null == triggerBody.plsqlBlock()) {
+            return;
+        }
+        BodyContext body = triggerBody.plsqlBlock().body();
+        if (null != body.identifier()) {
+            getProcedureBodyEndNameSegments().add(new ProcedureBodyEndNameSegment(body.identifier().getStart().getStartIndex(), body.identifier().getStop().getStopIndex(),
+                    new IdentifierValue(body.identifier().getText())));
+        }
+    }
+    
+    private FunctionNameSegment visitTriggerName(final PlsqlTriggerSourceContext ctx) {
+        TriggerNameContext triggerNameContext = ctx.triggerName();
+        IdentifierValue triggerName = (IdentifierValue) visit(triggerNameContext.name().identifier());
+        OwnerSegment owner = getTriggerOwner(ctx, triggerNameContext);
+        if (null == owner) {
+            return new FunctionNameSegment(triggerNameContext.start.getStartIndex(), triggerNameContext.stop.getStopIndex(), triggerName);
+        }
+        FunctionNameSegment result = new FunctionNameSegment(owner.getStartIndex(), triggerNameContext.stop.getStopIndex(), triggerName);
+        result.setOwner(owner);
+        return result;
+    }
+    
+    private OwnerSegment getTriggerOwner(final PlsqlTriggerSourceContext ctx, final TriggerNameContext triggerNameContext) {
+        if (null != ctx.schemaName()) {
+            return new OwnerSegment(ctx.schemaName().start.getStartIndex(), ctx.schemaName().stop.getStopIndex(), (IdentifierValue) visit(ctx.schemaName().identifier()));
+        }
+        return null == triggerNameContext.owner()
+                ? null
+                : new OwnerSegment(triggerNameContext.owner().start.getStartIndex(), triggerNameContext.owner().stop.getStopIndex(),
+                        (IdentifierValue) visit(triggerNameContext.owner().identifier()));
     }
     
     @Override
@@ -1075,6 +1143,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     }
     
     private ASTNode visitCreateFunction0(final CreateFunctionContext ctx) {
+        if (null != ctx.plsqlFunctionSource().parameterDeclaration()) {
+            for (ParameterDeclarationContext each : ctx.plsqlFunctionSource().parameterDeclaration()) {
+                visit(each);
+            }
+        }
         if (null != ctx.plsqlFunctionSource().declareSection()) {
             visit(ctx.plsqlFunctionSource().declareSection());
         }
@@ -1083,9 +1156,12 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         }
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
+        getProcedureBodyEndNameSegments().sort(Comparator.comparingInt(ProcedureBodyEndNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
+        getSqlStatementsInPlsql().forEach(each -> each.getSqlStatement().getVariableNames().addAll(getVariableNames()));
         return new OracleCreateFunctionStatement(
-                getDatabaseType(), getSqlStatementsInPlsql(), getProcedureCallNames(), visitFunctionName(ctx.plsqlFunctionSource()), getDynamicSqlStatementExpressions());
+                getDatabaseType(), getSqlStatementsInPlsql(), getProcedureCallNames(), getProcedureBodyEndNameSegments(), visitFunctionName(ctx.plsqlFunctionSource()),
+                getDynamicSqlStatementExpressions());
     }
     
     private FunctionNameSegment visitFunctionName(final PlsqlFunctionSourceContext ctx) {
@@ -1476,16 +1552,25 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitProcedureCall(final ProcedureCallContext ctx) {
-        int startIndex = ctx.procedureName().start.getStartIndex();
-        PackageSegment packageSegment = null;
-        if (null != ctx.packageName()) {
-            startIndex = ctx.packageName().start.getStartIndex();
-            packageSegment = (PackageSegment) visit(ctx.packageName());
-        }
-        ProcedureCallNameSegment result = new ProcedureCallNameSegment(startIndex, ctx.procedureName().stop.getStopIndex(), (IdentifierValue) visit(ctx.procedureName().identifier()));
-        result.setPackageSegment(packageSegment);
-        getProcedureCallNames().add(result);
+        PackageSegment packageSegment = null == ctx.packageName() ? null : (PackageSegment) visit(ctx.packageName());
+        getProcedureCallNames().add(createProcedureCallNameSegment(ctx.procedureName(), packageSegment));
         return defaultResult();
+    }
+    
+    @Override
+    public ASTNode visitCall(final CallContext ctx) {
+        PackageSegment packageSegment = null == ctx.schemaName()
+                ? null
+                : new PackageSegment(ctx.schemaName().start.getStartIndex(), ctx.schemaName().stop.getStopIndex(), (IdentifierValue) visit(ctx.schemaName().identifier()));
+        getProcedureCallNames().add(createProcedureCallNameSegment(ctx.procedureName(), packageSegment));
+        return defaultResult();
+    }
+    
+    private ProcedureCallNameSegment createProcedureCallNameSegment(final ProcedureNameContext procedureName, final PackageSegment packageSegment) {
+        int startIndex = null == packageSegment ? procedureName.start.getStartIndex() : packageSegment.getStartIndex();
+        ProcedureCallNameSegment result = new ProcedureCallNameSegment(startIndex, procedureName.stop.getStopIndex(), (IdentifierValue) visit(procedureName.identifier()));
+        result.setPackageSegment(packageSegment);
+        return result;
     }
     
     @Override
@@ -1757,7 +1842,15 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
-        return new CreateMaterializedViewStatement(getDatabaseType());
+        CreateMaterializedViewStatement result = new CreateMaterializedViewStatement(getDatabaseType());
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor(getDatabaseType());
+        getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
+        getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
+        result.setView((SimpleTableSegment) visit(ctx.materializedViewName()));
+        result.setSelect((SelectStatement) visitor.visit(ctx.selectSubquery()));
+        result.setViewDefinition(getOriginalText(ctx.selectSubquery()));
+        result.addParameterMarkers(getGlobalParameterMarkerSegments());
+        return result;
     }
     
     @Override

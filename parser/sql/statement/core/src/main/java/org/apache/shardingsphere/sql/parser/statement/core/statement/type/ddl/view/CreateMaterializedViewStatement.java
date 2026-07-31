@@ -17,13 +17,25 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
  * Create materialized view statement.
  */
+@Getter
+@Setter
 public final class CreateMaterializedViewStatement extends DDLStatement {
+    
+    private SimpleTableSegment view;
+    
+    private String viewDefinition;
+    
+    private SelectStatement select;
     
     public CreateMaterializedViewStatement(final DatabaseType databaseType) {
         super(databaseType);
