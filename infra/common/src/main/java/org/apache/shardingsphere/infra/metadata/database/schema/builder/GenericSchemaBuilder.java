@@ -71,7 +71,7 @@ public final class GenericSchemaBuilder {
      * @throws SQLException SQL exception
      */
     public static Map<String, ShardingSphereSchema> build(final Collection<String> tableNames, final DatabaseType protocolType, final GenericSchemaBuilderMaterial material) throws SQLException {
-        Map<String, SchemaMetaData> result = loadSchemas(tableNames, material);
+        Map<String, SchemaMetaData> result = loadSchemas(tableNames, protocolType, material);
         if (!isSchemaCompatible(protocolType, material.getStorageUnits())) {
             result = translate(result, protocolType, material);
         }
@@ -86,8 +86,9 @@ public final class GenericSchemaBuilder {
         return result;
     }
     
-    private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
-        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, material);
+    private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final DatabaseType protocolType,
+                                                           final GenericSchemaBuilderMaterial material) throws SQLException {
+        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, protocolType, material);
         return materials.isEmpty() ? Collections.emptyMap() : MetaDataLoader.load(materials);
     }
     
