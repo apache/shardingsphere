@@ -39,6 +39,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -148,12 +149,19 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
         String dataType = getOriginalDataType(resultSet.getString("DATA_TYPE"));
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
-        // TODO need to support caseSensitive when version < 12.2.
         String collation = versionContainsCollation(databaseMetaData) ? resultSet.getString("COLLATION") : null;
-        boolean caseSensitive = null != collation && collation.endsWith("_CS");
+        boolean caseSensitive = null != collation && isCaseSensitive(collation);
         boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
         boolean nullable = "Y".equals(resultSet.getString("NULLABLE"));
         return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, caseSensitive, isVisible, false, nullable);
+    }
+    
+    private boolean isCaseSensitive(final String collation) {
+        // TODO Support case sensitivity resolved from session parameters for Oracle versions earlier than 12.2 and session-dependent collations.
+        if ("USING_NLS_COMP".equals(collation) || "USING_NLS_SORT".equals(collation)) {
+            return false;
+        }
+        return Arrays.stream(collation.split("_")).noneMatch(each -> "CI".equals(each) || "AI".equals(each) || "S1".equals(each) || "S2".equals(each));
     }
     
     private String getOriginalDataType(final String dataType) {
