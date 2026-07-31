@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator;
 
+import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdBlobHandleGeneratorTest {
     
@@ -48,14 +49,14 @@ class FirebirdBlobHandleGeneratorTest {
     }
     
     @Test
-    void assertNextBlobHandleSkipsPlaceholderAndWraps() {
-        int lastBeforePlaceholder = 0;
-        for (int i = 0; i < INVALID_OBJECT_HANDLE; i++) {
-            lastBeforePlaceholder = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
-            assertThat(lastBeforePlaceholder, not(0));
-            assertThat(lastBeforePlaceholder, not(INVALID_OBJECT_HANDLE));
+    void assertNextBlobHandleWhenAllHandlesAreActive() {
+        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
+        int firstHandle = generator.nextBlobHandle(CONNECTION_ID);
+        assertThat(firstHandle, is(1));
+        for (int i = 1; i < 0xFFFE; i++) {
+            generator.nextBlobHandle(CONNECTION_ID);
         }
-        assertThat(lastBeforePlaceholder, is(1));
+        assertThrows(FirebirdProtocolException.class, () -> generator.nextBlobHandle(CONNECTION_ID));
     }
     
     @Test
