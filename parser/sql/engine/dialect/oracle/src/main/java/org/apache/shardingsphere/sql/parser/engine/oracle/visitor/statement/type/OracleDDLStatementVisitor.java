@@ -906,15 +906,20 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         SimpleTableSegment table = null;
         Collection<ColumnSegment> columns = Collections.emptyList();
+        String indexType = null;
         if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
             table = (SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName());
             columns = ((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue();
+            if (null != ctx.createIndexDefinitionClause().tableIndexClause().indexProperties()
+                    && null != ctx.createIndexDefinitionClause().tableIndexClause().indexProperties().domainIndexClause()) {
+                indexType = ctx.createIndexDefinitionClause().tableIndexClause().indexProperties().domainIndexClause().indexTypeName().getText();
+            }
         }
         IndexSegment index = (IndexSegment) visit(ctx.indexName());
         if (null != ctx.createIndexSpecification() && null != ctx.createIndexSpecification().UNIQUE()) {
             index.setUniqueKey(true);
         }
-        return CreateIndexStatement.builder().databaseType(getDatabaseType()).table(table).columns(columns).index(index).build();
+        return CreateIndexStatement.builder().databaseType(getDatabaseType()).table(table).columns(columns).index(index).indexType(indexType).build();
     }
     
     @Override
