@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -45,10 +46,8 @@ class MySQLReadOnlySQLE2ETest extends AbstractMySQLRuntimeE2ETest {
         return true;
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertExecuteSelect(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertExecuteSelect() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
@@ -56,10 +55,8 @@ class MySQLReadOnlySQLE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertExecuteSelectWithTruncation(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertExecuteSelectWithTruncation() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT order_id, status FROM orders ORDER BY order_id", "max_rows", 1));
@@ -69,10 +66,8 @@ class MySQLReadOnlySQLE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertExecuteExplainSelect(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertExecuteExplainSelect() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_explain_query",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT * FROM orders WHERE order_id = 1",
@@ -83,10 +78,8 @@ class MySQLReadOnlySQLE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertExecuteQueryTimeout(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertExecuteQueryTimeout() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT SLEEP(2)", "timeout_ms", 1));
@@ -125,10 +118,8 @@ class MySQLReadOnlySQLE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertRejectSequenceResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertRejectSequenceResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/sequences", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME));

@@ -19,16 +19,13 @@ package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.PostgreSQLRuntimeTestSupport;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
@@ -36,7 +33,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -88,10 +84,8 @@ class PostgreSQLDatabaseGatewayE2ETest extends AbstractTransportParameterizedE2E
         return PostgreSQLRuntimeTestSupport.createRuntimeDatabases(container, LOGICAL_DATABASE_NAME);
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertDatabaseGatewayContract(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertDatabaseGatewayContract() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             assertMetadata(interactionClient);
             assertQueries(interactionClient);
@@ -157,10 +151,6 @@ class PostgreSQLDatabaseGatewayE2ETest extends AbstractTransportParameterizedE2E
     
     private static Map<String, Object> createExecuteUpdateArguments(final String schema, final String sql) {
         return Map.of("database", LOGICAL_DATABASE_NAME, "schema", schema, "sql", sql, "execution_mode", "execute");
-    }
-    
-    private static Stream<Arguments> httpTransportCase() {
-        return FunctionalityTransportCases.httpTransportCase();
     }
     
     private Map<String, Object> findNested(final Map<String, Object> payload, final String collectionName, final String fieldName, final String expectedValue) {

@@ -152,10 +152,6 @@ abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterize
         return FunctionalityTransportCases.allTransportCases();
     }
     
-    protected static Stream<Arguments> httpTransportCase() {
-        return FunctionalityTransportCases.httpTransportCase();
-    }
-    
     protected static Stream<Arguments> singleMetadataResourceCases() {
         return FunctionalityTransportCases.singleMetadataResourceCases(LOGICAL_DATABASE_NAME);
     }
