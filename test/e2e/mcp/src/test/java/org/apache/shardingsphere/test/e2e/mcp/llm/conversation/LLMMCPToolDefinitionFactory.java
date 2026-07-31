@@ -26,33 +26,24 @@ import java.util.Set;
 
 final class LLMMCPToolDefinitionFactory {
     
-    List<Map<String, Object>> createFromRemote(final List<Map<String, Object>> advertisedTools, final Set<String> allowedNonReadOnlyToolNames) {
+    List<Map<String, Object>> createFromRemote(final List<Map<String, Object>> advertisedTools, final Set<String> allowedToolNames) {
         List<Map<String, Object>> result = new LinkedList<>();
-        result.add(createReadResourceToolDefinition());
-        boolean readOnlyToolFound = false;
-        Set<String> missingAllowedToolNames = new LinkedHashSet<>(allowedNonReadOnlyToolNames);
+        Set<String> missingAllowedToolNames = new LinkedHashSet<>(allowedToolNames);
+        if (missingAllowedToolNames.remove(LLMConversationRunner.READ_RESOURCE_TOOL_NAME)) {
+            result.add(createReadResourceToolDefinition());
+        }
         for (Map<String, Object> each : advertisedTools) {
             String toolName = Objects.toString(each.get("name"), "").trim();
-            boolean readOnly = isReadOnly(each);
-            if (!readOnly && !allowedNonReadOnlyToolNames.contains(toolName)) {
+            if (!missingAllowedToolNames.contains(toolName)) {
                 continue;
             }
             result.add(createRemoteToolDefinition(each, toolName));
-            readOnlyToolFound |= readOnly;
             missingAllowedToolNames.remove(toolName);
-        }
-        if (!readOnlyToolFound) {
-            throw new IllegalStateException("MCP runtime did not advertise any read-only tools.");
         }
         if (!missingAllowedToolNames.isEmpty()) {
             throw new IllegalStateException("MCP runtime did not advertise required scenario tools: " + missingAllowedToolNames);
         }
         return result;
-    }
-    
-    private boolean isReadOnly(final Map<String, Object> advertisedTool) {
-        Object annotations = advertisedTool.get("annotations");
-        return annotations instanceof Map && Boolean.TRUE.equals(((Map<?, ?>) annotations).get("readOnlyHint"));
     }
     
     private Map<String, Object> createRemoteToolDefinition(final Map<String, Object> advertisedTool, final String toolName) {

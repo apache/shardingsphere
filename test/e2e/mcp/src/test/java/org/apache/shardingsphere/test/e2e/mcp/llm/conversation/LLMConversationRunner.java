@@ -89,7 +89,7 @@ public final class LLMConversationRunner {
         try {
             mcpInteractionClient.open();
             List<Map<String, Object>> advertisedTools = mcpInteractionClient.listTools();
-            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createFromRemote(advertisedTools, scenario.allowedNonReadOnlyToolNames());
+            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createFromRemote(advertisedTools, scenario.allowedToolNames());
             artifacts.setToolDefinitions(toolDefinitions);
             return runTurns(scenario, artifacts, toolDefinitions);
         } catch (final IOException ex) {
@@ -225,10 +225,10 @@ public final class LLMConversationRunner {
      *
      * @param id scenario ID
      * @param question question
-     * @param allowedNonReadOnlyToolNames non-read-only tools exposed only to this scenario
+     * @param allowedToolNames tools exposed only to this scenario
      * @param evaluator scenario evidence evaluator
      */
-    public record Scenario(String id, String question, Set<String> allowedNonReadOnlyToolNames,
+    public record Scenario(String id, String question, Set<String> allowedToolNames,
                            BiFunction<String, List<MCPInteractionTraceRecord>, LLME2EAssertionReport> evaluator) {
     }
     

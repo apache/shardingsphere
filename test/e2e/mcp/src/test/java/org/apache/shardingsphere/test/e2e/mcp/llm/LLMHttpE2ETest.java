@@ -75,6 +75,12 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String STALE_TABLE_RESOURCE_URI = "shardingsphere://databases/logic_db/schemas/logic_db/tables/missing_orders";
     
+    private static final String READ_RESOURCE_TOOL_NAME = "mcp_read_resource";
+    
+    private static final String SEARCH_METADATA_TOOL_NAME = "database_gateway_search_metadata";
+    
+    private static final String EXECUTE_QUERY_TOOL_NAME = "database_gateway_execute_query";
+    
     private static final String EXECUTE_UPDATE_TOOL_NAME = "database_gateway_execute_update";
     
     private static final String PLAN_MASK_RULE_TOOL_NAME = "database_gateway_plan_mask_rule";
@@ -85,8 +91,10 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             "run-context.json", "system-prompt.md", "question.txt", "answer.txt", "raw-model-output.txt", "available-tools.json",
             "interaction-trace.json", "assertion-report.json");
     
+    // JSON boolean and null literals are metadata rather than credential values.
     private static final Pattern UNREDACTED_SECRET_PATTERN = Pattern.compile(
-            "(?i)(?<![a-z0-9_])\"?(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"?\\s*[:=]\\s*[\"']?(?!<redacted>)[^\\s,\"'}]+"
+            "(?i)(?<![a-z0-9_])\"?(?:api[_-]?key|access[_-]?token|token|authorization|password|passwd|pwd|secret)\"?\\s*[:=]\\s*"
+                    + "(?!(?:true|false|null)(?:\\s*[,}\\]]|\\s*$))[\"']?(?!<redacted>)[^\\s,\"'}]+"
                     + "|(Bearer\\s+)(?!<redacted>)[A-Za-z0-9._~+/=-]+|jdbc:");
     
     private static LLMRuntimeSupport.ModelRuntime llmRuntime;
@@ -121,7 +129,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         runScenario(new Scenario(
                 "read-only-query",
                 "How many rows are currently in the orders table of the logic_db runtime database? Inspect the live MCP server and answer concisely.",
-                Set.of(),
+                Set.of(EXECUTE_QUERY_TOOL_NAME),
                 this::evaluateReadOnlyQuery));
     }
     
@@ -130,7 +138,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         runScenario(new Scenario(
                 "metadata-discovery",
                 "List every table or view currently visible through the live MCP server. The user does not know the database or schema names, so discover the required scope first.",
-                Set.of(),
+                Set.of(SEARCH_METADATA_TOOL_NAME),
                 this::evaluateMetadataDiscovery));
     }
     
@@ -154,7 +162,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 "side-effect-preview",
                 "A user wants to change the status of order 1 in the orders table to REVIEW_PENDING. Preview the proposed change without executing it, then report whether it "
                         + "was only previewed and whether any data changed. Inspect the live MCP server to discover any required runtime scope.",
-                Set.of(EXECUTE_UPDATE_TOOL_NAME),
+                Set.of(SEARCH_METADATA_TOOL_NAME, EXECUTE_UPDATE_TOOL_NAME),
                 (answer, trace) -> evaluateSideEffectPreview(answer, trace, statusBefore)));
     }
     
@@ -164,7 +172,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 "invalid-resource-recovery",
                 "A user pasted stale resource `" + STALE_TABLE_RESOURCE_URI + "`. Inspect that resource, then follow the first safe read-only action in its top-level "
                         + "`next_actions` by reading its `resource_uri` exactly. Do not guess another URI. Then report how many rows are currently in the orders table.",
-                Set.of(),
+                Set.of(READ_RESOURCE_TOOL_NAME, EXECUTE_QUERY_TOOL_NAME),
                 this::evaluateInvalidResourceRecovery));
     }
     
@@ -206,7 +214,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         Set<String> actualMetadataNames = new LinkedHashSet<>();
         for (int index = unscopedSearchIndex; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
-            if (isValidModelAction(each, "database_gateway_search_metadata") && (unscopedSearchIndex == index || each.getModelTurn() > discoveryTurn)) {
+            if (isValidModelAction(each, SEARCH_METADATA_TOOL_NAME) && (unscopedSearchIndex == index || each.getModelTurn() > discoveryTurn)) {
                 actualMetadataNames.addAll(getMetadataNames(each.getStructuredContent()));
             }
         }
@@ -323,7 +331,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private int findStaleResourceIndex(final List<MCPInteractionTraceRecord> trace) {
         for (int index = 0; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
-            if (isValidModelAction(each, "mcp_read_resource")
+            if (isValidModelAction(each, READ_RESOURCE_TOOL_NAME)
                     && STALE_TABLE_RESOURCE_URI.equals(each.getArguments().get("uri"))
                     && hasRecoveryCategory(each.getStructuredContent(), "object_not_visible")) {
                 return index;
@@ -345,7 +353,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         for (int index = staleResourceIndex + 1; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
             if (each.getModelTurn() > staleResource.getModelTurn()
-                    && isValidModelAction(each, "mcp_read_resource")
+                    && isValidModelAction(each, READ_RESOURCE_TOOL_NAME)
                     && Objects.equals(recoveryAction.get("resource_uri"), each.getArguments().get("uri"))
                     && containsOrdersTable(each.getStructuredContent())) {
                 return index;
@@ -367,7 +375,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private Optional<Integer> findQueryCount(final List<MCPInteractionTraceRecord> trace, final int previousModelTurn) {
         for (MCPInteractionTraceRecord each : trace) {
-            if (each.getModelTurn() <= previousModelTurn || !isValidModelAction(each, "database_gateway_execute_query") || !isOrdersCountQuery(each.getArguments())) {
+            if (each.getModelTurn() <= previousModelTurn || !isValidModelAction(each, EXECUTE_QUERY_TOOL_NAME) || !isOrdersCountQuery(each.getArguments())) {
                 continue;
             }
             for (Map<String, Object> row : getObjectList(each.getStructuredContent().get("row_objects"))) {
@@ -406,7 +414,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private int findUnscopedMetadataSearchIndex(final List<MCPInteractionTraceRecord> trace) {
         for (int index = 0; index < trace.size(); index++) {
             MCPInteractionTraceRecord each = trace.get(index);
-            if (isValidModelAction(each, "database_gateway_search_metadata")
+            if (isValidModelAction(each, SEARCH_METADATA_TOOL_NAME)
                     && !each.getArguments().containsKey("database") && !each.getArguments().containsKey("schema")
                     && getObjectList(each.getStructuredContent().get("items")).stream().anyMatch(item -> DATABASE_NAME.equals(item.get("database")))) {
                 return index;
