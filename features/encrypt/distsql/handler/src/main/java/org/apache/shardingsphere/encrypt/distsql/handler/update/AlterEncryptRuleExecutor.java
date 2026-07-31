@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
@@ -103,7 +104,7 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     
     @Override
     public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> toBeAlteredTableNames = new CaseInsensitiveSet<>(toBeAlteredRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList()));
         Collection<EncryptTableRuleConfiguration> tables = rule.getConfiguration().getTables().stream().filter(each -> !toBeAlteredTableNames.contains(each.getName())).collect(Collectors.toList());
         tables.addAll(toBeAlteredRuleConfig.getTables());
         EncryptRuleConfiguration toBeCheckedRuleConfig = new EncryptRuleConfiguration(tables, rule.getConfiguration().getEncryptors());
