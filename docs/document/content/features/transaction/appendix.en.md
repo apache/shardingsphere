@@ -6,7 +6,7 @@ weight = 3
 Unsupported SQL：
 
 - RAL and RDL operations of DistSQL that are used in transactions.
-- DDL statements that are used in XA transactions.
+- DDL support in XA transactions depends on the database dialect. PostgreSQL and openGauss permit only DDL statements that do not change metadata.
 
 Privileges required for XA transactions:
 

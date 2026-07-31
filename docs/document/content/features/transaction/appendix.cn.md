@@ -6,7 +6,7 @@ weight = 3
 不支持的 SQL：
 
 - 事务中使用 DistSQL 里的 RAL、RDL 操作；
-- XA 事务中使用 DDL 语句。
+- XA 事务中的 DDL 支持取决于数据库方言；PostgreSQL 和 openGauss 仅支持不改变元数据的 DDL 语句。
 
 XA 事务所需的权限：
 
