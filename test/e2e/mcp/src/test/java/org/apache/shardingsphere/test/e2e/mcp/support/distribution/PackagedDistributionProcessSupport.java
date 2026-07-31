@@ -79,16 +79,12 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
         return result;
     }
     
-    static List<String> createCommand(final Path distributionHome, final Path configFile, final String osName) {
+    private static List<String> createCommand(final Path distributionHome, final Path configFile, final String osName) {
         Path startScript = resolveStartScript(distributionHome, osName);
         return isWindows(osName) ? List.of("cmd", "/c", startScript.toString(), configFile.toString()) : List.of(startScript.toString(), configFile.toString());
     }
     
-    static Path resolveStartScript(final Path distributionHome) {
-        return resolveStartScript(distributionHome, System.getProperty("os.name", ""));
-    }
-    
-    static Path resolveStartScript(final Path distributionHome, final String osName) {
+    private static Path resolveStartScript(final Path distributionHome, final String osName) {
         return distributionHome.resolve(isWindows(osName) ? "bin/start.bat" : "bin/start.sh");
     }
     

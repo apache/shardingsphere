@@ -19,15 +19,33 @@ package org.apache.shardingsphere.test.e2e.mcp.env;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
+
+import java.util.Locale;
+import java.util.Properties;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPE2ECondition {
     
-    public static boolean isDockerEnabled() {
-        return isDockerEnabled(MCPE2ETestConfiguration.getInstance());
-    }
+    private static final Properties PROPS = EnvironmentPropertiesLoader.loadProperties();
     
-    static boolean isDockerEnabled(final MCPE2ETestConfiguration config) {
-        return config.isDockerRunType();
+    /**
+     * Check whether Docker run type is enabled.
+     *
+     * @return whether Docker run type is enabled
+     * @throws IllegalStateException when run type is unsupported
+     */
+    public static boolean isDockerEnabled() {
+        boolean result = false;
+        for (String each : EnvironmentPropertiesLoader.getListValue(PROPS, "e2e.run.type")) {
+            String runType = each.toUpperCase(Locale.ENGLISH);
+            if (!"DOCKER".equals(runType) && !"NATIVE".equals(runType)) {
+                throw new IllegalStateException(String.format("Unsupported MCP E2E run type `%s`.", each));
+            }
+            if ("DOCKER".equals(runType)) {
+                result = true;
+            }
+        }
+        return result;
     }
 }

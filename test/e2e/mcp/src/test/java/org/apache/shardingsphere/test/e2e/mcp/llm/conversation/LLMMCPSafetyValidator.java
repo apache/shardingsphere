@@ -25,16 +25,16 @@ final class LLMMCPSafetyValidator {
     
     private static final String EXECUTION_MODE_PREVIEW = "preview";
     
-    Optional<LLMMCPToolCallValidationFailure> validate(final String actionName, final Map<String, Object> arguments) {
+    Optional<ValidationFailure> validate(final String actionName, final Map<String, Object> arguments) {
         if (LLMConversationRunner.READ_RESOURCE_TOOL_NAME.equals(actionName) && Objects.toString(arguments.get("uri"), "").trim().isEmpty()) {
-            return Optional.of(new LLMMCPToolCallValidationFailure("invalid_tool_arguments", "Model returned an empty resource URI."));
+            return Optional.of(new ValidationFailure("invalid_tool_arguments", "Model returned an empty resource URI."));
         }
         if ("database_gateway_execute_query".equals(actionName) && isExplain(arguments)) {
-            return Optional.of(new LLMMCPToolCallValidationFailure("invalid_tool_arguments",
+            return Optional.of(new ValidationFailure("invalid_tool_arguments",
                     "Model routed EXPLAIN SQL to database_gateway_execute_query instead of database_gateway_execute_explain_query."));
         }
         if ("database_gateway_execute_update".equals(actionName) && !EXECUTION_MODE_PREVIEW.equals(Objects.toString(arguments.get("execution_mode"), ""))) {
-            return Optional.of(new LLMMCPToolCallValidationFailure("unsafe_sql_execution_attempted",
+            return Optional.of(new ValidationFailure("unsafe_sql_execution_attempted",
                     "Model attempted to execute side-effecting SQL in an LLM E2E scenario."));
         }
         return Optional.empty();
@@ -46,4 +46,6 @@ final class LLMMCPSafetyValidator {
                 && (Character.isWhitespace(sql.charAt(7)) || '(' == sql.charAt(7));
     }
     
+    record ValidationFailure(String failureType, String message) {
+    }
 }

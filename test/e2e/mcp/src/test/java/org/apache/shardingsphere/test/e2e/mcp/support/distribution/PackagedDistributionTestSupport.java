@@ -59,18 +59,6 @@ public final class PackagedDistributionTestSupport {
     private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
     
     /**
-     * Prepare one packaged MCP distribution copy for E2E tests.
-     *
-     * @param tempDir temporary directory
-     * @param transport runtime transport
-     * @return prepared packaged distribution
-     * @throws IOException I/O exception
-     */
-    public static PreparedPackagedDistribution prepare(final Path tempDir, final RuntimeTransport transport) throws IOException {
-        return prepare(tempDir, transport, Map.of());
-    }
-    
-    /**
      * Prepare one packaged MCP distribution copy with supplied runtime databases.
      *
      * @param tempDir temporary directory
@@ -126,14 +114,7 @@ public final class PackagedDistributionTestSupport {
         return targetFile;
     }
     
-    /**
-     * Find the packaged MCP distribution home.
-     *
-     * @return packaged MCP distribution home
-     * @throws IOException I/O exception
-     * @throws IllegalStateException configured distribution home does not exist
-     */
-    public static Optional<Path> findDistributionHome() throws IOException {
+    private static Optional<Path> findDistributionHome() throws IOException {
         Optional<Path> configuredDistributionHome = resolveConfiguredDistributionHome();
         if (configuredDistributionHome.isPresent()) {
             return configuredDistributionHome;
@@ -281,9 +262,5 @@ public final class PackagedDistributionTestSupport {
     }
     
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport) {
-
-        public Path getStartScript() {
-            return PackagedDistributionProcessSupport.resolveStartScript(home);
-        }
     }
 }

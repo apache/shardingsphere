@@ -200,13 +200,14 @@ public final class LLMRuntimeSupport {
      * Prepared model runtime.
      */
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    @Getter
     public static final class ModelRuntime implements AutoCloseable {
         
+        @Getter
         private final LLME2EConfiguration configuration;
         
         private final GenericContainer<?> container;
         
+        @Getter
         private final Map<String, Object> evidence;
         
         private static ModelRuntime externalDebug(final LLME2EConfiguration config) {
