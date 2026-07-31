@@ -156,13 +156,13 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
         boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         boolean collationSupported = versionContainsCollation(databaseMetaData);
         String collation = collationSupported ? resultSet.getString("COLLATION") : null;
-        boolean caseSensitive = isResolveCaseSensitive(dataType, collation, collationSupported);
+        boolean caseSensitive = isCaseSensitive(dataType, collation, collationSupported);
         boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
         boolean nullable = "Y".equals(resultSet.getString("NULLABLE"));
         return new ColumnMetaData(columnName, dataType, primaryKey, generated, caseSensitive, isVisible, false, nullable);
     }
     
-    private boolean isResolveCaseSensitive(final int dataType, final String collation, final boolean collationSupported) {
+    private boolean isCaseSensitive(final int dataType, final String collation, final boolean collationSupported) {
         // TODO Resolve case sensitivity from session parameters for Oracle versions earlier than 12.2 and session-dependent collations.
         return collationSupported ? null != collation && isCaseSensitive(collation) : dataTypeOption.isStringDataType(dataType);
     }
