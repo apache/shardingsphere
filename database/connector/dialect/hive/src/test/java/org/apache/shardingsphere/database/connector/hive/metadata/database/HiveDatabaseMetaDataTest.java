@@ -52,7 +52,7 @@ class HiveDatabaseMetaDataTest {
     
     @Test
     void assertGetIdentifierPatternType() {
-        assertThat(dialectDatabaseMetaData.getIdentifierPatternType(), is(IdentifierPatternType.KEEP_ORIGIN));
+        assertThat(dialectDatabaseMetaData.getIdentifierPatternType(), is(IdentifierPatternType.LOWER_CASE));
     }
     
     @Test
