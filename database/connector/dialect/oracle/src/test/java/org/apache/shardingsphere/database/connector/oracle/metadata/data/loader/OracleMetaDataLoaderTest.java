@@ -257,12 +257,12 @@ class OracleMetaDataLoaderTest {
     private static Stream<Arguments> assertLoadArguments() {
         return Stream.of(
                 Arguments.of("major12Minor2WithoutPrimaryKey", 12, 2, false, "BINARY", true),
-                Arguments.of("major12Minor1WithoutPrimaryKey", 12, 1, false, NO_COLLATION, false),
-                Arguments.of("major11Minor2WithoutPrimaryKey", 11, 2, false, NO_COLLATION, false),
-                Arguments.of("major12Minor0WithoutPrimaryKey", 12, 0, false, NO_COLLATION, false),
+                Arguments.of("major12Minor1WithoutPrimaryKey", 12, 1, false, NO_COLLATION, true),
+                Arguments.of("major11Minor2WithoutPrimaryKey", 11, 2, false, NO_COLLATION, true),
+                Arguments.of("major12Minor0WithoutPrimaryKey", 12, 0, false, NO_COLLATION, true),
                 Arguments.of("major12Minor2WithPrimaryKey", 12, 2, true, "BINARY", true),
-                Arguments.of("major12Minor1WithPrimaryKey", 12, 1, true, NO_COLLATION, false),
-                Arguments.of("major11Minor2WithPrimaryKey", 11, 2, true, NO_COLLATION, false),
+                Arguments.of("major12Minor1WithPrimaryKey", 12, 1, true, NO_COLLATION, true),
+                Arguments.of("major11Minor2WithPrimaryKey", 11, 2, true, NO_COLLATION, true),
                 Arguments.of("major19Minor0WithPrimaryKey", 19, 0, true, "BINARY", true),
                 Arguments.of("major12Minor2WithNullCollation", 12, 2, true, NO_COLLATION, false),
                 Arguments.of("major12Minor2WithNamedCollation", 12, 2, true, "FRENCH", true),
