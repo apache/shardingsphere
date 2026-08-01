@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
@@ -37,16 +36,13 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ReadwriteSplittingWorkflowPlanningServicesTest {
+class ReadwriteSplittingRuleWorkflowPlanningServiceTest {
     
     @Test
     void assertPlanCreateRule() {
@@ -197,56 +193,6 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER));
     }
     
-    @Test
-    void assertPlanStatus() {
-        WorkflowContextSnapshot actual =
-                createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), createStatusRequest("disable"));
-        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertThat(actual.getWorkflowKind().getValue(), is("readwrite.status"));
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("ALTER READWRITE_SPLITTING RULE `readwrite_ds` DISABLE `read_ds_0` FROM `logic_db`"));
-    }
-    
-    @Test
-    void assertPlanStatusInfersTargetStatus() {
-        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
-        request.setNaturalLanguageIntent("disable read storage unit");
-        WorkflowContextSnapshot actual = createStatusService().plan(
-                new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of(createStatusRow("ENABLED"))), request);
-        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertThat(((ReadwriteSplittingStatusWorkflowRequest) actual.getRequest()).getTargetStatus(), is("disable"));
-        assertThat(actual.getRequest().getOperationType(), is(""));
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("ALTER READWRITE_SPLITTING RULE `readwrite_ds` DISABLE `read_ds_0` FROM `logic_db`"));
-    }
-    
-    @Test
-    void assertPlanStatusClarifiesMissingStatus() {
-        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
-        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
-        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
-    }
-    
-    @Test
-    void assertPlanStatusFailsWhenTargetMissing() {
-        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), mockStatusQueryFacade(List.of()), createStatusRequest("enable"));
-        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND));
-    }
-    
-    @Test
-    void assertPlanStatusFailsInStandaloneMode() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "SHOW COMPUTE NODE INFO")).thenReturn(List.of(Map.of("mode_type", "Standalone")));
-        WorkflowContextSnapshot actual = createStatusService().plan(new TestWorkflowSessionContext(), queryFacade, createStatusRequest("disable"));
-        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
-        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.CLUSTER_MODE_REQUIRED));
-        assertThat(actual.getIssues().getFirst().getStage(), is(WorkflowLifecycle.STEP_DISCOVERING));
-        assertFalse(actual.getIssues().getFirst().isRetryable());
-        assertThat(actual.getIssues().getFirst().getDetails(), is(Map.of("required_mode", "Cluster", "actual_mode", "Standalone")));
-        assertTrue(actual.getRuleArtifacts().isEmpty());
-        verify(queryFacade, never()).query("logic_db", "SHOW STATUS FROM READWRITE_SPLITTING RULE readwrite_ds FROM logic_db");
-    }
-    
     private ReadwriteSplittingRuleWorkflowPlanningService createRuleService() {
         return new ReadwriteSplittingRuleWorkflowPlanningService();
     }
@@ -267,25 +213,12 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
                 Arguments.of("read storage unit", "logic_db", "readwrite_ds", "write_ds", List.of("bad`read")));
     }
     
-    private ReadwriteSplittingStatusWorkflowPlanningService createStatusService() {
-        return new ReadwriteSplittingStatusWorkflowPlanningService();
-    }
-    
     private MCPFeatureQueryFacade mockRuleQueryFacade(final List<Map<String, Object>> rules) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
         when(result.query(eq("logic_db"), any())).thenReturn(rules);
         when(result.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS"))
                 .thenReturn(List.of(Map.of("type", "RANDOM"), Map.of("type", "WEIGHT")));
-        return result;
-    }
-    
-    private MCPFeatureQueryFacade mockStatusQueryFacade(final List<Map<String, Object>> statuses) {
-        MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
-        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);
-        when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "read_ds_0", "read_ds_0")).thenReturn(true);
-        when(result.query("logic_db", "SHOW COMPUTE NODE INFO")).thenReturn(List.of(Map.of("mode_type", "Cluster")));
-        when(result.query("logic_db", "SHOW STATUS FROM READWRITE_SPLITTING RULE readwrite_ds FROM logic_db")).thenReturn(statuses);
         return result;
     }
     
@@ -300,16 +233,4 @@ class ReadwriteSplittingWorkflowPlanningServicesTest {
         return result;
     }
     
-    private ReadwriteSplittingStatusWorkflowRequest createStatusRequest(final String targetStatus) {
-        ReadwriteSplittingStatusWorkflowRequest result = new ReadwriteSplittingStatusWorkflowRequest();
-        result.setDatabase("logic_db");
-        result.setRuleName("readwrite_ds");
-        result.setStorageUnit("read_ds_0");
-        result.setTargetStatus(targetStatus);
-        return result;
-    }
-    
-    private Map<String, Object> createStatusRow(final String status) {
-        return Map.of("name", "readwrite_ds", "storage_unit", "read_ds_0", "status", status);
-    }
 }

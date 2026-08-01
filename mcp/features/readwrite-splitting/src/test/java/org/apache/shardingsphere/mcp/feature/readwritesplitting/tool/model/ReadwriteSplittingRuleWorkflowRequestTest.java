@@ -26,53 +26,40 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class ReadwriteSplittingWorkflowRequestsTest {
+class ReadwriteSplittingRuleWorkflowRequestTest {
     
     @Test
-    void assertRuleRequestParsesReadStorageUnits() {
+    void assertSetReadStorageUnits() {
         ReadwriteSplittingRuleWorkflowRequest actual = new ReadwriteSplittingRuleWorkflowRequest();
         actual.setReadStorageUnits("read_ds_0, read_ds_1");
         assertThat(actual.getReadStorageUnits(), is(List.of("read_ds_0", "read_ds_1")));
     }
     
     @Test
-    void assertRuleRequestCopy() {
-        ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest();
-        ReadwriteSplittingRuleWorkflowRequest actual = request.copy();
+    void assertCopy() {
+        ReadwriteSplittingRuleWorkflowRequest actual = createRequest().copy();
         assertThat(actual.getRuleName(), is("readwrite_ds"));
         assertThat(actual.getLoadBalancerProperties(), is(Map.of("read_ds_0", "2")));
     }
     
     @Test
-    void assertRuleRequestMerge() {
-        ReadwriteSplittingRuleWorkflowRequest previous = createRuleRequest();
+    void assertMerge() {
         ReadwriteSplittingRuleWorkflowRequest current = new ReadwriteSplittingRuleWorkflowRequest();
         current.setRuleName("new_rule");
-        ReadwriteSplittingRuleWorkflowRequest actual = ReadwriteSplittingRuleWorkflowRequest.merge(previous, current);
+        ReadwriteSplittingRuleWorkflowRequest actual = ReadwriteSplittingRuleWorkflowRequest.merge(createRequest(), current);
         assertThat(actual.getRuleName(), is("new_rule"));
         assertThat(actual.getWriteStorageUnit(), is("write_ds"));
     }
     
     @Test
-    void assertRuleRequestMergeFromBaseRequest() {
+    void assertMergeFromBaseRequest() {
         WorkflowRequest previous = new WorkflowRequest();
         previous.setDatabase("logic_db");
         ReadwriteSplittingRuleWorkflowRequest actual = ReadwriteSplittingRuleWorkflowRequest.merge(previous, new ReadwriteSplittingRuleWorkflowRequest());
         assertThat(actual.getDatabase(), is("logic_db"));
     }
     
-    @Test
-    void assertStatusRequestMerge() {
-        ReadwriteSplittingStatusWorkflowRequest previous = new ReadwriteSplittingStatusWorkflowRequest();
-        previous.setRuleName("readwrite_ds");
-        ReadwriteSplittingStatusWorkflowRequest current = new ReadwriteSplittingStatusWorkflowRequest();
-        current.setStorageUnit("read_ds_0");
-        ReadwriteSplittingStatusWorkflowRequest actual = ReadwriteSplittingStatusWorkflowRequest.merge(previous, current);
-        assertThat(actual.getRuleName(), is("readwrite_ds"));
-        assertThat(actual.getStorageUnit(), is("read_ds_0"));
-    }
-    
-    private ReadwriteSplittingRuleWorkflowRequest createRuleRequest() {
+    private ReadwriteSplittingRuleWorkflowRequest createRequest() {
         ReadwriteSplittingRuleWorkflowRequest result = new ReadwriteSplittingRuleWorkflowRequest();
         result.setRuleName("readwrite_ds");
         result.setWriteStorageUnit("write_ds");
