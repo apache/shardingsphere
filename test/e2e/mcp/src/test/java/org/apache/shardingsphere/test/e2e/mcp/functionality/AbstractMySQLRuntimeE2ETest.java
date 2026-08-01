@@ -17,16 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
-import io.modelcontextprotocol.client.McpSyncClient;
-import io.modelcontextprotocol.spec.McpClientTransport;
-import io.modelcontextprotocol.spec.McpSchema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
@@ -43,7 +38,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,8 +49,6 @@ abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterize
     protected static final String LOGICAL_DATABASE_NAME = "logic_db";
     
     protected static final String PHYSICAL_DATABASE_NAME = "orders";
-    
-    protected static final String MASK_PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
     @Getter(AccessLevel.PROTECTED)
     private GenericContainer<?> container;
@@ -146,10 +138,6 @@ abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterize
     
     protected static Map<String, Object> createExecuteUpdateArguments(final String databaseName, final String sql) {
         return Map.of("database", databaseName, "schema", databaseName, "sql", sql, "execution_mode", "execute");
-    }
-    
-    protected static Stream<Arguments> allTransportCases() {
-        return FunctionalityTransportCases.allTransportCases();
     }
     
     protected static Stream<Arguments> singleMetadataResourceCases() {
@@ -249,52 +237,12 @@ abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterize
         assertThat(String.valueOf(getRequiredObjectList(actual.get("next_actions")).getFirst().get("type")), is("ask_user"));
     }
     
-    protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests) throws IOException {
-        return MCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, this::createElicitationResult);
-    }
-    
-    private McpClientTransport createClientTransport(final RuntimeTransport transport) throws IOException {
-        return RuntimeTransport.HTTP == transport
-                ? MCPClientTransportFactory.createHttpClientTransport(getHttpEndpointUri())
-                : MCPClientTransportFactory.createStdioClientTransport(getConfigFile());
-    }
-    
-    private McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,
-                                                           final McpSchema.ElicitRequest request) {
-        elicitationRequests.add(request);
-        List<String> requiredFields = getRequiredStringList(request.requestedSchema().get("required"));
-        return new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of(
-                requiredFields.getFirst(), "1",
-                requiredFields.get(1), "3"));
-    }
-    
-    protected void assertElicitationRequest(final List<McpSchema.ElicitRequest> actualRequests) {
-        assertThat(actualRequests.size(), is(1));
-        McpSchema.ElicitRequest actual = actualRequests.getFirst();
-        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.TOOL), is(MASK_PLAN_TOOL_NAME));
-        assertFalse(String.valueOf(actual.meta().get(MCPShardingSphereMetadataKeys.PLAN_ID)).isBlank());
-        Map<String, Object> actualRequestedSchema = actual.requestedSchema();
-        assertThat(actualRequestedSchema.get("type"), is("object"));
-        assertFalse((Boolean) actualRequestedSchema.get("additionalProperties"));
-        Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualRequestedSchema, "properties");
-        assertTrue(actualProperties.containsKey("field_1"));
-        assertTrue(actualProperties.containsKey("field_2"));
-        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_1").get("description")), is("Please provide property `from-x`."));
-        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_2").get("description")), is("Please provide property `to-y`."));
-        assertFalse(actualProperties.keySet().stream().map(String::valueOf).anyMatch(each -> each.contains("secret") || each.contains("password") || each.contains("token")));
-        assertThat(getRequiredStringList(actualRequestedSchema.get("required")), hasItems("field_1", "field_2"));
-    }
-    
     protected Map<String, Object> getObjectOrEmpty(final Object value) {
         return value instanceof Map ? MCPInteractionPayloads.getRequiredObjectValue(value, "payload") : Map.of();
     }
     
     protected List<Map<String, Object>> getRequiredObjectList(final Object value) {
         return MCPInteractionPayloads.getRequiredObjectList(value, "payload");
-    }
-    
-    protected List<String> getRequiredStringList(final Object value) {
-        return ((List<?>) value).stream().map(String::valueOf).toList();
     }
     
     @AllArgsConstructor(access = AccessLevel.PRIVATE)

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
 import java.util.LinkedList;
@@ -38,59 +37,60 @@ public final class ShardingAlgorithmRecommendationService {
      * Recommend sharding algorithm and key generator.
      *
      * @param request workflow request
-     * @param algorithmResult algorithm query result
-     * @param keyGeneratorResult key-generator query result
+     * @param algorithms sharding algorithms reported by the current Proxy
+     * @param keyGenerators key generators reported by the current Proxy
      * @param includeShardingAlgorithm whether to include sharding algorithm recommendation
      * @param includeKeyGenerator whether to include key-generator recommendation
      * @param issues workflow issues
      * @return selected candidates
      */
-    public List<AlgorithmCandidate> recommend(final ShardingWorkflowRequest request, final WorkflowQueryResult algorithmResult,
-                                              final WorkflowQueryResult keyGeneratorResult, final boolean includeShardingAlgorithm,
+    public List<AlgorithmCandidate> recommend(final ShardingWorkflowRequest request, final List<Map<String, Object>> algorithms,
+                                              final List<Map<String, Object>> keyGenerators, final boolean includeShardingAlgorithm,
                                               final boolean includeKeyGenerator, final List<WorkflowIssue> issues) {
         List<AlgorithmCandidate> result = new LinkedList<>();
         if (includeShardingAlgorithm) {
-            recommendAlgorithm(request.getAlgorithmType(), algorithmResult, issues).forEach(result::add);
+            recommendAlgorithm(request.getAlgorithmType(), algorithms, issues).forEach(result::add);
         }
         if (includeKeyGenerator) {
-            recommendKeyGenerator(request.getKeyGeneratorType(), keyGeneratorResult, issues).forEach(result::add);
+            recommendKeyGenerator(request.getKeyGeneratorType(), keyGenerators, issues).forEach(result::add);
         }
         return result;
     }
     
-    private List<AlgorithmCandidate> recommendAlgorithm(final String algorithmType, final WorkflowQueryResult algorithmResult, final List<WorkflowIssue> issues) {
+    private List<AlgorithmCandidate> recommendAlgorithm(final String algorithmType, final List<Map<String, Object>> algorithms, final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(algorithmType);
         if (!actualAlgorithmType.isEmpty()) {
-            if (!algorithmResult.isAvailabilityConfirmed() || WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), actualAlgorithmType, "type", "name")) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithms, actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate("primary", actualAlgorithmType, 100, "User specified sharding algorithm."));
             }
             addAlgorithmNotFoundIssue(issues, "Sharding algorithm", actualAlgorithmType);
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(algorithmResult.getRows(), List.of("INLINE", "MOD", "HASH_MOD"));
+        String recommendedType = resolveRecommendedAlgorithm(algorithms, List.of("INLINE", "MOD", "HASH_MOD"));
         if (recommendedType.isEmpty()) {
             addNoAlgorithmIssue(issues, "sharding algorithm");
             return List.of();
         }
-        return List.of(createCandidate("primary", recommendedType, 90, "Recommended from current sharding algorithm availability."));
+        return List.of(createCandidate("primary", recommendedType, 90,
+                "Selected from algorithms reported by the current Proxy using MCP's built-in sharding preference order."));
     }
     
-    private List<AlgorithmCandidate> recommendKeyGenerator(final String keyGeneratorType, final WorkflowQueryResult keyGeneratorResult, final List<WorkflowIssue> issues) {
+    private List<AlgorithmCandidate> recommendKeyGenerator(final String keyGeneratorType, final List<Map<String, Object>> keyGenerators, final List<WorkflowIssue> issues) {
         String actualKeyGeneratorType = WorkflowAlgorithmUtils.normalizeAlgorithmType(keyGeneratorType);
         if (!actualKeyGeneratorType.isEmpty()) {
-            if (!keyGeneratorResult.isAvailabilityConfirmed()
-                    || WorkflowAlgorithmUtils.containsAlgorithm(keyGeneratorResult.getRows(), actualKeyGeneratorType, "type", "name")) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(keyGenerators, actualKeyGeneratorType, "type", "name")) {
                 return List.of(createCandidate("key_generator", actualKeyGeneratorType, 100, "User specified key-generator algorithm."));
             }
             addAlgorithmNotFoundIssue(issues, "Key-generator algorithm", actualKeyGeneratorType);
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(keyGeneratorResult.getRows(), List.of("SNOWFLAKE", "UUID"));
+        String recommendedType = resolveRecommendedAlgorithm(keyGenerators, List.of("SNOWFLAKE", "UUID"));
         if (recommendedType.isEmpty()) {
             addNoAlgorithmIssue(issues, "key-generator algorithm");
             return List.of();
         }
-        return List.of(createCandidate("key_generator", recommendedType, 90, "Recommended from current key-generator availability."));
+        return List.of(createCandidate("key_generator", recommendedType, 90,
+                "Selected from algorithms reported by the current Proxy using MCP's built-in key-generator preference order."));
     }
     
     private AlgorithmCandidate createCandidate(final String role, final String algorithmType, final int score, final String reason) {

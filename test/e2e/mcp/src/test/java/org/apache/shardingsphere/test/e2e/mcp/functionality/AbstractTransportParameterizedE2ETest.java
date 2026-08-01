@@ -19,10 +19,17 @@ package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.params.provider.Arguments;
+
+import java.util.stream.Stream;
 
 abstract class AbstractTransportParameterizedE2ETest extends AbstractFunctionalityE2ETest {
     
     private RuntimeTransport transport = RuntimeTransport.HTTP;
+    
+    protected static Stream<Arguments> allTransportCases() {
+        return FunctionalityTransportCases.allTransportCases();
+    }
     
     protected final void useTransport(final RuntimeTransport transport) {
         this.transport = transport;

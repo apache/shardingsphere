@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
-import io.modelcontextprotocol.client.McpSyncClient;
-import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
@@ -31,12 +28,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class MySQLReadOnlySQLE2ETest extends AbstractMySQLRuntimeE2ETest {
@@ -84,37 +79,6 @@ class MySQLReadOnlySQLE2ETest extends AbstractMySQLRuntimeE2ETest {
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT SLEEP(2)", "timeout_ms", 1));
             assertRecoveryResponse(actual);
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("allTransportCases")
-    void assertElicitMaskPlanning(final String name, final RuntimeTransport transport) throws IOException {
-        useTransport(transport);
-        List<McpSchema.ElicitRequest> actualElicitationRequests = new CopyOnWriteArrayList<>();
-        try (McpSyncClient client = createElicitationClient(transport, actualElicitationRequests)) {
-            client.initialize();
-            McpSchema.CallToolResult actual = client.callTool(new McpSchema.CallToolRequest(MASK_PLAN_TOOL_NAME, Map.of(
-                    "database", LOGICAL_DATABASE_NAME,
-                    "schema", LOGICAL_DATABASE_NAME,
-                    "table", "orders",
-                    "column", "status",
-                    "operation_type", "create",
-                    "algorithm_type", "MASK_FROM_X_TO_Y")));
-            Map<String, Object> actualPayload = MCPInteractionPayloads.getRequiredObjectValue(actual.structuredContent(), "structuredContent");
-            if (RuntimeTransport.HTTP == transport) {
-                assertThat(String.valueOf(actualPayload.get("status")), is("clarifying"));
-                assertThat(String.valueOf(actualPayload.get("fallback_reason")), is("remote_identity_required"));
-                assertTrue(actualElicitationRequests.isEmpty());
-                return;
-            }
-            assertThat(String.valueOf(actualPayload.get("status")), is("planned"));
-            assertThat(String.valueOf(actualPayload.get("current_step")), is("review"));
-            Map<String, Object> maskedPropertyPreview = MCPInteractionPayloads.getRequiredObject(actualPayload, "masked_property_preview");
-            Map<String, Object> primaryProperties = MCPInteractionPayloads.getRequiredObject(maskedPropertyPreview, "primary");
-            assertThat(String.valueOf(primaryProperties.get("from-x")), is("1"));
-            assertThat(String.valueOf(primaryProperties.get("to-y")), is("3"));
-            assertElicitationRequest(actualElicitationRequests);
         }
     }
     

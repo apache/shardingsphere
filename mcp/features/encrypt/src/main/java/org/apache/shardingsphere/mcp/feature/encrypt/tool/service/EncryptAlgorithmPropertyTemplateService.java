@@ -49,15 +49,6 @@ public final class EncryptAlgorithmPropertyTemplateService {
     }
     
     /**
-     * Get supported algorithm types.
-     *
-     * @return supported algorithm types
-     */
-    public List<String> getSupportedAlgorithmTypes() {
-        return EncryptAlgorithmCatalog.getSupportedAlgorithmTypes();
-    }
-    
-    /**
      * Mask properties for review.
      *
      * @param requirements requirements

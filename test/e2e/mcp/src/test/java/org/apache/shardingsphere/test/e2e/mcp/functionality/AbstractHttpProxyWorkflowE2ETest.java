@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContract
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport.ProxyWorkflowRuntimeFixture;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
@@ -39,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-abstract class AbstractHttpProxyWorkflowE2ETest extends AbstractFunctionalityE2ETest {
+abstract class AbstractHttpProxyWorkflowE2ETest extends AbstractTransportParameterizedE2ETest {
     
     private ProxyWorkflowRuntimeFixture runtimeFixture;
     
@@ -69,11 +68,6 @@ abstract class AbstractHttpProxyWorkflowE2ETest extends AbstractFunctionalityE2E
             sharedRuntimeFixture.close();
             sharedRuntimeFixture = null;
         }
-    }
-    
-    @Override
-    protected final RuntimeTransport getTransport() {
-        return RuntimeTransport.HTTP;
     }
     
     @Override

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflo
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -41,8 +40,7 @@ class ShardingAlgorithmRecommendationServiceTest {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setAlgorithmType("inline");
         request.setKeyGeneratorType("snowflake");
-        List<AlgorithmCandidate> actual = service.recommend(request, WorkflowQueryResult.confirmed(List.of(Map.of("type", "INLINE"))),
-                WorkflowQueryResult.confirmed(List.of(Map.of("type", "SNOWFLAKE"))), true, true, new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommend(request, List.of(Map.of("type", "INLINE")), List.of(Map.of("type", "SNOWFLAKE")), true, true, new LinkedList<>());
         assertThat(actual.get(0).getAlgorithmType(), is("INLINE"));
         assertThat(actual.get(1).getAlgorithmRole(), is("key_generator"));
         assertThat(actual.get(1).getAlgorithmType(), is("SNOWFLAKE"));
@@ -51,10 +49,12 @@ class ShardingAlgorithmRecommendationServiceTest {
     @Test
     void assertRecommendDefaultAlgorithms() {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
-        List<AlgorithmCandidate> actual = service.recommend(request, WorkflowQueryResult.confirmed(List.of(Map.of("type", "MOD"), Map.of("type", "INLINE"))),
-                WorkflowQueryResult.confirmed(List.of(Map.of("type", "UUID"), Map.of("type", "SNOWFLAKE"))), true, true, new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommend(request, List.of(Map.of("type", "MOD"), Map.of("type", "INLINE")),
+                List.of(Map.of("type", "UUID"), Map.of("type", "SNOWFLAKE")), true, true, new LinkedList<>());
         assertThat(actual.get(0).getAlgorithmType(), is("INLINE"));
+        assertThat(actual.get(0).getRecommendationReason(), is("Selected from algorithms reported by the current Proxy using MCP's built-in sharding preference order."));
         assertThat(actual.get(1).getAlgorithmType(), is("SNOWFLAKE"));
+        assertThat(actual.get(1).getRecommendationReason(), is("Selected from algorithms reported by the current Proxy using MCP's built-in key-generator preference order."));
     }
     
     @Test
@@ -62,17 +62,7 @@ class ShardingAlgorithmRecommendationServiceTest {
         ShardingWorkflowRequest request = new ShardingWorkflowRequest();
         request.setAlgorithmType("CLASS_BASED");
         List<WorkflowIssue> issues = new LinkedList<>();
-        assertTrue(service.recommend(request, WorkflowQueryResult.confirmed(List.of(Map.of("type", "INLINE"))),
-                WorkflowQueryResult.confirmed(List.of()), true, false, issues).isEmpty());
+        assertTrue(service.recommend(request, List.of(Map.of("type", "INLINE")), List.of(), true, false, issues).isEmpty());
         assertThat(issues.getFirst().getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
-    }
-    
-    @Test
-    void assertRecommendSpecifiedAlgorithmWithFallbackCatalog() {
-        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
-        request.setAlgorithmType("CLASS_BASED");
-        List<AlgorithmCandidate> actual = service.recommend(request, WorkflowQueryResult.fallback(List.of(Map.of("type", "INLINE"))),
-                WorkflowQueryResult.fallback(List.of(Map.of("type", "SNOWFLAKE"))), true, false, new LinkedList<>());
-        assertThat(actual.getFirst().getAlgorithmType(), is("CLASS_BASED"));
     }
 }
