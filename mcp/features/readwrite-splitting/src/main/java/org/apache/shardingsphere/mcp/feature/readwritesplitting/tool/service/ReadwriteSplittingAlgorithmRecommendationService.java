@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
 import java.util.List;
@@ -37,15 +36,15 @@ public final class ReadwriteSplittingAlgorithmRecommendationService {
      * Recommend load-balance algorithms.
      *
      * @param request workflow request
-     * @param algorithmResult load-balance algorithm query result
+     * @param algorithms load-balance algorithms reported by the current Proxy
      * @param issues workflow issues
      * @return selected candidates
      */
     public List<AlgorithmCandidate> recommendLoadBalanceAlgorithms(final ReadwriteSplittingRuleWorkflowRequest request,
-                                                                   final WorkflowQueryResult algorithmResult, final List<WorkflowIssue> issues) {
+                                                                   final List<Map<String, Object>> algorithms, final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getLoadBalancerType());
         if (!actualAlgorithmType.isEmpty()) {
-            if (!algorithmResult.isAvailabilityConfirmed() || WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), actualAlgorithmType, "type", "name")) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithms, actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate(actualAlgorithmType, 100, "User specified load-balance algorithm."));
             }
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
@@ -53,13 +52,14 @@ public final class ReadwriteSplittingAlgorithmRecommendationService {
                     "Choose an available load-balance algorithm.", false, Map.of()));
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(algorithmResult.getRows());
+        String recommendedType = resolveRecommendedAlgorithm(algorithms);
         if (recommendedType.isEmpty()) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     "No load-balance algorithm is available from the current Proxy.", "Install or expose at least one load-balance algorithm.", false, Map.of()));
             return List.of();
         }
-        return List.of(createCandidate(recommendedType, 90, "Recommended from current load-balance algorithm availability."));
+        return List.of(createCandidate(recommendedType, 90,
+                "Selected from algorithms reported by the current Proxy using MCP's built-in load-balance preference order."));
     }
     
     private AlgorithmCandidate createCandidate(final String algorithmType, final int score, final String reason) {

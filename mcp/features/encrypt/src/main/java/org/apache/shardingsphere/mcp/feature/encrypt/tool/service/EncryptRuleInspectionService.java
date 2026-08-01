@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -67,10 +65,9 @@ public final class EncryptRuleInspectionService {
      * @param queryFacade query facade
      * @return encrypt algorithms
      */
-    public WorkflowQueryResult queryEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
-        WorkflowQueryResult algorithmResult = queryAlgorithmRows(queryFacade);
+    public List<Map<String, Object>> queryEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : algorithmResult.getRows()) {
+        for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")) {
             String type = WorkflowAlgorithmUtils.getAlgorithmType(each);
             Map<String, Boolean> capability = EncryptAlgorithmCatalog.findCapability(type);
             List<AlgorithmPropertyRequirement> propertyTemplates = EncryptAlgorithmCatalog.findRequirements(EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY, type);
@@ -85,17 +82,6 @@ public final class EncryptRuleInspectionService {
             row.put("secret_properties", propertyTemplates.stream().filter(AlgorithmPropertyRequirement::isSecret).map(AlgorithmPropertyRequirement::getPropertyKey).toList());
             result.add(row);
         }
-        return new WorkflowQueryResult(result, algorithmResult.isAvailabilityConfirmed());
-    }
-    
-    private WorkflowQueryResult queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
-        try {
-            return WorkflowQueryResult.confirmed(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS"));
-        } catch (final MCPQueryFailedException ex) {
-            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return WorkflowQueryResult.fallback(EncryptAlgorithmCatalog.getSupportedAlgorithmTypes().stream().map(each -> Map.<String, Object>of("type", each)).toList());
-            }
-            throw ex;
-        }
+        return result;
     }
 }

@@ -46,7 +46,7 @@ public final class EncryptAlgorithmsHandler implements MCPResourceHandler<MCPFea
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
-        return new MCPItemsPayload(ruleInspectionService.queryEncryptAlgorithms(requestContext.getQueryFacade()).getRows(),
+        return new MCPItemsPayload(ruleInspectionService.queryEncryptAlgorithms(requestContext.getQueryFacade()),
                 MCPResourceNavigationPayloadBuilder.create(MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(getResourceUriTemplate()), uriVariables));
     }
 }
