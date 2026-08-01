@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatab
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -182,7 +182,7 @@ class MetadataCompletionHandlerTest {
     @Test
     void assertCompleteSequence() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        when(metadataQueryFacade.querySequences("logic_db", "public")).thenReturn(List.of(new ShardingSphereSequence("order_seq")));
+        when(metadataQueryFacade.querySequences("logic_db", "public")).thenReturn(List.of(new MCPSequenceMetadata("logic_db", "public", "order_seq")));
         MCPCompletionHandlerResult actual = new MetadataCompletionHandler().complete(createHandlerContext(metadataQueryFacade),
                 createRequestContext("sequence", Map.of("database", "logic_db", "schema", "public")));
         assertCandidate(actual, "order_seq");

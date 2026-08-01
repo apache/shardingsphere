@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
-import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
@@ -32,17 +30,12 @@ import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -55,7 +48,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.withSettings;
@@ -116,158 +108,6 @@ class ShardingWorkflowValidationServiceTest {
                 mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         verify(queryFacade).isSameIdentifier("logic_db", IdentifierScope.COLUMN, "user_id", "user_id");
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsRejectsUnavailableShardingAlgorithm() {
-        ShardingWorkflowRequest request = createTableRuleRequest();
-        request.setAlgorithmType("INLINE");
-        request.putAlgorithmProperties(Map.of("algorithm-expression", "t_order_${order_id % 2}"));
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
-        try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
-            mockedStatic.when(() -> TypedSPILoader.checkService(ShardingAlgorithm.class, "INLINE",
-                    WorkflowAlgorithmUtils.createProperties(request.getPrimaryAlgorithmProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
-            List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)")));
-            assertThat(actual.size(), is(1));
-            assertThat(actual.getFirst().get("message"), is("Generated sharding DistSQL references sharding algorithm `INLINE`, "
-                    + "but it cannot be loaded or initialized by ShardingAlgorithm SPI."));
-        }
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsRejectsUnavailableKeyGenerator() {
-        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
-        request.setKeyGeneratorName("snowflake_generator");
-        request.setKeyGeneratorType("SNOWFLAKE");
-        request.putKeyGeneratorProperties(Map.of("worker-id", "1"));
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create", ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND, request);
-        try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
-            mockedStatic.when(() -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, "SNOWFLAKE",
-                    WorkflowAlgorithmUtils.createProperties(request.getKeyGeneratorProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
-            List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(snapshot,
-                    List.of(createRuleDistSQLArtifact("CREATE SHARDING KEY GENERATOR `snowflake_generator`(TYPE(NAME='snowflake'))")));
-            assertThat(actual.size(), is(1));
-            assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
-        }
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsRejectsUnavailableAuditor() {
-        ShardingWorkflowRequest request = createTableRuleRequest();
-        request.setStrategyType("none");
-        request.setAlgorithmType("");
-        request.getAuditorNames().add("DML_SHARDING_CONDITIONS");
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create", ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
-        try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
-            mockedStatic.when(() -> TypedSPILoader.checkService(ShardingAuditAlgorithm.class, "DML_SHARDING_CONDITIONS",
-                    WorkflowAlgorithmUtils.createProperties(Map.of()))).thenThrow(new IllegalArgumentException("unavailable"));
-            List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)")));
-            assertThat(actual.size(), is(1));
-            assertThat(actual.getFirst().get("message"), is("Generated sharding DistSQL references auditor algorithm `DML_SHARDING_CONDITIONS`, "
-                    + "but it cannot be loaded or initialized by ShardingAuditAlgorithm SPI."));
-        }
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsRejectsUnavailableDefaultStrategyAlgorithm() {
-        ShardingWorkflowRequest request = createTableRuleRequest();
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
-                ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND, request);
-        try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
-            mockedStatic.when(() -> TypedSPILoader.checkService(ShardingAlgorithm.class, "INLINE",
-                    WorkflowAlgorithmUtils.createProperties(request.getPrimaryAlgorithmProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
-            List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(
-                    snapshot, List.of(createRuleDistSQLArtifact("CREATE DEFAULT SHARDING TABLE STRATEGY(TYPE='standard')")));
-            assertThat(actual.size(), is(1));
-            assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
-        }
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsRejectsUnavailableInlineKeyGenerator() {
-        ShardingWorkflowRequest request = new ShardingWorkflowRequest();
-        request.setKeyGeneratorType("SNOWFLAKE");
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
-                ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND, request);
-        try (MockedStatic<TypedSPILoader> mockedStatic = mockStatic(TypedSPILoader.class)) {
-            mockedStatic.when(() -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, "SNOWFLAKE",
-                    WorkflowAlgorithmUtils.createProperties(request.getKeyGeneratorProperties()))).thenThrow(new IllegalArgumentException("unavailable"));
-            List<Map<String, Object>> actual = new ShardingWorkflowValidationService().validate(
-                    snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING KEY GENERATE STRATEGY `order_id_strategy`(...)")));
-            assertThat(actual.size(), is(1));
-            assertThat(actual.getFirst().get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
-        }
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsWithoutShardingRequest() {
-        assertThat(new ShardingWorkflowValidationService().validate(
-                new WorkflowContextSnapshot(), List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)"))).size(), is(0));
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsIgnoresDropArtifact() {
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop",
-                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, createTableRuleRequest());
-        assertThat(new ShardingWorkflowValidationService().validate(
-                snapshot, List.of(createRuleDistSQLArtifact("DROP SHARDING TABLE RULE `t_order`"))).size(), is(0));
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsAcceptsAvailableAlgorithms() {
-        ShardingWorkflowRequest request = createTableRuleRequest();
-        request.setStorageUnits("ds_0");
-        request.setKeyGenerateColumn("order_id");
-        request.setKeyGeneratorType("SNOWFLAKE");
-        request.getAuditorNames().add("DML_SHARDING_CONDITIONS");
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
-                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
-        try (MockedStatic<TypedSPILoader> ignored = mockStatic(TypedSPILoader.class)) {
-            assertThat(new ShardingWorkflowValidationService().validate(
-                    snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)"))).size(), is(0));
-        }
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsAcceptsNamedKeyGenerator() {
-        ShardingWorkflowRequest request = createTableRuleRequest();
-        request.setKeyGenerateColumn("order_id");
-        request.setKeyGeneratorName("snowflake_generator");
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
-                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
-        try (MockedStatic<TypedSPILoader> ignored = mockStatic(TypedSPILoader.class)) {
-            assertThat(new ShardingWorkflowValidationService().validate(
-                    snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)"))).size(), is(0));
-        }
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsAcceptsTableReferenceRule() {
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
-                ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND, createReferenceRuleRequest());
-        assertThat(new ShardingWorkflowValidationService().validate(snapshot,
-                List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE REFERENCE RULE `ref_rule`(...)"))).size(), is(0));
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsIgnoresEmptyAlgorithmTypes() {
-        ShardingWorkflowRequest request = createTableRuleRequest();
-        request.setStrategyType("");
-        request.setAlgorithmType("");
-        request.setKeyGenerateColumn("order_id");
-        request.getAuditorNames().add("");
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
-                ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, request);
-        assertThat(new ShardingWorkflowValidationService().validate(
-                snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING TABLE RULE `t_order`(...)"))).size(), is(0));
-    }
-    
-    @Test
-    void assertValidateApplyArtifactsIgnoresEmptyKeyGeneratorType() {
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create",
-                ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND, new ShardingWorkflowRequest());
-        assertThat(new ShardingWorkflowValidationService().validate(
-                snapshot, List.of(createRuleDistSQLArtifact("CREATE SHARDING KEY GENERATOR `generator`(TYPE(NAME=''))"))).size(), is(0));
     }
     
     @Test
@@ -1158,10 +998,6 @@ class ShardingWorkflowValidationServiceTest {
                 Arguments.of("algorithm", "algorithm", "unused_algorithm"),
                 Arguments.of("key generator", "key-generator", "unused_generator"),
                 Arguments.of("auditor", "auditor", "unused_auditor"));
-    }
-    
-    private ExecutableWorkflowArtifact createRuleDistSQLArtifact(final String sql) {
-        return new ExecutableWorkflowArtifact(sql, sql);
     }
     
     private Map<?, ?> getValidationSection(final Map<String, Object> payload, final String layer) {

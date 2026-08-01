@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 
@@ -31,7 +32,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * STDIO MCP interaction client backed by one child process.
@@ -39,6 +45,8 @@ import java.util.concurrent.TimeUnit;
 abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInteractionClient {
     
     private static final long PROCESS_STOP_TIMEOUT_SECONDS = 5L;
+    
+    private static final long RESPONSE_TIMEOUT_SECONDS = 30L;
     
     private static final int STDERR_DIAGNOSTIC_MAX_CHARS = 4096;
     
@@ -56,10 +64,8 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     
     private BufferedReader reader;
     
-    private Map<String, Object> initializePayload = Map.of();
-    
     @Override
-    public final void open() throws IOException {
+    public final void open() throws IOException, InterruptedException {
         if (null != process) {
             return;
         }
@@ -69,7 +75,7 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
             writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8));
             reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
             initializeSession();
-        } catch (final IOException | IllegalStateException ex) {
+        } catch (final IOException | InterruptedException | IllegalStateException ex) {
             closeQuietly();
             throw ex;
         }
@@ -103,18 +109,14 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     }
     
     @Override
-    protected final Map<String, Object> sendRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException {
+    protected final Map<String, Object> sendRequest(final String requestId, final String method,
+                                                    final Map<String, Object> params) throws IOException, InterruptedException {
         writeJsonRpcMessage(MCPInteractionProtocolSupport.createJsonRpcRequest(requestId, method, params));
         return readResponse(requestId);
     }
     
-    @Override
-    public final Map<String, Object> getInitializePayload() {
-        return initializePayload;
-    }
-    
-    private void initializeSession() throws IOException {
-        initializePayload = sendRequest(INITIALIZE_REQUEST_ID, "initialize",
+    private void initializeSession() throws IOException, InterruptedException {
+        Map<String, Object> initializePayload = sendRequest(INITIALIZE_REQUEST_ID, "initialize",
                 MCPInteractionProtocolSupport.createInitializeRequestParams(getClientName()));
         if (MCPInteractionPayloads.hasJsonRpcError(initializePayload)) {
             throw createRuntimeFailureException("Failed to initialize STDIO MCP session: "
@@ -156,9 +158,10 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
         writer.flush();
     }
     
-    private Map<String, Object> readResponse(final String requestId) throws IOException {
+    private Map<String, Object> readResponse(final String requestId) throws IOException, InterruptedException {
+        long deadlineNanos = System.nanoTime() + TimeUnit.SECONDS.toNanos(RESPONSE_TIMEOUT_SECONDS);
         String line;
-        while (null != (line = reader.readLine())) {
+        while (null != (line = readLine(requestId, deadlineNanos))) {
             if (line.isBlank()) {
                 continue;
             }
@@ -169,6 +172,34 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
             }
         }
         throw createRuntimeFailureException("STDIO MCP runtime did not return a response.");
+    }
+    
+    private String readLine(final String requestId, final long deadlineNanos) throws IOException, InterruptedException {
+        long remainingNanos = deadlineNanos - System.nanoTime();
+        if (0L >= remainingNanos) {
+            throw createResponseTimeoutException(requestId);
+        }
+        ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+        Future<String> responseLine = executor.submit(reader::readLine);
+        try {
+            return responseLine.get(remainingNanos, TimeUnit.NANOSECONDS);
+        } catch (final TimeoutException ex) {
+            responseLine.cancel(true);
+            throw createResponseTimeoutException(requestId);
+        } catch (final ExecutionException ex) {
+            if (ex.getCause() instanceof IOException) {
+                throw (IOException) ex.getCause();
+            }
+            throw new IOException("Failed to read STDIO MCP response.", ex.getCause());
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+    
+    private IllegalStateException createResponseTimeoutException(final String requestId) throws InterruptedException {
+        destroyProcess();
+        return createRuntimeFailureException(String.format(
+                "STDIO MCP runtime did not return response `%s` within %d seconds.", requestId, RESPONSE_TIMEOUT_SECONDS));
     }
     
     private void waitForNormalExit() throws InterruptedException {
@@ -239,7 +270,7 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
         reader = null;
         writer = null;
         stdErrorCollector = null;
-        initializePayload = Map.of();
+        MCPArtifactUtils.writeRuntimeLogIfConfigured(getClientName() + "-", stdErrorMessages);
         stdErrorMessages.clear();
     }
     

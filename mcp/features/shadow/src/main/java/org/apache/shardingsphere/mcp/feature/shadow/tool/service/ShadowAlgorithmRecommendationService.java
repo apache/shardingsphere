@@ -36,16 +36,15 @@ public final class ShadowAlgorithmRecommendationService {
      * Recommend shadow algorithm.
      *
      * @param request workflow request
-     * @param algorithmRows algorithm rows
+     * @param algorithms algorithms reported by the current Proxy
      * @param issues workflow issues
      * @return selected candidates
      */
-    public List<AlgorithmCandidate> recommendShadowAlgorithms(final WorkflowRequest request, final List<Map<String, Object>> algorithmRows,
+    public List<AlgorithmCandidate> recommendShadowAlgorithms(final WorkflowRequest request, final List<Map<String, Object>> algorithms,
                                                               final List<WorkflowIssue> issues) {
-        List<Map<String, Object>> actualAlgorithmRows = null == algorithmRows ? List.of() : algorithmRows;
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getAlgorithmType());
         if (!actualAlgorithmType.isEmpty()) {
-            if (actualAlgorithmRows.isEmpty() || WorkflowAlgorithmUtils.containsAlgorithm(actualAlgorithmRows, actualAlgorithmType, "type", "name")) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithms, actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate(actualAlgorithmType, 100, "User specified shadow algorithm."));
             }
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
@@ -53,13 +52,14 @@ public final class ShadowAlgorithmRecommendationService {
                     "Choose an available shadow algorithm.", false, Map.of()));
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(actualAlgorithmRows);
+        String recommendedType = resolveRecommendedAlgorithm(algorithms);
         if (recommendedType.isEmpty()) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     "No shadow algorithm is available from the current Proxy.", "Install or expose at least one shadow algorithm.", false, Map.of()));
             return List.of();
         }
-        return List.of(createCandidate(recommendedType, 90, "Recommended from current shadow algorithm availability."));
+        return List.of(createCandidate(recommendedType, 90,
+                "Selected from algorithms reported by the current Proxy using MCP's built-in shadow preference order."));
     }
     
     private AlgorithmCandidate createCandidate(final String algorithmType, final int score, final String reason) {

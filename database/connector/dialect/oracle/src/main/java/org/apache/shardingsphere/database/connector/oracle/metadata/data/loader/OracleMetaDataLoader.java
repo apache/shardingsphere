@@ -29,7 +29,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Tab
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleDataTypeOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.Connection;
@@ -39,6 +41,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,6 +82,8 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
     
     private static final int MAX_EXPRESSION_SIZE = 1000;
+    
+    private final DialectDataTypeOption dataTypeOption = new OracleDataTypeOption();
     
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
@@ -145,15 +150,28 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private ColumnMetaData loadColumnMetaData(final ResultSet resultSet, final Collection<String> primaryKeys, final DatabaseMetaData databaseMetaData) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
-        String dataType = getOriginalDataType(resultSet.getString("DATA_TYPE"));
+        String dataTypeName = getOriginalDataType(resultSet.getString("DATA_TYPE"));
+        int dataType = DataTypeRegistry.getDataType(getDatabaseType(), dataTypeName).orElse(Types.OTHER);
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
-        // TODO need to support caseSensitive when version < 12.2.
-        String collation = versionContainsCollation(databaseMetaData) ? resultSet.getString("COLLATION") : null;
-        boolean caseSensitive = null != collation && collation.endsWith("_CS");
+        boolean collationSupported = versionContainsCollation(databaseMetaData);
+        String collation = collationSupported ? resultSet.getString("COLLATION") : null;
+        boolean caseSensitive = isCaseSensitive(dataType, collation, collationSupported);
         boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
         boolean nullable = "Y".equals(resultSet.getString("NULLABLE"));
-        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, caseSensitive, isVisible, false, nullable);
+        return new ColumnMetaData(columnName, dataType, primaryKey, generated, caseSensitive, isVisible, false, nullable);
+    }
+    
+    private boolean isCaseSensitive(final int dataType, final String collation, final boolean collationSupported) {
+        // TODO Resolve case sensitivity from session parameters for Oracle versions earlier than 12.2 and session-dependent collations.
+        return collationSupported ? null != collation && isCaseSensitive(collation) : dataTypeOption.isStringDataType(dataType);
+    }
+    
+    private boolean isCaseSensitive(final String collation) {
+        if ("USING_NLS_COMP".equals(collation) || "USING_NLS_SORT".equals(collation)) {
+            return false;
+        }
+        return Arrays.stream(collation.split("_")).noneMatch(each -> "CI".equals(each) || "AI".equals(each) || "S1".equals(each) || "S2".equals(each));
     }
     
     private String getOriginalDataType(final String dataType) {
@@ -236,7 +254,6 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
-        // TODO The table name needs to be in uppercase, otherwise the index cannot be found.
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     

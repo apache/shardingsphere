@@ -106,16 +106,4 @@ public enum QuoteCharacter {
     public static String unwrapText(final String text) {
         return getQuoteCharacter(text).unwrap(text);
     }
-    
-    /**
-     * Unwrap and trim text.
-     *
-     * @param text text to be unwrapped and trimmed
-     * @return unwrapped and trimmed test
-     */
-    // TODO Should use unwrap instead of this method after new rules defined in G4's property key and property key, which should include string but cannot permit blank on first and last of the value
-    // TODO @longtao
-    public static String unwrapAndTrimText(final String text) {
-        return unwrapText(text).trim();
-    }
 }

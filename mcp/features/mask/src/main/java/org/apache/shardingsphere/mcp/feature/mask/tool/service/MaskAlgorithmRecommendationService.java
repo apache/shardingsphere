@@ -39,15 +39,15 @@ public final class MaskAlgorithmRecommendationService {
      *
      * @param intent clarified intent
      * @param request workflow request
-     * @param maskAlgorithms mask algorithm plugins
+     * @param algorithms mask algorithms reported by the current Proxy
      * @param issues workflow issues
      * @return selected candidates
      */
     public List<AlgorithmCandidate> recommendMaskAlgorithms(final ClarifiedIntent intent, final WorkflowRequest request,
-                                                            final List<Map<String, Object>> maskAlgorithms, final List<WorkflowIssue> issues) {
+                                                            final List<Map<String, Object>> algorithms, final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getAlgorithmType());
         if (!actualAlgorithmType.isEmpty()) {
-            if (WorkflowAlgorithmUtils.containsAlgorithm(maskAlgorithms, actualAlgorithmType)) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithms, actualAlgorithmType)) {
                 return List.of(AlgorithmCandidate.builder().algorithmRole("primary").algorithmType(actualAlgorithmType).recommendationScore(100)
                         .recommendationReason("User specified algorithm.").riskNotes("").build());
             }
@@ -55,14 +55,14 @@ public final class MaskAlgorithmRecommendationService {
                     String.format("Mask algorithm `%s` is not visible from the current Proxy.", actualAlgorithmType), "Choose an available mask algorithm.", false, Map.of()));
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(intent, request, maskAlgorithms);
+        String recommendedType = resolveRecommendedAlgorithm(intent, request, algorithms);
         if (recommendedType.isEmpty()) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     "No mask algorithm is available from the current Proxy.", "Install or register at least one visible mask algorithm.", false, Map.of()));
             return List.of();
         }
         return List.of(AlgorithmCandidate.builder().algorithmRole("primary").algorithmType(recommendedType).recommendationScore(100)
-                .recommendationReason("Recommended by field semantics and current algorithm availability.").riskNotes("").build());
+                .recommendationReason("Selected from algorithms reported by the current Proxy using field semantics and MCP's built-in mask defaults.").riskNotes("").build());
     }
     
     private String resolveRecommendedAlgorithm(final ClarifiedIntent intent, final WorkflowRequest request, final List<Map<String, Object>> maskAlgorithms) {

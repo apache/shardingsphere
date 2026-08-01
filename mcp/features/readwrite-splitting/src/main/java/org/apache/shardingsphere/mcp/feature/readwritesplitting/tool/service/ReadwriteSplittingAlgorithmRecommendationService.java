@@ -36,16 +36,15 @@ public final class ReadwriteSplittingAlgorithmRecommendationService {
      * Recommend load-balance algorithms.
      *
      * @param request workflow request
-     * @param algorithmRows load-balance algorithm rows
+     * @param algorithms load-balance algorithms reported by the current Proxy
      * @param issues workflow issues
      * @return selected candidates
      */
     public List<AlgorithmCandidate> recommendLoadBalanceAlgorithms(final ReadwriteSplittingRuleWorkflowRequest request,
-                                                                   final List<Map<String, Object>> algorithmRows, final List<WorkflowIssue> issues) {
-        List<Map<String, Object>> actualAlgorithmRows = null == algorithmRows ? List.of() : algorithmRows;
+                                                                   final List<Map<String, Object>> algorithms, final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getLoadBalancerType());
         if (!actualAlgorithmType.isEmpty()) {
-            if (actualAlgorithmRows.isEmpty() || WorkflowAlgorithmUtils.containsAlgorithm(actualAlgorithmRows, actualAlgorithmType, "type", "name")) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithms, actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate(actualAlgorithmType, 100, "User specified load-balance algorithm."));
             }
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
@@ -53,13 +52,14 @@ public final class ReadwriteSplittingAlgorithmRecommendationService {
                     "Choose an available load-balance algorithm.", false, Map.of()));
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(actualAlgorithmRows);
+        String recommendedType = resolveRecommendedAlgorithm(algorithms);
         if (recommendedType.isEmpty()) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     "No load-balance algorithm is available from the current Proxy.", "Install or expose at least one load-balance algorithm.", false, Map.of()));
             return List.of();
         }
-        return List.of(createCandidate(recommendedType, 90, "Recommended from current load-balance algorithm availability."));
+        return List.of(createCandidate(recommendedType, 90,
+                "Selected from algorithms reported by the current Proxy using MCP's built-in load-balance preference order."));
     }
     
     private AlgorithmCandidate createCandidate(final String algorithmType, final int score, final String reason) {

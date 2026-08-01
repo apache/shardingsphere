@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
- * Policy of identifier case matching.
+ * Policy of identifier case normalization and matching.
  */
 @RequiredArgsConstructor
 public final class IdentifierCasePolicy {
@@ -33,7 +33,11 @@ public final class IdentifierCasePolicy {
     
     private final LookupMode unquotedLookupMode;
     
-    private final UnaryOperator<String> normalizer;
+    private final UnaryOperator<String> quotedDefinitionNormalizer;
+    
+    private final UnaryOperator<String> unquotedDefinitionNormalizer;
+    
+    private final UnaryOperator<String> lookupNormalizer;
     
     private final Predicate<String> unquotedStoredNamePredicate;
     
@@ -48,13 +52,24 @@ public final class IdentifierCasePolicy {
     }
     
     /**
-     * Normalize identifier value.
+     * Normalize identifier value for definition.
      *
      * @param value identifier value
-    * @return normalized identifier value
-    */
-    public String normalize(final String value) {
-        return normalizer.apply(value);
+     * @param quoteCharacter quote character
+     * @return normalized identifier value
+     */
+    public String normalizeForDefinition(final String value, final QuoteCharacter quoteCharacter) {
+        return QuoteCharacter.NONE == quoteCharacter ? unquotedDefinitionNormalizer.apply(value) : quotedDefinitionNormalizer.apply(value);
+    }
+    
+    /**
+     * Normalize identifier value for lookup.
+     *
+     * @param value identifier value
+     * @return normalized identifier value
+     */
+    public String normalizeForLookup(final String value) {
+        return lookupNormalizer.apply(value);
     }
     
     /**
@@ -63,14 +78,14 @@ public final class IdentifierCasePolicy {
      * @param storedName stored identifier name
      * @param actualIdentifier input identifier value
      * @param quoteCharacter quote character
-    * @return whether matched
-    */
+     * @return whether matched
+     */
     public boolean matches(final String storedName, final String actualIdentifier, final QuoteCharacter quoteCharacter) {
         if (QuoteCharacter.NONE != quoteCharacter) {
             return LookupMode.EXACT == quotedLookupMode
                     ? storedName.equals(actualIdentifier)
-                    : normalize(storedName).equals(normalize(actualIdentifier));
+                    : normalizeForLookup(storedName).equals(normalizeForLookup(actualIdentifier));
         }
-        return unquotedStoredNamePredicate.test(storedName) && normalize(storedName).equals(normalize(actualIdentifier));
+        return unquotedStoredNamePredicate.test(storedName) && normalizeForLookup(storedName).equals(normalizeForLookup(actualIdentifier));
     }
 }

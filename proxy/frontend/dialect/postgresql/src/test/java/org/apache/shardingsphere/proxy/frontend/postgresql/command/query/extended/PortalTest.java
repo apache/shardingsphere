@@ -52,6 +52,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -136,9 +137,10 @@ class PortalTest {
     @Test
     void assertExecuteSelectStatementAndReturnAllRows() throws SQLException, ReflectiveOperationException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
-        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.VARCHAR, "columnTypeName", 0, 0, false, false, false, false);
-        QueryHeader intColumnQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
-        when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, intColumnQueryHeader));
+        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.STRUCT, "record_type", 0, 0, false, false, false, false);
+        queryHeader.getProtocolAttributes().put(PostgreSQLQueryHeaderBuilder.TYPE_OID, 2249);
+        QueryHeader binaryQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.STRUCT, "record_type", 0, 0, false, false, false, false);
+        when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, binaryQueryHeader));
         when(proxyBackendHandler.execute()).thenReturn(responseHeader);
         when(proxyBackendHandler.next()).thenReturn(true, true, false);
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
@@ -153,9 +155,11 @@ class PortalTest {
                 .get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), portalDescription);
         Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = columnDescriptions.iterator();
         PostgreSQLColumnDescription textColumnDescription = columnDescriptionIterator.next();
-        PostgreSQLColumnDescription intColumnDescription = columnDescriptionIterator.next();
+        PostgreSQLColumnDescription binaryColumnDescription = columnDescriptionIterator.next();
+        assertThat(textColumnDescription.getTypeOID(), is(2249));
         assertThat(textColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.TEXT.getCode()));
-        assertThat(intColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.BINARY.getCode()));
+        assertThat(binaryColumnDescription.getTypeOID(), is(PostgreSQLBinaryColumnType.VARCHAR.getValue()));
+        assertThat(binaryColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.BINARY.getCode()));
         List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));
         assertThat(actualPackets.get(0), isA(PostgreSQLDataRowPacket.class));

@@ -155,32 +155,6 @@ public final class WorkflowPlanningSupport {
     }
     
     /**
-     * Add one fallback clarification question when algorithm selection is blocked.
-     *
-     * @param clarifiedIntent clarified intent
-     * @param snapshot workflow snapshot
-     * @param fallbackQuestion fallback question
-     * @return whether there is any blocking algorithm issue
-     */
-    public boolean hasBlockingAlgorithmIssues(final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String fallbackQuestion) {
-        return requirementCollector.hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, fallbackQuestion);
-    }
-    
-    /**
-     * Collect required algorithm properties and emit missing-property clarification prompts.
-     *
-     * @param request workflow request
-     * @param clarifiedIntent clarified intent
-     * @param snapshot workflow snapshot
-     * @param propertyRequirements property requirements
-     * @return whether all required properties are present
-     */
-    public boolean collectPropertyRequirements(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent,
-                                               final WorkflowContextSnapshot snapshot, final List<AlgorithmPropertyRequirement> propertyRequirements) {
-        return requirementCollector.collectPropertyRequirements(request, clarifiedIntent, snapshot, propertyRequirements);
-    }
-    
-    /**
      * Judge whether workflow planning can continue to artifact generation.
      *
      * @param request workflow request

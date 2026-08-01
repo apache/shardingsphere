@@ -1796,13 +1796,6 @@ tools:
       destructiveHint: true
       idempotentHint: false
       openWorldHint: true
-    runtime:
-      sideEffectScope:
-        - physical-data
-        - physical-structure
-        - privilege-metadata
-        - rule-metadata
-        - transaction-state
     meta:
       org.apache.shardingsphere/related-resource-uris:
         - "shardingsphere://databases/{database}/capabilities"

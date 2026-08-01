@@ -136,7 +136,8 @@ class DatabaseIdentifierContextFactoryTest {
                 createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
         assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
         assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
-        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalize("Foo"), is("foo"));
+        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalizeForLookup("Foo"), is("foo"));
+        assertTrue(actual.matchesMetaData(IdentifierScope.SCHEMA, "Foo", new IdentifierValue("foo")));
     }
     
     @Test
@@ -146,7 +147,8 @@ class DatabaseIdentifierContextFactoryTest {
                 createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE));
         assertThat(actual.normalizeProtocol(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("FOO"));
         assertThat(actual.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue("Foo")), is("foo"));
-        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalize("Foo"), is("foo"));
+        assertThat(actual.getMetaDataPolicy(IdentifierScope.TABLE).normalizeForLookup("Foo"), is("foo"));
+        assertTrue(actual.matchesMetaData(IdentifierScope.SCHEMA, "Foo", new IdentifierValue("foo")));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -178,6 +180,34 @@ class DatabaseIdentifierContextFactoryTest {
         IdentifierCasePolicy actualTableRule = actual.getMetaDataPolicy(IdentifierScope.TABLE);
         assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateUsesProtocolRuleForSchemaWhenProtocolSchemaUnavailable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(
+                MYSQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.SCHEMA).matches("FOO_SCHEMA", "foo_schema", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesProtocolRuleForSchemaWhenProtocolSchemaUnavailable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.SCHEMA).matches("FOO_SCHEMA", "foo_schema", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateUsesProtocolRuleForSchemaWhenStorageSchemaUnavailable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(
+                POSTGRESQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesProtocolRuleForSchemaWhenStorageSchemaUnavailable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, POSTGRESQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.getMetaDataPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE));
     }
     
     @Test
@@ -283,26 +313,28 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("storageObjectScopes")
-    void assertCreateUsesInsensitiveRuleForStorageObjectScope(final String name, final IdentifierScope identifierScope) {
+    @MethodSource("physicalScopes")
+    void assertCreateUsesMySQLStorageRuleForPhysicalScope(final String name, final IdentifierScope identifierScope,
+                                                          final LookupMode expectedLookupMode, final boolean expectedMatched) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
         IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(identifierScope);
-        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertThat(actualRule.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
-        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.NONE));
-        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.BACK_QUOTE));
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
+        assertThat(actualRule.normalizeForDefinition("FooName", QuoteCharacter.NONE), is("FooName"));
+        IdentifierIndex<String> identifierIndex = createIdentifierIndex(actual, identifierScope, "foo_name");
+        assertThat(identifierIndex.find(new IdentifierValue("FOO_NAME")).isPresent(), is(expectedMatched));
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("storageObjectScopes")
-    void assertRefreshUsesInsensitiveRuleForStorageObjectScope(final String name, final IdentifierScope identifierScope) {
+    @MethodSource("physicalScopes")
+    void assertRefreshUsesMySQLStorageRuleForPhysicalScope(final String name, final IdentifierScope identifierScope,
+                                                           final LookupMode expectedLookupMode, final boolean expectedMatched) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
         IdentifierCasePolicy actualRule = actual.getMetaDataPolicy(identifierScope);
-        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertThat(actualRule.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
-        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.NONE));
-        assertTrue(actualRule.matches("foo_name", "FOO_NAME", QuoteCharacter.BACK_QUOTE));
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
+        assertThat(actualRule.normalizeForDefinition("FooName", QuoteCharacter.NONE), is("FooName"));
+        IdentifierIndex<String> identifierIndex = createIdentifierIndex(actual, identifierScope, "foo_name");
+        assertThat(identifierIndex.find(new IdentifierValue("FOO_NAME")).isPresent(), is(expectedMatched));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -437,8 +469,10 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithSupportedDatabaseSchemaLookupArguments() {
         return Stream.of(
                 createNormalizedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
-                createInsensitiveQuotedExactLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
-                createInsensitiveQuotedExactLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseLookupArguments("postgresql protocol openGauss storage schema", POSTGRESQL_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseLookupArguments("openGauss protocol postgresql storage schema", OPEN_GAUSS_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
                 createUpperCaseLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
     }
@@ -457,9 +491,9 @@ class DatabaseIdentifierContextFactoryTest {
         return Stream.of(
                 createNormalizedLookupArguments("mysql column lower_case_table_names=1", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
                 createNormalizedLookupArguments("mysql column lower_case_table_names=2", MYSQL_DATABASE_TYPE, MYSQL_QUOTED_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
-                createNormalizedLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
-                createNormalizedLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
-                createNormalizedLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
+                createLowerCaseLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
+                createLowerCaseLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
+                createUpperCaseLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
                 .flatMap(each -> each);
     }
     
@@ -487,8 +521,10 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithMixedStoredCaseSchemaLookupArguments() {
         return Stream.of(
                 createNormalizedMixedLookupArguments("mysql schema", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_schema", "`"),
-                createInsensitiveQuotedExactMixedLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
-                createInsensitiveQuotedExactMixedLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseMixedLookupArguments("postgresql schema", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseMixedLookupArguments("postgresql protocol openGauss storage schema", POSTGRESQL_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseMixedLookupArguments("openGauss schema", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_schema", "\""),
+                createLowerCaseMixedLookupArguments("openGauss protocol postgresql storage schema", OPEN_GAUSS_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_schema", "\""),
                 createUpperCaseMixedLookupArguments("oracle schema", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_schema", "\""))
                 .flatMap(each -> each);
     }
@@ -507,9 +543,9 @@ class DatabaseIdentifierContextFactoryTest {
         return Stream.of(
                 createNormalizedMixedLookupArguments("mysql column lower_case_table_names=1", MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
                 createNormalizedMixedLookupArguments("mysql column lower_case_table_names=2", MYSQL_DATABASE_TYPE, MYSQL_QUOTED_INSENSITIVE_RESOURCE_META_DATA, "foo_col", "`"),
-                createNormalizedMixedLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
-                createNormalizedMixedLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
-                createNormalizedMixedLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
+                createLowerCaseMixedLookupArguments("postgresql column", POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, "foo_col", "\""),
+                createLowerCaseMixedLookupArguments("openGauss column", OPEN_GAUSS_DATABASE_TYPE, OPEN_GAUSS_RESOURCE_META_DATA, "foo_col", "\""),
+                createUpperCaseMixedLookupArguments("oracle column", ORACLE_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, "foo_col", "\""))
                 .flatMap(each -> each);
     }
     
@@ -529,11 +565,13 @@ class DatabaseIdentifierContextFactoryTest {
         return new ConfigurationProperties(PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), caseSensitivity.name())));
     }
     
-    private static Stream<Arguments> storageObjectScopes() {
+    private static Stream<Arguments> physicalScopes() {
         return Stream.of(
-                Arguments.of("column", IdentifierScope.COLUMN),
-                Arguments.of("index", IdentifierScope.INDEX),
-                Arguments.of("constraint", IdentifierScope.CONSTRAINT));
+                Arguments.of("table", IdentifierScope.TABLE, LookupMode.EXACT, false),
+                Arguments.of("view", IdentifierScope.VIEW, LookupMode.EXACT, false),
+                Arguments.of("column", IdentifierScope.COLUMN, LookupMode.NORMALIZED, true),
+                Arguments.of("index", IdentifierScope.INDEX, LookupMode.NORMALIZED, true),
+                Arguments.of("constraint", IdentifierScope.CONSTRAINT, LookupMode.NORMALIZED, true));
     }
     
     private static IdentifierIndex<String> createIdentifierIndex(final DatabaseIdentifierContext identifierContext, final IdentifierScope identifierScope, final String... actualNames) {
@@ -548,29 +586,6 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static Optional<String> getExpectedResult(final String expectedName) {
         return null == expectedName ? Optional.empty() : Optional.of(expectedName);
-    }
-    
-    private static Stream<Arguments> createInsensitiveQuotedExactLookupArguments(final String databaseName, final DatabaseType protocolType,
-                                                                                 final ResourceMetaData resourceMetaData, final String lowerActualName,
-                                                                                 final String quoteCharacter) {
-        String upperActualName = lowerActualName.toUpperCase(Locale.ENGLISH);
-        return Stream.of(
-                createLookupArgument(databaseName + " finds lower actual by unquoted lower lookup",
-                        protocolType, resourceMetaData, lowerActualName, lowerActualName, false, quoteCharacter, lowerActualName),
-                createLookupArgument(databaseName + " finds lower actual by unquoted upper lookup",
-                        protocolType, resourceMetaData, lowerActualName, upperActualName, false, quoteCharacter, lowerActualName),
-                createLookupArgument(databaseName + " finds lower actual by quoted lower lookup",
-                        protocolType, resourceMetaData, lowerActualName, lowerActualName, true, quoteCharacter, lowerActualName),
-                createLookupArgument(databaseName + " does not find lower actual by quoted upper lookup",
-                        protocolType, resourceMetaData, lowerActualName, upperActualName, true, quoteCharacter, null),
-                createLookupArgument(databaseName + " finds upper actual by unquoted lower lookup",
-                        protocolType, resourceMetaData, upperActualName, lowerActualName, false, quoteCharacter, upperActualName),
-                createLookupArgument(databaseName + " finds upper actual by unquoted upper lookup",
-                        protocolType, resourceMetaData, upperActualName, upperActualName, false, quoteCharacter, upperActualName),
-                createLookupArgument(databaseName + " does not find upper actual by quoted lower lookup",
-                        protocolType, resourceMetaData, upperActualName, lowerActualName, true, quoteCharacter, null),
-                createLookupArgument(databaseName + " finds upper actual by quoted upper lookup",
-                        protocolType, resourceMetaData, upperActualName, upperActualName, true, quoteCharacter, upperActualName));
     }
     
     private static Stream<Arguments> createNormalizedLookupArguments(final String databaseName, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
@@ -637,17 +652,6 @@ class DatabaseIdentifierContextFactoryTest {
                         protocolType, resourceMetaData, upperActualName, lowerActualName, true, quoteCharacter, null),
                 createLookupArgument(databaseName + " finds upper actual by quoted upper lookup",
                         protocolType, resourceMetaData, upperActualName, upperActualName, true, quoteCharacter, upperActualName));
-    }
-    
-    private static Stream<Arguments> createInsensitiveQuotedExactMixedLookupArguments(final String databaseName, final DatabaseType protocolType,
-                                                                                      final ResourceMetaData resourceMetaData, final String lowerActualName,
-                                                                                      final String quoteCharacter) {
-        String upperActualName = lowerActualName.toUpperCase(Locale.ENGLISH);
-        return Stream.of(
-                createMixedLookupArgument(databaseName + " finds lower actual by quoted lower lookup", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, lowerActualName),
-                createMixedLookupArgument(databaseName + " finds upper actual by quoted upper lookup", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, upperActualName),
-                createMixedLookupArgument(databaseName + " finds lower actual by unquoted lower lookup", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, lowerActualName),
-                createMixedLookupArgument(databaseName + " finds upper actual by unquoted upper lookup", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, upperActualName));
     }
     
     private static Stream<Arguments> createNormalizedMixedLookupArguments(final String databaseName, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,

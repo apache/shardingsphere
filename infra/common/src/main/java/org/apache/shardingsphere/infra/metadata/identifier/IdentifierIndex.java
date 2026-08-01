@@ -186,7 +186,7 @@ public final class IdentifierIndex<T> {
     }
     
     private T getByNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCasePolicy policy, final String identifier) {
-        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(policy.normalize(identifier));
+        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(policy.normalizeForLookup(identifier));
         if (null == normalizedBucket) {
             return null;
         }
@@ -208,7 +208,7 @@ public final class IdentifierIndex<T> {
     }
     
     private Optional<T> findByQuotedNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCasePolicy policy, final IdentifierValue identifierValue) {
-        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(policy.normalize(identifierValue.getValue()));
+        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(policy.normalizeForLookup(identifierValue.getValue()));
         if (null == normalizedBucket) {
             return Optional.empty();
         }
@@ -255,12 +255,12 @@ public final class IdentifierIndex<T> {
     }
     
     private void addNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCasePolicy policy, final String name) {
-        String normalizedName = policy.normalize(name);
+        String normalizedName = policy.normalizeForLookup(name);
         values.computeIfAbsent(normalizedName, key -> new LinkedList<>()).add(name);
     }
     
     private void removeNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCasePolicy policy, final String name) {
-        String normalizedName = policy.normalize(name);
+        String normalizedName = policy.normalizeForLookup(name);
         Collection<String> candidateIdentifiers = values.get(normalizedName);
         if (null == candidateIdentifiers) {
             return;

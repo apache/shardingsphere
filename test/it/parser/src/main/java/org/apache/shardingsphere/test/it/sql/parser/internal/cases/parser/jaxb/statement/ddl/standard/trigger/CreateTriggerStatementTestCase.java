@@ -17,10 +17,23 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.trigger;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureCallNameSegment;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.List;
 
 /**
  * Create trigger statement test case.
  */
+@Getter
+@Setter
 public final class CreateTriggerStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElementWrapper(name = "procedure-calls")
+    @XmlElement(name = "procedure-call")
+    private List<ExpectedProcedureCallNameSegment> procedureCalls;
 }

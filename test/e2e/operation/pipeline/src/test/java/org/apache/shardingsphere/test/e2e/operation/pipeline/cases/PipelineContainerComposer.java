@@ -44,7 +44,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.NativeStorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
@@ -71,7 +70,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -299,9 +297,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
         String host = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getHost();
         int port = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPort(databaseType);
-        Optional<NativeStorageContainerOption> nativeOption = DatabaseTypedSPILoader.findService(NativeStorageContainerOption.class, databaseType);
-        return nativeOption.map(optional -> optional.getAccessURL(option.getConnectOption(), host, port, databaseName))
-                .orElseGet(() -> option.getConnectOption().getURL(host, port, databaseName));
+        return option.getConnectOption().getURL(host, port, databaseName);
     }
     
     /**

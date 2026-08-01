@@ -17,12 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,51 +26,30 @@ import java.util.Set;
 
 final class LLMMCPToolDefinitionFactory {
     
-    List<Map<String, Object>> create(final Collection<String> allowedToolNames) {
+    List<Map<String, Object>> createFromRemote(final List<Map<String, Object>> advertisedTools, final Set<String> allowedToolNames) {
         List<Map<String, Object>> result = new LinkedList<>();
-        for (String each : allowedToolNames) {
-            result.add(createToolDefinition(each));
+        Set<String> missingAllowedToolNames = new LinkedHashSet<>(allowedToolNames);
+        if (missingAllowedToolNames.remove(LLMConversationRunner.READ_RESOURCE_TOOL_NAME)) {
+            result.add(createReadResourceToolDefinition());
         }
-        return result;
-    }
-    
-    List<Map<String, Object>> createFromRemote(final List<Map<String, Object>> advertisedTools, final Collection<String> allowedToolNames,
-                                               final Collection<String> bridgeToolNames) {
-        List<Map<String, Object>> result = new LinkedList<>(create(bridgeToolNames));
-        Set<String> matchedToolNames = new LinkedHashSet<>();
         for (Map<String, Object> each : advertisedTools) {
             String toolName = Objects.toString(each.get("name"), "").trim();
-            if (allowedToolNames.contains(toolName)) {
-                result.add(createRemoteToolDefinition(each, toolName));
-                matchedToolNames.add(toolName);
+            if (!missingAllowedToolNames.contains(toolName)) {
+                continue;
             }
+            result.add(createRemoteToolDefinition(each, toolName));
+            missingAllowedToolNames.remove(toolName);
         }
-        if (!matchedToolNames.containsAll(allowedToolNames)) {
-            Set<String> missingToolNames = new LinkedHashSet<>(allowedToolNames);
-            missingToolNames.removeAll(matchedToolNames);
-            throw new IllegalStateException("MCP runtime did not advertise required read-only tools: " + missingToolNames);
+        if (!missingAllowedToolNames.isEmpty()) {
+            throw new IllegalStateException("MCP runtime did not advertise required scenario tools: " + missingAllowedToolNames);
         }
         return result;
-    }
-    
-    List<Map<String, Object>> createReadOnlyFromRemote(final List<Map<String, Object>> advertisedTools, final Collection<String> bridgeToolNames) {
-        List<String> readOnlyToolNames = new LinkedList<>();
-        for (Map<String, Object> each : advertisedTools) {
-            Object annotations = each.get("annotations");
-            if (annotations instanceof Map && Boolean.TRUE.equals(((Map<?, ?>) annotations).get("readOnlyHint"))) {
-                readOnlyToolNames.add(Objects.toString(each.get("name"), "").trim());
-            }
-        }
-        if (readOnlyToolNames.isEmpty()) {
-            throw new IllegalStateException("MCP runtime did not advertise any read-only tools.");
-        }
-        return createFromRemote(advertisedTools, readOnlyToolNames, bridgeToolNames);
     }
     
     private Map<String, Object> createRemoteToolDefinition(final Map<String, Object> advertisedTool, final String toolName) {
         Object inputSchema = advertisedTool.get("inputSchema");
-        if (!(inputSchema instanceof Map)) {
-            throw new IllegalStateException("MCP runtime advertised tool without inputSchema: " + toolName);
+        if (toolName.isEmpty() || !(inputSchema instanceof Map)) {
+            throw new IllegalStateException("MCP runtime advertised tool without a name or inputSchema.");
         }
         return Map.of("type", "function", "function", Map.of(
                 "name", toolName,
@@ -84,144 +57,14 @@ final class LLMMCPToolDefinitionFactory {
                 "parameters", LLMMCPJsonValues.castToMap(inputSchema)));
     }
     
-    private Map<String, Object> createToolDefinition(final String toolName) {
-        if (MCPInteractionActionNames.LIST_TOOLS.equals(toolName)) {
-            return createListToolsToolDefinition();
-        }
-        if (MCPInteractionActionNames.LIST_RESOURCES.equals(toolName)) {
-            return createListResourcesToolDefinition();
-        }
-        if (MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES.equals(toolName)) {
-            return createListResourceTemplatesToolDefinition();
-        }
-        if (MCPInteractionActionNames.READ_RESOURCE.equals(toolName)) {
-            return createReadResourceToolDefinition();
-        }
-        if (MCPInteractionActionNames.LIST_PROMPTS.equals(toolName)) {
-            return createListPromptsToolDefinition();
-        }
-        if (MCPInteractionActionNames.GET_PROMPT.equals(toolName)) {
-            return createGetPromptToolDefinition();
-        }
-        return MCPInteractionActionNames.COMPLETE.equals(toolName) ? createCompleteToolDefinition() : createOfficialToolDefinition(toolName);
-    }
-    
-    private Map<String, Object> createListToolsToolDefinition() {
-        return Map.of("type", "function", "function", Map.of(
-                "name", MCPInteractionActionNames.LIST_TOOLS,
-                "description", "Bridge to MCP tools/list for application-driven tool discovery.",
-                "parameters", createEmptyObjectSchema()));
-    }
-    
-    private Map<String, Object> createListResourcesToolDefinition() {
-        return Map.of("type", "function", "function", Map.of(
-                "name", MCPInteractionActionNames.LIST_RESOURCES,
-                "description", "Bridge to MCP resources/list for application-driven context discovery.",
-                "parameters", createEmptyObjectSchema()));
-    }
-    
-    private Map<String, Object> createListResourceTemplatesToolDefinition() {
-        return Map.of("type", "function", "function", Map.of(
-                "name", MCPInteractionActionNames.LIST_RESOURCE_TEMPLATES,
-                "description", "Bridge to MCP resources/templates/list for parameterized resource discovery.",
-                "parameters", createEmptyObjectSchema()));
-    }
-    
     private Map<String, Object> createReadResourceToolDefinition() {
         return Map.of("type", "function", "function", Map.of(
-                "name", MCPInteractionActionNames.READ_RESOURCE,
-                "description", "Bridge to MCP resources/read for application-driven context retrieval.",
+                "name", LLMConversationRunner.READ_RESOURCE_TOOL_NAME,
+                "description", "Read one resource from the live MCP server.",
                 "parameters", Map.of(
                         "type", "object",
                         "properties", Map.of("uri", Map.of("type", "string", "description", "Resource URI to read.")),
                         "required", List.of("uri"),
                         "additionalProperties", false)));
     }
-    
-    private Map<String, Object> createListPromptsToolDefinition() {
-        return Map.of("type", "function", "function", Map.of(
-                "name", MCPInteractionActionNames.LIST_PROMPTS,
-                "description", "Bridge to MCP prompts/list for task guide discovery.",
-                "parameters", createEmptyObjectSchema()));
-    }
-    
-    private Map<String, Object> createGetPromptToolDefinition() {
-        return Map.of("type", "function", "function", Map.of(
-                "name", MCPInteractionActionNames.GET_PROMPT,
-                "description", "Bridge to MCP prompts/get for retrieving a task guide template.",
-                "parameters", Map.of(
-                        "type", "object",
-                        "properties", Map.of(
-                                "name", Map.of("type", "string", "description", "Prompt name to retrieve."),
-                                "arguments", Map.of("type", "object", "description", "Prompt arguments.")),
-                        "required", List.of("name"),
-                        "additionalProperties", false)));
-    }
-    
-    private Map<String, Object> createCompleteToolDefinition() {
-        return Map.of("type", "function", "function", Map.of(
-                "name", MCPInteractionActionNames.COMPLETE,
-                "description", "Bridge to MCP completion/complete for descriptor-backed argument suggestions.",
-                "parameters", Map.of(
-                        "type", "object",
-                        "properties", Map.of(
-                                "ref", createCompletionReferenceSchema(),
-                                "argument", createCompletionArgumentSchema(),
-                                "context", createCompletionContextSchema()),
-                        "required", List.of("ref", "argument"),
-                        "additionalProperties", false)));
-    }
-    
-    private Map<String, Object> createCompletionReferenceSchema() {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("type", "object");
-        result.put("description", "MCP completion reference. Use type `ref/prompt` with prompt name, or type `ref/resource` with resource uri.");
-        result.put("properties", Map.of(
-                "type", Map.of("type", "string", "description", "Reference type.", "enum", List.of("ref/prompt", "ref/resource")),
-                "name", Map.of("type", "string", "description", "Prompt name when type is `ref/prompt`."),
-                "uri", Map.of("type", "string", "description", "Resource URI when type is `ref/resource`.")));
-        result.put("required", List.of("type"));
-        result.put("additionalProperties", false);
-        return result;
-    }
-    
-    private Map<String, Object> createCompletionArgumentSchema() {
-        return Map.of(
-                "type", "object",
-                "properties", Map.of(
-                        "name", Map.of("type", "string", "description", "Argument name to complete."),
-                        "value", Map.of("type", "string", "description", "Argument prefix.")),
-                "required", List.of("name"),
-                "additionalProperties", false);
-    }
-    
-    private Map<String, Object> createCompletionContextSchema() {
-        return Map.of(
-                "type", "object",
-                "properties", Map.of("arguments", Map.of("type", "object", "description", "Known arguments for contextual completion.")),
-                "required", List.of("arguments"),
-                "additionalProperties", false);
-    }
-    
-    private Map<String, Object> createOfficialToolDefinition(final String toolName) {
-        MCPToolDescriptor toolDescriptor = getToolDescriptor(toolName);
-        return Map.of("type", "function", "function", Map.of(
-                "name", toolDescriptor.getName(),
-                "description", toolDescriptor.getDescription(),
-                "parameters", toolDescriptor.getInputSchema()));
-    }
-    
-    private MCPToolDescriptor getToolDescriptor(final String toolName) {
-        for (MCPToolDescriptor each : ToolDefinitionRegistry.getSupportedToolDescriptors()) {
-            if (toolName.equals(each.getName())) {
-                return each;
-            }
-        }
-        throw new IllegalArgumentException("Unsupported tool descriptor: " + toolName);
-    }
-    
-    private Map<String, Object> createEmptyObjectSchema() {
-        return Map.of("type", "object", "properties", Map.of(), "additionalProperties", false);
-    }
-    
 }

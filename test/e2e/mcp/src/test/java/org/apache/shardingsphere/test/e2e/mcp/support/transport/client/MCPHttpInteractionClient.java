@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -38,6 +39,12 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
     
     private static final String CLIENT_NAME = "mcp-e2e-http";
     
+    private static final String CONTENT_TYPE = "application/json";
+    
+    private static final String ACCEPT = "application/json, text/event-stream";
+    
+    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30L);
+    
     private final URI endpointUri;
     
     private final HttpClient httpClient;
@@ -46,14 +53,12 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
     
     private String actualProtocolVersion;
     
-    private Map<String, Object> initializePayload = Map.of();
-    
     @Override
     public void open() throws IOException, InterruptedException {
         if (null != sessionId) {
             return;
         }
-        HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(endpointUri)
+        HttpRequest request = createJsonRequestBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(MCPInteractionProtocolSupport.createJsonRpcRequestBody(
                         INITIALIZE_REQUEST_ID, "initialize", MCPInteractionProtocolSupport.createInitializeRequestParams(CLIENT_NAME))))
                 .build();
@@ -61,7 +66,7 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
         if (200 != response.statusCode()) {
             throw new IllegalStateException("Failed to initialize MCP session.");
         }
-        initializePayload = MCPInteractionPayloads.parseJsonPayload(response.body());
+        Map<String, Object> initializePayload = MCPInteractionPayloads.parseJsonPayload(response.body());
         if (MCPInteractionPayloads.hasJsonRpcError(initializePayload)) {
             throw new IllegalStateException("Failed to initialize MCP session: "
                     + MCPInteractionPayloads.getJsonRpcErrorPayload(initializePayload).get("message"));
@@ -74,16 +79,11 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
     }
     
     @Override
-    public Map<String, Object> getInitializePayload() {
-        return initializePayload;
-    }
-    
-    @Override
     public void close() throws IOException, InterruptedException {
         if (null == sessionId) {
             return;
         }
-        HttpRequest request = HttpRequest.newBuilder(endpointUri)
+        HttpRequest request = createJsonRequestBuilder()
                 .header("MCP-Session-Id", sessionId)
                 .header("MCP-Protocol-Version", actualProtocolVersion)
                 .DELETE()
@@ -91,7 +91,6 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
         httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         sessionId = null;
         actualProtocolVersion = null;
-        initializePayload = Map.of();
     }
     
     @Override
@@ -121,7 +120,16 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
     }
     
     private HttpRequest.Builder createSessionRequestBuilder() {
-        return MCPHttpTransportTestSupport.createSessionRequestBuilder(endpointUri, sessionId, actualProtocolVersion);
+        return createJsonRequestBuilder()
+                .header("MCP-Session-Id", sessionId)
+                .header("MCP-Protocol-Version", actualProtocolVersion);
+    }
+    
+    private HttpRequest.Builder createJsonRequestBuilder() {
+        return HttpRequest.newBuilder(endpointUri)
+                .timeout(REQUEST_TIMEOUT)
+                .header("Content-Type", CONTENT_TYPE)
+                .header("Accept", ACCEPT);
     }
     
     private HttpResponse<String> sendPostRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException, InterruptedException {
@@ -134,5 +142,4 @@ public final class MCPHttpInteractionClient extends AbstractMCPInteractionClient
         }
         return response;
     }
-    
 }

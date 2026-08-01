@@ -119,7 +119,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
         return null == result ? getFirstExpectedDataSource(expectedDataSourceMap.values()) : result;
     }
     
-    private void fillDataOnlyOnce(final AssertionTestParameter testParam) throws IOException, JAXBException {
+    private void fillDataOnlyOnce(final AssertionTestParameter testParam) {
         String cacheKey = testParam.getKey() + "-" + System.identityHashCode(getEnvironmentEngine().getActualDataSourceMap());
         if (FILLED_SUITES.contains(cacheKey)) {
             return;
@@ -175,7 +175,10 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
             if ("db_tbl_sql_federation".equals(testParam.getScenario())) {
                 continue;
             }
-            if ("jdbc".equals(testParam.getAdapter()) && Mode.CLUSTER == testParam.getMode() && "encrypt".equals(testParam.getScenario())
+            if (isCompositeColumn(expectedResultSetMetaData, i + 1)) {
+                assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
+                assertThat(actualResultSetMetaData.getColumnTypeName(i + 1), is(expectedResultSetMetaData.getColumnTypeName(i + 1)));
+            } else if ("jdbc".equals(testParam.getAdapter()) && Mode.CLUSTER == testParam.getMode() && "encrypt".equals(testParam.getScenario())
                     || "MySQL".equals(testParam.getDatabaseType().getType()) && "passthrough".equals(testParam.getScenario())) {
                 // FIXME correct columnType with proxy adapter and other jdbc scenario
                 assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
@@ -189,6 +192,10 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
         for (DataSetColumn each : expected) {
             assertThat(actual.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
         }
+    }
+    
+    private boolean isCompositeColumn(final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
+        return Types.STRUCT == resultSetMetaData.getColumnType(columnIndex);
     }
     
     private void assertRows(final ResultSet actualResultSet, final ResultSet expectedResultSet) throws SQLException {

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
+import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.executor.engine.batch.preparedstatement.DriverExecuteBatchExecutor;
 import org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractPreparedStatementAdapter;
@@ -175,7 +176,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             currentResultSet =
-                    driverExecutorFacade.executeQuery(usedDatabase, metaData, queryContext, this, columnLabelAndIndexMap, (StatementAddCallback<PreparedStatement>) this::addStatements, this::replay);
+                    driverExecutorFacade.executeQuery(usedDatabase, metaData, queryContext, this, columnLabelAndIndexMap, (StatementAddCallback<PreparedStatement>) this::addStatements,
+                            createReplayCallback());
             if (currentResultSet instanceof ShardingSphereResultSet) {
                 columnLabelAndIndexMap = ((ShardingSphereResultSet) currentResultSet).getColumnLabelAndIndexMap();
             }
@@ -212,7 +214,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             this.queryContext = queryContext;
             handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
             int result = driverExecutorFacade.executeUpdate(usedDatabase, metaData, queryContext,
-                    (sql, statement) -> ((PreparedStatement) statement).executeUpdate(), (StatementAddCallback<PreparedStatement>) this::addStatements, this::replay);
+                    (sql, statement) -> ((PreparedStatement) statement).executeUpdate(), (StatementAddCallback<PreparedStatement>) this::addStatements, createReplayCallback());
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             return result;
             // CHECKSTYLE:OFF
@@ -237,7 +239,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             this.queryContext = queryContext;
             handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
             boolean result = driverExecutorFacade.execute(usedDatabase, metaData, queryContext, (sql, statement) -> ((PreparedStatement) statement).execute(),
-                    (StatementAddCallback<PreparedStatement>) this::addStatements, this::replay);
+                    (StatementAddCallback<PreparedStatement>) this::addStatements, createReplayCallback());
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             return result;
             // CHECKSTYLE:OFF
@@ -270,8 +272,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return new QueryContext(sqlStatementContext, sql, params, hintValueContext, connection.getDatabaseConnectionManager().getConnectionContext(), metaData, true);
     }
     
+    private StatementReplayCallback createReplayCallback() {
+        return this::replay;
+    }
+    
     private void replay() throws SQLException {
         replaySetParameter(statements, parameterSets);
+        replayStatementMethods(statements);
+    }
+    
+    private void replayStatementMethods(final Collection<? extends Statement> statements) throws SQLException {
         for (Statement each : statements) {
             getMethodInvocationRecorder().replay(each);
         }

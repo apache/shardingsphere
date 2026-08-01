@@ -169,18 +169,6 @@ public final class MCPInteractionPayloads {
     }
     
     /**
-     * Get an optional object field.
-     *
-     * @param payload parent payload
-     * @param fieldName field name
-     * @return object field, or an empty map when absent
-     * @throws IllegalStateException when the present field is not an object
-     */
-    public static Map<String, Object> getOptionalObject(final Map<String, Object> payload, final String fieldName) {
-        return payload.containsKey(fieldName) ? getRequiredObject(payload, fieldName) : Map.of();
-    }
-    
-    /**
      * Get a required object-list field.
      *
      * @param payload parent payload
@@ -202,26 +190,13 @@ public final class MCPInteractionPayloads {
      */
     @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> getRequiredObjectList(final Object value, final String fieldPath) {
-        if (!(value instanceof List)) {
+        if (!(value instanceof final List<?> values)) {
             throw new IllegalStateException(String.format("MCP payload field `%s` must be a list.", fieldPath));
         }
-        List<?> values = (List<?>) value;
         for (int index = 0; index < values.size(); index++) {
             getRequiredObjectValue(values.get(index), fieldPath + "[" + index + "]");
         }
         return (List<Map<String, Object>>) values;
-    }
-    
-    /**
-     * Get an optional object-list field.
-     *
-     * @param payload parent payload
-     * @param fieldName field name
-     * @return object-list field, or an empty list when absent
-     * @throws IllegalStateException when the present field is not a list or contains a non-object value
-     */
-    public static List<Map<String, Object>> getOptionalObjectList(final Map<String, Object> payload, final String fieldName) {
-        return payload.containsKey(fieldName) ? getRequiredObjectList(payload, fieldName) : List.of();
     }
     
     private static Map<String, Object> parseJsonText(final String value) {

@@ -37,60 +37,60 @@ public final class ShardingAlgorithmRecommendationService {
      * Recommend sharding algorithm and key generator.
      *
      * @param request workflow request
-     * @param algorithmRows algorithm rows
-     * @param keyGeneratorRows key-generator rows
+     * @param algorithms sharding algorithms reported by the current Proxy
+     * @param keyGenerators key generators reported by the current Proxy
      * @param includeShardingAlgorithm whether to include sharding algorithm recommendation
      * @param includeKeyGenerator whether to include key-generator recommendation
      * @param issues workflow issues
      * @return selected candidates
      */
-    public List<AlgorithmCandidate> recommend(final ShardingWorkflowRequest request, final List<Map<String, Object>> algorithmRows,
-                                              final List<Map<String, Object>> keyGeneratorRows, final boolean includeShardingAlgorithm,
+    public List<AlgorithmCandidate> recommend(final ShardingWorkflowRequest request, final List<Map<String, Object>> algorithms,
+                                              final List<Map<String, Object>> keyGenerators, final boolean includeShardingAlgorithm,
                                               final boolean includeKeyGenerator, final List<WorkflowIssue> issues) {
-        List<Map<String, Object>> actualAlgorithmRows = null == algorithmRows ? List.of() : algorithmRows;
-        List<Map<String, Object>> actualKeyGeneratorRows = null == keyGeneratorRows ? List.of() : keyGeneratorRows;
         List<AlgorithmCandidate> result = new LinkedList<>();
         if (includeShardingAlgorithm) {
-            recommendAlgorithm(request.getAlgorithmType(), actualAlgorithmRows, issues).forEach(result::add);
+            recommendAlgorithm(request.getAlgorithmType(), algorithms, issues).forEach(result::add);
         }
         if (includeKeyGenerator) {
-            recommendKeyGenerator(request.getKeyGeneratorType(), actualKeyGeneratorRows, issues).forEach(result::add);
+            recommendKeyGenerator(request.getKeyGeneratorType(), keyGenerators, issues).forEach(result::add);
         }
         return result;
     }
     
-    private List<AlgorithmCandidate> recommendAlgorithm(final String algorithmType, final List<Map<String, Object>> algorithmRows, final List<WorkflowIssue> issues) {
+    private List<AlgorithmCandidate> recommendAlgorithm(final String algorithmType, final List<Map<String, Object>> algorithms, final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(algorithmType);
         if (!actualAlgorithmType.isEmpty()) {
-            if (algorithmRows.isEmpty() || WorkflowAlgorithmUtils.containsAlgorithm(algorithmRows, actualAlgorithmType, "type", "name")) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithms, actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate("primary", actualAlgorithmType, 100, "User specified sharding algorithm."));
             }
             addAlgorithmNotFoundIssue(issues, "Sharding algorithm", actualAlgorithmType);
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(algorithmRows, List.of("INLINE", "MOD", "HASH_MOD"));
+        String recommendedType = resolveRecommendedAlgorithm(algorithms, List.of("INLINE", "MOD", "HASH_MOD"));
         if (recommendedType.isEmpty()) {
             addNoAlgorithmIssue(issues, "sharding algorithm");
             return List.of();
         }
-        return List.of(createCandidate("primary", recommendedType, 90, "Recommended from current sharding algorithm availability."));
+        return List.of(createCandidate("primary", recommendedType, 90,
+                "Selected from algorithms reported by the current Proxy using MCP's built-in sharding preference order."));
     }
     
-    private List<AlgorithmCandidate> recommendKeyGenerator(final String keyGeneratorType, final List<Map<String, Object>> keyGeneratorRows, final List<WorkflowIssue> issues) {
+    private List<AlgorithmCandidate> recommendKeyGenerator(final String keyGeneratorType, final List<Map<String, Object>> keyGenerators, final List<WorkflowIssue> issues) {
         String actualKeyGeneratorType = WorkflowAlgorithmUtils.normalizeAlgorithmType(keyGeneratorType);
         if (!actualKeyGeneratorType.isEmpty()) {
-            if (keyGeneratorRows.isEmpty() || WorkflowAlgorithmUtils.containsAlgorithm(keyGeneratorRows, actualKeyGeneratorType, "type", "name")) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(keyGenerators, actualKeyGeneratorType, "type", "name")) {
                 return List.of(createCandidate("key_generator", actualKeyGeneratorType, 100, "User specified key-generator algorithm."));
             }
             addAlgorithmNotFoundIssue(issues, "Key-generator algorithm", actualKeyGeneratorType);
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(keyGeneratorRows, List.of("SNOWFLAKE", "UUID"));
+        String recommendedType = resolveRecommendedAlgorithm(keyGenerators, List.of("SNOWFLAKE", "UUID"));
         if (recommendedType.isEmpty()) {
             addNoAlgorithmIssue(issues, "key-generator algorithm");
             return List.of();
         }
-        return List.of(createCandidate("key_generator", recommendedType, 90, "Recommended from current key-generator availability."));
+        return List.of(createCandidate("key_generator", recommendedType, 90,
+                "Selected from algorithms reported by the current Proxy using MCP's built-in key-generator preference order."));
     }
     
     private AlgorithmCandidate createCandidate(final String role, final String algorithmType, final int score, final String reason) {

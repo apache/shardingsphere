@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
 import org.junit.jupiter.api.Test;
 
@@ -132,11 +133,12 @@ class MCPLaunchConfigurationTest {
         return result;
     }
     
-    private Map<String, Map<String, Object>> createRuntimeDatabases() {
-        return Collections.singletonMap("logic_db", Map.of(
-                "jdbcUrl", "jdbc:mysql://localhost:3306/logic_db",
-                "username", "demo",
-                "password", "",
-                "driverClassName", "com.mysql.cj.jdbc.Driver"));
+    private Map<String, YamlRuntimeDatabaseConfiguration> createRuntimeDatabases() {
+        YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
+        result.setJdbcUrl("jdbc:mysql://localhost:3306/logic_db");
+        result.setUsername("demo");
+        result.setPassword("");
+        result.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        return Collections.singletonMap("logic_db", result);
     }
 }

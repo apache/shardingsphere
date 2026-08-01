@@ -298,7 +298,71 @@
             </assignment>
         </set>
     </insert>
-    
+
+    <insert sql-case-id="insert_select_with_target_table_alias_oracle">
+        <table name="t_order" start-index="12" stop-index="20" alias="o">
+            <table-bound>
+                <original-database name="foo_db_1" />
+                <original-schema name="FOO_DB_1" />
+            </table-bound>
+        </table>
+        <columns start-index="22" stop-index="31">
+            <column name="order_id" start-index="23" stop-index="30">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="FOO_DB_1" />
+                    <original-table name="t_order" />
+                    <original-column name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+        </columns>
+        <select>
+            <projections start-index="40" stop-index="49">
+                <column-projection name="order_id" start-index="40" stop-index="49">
+                    <owner name="i" start-index="40" stop-index="40" />
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="FOO_DB_1" />
+                        <original-table name="t_order_item" />
+                        <original-column name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+                        <table-source-type name="PHYSICAL_TABLE"/>
+                    </column-bound>
+                </column-projection>
+            </projections>
+            <from start-index="56" stop-index="69">
+                <simple-table name="t_order_item" start-index="56" stop-index="69" alias="i">
+                    <table-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="FOO_DB_1" />
+                    </table-bound>
+                </simple-table>
+            </from>
+            <where start-index="71" stop-index="89">
+                <expr>
+                    <binary-operation-expression start-index="77" stop-index="89">
+                        <left>
+                            <column name="item_id" start-index="77" stop-index="85">
+                                <owner name="i" start-index="77" stop-index="77" />
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="FOO_DB_1" />
+                                    <original-table name="t_order_item" />
+                                    <original-column name="item_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
+                                </column-bound>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="89" stop-index="89" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </insert>
+
     <insert sql-case-id="insert_on_duplicate_key_update_with_excluded_postgres">
         <table name="t_order" start-index="12" stop-index="18">
             <table-bound>

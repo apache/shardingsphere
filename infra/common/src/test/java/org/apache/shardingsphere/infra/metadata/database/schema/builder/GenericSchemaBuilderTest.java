@@ -35,6 +35,9 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -42,14 +45,15 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -60,19 +64,21 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(MetaDataLoader.class)
 class GenericSchemaBuilderTest {
     
+    private static final DatabaseType MYSQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
+    private static final DatabaseType POSTGRESQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private static final DatabaseType OPEN_GAUSS_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
+    private static final DatabaseType ORACLE_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private GenericSchemaBuilderMaterial material;
     
     @BeforeEach
     void setUp() {
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
-        StorageUnit storageUnit = mock(StorageUnit.class);
-        when(storageUnit.getStorageType()).thenReturn(databaseType);
-        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
-        material = new GenericSchemaBuilderMaterial(Collections.singletonMap("foo_schema", storageUnit), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema",
-                DatabaseIdentifierContextFactory.createDefault());
+        material = createMaterial(databaseType, "foo_schema");
     }
     
     @Test
@@ -121,25 +127,64 @@ class GenericSchemaBuilderTest {
         assertTables(new ShardingSphereSchema("foo_schema", databaseType, actual.values().iterator().next().getAllTables(), Collections.emptyList()));
     }
     
-    @Test
-    void assertBuildWithDifferentProtocolAndStorageTypes() throws SQLException {
-        DatabaseType differentDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        Collection<String> tableNames = Collections.singleton("foo_tbl");
-        Map<String, SchemaMetaData> schemaMetaDataMap = createSchemaMetaDataMap(tableNames, material);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("schemaAvailableDatabaseTypes")
+    void assertBuildKeepsPhysicalSchemasWithDifferentSchemaAvailableDatabaseTypes(final String name, final DatabaseType protocolType,
+                                                                                  final DatabaseType storageType) throws SQLException {
+        Map<String, SchemaMetaData> schemaMetaDataMap = new LinkedHashMap<>(2, 1F);
+        schemaMetaDataMap.put("public", createSchemaMetaData("public", "foo_tbl"));
+        schemaMetaDataMap.put("foo_schema", createSchemaMetaData("foo_schema", "bar_tbl"));
         when(MetaDataLoader.load(any())).thenReturn(schemaMetaDataMap);
-        StorageUnit storageUnit = mock(StorageUnit.class);
-        when(storageUnit.getStorageType()).thenReturn(differentDatabaseType);
-        Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_schema", storageUnit);
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(Arrays.asList("foo_tbl", "bar_tbl"), protocolType, createMaterial(storageType, "public"));
+        assertThat(actual.size(), is(2));
+        assertSchemaTable(actual, "public", "foo_tbl");
+        assertSchemaTable(actual, "foo_schema", "bar_tbl");
+    }
+    
+    @Test
+    void assertBuildTranslatesSchemaWhenProtocolSchemaUnavailable() throws SQLException {
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("public", createSchemaMetaData("public", "foo_tbl")));
+        Map<String, ShardingSphereSchema> actual =
+                GenericSchemaBuilder.build(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, createMaterial(POSTGRESQL_DATABASE_TYPE, "foo_db"));
+        assertThat(actual.size(), is(1));
+        assertSchemaTable(actual, "foo_db", "foo_tbl");
+    }
+    
+    @Test
+    void assertBuildTranslatesSchemaWhenStorageSchemaUnavailable() throws SQLException {
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("PUBLIC", createSchemaMetaData("PUBLIC", "foo_tbl")));
+        Map<String, ShardingSphereSchema> actual =
+                GenericSchemaBuilder.build(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, createMaterial(ORACLE_DATABASE_TYPE, "public"));
+        assertThat(actual.size(), is(1));
+        assertSchemaTable(actual, "public", "foo_tbl");
+    }
+    
+    private static Stream<Arguments> schemaAvailableDatabaseTypes() {
+        return Stream.of(
+                Arguments.of("PostgreSQL protocol with openGauss storage", POSTGRESQL_DATABASE_TYPE, OPEN_GAUSS_DATABASE_TYPE),
+                Arguments.of("openGauss protocol with PostgreSQL storage", OPEN_GAUSS_DATABASE_TYPE, POSTGRESQL_DATABASE_TYPE));
+    }
+    
+    private GenericSchemaBuilderMaterial createMaterial(final DatabaseType storageType, final String defaultSchemaName) {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
-        GenericSchemaBuilderMaterial newMaterial = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema",
-                DatabaseIdentifierContextFactory.createDefault());
-        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, databaseType, newMaterial);
-        assertThat(actual.size(), is(1));
-        ShardingSphereSchema actualSchema = actual.values().iterator().next();
-        assertTrue(actualSchema.getAllTables().isEmpty());
-        assertNull(actualSchema.getTable("foo_tbl"));
-        assertThat(actualSchema.getName(), is("foo_schema"));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(storageType);
+        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        return new GenericSchemaBuilderMaterial(Collections.singletonMap("foo_schema", storageUnit), Collections.singleton(rule), new ConfigurationProperties(new Properties()),
+                defaultSchemaName, DatabaseIdentifierContextFactory.createDefault());
+    }
+    
+    private SchemaMetaData createSchemaMetaData(final String schemaName, final String tableName) {
+        TableMetaData tableMetaData = new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        return new SchemaMetaData(schemaName, Collections.singleton(tableMetaData));
+    }
+    
+    private void assertSchemaTable(final Map<String, ShardingSphereSchema> actual, final String expectedSchemaName, final String expectedTableName) {
+        ShardingSphereSchema actualSchema = actual.get(expectedSchemaName);
+        assertThat(actualSchema.getName(), is(expectedSchemaName));
+        assertThat(actualSchema.getAllTables().size(), is(1));
+        assertThat(actualSchema.getAllTables().iterator().next().getName(), is(expectedTableName));
     }
     
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -68,7 +67,7 @@ public final class EncryptRuleInspectionService {
      */
     public List<Map<String, Object>> queryEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : queryAlgorithmRows(queryFacade)) {
+        for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")) {
             String type = WorkflowAlgorithmUtils.getAlgorithmType(each);
             Map<String, Boolean> capability = EncryptAlgorithmCatalog.findCapability(type);
             List<AlgorithmPropertyRequirement> propertyTemplates = EncryptAlgorithmCatalog.findRequirements(EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY, type);
@@ -84,16 +83,5 @@ public final class EncryptRuleInspectionService {
             result.add(row);
         }
         return result;
-    }
-    
-    private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
-        try {
-            return queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
-        } catch (final MCPQueryFailedException ex) {
-            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return EncryptAlgorithmCatalog.getSupportedAlgorithmTypes().stream().map(each -> Map.<String, Object>of("type", each)).toList();
-            }
-            throw ex;
-        }
     }
 }

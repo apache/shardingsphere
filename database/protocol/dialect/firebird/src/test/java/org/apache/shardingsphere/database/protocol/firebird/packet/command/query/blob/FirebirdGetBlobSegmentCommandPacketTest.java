@@ -26,7 +26,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -39,14 +38,16 @@ class FirebirdGetBlobSegmentCommandPacketTest {
     
     @Test
     void assertGetBlobSegmentPacket() {
-        when(payload.readInt4()).thenReturn(11, 3);
+        when(payload.readBlobHandle()).thenReturn(11);
+        when(payload.readInt4()).thenReturn(3);
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 2, 3}));
         FirebirdGetBlobSegmentCommandPacket packet = new FirebirdGetBlobSegmentCommandPacket(payload);
         assertThat(packet.getBlobHandle(), is(11));
         assertThat(packet.getSegmentLength(), is(3));
         assertThat(packet.getSegment(), is(new byte[]{1, 2, 3}));
         verify(payload).skipReserved(4);
-        verify(payload, times(2)).readInt4();
+        verify(payload).readBlobHandle();
+        verify(payload).readInt4();
         verify(payload).readBuffer();
         packet.write(payload);
         verifyNoMoreInteractions(payload);

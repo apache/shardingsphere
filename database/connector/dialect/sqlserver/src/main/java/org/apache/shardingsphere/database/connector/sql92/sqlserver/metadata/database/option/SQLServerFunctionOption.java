@@ -28,9 +28,8 @@ import java.util.Collection;
  */
 public final class SQLServerFunctionOption implements DialectFunctionOption {
     
-    // TODO remove ROWNUM, ROWNUM_ and ROW_NUMBER @duanzhengqiang
     private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Arrays.asList(
-            "CURRENT_TIMESTAMP", "CURRENT_USER", "ROWNUM", "ROWNUM_", "ROW_NUMBER", "SESSION_USER", "SYSTEM_USER", "USER"));
+            "CURRENT_TIMESTAMP", "CURRENT_USER", "SESSION_USER", "SYSTEM_USER", "USER"));
     
     @Override
     public Collection<String> getUnparenthesizedFunctionNames() {

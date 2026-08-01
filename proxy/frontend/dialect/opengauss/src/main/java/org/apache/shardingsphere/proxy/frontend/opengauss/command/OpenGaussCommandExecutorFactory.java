@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.command.bind.OpenGaussComBatchBindPacket;
+import org.apache.shardingsphere.database.protocol.opengauss.type.OpenGaussColumnTypeOIDResolver;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacketType;
 import org.apache.shardingsphere.database.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended.bind.OpenGaussComBatchBindExecutor;
@@ -60,6 +62,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class OpenGaussCommandExecutorFactory {
+    
+    private static final ColumnTypeOIDResolver COLUMN_TYPE_OID_RESOLVER = new OpenGaussColumnTypeOIDResolver();
     
     /**
      * Create new instance of command executor.
@@ -123,7 +127,7 @@ public final class OpenGaussCommandExecutorFactory {
             case BIND_COMMAND:
                 return new PostgreSQLComBindExecutor(portalContext, (PostgreSQLComBindPacket) commandPacket, connectionSession);
             case DESCRIBE_COMMAND:
-                return new PostgreSQLComDescribeExecutor(portalContext, (PostgreSQLComDescribePacket) commandPacket, connectionSession);
+                return new PostgreSQLComDescribeExecutor(portalContext, (PostgreSQLComDescribePacket) commandPacket, connectionSession, COLUMN_TYPE_OID_RESOLVER);
             case EXECUTE_COMMAND:
                 return new PostgreSQLComExecuteExecutor(portalContext, (PostgreSQLComExecutePacket) commandPacket);
             case SYNC_COMMAND:

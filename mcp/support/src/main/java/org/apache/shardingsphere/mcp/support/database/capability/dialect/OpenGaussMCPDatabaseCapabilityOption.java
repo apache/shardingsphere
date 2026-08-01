@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
+import java.util.Optional;
+
 /**
  * MCP database capability option for openGauss.
  */
@@ -27,6 +29,11 @@ public final class OpenGaussMCPDatabaseCapabilityOption implements MCPDatabaseCa
     @Override
     public boolean isExplainSupported() {
         return true;
+    }
+    
+    @Override
+    public Optional<String> getSequenceQuery() {
+        return Optional.of("SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences");
     }
     
     @Override

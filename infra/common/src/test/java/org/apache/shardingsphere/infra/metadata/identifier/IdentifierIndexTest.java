@@ -204,17 +204,18 @@ class IdentifierIndexTest {
     }
     
     private IdentifierCasePolicy createExactRule() {
-        return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> true);
+        return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.EXACT, each -> each, each -> each, each -> each, each -> true);
     }
     
     private IdentifierCasePolicy createPostgreSQLRule() {
         return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
-                each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
+                each -> each, each -> each.toLowerCase(Locale.ENGLISH), each -> each.toLowerCase(Locale.ENGLISH),
+                each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
     }
     
     private IdentifierCasePolicy createMySQLInsensitiveRule() {
         return new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
-                each -> each.toLowerCase(Locale.ENGLISH), each -> true);
+                each -> each, each -> each.toLowerCase(Locale.ENGLISH), each -> each.toLowerCase(Locale.ENGLISH), each -> true);
     }
     
     private Map<String, String> createSingleValueMap(final String key, final String value) {

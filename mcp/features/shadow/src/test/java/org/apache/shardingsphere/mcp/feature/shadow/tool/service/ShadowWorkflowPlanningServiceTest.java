@@ -39,6 +39,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
@@ -49,7 +50,8 @@ class ShadowWorkflowPlanningServiceTest {
     
     @BeforeEach
     void setUp() {
-        mockedInspectionServices = mockConstruction(ShadowInspectionService.class);
+        mockedInspectionServices = mockConstruction(ShadowInspectionService.class,
+                (mock, context) -> when(mock.queryAlgorithmPlugins(any())).thenReturn(List.of(Map.of("type", "SQL_HINT"), Map.of("type", "VALUE_MATCH"))));
     }
     
     @AfterEach
@@ -221,8 +223,9 @@ class ShadowWorkflowPlanningServiceTest {
     void assertPlanDefaultAlgorithmWithoutAlgorithmType() {
         ShadowDefaultAlgorithmWorkflowRequest request = createDefaultAlgorithmRequest();
         request.setAlgorithmType("");
-        WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService().planDefaultAlgorithm(
-                new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        ShadowWorkflowPlanningService service = new ShadowWorkflowPlanningService();
+        when(getInspectionService().queryAlgorithmPlugins(any())).thenReturn(List.of());
+        WorkflowContextSnapshot actual = service.planDefaultAlgorithm(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
         WorkflowIssue actualIssue = actual.getIssues().stream()
                 .filter(each -> WorkflowIssueCode.RULE_INPUT_REQUIRED.equals(each.getCode())).findFirst().orElseThrow();

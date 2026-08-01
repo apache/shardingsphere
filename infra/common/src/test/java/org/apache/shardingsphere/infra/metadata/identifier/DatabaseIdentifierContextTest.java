@@ -72,11 +72,11 @@ class DatabaseIdentifierContextTest {
     
     private IdentifierCasePolicy createLowerRule() {
         return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
-                each -> each.toLowerCase(Locale.ENGLISH), each -> true);
+                each -> each, each -> each.toLowerCase(Locale.ENGLISH), each -> each.toLowerCase(Locale.ENGLISH), each -> true);
     }
     
     private IdentifierCasePolicy createUpperRule() {
         return new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
-                each -> each.toUpperCase(Locale.ENGLISH), each -> true);
+                each -> each, each -> each.toUpperCase(Locale.ENGLISH), each -> each.toUpperCase(Locale.ENGLISH), each -> true);
     }
 }

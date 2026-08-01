@@ -114,40 +114,6 @@ class ShardingSphereSchemaTest {
     }
     
     @Test
-    void assertGetAllSequences() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        assertThat(new HashSet<>(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence))
-                .getAllSequences()), is(Collections.singleton(sequence)));
-    }
-    
-    @Test
-    void assertContainsSequence() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        assertTrue(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence)).containsSequence("foo_seq"));
-    }
-    
-    @Test
-    void assertGetSequence() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        assertThat(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence)).getSequence("foo_seq"), is(sequence));
-    }
-    
-    @Test
-    void assertPutSequence() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", postgreSQLDatabaseType);
-        schema.putSequence(new ShardingSphereSequence("foo_seq"));
-        assertTrue(schema.containsSequence("foo_seq"));
-    }
-    
-    @Test
-    void assertRemoveSequence() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(),
-                Collections.singleton(new ShardingSphereSequence("foo_seq")));
-        schema.removeSequence("foo_seq");
-        assertFalse(schema.containsSequence("foo_seq"));
-    }
-    
-    @Test
     void assertContainsIndex() {
         ShardingSphereTable table = new ShardingSphereTable(
                 "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("col_idx", Collections.emptyList(), false)), Collections.emptyList());
@@ -214,12 +180,6 @@ class ShardingSphereSchemaTest {
     }
     
     @Test
-    void assertIsEmptyWithEmptySequence() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        assertFalse(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence)).isEmpty());
-    }
-    
-    @Test
     void assertIsEmpty() {
         assertTrue(new ShardingSphereSchema("foo_db", postgreSQLDatabaseType).isEmpty());
     }
@@ -270,22 +230,6 @@ class ShardingSphereSchemaTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view));
         schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
         assertThat(schema.getView("FOO_VIEW"), is(view));
-    }
-    
-    @Test
-    void assertContainsUpperCaseSequence() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence));
-        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
-        assertTrue(schema.containsSequence("FOO_SEQ"));
-    }
-    
-    @Test
-    void assertGetUpperCaseSequence() {
-        ShardingSphereSequence sequence = new ShardingSphereSequence("foo_seq");
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.emptyList(), Collections.singleton(sequence));
-        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()));
-        assertThat(schema.getSequence("FOO_SEQ"), is(sequence));
     }
     
     @Test

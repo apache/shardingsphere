@@ -59,6 +59,16 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
+    void assertResolveResourceKind() {
+        assertThat(MCPDescriptorCatalogIndex.resolveResourceKind("shardingsphere://workflows/plan-1"), is("workflow-plan"));
+    }
+    
+    @Test
+    void assertResolveUnknownResourceKind() {
+        assertThat(MCPDescriptorCatalogIndex.resolveResourceKind("shardingsphere://unknown"), is("resource"));
+    }
+    
+    @Test
     void assertGetToolDescriptors() {
         Collection<MCPToolDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getToolDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "database_gateway_apply_workflow".equals(each.getName())));
@@ -88,9 +98,8 @@ class MCPDescriptorCatalogIndexTest {
     }
     
     @Test
-    void assertFindToolRuntimeDescriptor() {
-        assertTrue(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("database_gateway_apply_workflow")
-                .filter(optional -> "apply".equals(optional.getWorkflowRole()) && optional.getSideEffectScope().contains("rule-metadata")).isPresent());
+    void assertFindToolRuntimeDescriptorWithoutRuntimeMetadata() {
+        assertFalse(MCPDescriptorCatalogIndex.findToolRuntimeDescriptor("database_gateway_validate_workflow").isPresent());
     }
     
     @Test

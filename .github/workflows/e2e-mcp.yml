@@ -27,15 +27,8 @@ on:
       - ready_for_review
     paths:
       - '.github/workflows/e2e-mcp.yml'
-      - '.github/workflows/resources/actions/download-e2e-artifacts/**'
-      - '.github/workflows/resources/actions/setup-build-environment/**'
-      - '.github/workflows/resources/actions/upload-e2e-artifacts/**'
-      - 'pom.xml'
-      - 'database/connector/**'
       - 'distribution/mcp/**'
       - 'mcp/**'
-      - 'test/e2e/pom.xml'
-      - 'test/e2e/env/**'
       - 'test/e2e/mcp/**'
   schedule:
     - cron: '0 19 * * 1-5'
@@ -72,20 +65,18 @@ jobs:
           docker system df
       - name: Build MCP E2E Test Dependencies and Distribution
         run: ./mvnw -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
-      - name: Run MCP E2E Harness Tests
-        run: ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true -Dtest='*Test,!*E2ETest' -Dsurefire.failIfNoSpecifiedTests=true -T1C -B -ntp
       - name: Build MCP Distribution Image
         run: |
           docker build \
             --platform "$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}')" \
             -f distribution/mcp/Dockerfile \
-            -t "${{ env.MCP_DISTRIBUTION_IMAGE }}" \
+            -t "${MCP_DISTRIBUTION_IMAGE}" \
             distribution/mcp/target
       - name: Package MCP Distribution Home
         shell: bash
         run: |
           set -euo pipefail
-          artifact_dir="${RUNNER_TEMP}/mcp-e2e-build-artifacts"
+          artifact_dir="${RUNNER_TEMP}/mcp-e2e-distribution"
           mkdir -p "${artifact_dir}"
           distribution_home="$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)"
           if [[ -z "${distribution_home}" ]]; then
@@ -93,11 +84,18 @@ jobs:
             exit 1
           fi
           tar -czf "${artifact_dir}/mcp-distribution-home.tar.gz" -C distribution/mcp/target "$(basename "${distribution_home}")"
-      - name: Upload MCP E2E Build Artifacts
+      - name: Upload MCP Maven Repository
         uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-build-artifacts
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
+          artifact-name: mcp-e2e-maven-repository
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
+          docker-images: ''
+      - name: Upload MCP Distribution
+        uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+        with:
+          artifact-name: mcp-e2e-distribution
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
+          include-maven-repository: 'false'
           docker-images: |
             ${{ env.MCP_DISTRIBUTION_IMAGE }}=mcp-distribution-image.tar
 
@@ -134,8 +132,8 @@ jobs:
           docker-images: |
             ${{ steps.mcp-llm-runtime-image.outputs.image_tag }}=mcp-llm-runtime-image.tar
 
-  e2e-mcp-core:
-    name: E2E - MCP Core
+  e2e-mcp-functionality:
+    name: E2E - MCP Functionality
     if: github.repository == 'apache/shardingsphere'
     needs: e2e-mcp-build-images
     runs-on: ubuntu-latest
@@ -148,35 +146,35 @@ jobs:
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - name: Download MCP E2E Build Artifacts
+      - name: Download MCP Maven Repository
         uses: ./.github/workflows/resources/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-build-artifacts
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
+          artifact-name: mcp-e2e-maven-repository
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
+          load-docker-image: 'false'
+      - name: Download MCP Distribution
+        uses: ./.github/workflows/resources/actions/download-e2e-artifacts
+        with:
+          artifact-name: mcp-e2e-distribution
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
+          restore-maven-repository: 'false'
           docker-image-archives: mcp-distribution-image.tar
       - name: Restore MCP Distribution Home
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p distribution/mcp/target
-          tar -xzf "${RUNNER_TEMP}/mcp-e2e-build-artifacts/mcp-distribution-home.tar.gz" -C distribution/mcp/target
-      - name: Run MCP Core E2E
-        shell: bash
-        run: |
-          set -euo pipefail
-          ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-            -Dtest='*E2ETest' \
-            -DexcludedGroups=llm-e2e \
-            -Dsurefire.failIfNoSpecifiedTests=true \
-            -De2e.run.type=DOCKER \
-            -Dmcp.e2e.container.image="${{ env.MCP_DISTRIBUTION_IMAGE }}" \
-            -B -ntp
-      - name: Upload MCP Core E2E Artifacts
+          tar -xzf "${RUNNER_TEMP}/mcp-e2e-distribution/mcp-distribution-home.tar.gz" -C distribution/mcp/target
+      - name: Run MCP Functionality E2E
+        run: ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.functionality -Dmcp.e2e.container.image=${{ env.MCP_DISTRIBUTION_IMAGE }} -Dmcp.e2e.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/functionality-e2e" -DskipITs -Dspotless.skip=true -B -ntp
+      - name: Upload MCP Functionality E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: e2e-mcp-core-${{ github.run_id }}-${{ github.run_attempt }}
-          path: test/e2e/mcp/target/surefire-reports
+          name: e2e-mcp-functionality-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test/e2e/mcp/target/surefire-reports
+            test/e2e/mcp/target/functionality-e2e
           if-no-files-found: warn
 
   e2e-mcp-conformance:
@@ -187,14 +185,14 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6.0.1
-      - name: Download MCP E2E Build Artifacts
+      - name: Download MCP Distribution
         uses: ./.github/workflows/resources/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-build-artifacts
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
+          artifact-name: mcp-e2e-distribution
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-distribution
           restore-maven-repository: 'false'
           docker-image-archives: mcp-distribution-image.tar
-      - name: Checkout Fixed MCP Conformance Source
+      - name: Checkout Pinned MCP Conformance Runner
         uses: actions/checkout@v6.0.1
         with:
           repository: modelcontextprotocol/conformance
@@ -205,15 +203,24 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: .mcp-conformance/package-lock.json
-      - name: Build Fixed MCP Conformance Runner
+      - name: Build MCP Conformance Runner
         working-directory: .mcp-conformance
         run: |
           npm ci
           npm run build
-      - name: Run Applicable MCP 2025-11-25 Server Scenarios
+      - name: Run MCP 2025-11-25 Conformance Scenarios
         shell: bash
         run: |
           set -euo pipefail
+          generic_scenarios=(
+            server-initialize
+            ping
+            logging-set-level
+            tools-list
+            resources-list
+            prompts-list
+            dns-rebinding-protection
+          )
           container_name="shardingsphere-mcp-conformance"
           cleanup() {
             docker logs "${container_name}" >"${RUNNER_TEMP}/mcp-conformance-server.log" 2>&1 || true
@@ -232,24 +239,25 @@ jobs:
           curl --silent --output /dev/null --request POST http://127.0.0.1:18088/mcp
           results_root="${RUNNER_TEMP}/mcp-conformance-results"
           mkdir -p "${results_root}"
-          scenario_count=0
-          while IFS= read -r scenario; do
-            [[ -z "${scenario}" || "${scenario}" == \#* ]] && continue
-            scenario_count=$((scenario_count + 1))
+          version_scenarios="$(
+            node .mcp-conformance/dist/index.js list --server --spec-version 2025-11-25 \
+              | sed -nE 's/^[[:space:]]+- ([^ ]+).*/\1/p'
+          )"
+          for scenario in "${generic_scenarios[@]}"; do
+            if ! grep -Fxq -- "${scenario}" <<<"${version_scenarios}"; then
+              echo "MCP conformance scenario '${scenario}' is unavailable for protocol version 2025-11-25." >&2
+              exit 1
+            fi
             node .mcp-conformance/dist/index.js server \
               --url http://127.0.0.1:18088/mcp \
               --scenario "${scenario}" \
-              --spec-version 2025-11-25 \
               --output-dir "${results_root}/${scenario}"
-          done < test/e2e/mcp/src/test/resources/conformance/server-scenarios.txt
-          if [[ "${scenario_count}" -eq 0 ]]; then
-            echo "No MCP conformance scenarios were selected." >&2
-            exit 1
-          fi
-          if ! find "${results_root}" -mindepth 1 -type f -print -quit | grep -q .; then
-            echo "MCP conformance produced no result files." >&2
-            exit 1
-          fi
+            checks_file="$(find "${results_root}/${scenario}" -type f -name checks.json -print -quit 2>/dev/null || true)"
+            if [[ -z "${checks_file}" ]] || ! jq -e 'type == "array" and length > 0' "${checks_file}" >/dev/null; then
+              echo "MCP conformance scenario '${scenario}' produced no checks." >&2
+              exit 1
+            fi
+          done
       - name: Upload MCP Conformance Artifacts
         if: always()
         uses: actions/upload-artifact@v6
@@ -261,30 +269,26 @@ jobs:
           if-no-files-found: warn
 
   e2e-mcp-llm:
-    name: E2E - MCP LLM - ${{ matrix.suite-id }}
+    name: E2E - MCP LLM - ${{ matrix.id }}
     if: github.repository == 'apache/shardingsphere'
     needs: [ e2e-mcp-build-images, e2e-mcp-build-llm-image ]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 20
       matrix:
         include:
-          - suite-id: smoke
-            test-class: LLMSmokeE2ETest
-          - suite-id: usability-core
-            test-class: LLMUsabilitySuiteE2ETest
-            test-property: mcp.e2e.llm.usability-suite=core
-          - suite-id: usability-extended
-            test-class: LLMUsabilitySuiteE2ETest
-            test-property: mcp.e2e.llm.usability-suite=extended
-          - suite-id: builder-first
-            test-class: MCPBuilderEvaluationE2ETest
-            test-property: mcp.e2e.llm.builder-case-group=first
-          - suite-id: builder-second
-            test-class: MCPBuilderEvaluationE2ETest
-            test-property: mcp.e2e.llm.builder-case-group=second
+          - id: http-read-only-query
+            test: LLMHttpE2ETest#assertReadOnlyQuery
+          - id: http-metadata-discovery
+            test: LLMHttpE2ETest#assertMetadataDiscovery
+          - id: http-mask-planning
+            test: LLMHttpE2ETest#assertMaskPlanning
+          - id: http-side-effect-preview
+            test: LLMHttpE2ETest#assertSideEffectPreview
+          - id: http-invalid-resource-recovery
+            test: LLMHttpE2ETest#assertInvalidResourceRecovery
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
@@ -293,11 +297,11 @@ jobs:
           cache-suffix: 'e2e-mcp'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - name: Download MCP E2E Build Artifacts
+      - name: Download MCP Maven Repository
         uses: ./.github/workflows/resources/actions/download-e2e-artifacts
         with:
-          artifact-name: mcp-e2e-build-artifacts
-          artifact-dir: ${{ runner.temp }}/mcp-e2e-build-artifacts
+          artifact-name: mcp-e2e-maven-repository
+          artifact-dir: ${{ runner.temp }}/mcp-e2e-maven-repository
           load-docker-image: 'false'
       - name: Download MCP LLM Runtime Image
         uses: ./.github/workflows/resources/actions/download-e2e-artifacts
@@ -307,31 +311,14 @@ jobs:
           restore-maven-repository: 'false'
           docker-image-archives: mcp-llm-runtime-image.tar
       - name: Run MCP LLM E2E
-        shell: bash
         env:
-          MCP_LLM_TEST_PROPERTY: ${{ matrix.test-property }}
-        run: |
-          set -euo pipefail
-          test_property_args=()
-          if [[ -n "${MCP_LLM_TEST_PROPERTY}" ]]; then
-            test_property_args+=("-D${MCP_LLM_TEST_PROPERTY}")
-          fi
-          ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-            -Dtest='${{ matrix.test-class }}' \
-            "${test_property_args[@]}" \
-            -Dgroups=llm-e2e \
-            -Dsurefire.failIfNoSpecifiedTests=true \
-            -De2e.run.type=DOCKER \
-            -Dmcp.llm.ready-timeout-seconds=900 \
-            -Dmcp.llm.request-timeout-seconds=300 \
-            -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" \
-            -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.suite-id }} \
-            -B -ntp
+          TESTCONTAINERS_RYUK_DISABLED: 'true'
+        run: ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm -DskipITs -Dspotless.skip=true -Dtest='${{ matrix.test }}' -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.id }} -B -ntp
       - name: Upload MCP LLM E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: e2e-mcp-llm-${{ matrix.suite-id }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: e2e-mcp-llm-${{ matrix.id }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             test/e2e/mcp/target/llm-e2e
             test/e2e/mcp/target/surefire-reports

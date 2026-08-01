@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -152,7 +151,6 @@ class PlanEncryptRuleToolHandlerTest {
         result.setStatus(status);
         result.setRequest(new EncryptWorkflowRequest());
         result.setClarifiedIntent(new ClarifiedIntent());
-        result.setFeatureData(new EncryptWorkflowState());
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }

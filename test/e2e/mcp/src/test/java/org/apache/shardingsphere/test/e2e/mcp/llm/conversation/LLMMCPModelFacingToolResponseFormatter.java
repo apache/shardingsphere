@@ -49,7 +49,7 @@ final class LLMMCPModelFacingToolResponseFormatter {
         copyCompactArtifactPackage(response, result, "manual_artifact_package");
         copyCompactArtifactList(response, result, "exported_artifacts");
         copyModelCriticalFields(response, result);
-        copyModelFacingNextActions(response, result);
+        copyNextActions(response, result);
         copyFields(response, result, POST_ACTION_FIELD_NAMES);
         copyToolList(response, result);
         copyCompactResourceList(response, result, "resources", "uri");
@@ -217,19 +217,10 @@ final class LLMMCPModelFacingToolResponseFormatter {
         target.put("recovery", compactRecovery);
     }
     
-    private static void copyModelFacingNextActions(final Map<String, Object> source, final Map<String, Object> target) {
+    private static void copyNextActions(final Map<String, Object> source, final Map<String, Object> target) {
         List<Map<String, Object>> nextActions = LLMMCPJsonValues.castToList(source.get(MCPPayloadFieldNames.NEXT_ACTIONS));
-        if (nextActions.isEmpty()) {
-            return;
-        }
-        List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : nextActions) {
-            if (!LLMMCPSideEffectNextAction.isExecutionAction(each)) {
-                result.add(each);
-            }
-        }
-        if (!result.isEmpty()) {
-            target.put(MCPPayloadFieldNames.NEXT_ACTIONS, result);
+        if (!nextActions.isEmpty()) {
+            target.put(MCPPayloadFieldNames.NEXT_ACTIONS, nextActions);
         }
     }
 }

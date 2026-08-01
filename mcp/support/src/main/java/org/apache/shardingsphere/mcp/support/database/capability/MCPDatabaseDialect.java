@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundExce
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * MCP database dialect capabilities.
@@ -38,6 +39,8 @@ public final class MCPDatabaseDialect {
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
     private final SystemDatabase systemDatabase;
+    
+    private final Optional<MCPDatabaseCapabilityOption> capabilityOption;
     
     /**
      * Create MCP database dialect capabilities.
@@ -51,7 +54,8 @@ public final class MCPDatabaseDialect {
                 .orElseThrow(() -> new ServiceProviderNotFoundException(DatabaseType.class, actualDatabaseType));
         DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseTypeFromSPI)
                 .orElseThrow(() -> new ServiceProviderNotFoundException(DialectDatabaseMetaData.class, actualDatabaseType));
-        return new MCPDatabaseDialect(dialectDatabaseMetaData, new SystemDatabase(databaseTypeFromSPI));
+        return new MCPDatabaseDialect(dialectDatabaseMetaData, new SystemDatabase(databaseTypeFromSPI),
+                TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, actualDatabaseType));
     }
     
     /**
@@ -68,8 +72,8 @@ public final class MCPDatabaseDialect {
      *
      * @return sequence metadata query
      */
-    public boolean isSequenceSupported() {
-        return dialectDatabaseMetaData.getSequenceOption().isPresent();
+    public Optional<String> getSequenceQuery() {
+        return capabilityOption.flatMap(MCPDatabaseCapabilityOption::getSequenceQuery);
     }
     
     /**

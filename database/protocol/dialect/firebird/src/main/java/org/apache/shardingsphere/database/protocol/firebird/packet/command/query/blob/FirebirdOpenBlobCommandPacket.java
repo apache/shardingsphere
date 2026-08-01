@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
@@ -37,7 +36,6 @@ public final class FirebirdOpenBlobCommandPacket extends FirebirdCommandPacket {
     private final long blobId;
     
     public FirebirdOpenBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
-        Preconditions.checkArgument(FirebirdCommandPacketType.OPEN_BLOB == commandType || FirebirdCommandPacketType.OPEN_BLOB2 == commandType, "Unsupported blob command type: %s", commandType);
         payload.skipReserved(4);
         if (FirebirdCommandPacketType.OPEN_BLOB2 == commandType) {
             ByteBuf buffer = payload.readBuffer();
@@ -62,16 +60,11 @@ public final class FirebirdOpenBlobCommandPacket extends FirebirdCommandPacket {
      * @return length of packet
      */
     public static int getLength(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
-        Preconditions.checkArgument(FirebirdCommandPacketType.OPEN_BLOB == commandType || FirebirdCommandPacketType.OPEN_BLOB2 == commandType, "Unsupported blob command type: %s", commandType);
-        // reserved (4)
         int length = 4;
         if (FirebirdCommandPacketType.OPEN_BLOB2 == commandType) {
-            // + blob parameter buffer
             length += payload.getBufferLength(length);
         }
-        // transactionId (4)
         length += 4;
-        // blobId (8)
         length += 8;
         return length;
     }

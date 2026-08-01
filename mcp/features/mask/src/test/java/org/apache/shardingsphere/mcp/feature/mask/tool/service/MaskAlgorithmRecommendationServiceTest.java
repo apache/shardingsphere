@@ -68,6 +68,8 @@ class MaskAlgorithmRecommendationServiceTest {
                 Map.of("type", "KEEP_FIRST_N_LAST_M")), issues);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getAlgorithmType(), is("MASK_FROM_X_TO_Y"));
+        assertThat(actual.get(0).getRecommendationReason(), is(
+                "Selected from algorithms reported by the current Proxy using field semantics and MCP's built-in mask defaults."));
     }
     
     @Test
@@ -86,8 +88,10 @@ class MaskAlgorithmRecommendationServiceTest {
     @Test
     void assertRecommendMaskAlgorithmsWithoutAvailableAlgorithms() {
         List<WorkflowIssue> issues = new LinkedList<>();
-        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), new WorkflowRequest(), List.of(), issues);
+        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(
+                new ClarifiedIntent(), new WorkflowRequest(), List.of(), issues);
         assertTrue(actual.isEmpty());
         assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
     }
+    
 }

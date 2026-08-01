@@ -39,7 +39,6 @@ public final class DialectTransactionOption {
     
     private final boolean isSupportDDLInXATransaction;
     
-    // TODO Investigate the reason of some databases cannot support meta data refreshed in transaction. The method should be removed finally after metadata refresh supported for all database.
     private final boolean isSupportMetaDataRefreshInTransaction;
     
     private final boolean isReturnRollbackStatementWhenCommitFailed;

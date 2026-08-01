@@ -486,7 +486,15 @@ partitionedTable
     ;
 
 domainIndexClause
-    : indexTypeName localDomainIndexClause? parallelClause? (PARAMETERS LP_ SQ_ odciParameters SQ_ RP_)?
+    : indexTypeName localDomainIndexClause? parallelClause? domainIndexFilterByClause? domainIndexOrderByClause? (PARAMETERS LP_ STRING_ RP_)?
+    ;
+
+domainIndexFilterByClause
+    : FILTER BY columnName (COMMA_ columnName)*
+    ;
+
+domainIndexOrderByClause
+    : ORDER BY columnName (ASC | DESC)? (COMMA_ columnName (ASC | DESC)?)*
     ;
 
 localDomainIndexClause
@@ -2786,7 +2794,7 @@ javaDeclaration
 cDeclaration
     : (LANGUAGE SINGLE_C | EXTERNAL)
     ((NAME name)? LIBRARY libName| LIBRARY libName (NAME name)?)
-    (AGENT IN RP_ argument (COMMA_ argument)* LP_)?
+    (AGENT IN LP_ argument (COMMA_ argument)* RP_)?
     (WITH CONTEXT)?
     (PARAMETERS LP_ externalParameter (COMMA_ externalParameter)* RP_)?
     ;

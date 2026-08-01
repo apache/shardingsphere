@@ -48,7 +48,7 @@ final class MCPDescriptorYamlKeyValidator {
     
     private static final Collection<String> REQUIRED_TOOL_ANNOTATION_HINT_KEYS = Set.of("readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint");
     
-    private static final Collection<String> TOOL_RUNTIME_KEYS = Set.of("workflowRole", "sideEffectScope");
+    private static final Collection<String> TOOL_RUNTIME_KEYS = Set.of("workflowRole");
     
     private static final Collection<String> PROMPT_KEYS = Set.of("name", "title", "description", "arguments", "binding", "meta");
     

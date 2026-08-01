@@ -82,26 +82,34 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthenticationEngine().authenticate(context,
                     databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()));
             if (authResult.isFinished()) {
-                connectionSession.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
-                connectionSession.setCurrentDatabaseName(authResult.getDatabase());
-                connectionSession.setProcessId(processEngine.connect(connectionSession.getUsedDatabaseName(), connectionSession.getConnectionContext().getGrantee()));
-                connectionSession.setConnectionAttributes(authResult.getConnectionAttributes());
+                finishAuthentication(authResult);
             }
             return authResult.isFinished();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            if (ExpectedExceptions.isExpected(ex.getClass())) {
-                log.debug("Exception occur: ", ex);
-            } else {
-                log.error("Exception occur: ", ex);
-            }
-            context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
-            context.close();
+            failAuthentication(context, ex);
         } finally {
             message.release();
         }
         return false;
+    }
+    
+    private void finishAuthentication(final AuthenticationResult authenticationResult) {
+        connectionSession.setGrantee(new Grantee(authenticationResult.getUsername(), authenticationResult.getHostname()));
+        connectionSession.setCurrentDatabaseName(authenticationResult.getDatabase());
+        connectionSession.setProcessId(processEngine.connect(connectionSession.getUsedDatabaseName(), connectionSession.getConnectionContext().getGrantee()));
+        connectionSession.setConnectionAttributes(authenticationResult.getConnectionAttributes());
+    }
+    
+    private void failAuthentication(final ChannelHandlerContext context, final Exception cause) {
+        if (ExpectedExceptions.isExpected(cause.getClass())) {
+            log.debug("Exception occur: ", cause);
+        } else {
+            log.error("Exception occur: ", cause);
+        }
+        context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause));
+        context.close();
     }
     
     @Override

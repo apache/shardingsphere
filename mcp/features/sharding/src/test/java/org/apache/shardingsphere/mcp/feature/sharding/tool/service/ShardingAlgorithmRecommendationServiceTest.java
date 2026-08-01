@@ -52,7 +52,9 @@ class ShardingAlgorithmRecommendationServiceTest {
         List<AlgorithmCandidate> actual = service.recommend(request, List.of(Map.of("type", "MOD"), Map.of("type", "INLINE")),
                 List.of(Map.of("type", "UUID"), Map.of("type", "SNOWFLAKE")), true, true, new LinkedList<>());
         assertThat(actual.get(0).getAlgorithmType(), is("INLINE"));
+        assertThat(actual.get(0).getRecommendationReason(), is("Selected from algorithms reported by the current Proxy using MCP's built-in sharding preference order."));
         assertThat(actual.get(1).getAlgorithmType(), is("SNOWFLAKE"));
+        assertThat(actual.get(1).getRecommendationReason(), is("Selected from algorithms reported by the current Proxy using MCP's built-in key-generator preference order."));
     }
     
     @Test

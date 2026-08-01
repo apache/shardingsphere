@@ -50,7 +50,7 @@ class FirebirdIdentifierCasePolicyProviderTest {
     void assertProvide() {
         IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(databaseType, null)).getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertThat(actual.normalize("Foo"), is("FOO"));
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("FOO"));
         assertTrue(actual.matches("FOO", "foo", QuoteCharacter.NONE));
         assertTrue(actual.matches("Foo", "foo", QuoteCharacter.NONE));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.QUOTE));

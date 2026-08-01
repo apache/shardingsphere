@@ -30,7 +30,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptAlgorithmRecommendationServiceTest {
@@ -47,6 +46,7 @@ class EncryptAlgorithmRecommendationServiceTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.getFirst().getAlgorithmRole(), is("primary"));
         assertThat(actual.getFirst().getAlgorithmType(), is("AES"));
+        assertThat(actual.getFirst().getRecommendationReason(), is("User specified algorithm."));
         assertTrue(issues.isEmpty());
     }
     
@@ -80,7 +80,7 @@ class EncryptAlgorithmRecommendationServiceTest {
     }
     
     @Test
-    void assertRecommendEncryptAlgorithmsFallsBackToFirstAvailableAlgorithm() {
+    void assertRecommendEncryptAlgorithmsUsesFirstAvailableAlgorithm() {
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(
                 new EncryptWorkflowRequest(), List.of(createAlgorithmRow("FPE", null, null, null)), issues);
@@ -138,13 +138,14 @@ class EncryptAlgorithmRecommendationServiceTest {
     }
     
     @Test
-    void assertRecommendEncryptAlgorithmsWithUnconfirmedCapability() {
+    void assertRecommendEncryptAlgorithmsWithUnknownCapabilityMetadata() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.setAlgorithmType("FPE");
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("FPE", null, null, null)), issues);
         assertThat(actual.size(), is(1));
-        assertFalse(actual.getFirst().getRiskNotes().isEmpty());
+        assertThat(actual.getFirst().getRiskNotes(), is(
+                "The algorithm is reported by the current Proxy, but its capabilities are not described by MCP's built-in metadata."));
         assertTrue(issues.isEmpty());
     }
     
@@ -197,7 +198,7 @@ class EncryptAlgorithmRecommendationServiceTest {
     }
     
     @Test
-    void assertRecommendEncryptAlgorithmsWithSpecifiedUnconfirmedLikeAlgorithm() {
+    void assertRecommendEncryptAlgorithmsWithSpecifiedLikeAlgorithmAndUnknownCapabilityMetadata() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.getOptions().setRequiresLikeQuery(true);
         request.getOptions().setLikeQueryAlgorithmType("FPE");

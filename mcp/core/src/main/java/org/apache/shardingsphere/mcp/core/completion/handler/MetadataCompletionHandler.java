@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequ
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
@@ -178,7 +178,7 @@ public final class MetadataCompletionHandler implements MCPCompletionHandler<MCP
             return List.of();
         }
         try {
-            return handlerContext.getMetadataQueryFacade().querySequences(database, schema).stream().map(ShardingSphereSequence::getName)
+            return handlerContext.getMetadataQueryFacade().querySequences(database, schema).stream().map(MCPSequenceMetadata::getSequence)
                     .map(each -> new MCPCompletionCandidate(each, "sequence", "metadata")).toList();
         } catch (final MCPUnsupportedException ignored) {
             return List.of();

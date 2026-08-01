@@ -240,7 +240,8 @@ class SingleRouteEngineTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        IdentifierCasePolicy identifierCasePolicy = new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED, each -> each.toLowerCase(Locale.ENGLISH), each -> true);
+        IdentifierCasePolicy identifierCasePolicy = new IdentifierCasePolicy(LookupMode.NORMALIZED, LookupMode.NORMALIZED,
+                each -> each, each -> each.toLowerCase(Locale.ENGLISH), each -> each.toLowerCase(Locale.ENGLISH), each -> true);
         when(result.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(new IdentifierCasePolicySet(identifierCasePolicy)));
         return result;
     }

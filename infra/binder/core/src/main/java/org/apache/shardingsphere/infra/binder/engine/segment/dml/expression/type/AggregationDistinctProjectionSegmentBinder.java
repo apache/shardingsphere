@@ -46,9 +46,10 @@ public final class AggregationDistinctProjectionSegmentBinder {
     public static AggregationDistinctProjectionSegment bind(final AggregationDistinctProjectionSegment segment, final SegmentType parentSegmentType,
                                                             final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        AggregationDistinctProjectionSegment result =
-                new AggregationDistinctProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getType(), segment.getExpression(), segment.getDistinctInnerExpression());
+        AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(
+                segment.getStartIndex(), segment.getStopIndex(), segment.getType(), segment.getExpression(), segment.getDistinctInnerExpression(), segment.getSeparator().orElse(null));
         segment.getParameters().forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        segment.getWindow().ifPresent(optional -> result.setWindow(WindowItemSegmentBinder.bind(optional, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
         return result;
     }
 }

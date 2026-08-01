@@ -46,7 +46,8 @@ class LoadBalanceAlgorithmPluginsHandlerTest {
             MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
             MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
             when(requestContext.getQueryFacade()).thenReturn(queryFacade);
-            when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade)).thenReturn(List.of(Map.of("type", "ROUND_ROBIN")));
+            when(inspectionService.queryLoadBalanceAlgorithmPlugins(queryFacade))
+                    .thenReturn(List.of(Map.of("type", "ROUND_ROBIN")));
             MCPSuccessPayload actual = handler.handle(requestContext, new MCPResourceURIVariables(Map.of()));
             verify(inspectionService).queryLoadBalanceAlgorithmPlugins(queryFacade);
             assertThat(((Collection<?>) actual.toPayload().get("items")).size(), is(1));

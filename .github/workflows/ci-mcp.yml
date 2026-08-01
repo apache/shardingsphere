@@ -61,6 +61,8 @@ jobs:
             -DskipITs -Dspotless.skip=true \
             -Dsurefire.failIfNoSpecifiedTests=false \
             -B -ntp
+      - name: Run MCP HTTP Integration Test
+        run: ./mvnw -pl mcp/bootstrap verify -DskipITs=false -Dspotless.skip=true -B -ntp
       - name: Verify MCP Metadata Pagination Coverage
         shell: bash
         run: |

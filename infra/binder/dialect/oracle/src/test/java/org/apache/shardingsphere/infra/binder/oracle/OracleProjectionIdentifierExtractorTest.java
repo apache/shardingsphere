@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
@@ -51,6 +52,11 @@ class OracleProjectionIdentifierExtractorTest {
     @Test
     void assertGetColumnNameFromExpression() {
         assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "expression")), is("EXPRESSION"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromStringLiteralExpression() {
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 7, "EXTMSG", new LiteralExpressionSegment(0, 7, "EXTMSG"))), is("'EXTMSG'"));
     }
     
     @Test

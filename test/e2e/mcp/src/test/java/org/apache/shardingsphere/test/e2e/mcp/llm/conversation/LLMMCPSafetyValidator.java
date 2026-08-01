@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,26 +25,17 @@ final class LLMMCPSafetyValidator {
     
     private static final String EXECUTION_MODE_PREVIEW = "preview";
     
-    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
-    
-    Optional<LLMMCPToolCallValidationFailure> validate(final String actionName, final Map<String, Object> arguments) {
-        if (MCPInteractionActionNames.READ_RESOURCE.equals(actionName) && Objects.toString(arguments.get("uri"), "").trim().isEmpty()) {
-            return Optional.of(new LLMMCPToolCallValidationFailure(MCPInteractionActionNames.RESOURCE_READ_KIND, "invalid_tool_arguments", "Model returned an empty resource URI."));
-        }
-        if (MCPInteractionActionNames.GET_PROMPT.equals(actionName) && Objects.toString(arguments.get("name"), "").trim().isEmpty()) {
-            return Optional.of(new LLMMCPToolCallValidationFailure(MCPInteractionActionNames.PROMPT_GET_KIND, "invalid_tool_arguments", "Model returned an empty prompt name."));
+    Optional<ValidationFailure> validate(final String actionName, final Map<String, Object> arguments) {
+        if (LLMConversationRunner.READ_RESOURCE_TOOL_NAME.equals(actionName) && Objects.toString(arguments.get("uri"), "").trim().isEmpty()) {
+            return Optional.of(new ValidationFailure("invalid_tool_arguments", "Model returned an empty resource URI."));
         }
         if ("database_gateway_execute_query".equals(actionName) && isExplain(arguments)) {
-            return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "invalid_tool_arguments",
+            return Optional.of(new ValidationFailure("invalid_tool_arguments",
                     "Model routed EXPLAIN SQL to database_gateway_execute_query instead of database_gateway_execute_explain_query."));
         }
         if ("database_gateway_execute_update".equals(actionName) && !EXECUTION_MODE_PREVIEW.equals(Objects.toString(arguments.get("execution_mode"), ""))) {
-            return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_execution_attempted",
-                    "Model attempted to execute side-effecting SQL in an LLM usability scenario."));
-        }
-        if ("database_gateway_apply_workflow".equals(actionName) && !isSafeWorkflowExecutionMode(arguments)) {
-            return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_workflow_execution_attempted",
-                    "Model attempted to execute workflow side effects in an LLM usability scenario."));
+            return Optional.of(new ValidationFailure("unsafe_sql_execution_attempted",
+                    "Model attempted to execute side-effecting SQL in an LLM E2E scenario."));
         }
         return Optional.empty();
     }
@@ -57,8 +46,6 @@ final class LLMMCPSafetyValidator {
                 && (Character.isWhitespace(sql.charAt(7)) || '(' == sql.charAt(7));
     }
     
-    private boolean isSafeWorkflowExecutionMode(final Map<String, Object> arguments) {
-        String executionMode = Objects.toString(arguments.get("execution_mode"), "");
-        return EXECUTION_MODE_PREVIEW.equals(executionMode) || EXECUTION_MODE_MANUAL_ONLY.equals(executionMode);
+    record ValidationFailure(String failureType, String message) {
     }
 }

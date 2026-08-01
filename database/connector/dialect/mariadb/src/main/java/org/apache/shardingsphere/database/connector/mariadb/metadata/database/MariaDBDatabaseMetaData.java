@@ -27,7 +27,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
@@ -92,11 +91,6 @@ public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public Optional<DialectGeneratedKeyOption> getGeneratedKeyOption() {
         return delegate.getGeneratedKeyOption();
-    }
-    
-    @Override
-    public Optional<DialectSequenceOption> getSequenceOption() {
-        return Optional.of(new DialectSequenceOption("SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'"));
     }
     
     @Override

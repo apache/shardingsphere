@@ -19,16 +19,12 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.FirebirdParameterBuffer;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdTransactionParameterBufferType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,25 +60,12 @@ class FirebirdStartTransactionPacketTest {
     
     @Test
     void assertIsolationLevelSerializable() {
-        FirebirdStartTransactionPacket packet = new FirebirdStartTransactionPacket(createPayload(1, FirebirdTransactionParameterBufferType.CONSISTENCY));
-        getParameterBuffer(packet).put(FirebirdTransactionParameterBufferType.CONCURRENCY, false);
-        assertThat(packet.getIsolationLevel(), is(TransactionIsolationLevel.SERIALIZABLE));
+        assertThat(new FirebirdStartTransactionPacket(createPayload(1, FirebirdTransactionParameterBufferType.CONSISTENCY)).getIsolationLevel(), is(TransactionIsolationLevel.SERIALIZABLE));
     }
     
     @Test
-    void assertIsolationLevelNone() {
-        FirebirdStartTransactionPacket packet = new FirebirdStartTransactionPacket(createPayload(1));
-        Map<FirebirdTransactionParameterBufferType, Object> parameterBuffer = getParameterBuffer(packet);
-        parameterBuffer.put(FirebirdTransactionParameterBufferType.CONCURRENCY, false);
-        parameterBuffer.put(FirebirdTransactionParameterBufferType.CONSISTENCY, false);
-        assertThat(packet.getIsolationLevel(), is(TransactionIsolationLevel.NONE));
-    }
-    
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Map<FirebirdTransactionParameterBufferType, Object> getParameterBuffer(final FirebirdStartTransactionPacket packet) {
-        FirebirdParameterBuffer tpb = (FirebirdParameterBuffer) Plugins.getMemberAccessor().get(FirebirdStartTransactionPacket.class.getDeclaredField("tpb"), packet);
-        return (Map<FirebirdTransactionParameterBufferType, Object>) Plugins.getMemberAccessor().get(FirebirdParameterBuffer.class.getDeclaredField("parameterBuffer"), tpb);
+    void assertIsolationLevelDefaultsToRepeatableRead() {
+        assertThat(new FirebirdStartTransactionPacket(createPayload(1)).getIsolationLevel(), is(TransactionIsolationLevel.REPEATABLE_READ));
     }
     
     @Test

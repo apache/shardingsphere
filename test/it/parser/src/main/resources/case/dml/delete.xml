@@ -820,6 +820,15 @@
         </where>
     </delete>
 
+    <delete sql-case-id="delete_with_current_of_oracle">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <where start-index="20" stop-index="48">
+            <expr>
+                <common-expression text="CURRENT OF order_cursor" start-index="26" stop-index="48" />
+            </expr>
+        </where>
+    </delete>
+
     <delete sql-case-id="delete_with_schema">
         <table name="t_order" start-index="12" stop-index="22">
             <owner name="db1" start-index="12" stop-index="14" />

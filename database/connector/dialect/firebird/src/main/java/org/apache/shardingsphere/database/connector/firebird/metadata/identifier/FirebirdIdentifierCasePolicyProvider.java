@@ -32,7 +32,8 @@ public final class FirebirdIdentifierCasePolicyProvider implements IdentifierCas
     
     @Override
     public IdentifierCasePolicySet provide(final IdentifierCasePolicyProviderContext context) {
-        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED, FirebirdIdentifierCasePolicyProvider::toUpperCase, each -> true));
+        return new IdentifierCasePolicySet(new IdentifierCasePolicy(LookupMode.EXACT, LookupMode.NORMALIZED,
+                each -> each, FirebirdIdentifierCasePolicyProvider::toUpperCase, FirebirdIdentifierCasePolicyProvider::toUpperCase, each -> true));
     }
     
     @Override

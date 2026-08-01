@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
@@ -67,18 +66,7 @@ public final class MaskRuleInspectionService {
      * @return mask algorithms
      */
     public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
-        return decorateMaskAlgorithms(queryAlgorithmRows(queryFacade));
-    }
-    
-    private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
-        try {
-            return queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
-        } catch (final MCPQueryFailedException ex) {
-            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return propertyTemplateService.getSupportedAlgorithmTypes().stream().map(each -> Map.<String, Object>of("type", each)).toList();
-            }
-            throw ex;
-        }
+        return decorateMaskAlgorithms(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS"));
     }
     
     private List<Map<String, Object>> decorateMaskAlgorithms(final List<Map<String, Object>> maskAlgorithms) {

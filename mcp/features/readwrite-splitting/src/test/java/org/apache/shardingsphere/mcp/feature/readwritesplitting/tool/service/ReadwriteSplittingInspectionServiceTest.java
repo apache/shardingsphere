@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -77,19 +75,12 @@ class ReadwriteSplittingInspectionServiceTest {
     @Test
     void assertQueryLoadBalanceAlgorithmPluginsWithUnavailableDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS"))
-                .thenThrow(new MCPQueryFailedException("syntax error near 'LOAD BALANCE ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
-        List<Map<String, Object>> actual = new ReadwriteSplittingInspectionService().queryLoadBalanceAlgorithmPlugins(queryFacade);
-        assertTrue(actual.stream().anyMatch(each -> "ROUND_ROBIN".equals(each.get("type"))));
-        assertTrue(actual.stream().anyMatch(each -> "ROUND_ROBIN".equals(each.get("type")) && "No required properties.".equals(each.get("property_guidance"))));
-    }
-    
-    @Test
-    void assertQueryLoadBalanceAlgorithmPluginsPropagatesQueryFailure() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS"))
-                .thenThrow(new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused.")));
-        assertThrows(MCPQueryFailedException.class, () -> new ReadwriteSplittingInspectionService().queryLoadBalanceAlgorithmPlugins(queryFacade));
+        MCPQueryFailedException expected = new MCPQueryFailedException(
+                "syntax error near 'LOAD BALANCE ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error"));
+        when(queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS")).thenThrow(expected);
+        MCPQueryFailedException actual = assertThrows(
+                MCPQueryFailedException.class, () -> new ReadwriteSplittingInspectionService().queryLoadBalanceAlgorithmPlugins(queryFacade));
+        assertThat(actual, is(expected));
     }
     
     @Test

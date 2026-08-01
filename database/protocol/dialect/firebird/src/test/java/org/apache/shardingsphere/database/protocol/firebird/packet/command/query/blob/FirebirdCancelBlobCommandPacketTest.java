@@ -32,10 +32,10 @@ class FirebirdCancelBlobCommandPacketTest {
     @Test
     void assertCancelBlobPacket() {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        when(payload.readInt4()).thenReturn(42);
+        when(payload.readBlobHandle()).thenReturn(42);
         FirebirdCancelBlobCommandPacket packet = new FirebirdCancelBlobCommandPacket(payload);
         verify(payload).skipReserved(4);
-        verify(payload).readInt4();
+        verify(payload).readBlobHandle();
         assertThat(packet.getBlobHandle(), is(42));
         packet.write(payload);
         verifyNoMoreInteractions(payload);

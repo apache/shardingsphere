@@ -119,18 +119,10 @@ class EncryptRuleInspectionServiceTest {
     @Test
     void assertQueryEncryptAlgorithmsWithUnavailableDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS"))
-                .thenThrow(new MCPQueryFailedException("syntax error near 'ENCRYPT ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
-        List<Map<String, Object>> actual = service.queryEncryptAlgorithms(queryFacade);
-        assertThat(actual.getFirst().get("type"), is("AES"));
-        assertThat(actual.getFirst().get("required_properties"), is(List.of("aes-key-value")));
-    }
-    
-    @Test
-    void assertQueryEncryptAlgorithmsPropagatesQueryFailure() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS"))
-                .thenThrow(new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused.")));
-        assertThrows(MCPQueryFailedException.class, () -> service.queryEncryptAlgorithms(queryFacade));
+        MCPQueryFailedException expected = new MCPQueryFailedException(
+                "syntax error near 'ENCRYPT ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error"));
+        when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenThrow(expected);
+        MCPQueryFailedException actual = assertThrows(MCPQueryFailedException.class, () -> service.queryEncryptAlgorithms(queryFacade));
+        assertThat(actual, is(expected));
     }
 }

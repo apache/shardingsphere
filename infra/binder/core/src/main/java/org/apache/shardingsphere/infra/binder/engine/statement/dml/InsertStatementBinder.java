@@ -101,7 +101,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
                 .multiTableInsertInto(sqlStatement.getMultiTableInsertInto().orElse(null)).multiTableConditionalInto(sqlStatement.getMultiTableConditionalInto().orElse(null))
                 .where(sqlStatement.getWhere().orElse(null)).exec(sqlStatement.getExec().orElse(null)).withTableHint(sqlStatement.getWithTableHint().orElse(null))
                 .rowSetFunction(sqlStatement.getRowSetFunction().orElse(null)).ignore(sqlStatement.isIgnore()).replace(sqlStatement.isReplace())
-                .values(new LinkedList<>(boundValues)).build();
+                .overwrite(sqlStatement.isOverwrite()).values(new LinkedList<>(boundValues)).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

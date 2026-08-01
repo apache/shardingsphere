@@ -21,12 +21,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDLoader;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -60,9 +62,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -79,6 +81,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private final PostgreSQLComDescribePacket packet;
     
     private final ConnectionSession connectionSession;
+    
+    private final ColumnTypeOIDResolver columnTypeOIDResolver;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
@@ -111,7 +115,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
     }
     
-    private void describeInsertStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement) {
+    private void describeInsertStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
         InsertStatement insertStatement = (InsertStatement) preparedStatement.getSqlStatementContext().getSqlStatement();
         Collection<Integer> unspecifiedTypeParameterIndexes = getUnspecifiedTypeParameterIndexes(preparedStatement);
         Optional<ReturningSegment> returningSegment = insertStatement.getReturning();
@@ -121,7 +125,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String logicTableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), insertStatement, logicTableName);
         List<ShardingSphereIdentifier> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
-        preparedStatement.setRowDescription(returningSegment.<PostgreSQLPacket>map(returning -> describeReturning(returning, table)).orElseGet(PostgreSQLNoDataPacket::getInstance));
+        preparedStatement.setRowDescription(returningSegment.isPresent()
+                ? describeReturning(returningSegment.get(), table, preparedStatement)
+                : PostgreSQLNoDataPacket.getInstance());
         int parameterMarkerIndex = 0;
         for (InsertValuesSegment each : insertStatement.getValues()) {
             for (int i = 0; i < each.getValues().size(); i++) {
@@ -164,8 +170,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 : insertStatement.getColumns().stream().map(each -> new ShardingSphereIdentifier(each.getIdentifier().getValue())).collect(Collectors.toList());
     }
     
-    private PostgreSQLRowDescriptionPacket describeReturning(final ReturningSegment returningSegment, final ShardingSphereTable table) {
-        Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
+    private PostgreSQLRowDescriptionPacket describeReturning(final ReturningSegment returningSegment, final ShardingSphereTable table,
+                                                             final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
+        List<PostgreSQLColumnDescription> result = new ArrayList<>();
         for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
                 table.getAllColumns().stream()
@@ -182,6 +189,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 result.add(convertExpressionToDescription((ExpressionProjectionSegment) each));
             }
         }
+        applyColumnTypeOIDs(result, loadColumnTypeOIDs(preparedStatement, result.size()));
         return new PostgreSQLRowDescriptionPacket(result);
     }
     
@@ -223,6 +231,15 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
     }
     
+    private Map<Integer, Integer> loadColumnTypeOIDs(final PostgreSQLServerPreparedStatement preparedStatement, final int expectedColumnCount) throws SQLException {
+        try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, Collections.emptyList())) {
+            ResultSetMetaData metaData = actualPreparedStatement.getMetaData();
+            return null == metaData || expectedColumnCount != metaData.getColumnCount()
+                    ? Collections.emptyMap()
+                    : ColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), metaData, columnTypeOIDResolver);
+        }
+    }
+    
     private void tryDescribePreparedStatementByJDBC(final PostgreSQLServerPreparedStatement logicPreparedStatement) throws SQLException {
         try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, logicPreparedStatement, Collections.emptyList())) {
             PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(logicPreparedStatement, actualPreparedStatement);
@@ -239,14 +256,32 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             logicPreparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
             return;
         }
+        Map<Integer, Integer> columnTypeOIDs = ColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), resultSetMetaData, columnTypeOIDResolver);
         List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(resultSetMetaData.getColumnCount());
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
             String columnName = resultSetMetaData.getColumnName(columnIndex);
             int columnType = resultSetMetaData.getColumnType(columnIndex);
             int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
             String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
-            columnDescriptions.add(new PostgreSQLColumnDescription(columnName, columnIndex, columnType, columnLength, columnTypeName));
+            Integer typeOID = columnTypeOIDs.get(columnIndex);
+            columnDescriptions.add(null != typeOID
+                    ? new PostgreSQLColumnDescription(columnName, columnIndex, typeOID, columnLength, PostgreSQLValueFormat.TEXT.getCode())
+                    : new PostgreSQLColumnDescription(columnName, columnIndex, columnType, columnLength, columnTypeName));
         }
         logicPreparedStatement.setRowDescription(new PostgreSQLRowDescriptionPacket(columnDescriptions));
+    }
+    
+    private void applyColumnTypeOIDs(final List<PostgreSQLColumnDescription> columnDescriptions, final Map<Integer, Integer> columnTypeOIDs) {
+        if (columnTypeOIDs.isEmpty()) {
+            return;
+        }
+        for (int columnIndex = 1; columnIndex <= columnDescriptions.size(); columnIndex++) {
+            Integer typeOID = columnTypeOIDs.get(columnIndex);
+            if (null != typeOID) {
+                PostgreSQLColumnDescription columnDescription = columnDescriptions.get(columnIndex - 1);
+                columnDescriptions.set(columnIndex - 1, new PostgreSQLColumnDescription(
+                        columnDescription.getColumnName(), columnDescription.getColumnIndex(), typeOID, columnDescription.getColumnLength(), columnDescription.getDataFormat()));
+            }
+        }
     }
 }

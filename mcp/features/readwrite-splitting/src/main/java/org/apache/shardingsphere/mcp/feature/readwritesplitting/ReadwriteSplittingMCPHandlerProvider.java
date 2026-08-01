@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting;
 
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
@@ -41,7 +40,7 @@ import java.util.List;
 /**
  * Readwrite-splitting MCP handler provider.
  */
-public final class ReadwriteSplittingMCPHandlerProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
+public final class ReadwriteSplittingMCPHandlerProvider implements MCPWorkflowDefinitionProvider {
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
