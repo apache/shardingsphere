@@ -208,6 +208,18 @@ class WorkflowValidationSupportTest {
         assertThat(actualMismatch.get("remediation"), is("fix it"));
     }
     
+    @Test
+    void assertCreateSQLExecutabilityIssueBuildsExpectedPayload() {
+        assertThat(validationSupport.createSQLExecutabilityIssue("invalid DistSQL", "CREATE RULE test"), is(Map.of(
+                "code", WorkflowIssueCode.SQL_EXECUTABILITY_FAILED,
+                "severity", "error",
+                "stage", "review",
+                "message", "invalid DistSQL",
+                "user_action", "Regenerate the workflow artifact through the feature planner before approval.",
+                "retryable", true,
+                "details", Map.of("sql", "CREATE RULE test"))));
+    }
+    
     private WorkflowContextSnapshot createSnapshot() {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setSessionId("session-1");

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +26,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,7 +43,6 @@ class WorkflowContextSnapshotTest {
         originalSnapshot.getClarifiedIntent().getClarificationMessages().add("another question");
         originalSnapshot.getClarifiedIntent().getUnresolvedFields().add("schema");
         originalSnapshot.getClarifiedIntent().getInferredValues().put("requires_decrypt", false);
-        originalSnapshot.getFeatureData().getAlgorithmProperties("primary").put("mode", "changed");
         originalSnapshot.getInteractionPlan().getValidationStrategy().put("layers", List.of("rule"));
         getStringList(originalSnapshot.getIssues().get(0).getDetails(), "missing_fields").add("schema");
         getStringList(originalSnapshot.getValidationReport().getMismatches().get(0), "layers").add("rule");
@@ -54,7 +54,7 @@ class WorkflowContextSnapshotTest {
         assertThat(actualSnapshot.getClarifiedIntent().getClarificationMessages(), is(List.of("provide schema")));
         assertTrue(actualSnapshot.getClarifiedIntent().getUnresolvedFields().isEmpty());
         assertTrue(actualSnapshot.getClarifiedIntent().getInferredValues().isEmpty());
-        assertThat(actualSnapshot.getFeatureData().getAlgorithmProperties("primary").get("mode"), is("strict"));
+        assertThat(actualSnapshot.getFeatureData(), not(sameInstance(originalSnapshot.getFeatureData())));
         assertThat(actualSnapshot.getInteractionPlan().getValidationStrategy().get("layers"), is(List.of("rule")));
         assertThat(actualSnapshot.getIssues().get(0).getDetails().get("missing_fields"), is(List.of("column")));
         assertThat(actualSnapshot.getValidationReport().getMismatches().get(0).get("layers"), is(List.of("rule")));
@@ -93,9 +93,7 @@ class WorkflowContextSnapshotTest {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         clarifiedIntent.getClarificationMessages().add("provide schema");
         result.setClarifiedIntent(clarifiedIntent);
-        StubWorkflowFeatureData featureData = new StubWorkflowFeatureData();
-        featureData.getAlgorithmProperties("primary").put("mode", "strict");
-        result.setFeatureData(featureData);
+        result.setFeatureData(new StubWorkflowFeatureData());
         InteractionPlan interactionPlan = new InteractionPlan();
         interactionPlan.setCurrentStep("review");
         interactionPlan.getValidationStrategy().put("layers", List.of("rule"));
@@ -124,18 +122,9 @@ class WorkflowContextSnapshotTest {
     
     private static final class StubWorkflowFeatureData implements WorkflowFeatureData {
         
-        private final Map<String, String> algorithmProperties = new LinkedHashMap<>(4, 1F);
-        
-        @Override
-        public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
-            return "primary".equals(algorithmRole) ? algorithmProperties : Collections.emptyMap();
-        }
-        
         @Override
         public WorkflowFeatureData copy() {
-            StubWorkflowFeatureData result = new StubWorkflowFeatureData();
-            result.algorithmProperties.putAll(algorithmProperties);
-            return result;
+            return new StubWorkflowFeatureData();
         }
     }
 }

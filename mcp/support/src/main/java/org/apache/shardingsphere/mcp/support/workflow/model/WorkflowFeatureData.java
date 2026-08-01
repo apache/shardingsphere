@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
-
 /**
  * Feature-scoped workflow data.
  */
-public interface WorkflowFeatureData extends WorkflowPropertySource {
+public interface WorkflowFeatureData {
     
     /**
      * Copy feature data.

@@ -57,7 +57,7 @@ final class ExplainSQLCandidateValidator {
                 () -> new MCPInvalidRequestException("explain_sql must start with EXPLAIN."));
         String explainPrefix = extractExplainPrefix(explainSql, sql);
         List<SQLStatementToken> explainPrefixTokens = scanner.tokenize(explainPrefix);
-        ShardingSpherePreconditions.checkState(!containsKeywordSequence(scanner, explainPrefixTokens, "EXPLAIN", "PLAN", "FOR"),
+        ShardingSpherePreconditions.checkState(!scanner.containsKeywordSequence(explainPrefixTokens, "EXPLAIN", "PLAN", "FOR"),
                 () -> new MCPInvalidRequestException("EXPLAIN PLAN FOR workflows are not supported by the MCP explain query tool."));
         ShardingSpherePreconditions.checkState(!containsKeyword(scanner, explainPrefixTokens, "ANALYZE", "ANALYSE"),
                 () -> new MCPInvalidRequestException("EXPLAIN ANALYZE is not supported by the MCP explain query tool."));
@@ -89,24 +89,6 @@ final class ExplainSQLCandidateValidator {
             }
         }
         return false;
-    }
-    
-    private boolean containsKeywordSequence(final SQLStatementScanner scanner, final List<SQLStatementToken> tokens, final String... keywords) {
-        for (int index = 0; index + keywords.length <= tokens.size(); index++) {
-            if (containsKeywordSequence(scanner, tokens, index, keywords)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsKeywordSequence(final SQLStatementScanner scanner, final List<SQLStatementToken> tokens, final int startIndex, final String... keywords) {
-        for (int index = 0; index < keywords.length; index++) {
-            if (!scanner.isKeyword(tokens.get(startIndex + index), keywords[index])) {
-                return false;
-            }
-        }
-        return true;
     }
     
 }

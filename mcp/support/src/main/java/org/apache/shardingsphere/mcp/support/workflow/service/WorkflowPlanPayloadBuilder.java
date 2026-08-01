@@ -103,11 +103,10 @@ public final class WorkflowPlanPayloadBuilder {
     }
     
     private static void appendSecretReferenceSummary(final Map<String, Object> result, final WorkflowContextSnapshot snapshot) {
-        WorkflowPropertySource propertySource = null == snapshot.getRequest() ? snapshot.getFeatureData() : snapshot.getRequest();
-        if (null == propertySource) {
+        if (null == snapshot.getRequest()) {
             return;
         }
-        Map<String, Object> summary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(propertySource);
+        Map<String, Object> summary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(snapshot.getRequest());
         if ((Boolean) summary.get("required")) {
             result.put("secret_reference_summary", summary);
         }

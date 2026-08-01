@@ -137,6 +137,24 @@ final class SQLStatementScanner {
         return !token.quotedIdentifier() && token.upperText().equals(keyword);
     }
     
+    boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final String... keywords) {
+        for (int index = 0; index + keywords.length <= tokens.size(); index++) {
+            if (containsKeywordSequence(tokens, index, keywords)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final int startIndex, final String... keywords) {
+        for (int index = 0; index < keywords.length; index++) {
+            if (!isKeyword(tokens.get(startIndex + index), keywords[index])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     boolean containsExecutableComment(final String sql) {
         int currentIndex = 0;
         while (currentIndex < sql.length()) {

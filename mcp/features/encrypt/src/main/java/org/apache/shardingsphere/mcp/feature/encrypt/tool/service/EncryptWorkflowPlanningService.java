@@ -102,7 +102,7 @@ public final class EncryptWorkflowPlanningService {
             if (!ensureSupportedRuleRewrite(queryFacade, mergedRequest, existingRules, result)) {
                 return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
             }
-            planDrop(mergedRequest, existingRules, result);
+            planDrop(mergedRequest, result);
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
         }
         if (!planNonDrop(queryFacade, clarifiedIntent, mergedRequest, existingRules, result)) {
@@ -133,10 +133,10 @@ public final class EncryptWorkflowPlanningService {
         return WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(clarifiedIntent.getOperationType());
     }
     
-    private void planDrop(final EncryptWorkflowRequest request, final List<Map<String, Object>> existingRules, final WorkflowContextSnapshot snapshot) {
+    private void planDrop(final EncryptWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         addDropLifecycleWarnings(snapshot);
         snapshot.getRuleArtifacts().addAll(ruleDistSQLPlanningService.planEncryptDropRule(request));
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(existingRules, List.of()));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of()));
     }
     
     private boolean planNonDrop(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
@@ -153,7 +153,7 @@ public final class EncryptWorkflowPlanningService {
             return false;
         }
         planEncryptArtifacts(request, snapshot);
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(existingRules, List.of(createExpectedTargetRule(request))));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(createExpectedTargetRule(request))));
         return true;
     }
     
