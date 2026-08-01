@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Collection;
 import java.util.List;
@@ -49,22 +49,22 @@ public final class WorkflowArtifactBundle {
     /**
      * Convert workflow artifacts into executable artifacts with masked display SQL.
      *
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @param propertyRequirements property requirements
      * @return executable workflow artifacts
      */
-    public List<ExecutableWorkflowArtifact> toExecutableArtifacts(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
-        return ruleArtifacts.stream().map(each -> createExecutableArtifact(each, propertySource, propertyRequirements)).toList();
+    public List<ExecutableWorkflowArtifact> toExecutableArtifacts(final WorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        return ruleArtifacts.stream().map(each -> createExecutableArtifact(each, request, propertyRequirements)).toList();
     }
     
-    private ExecutableWorkflowArtifact createExecutableArtifact(final RuleArtifact ruleArtifact, final WorkflowPropertySource propertySource,
+    private ExecutableWorkflowArtifact createExecutableArtifact(final RuleArtifact ruleArtifact, final WorkflowRequest request,
                                                                 final List<AlgorithmPropertyRequirement> propertyRequirements) {
-        return new ExecutableWorkflowArtifact(ruleArtifact.getSql(), WorkflowArtifactMaskUtils.maskSensitiveSql(ruleArtifact.getSql(), propertySource, propertyRequirements));
+        return new ExecutableWorkflowArtifact(ruleArtifact.getSql(), WorkflowArtifactMaskUtils.maskSensitiveSql(ruleArtifact.getSql(), request, propertyRequirements));
     }
     
-    Map<String, Object> toPayload(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+    Map<String, Object> toPayload(final WorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         return Map.of(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS, ruleArtifacts.stream()
-                .map(each -> WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(each, propertySource, propertyRequirements)).toList());
+                .map(each -> WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(each, request, propertyRequirements)).toList());
     }
     
     public record ExecutableWorkflowArtifact(String sql, String displaySql) {

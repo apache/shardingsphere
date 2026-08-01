@@ -24,12 +24,15 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlann
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,7 +59,21 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPFeatureR
         WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(arguments, this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getMetadataQueryFacade(),
                 requestContext.getQueryFacade(), request);
-        return new MCPMapPayload(new MaskWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
+        return new MCPMapPayload(buildPlanResponse(snapshot));
+    }
+    
+    private Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
+        WorkflowRequest request = snapshot.getRequest();
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, request);
+        result.put("masked_property_preview", Map.of(
+                "primary", propertyTemplateService.maskProperties(createPropertyRequirements(snapshot, request), request.getAlgorithmProperties("primary"))));
+        return result;
+    }
+    
+    private List<AlgorithmPropertyRequirement> createPropertyRequirements(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        return snapshot.getPropertyRequirements().isEmpty()
+                ? propertyTemplateService.findRequirements(request.getAlgorithmType())
+                : snapshot.getPropertyRequirements().stream().filter(each -> "primary".equals(each.getAlgorithmRole())).toList();
     }
     
     private void bindFeatureArguments(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

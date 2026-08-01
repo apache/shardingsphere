@@ -40,11 +40,6 @@ import static org.mockito.Mockito.when;
 class ShadowAlgorithmCompletionHandlerTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new ShadowAlgorithmCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
-    }
-    
-    @Test
     void assertSupports() {
         assertTrue(new ShadowAlgorithmCompletionHandler().supports(createRequestContext(ShadowFeatureDefinition.PLAN_RULE_PROMPT_NAME)));
     }

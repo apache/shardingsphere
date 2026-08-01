@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +27,7 @@ import java.util.Map;
  * Workflow request.
  */
 @Getter
-public class WorkflowRequest implements WorkflowPropertySource {
+public class WorkflowRequest {
     
     private String planId = "";
     
@@ -140,12 +138,21 @@ public class WorkflowRequest implements WorkflowPropertySource {
         return null == source ? target : source.copyTo(target);
     }
     
-    @Override
+    /**
+     * Get algorithm properties.
+     *
+     * @param algorithmRole algorithm role
+     * @return algorithm properties
+     */
     public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
         return "primary".equals(algorithmRole) ? primaryAlgorithmProperties : Map.of();
     }
     
-    @Override
+    /**
+     * Get secret references by algorithm role.
+     *
+     * @return secret references by algorithm role
+     */
     public Map<String, Map<String, SecretReferenceValue>> getSecretReferences() {
         if (primaryAlgorithmSecretReferences.isEmpty()) {
             return Map.of();
@@ -155,7 +162,12 @@ public class WorkflowRequest implements WorkflowPropertySource {
         return result;
     }
     
-    @Override
+    /**
+     * Get secret references.
+     *
+     * @param algorithmRole algorithm role
+     * @return secret references
+     */
     public Map<String, SecretReferenceValue> getSecretReferences(final String algorithmRole) {
         return "primary".equals(algorithmRole) ? primaryAlgorithmSecretReferences : Map.of();
     }

@@ -42,11 +42,6 @@ import static org.mockito.Mockito.when;
 class WorkflowPlanIdCompletionHandlerTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new WorkflowPlanIdCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
-    }
-    
-    @Test
     void assertSupports() {
         assertTrue(new WorkflowPlanIdCompletionHandler().supports(createRequestContext()));
     }

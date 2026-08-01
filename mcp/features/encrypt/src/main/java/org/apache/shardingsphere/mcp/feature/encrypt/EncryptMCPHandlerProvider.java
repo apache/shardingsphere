@@ -57,6 +57,6 @@ public final class EncryptMCPHandlerProvider implements MCPWorkflowDefinitionPro
     public Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
         EncryptWorkflowValidationService validationService = new EncryptWorkflowValidationService();
         return List.of(new WorkflowRuntimeDefinition(EncryptFeatureDefinition.WORKFLOW_KIND,
-                validationService, validationService, new EncryptWorkflowApplyArtifactValidator()));
+                validationService, new EncryptWorkflowApplyArtifactValidator()));
     }
 }

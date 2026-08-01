@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -94,8 +95,10 @@ public final class ShardingPlanningRequestBinder {
         return bind(arguments, this::bindRuleComponentCleanupArguments, this::applyRuleComponentCleanupEvidence);
     }
     
-    private ShardingWorkflowRequest bind(final Map<String, Object> arguments, final FeatureArgumentBinder argumentBinder, final EvidenceBinder evidenceBinder) {
-        return WorkflowRequestBinder.bindPlanningRequest(ShardingWorkflowRequest::new, arguments, argumentBinder::bind, evidenceBinder::bind);
+    private ShardingWorkflowRequest bind(final Map<String, Object> arguments,
+                                         final BiConsumer<ShardingWorkflowRequest, WorkflowPlanningArguments> argumentBinder,
+                                         final BiConsumer<ShardingWorkflowRequest, Map<String, Object>> evidenceBinder) {
+        return WorkflowRequestBinder.bindPlanningRequest(ShardingWorkflowRequest::new, arguments, argumentBinder, evidenceBinder);
     }
     
     private void bindTableRuleArguments(final ShardingWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
@@ -232,15 +235,4 @@ public final class ShardingPlanningRequestBinder {
         return Stream.of(String.valueOf(value).split(",")).map(String::trim).filter(each -> !each.isEmpty()).toList();
     }
     
-    @FunctionalInterface
-    private interface FeatureArgumentBinder {
-        
-        void bind(ShardingWorkflowRequest request, WorkflowPlanningArguments workflowPlanningArguments);
-    }
-    
-    @FunctionalInterface
-    private interface EvidenceBinder {
-        
-        void bind(ShardingWorkflowRequest request, Map<String, Object> values);
-    }
 }

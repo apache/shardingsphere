@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -89,12 +88,12 @@ public final class WorkflowPlanPayloadBuilder {
      * Build one workflow-plan payload map with generated artifacts.
      *
      * @param snapshot workflow snapshot
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @return workflow-plan payload with generated artifacts
      */
-    public static Map<String, Object> buildWithArtifacts(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
+    public static Map<String, Object> buildWithArtifacts(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         Map<String, Object> result = build(snapshot);
-        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));
+        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, request));
         return result;
     }
     

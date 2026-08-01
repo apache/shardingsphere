@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -90,12 +90,12 @@ public final class WorkflowSecretReferenceUtils {
     /**
      * Create safe summaries for secret references.
      *
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @return safe summaries
      */
-    public static List<Map<String, Object>> createSafeSummaries(final WorkflowPropertySource propertySource) {
+    public static List<Map<String, Object>> createSafeSummaries(final WorkflowRequest request) {
         List<Map<String, Object>> result = new LinkedList<>();
-        propertySource.getSecretReferences().forEach((algorithmRole, references) -> references.forEach(
+        request.getSecretReferences().forEach((algorithmRole, references) -> references.forEach(
                 (propertyKey, reference) -> result.add(reference.toSafeSummary(algorithmRole, propertyKey))));
         return result;
     }
@@ -104,15 +104,15 @@ public final class WorkflowSecretReferenceUtils {
      * Replace secret reference placeholders with manual placeholders in SQL.
      *
      * @param sql SQL text
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @return SQL text with manual placeholders
      */
-    public static String replacePlaceholdersWithManualPlaceholders(final String sql, final WorkflowPropertySource propertySource) {
+    public static String replacePlaceholdersWithManualPlaceholders(final String sql, final WorkflowRequest request) {
         String result = sql;
-        if (null == propertySource) {
+        if (null == request) {
             return result;
         }
-        for (Entry<String, Map<String, SecretReferenceValue>> groupEntry : propertySource.getSecretReferences().entrySet()) {
+        for (Entry<String, Map<String, SecretReferenceValue>> groupEntry : request.getSecretReferences().entrySet()) {
             for (String each : groupEntry.getValue().keySet()) {
                 result = result.replace(SecretReferenceValue.createPlaceholder(groupEntry.getKey(), each), SecretReferenceValue.createManualPlaceholder(groupEntry.getKey(), each));
             }
@@ -123,24 +123,24 @@ public final class WorkflowSecretReferenceUtils {
     /**
      * Judge whether a workflow property source has secret references.
      *
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @return whether secret references exist
      */
-    public static boolean hasSecretReferences(final WorkflowPropertySource propertySource) {
-        return null != propertySource && propertySource.getSecretReferences().values().stream().anyMatch(each -> !each.isEmpty());
+    public static boolean hasSecretReferences(final WorkflowRequest request) {
+        return null != request && request.getSecretReferences().values().stream().anyMatch(each -> !each.isEmpty());
     }
     
     /**
      * Judge whether a workflow property source has malformed secret references.
      *
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @return whether malformed secret references exist
      */
-    public static boolean hasMalformedSecretReferences(final WorkflowPropertySource propertySource) {
-        if (null == propertySource) {
+    public static boolean hasMalformedSecretReferences(final WorkflowRequest request) {
+        if (null == request) {
             return false;
         }
-        return propertySource.getSecretReferences().values().stream().flatMap(each -> each.values().stream()).anyMatch(SecretReferenceValue::isMalformed);
+        return request.getSecretReferences().values().stream().flatMap(each -> each.values().stream()).anyMatch(SecretReferenceValue::isMalformed);
     }
     
     /**
@@ -148,18 +148,18 @@ public final class WorkflowSecretReferenceUtils {
      *
      * @param expectedProperties expected properties
      * @param actualProperties actual properties
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @param algorithmRole algorithm role
      * @return whether property maps match
      */
     public static boolean matchesManualPlaceholderProperties(final Map<String, String> expectedProperties, final Map<String, String> actualProperties,
-                                                             final WorkflowPropertySource propertySource, final String algorithmRole) {
-        if (null == propertySource) {
+                                                             final WorkflowRequest request, final String algorithmRole) {
+        if (null == request) {
             return expectedProperties.equals(actualProperties);
         }
         Map<String, String> comparableExpected = new LinkedHashMap<>(expectedProperties);
         Map<String, String> comparableActual = new LinkedHashMap<>(actualProperties);
-        for (String each : propertySource.getSecretReferences(algorithmRole).keySet()) {
+        for (String each : request.getSecretReferences(algorithmRole).keySet()) {
             String expectedPlaceholder = SecretReferenceValue.createPlaceholder(algorithmRole, each);
             if (!expectedPlaceholder.equals(expectedProperties.get(each))) {
                 continue;

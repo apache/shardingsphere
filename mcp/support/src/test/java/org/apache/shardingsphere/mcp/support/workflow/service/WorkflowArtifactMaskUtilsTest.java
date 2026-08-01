@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -33,21 +33,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowArtifactMaskUtilsTest {
     
-    private final WorkflowPropertySource propertySource = createPropertySource();
+    private final WorkflowRequest request = createRequest();
     
     @Test
-    void assertCreateMaskedRuleArtifactMapMasksSecretPropertiesAcrossRoles() {
+    void assertCreateMaskedRuleArtifactMapMasksSecretProperties() {
         RuleArtifact ruleArtifact = new RuleArtifact("create", "SQL primary-secret 'assist-secret' like-secret");
-        Map<String, Object> actualRuleArtifact = WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(ruleArtifact, propertySource, List.of(
+        Map<String, Object> actualRuleArtifact = WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(ruleArtifact, request, List.of(
                 new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "primary", ""),
-                new AlgorithmPropertyRequirement("assisted_query", "salt", true, true, "assist", ""),
-                new AlgorithmPropertyRequirement("like_query", "token", true, true, "like", "")));
+                new AlgorithmPropertyRequirement("primary", "salt", true, true, "assist", ""),
+                new AlgorithmPropertyRequirement("primary", "token", true, true, "like", "")));
         assertThat(actualRuleArtifact.get("operation_type"), is("create"));
         assertThat(actualRuleArtifact.get("sql"), is("SQL ****** '******' ******"));
         Map<?, ?> actualRedaction = (Map<?, ?>) actualRuleArtifact.get("redaction");
         assertTrue((Boolean) actualRedaction.get("applied"));
         assertThat(actualRedaction.get("redacted_count"), is(3));
-        assertThat(actualRedaction.get("redacted_properties"), is(List.of("primary.aes-key-value", "assisted_query.salt", "like_query.token")));
+        assertThat(actualRedaction.get("redacted_properties"), is(List.of("primary.aes-key-value", "primary.salt", "primary.token")));
         assertThat(actualRedaction.get("categories"), is(List.of("aes-key-value", "salt", "token")));
         assertFalse(actualRedaction.containsKey("secret_reference_summary"));
     }
@@ -61,39 +61,29 @@ class WorkflowArtifactMaskUtilsTest {
     
     @Test
     void assertMaskSecretReferencePlaceholder() {
-        WorkflowPropertySource source = createSecretReferencePropertySource();
-        assertThat(WorkflowArtifactMaskUtils.maskSensitiveSql("SQL secret_reference:primary.aes-key-value", source, List.of()), is("SQL <SECRET_VALUE_PRIMARY_AES_KEY_VALUE>"));
+        WorkflowRequest actualRequest = createSecretReferenceRequest();
+        assertThat(WorkflowArtifactMaskUtils.maskSensitiveSql("SQL secret_reference:primary.aes-key-value", actualRequest, List.of()), is("SQL <SECRET_VALUE_PRIMARY_AES_KEY_VALUE>"));
         assertThat(WorkflowArtifactMaskUtils.maskPropertyMap(Map.of("aes-key-value", "secret_reference:primary.aes-key-value"), List.of()), is(Map.of("aes-key-value", "******")));
-        assertThat(WorkflowArtifactMaskUtils.maskPropertyMap(Map.of("replace-char", "?"), List.of(), source, "primary"), is(Map.of("replace-char", "******")));
-        Map<?, ?> actualSummary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(source);
+        assertThat(WorkflowArtifactMaskUtils.maskPropertyMap(Map.of("replace-char", "?"), List.of(), actualRequest, "primary"), is(Map.of("replace-char", "******")));
+        Map<?, ?> actualSummary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(actualRequest);
         assertTrue((Boolean) actualSummary.get("required"));
         assertThat(actualSummary.get("reference_count"), is(2));
         assertThat(actualSummary.get("value_handling"), is("manual_execution"));
         assertFalse(String.valueOf(actualSummary).contains("placeholder://"));
     }
     
-    private WorkflowPropertySource createPropertySource() {
-        Map<String, Map<String, String>> properties = Map.of(
-                "primary", Map.of("aes-key-value", "primary-secret"),
-                "assisted_query", Map.of("salt", "assist-secret"),
-                "like_query", Map.of("token", "like-secret"));
-        return algorithmRole -> properties.getOrDefault(algorithmRole, Map.of());
+    private WorkflowRequest createRequest() {
+        WorkflowRequest result = new WorkflowRequest();
+        result.getPrimaryAlgorithmProperties().putAll(Map.of("aes-key-value", "primary-secret", "salt", "assist-secret", "token", "like-secret"));
+        return result;
     }
     
-    private WorkflowPropertySource createSecretReferencePropertySource() {
-        return new WorkflowPropertySource() {
-            
-            @Override
-            public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
-                return Map.of("aes-key-value", "secret_reference:primary.aes-key-value");
-            }
-            
-            @Override
-            public Map<String, Map<String, SecretReferenceValue>> getSecretReferences() {
-                return Map.of("primary", Map.of(
-                        "aes-key-value", SecretReferenceValue.create(),
-                        "replace-char", SecretReferenceValue.create()));
-            }
-        };
+    private WorkflowRequest createSecretReferenceRequest() {
+        WorkflowRequest result = new WorkflowRequest();
+        result.getPrimaryAlgorithmProperties().put("aes-key-value", "secret_reference:primary.aes-key-value");
+        result.getPrimaryAlgorithmSecretReferences().putAll(Map.of(
+                "aes-key-value", SecretReferenceValue.create(),
+                "replace-char", SecretReferenceValue.create()));
+        return result;
     }
 }

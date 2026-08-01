@@ -69,9 +69,9 @@ class ReadwriteSplittingMCPHandlerProviderTest {
     void assertGetWorkflowDefinitions() {
         List<WorkflowRuntimeDefinition> actual = new ReadwriteSplittingMCPHandlerProvider().getWorkflowDefinitions().stream().toList();
         assertThat(actual.get(0).getWorkflowKind(), is(ReadwriteSplittingFeatureDefinition.RULE_WORKFLOW_KIND));
-        assertThat(actual.get(0).getValidationHandler(), isA(ReadwriteSplittingRuleWorkflowValidationService.class));
+        assertThat(actual.get(0).getRuntimeHandler(), isA(ReadwriteSplittingRuleWorkflowValidationService.class));
         assertThat(actual.get(1).getWorkflowKind(), is(ReadwriteSplittingFeatureDefinition.STATUS_WORKFLOW_KIND));
-        assertThat(actual.get(1).getValidationHandler(), isA(ReadwriteSplittingStatusWorkflowValidationService.class));
+        assertThat(actual.get(1).getRuntimeHandler(), isA(ReadwriteSplittingStatusWorkflowValidationService.class));
     }
     
     @Test

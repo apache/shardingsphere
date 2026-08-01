@@ -34,10 +34,13 @@ import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.ServerTransportSecurityValidatorFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.ShardingSphereServerTransportSecurityValidator;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.OriginHeaderConstraint;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.ProtocolVersionHeaderConstraint;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import reactor.core.publisher.Mono;
@@ -83,7 +86,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final HttpTransportConfiguration config) {
         sessionAttributionResolver = new SessionAttributionResolver(config.getSessionAttributionSource());
-        securityValidator = ServerTransportSecurityValidatorFactory.create(sessionManager, config.getBindHost(), sessionAttributionResolver);
+        securityValidator = new ShardingSphereServerTransportSecurityValidator(sessionManager,
+                new OriginHeaderConstraint(HttpTransportHostUtils.isLoopbackHost(config.getBindHost())),
+                new ProtocolVersionHeaderConstraint(), sessionAttributionResolver);
         delegate = createDelegate(jsonMapper, config.getEndpointPath());
         this.jsonMapper = jsonMapper;
         this.sessionManager = sessionManager;

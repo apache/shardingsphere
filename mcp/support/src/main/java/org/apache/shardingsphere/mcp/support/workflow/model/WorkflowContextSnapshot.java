@@ -48,7 +48,7 @@ public final class WorkflowContextSnapshot {
     
     private ClarifiedIntent clarifiedIntent;
     
-    private WorkflowFeatureData featureData;
+    private RuleWorkflowFeatureData featureData;
     
     private InteractionPlan interactionPlan;
     
@@ -156,7 +156,7 @@ public final class WorkflowContextSnapshot {
         return new ValidationSection(original.getStatus(), copyValue(original.getEvidence()), copyValue(original.getDetails()));
     }
     
-    private static Map<String, Object> copyMap(final Map<?, ?> original) {
+    static Map<String, Object> copyMap(final Map<?, ?> original) {
         Map<String, Object> result = new LinkedHashMap<>(original.size(), 1F);
         original.forEach((key, value) -> result.put(String.valueOf(key), copyValue(value)));
         return result;

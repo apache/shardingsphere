@@ -130,7 +130,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     }
     
     private Optional<List<Map<String, Object>>> getExpectedRules(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getFeatureData() instanceof RuleWorkflowFeatureData ? Optional.of(((RuleWorkflowFeatureData) snapshot.getFeatureData()).getExpectedRules()) : Optional.empty();
+        return Optional.ofNullable(snapshot.getFeatureData()).map(RuleWorkflowFeatureData::getExpectedRules);
     }
     
     private ValidationSection validateExpectedRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules, final List<Map<String, Object>> actualRules,

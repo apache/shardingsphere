@@ -24,9 +24,7 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpec
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.modelcontextprotocol.spec.DefaultMcpStreamableServerSessionFactory;
 import io.modelcontextprotocol.spec.McpServerSession;
-import io.modelcontextprotocol.spec.McpServerTransport;
 import io.modelcontextprotocol.spec.McpServerTransportProvider;
 import io.modelcontextprotocol.spec.McpStreamableServerSession;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
@@ -42,10 +40,8 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogInde
 import org.apache.shardingsphere.mcp.support.markdown.MCPMarkdownResourceLoader;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
-import org.mockito.internal.configuration.plugins.Plugins;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +58,7 @@ import static org.mockito.Mockito.when;
 class MCPSyncServerFactoryTest {
     
     @Test
-    void assertCreateWithTransportProvider() throws NoSuchFieldException, IllegalAccessException {
+    void assertCreateWithTransportProvider() {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
         McpSyncServer actual = createFactory().create(transportProvider);
         assertNotNull(transportProvider.sessionFactory);
@@ -72,20 +68,17 @@ class MCPSyncServerFactoryTest {
         assertThat(actual.listResources().size(), is(1));
         assertThat(actual.listResourceTemplates().size(), is(1));
         assertThat(actual.listPrompts().size(), is(1));
-        McpServerSession session = transportProvider.sessionFactory.create(mock(McpServerTransport.class));
-        assertThat(getRequestTimeout(McpServerSession.class, session), is(Duration.ofMinutes(10L)));
         actual.closeGracefully();
     }
     
     @Test
-    void assertCreateWithStreamableTransportProvider() throws NoSuchFieldException, IllegalAccessException {
+    void assertCreateWithStreamableTransportProvider() {
         TestStreamableTransportProvider transportProvider = new TestStreamableTransportProvider();
         McpSyncServer actual = createFactory().create(transportProvider);
         assertNotNull(transportProvider.sessionFactory);
         assertThat(actual.listTools().size(), is(1));
         assertThat(actual.listResources().size(), is(1));
         assertThat(actual.listResourceTemplates().size(), is(1));
-        assertThat(getRequestTimeout(DefaultMcpStreamableServerSessionFactory.class, transportProvider.sessionFactory), is(Duration.ofMinutes(10L)));
         actual.closeGracefully();
     }
     
@@ -135,10 +128,6 @@ class MCPSyncServerFactoryTest {
                                 (exchange, request) -> new McpSchema.CompleteResult(new McpSchema.CompleteResult.CompleteCompletion(List.of(), 0, false))))))) {
             return new MCPSyncServerFactory(runtimeContext, MCPTransportJsonMapperFactory.create());
         }
-    }
-    
-    private Duration getRequestTimeout(final Class<?> targetClass, final Object target) throws NoSuchFieldException, IllegalAccessException {
-        return (Duration) Plugins.getMemberAccessor().get(targetClass.getDeclaredField("requestTimeout"), target);
     }
     
     private McpSchema.CallToolResult createFixtureToolResult() {

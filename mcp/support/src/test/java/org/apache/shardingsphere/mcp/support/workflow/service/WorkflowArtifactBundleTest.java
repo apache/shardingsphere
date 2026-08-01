@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -36,7 +35,7 @@ class WorkflowArtifactBundleTest {
     void assertToExecutableArtifacts() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t"));
-        List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot).toExecutableArtifacts(role -> Map.of(), List.of());
+        List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot).toExecutableArtifacts(new WorkflowRequest(), List.of());
         assertThat(actual, is(List.of(new WorkflowArtifactBundle.ExecutableWorkflowArtifact("CREATE ENCRYPT RULE t", "CREATE ENCRYPT RULE t"))));
     }
     
@@ -45,7 +44,7 @@ class WorkflowArtifactBundleTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='primary-secret'))"));
         List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot)
-                .toExecutableArtifacts(createPropertySource(), List.of(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "primary", "")));
+                .toExecutableArtifacts(createRequest(), List.of(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "primary", "")));
         assertThat(actual.size(), is(1));
         assertThat(actual.getFirst().sql(), is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='primary-secret'))"));
         assertThat(actual.getFirst().displaySql(), is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='******'))"));
@@ -56,28 +55,22 @@ class WorkflowArtifactBundleTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='secret_reference:primary.aes-key-value'))"));
         List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> actual = WorkflowArtifactBundle.from(snapshot)
-                .toExecutableArtifacts(createSecretReferencePropertySource(), List.of());
+                .toExecutableArtifacts(createSecretReferenceRequest(), List.of());
         assertThat(actual.size(), is(1));
         assertThat(actual.getFirst().sql(), is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='secret_reference:primary.aes-key-value'))"));
         assertThat(actual.getFirst().displaySql(), is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>'))"));
     }
     
-    private WorkflowPropertySource createPropertySource() {
-        return algorithmRole -> "primary".equals(algorithmRole) ? Map.of("aes-key-value", "primary-secret") : Map.of();
+    private WorkflowRequest createRequest() {
+        WorkflowRequest result = new WorkflowRequest();
+        result.getPrimaryAlgorithmProperties().put("aes-key-value", "primary-secret");
+        return result;
     }
     
-    private WorkflowPropertySource createSecretReferencePropertySource() {
-        return new WorkflowPropertySource() {
-            
-            @Override
-            public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
-                return "primary".equals(algorithmRole) ? Map.of("aes-key-value", "secret_reference:primary.aes-key-value") : Map.of();
-            }
-            
-            @Override
-            public Map<String, Map<String, SecretReferenceValue>> getSecretReferences() {
-                return Map.of("primary", Map.of("aes-key-value", SecretReferenceValue.create()));
-            }
-        };
+    private WorkflowRequest createSecretReferenceRequest() {
+        WorkflowRequest result = new WorkflowRequest();
+        result.getPrimaryAlgorithmProperties().put("aes-key-value", "secret_reference:primary.aes-key-value");
+        result.getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
+        return result;
     }
 }
