@@ -42,6 +42,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class LLMChatModelClient {
     
+    private static final int COMPLETION_MAX_TOKENS = 512;
+    
+    private static final int READINESS_MAX_TOKENS = 64;
+    
     private final LLME2EConfiguration config;
     
     private final HttpClient httpClient;
@@ -84,7 +88,8 @@ public final class LLMChatModelClient {
      */
     public LLMChatCompletion complete(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                       final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
-        HttpResponse<String> response = sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse), config.getRequestTimeoutSeconds());
+        HttpResponse<String> response = sendCompletionRequest(
+                createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, COMPLETION_MAX_TOKENS), config.getRequestTimeoutSeconds());
         if (200 != response.statusCode()) {
             throw new IllegalStateException(String.format("Model completion request failed with status %d%s.", response.statusCode(), createErrorCodeSuffix(response.body())));
         }
@@ -97,7 +102,7 @@ public final class LLMChatModelClient {
     }
     
     private Map<String, Object> createCompletionRequestPayload(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
-                                                               final String toolChoice, final boolean jsonResponse) {
+                                                               final String toolChoice, final boolean jsonResponse, final int maxTokens) {
         Map<String, Object> requestPayload = new LinkedHashMap<>(16, 1F);
         requestPayload.put("model", config.getModelName());
         requestPayload.put("messages", createMessages(messages));
@@ -105,6 +110,7 @@ public final class LLMChatModelClient {
         requestPayload.put("temperature", 0);
         requestPayload.put("seed", 1);
         requestPayload.put("reasoning_effort", "none");
+        requestPayload.put("max_tokens", maxTokens);
         if (!tools.isEmpty()) {
             requestPayload.put("tools", tools);
         }
@@ -138,7 +144,7 @@ public final class LLMChatModelClient {
     
     HttpResponse<String> sendReadinessCompletionRequest(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                                         final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
-        return sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse),
+        return sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, READINESS_MAX_TOKENS),
                 Math.min(config.getRequestTimeoutSeconds(), config.getReadyTimeoutSeconds()));
     }
     
