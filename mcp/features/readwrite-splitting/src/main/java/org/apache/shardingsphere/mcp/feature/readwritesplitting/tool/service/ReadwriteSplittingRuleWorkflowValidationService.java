@@ -81,10 +81,9 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     }
     
     private void addRuleDistSQLIssues(final List<Map<String, Object>> issues, final WorkflowContextSnapshot snapshot, final String sql, final String displaySql) {
-        if (!isReadwriteSplittingRuleDistSQL(sql) || !(snapshot.getRequest() instanceof ReadwriteSplittingRuleWorkflowRequest)) {
+        if (!isReadwriteSplittingRuleDistSQL(sql) || !(snapshot.getRequest() instanceof final ReadwriteSplittingRuleWorkflowRequest request)) {
             return;
         }
-        ReadwriteSplittingRuleWorkflowRequest request = (ReadwriteSplittingRuleWorkflowRequest) snapshot.getRequest();
         addLoadBalancerIssue(issues, request, displaySql);
         addWeightIssues(issues, request, displaySql);
     }
@@ -142,11 +141,13 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
                                             final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
         ReadwriteSplittingRuleWorkflowRequest request = (ReadwriteSplittingRuleWorkflowRequest) snapshot.getRequest();
         boolean ruleExists = containsRule(rules, queryFacade, request.getDatabase(), request.getRuleName());
-        if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && ruleExists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !ruleExists) {
-            addRuleMismatch(validationReport, request.getRuleName(), WorkflowLifecycleUtils.isDropWorkflow(snapshot));
+        boolean dropWorkflow = WorkflowLifecycleUtils.isDropWorkflow(snapshot);
+        boolean expectedRuleExists = !dropWorkflow;
+        if (expectedRuleExists != ruleExists) {
+            addRuleMismatch(validationReport, request.getRuleName(), dropWorkflow);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Readwrite-splitting rule state does not match the planned DistSQL artifact.");
         }
-        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !matchesRuleShape(rules, queryFacade, request)) {
+        if (!dropWorkflow && !matchesRuleShape(rules, queryFacade, request)) {
             addRuleShapeMismatch(validationReport, request.getRuleName());
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Readwrite-splitting rule fields do not match the planned DistSQL artifact.");
         }
