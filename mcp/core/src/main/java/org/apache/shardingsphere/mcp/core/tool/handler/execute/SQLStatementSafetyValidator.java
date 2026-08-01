@@ -117,7 +117,7 @@ final class SQLStatementSafetyValidator {
     
     private boolean containsBannedDialectPattern(final List<SQLStatementToken> tokens) {
         return containsSelectIntoFile(tokens)
-                || containsKeywordSequence(tokens, "ALTER", "SYSTEM")
+                || scanner.containsKeywordSequence(tokens, "ALTER", "SYSTEM")
                 || containsUserOrRoleManagement(tokens)
                 || containsSideEffectingQueryPattern(tokens)
                 || containsMetadataLookupFunction(tokens);
@@ -136,16 +136,16 @@ final class SQLStatementSafetyValidator {
     }
     
     private boolean containsUserOrRoleManagement(final List<SQLStatementToken> tokens) {
-        return containsKeywordSequence(tokens, "CREATE", "USER")
-                || containsKeywordSequence(tokens, "ALTER", "USER")
-                || containsKeywordSequence(tokens, "DROP", "USER")
-                || containsKeywordSequence(tokens, "CREATE", "ROLE")
-                || containsKeywordSequence(tokens, "ALTER", "ROLE")
-                || containsKeywordSequence(tokens, "DROP", "ROLE");
+        return scanner.containsKeywordSequence(tokens, "CREATE", "USER")
+                || scanner.containsKeywordSequence(tokens, "ALTER", "USER")
+                || scanner.containsKeywordSequence(tokens, "DROP", "USER")
+                || scanner.containsKeywordSequence(tokens, "CREATE", "ROLE")
+                || scanner.containsKeywordSequence(tokens, "ALTER", "ROLE")
+                || scanner.containsKeywordSequence(tokens, "DROP", "ROLE");
     }
     
     private boolean containsSideEffectingQueryPattern(final List<SQLStatementToken> tokens) {
-        return containsKeywordSequence(tokens, "NEXT", "VALUE", "FOR")
+        return scanner.containsKeywordSequence(tokens, "NEXT", "VALUE", "FOR")
                 || containsSequenceNextvalPseudocolumn(tokens)
                 || containsSideEffectingFunction(tokens)
                 || containsLastInsertIdMutation(tokens);
@@ -185,24 +185,6 @@ final class SQLStatementSafetyValidator {
             }
         }
         return false;
-    }
-    
-    private boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final String... keywords) {
-        for (int index = 0; index + keywords.length <= tokens.size(); index++) {
-            if (containsKeywordSequence(tokens, index, keywords)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final int startIndex, final String... keywords) {
-        for (int index = 0; index < keywords.length; index++) {
-            if (!scanner.isKeyword(tokens.get(startIndex + index), keywords[index])) {
-                return false;
-            }
-        }
-        return true;
     }
     
     private void checkLockingRead(final List<SQLStatementToken> tokens) {

@@ -119,6 +119,10 @@ class HttpProxyMaskWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
                 requiredFields.get(1), "3"));
     }
     
+    private List<String> getRequiredStringList(final Object value) {
+        return ((List<?>) value).stream().map(String::valueOf).toList();
+    }
+    
     private void assertElicitationRequest(final List<McpSchema.ElicitRequest> actualRequests) {
         assertThat(actualRequests.size(), is(1));
         McpSchema.ElicitRequest actual = actualRequests.getFirst();

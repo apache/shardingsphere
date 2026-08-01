@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowIntentResolverSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 
@@ -49,8 +50,6 @@ public final class BroadcastWorkflowPlanningService {
     private static final List<String> VALIDATION_LAYERS = List.of("rules");
     
     private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
-    
-    private final BroadcastWorkflowIntentResolver intentResolver = new BroadcastWorkflowIntentResolver();
     
     private final BroadcastRuleInspectionService ruleInspectionService = new BroadcastRuleInspectionService();
     
@@ -94,8 +93,11 @@ public final class BroadcastWorkflowPlanningService {
         if (result.getTable().isEmpty() && !result.getTables().isEmpty()) {
             result.setTable(result.getTables().iterator().next());
         }
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        clarifiedIntent.setOperationType(WorkflowIntentResolverSupport.resolveOperationType(result, clarifiedIntent));
+        clarifiedIntent.setReasoningNotes(WorkflowIntentResolverSupport.summarizeReasoning(clarifiedIntent));
         return planningSupport.prepareSnapshot(snapshot, BroadcastFeatureDefinition.WORKFLOW_KIND, result, null,
-                intentResolver.resolve(result), "Broadcast workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+                clarifiedIntent, "Broadcast workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
     }
     
     private boolean ensurePlanningContext(final BroadcastWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
@@ -149,5 +150,27 @@ class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
                     Map.of("database", "analytics_db", "schema", "analytics_db", "sql", "SELECT metric_name FROM metrics ORDER BY metric_id"));
             assertRecoveryResponse(actual, "Cross-database transaction switching is not supported.");
         }
+    }
+    
+    private static Map<String, Object> createExecuteUpdateArguments(final String sql) {
+        return Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", sql, "execution_mode", "execute");
+    }
+    
+    private static Map<String, Object> createExecuteUpdateArguments(final String databaseName, final String sql) {
+        return Map.of("database", databaseName, "schema", databaseName, "sql", sql, "execution_mode", "execute");
+    }
+    
+    private Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases() throws IOException {
+        prepareRuntime();
+        try {
+            return MySQLRuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(getContainer());
+        } catch (final SQLException ex) {
+            throw new IOException("Failed to initialize MySQL programmatic runtime databases.", ex);
+        }
+    }
+    
+    private List<String> readTableNames(final MCPInteractionClient interactionClient, final String databaseName) throws IOException, InterruptedException {
+        return getPayloadItems(interactionClient.readResource(String.format("shardingsphere://databases/%s/schemas/%s/tables", databaseName, databaseName)))
+                .stream().map(each -> String.valueOf(each.get("table"))).toList();
     }
 }
