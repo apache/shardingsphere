@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
-import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ReadwriteSplittingDistSQLPlanningServicesTest {
+class ReadwriteSplittingRuleDistSQLPlanningServiceTest {
     
     @Test
     void assertPlanCreateRule() {
@@ -61,36 +58,6 @@ class ReadwriteSplittingDistSQLPlanningServicesTest {
         assertThat(new ReadwriteSplittingRuleDistSQLPlanningService().planDropRule("readwrite_ds").getSql(), is("DROP READWRITE_SPLITTING RULE `readwrite_ds`"));
     }
     
-    @Test
-    void assertPlanStatus() {
-        ReadwriteSplittingStatusWorkflowRequest request = new ReadwriteSplittingStatusWorkflowRequest();
-        request.setDatabase("logic_db");
-        request.setRuleName("readwrite_ds");
-        request.setStorageUnit("read_ds_0");
-        request.setTargetStatus("enable");
-        assertThat(new ReadwriteSplittingStatusDistSQLPlanningService().planStatus(request).getSql(),
-                is("ALTER READWRITE_SPLITTING RULE `readwrite_ds` ENABLE `read_ds_0` FROM `logic_db`"));
-    }
-    
-    @Test
-    void assertResolveStatusOperationUsesTargetStatus() {
-        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("disable");
-        assertThat(new ReadwriteSplittingStatusDistSQLPlanningService().resolveStatusOperation(request), is("DISABLE"));
-    }
-    
-    @Test
-    void assertResolveStatusOperationIgnoresOperationType() {
-        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
-        request.setOperationType("enable");
-        assertThat(new ReadwriteSplittingStatusDistSQLPlanningService().resolveStatusOperation(request), is(""));
-    }
-    
-    @Test
-    void assertPlanStatusRejectsMissingTargetStatus() {
-        ReadwriteSplittingStatusWorkflowRequest request = createStatusRequest("");
-        assertThrows(MCPInvalidRequestException.class, () -> new ReadwriteSplittingStatusDistSQLPlanningService().planStatus(request));
-    }
-    
     private ReadwriteSplittingRuleWorkflowRequest createRuleRequest() {
         ReadwriteSplittingRuleWorkflowRequest result = new ReadwriteSplittingRuleWorkflowRequest();
         result.setRuleName("readwrite_ds");
@@ -99,15 +66,6 @@ class ReadwriteSplittingDistSQLPlanningServicesTest {
         result.setTransactionalReadQueryStrategy("dynamic");
         result.setLoadBalancerType("WEIGHT");
         result.putLoadBalancerProperties(Map.of("read_ds_0", "2"));
-        return result;
-    }
-    
-    private ReadwriteSplittingStatusWorkflowRequest createStatusRequest(final String targetStatus) {
-        ReadwriteSplittingStatusWorkflowRequest result = new ReadwriteSplittingStatusWorkflowRequest();
-        result.setDatabase("logic_db");
-        result.setRuleName("readwrite_ds");
-        result.setStorageUnit("read_ds_0");
-        result.setTargetStatus(targetStatus);
         return result;
     }
 }

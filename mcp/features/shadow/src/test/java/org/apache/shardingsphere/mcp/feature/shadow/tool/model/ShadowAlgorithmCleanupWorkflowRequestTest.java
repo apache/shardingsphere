@@ -19,42 +19,13 @@ package org.apache.shardingsphere.mcp.feature.shadow.tool.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class ShadowWorkflowRequestsTest {
+class ShadowAlgorithmCleanupWorkflowRequestTest {
     
     @Test
-    void assertMergeRuleRequest() {
-        ShadowRuleWorkflowRequest previous = new ShadowRuleWorkflowRequest();
-        previous.setDatabase("logic_db");
-        previous.setRuleName("shadow_rule");
-        ShadowRuleWorkflowRequest current = new ShadowRuleWorkflowRequest();
-        current.setTableName("t_order");
-        current.putAlgorithmProperties(Map.of("operation", "insert"));
-        ShadowRuleWorkflowRequest actual = ShadowRuleWorkflowRequest.merge(previous, current);
-        assertThat(actual.getDatabase(), is("logic_db"));
-        assertThat(actual.getRuleName(), is("shadow_rule"));
-        assertThat(actual.getTableName(), is("t_order"));
-        assertThat(actual.getTable(), is("t_order"));
-        assertThat(actual.getAlgorithmProperties().get("operation"), is("insert"));
-    }
-    
-    @Test
-    void assertMergeDefaultAlgorithmRequest() {
-        ShadowDefaultAlgorithmWorkflowRequest previous = new ShadowDefaultAlgorithmWorkflowRequest();
-        previous.setAlgorithmType("SQL_HINT");
-        ShadowDefaultAlgorithmWorkflowRequest current = new ShadowDefaultAlgorithmWorkflowRequest();
-        current.putAlgorithmProperties(Map.of("k", "v"));
-        ShadowDefaultAlgorithmWorkflowRequest actual = ShadowDefaultAlgorithmWorkflowRequest.merge(previous, current);
-        assertThat(actual.getAlgorithmType(), is("SQL_HINT"));
-        assertThat(actual.getAlgorithmProperties().get("k"), is("v"));
-    }
-    
-    @Test
-    void assertMergeCleanupRequest() {
+    void assertMerge() {
         ShadowAlgorithmCleanupWorkflowRequest previous = new ShadowAlgorithmCleanupWorkflowRequest();
         previous.setDatabase("logic_db");
         ShadowAlgorithmCleanupWorkflowRequest current = new ShadowAlgorithmCleanupWorkflowRequest();

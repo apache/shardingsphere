@@ -30,6 +30,8 @@ import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContract
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport.ProxyWorkflowRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.junit.jupiter.api.AfterAll;
@@ -101,7 +103,11 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private final LLMConversationArtifactWriter artifactWriter = new LLMConversationArtifactWriter();
     
-    private LLMMySQLRuntimeFixture runtimeFixture;
+    private LLMMySQLRuntimeFixture mySQLRuntimeFixture;
+    
+    private ProxyWorkflowRuntimeFixture proxyRuntimeFixture;
+    
+    private boolean proxyRuntimeFixtureSelected;
     
     @BeforeAll
     static void prepareLLMRuntime() throws InterruptedException {
@@ -118,9 +124,13 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @AfterAll
     void closeRuntimeFixture() {
-        if (null != runtimeFixture) {
-            runtimeFixture.close();
-            runtimeFixture = null;
+        if (null != mySQLRuntimeFixture) {
+            mySQLRuntimeFixture.close();
+            mySQLRuntimeFixture = null;
+        }
+        if (null != proxyRuntimeFixture) {
+            proxyRuntimeFixture.close();
+            proxyRuntimeFixture = null;
         }
     }
     
@@ -144,16 +154,21 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @Test
     void assertMaskPlanning() throws IOException {
-        runScenario(new Scenario(
-                "mask-planning",
-                "The target metadata has already been verified, so do not run separate metadata discovery. Create a reviewable Mask rule plan, without applying it, "
-                        + "for the status column of the orders table in the logic_db database and logic_db schema. "
-                        + "Pass database, schema, table, column, operation_type, algorithm_type, and primary_algorithm_properties directly to the planning tool; "
-                        + "omit natural_language_intent and structured_intent_evidence. "
-                        + "Use the create operation, KEEP_FIRST_N_LAST_M algorithm, and primary properties first-n=1, last-m=1, replace-char=*. "
-                        + "Report the plan ID and explicitly confirm that nothing was applied.",
-                Set.of(PLAN_MASK_RULE_TOOL_NAME),
-                this::evaluateMaskPlanning));
+        proxyRuntimeFixtureSelected = true;
+        try {
+            runScenario(new Scenario(
+                    "mask-planning",
+                    "The target metadata has already been verified, so do not run separate metadata discovery. Create a reviewable Mask rule plan, without applying it, "
+                            + "for the status column of the orders table in the logic_db database and logic_db schema. "
+                            + "Pass database, schema, table, column, operation_type, algorithm_type, and primary_algorithm_properties directly to the planning tool; "
+                            + "omit natural_language_intent and structured_intent_evidence. "
+                            + "Use the create operation, KEEP_FIRST_N_LAST_M algorithm, and primary properties first-n=1, last-m=1, replace-char=*. "
+                            + "Report the plan ID and explicitly confirm that nothing was applied.",
+                    Set.of(PLAN_MASK_RULE_TOOL_NAME),
+                    this::evaluateMaskPlanning));
+        } finally {
+            proxyRuntimeFixtureSelected = false;
+        }
     }
     
     @Test
@@ -199,7 +214,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private LLME2EAssertionReport evaluateReadOnlyQuery(final String answer, final List<MCPInteractionTraceRecord> trace) {
         Optional<Integer> actualCount = findQueryCount(trace, 0);
-        if (actualCount.isEmpty() || getRequiredRuntimeFixture().getTotalOrders() != actualCount.get()) {
+        if (actualCount.isEmpty() || getRequiredMySQLRuntimeFixture().getTotalOrders() != actualCount.get()) {
             return LLME2EAssertionReport.failure("query_evidence_mismatch", "The MCP query response did not contain the fixture row count.");
         }
         return containsStandaloneNumber(answer, actualCount.get())
@@ -324,7 +339,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             return LLME2EAssertionReport.failure("missing_resource_recovery", "The model did not follow the stale response recovery action to a live resource containing orders.");
         }
         Optional<Integer> actualCount = findQueryCount(trace, trace.get(recoveryResourceIndex).getModelTurn());
-        if (actualCount.isEmpty() || getRequiredRuntimeFixture().getTotalOrders() != actualCount.get()) {
+        if (actualCount.isEmpty() || getRequiredMySQLRuntimeFixture().getTotalOrders() != actualCount.get()) {
             return LLME2EAssertionReport.failure("query_evidence_mismatch", "The recovered conversation did not obtain the fixture row count from MCP.");
         }
         return containsStandaloneNumber(answer, actualCount.get())
@@ -443,7 +458,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private Collection<String> getArtifactSensitiveValues() {
         Set<String> result = new LinkedHashSet<>();
         addArtifactSensitiveValue(result, getRequiredLLMRuntime().getConfiguration().getApiKey());
-        for (RuntimeDatabaseConfiguration each : getRequiredRuntimeFixture().getRuntimeDatabases().values()) {
+        for (RuntimeDatabaseConfiguration each : getRuntimeDatabases().values()) {
             addArtifactSensitiveValue(result, each.getJdbcUrl());
             addArtifactSensitiveValue(result, each.getPassword());
         }
@@ -484,7 +499,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private String queryOrderStatus() throws SQLException {
-        RuntimeDatabaseConfiguration databaseConfig = getRequiredRuntimeFixture().getRuntimeDatabases().get(DATABASE_NAME);
+        RuntimeDatabaseConfiguration databaseConfig = getRequiredMySQLRuntimeFixture().getRuntimeDatabases().get(DATABASE_NAME);
         try (
                 Connection connection = databaseConfig.openConnection(DATABASE_NAME);
                 PreparedStatement statement = connection.prepareStatement("SELECT status FROM orders WHERE order_id = 1");
@@ -522,29 +537,43 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return getRequiredRuntimeFixture().getRuntimeDatabases();
+        return proxyRuntimeFixtureSelected ? getRequiredProxyRuntimeFixture().getRuntimeDatabases() : getRequiredMySQLRuntimeFixture().getRuntimeDatabases();
     }
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        if (null != runtimeFixture) {
+        if (proxyRuntimeFixtureSelected && null != proxyRuntimeFixture) {
+            return;
+        }
+        if (!proxyRuntimeFixtureSelected && null != mySQLRuntimeFixture) {
             return;
         }
         if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed LLM E2E test."));
+            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the LLM E2E test."));
         }
         try {
-            runtimeFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture(DATABASE_NAME);
+            if (proxyRuntimeFixtureSelected) {
+                proxyRuntimeFixture = ProxyWorkflowRuntimeTestSupport.createFixture();
+            } else {
+                mySQLRuntimeFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture(DATABASE_NAME);
+            }
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
     }
     
-    private LLMMySQLRuntimeFixture getRequiredRuntimeFixture() {
-        if (null == runtimeFixture) {
-            throw new IllegalStateException("LLM E2E runtime fixture was not initialized.");
+    private LLMMySQLRuntimeFixture getRequiredMySQLRuntimeFixture() {
+        if (null == mySQLRuntimeFixture) {
+            throw new IllegalStateException("LLM MySQL runtime fixture was not initialized.");
         }
-        return runtimeFixture;
+        return mySQLRuntimeFixture;
+    }
+    
+    private ProxyWorkflowRuntimeFixture getRequiredProxyRuntimeFixture() {
+        if (null == proxyRuntimeFixture) {
+            throw new IllegalStateException("LLM Proxy runtime fixture was not initialized.");
+        }
+        return proxyRuntimeFixture;
     }
     
     private static LLMRuntimeSupport.ModelRuntime getRequiredLLMRuntime() {
