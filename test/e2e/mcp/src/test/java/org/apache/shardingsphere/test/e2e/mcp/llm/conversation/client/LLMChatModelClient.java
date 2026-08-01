@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class LLMChatModelClient {
     
-    private static final int COMPLETION_MAX_TOKENS = 224;
+    private static final int COMPLETION_MAX_TOKENS = 512;
     
     private static final int READINESS_MAX_TOKENS = 64;
     
