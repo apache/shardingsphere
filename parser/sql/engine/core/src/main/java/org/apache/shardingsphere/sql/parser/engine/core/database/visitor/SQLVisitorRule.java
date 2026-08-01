@@ -813,6 +813,8 @@ public enum SQLVisitorRule {
     
     CREATE_OPERATOR("CreateOperator", SQLStatementType.DDL),
     
+    CREATE_INDEX_TYPE("CreateIndexType", SQLStatementType.DDL),
+    
     CREATE_POLICY("CreatePolicy", SQLStatementType.DDL),
     
     DROP_INDEX_TYPE("DropIndexType", SQLStatementType.DDL),
