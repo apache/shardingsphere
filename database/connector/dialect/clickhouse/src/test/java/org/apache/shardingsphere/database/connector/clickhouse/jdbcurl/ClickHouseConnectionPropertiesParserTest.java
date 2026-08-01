@@ -65,6 +65,7 @@ class ClickHouseConnectionPropertiesParserTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
+                    Arguments.of("service", "jdbc:clickhouse:http://127.0.0.1:8123/", "127.0.0.1", 8123, "", null, new Properties()),
                     Arguments.of("simple", "jdbc:ch://127.0.0.1/foo_ds", "127.0.0.1", 8123, "foo_ds", null, new Properties()),
                     Arguments.of("complex", "jdbc:clickhouse:http://127.0.0.1:9999/foo_ds?continueBatchOnError=true", "127.0.0.1", 9999, "foo_ds", null,
                             PropertiesBuilder.build(new Property("continueBatchOnError", "true"))));
