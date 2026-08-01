@@ -17,21 +17,33 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
+import io.modelcontextprotocol.client.McpSyncClient;
+import io.modelcontextprotocol.spec.McpClientTransport;
+import io.modelcontextprotocol.spec.McpSchema;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class HttpProxyMaskWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
@@ -55,6 +67,73 @@ class HttpProxyMaskWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
             Map<String, Object> actual = interactionClient.complete(Map.of("type", "ref/prompt", "name", PLAN_PROMPT_NAME), "algorithm_type", "KEEP", Map.of());
             assertThat(getStringListOrEmpty(getObjectOrEmpty(actual.get("completion")).get("values")), hasItem("KEEP_FIRST_N_LAST_M"));
         }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("allTransportCases")
+    void assertElicitMaskPlanning(final String name, final RuntimeTransport transport) throws IOException {
+        useTransport(transport);
+        List<McpSchema.ElicitRequest> actualElicitationRequests = new CopyOnWriteArrayList<>();
+        try (McpSyncClient client = createElicitationClient(transport, actualElicitationRequests)) {
+            client.initialize();
+            McpSchema.CallToolResult actual = client.callTool(new McpSchema.CallToolRequest(PLAN_TOOL_NAME, Map.of(
+                    "database", getLogicalDatabaseName(),
+                    "schema", getLogicalDatabaseName(),
+                    "table", "orders",
+                    "column", "status",
+                    "operation_type", "create",
+                    "algorithm_type", "MASK_FROM_X_TO_Y")));
+            Map<String, Object> actualPayload = MCPInteractionPayloads.getRequiredObjectValue(actual.structuredContent(), "structuredContent");
+            if (RuntimeTransport.HTTP == transport) {
+                assertThat(String.valueOf(actualPayload.get("status")), is("clarifying"));
+                assertThat(String.valueOf(actualPayload.get("fallback_reason")), is("remote_identity_required"));
+                assertTrue(actualElicitationRequests.isEmpty());
+                return;
+            }
+            assertThat(String.valueOf(actualPayload.get("status")), is("planned"));
+            assertThat(String.valueOf(actualPayload.get("current_step")), is("review"));
+            Map<String, Object> maskedPropertyPreview = MCPInteractionPayloads.getRequiredObject(actualPayload, "masked_property_preview");
+            Map<String, Object> primaryProperties = MCPInteractionPayloads.getRequiredObject(maskedPropertyPreview, "primary");
+            assertThat(String.valueOf(primaryProperties.get("from-x")), is("1"));
+            assertThat(String.valueOf(primaryProperties.get("to-y")), is("3"));
+            assertElicitationRequest(actualElicitationRequests);
+        }
+    }
+    
+    private McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests) throws IOException {
+        return MCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, this::createElicitationResult);
+    }
+    
+    private McpClientTransport createClientTransport(final RuntimeTransport transport) throws IOException {
+        return RuntimeTransport.HTTP == transport
+                ? MCPClientTransportFactory.createHttpClientTransport(getHttpEndpointUri())
+                : MCPClientTransportFactory.createStdioClientTransport(getConfigFile());
+    }
+    
+    private McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,
+                                                           final McpSchema.ElicitRequest request) {
+        elicitationRequests.add(request);
+        List<String> requiredFields = getRequiredStringList(request.requestedSchema().get("required"));
+        return new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of(
+                requiredFields.getFirst(), "1",
+                requiredFields.get(1), "3"));
+    }
+    
+    private void assertElicitationRequest(final List<McpSchema.ElicitRequest> actualRequests) {
+        assertThat(actualRequests.size(), is(1));
+        McpSchema.ElicitRequest actual = actualRequests.getFirst();
+        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.TOOL), is(PLAN_TOOL_NAME));
+        assertFalse(String.valueOf(actual.meta().get(MCPShardingSphereMetadataKeys.PLAN_ID)).isBlank());
+        Map<String, Object> actualRequestedSchema = actual.requestedSchema();
+        assertThat(actualRequestedSchema.get("type"), is("object"));
+        assertFalse((Boolean) actualRequestedSchema.get("additionalProperties"));
+        Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualRequestedSchema, "properties");
+        assertTrue(actualProperties.containsKey("field_1"));
+        assertTrue(actualProperties.containsKey("field_2"));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_1").get("description")), is("Please provide property `from-x`."));
+        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_2").get("description")), is("Please provide property `to-y`."));
+        assertFalse(actualProperties.keySet().stream().map(String::valueOf).anyMatch(each -> each.contains("secret") || each.contains("password") || each.contains("token")));
+        assertThat(getRequiredStringList(actualRequestedSchema.get("required")), hasItems("field_1", "field_2"));
     }
     
     @Test

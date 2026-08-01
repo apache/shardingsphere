@@ -37,6 +37,10 @@ abstract class AbstractFunctionalityE2ETest extends AbstractConfigBackedRuntimeE
         return MCPInteractionPayloads.getRequiredObjectList(payload, "resourceTemplates");
     }
     
+    protected final List<String> getRequiredStringList(final Object value) {
+        return ((List<?>) value).stream().map(String::valueOf).toList();
+    }
+    
     protected final List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
         return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
     }
