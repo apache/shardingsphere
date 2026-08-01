@@ -22,8 +22,8 @@ import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -48,14 +48,14 @@ class WorkflowValidationToolHandlerTest {
     
     @Test
     void assertHandle() {
-        MCPWorkflowValidationHandler workflowValidationHandler = mock(MCPWorkflowValidationHandler.class);
-        when(workflowValidationHandler.validate(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "validated"));
+        MCPWorkflowRuntimeHandler workflowRuntimeHandler = mock(MCPWorkflowRuntimeHandler.class);
+        when(workflowRuntimeHandler.validate(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "validated"));
         WorkflowContextSnapshot snapshot = WorkflowHandlerTestFixture.createSnapshot();
         WorkflowHandlerTestFixture.Context fixture = WorkflowHandlerTestFixture.createContext(snapshot);
         WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
-                WorkflowHandlerTestFixture.createDefinition("encrypt.rule", workflowValidationHandler, mock(MCPWorkflowApplySynchronizationHandler.class)))));
+                WorkflowHandlerTestFixture.createDefinition("encrypt.rule", workflowRuntimeHandler, MCPWorkflowApplyArtifactValidator.NO_OP))));
         MCPSuccessPayload actual = handler.handle(fixture.requestContext(), Map.of("plan_id", "plan-1"));
-        verify(workflowValidationHandler).validate(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()),
+        verify(workflowRuntimeHandler).validate(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()),
                 eq(fixture.queryFacade()), eq(fixture.executionFacade()), eq("session-1"), eq(snapshot));
         assertThat(actual.toPayload().get("status"), is("validated"));
     }

@@ -40,11 +40,6 @@ import static org.mockito.Mockito.when;
 class ReadwriteSplittingLoadBalanceAlgorithmCompletionHandlerTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new ReadwriteSplittingLoadBalanceAlgorithmCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
-    }
-    
-    @Test
     void assertSupports() {
         assertTrue(new ReadwriteSplittingLoadBalanceAlgorithmCompletionHandler().supports(createRequestContext(ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME)));
     }

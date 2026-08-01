@@ -28,8 +28,7 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
 import java.util.Map;
@@ -69,20 +68,12 @@ final class WorkflowHandlerTestFixture {
     }
     
     static WorkflowRuntimeDefinition createDefinition(final String workflowKind) {
-        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), (workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, sessionId, snapshot) -> Map.of(),
-                (snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId) -> {
-                }, MCPWorkflowApplyArtifactValidator.NO_OP);
+        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), mock(MCPWorkflowRuntimeHandler.class));
     }
     
-    static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowValidationHandler validationHandler,
-                                                      final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler) {
-        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler, MCPWorkflowApplyArtifactValidator.NO_OP);
-    }
-    
-    static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowValidationHandler validationHandler,
-                                                      final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler,
+    static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowRuntimeHandler runtimeHandler,
                                                       final MCPWorkflowApplyArtifactValidator applyArtifactValidator) {
-        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler, applyArtifactValidator);
+        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), runtimeHandler, applyArtifactValidator);
     }
     
     record Context(MCPFeatureRequestContext requestContext, WorkflowSessionContext workflowSessionContext,

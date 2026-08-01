@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Map;
 
@@ -42,11 +42,11 @@ public final class WorkflowArtifactPayloadUtils {
      * Create masked workflow artifact payload.
      *
      * @param snapshot workflow snapshot
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @return masked workflow artifact payload
      */
-    public static Map<String, Object> createArtifactPayload(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
-        return WorkflowArtifactBundle.from(snapshot).toPayload(propertySource, snapshot.getPropertyRequirements());
+    public static Map<String, Object> createArtifactPayload(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        return WorkflowArtifactBundle.from(snapshot).toPayload(request, snapshot.getPropertyRequirements());
     }
     
 }

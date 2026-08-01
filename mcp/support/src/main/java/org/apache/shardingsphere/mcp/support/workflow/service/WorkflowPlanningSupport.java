@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
+import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
@@ -73,7 +73,8 @@ public final class WorkflowPlanningSupport {
      * @param <T> request type
      * @return prepared request
      */
-    public <T extends WorkflowRequest> T prepareSnapshot(final WorkflowContextSnapshot snapshot, final WorkflowKind workflowKind, final T request, final WorkflowFeatureData featureData,
+    public <T extends WorkflowRequest> T prepareSnapshot(final WorkflowContextSnapshot snapshot, final WorkflowKind workflowKind, final T request,
+                                                         final RuleWorkflowFeatureData featureData,
                                                          final ClarifiedIntent clarifiedIntent, final String summary,
                                                          final List<String> interactionSteps, final List<String> validationLayers) {
         WorkflowKind existingWorkflowKind = snapshot.getWorkflowKind();

@@ -67,7 +67,7 @@ class WorkflowContextSnapshotTest {
     @Test
     void assertClearPlanningStateRemovesTransientArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
-        WorkflowFeatureData featureData = snapshot.getFeatureData();
+        RuleWorkflowFeatureData featureData = snapshot.getFeatureData();
         assertThat(snapshot.getFeatureData(), is(featureData));
         snapshot.clearPlanningState();
         assertTrue(snapshot.getIssues().isEmpty());
@@ -93,7 +93,7 @@ class WorkflowContextSnapshotTest {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         clarifiedIntent.getClarificationMessages().add("provide schema");
         result.setClarifiedIntent(clarifiedIntent);
-        result.setFeatureData(new StubWorkflowFeatureData());
+        result.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of("rule", "encrypt_rule"))));
         InteractionPlan interactionPlan = new InteractionPlan();
         interactionPlan.setCurrentStep("review");
         interactionPlan.getValidationStrategy().put("layers", List.of("rule"));
@@ -120,11 +120,4 @@ class WorkflowContextSnapshotTest {
         return (List<String>) source.get(key);
     }
     
-    private static final class StubWorkflowFeatureData implements WorkflowFeatureData {
-        
-        @Override
-        public WorkflowFeatureData copy() {
-            return new StubWorkflowFeatureData();
-        }
-    }
 }

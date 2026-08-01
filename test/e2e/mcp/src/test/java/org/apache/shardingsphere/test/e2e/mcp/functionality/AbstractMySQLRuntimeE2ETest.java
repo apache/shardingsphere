@@ -131,11 +131,28 @@ abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterize
     }
     
     protected static Stream<Arguments> singleMetadataResourceCases() {
-        return FunctionalityTransportCases.singleMetadataResourceCases(LOGICAL_DATABASE_NAME);
+        return Stream.of(
+                Arguments.of("database detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME, "database", LOGICAL_DATABASE_NAME),
+                Arguments.of("schema detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME),
+                Arguments.of("table column detail",
+                        "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME + "/tables/orders/columns/status", "column", "status"),
+                Arguments.of("view detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/views/active_orders", "view", "active_orders"),
+                Arguments.of("view column detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/views/active_orders/columns/status", "column", "status"),
+                Arguments.of("index detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/tables/orders/indexes/idx_orders_status", "index", "idx_orders_status"));
     }
     
     protected static Stream<Arguments> collectionMetadataResourceCases() {
-        return FunctionalityTransportCases.collectionMetadataResourceCases(LOGICAL_DATABASE_NAME);
+        return Stream.of(
+                Arguments.of("schemas list", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas", "schema", List.of(LOGICAL_DATABASE_NAME)),
+                Arguments.of("tables list", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME + "/tables", "table",
+                        List.of("order_items", "orders")),
+                Arguments.of("table columns list", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/tables/orders/columns", "column", List.of("amount", "order_id", "status")),
+                Arguments.of("view columns list", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/views/active_orders/columns", "column", List.of("order_id", "status")));
     }
     
     protected void assertRecoveryResponse(final Map<String, Object> actual) {

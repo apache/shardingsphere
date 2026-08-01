@@ -42,10 +42,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class LLMChatModelClient {
     
-    private static final int COMPLETION_MAX_TOKENS = 512;
-    
-    private static final int READINESS_MAX_TOKENS = 64;
-    
     private final LLME2EConfiguration config;
     
     private final HttpClient httpClient;
@@ -88,7 +84,7 @@ public final class LLMChatModelClient {
      */
     public LLMChatCompletion complete(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                       final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
-        HttpResponse<String> response = sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, COMPLETION_MAX_TOKENS), config.getRequestTimeoutSeconds());
+        HttpResponse<String> response = sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse), config.getRequestTimeoutSeconds());
         if (200 != response.statusCode()) {
             throw new IllegalStateException(String.format("Model completion request failed with status %d%s.", response.statusCode(), createErrorCodeSuffix(response.body())));
         }
@@ -101,7 +97,7 @@ public final class LLMChatModelClient {
     }
     
     private Map<String, Object> createCompletionRequestPayload(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
-                                                               final String toolChoice, final boolean jsonResponse, final int maxTokens) {
+                                                               final String toolChoice, final boolean jsonResponse) {
         Map<String, Object> requestPayload = new LinkedHashMap<>(16, 1F);
         requestPayload.put("model", config.getModelName());
         requestPayload.put("messages", createMessages(messages));
@@ -109,7 +105,6 @@ public final class LLMChatModelClient {
         requestPayload.put("temperature", 0);
         requestPayload.put("seed", 1);
         requestPayload.put("reasoning_effort", "none");
-        requestPayload.put("max_tokens", maxTokens);
         if (!tools.isEmpty()) {
             requestPayload.put("tools", tools);
         }
@@ -143,7 +138,7 @@ public final class LLMChatModelClient {
     
     HttpResponse<String> sendReadinessCompletionRequest(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                                         final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
-        return sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, READINESS_MAX_TOKENS),
+        return sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse),
                 Math.min(config.getRequestTimeoutSeconds(), config.getReadyTimeoutSeconds()));
     }
     
@@ -213,16 +208,21 @@ public final class LLMChatModelClient {
         if (null == value) {
             return List.of();
         }
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
+        Preconditions.checkState(value instanceof List, "Expected a JSON array, but got `%s`.", value.getClass().getSimpleName());
+        List<?> values = (List<?>) value;
+        Preconditions.checkState(values.stream().allMatch(Map.class::isInstance), "Expected a JSON array of objects.");
+        return values.stream().map(this::castToMap).toList();
     }
     
+    @SuppressWarnings("unchecked")
     private Map<String, Object> castToMap(final Object value) {
         if (null == value) {
             return Map.of();
         }
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
+        Preconditions.checkState(value instanceof Map, "Expected a JSON object, but got `%s`.", value.getClass().getSimpleName());
+        Map<?, ?> result = (Map<?, ?>) value;
+        Preconditions.checkState(result.keySet().stream().allMatch(String.class::isInstance), "Expected a JSON object with string keys.");
+        return (Map<String, Object>) result;
     }
     
     private Map<String, Object> parseJsonObject(final String responseBody, final String errorMessage) {

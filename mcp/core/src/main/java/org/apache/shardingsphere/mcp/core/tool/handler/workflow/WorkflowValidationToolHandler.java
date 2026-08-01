@@ -54,7 +54,7 @@ public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPFe
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         WorkflowSessionContext workflowSessionContext = requestContext.getWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
-        return new MCPMapPayload(workflowRuntimeDefinitionRegistry.getRequired(snapshot).getValidationHandler().validate(workflowSessionContext,
+        return new MCPMapPayload(workflowRuntimeDefinitionRegistry.getRequired(snapshot).getRuntimeHandler().validate(workflowSessionContext,
                 requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade(), requestContext.getExecutionFacade(), requestContext.getSessionIdentity().getSessionId(), snapshot));
     }
     

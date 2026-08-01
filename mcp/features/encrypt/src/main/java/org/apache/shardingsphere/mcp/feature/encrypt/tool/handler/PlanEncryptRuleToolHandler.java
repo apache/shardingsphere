@@ -25,11 +25,16 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflo
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,7 +62,37 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPFeatu
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence);
         WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getMetadataQueryFacade(),
                 requestContext.getQueryFacade(), request);
-        return new MCPMapPayload(new EncryptWorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
+        return new MCPMapPayload(buildPlanResponse(snapshot));
+    }
+    
+    private Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
+        WorkflowRequest request = snapshot.getRequest();
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, request);
+        result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, request));
+        return result;
+    }
+    
+    private Map<String, Object> createMaskedPropertyPreview(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        List<AlgorithmPropertyRequirement> requirements = createPropertyRequirements(snapshot, request);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        putMaskedProperties(result, requirements, request, EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY);
+        putMaskedProperties(result, requirements, request, EncryptFeatureDefinition.ALGORITHM_ROLE_ASSISTED_QUERY);
+        putMaskedProperties(result, requirements, request, EncryptFeatureDefinition.ALGORITHM_ROLE_LIKE_QUERY);
+        return result;
+    }
+    
+    private void putMaskedProperties(final Map<String, Object> target, final List<AlgorithmPropertyRequirement> requirements,
+                                     final WorkflowRequest request, final String role) {
+        target.put(role, propertyTemplateService.maskProperties(
+                requirements.stream().filter(each -> role.equals(each.getAlgorithmRole())).toList(), request.getAlgorithmProperties(role)));
+    }
+    
+    private List<AlgorithmPropertyRequirement> createPropertyRequirements(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        if (snapshot.getPropertyRequirements().isEmpty() && request instanceof EncryptWorkflowRequest encryptRequest) {
+            return propertyTemplateService.findRequirements(encryptRequest.getAlgorithmType(), encryptRequest.getOptions().getAssistedQueryAlgorithmType(),
+                    encryptRequest.getOptions().getLikeQueryAlgorithmType());
+        }
+        return snapshot.getPropertyRequirements();
     }
     
     private void bindFeatureArguments(final EncryptWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {

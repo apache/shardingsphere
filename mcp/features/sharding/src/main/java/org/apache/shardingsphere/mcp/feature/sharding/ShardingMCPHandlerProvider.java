@@ -92,11 +92,11 @@ public final class ShardingMCPHandlerProvider implements MCPWorkflowDefinitionPr
         ShardingWorkflowValidationService validationService = new ShardingWorkflowValidationService();
         ShardingWorkflowApplyArtifactValidator applyArtifactValidator = new ShardingWorkflowApplyArtifactValidator();
         return List.of(
-                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, validationService, validationService, applyArtifactValidator),
-                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND, validationService, validationService, applyArtifactValidator),
-                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND, validationService, validationService, applyArtifactValidator),
-                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND, validationService, validationService, applyArtifactValidator),
-                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND, validationService, validationService, applyArtifactValidator),
-                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND, validationService, validationService, applyArtifactValidator));
+                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND, validationService, applyArtifactValidator),
+                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND, validationService, applyArtifactValidator),
+                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND, validationService, applyArtifactValidator),
+                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND, validationService, applyArtifactValidator),
+                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND, validationService, applyArtifactValidator),
+                new WorkflowRuntimeDefinition(ShardingFeatureDefinition.COMPONENT_CLEANUP_WORKFLOW_KIND, validationService, applyArtifactValidator));
     }
 }

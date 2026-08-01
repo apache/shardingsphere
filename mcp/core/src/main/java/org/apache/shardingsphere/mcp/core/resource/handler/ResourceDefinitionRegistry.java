@@ -47,7 +47,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceDefinitionRegistry {
     
-    private static final List<MCPResourceDefinition> REGISTERED_RESOURCE_DEFINITIONS;
+    private static final List<ResourceDefinition> REGISTERED_RESOURCE_DEFINITIONS;
     
     static {
         Map<MCPUriPattern, MCPResourceHandler<?>> resourceHandlers = createRegisteredResourceHandlers(
@@ -91,12 +91,9 @@ public final class ResourceDefinitionRegistry {
         }
     }
     
-    private static List<MCPResourceDefinition> createRegisteredResourceDefinitions(final Map<MCPUriPattern, MCPResourceHandler<?>> handlers) {
-        return handlers.entrySet().stream().map(entry -> createResourceDefinition(entry.getKey(), entry.getValue())).toList();
-    }
-    
-    private static MCPResourceDefinition createResourceDefinition(final MCPUriPattern uriPattern, final MCPResourceHandler<?> handler) {
-        return new MCPResourceDefinition(uriPattern, MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriTemplate()), handler);
+    private static List<ResourceDefinition> createRegisteredResourceDefinitions(final Map<MCPUriPattern, MCPResourceHandler<?>> handlers) {
+        return handlers.entrySet().stream().map(entry -> new ResourceDefinition(entry.getKey(),
+                MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(entry.getValue().getResourceUriTemplate()), entry.getValue())).toList();
     }
     
     private static void validateRegisteredResourceDescriptors() {
@@ -107,8 +104,8 @@ public final class ResourceDefinitionRegistry {
     }
     
     private static boolean isRegisteredResourceDescriptor(final MCPResourceDescriptor descriptor) {
-        for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
-            if (descriptor.getUriTemplate().equals(each.getUriPattern().getPattern())) {
+        for (ResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
+            if (descriptor.getUriTemplate().equals(each.uriPattern().getPattern())) {
                 return true;
             }
         }
@@ -123,17 +120,13 @@ public final class ResourceDefinitionRegistry {
      * @return handled payload
      */
     public static Optional<MCPSuccessPayload> dispatch(final MCPFeatureRuntimeRequestContext requestContext, final String resourceUri) {
-        for (MCPResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
-            Optional<MCPResourceURIVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
+        for (ResourceDefinition each : REGISTERED_RESOURCE_DEFINITIONS) {
+            Optional<MCPResourceURIVariables> matchedUriVariables = each.uriPattern().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
-                return Optional.of(dispatch(requestContext, each, matchedUriVariables.get()));
+                return Optional.of(dispatch(requestContext, each.handler(), matchedUriVariables.get()));
             }
         }
         return Optional.empty();
-    }
-    
-    private static MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceDefinition resourceDefinition, final MCPResourceURIVariables uriVariables) {
-        return dispatch(requestContext, resourceDefinition.getHandler(), uriVariables);
     }
     
     private static <T extends MCPRequestContext> MCPSuccessPayload dispatch(final MCPFeatureRuntimeRequestContext requestContext, final MCPResourceHandler<T> resourceHandler,
@@ -147,6 +140,9 @@ public final class ResourceDefinitionRegistry {
      * @return supported resource descriptors
      */
     public static Collection<MCPResourceDescriptor> getSupportedResourceDescriptors() {
-        return REGISTERED_RESOURCE_DEFINITIONS.stream().map(MCPResourceDefinition::getDescriptor).toList();
+        return REGISTERED_RESOURCE_DEFINITIONS.stream().map(ResourceDefinition::descriptor).toList();
+    }
+    
+    private record ResourceDefinition(MCPUriPattern uriPattern, MCPResourceDescriptor descriptor, MCPResourceHandler<?> handler) {
     }
 }

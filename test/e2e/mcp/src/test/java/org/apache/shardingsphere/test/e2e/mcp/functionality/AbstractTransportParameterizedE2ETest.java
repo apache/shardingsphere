@@ -17,18 +17,32 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.provider.Arguments;
 
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
-abstract class AbstractTransportParameterizedE2ETest extends AbstractFunctionalityE2ETest {
+abstract class AbstractTransportParameterizedE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private RuntimeTransport transport = RuntimeTransport.HTTP;
     
     protected static Stream<Arguments> allTransportCases() {
-        return FunctionalityTransportCases.allTransportCases();
+        return Stream.of(
+                Arguments.of("http", RuntimeTransport.HTTP),
+                Arguments.of("stdio", RuntimeTransport.STDIO));
+    }
+    
+    protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "items");
+    }
+    
+    protected final List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
+        return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
     }
     
     protected final void useTransport(final RuntimeTransport transport) {

@@ -148,7 +148,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private Optional<RuleWorkflowFeatureData> getRuleFeatureData(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getFeatureData() instanceof RuleWorkflowFeatureData ? Optional.of((RuleWorkflowFeatureData) snapshot.getFeatureData()) : Optional.empty();
+        return Optional.ofNullable(snapshot.getFeatureData());
     }
     
     private ValidationSection validateExpectedRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules, final List<Map<String, Object>> actualRules,

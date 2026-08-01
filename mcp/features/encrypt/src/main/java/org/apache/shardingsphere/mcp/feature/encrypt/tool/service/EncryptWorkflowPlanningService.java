@@ -119,7 +119,7 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private RuleWorkflowFeatureData getWorkflowState(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getFeatureData() instanceof RuleWorkflowFeatureData ? (RuleWorkflowFeatureData) snapshot.getFeatureData() : new RuleWorkflowFeatureData();
+        return null == snapshot.getFeatureData() ? new RuleWorkflowFeatureData() : snapshot.getFeatureData();
     }
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,

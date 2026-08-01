@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCal
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -67,15 +68,12 @@ public final class LLMConversationRunner {
     
     private final LLMMCPSafetyValidator safetyValidator = new LLMMCPSafetyValidator();
     
-    private final LLMMCPActionExecutor actionExecutor;
-    
     public LLMConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
                                  final String modelName) {
         this.maxTurns = maxTurns;
         this.llmChatClient = llmChatClient;
         this.mcpInteractionClient = mcpInteractionClient;
         this.modelName = modelName;
-        actionExecutor = new LLMMCPActionExecutor(mcpInteractionClient);
     }
     
     /**
@@ -176,7 +174,7 @@ public final class LLMConversationRunner {
             long startTime = System.currentTimeMillis();
             Map<String, Object> response;
             try {
-                response = actionExecutor.executeSafely(each.getName(), arguments);
+                response = executeAction(each.getName(), arguments);
             } catch (final IllegalArgumentException ex) {
                 artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(
                         artifacts.nextSequence(), modelTurn, TOOL_CALL_KIND, each.getName(), arguments, "invalid_tool_arguments"));
@@ -190,13 +188,31 @@ public final class LLMConversationRunner {
             artifacts.addTrace(new MCPInteractionTraceRecord(
                     artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
                     each.getName(), getTraceArguments(each.getName(), arguments), response, true, latencyMillis));
-            messages.add(LLMChatMessage.tool(each.getId(), LLMMCPModelFacingToolResponseFormatter.format(response)));
+            messages.add(LLMChatMessage.tool(each.getId(), JsonUtils.toJsonString(response)));
         }
         return Optional.empty();
     }
     
     private String getActionKind(final String toolName) {
         return READ_RESOURCE_TOOL_NAME.equals(toolName) ? RESOURCE_READ_KIND : TOOL_CALL_KIND;
+    }
+    
+    private Map<String, Object> executeAction(final String actionName, final Map<String, Object> arguments) throws InterruptedException {
+        try {
+            return READ_RESOURCE_TOOL_NAME.equals(actionName)
+                    ? mcpInteractionClient.readResource(getRequiredResourceUri(arguments))
+                    : mcpInteractionClient.call(actionName, arguments);
+        } catch (final IOException | IllegalStateException ex) {
+            throw new IllegalStateException(String.format("MCP action `%s` failed: %s", actionName, ex.getMessage()), ex);
+        }
+    }
+    
+    private String getRequiredResourceUri(final Map<String, Object> arguments) {
+        Object value = arguments.get("uri");
+        if (!(value instanceof String) || ((String) value).trim().isEmpty()) {
+            throw new IllegalArgumentException("Resource URI is required.");
+        }
+        return ((String) value).trim();
     }
     
     private Map<String, Object> getTraceArguments(final String toolName, final Map<String, Object> arguments) {

@@ -30,12 +30,6 @@ import static org.hamcrest.Matchers.is;
 class ReadwriteSplittingFeatureDefinitionTest {
     
     @Test
-    void assertWorkflowKinds() {
-        assertThat(ReadwriteSplittingFeatureDefinition.RULE_WORKFLOW_KIND.getValue(), is("readwrite.rule"));
-        assertThat(ReadwriteSplittingFeatureDefinition.STATUS_WORKFLOW_KIND.getValue(), is("readwrite.status"));
-    }
-    
-    @Test
     void assertPromptCompletionArguments() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
         assertCompletionTargetArguments(catalog, ReadwriteSplittingFeatureDefinition.PLAN_RULE_PROMPT_NAME, "database", "write_storage_unit", "load_balancer_type", "plan_id");

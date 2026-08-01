@@ -56,11 +56,6 @@ import static org.mockito.Mockito.when;
 class MetadataCompletionHandlerTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new MetadataCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
-    }
-    
-    @Test
     void assertSupports() {
         assertTrue(new MetadataCompletionHandler().supports(createRequestContext("database", Map.of())));
     }

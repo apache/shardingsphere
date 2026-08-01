@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
@@ -37,6 +38,8 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueU
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Sharding workflow planning service.
@@ -204,7 +207,7 @@ public final class ShardingWorkflowPlanningService {
     
     private WorkflowContextSnapshot planLifecycleWorkflow(final WorkflowSessionContext workflowSessionContext, final ShardingWorkflowRequest request,
                                                           final ShardingWorkflowLifecycleSpec spec) {
-        WorkflowContextSnapshot result = prepareSnapshot(workflowSessionContext, request, spec.getWorkflowKind(), spec.getDefaultOperationType(), spec.getSummary());
+        WorkflowContextSnapshot result = prepareSnapshot(workflowSessionContext, request, spec.workflowKind(), spec.defaultOperationType(), spec.summary());
         ShardingWorkflowRequest mergedRequest = (ShardingWorkflowRequest) result.getRequest();
         if (!planningSupport.ensureSupportedOperationType(result.getClarifiedIntent(), SUPPORTED_LIFECYCLE_OPERATION_TYPES, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
@@ -215,20 +218,20 @@ public final class ShardingWorkflowPlanningService {
         if (!inputValidator.ensureIdentifiers(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, result.getStatus());
         }
-        if (!inputValidator.ensureCompatibleInputs(spec.getWorkflowKind(), mergedRequest, result)) {
+        if (!inputValidator.ensureCompatibleInputs(spec.workflowKind(), mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, result.getStatus());
         }
-        if (!spec.getRequiredInputSupplier().apply(mergedRequest, result)) {
+        if (!spec.requiredInputSupplier().apply(mergedRequest, result)) {
             addRequiredInputClarification(mergedRequest, result);
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
-        if (!planningSupport.ensureLifecycleState(spec.getSummary(), result.getClarifiedIntent(), spec.getExistsSupplier().apply(mergedRequest), result)) {
+        if (!planningSupport.ensureLifecycleState(spec.summary(), result.getClarifiedIntent(), spec.existsSupplier().apply(mergedRequest), result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
-        if (!spec.getAlgorithmPlanSupplier().apply(mergedRequest, result)) {
+        if (!spec.algorithmPlanSupplier().apply(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
-        result.getRuleArtifacts().add(spec.getArtifactSupplier().apply(mergedRequest));
+        result.getRuleArtifacts().add(spec.artifactSupplier().apply(mergedRequest));
         return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
     }
     
@@ -344,6 +347,13 @@ public final class ShardingWorkflowPlanningService {
                                      final String fieldName, final String expected) {
         queryFacade.checkDatabaseCapability(databaseName);
         return rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, expected, WorkflowRuleValueUtils.getRuleValue(each, fieldName)));
+    }
+    
+    private record ShardingWorkflowLifecycleSpec(WorkflowKind workflowKind, String defaultOperationType, String summary,
+                                                 Function<ShardingWorkflowRequest, Boolean> existsSupplier,
+                                                 BiFunction<ShardingWorkflowRequest, WorkflowContextSnapshot, Boolean> requiredInputSupplier,
+                                                 BiFunction<ShardingWorkflowRequest, WorkflowContextSnapshot, Boolean> algorithmPlanSupplier,
+                                                 Function<ShardingWorkflowRequest, RuleArtifact> artifactSupplier) {
     }
     
 }
