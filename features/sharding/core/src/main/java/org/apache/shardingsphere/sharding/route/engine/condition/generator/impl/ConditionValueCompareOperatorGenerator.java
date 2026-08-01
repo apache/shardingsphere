@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingC
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import java.util.ArrayList;
@@ -64,7 +65,9 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
         }
-        ExpressionSegment valueExpression = predicate.getLeft() instanceof ColumnSegment ? predicate.getRight() : predicate.getLeft();
+        ExpressionSegment left = unwrapBinaryOperator(predicate.getLeft());
+        ExpressionSegment right = unwrapBinaryOperator(predicate.getRight());
+        ExpressionSegment valueExpression = left instanceof ColumnSegment ? right : left;
         ConditionValue conditionValue = new ConditionValue(valueExpression, params);
         if (conditionValue.isNull()) {
             return generate(null, column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
@@ -105,5 +108,12 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     
     private boolean isSupportedOperator(final String operator) {
         return OPERATORS.contains(operator);
+    }
+    
+    private ExpressionSegment unwrapBinaryOperator(final ExpressionSegment segment) {
+        return segment instanceof UnaryOperationExpression
+                && "BINARY".equalsIgnoreCase(((UnaryOperationExpression) segment).getOperator())
+                        ? ((UnaryOperationExpression) segment).getExpression()
+                        : segment;
     }
 }
