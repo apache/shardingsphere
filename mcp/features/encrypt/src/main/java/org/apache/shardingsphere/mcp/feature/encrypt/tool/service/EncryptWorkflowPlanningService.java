@@ -20,13 +20,13 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
@@ -113,13 +113,13 @@ public final class EncryptWorkflowPlanningService {
     
     private EncryptWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request) {
         EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), request);
-        EncryptWorkflowState workflowState = getWorkflowState(snapshot);
+        RuleWorkflowFeatureData workflowState = getWorkflowState(snapshot);
         return planningSupport.prepareSnapshot(snapshot, EncryptFeatureDefinition.WORKFLOW_KIND, result, workflowState,
                 intentResolver.resolve(result), "Encrypt workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
     }
     
-    private EncryptWorkflowState getWorkflowState(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getFeatureData() instanceof EncryptWorkflowState ? (EncryptWorkflowState) snapshot.getFeatureData() : new EncryptWorkflowState();
+    private RuleWorkflowFeatureData getWorkflowState(final WorkflowContextSnapshot snapshot) {
+        return snapshot.getFeatureData() instanceof RuleWorkflowFeatureData ? (RuleWorkflowFeatureData) snapshot.getFeatureData() : new RuleWorkflowFeatureData();
     }
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
@@ -136,7 +136,7 @@ public final class EncryptWorkflowPlanningService {
     private void planDrop(final EncryptWorkflowRequest request, final List<Map<String, Object>> existingRules, final WorkflowContextSnapshot snapshot) {
         addDropLifecycleWarnings(snapshot);
         snapshot.getRuleArtifacts().addAll(ruleDistSQLPlanningService.planEncryptDropRule(request));
-        snapshot.setFeatureData(new EncryptWorkflowState(existingRules, List.of()));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(existingRules, List.of()));
     }
     
     private boolean planNonDrop(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
@@ -153,7 +153,7 @@ public final class EncryptWorkflowPlanningService {
             return false;
         }
         planEncryptArtifacts(request, snapshot);
-        snapshot.setFeatureData(new EncryptWorkflowState(existingRules, List.of(createExpectedTargetRule(request))));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(existingRules, List.of(createExpectedTargetRule(request))));
         return true;
     }
     

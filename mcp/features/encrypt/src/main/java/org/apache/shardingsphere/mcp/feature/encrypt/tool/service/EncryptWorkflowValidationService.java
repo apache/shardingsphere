@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -139,9 +138,6 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     }
     
     private Optional<List<Map<String, Object>>> getExpectedRules(final WorkflowContextSnapshot snapshot) {
-        if (snapshot.getFeatureData() instanceof EncryptWorkflowState) {
-            return Optional.of(((EncryptWorkflowState) snapshot.getFeatureData()).getExpectedRules());
-        }
         return snapshot.getFeatureData() instanceof RuleWorkflowFeatureData ? Optional.of(((RuleWorkflowFeatureData) snapshot.getFeatureData()).getExpectedRules()) : Optional.empty();
     }
     
