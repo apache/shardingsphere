@@ -285,6 +285,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private void replay() throws SQLException {
+        replayStatements(statements);
+    }
+    
+    private void replayStatements(final Collection<? extends Statement> statements) throws SQLException {
         for (Statement each : statements) {
             getMethodInvocationRecorder().replay(each);
         }
