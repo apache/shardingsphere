@@ -217,7 +217,8 @@ class ShardingSphereMetaDataTest {
     @Test
     void assertCloseClosesAllRules() throws Exception {
         GlobalRule closableGlobalRule = mock(GlobalRule.class, withSettings().extraInterfaces(AutoCloseable.class));
-        ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class), new MockedDataSource(), mock(ShardingSphereRule.class));
+        MockedDataSource dataSource = new MockedDataSource();
+        ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class), dataSource, mock(ShardingSphereRule.class));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), mock(), new RuleMetaData(Collections.singleton(closableGlobalRule)), new ConfigurationProperties(new Properties()));
         metaData.close();
