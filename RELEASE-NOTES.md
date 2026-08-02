@@ -21,6 +21,7 @@
 1. Metadata: Fix MySQL metadata loading fallback when JDBC catalog is null for named tables - [#38855](https://github.com/apache/shardingsphere/pull/38855)
 1. Metadata: Fix Oracle metadata version comparison skipping identity and collation columns on 18c and later - [#39104](https://github.com/apache/shardingsphere/pull/39104)
 1. DistSQL: Fix case-sensitive storage unit matching in `SHOW RULES USED STORAGE UNIT` - [#38848](https://github.com/apache/shardingsphere/pull/38848)
+1. DistSQL: Use case-insensitive table name matching in broadcast create and drop executors - [#39200](https://github.com/apache/shardingsphere/pull/39200)
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
 1. JDBC: Fix MySQL-compatible typed string conversion for `ResultSet#getObject(index, Class<T>)` - [#38444](https://github.com/apache/shardingsphere/pull/38444)
 1. Proxy: Resolve MySQL prepared statement parameter columns for where clause - [#38382](https://github.com/apache/shardingsphere/pull/38382)
