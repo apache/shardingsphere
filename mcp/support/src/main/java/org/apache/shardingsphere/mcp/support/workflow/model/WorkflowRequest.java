@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,8 +52,6 @@ public class WorkflowRequest {
     private final Map<String, String> primaryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
     
     private final Map<String, SecretReferenceValue> primaryAlgorithmSecretReferences = new LinkedHashMap<>(8, 1F);
-    
-    private final List<String> approvedSteps = new LinkedList<>();
     
     /**
      * Create a defensive copy of the workflow request.
@@ -193,7 +189,6 @@ public class WorkflowRequest {
         target.setAlgorithmType(algorithmType);
         target.getPrimaryAlgorithmProperties().putAll(primaryAlgorithmProperties);
         target.getPrimaryAlgorithmSecretReferences().putAll(primaryAlgorithmSecretReferences);
-        target.getApprovedSteps().addAll(approvedSteps);
         return target;
     }
     
@@ -218,10 +213,6 @@ public class WorkflowRequest {
         target.setAlgorithmType(resolveValue(target.getAlgorithmType(), algorithmType));
         target.getPrimaryAlgorithmProperties().putAll(primaryAlgorithmProperties);
         target.getPrimaryAlgorithmSecretReferences().putAll(primaryAlgorithmSecretReferences);
-        if (!approvedSteps.isEmpty()) {
-            target.getApprovedSteps().clear();
-            target.getApprovedSteps().addAll(approvedSteps);
-        }
     }
     
     private String resolveValue(final String previousValue, final String currentValue) {
