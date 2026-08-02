@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -300,15 +299,6 @@ class SearchMetadataToolServiceTest {
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
                 createRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.SEQUENCE)));
         assertThat(actual.getItems().size(), is(0));
-    }
-    
-    @Test
-    void assertExecuteSearchWithUnsearchableObjectType() {
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        MetadataSearchResult actual = new SearchMetadataToolService(metadataQueryFacade, mock(MCPFeatureQueryFacade.class)).execute(
-                createRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.MATERIALIZED_VIEW)));
-        assertThat(actual.getItems(), is(List.of()));
-        verifyNoInteractions(metadataQueryFacade);
     }
     
     private MetadataSearchResult execute(final List<DatabaseMetadataFixture> databaseMetadata, final MetadataSearchRequest request) {

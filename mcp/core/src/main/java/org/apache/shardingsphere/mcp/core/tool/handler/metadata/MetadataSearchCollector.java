@@ -73,7 +73,6 @@ final class MetadataSearchCollector {
             case SCHEMA, TABLE, VIEW, COLUMN, INDEX, SEQUENCE -> metadataQueryFacade.isSupportedMetadataObjectType(databaseName, objectType)
                     ? querySearchHits(databaseName, objectType, schemaName)
                     : List.of();
-            case MATERIALIZED_VIEW, ROUTINE, TRIGGER, EVENT, SYNONYM, DATABASE_SPECIFIC -> List.of();
         };
     }
     
@@ -89,7 +88,7 @@ final class MetadataSearchCollector {
             case COLUMN -> queryColumnSearchHits(databaseName, schemaName);
             case INDEX -> queryIndexSearchHits(databaseName, schemaName);
             case SEQUENCE -> querySequenceSearchHits(databaseName, schemaName);
-            case DATABASE, STORAGE_UNIT, MATERIALIZED_VIEW, ROUTINE, TRIGGER, EVENT, SYNONYM, DATABASE_SPECIFIC -> List.of();
+            case DATABASE, STORAGE_UNIT -> List.of();
         };
     }
     

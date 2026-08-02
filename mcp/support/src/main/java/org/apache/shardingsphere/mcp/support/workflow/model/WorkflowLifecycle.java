@@ -50,8 +50,6 @@ public final class WorkflowLifecycle {
     
     public static final String STATUS_PREVIEWED = "previewed";
     
-    public static final String STATUS_SKIPPED = "skipped";
-    
     public static final String STATUS_VALIDATED = "validated";
     
     public static final String STEP_CLARIFYING = "clarifying";
