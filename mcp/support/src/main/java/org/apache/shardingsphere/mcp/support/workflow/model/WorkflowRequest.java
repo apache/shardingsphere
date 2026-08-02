@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
+
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Workflow request.
@@ -51,11 +51,9 @@ public class WorkflowRequest {
     
     private String algorithmType = "";
     
-    private final Map<String, String> primaryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
+    private final Map<String, String> primaryAlgorithmProperties = new LinkedHashMap<>();
     
-    private final Map<String, SecretReferenceValue> primaryAlgorithmSecretReferences = new LinkedHashMap<>(8, 1F);
-    
-    private final List<String> approvedSteps = new LinkedList<>();
+    private final Map<String, SecretReferenceValue> primaryAlgorithmSecretReferences = new LinkedHashMap<>();
     
     /**
      * Create a defensive copy of the workflow request.
@@ -66,46 +64,101 @@ public class WorkflowRequest {
         return copyTo(new WorkflowRequest());
     }
     
+    /**
+     * Set plan id.
+     *
+     * @param planId plan id
+     */
     public void setPlanId(final String planId) {
         this.planId = normalize(planId);
     }
     
+    /**
+     * Set database.
+     *
+     * @param database database
+     */
     public void setDatabase(final String database) {
         this.database = normalize(database);
     }
     
+    /**
+     * Set schema.
+     *
+     * @param schema schema
+     */
     public void setSchema(final String schema) {
         this.schema = normalize(schema);
     }
     
+    /**
+     * Set table.
+     *
+     * @param table table
+     */
     public void setTable(final String table) {
         this.table = normalize(table);
     }
     
+    /**
+     * Set column.
+     *
+     * @param column column
+     */
     public void setColumn(final String column) {
         this.column = normalize(column);
     }
     
+    /**
+     * Set operation type.
+     *
+     * @param operationType operation type
+     */
     public void setOperationType(final String operationType) {
         this.operationType = normalize(operationType);
     }
     
+    /**
+     * Set natural language intent.
+     *
+     * @param naturalLanguageIntent natural language intent
+     */
     public void setNaturalLanguageIntent(final String naturalLanguageIntent) {
         this.naturalLanguageIntent = normalize(naturalLanguageIntent);
     }
     
+    /**
+     * Set field semantics.
+     *
+     * @param fieldSemantics field semantics
+     */
     public void setFieldSemantics(final String fieldSemantics) {
         this.fieldSemantics = normalize(fieldSemantics);
     }
     
+    /**
+     * Set delivery mode.
+     *
+     * @param deliveryMode delivery mode
+     */
     public void setDeliveryMode(final String deliveryMode) {
         this.deliveryMode = normalize(deliveryMode);
     }
     
+    /**
+     * Set execution mode.
+     *
+     * @param executionMode execution mode
+     */
     public void setExecutionMode(final String executionMode) {
         this.executionMode = normalize(executionMode);
     }
     
+    /**
+     * Set algorithm type.
+     *
+     * @param algorithmType algorithm type
+     */
     public void setAlgorithmType(final String algorithmType) {
         this.algorithmType = normalize(algorithmType);
     }
@@ -193,7 +246,6 @@ public class WorkflowRequest {
         target.setAlgorithmType(algorithmType);
         target.getPrimaryAlgorithmProperties().putAll(primaryAlgorithmProperties);
         target.getPrimaryAlgorithmSecretReferences().putAll(primaryAlgorithmSecretReferences);
-        target.getApprovedSteps().addAll(approvedSteps);
         return target;
     }
     
@@ -203,7 +255,7 @@ public class WorkflowRequest {
      * @param target target request
      */
     protected final void overlayTo(final WorkflowRequest target) {
-        if (hasText(planId)) {
+        if (!planId.isEmpty()) {
             target.setPlanId(planId);
         }
         target.setDatabase(resolveValue(target.getDatabase(), database));
@@ -218,21 +270,13 @@ public class WorkflowRequest {
         target.setAlgorithmType(resolveValue(target.getAlgorithmType(), algorithmType));
         target.getPrimaryAlgorithmProperties().putAll(primaryAlgorithmProperties);
         target.getPrimaryAlgorithmSecretReferences().putAll(primaryAlgorithmSecretReferences);
-        if (!approvedSteps.isEmpty()) {
-            target.getApprovedSteps().clear();
-            target.getApprovedSteps().addAll(approvedSteps);
-        }
     }
     
     private String resolveValue(final String previousValue, final String currentValue) {
-        return hasText(currentValue) ? currentValue : previousValue;
+        return !currentValue.isEmpty() ? currentValue : previousValue;
     }
     
-    private static boolean hasText(final String value) {
-        return !value.isEmpty();
-    }
-    
-    private static String normalize(final String value) {
-        return null == value ? "" : value.trim();
+    private String normalize(final String value) {
+        return Objects.toString(value, "").trim();
     }
 }

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,13 +35,11 @@ class WorkflowRequestTest {
         previous.setNaturalLanguageIntent("mask phone");
         previous.setExecutionMode("review-then-execute");
         previous.getPrimaryAlgorithmProperties().put("first-n", "1");
-        previous.getApprovedSteps().add("rule_distsql");
         WorkflowRequest current = new WorkflowRequest();
         current.setOperationType("alter");
         current.setNaturalLanguageIntent("mask mobile");
         current.getPrimaryAlgorithmProperties().put("replace-char", "*");
         current.getPrimaryAlgorithmSecretReferences().put("replace-char", SecretReferenceValue.create());
-        current.getApprovedSteps().add("rule_distsql");
         WorkflowRequest actualRequest = WorkflowRequest.merge(previous, current);
         assertThat(actualRequest.getPlanId(), is("plan-1"));
         assertThat(actualRequest.getDatabase(), is("logic_db"));
@@ -54,7 +50,6 @@ class WorkflowRequestTest {
         assertThat(actualRequest.getPrimaryAlgorithmProperties().get("first-n"), is("1"));
         assertThat(actualRequest.getPrimaryAlgorithmProperties().get("replace-char"), is("*"));
         assertFalse(actualRequest.getSecretReferences("primary").get("replace-char").isMalformed());
-        assertThat(actualRequest.getApprovedSteps(), is(List.of("rule_distsql")));
     }
     
     @Test
@@ -63,16 +58,13 @@ class WorkflowRequestTest {
         originalRequest.setPlanId("plan-1");
         originalRequest.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
         originalRequest.getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
-        originalRequest.getApprovedSteps().add("rule_distsql");
         WorkflowRequest actualRequest = originalRequest.copy();
         assertThat(actualRequest.getPlanId(), is("plan-1"));
         originalRequest.getPrimaryAlgorithmProperties().put("salt", "abc");
         originalRequest.getPrimaryAlgorithmSecretReferences().clear();
-        originalRequest.getApprovedSteps().add("rule_distsql");
         assertThat(actualRequest.getPrimaryAlgorithmProperties().size(), is(1));
         assertThat(actualRequest.getPrimaryAlgorithmProperties().get("aes-key-value"), is("123456"));
         assertFalse(actualRequest.getSecretReferences("primary").get("aes-key-value").isMalformed());
-        assertThat(actualRequest.getApprovedSteps(), is(List.of("rule_distsql")));
     }
     
     @Test
@@ -81,14 +73,12 @@ class WorkflowRequestTest {
         source.setPlanId("plan-1");
         source.setDatabase("logic_db");
         source.getPrimaryAlgorithmProperties().put("first-n", "1");
-        source.getApprovedSteps().add("rule_distsql");
         WorkflowRequest target = new WorkflowRequest();
         WorkflowRequest actualRequest = WorkflowRequest.copyFieldsTo(source, target);
         assertThat(actualRequest, is(target));
         assertThat(target.getPlanId(), is("plan-1"));
         assertThat(target.getDatabase(), is("logic_db"));
         assertThat(target.getPrimaryAlgorithmProperties().get("first-n"), is("1"));
-        assertThat(target.getApprovedSteps(), is(List.of("rule_distsql")));
     }
     
     @Test
