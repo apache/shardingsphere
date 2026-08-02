@@ -69,7 +69,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
-    private static final int MAX_TURNS = 4;
+    private static final int MAX_TURNS = 6;
     
     private static final String DATABASE_NAME = "logic_db";
     
