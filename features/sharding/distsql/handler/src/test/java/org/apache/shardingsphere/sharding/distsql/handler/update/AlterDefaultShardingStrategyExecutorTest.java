@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
@@ -56,7 +56,7 @@ class AlterDefaultShardingStrategyExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
         executor.setRule(rule);
-        assertThrows(InvalidAlgorithmConfigurationException.class,
+        assertThrows(InvalidAlgorithmDefinitionException.class,
                 () -> executor.checkBeforeUpdate(new AlterDefaultShardingStrategyStatement("TABLE", "invalidType", null, null)));
     }
     
@@ -81,7 +81,7 @@ class AlterDefaultShardingStrategyExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         AlterDefaultShardingStrategyStatement sqlStatement = new AlterDefaultShardingStrategyStatement("TABLE", "standard", "order_id,user_id", null);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+        assertThrows(InvalidAlgorithmDefinitionException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
