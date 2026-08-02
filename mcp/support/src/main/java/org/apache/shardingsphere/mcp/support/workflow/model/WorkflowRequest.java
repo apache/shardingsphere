@@ -277,6 +277,6 @@ public class WorkflowRequest {
     }
     
     private String normalize(final String value) {
-        return Objects.toString(value.trim(), "");
+        return Objects.toString(value, "").trim();
     }
 }
