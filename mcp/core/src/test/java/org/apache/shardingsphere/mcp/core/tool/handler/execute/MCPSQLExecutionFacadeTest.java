@@ -388,7 +388,7 @@ class MCPSQLExecutionFacadeTest {
         ArgumentCaptor<ClassificationResult> classificationCaptor = ArgumentCaptor.forClass(ClassificationResult.class);
         verify(statementExecutor).execute(eq(request), classificationCaptor.capture(), eq(capability));
         assertThat(classificationCaptor.getValue().getStatementClass(), is(SupportedMCPStatement.EXPLAIN));
-        assertThat(classificationCaptor.getValue().getReferencedObjectNames(), contains("orders"));
+        assertThat(classificationCaptor.getValue().getReferencedObjects().stream().map(SQLStatementObjectName::getObjectName).toList(), contains("orders"));
         verifyNoInteractions(transactionExecutor);
     }
     
