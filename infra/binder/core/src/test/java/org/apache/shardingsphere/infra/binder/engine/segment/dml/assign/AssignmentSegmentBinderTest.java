@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
@@ -47,6 +48,7 @@ import java.util.LinkedList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,16 +57,10 @@ class AssignmentSegmentBinderTest {
     @Test
     void assertBindAssignmentSegment() {
         Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
-        ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")),
-                new IdentifierValue("t_order"), new IdentifierValue("order_id"), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         assignments.add(new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new LiteralExpressionSegment(0, 0, 1)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
-                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn)), TableSourceType.PHYSICAL_TABLE));
-        SetAssignmentSegment actual = AssignmentSegmentBinder.bind(setAssignmentSegment, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        SetAssignmentSegment actual = AssignmentSegmentBinder.bind(setAssignmentSegment, createBinderContext(), createTableBinderContexts(), LinkedHashMultimap.create());
         assertThat(actual, not(setAssignmentSegment));
         assertThat(actual.getAssignments().iterator().next(), not(setAssignmentSegment.getAssignments().iterator().next()));
         assertThat(actual.getAssignments().iterator().next().getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
@@ -75,15 +71,39 @@ class AssignmentSegmentBinderTest {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new LiteralExpressionSegment(0, 0, 1));
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignment));
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")),
-                new IdentifierValue("t_order"), new IdentifierValue("order_id"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
-                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn)), TableSourceType.PHYSICAL_TABLE));
-        OnDuplicateKeyColumnsSegment actual = AssignmentSegmentBinder.bind(onDuplicateKeyColumnsSegment, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        OnDuplicateKeyColumnsSegment actual = AssignmentSegmentBinder.bind(onDuplicateKeyColumnsSegment, createBinderContext(), createTableBinderContexts(), LinkedHashMultimap.create());
         assertThat(actual, not(onDuplicateKeyColumnsSegment));
         assertThat(actual.getColumns().iterator().next().getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindUnparenthesizedFunctionAsAssignmentColumnWithoutColumn() {
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("CURRENT_DATE"));
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new LiteralExpressionSegment(0, 0, 1));
+        SetAssignmentSegment segment = new SetAssignmentSegment(0, 0, Collections.singletonList(assignment));
+        SQLStatementBinderContext binderContext = createBinderContext();
+        assertThrows(ColumnNotFoundException.class,
+                () -> AssignmentSegmentBinder.bind(segment, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create()));
+    }
+    
+    @Test
+    void assertBindUnparenthesizedFunctionAsAssignmentValue() {
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
+        ColumnSegment valueSegment = new ColumnSegment(0, 0, new IdentifierValue("CURRENT_DATE"));
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), valueSegment);
+        SetAssignmentSegment segment = new SetAssignmentSegment(0, 0, Collections.singletonList(assignment));
+        SetAssignmentSegment actual = AssignmentSegmentBinder.bind(segment, createBinderContext(), createTableBinderContexts(), LinkedHashMultimap.create());
+        assertThat(actual.getAssignments().iterator().next().getValue(), is(valueSegment));
+    }
+    
+    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createTableBinderContexts() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
+        ColumnSegment boundColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
+        boundColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")),
+                new IdentifierValue("t_order"), new IdentifierValue("order_id"), TableSourceType.PHYSICAL_TABLE));
+        result.put(CaseInsensitiveString.of("t_order"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundColumn)), TableSourceType.PHYSICAL_TABLE));
+        return result;
     }
     
     private SQLStatementBinderContext createBinderContext() {
