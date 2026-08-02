@@ -41,6 +41,7 @@ final class MetadataSearchResourceUriFactory {
             case INDEX -> createIndexResourceUris(database, schema, table, name);
             case STORAGE_UNIT -> createStorageUnitResourceUris(database, name);
             case SEQUENCE -> createSequenceResourceUris(database, schema, name);
+            default -> notSafe("Metadata hit object type is not backed by a descriptor resource pattern.");
         };
     }
     
