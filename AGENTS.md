@@ -112,6 +112,11 @@ message is not authorization to commit.
   repository, deployment, production API, connector, cloud task, message, or
   other remote state. Perform a remote write only when the current request
   explicitly names the action and exact target.
+- For GitHub access, use the first configured token in this order: `GH_TOKEN`,
+  then `GITHUB_TOKEN`; check it without printing, logging, persisting, or
+  otherwise exposing its value. When a token is available, call the GitHub API
+  directly and do not search for, inspect, or invoke `gh`; use `gh` only when
+  neither token is configured.
 - Do not transmit credentials, tokens, private keys, private logs, proprietary
   source, personal data, connection strings, or other sensitive repository data
   outside the active user-authorized Codex task, including to websites, search
