@@ -66,7 +66,7 @@ public class WorkflowRequest {
     
     /**
      * Set plan id.
-     * 
+     *
      * @param planId plan id
      */
     public void setPlanId(final String planId) {
@@ -75,7 +75,7 @@ public class WorkflowRequest {
     
     /**
      * Set database.
-     * 
+     *
      * @param database database
      */
     public void setDatabase(final String database) {
@@ -84,7 +84,7 @@ public class WorkflowRequest {
     
     /**
      * Set schema.
-     * 
+     *
      * @param schema schema
      */
     public void setSchema(final String schema) {
@@ -93,7 +93,7 @@ public class WorkflowRequest {
     
     /**
      * Set table.
-     * 
+     *
      * @param table table
      */
     public void setTable(final String table) {
@@ -102,7 +102,7 @@ public class WorkflowRequest {
     
     /**
      * Set column.
-     * 
+     *
      * @param column column
      */
     public void setColumn(final String column) {
@@ -111,7 +111,7 @@ public class WorkflowRequest {
     
     /**
      * Set operation type.
-     * 
+     *
      * @param operationType operation type
      */
     public void setOperationType(final String operationType) {
@@ -120,7 +120,7 @@ public class WorkflowRequest {
     
     /**
      * Set natural language intent.
-     * 
+     *
      * @param naturalLanguageIntent natural language intent
      */
     public void setNaturalLanguageIntent(final String naturalLanguageIntent) {
@@ -129,7 +129,7 @@ public class WorkflowRequest {
     
     /**
      * Set field semantics.
-     * 
+     *
      * @param fieldSemantics field semantics
      */
     public void setFieldSemantics(final String fieldSemantics) {
@@ -138,7 +138,7 @@ public class WorkflowRequest {
     
     /**
      * Set delivery mode.
-     * 
+     *
      * @param deliveryMode delivery mode
      */
     public void setDeliveryMode(final String deliveryMode) {
@@ -147,7 +147,7 @@ public class WorkflowRequest {
     
     /**
      * Set execution mode.
-     * 
+     *
      * @param executionMode execution mode
      */
     public void setExecutionMode(final String executionMode) {
@@ -156,7 +156,7 @@ public class WorkflowRequest {
     
     /**
      * Set algorithm type.
-     * 
+     *
      * @param algorithmType algorithm type
      */
     public void setAlgorithmType(final String algorithmType) {
