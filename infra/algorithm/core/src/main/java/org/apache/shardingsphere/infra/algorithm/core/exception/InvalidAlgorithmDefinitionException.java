@@ -20,22 +20,21 @@ package org.apache.shardingsphere.infra.algorithm.core.exception;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Invalid algorithm configuration exception.
+ * Invalid algorithm definition exception.
  */
-// TODO consider about merge with AlgorithmInitializationException
-public final class InvalidAlgorithmConfigurationException extends AlgorithmDefinitionException {
+public final class InvalidAlgorithmDefinitionException extends AlgorithmDefinitionException {
     
     private static final long serialVersionUID = 1352014079406440573L;
     
-    public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm) {
+    public InvalidAlgorithmDefinitionException(final String algorithmType, final String algorithm) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration '%s'.", algorithmType, algorithm);
     }
     
-    public InvalidAlgorithmConfigurationException(final String algorithmType) {
+    public InvalidAlgorithmDefinitionException(final String algorithmType) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration.", algorithmType);
     }
     
-    public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm, final String message) {
+    public InvalidAlgorithmDefinitionException(final String algorithmType, final String algorithm, final String message) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration '%s'. %s.", algorithmType, algorithm, message);
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
@@ -101,7 +101,7 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidWeightConfigurationArguments")
     void assertCheckCreationWithInvalidWeightConfiguration(final String name, final ReadwriteSplittingRuleSegment segment) {
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false), name);
+        assertThrows(InvalidAlgorithmDefinitionException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false), name);
     }
     
     @Test
