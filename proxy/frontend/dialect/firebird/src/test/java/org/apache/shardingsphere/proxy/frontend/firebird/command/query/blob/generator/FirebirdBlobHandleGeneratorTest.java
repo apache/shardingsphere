@@ -74,15 +74,26 @@ class FirebirdBlobHandleGeneratorTest {
     }
     
     @Test
-    void assertNextBlobHandleReusesReleasedHandleAfterWrap() {
+    void assertNextBlobHandleReusesReleasedHandle() {
         FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
+        generator.nextBlobHandle(CONNECTION_ID);
         int releasedHandle = generator.nextBlobHandle(CONNECTION_ID);
+        int lastHandle = generator.nextBlobHandle(CONNECTION_ID);
         generator.releaseBlobHandle(CONNECTION_ID, releasedHandle);
-        for (int i = 1; i < MAX_OBJECT_HANDLE; i++) {
-            generator.nextBlobHandle(CONNECTION_ID);
-        }
         assertThat(generator.nextBlobHandle(CONNECTION_ID), is(releasedHandle));
-        assertThrows(FirebirdProtocolException.class, () -> generator.nextBlobHandle(CONNECTION_ID));
+        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(lastHandle + 1));
+    }
+
+    @Test
+    void assertNextBlobHandleReusesLowestReleasedHandle() {
+        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
+        int lowestHandle = generator.nextBlobHandle(CONNECTION_ID);
+        generator.nextBlobHandle(CONNECTION_ID);
+        int highestHandle = generator.nextBlobHandle(CONNECTION_ID);
+        generator.releaseBlobHandle(CONNECTION_ID, lowestHandle);
+        generator.releaseBlobHandle(CONNECTION_ID, highestHandle);
+        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(lowestHandle));
+        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(highestHandle));
     }
     
     @Test
@@ -113,7 +124,7 @@ class FirebirdBlobHandleGeneratorTest {
         int blobHandle = generator.nextBlobHandle(CONNECTION_ID);
         generator.releaseBlobHandle(CONNECTION_ID, blobHandle);
         assertThat(generator.resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(INVALID_OBJECT_HANDLE));
-        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(2));
+        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(blobHandle));
     }
     
     @Test

@@ -63,6 +63,8 @@ public final class FirebirdBlobHandleGenerator {
     /**
      * Generate next BLOB handle for connection.
      *
+     * <p>The search starts at the lowest free handle, so a handle released by close or cancel is reused at once.</p>
+     *
      * @param connectionId connection ID
      * @return generated BLOB handle within the range 1 to {@code 0xFFFE}
      * @throws FirebirdProtocolException when connection is not registered or no free BLOB handle is available
@@ -73,16 +75,12 @@ public final class FirebirdBlobHandleGenerator {
                 () -> new FirebirdProtocolException("Connection %d is not registered.", connectionId));
         synchronized (connectionBlobHandles) {
             int handleIndex = connectionBlobHandles.handles.nextClearBit(connectionBlobHandles.searchPosition);
-            if (handleIndex >= MAX_OBJECT_HANDLE) {
-                handleIndex = connectionBlobHandles.handles.nextClearBit(0);
-            }
-            if (handleIndex < MAX_OBJECT_HANDLE) {
-                connectionBlobHandles.handles.set(handleIndex);
-                connectionBlobHandles.lastBlobHandle = handleIndex + 1;
-                connectionBlobHandles.searchPosition = connectionBlobHandles.lastBlobHandle;
-                return connectionBlobHandles.lastBlobHandle;
-            }
-            throw new FirebirdProtocolException("No free BLOB handles are available for connection %d.", connectionId);
+            ShardingSpherePreconditions.checkState(MAX_OBJECT_HANDLE > handleIndex,
+                    () -> new FirebirdProtocolException("No free BLOB handles are available for connection %d.", connectionId));
+            connectionBlobHandles.handles.set(handleIndex);
+            connectionBlobHandles.lastBlobHandle = handleIndex + 1;
+            connectionBlobHandles.searchPosition = connectionBlobHandles.lastBlobHandle;
+            return connectionBlobHandles.lastBlobHandle;
         }
     }
     
@@ -123,7 +121,9 @@ public final class FirebirdBlobHandleGenerator {
         synchronized (connectionBlobHandles) {
             ShardingSpherePreconditions.checkState(connectionBlobHandles.handles.get(blobHandle - 1),
                     () -> new FirebirdProtocolException("Invalid BLOB handle %d.", blobHandle));
-            connectionBlobHandles.handles.clear(blobHandle - 1);
+            int position = blobHandle - 1;
+            connectionBlobHandles.handles.clear(position);
+            connectionBlobHandles.searchPosition = Math.min(connectionBlobHandles.searchPosition, position);
             if (blobHandle == connectionBlobHandles.lastBlobHandle) {
                 connectionBlobHandles.lastBlobHandle = 0;
             }
