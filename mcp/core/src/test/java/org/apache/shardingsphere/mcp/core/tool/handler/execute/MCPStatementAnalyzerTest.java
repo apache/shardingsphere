@@ -30,7 +30,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -87,75 +86,79 @@ class MCPStatementAnalyzerTest {
     void assertAnalyzeReferencedObjects() {
         ClassificationResult actual = analyzer.analyze(
                 "SELECT * FROM logic_db.orders JOIN other_db.order_items ON orders.order_id = order_items.order_id", createCapability("MySQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("logic_db.orders", "other_db.order_items"));
+        assertThat(getObjectNames(actual), contains("logic_db.orders", "other_db.order_items"));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("referencedObjectCases")
     void assertAnalyzeExactReferencedObjects(final String name, final String databaseType, final String sql, final List<String> expected) {
-        assertThat(new ArrayList<>(analyzer.analyze(sql, createCapability(databaseType)).getReferencedObjectNames()), is(expected));
+        assertThat(getObjectNames(analyzer.analyze(sql, createCapability(databaseType))), is(expected));
     }
     
     @Test
     void assertAnalyzeCommonTableExpressionReferences() {
         ClassificationResult actual = analyzer.analyze(
                 "WITH order_result AS (SELECT * FROM other_db.orders) SELECT * FROM order_result", createCapability("PostgreSQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("other_db.orders"));
+        assertThat(getObjectNames(actual), contains("other_db.orders"));
     }
     
     @Test
     void assertAnalyzeDMLReferences() {
         ClassificationResult actual = analyzer.analyze(
                 "UPDATE logic_db.orders SET status = 'DONE' FROM other_db.order_items", createCapability("PostgreSQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("logic_db.orders", "other_db.order_items"));
+        assertThat(getObjectNames(actual), contains("logic_db.orders", "other_db.order_items"));
     }
     
     @Test
     void assertAnalyzeAlterViewReferences() {
         ClassificationResult actual = analyzer.analyze(
                 "ALTER VIEW logic_db.active_orders AS SELECT * FROM other_db.orders", createCapability("MySQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("logic_db.active_orders", "other_db.orders"));
+        assertThat(getObjectNames(actual), contains("logic_db.active_orders", "other_db.orders"));
     }
     
     @Test
     void assertAnalyzeSameNamedDMLReferences() {
         ClassificationResult actual = analyzer.analyze(
                 "UPDATE orders SET status = source.status FROM other_db.orders source", createCapability("PostgreSQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("orders", "other_db.orders"));
+        assertThat(getObjectNames(actual), contains("orders", "other_db.orders"));
         assertThat(actual.getTargetObjectName().orElse(""), is("orders"));
     }
     
     @Test
     void assertAnalyzeQuotedTableQueryIdentifier() {
         ClassificationResult actual = analyzer.analyze("CREATE TABLE order_archive AS TABLE `other.db.orders`", createCapability("MySQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("order_archive", "other.db.orders"));
+        assertThat(getObjectNames(actual), contains("order_archive", "other.db.orders"));
         assertFalse(actual.getReferencedObjects().stream().filter(each -> "other.db.orders".equals(each.getObjectName())).findFirst().orElseThrow().isQualified());
     }
     
     @Test
     void assertAnalyzeDCLReference() {
         ClassificationResult actual = analyzer.analyze("GRANT SELECT ON other_db.orders TO PUBLIC", createCapability("MySQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("other_db.orders"));
+        assertThat(getObjectNames(actual), contains("other_db.orders"));
     }
     
     @Test
     void assertAnalyzeGlobalDCLReference() {
         ClassificationResult actual = analyzer.analyze("GRANT SELECT ON *.* TO PUBLIC", createCapability("MySQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("*.*"));
+        assertThat(getObjectNames(actual), contains("*.*"));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("dclNamespaceCases")
     void assertAnalyzeDCLNamespaceReference(final String name, final String sql) {
         ClassificationResult actual = analyzer.analyze(sql, createCapability("PostgreSQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("other_db"));
+        assertThat(getObjectNames(actual), contains("other_db"));
         assertTrue(actual.getReferencedObjects().iterator().next().isNamespaceTarget());
     }
     
     @Test
     void assertAnalyzeQualifiedFunctionReference() {
         ClassificationResult actual = analyzer.analyze("SELECT other_db.foo_refresh_orders()", createCapability("MySQL"));
-        assertThat(actual.getReferencedObjectNames(), contains("other_db.foo_refresh_orders"));
+        assertThat(getObjectNames(actual), contains("other_db.foo_refresh_orders"));
+    }
+    
+    private List<String> getObjectNames(final ClassificationResult classificationResult) {
+        return classificationResult.getReferencedObjects().stream().map(SQLStatementObjectName::getObjectName).toList();
     }
     
     @Test
