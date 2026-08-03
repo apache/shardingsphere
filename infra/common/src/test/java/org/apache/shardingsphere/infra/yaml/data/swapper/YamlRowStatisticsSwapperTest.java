@@ -86,7 +86,8 @@ class YamlRowStatisticsSwapperTest {
     private static Stream<Arguments> getSwapToObjectArguments() {
         return Stream.of(
                 Arguments.of("decimal string", Types.DECIMAL, "1.5", new BigDecimal("1.5")),
-                Arguments.of("numeric BigDecimal", Types.NUMERIC, new BigDecimal("2.5"), new BigDecimal("2.5")),
+                Arguments.of("numeric string", Types.NUMERIC, "2.5", new BigDecimal("2.5")),
+                Arguments.of("numeric BigDecimal", Types.NUMERIC, new BigDecimal("3.5"), new BigDecimal("3.5")),
                 Arguments.of("bigint integer", Types.BIGINT, 3, 3L),
                 Arguments.of("bigint long", Types.BIGINT, 4L, 4L),
                 Arguments.of("real double", Types.REAL, 5.5D, 5.5F),
