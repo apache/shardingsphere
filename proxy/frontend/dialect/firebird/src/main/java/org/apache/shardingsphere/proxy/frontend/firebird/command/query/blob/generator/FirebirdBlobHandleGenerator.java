@@ -19,13 +19,22 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.gen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
+import java.util.BitSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * BLOB handle (p_resp_object) generator for Firebird.
+ *
+ * <p>Firebird carries object handles as 16 bit values and reserves {@code 0xFFFF} as the invalid object handle,
+ * so handles are issued within the range 1 to {@code 0xFFFE}. BLOB operations sent immediately after
+ * {@code op_create_blob2} or {@code op_open_blob2}, without waiting for its response, can use the invalid object
+ * handle instead of the not yet received BLOB handle, which refers to the latest object created.</p>
+ *
+ * @see <a href="https://firebirdsql.org/file/documentation/html/en/firebirddocs/wireprotocol/firebird-wire-protocol.html#wireprotocol-blobs-create-v11">Firebird wire protocol - blobs</a>
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class FirebirdBlobHandleGenerator {
@@ -36,7 +45,7 @@ public final class FirebirdBlobHandleGenerator {
     
     private static final int MAX_OBJECT_HANDLE = INVALID_OBJECT_HANDLE - 1;
     
-    private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
+    private final Map<Integer, ConnectionBlobHandles> connectionRegistry = new ConcurrentHashMap<>();
     
     public static FirebirdBlobHandleGenerator getInstance() {
         return INSTANCE;
@@ -48,31 +57,37 @@ public final class FirebirdBlobHandleGenerator {
      * @param connectionId connection ID
      */
     public void registerConnection(final int connectionId) {
-        connectionRegistry.put(connectionId, new AtomicInteger());
+        connectionRegistry.put(connectionId, new ConnectionBlobHandles());
     }
     
     /**
      * Generate next BLOB handle for connection.
      *
-     * <p>Firebird carries object handles as 16 bit values, and {@code 0xFFFF} is reserved as the deferred
-     * placeholder handle, so generated handles wrap within the range 1 to {@code 0xFFFE}. Handle 0 is never
-     * issued because it marks a connection that has not generated a handle yet.</p>
-     *
      * @param connectionId connection ID
-     * @return generated BLOB handle
+     * @return generated BLOB handle within the range 1 to {@code 0xFFFE}
+     * @throws FirebirdProtocolException when connection is not registered or no free BLOB handle is available
      */
     public int nextBlobHandle(final int connectionId) {
-        return connectionRegistry.get(connectionId).updateAndGet(current -> MAX_OBJECT_HANDLE <= current ? 1 : current + 1);
+        ConnectionBlobHandles connectionBlobHandles = connectionRegistry.get(connectionId);
+        ShardingSpherePreconditions.checkState(null != connectionBlobHandles,
+                () -> new FirebirdProtocolException("Connection %d is not registered.", connectionId));
+        synchronized (connectionBlobHandles) {
+            int handleIndex = connectionBlobHandles.handles.nextClearBit(connectionBlobHandles.searchPosition);
+            if (handleIndex >= MAX_OBJECT_HANDLE) {
+                handleIndex = connectionBlobHandles.handles.nextClearBit(0);
+            }
+            if (handleIndex < MAX_OBJECT_HANDLE) {
+                connectionBlobHandles.handles.set(handleIndex);
+                connectionBlobHandles.lastBlobHandle = handleIndex + 1;
+                connectionBlobHandles.searchPosition = connectionBlobHandles.lastBlobHandle;
+                return connectionBlobHandles.lastBlobHandle;
+            }
+            throw new FirebirdProtocolException("No free BLOB handles are available for connection %d.", connectionId);
+        }
     }
     
     /**
      * Resolve a BLOB handle, mapping the deferred placeholder handle to the most recently generated one.
-     *
-     * <p>In the Firebird lazy (deferred) protocol a pipelined operation such as {@code op_put_segment},
-     * {@code op_get_segment} or {@code op_info_blob} that is flushed together with its preceding
-     * {@code op_create_blob2} or {@code op_open_blob2} carries the placeholder handle {@code 0xFFFF}
-     * (INVALID_OBJECT), which the server resolves to the most recently created object. Handles are generated
-     * here for both created and opened BLOBs, so the last generated handle mirrors that resolution.</p>
      *
      * @param connectionId connection ID
      * @param blobHandle blob handle received from the client
@@ -82,8 +97,37 @@ public final class FirebirdBlobHandleGenerator {
         if (INVALID_OBJECT_HANDLE != blobHandle) {
             return blobHandle;
         }
-        AtomicInteger lastGenerated = connectionRegistry.get(connectionId);
-        return null == lastGenerated || 0 == lastGenerated.get() ? blobHandle : lastGenerated.get();
+        ConnectionBlobHandles connectionBlobHandles = connectionRegistry.get(connectionId);
+        if (null == connectionBlobHandles) {
+            return blobHandle;
+        }
+        synchronized (connectionBlobHandles) {
+            return 0 == connectionBlobHandles.lastBlobHandle ? blobHandle : connectionBlobHandles.lastBlobHandle;
+        }
+    }
+    
+    /**
+     * Release BLOB handle for connection.
+     *
+     * @param connectionId connection ID
+     * @param blobHandle BLOB handle
+     * @throws FirebirdProtocolException when BLOB handle is invalid
+     */
+    public void releaseBlobHandle(final int connectionId, final int blobHandle) {
+        ConnectionBlobHandles connectionBlobHandles = connectionRegistry.get(connectionId);
+        if (null == connectionBlobHandles) {
+            return;
+        }
+        ShardingSpherePreconditions.checkState(0 < blobHandle && MAX_OBJECT_HANDLE >= blobHandle,
+                () -> new FirebirdProtocolException("Invalid BLOB handle %d.", blobHandle));
+        synchronized (connectionBlobHandles) {
+            ShardingSpherePreconditions.checkState(connectionBlobHandles.handles.get(blobHandle - 1),
+                    () -> new FirebirdProtocolException("Invalid BLOB handle %d.", blobHandle));
+            connectionBlobHandles.handles.clear(blobHandle - 1);
+            if (blobHandle == connectionBlobHandles.lastBlobHandle) {
+                connectionBlobHandles.lastBlobHandle = 0;
+            }
+        }
     }
     
     /**
@@ -94,4 +138,14 @@ public final class FirebirdBlobHandleGenerator {
     public void unregisterConnection(final int connectionId) {
         connectionRegistry.remove(connectionId);
     }
+    
+    private static final class ConnectionBlobHandles {
+        
+        private final BitSet handles = new BitSet();
+        
+        private int searchPosition;
+        
+        private int lastBlobHandle;
+    }
+    
 }
