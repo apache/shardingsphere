@@ -37,6 +37,29 @@ match as a candidate. Publish it as a finding only when all of these conditions 
 Reject the candidate when it is only a preference, a theoretical future risk, or a pattern name
 without a demonstrated consequence.
 
+## Self-Contained Finding Gate
+
+A confirmed finding must be understandable and actionable without a follow-up question. Explain
+the issue in current ShardingSphere terms rather than using a smell label as the conclusion. Every
+finding must answer:
+
+1. **Where:** Which concrete class, resource, POM, registration, module, or line owns the problem.
+2. **How it is reached:** Which caller, dependency, loader, registration, packaging, or test path
+   establishes the behavior.
+3. **Why it is wrong:** Which specific responsibility, dependency direction, SPI contract, written
+   rule, or maintained project principle is violated.
+4. **What it causes:** Which current correctness, maintenance, extension, packaging, navigation, or
+   test-protection consequence follows from that path.
+5. **What must change:** Which responsibility stays, which concrete artifacts move or change, and
+   which behavior must remain verified. Do not invent a target module or hierarchy without
+   maintained ownership evidence.
+6. **Why the alternative explanation fails:** Which framework, bootstrap, compatibility,
+   packaging, closed-set, default-implementation, or nearby-precedent justification was checked.
+
+Define contextual phrases such as `shared module`, `core policy`, `plugin-specific behavior`, or
+`wrong owner` through the actual consumers and dependencies. If any answer that could reverse the
+conclusion is missing, keep the item as a candidate or evidence limitation rather than a finding.
+
 ## Evidence Quality
 
 Prefer evidence in this order:
@@ -85,5 +108,7 @@ history merely to find old problems.
 - Cite repository-relative paths and tight line locations when available.
 - Separate observed facts from inference in the evidence text.
 - Explain why the issue matters to the next engineer who changes or extends the code.
-- Give a direction, not a patch, new class hierarchy, or speculative target architecture.
+- Give a concrete correction boundary, not a patch, new class hierarchy, or speculative target
+  architecture. Name affected classes, dependencies, registrations, or resources when the evidence
+  requires them.
 - Omit generic compliments, exhaustive candidate logs, and findings that failed the proof gate.

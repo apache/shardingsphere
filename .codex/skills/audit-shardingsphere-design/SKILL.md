@@ -111,18 +111,30 @@ Read these files directly from this Skill before classifying findings:
 
 ## Output Contract
 
+Write the report in the same natural language as the user's audit request. An explicit output
+language wins. For a mixed-language request without an explicit choice, use the language of the
+user's instructions rather than identifiers or quoted code. If the invocation contains only the
+Skill name or a scope, use the language of the surrounding conversation, or English when none is
+available. Translate headings and field labels as well as the finding text; keep code identifiers
+and repository paths unchanged.
+
 Start with the reviewed scope and a one-sentence conclusion. Then list confirmed findings in
-priority order. Use this shape for every finding:
+priority order. Apply the self-contained finding rules in `finding-model.md` and use this shape for
+every finding:
 
 ```markdown
 ### [P1|P2|P3] Concise problem title
 
 - Location: repository-relative file and line, or the smallest responsible module
 - Capability: one capability group from the workflow
-- Evidence: observed code path, dependency, registration, rule, and relevant counter-evidence
+- Evidence: applicable exact code, dependency, registration, rule, or maintained precedent
+- Path: the relevant owner, caller, dependency, loading, registration, and packaging path
 - Problem: the violated responsibility, contract, or project principle
 - Impact: current maintenance, extension, correctness, packaging, or test consequence
-- Direction: the smallest correction direction without patch content
+- Direction: the smallest correction boundary, naming what stays, moves, or changes and how to
+  verify the preserved behavior, without patch content
+- Counter-evidence: the strongest alternative explanation checked and why it does not reverse the
+  finding
 - Confidence: High or Medium, with the reason
 ```
 
@@ -138,7 +150,9 @@ End with:
 - `Evidence limits`: facts that could materially change the conclusion.
 
 Keep the report concise. Do not add a generic checklist, praise unaffected code, or recommend a
-large redesign when a smaller ownership correction addresses the evidence.
+large redesign when a smaller ownership correction addresses the evidence. A finding must explain
+the concrete project problem and correction without requiring the reader to infer the meaning of a
+smell label or ask a follow-up question.
 
 ## Completion Gate
 
@@ -146,8 +160,11 @@ Before returning the report, verify that:
 
 - every finding traces a complete relevant path and cites current repository evidence;
 - every finding identifies a concrete consequence and minimum correction boundary;
+- every finding is self-contained and explains project-specific terms that are necessary to
+  understand the problem;
 - every leaf module in an aggregate scope is accounted for, or the result is explicitly incomplete;
-- SPI findings apply the correct category profile rather than a universal placement rule;
+- SPI findings apply the correct category profile rather than a universal placement rule, and SPI
+  placement findings satisfy the reporting contract in `spi-plugin-design.md`;
 - style findings distinguish written rules from engineering judgment;
 - test findings protect production-owned behavior rather than coverage appearance;
 - no finding depends on another Skill, a single regex match, or an unverified deletion premise;

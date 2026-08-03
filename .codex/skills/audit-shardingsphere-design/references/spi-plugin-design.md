@@ -21,6 +21,7 @@
 - [Common Plugin Invariants](#common-plugin-invariants)
 - [Category Profiles](#category-profiles)
 - [High-Value Smells](#high-value-smells)
+- [SPI Placement Finding Contract](#spi-placement-finding-contract)
 
 ## Model
 
@@ -108,3 +109,34 @@ derive category-specific ownership from maintained peers with the same runtime r
 For every smell, inspect counterexamples such as framework discovery constraints, bootstrap-owned
 registries, deliberately closed sets, default implementations, and distribution assembly. Report
 the issue only when those facts do not justify the design.
+
+## SPI Placement Finding Contract
+
+Do not publish a statement such as `a database plugin implementation is packaged in a shared core
+module` as a finding by itself. It names only a candidate smell. For every plugin placement
+finding, report:
+
+1. The concrete SPI implementation, current module, and tight source location.
+2. Why the current module is shared or neutral, proven through its POM, consumers, public contract,
+   and maintained peers rather than its directory name.
+3. The complete `contract -> loader/registry -> registration -> implementation -> caller ->
+   package` path, including variant-only dependencies, configuration, or resources.
+4. The current consequence, such as requiring a neutral caller to change for another plugin,
+   forcing a shared artifact to carry plugin-only dependencies, or preventing independent
+   packaging.
+5. The maintained module that should own the implementation and the evidence for that ownership.
+6. The minimum correction boundary:
+   - what contract, neutral loader, and genuinely shared behavior remain in the current owner;
+   - what implementation, dependency, registration, configuration, or resource moves;
+   - what caller, distribution assembly, or packaging declaration changes; and
+   - what loading, selection, compatibility, and runtime behavior must be verified.
+7. The strongest counterexample checked, including infrastructure-owned variation, bootstrap
+   assembly, deliberately closed sets, default implementations, and dependency reversal.
+
+Use actual repository identifiers to summarize both `Current ownership` and `Expected ownership`.
+For example, a proven database placement issue may keep the SPI contract and neutral loader in a
+shared module, move the database implementation, registration, resources, and dedicated
+dependencies to the maintained database plugin module, and keep explicit plugin inclusion in the
+distribution assembly. This is only a structure for reporting; derive every named move from the
+current repository. If the report cannot identify these facts, retain the item as a candidate or
+evidence limitation rather than asking the reader to infer the problem.
