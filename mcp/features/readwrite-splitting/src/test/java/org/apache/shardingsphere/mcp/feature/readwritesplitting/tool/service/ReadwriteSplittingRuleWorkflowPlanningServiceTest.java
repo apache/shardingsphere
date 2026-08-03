@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.feature.readwritesplitting.TestWorkflowSess
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,16 @@ class ReadwriteSplittingRuleWorkflowPlanningServiceTest {
         assertThat(actual.getResourceUriTemplates(), is(List.of(ReadwriteSplittingFeatureDefinition.STORAGE_UNITS_RESOURCE_URI)));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(),
                 is("CREATE READWRITE_SPLITTING RULE `readwrite_ds` (WRITE_STORAGE_UNIT=`write_ds`, READ_STORAGE_UNITS(`read_ds_0`), TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC')"));
+    }
+    
+    @Test
+    void assertPlanClarifiesNaturalLanguageWithoutOperation() {
+        ReadwriteSplittingRuleWorkflowRequest request = createRuleRequest("");
+        request.setNaturalLanguageIntent("opaque request text");
+        WorkflowContextSnapshot actual = createRuleService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getClarifiedIntent().getUnresolvedFields(), is(List.of(WorkflowFieldNames.OPERATION_TYPE)));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test

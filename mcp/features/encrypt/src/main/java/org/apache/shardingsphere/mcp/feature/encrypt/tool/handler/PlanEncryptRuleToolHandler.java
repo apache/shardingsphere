@@ -58,8 +58,7 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPFeatu
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
-        EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, arguments,
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, arguments, this::bindFeatureArguments);
         WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getMetadataQueryFacade(),
                 requestContext.getQueryFacade(), request);
         return new MCPMapPayload(buildPlanResponse(snapshot));
@@ -102,6 +101,9 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPFeatu
         request.getOptions().setCipherColumnName(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.CIPHER_COLUMN_NAME));
         request.getOptions().setAssistedQueryColumnName(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.ASSISTED_QUERY_COLUMN_NAME));
         request.getOptions().setLikeQueryColumnName(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.LIKE_QUERY_COLUMN_NAME));
+        request.getOptions().setRequiresDecrypt(workflowPlanningArguments.getBooleanArgument(WorkflowFieldNames.REQUIRES_DECRYPT));
+        request.getOptions().setRequiresEqualityFilter(workflowPlanningArguments.getBooleanArgument(WorkflowFieldNames.REQUIRES_EQUALITY_FILTER));
+        request.getOptions().setRequiresLikeQuery(workflowPlanningArguments.getBooleanArgument(WorkflowFieldNames.REQUIRES_LIKE_QUERY));
         request.getPrimaryAlgorithmProperties().putAll(
                 workflowPlanningArguments.getAlgorithmPropertyMapArgument(WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES, EncryptFeatureDefinition.ALGORITHM_ROLE_PRIMARY));
         request.getPrimaryAlgorithmSecretReferences().putAll(workflowPlanningArguments.getSecretReferenceMapArgument(WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES));
@@ -113,13 +115,4 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPFeatu
         request.getOptions().getLikeQueryAlgorithmSecretReferences().putAll(workflowPlanningArguments.getSecretReferenceMapArgument(WorkflowFieldNames.LIKE_QUERY_ALGORITHM_PROPERTIES));
     }
     
-    private void applyStructuredIntentEvidence(final EncryptWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        request.getOptions().setRequiresDecrypt((Boolean) structuredIntentEvidence.get(WorkflowFieldNames.REQUIRES_DECRYPT));
-        request.getOptions().setRequiresEqualityFilter((Boolean) structuredIntentEvidence.get(WorkflowFieldNames.REQUIRES_EQUALITY_FILTER));
-        request.getOptions().setRequiresLikeQuery((Boolean) structuredIntentEvidence.get(WorkflowFieldNames.REQUIRES_LIKE_QUERY));
-        Object fieldSemantics = structuredIntentEvidence.get(WorkflowFieldNames.FIELD_SEMANTICS);
-        if (null != fieldSemantics) {
-            request.setFieldSemantics(((String) fieldSemantics).trim());
-        }
-    }
 }

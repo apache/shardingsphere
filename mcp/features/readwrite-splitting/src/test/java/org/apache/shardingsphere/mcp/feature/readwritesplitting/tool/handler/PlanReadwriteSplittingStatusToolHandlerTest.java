@@ -60,8 +60,10 @@ class PlanReadwriteSplittingStatusToolHandlerTest {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
             MCPSuccessPayload actual = new PlanReadwriteSplittingStatusToolHandler().handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
+                    "rule", "readwrite_ds",
+                    "storage_unit", "read_ds_0",
                     "target_status", "disable",
-                    "structured_intent_evidence", Map.of("rule", "readwrite_ds", "storage_unit", "read_ds_0")));
+                    "natural_language_intent", "opaque request text"));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actualPayload.get("workflow_kind"), is("readwrite.status"));
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");

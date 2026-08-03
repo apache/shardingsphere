@@ -70,6 +70,15 @@ class EncryptDescriptorContractTest {
         assertThat(actualOperationType.get("enum"), is(List.of("create", "drop")));
     }
     
+    @Test
+    void assertPlanToolExposesEncryptRequirementsAtTopLevel() {
+        MCPToolDescriptor actualDescriptor = findToolDescriptor();
+        assertThat(MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "requires_decrypt").orElseThrow().get("type"), is("boolean"));
+        assertThat(MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "requires_equality_filter").orElseThrow().get("type"), is("boolean"));
+        assertThat(MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "requires_like_query").orElseThrow().get("type"), is("boolean"));
+        assertFalse(MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "structured_intent_evidence").isPresent());
+    }
+    
     private MCPToolDescriptor findToolDescriptor() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
         return catalog.getProtocolDescriptors().getToolDescriptors().stream()

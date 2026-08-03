@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ShadowDescriptorContractTest {
     
@@ -58,8 +59,7 @@ class ShadowDescriptorContractTest {
         Map<String, Object> properties = (Map<String, Object>) findTool(MCPDescriptorCatalogLoader.load(),
                 ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_TOOL_NAME).getInputSchema().get("properties");
         assertThat(((Map<String, Object>) properties.get("algorithm_type")).get("enum"), is(List.of("SQL_HINT")));
-        Map<String, Object> structuredIntentProperties = (Map<String, Object>) ((Map<String, Object>) properties.get("structured_intent_evidence")).get("properties");
-        assertThat(((Map<String, Object>) structuredIntentProperties.get("algorithm_type")).get("enum"), is(List.of("SQL_HINT")));
+        assertFalse(properties.containsKey("structured_intent_evidence"));
     }
     
     @Test

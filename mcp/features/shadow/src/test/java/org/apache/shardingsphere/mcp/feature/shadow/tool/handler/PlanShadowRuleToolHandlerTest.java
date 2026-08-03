@@ -59,8 +59,10 @@ class PlanShadowRuleToolHandlerTest {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
             MCPSuccessPayload actual = new PlanShadowRuleToolHandler().handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
+                    "rule", "shadow_rule",
+                    "table", "t_order",
                     "algorithm_type", "SQL_HINT",
-                    "structured_intent_evidence", Map.of("rule", "shadow_rule", "table", "t_order")));
+                    "natural_language_intent", "opaque request text"));
             Map<String, Object> actualPayload = actual.toPayload();
             List<?> actualResourcesToRead = (List<?>) actualPayload.get("resources_to_read");
             assertThat(findResourceKind(actualResourcesToRead, "shardingsphere://features/shadow/algorithm-plugins"), is("algorithm"));

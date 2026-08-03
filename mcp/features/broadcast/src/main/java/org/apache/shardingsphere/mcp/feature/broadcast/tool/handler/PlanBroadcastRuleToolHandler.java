@@ -50,8 +50,7 @@ public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPFea
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
-        BroadcastWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(BroadcastWorkflowRequest::new, arguments,
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        BroadcastWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(BroadcastWorkflowRequest::new, arguments, this::bindFeatureArguments);
         WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
         return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
@@ -60,10 +59,4 @@ public final class PlanBroadcastRuleToolHandler implements MCPToolHandler<MCPFea
         request.setTables(workflowPlanningArguments.getStringArgument(BroadcastFeatureDefinition.TABLES_FIELD));
     }
     
-    private void applyStructuredIntentEvidence(final BroadcastWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        Object tables = structuredIntentEvidence.get(BroadcastFeatureDefinition.TABLES_FIELD);
-        if (null != tables) {
-            request.setTables(String.valueOf(tables));
-        }
-    }
 }

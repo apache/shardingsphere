@@ -50,18 +50,13 @@ public final class PlanShadowAlgorithmCleanupToolHandler implements MCPToolHandl
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
-        ShadowAlgorithmCleanupWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowAlgorithmCleanupWorkflowRequest::new, arguments,
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        ShadowAlgorithmCleanupWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowAlgorithmCleanupWorkflowRequest::new, arguments, this::bindFeatureArguments);
         WorkflowContextSnapshot snapshot = planningService.planAlgorithmCleanup(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
         return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
     
     private void bindFeatureArguments(final ShadowAlgorithmCleanupWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
         workflowPlanningArguments.applyStringArgument(ShadowFeatureDefinition.ALGORITHM_NAME_FIELD, request::setAlgorithmName);
-    }
-    
-    private void applyStructuredIntentEvidence(final ShadowAlgorithmCleanupWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_NAME_FIELD, request::setAlgorithmName);
     }
     
 }

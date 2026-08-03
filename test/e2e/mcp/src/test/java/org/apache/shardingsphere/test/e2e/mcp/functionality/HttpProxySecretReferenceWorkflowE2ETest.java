@@ -68,8 +68,8 @@ class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE
     private Map<String, Object> planSecretReferencedEncryptRule(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         return interactionClient.call(PLAN_TOOL_NAME,
                 Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                        "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
-                        "cipher_column_name", "status_cipher",
+                        "operation_type", "create", "requires_decrypt", true, "requires_equality_filter", false, "requires_like_query", false,
+                        "algorithm_type", "AES", "cipher_column_name", "status_cipher",
                         "primary_algorithm_properties", Map.of("aes-key-value", Map.of("secret_ref", SECRET_REF, "label", INPUT_LABEL))));
     }
     

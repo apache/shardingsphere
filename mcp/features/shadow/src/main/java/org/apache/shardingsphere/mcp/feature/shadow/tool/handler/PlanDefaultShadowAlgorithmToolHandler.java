@@ -29,9 +29,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Tool handler for default shadow algorithm workflow planning.
@@ -52,8 +50,7 @@ public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandl
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
-        ShadowDefaultAlgorithmWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowDefaultAlgorithmWorkflowRequest::new, arguments,
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        ShadowDefaultAlgorithmWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowDefaultAlgorithmWorkflowRequest::new, arguments, this::bindFeatureArguments);
         WorkflowContextSnapshot snapshot = planningService.planDefaultAlgorithm(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
         return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
@@ -63,23 +60,4 @@ public final class PlanDefaultShadowAlgorithmToolHandler implements MCPToolHandl
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument(ShadowFeatureDefinition.ALGORITHM_PROPERTIES_FIELD));
     }
     
-    private void applyStructuredIntentEvidence(final ShadowDefaultAlgorithmWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
-        applyMapField(structuredIntentEvidence, request);
-    }
-    
-    private void applyMapField(final Map<String, Object> values, final ShadowDefaultAlgorithmWorkflowRequest request) {
-        Object value = values.get(ShadowFeatureDefinition.ALGORITHM_PROPERTIES_FIELD);
-        if (value instanceof Map) {
-            request.putAlgorithmProperties(createStringMap((Map<?, ?>) value));
-        }
-    }
-    
-    private Map<String, String> createStringMap(final Map<?, ?> values) {
-        Map<String, String> result = new LinkedHashMap<>(values.size(), 1F);
-        for (Entry<?, ?> entry : values.entrySet()) {
-            result.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
-        }
-        return result;
-    }
 }

@@ -52,14 +52,14 @@ class ReadwriteSplittingStatusWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanInfersTargetStatus() {
+    void assertPlanDoesNotInferTargetStatusFromNaturalLanguage() {
         ReadwriteSplittingStatusWorkflowRequest request = createRequest("");
-        request.setNaturalLanguageIntent("disable read storage unit");
-        WorkflowContextSnapshot actual = planningService.plan(new TestWorkflowSessionContext(), createQueryFacade(List.of(createStatusRow("ENABLED"))), request);
-        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
-        assertThat(((ReadwriteSplittingStatusWorkflowRequest) actual.getRequest()).getTargetStatus(), is("disable"));
+        request.setNaturalLanguageIntent("opaque request text");
+        WorkflowContextSnapshot actual = planningService.plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(((ReadwriteSplittingStatusWorkflowRequest) actual.getRequest()).getTargetStatus(), is(""));
         assertThat(actual.getRequest().getOperationType(), is(""));
-        assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("ALTER READWRITE_SPLITTING RULE `readwrite_ds` DISABLE `read_ds_0` FROM `logic_db`"));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test

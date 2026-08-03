@@ -49,9 +49,11 @@ class PlanShardingTableRuleToolHandlerTest {
             WorkflowContextFixture fixture = ShardingWorkflowToolHandlerTestFixture.createWorkflowContextFixture();
             MCPSuccessPayload actual = new PlanShardingTableRuleToolHandler().handle(fixture.requestContext(), Map.of(
                     "database", "logic_db",
+                    "table", "t_order",
+                    "column", "order_id",
+                    "sharding_columns", "order_id, user_id",
                     "algorithm_type", "INLINE",
-                    "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
-                    "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "sharding_columns", "order_id, user_id")));
+                    "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}")));
             List<?> actualResourcesToRead = (List<?>) actual.toPayload().get("resources_to_read");
             assertThat(ShardingWorkflowToolHandlerTestFixture.findResourceKind(
                     actualResourcesToRead, "shardingsphere://features/sharding/algorithm-plugins"), is("algorithm"));

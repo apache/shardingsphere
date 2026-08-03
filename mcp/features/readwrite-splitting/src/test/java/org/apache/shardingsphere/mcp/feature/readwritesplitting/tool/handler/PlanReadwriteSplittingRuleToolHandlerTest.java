@@ -61,7 +61,7 @@ class PlanReadwriteSplittingRuleToolHandlerTest {
             MCPSuccessPayload actual = new PlanReadwriteSplittingRuleToolHandler().handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
                     "rule", "readwrite_ds",
-                    "structured_intent_evidence", Map.of("rule", "inferred_rule", "read_storage_units", "read_ds_1")));
+                    "read_storage_units", "read_ds_1"));
             assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
             ArgumentCaptor<ReadwriteSplittingRuleWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(ReadwriteSplittingRuleWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());
@@ -74,13 +74,6 @@ class PlanReadwriteSplittingRuleToolHandlerTest {
     void assertHandleWithTopLevelLoadBalancerProperties() {
         ReadwriteSplittingRuleWorkflowRequest actual = handle(Map.of("database", "logic_db",
                 "load_balancer_properties", Map.of("read_ds_0", "2")));
-        assertThat(actual.getLoadBalancerProperties(), is(Map.of("read_ds_0", "2")));
-    }
-    
-    @Test
-    void assertHandleWithStructuredIntentLoadBalancerProperties() {
-        ReadwriteSplittingRuleWorkflowRequest actual = handle(Map.of("database", "logic_db",
-                "structured_intent_evidence", Map.of("load_balancer_properties", Map.of("read_ds_0", "2"))));
         assertThat(actual.getLoadBalancerProperties(), is(Map.of("read_ds_0", "2")));
     }
     
