@@ -180,7 +180,7 @@ final class ShardingWorkflowInputValidator {
             return false;
         }
         if (request.getDataNodes().isEmpty() && request.getStorageUnits().isEmpty()) {
-            return clarify(snapshot, List.of("data_nodes", "storage_units"), "Please provide data nodes or storage units.");
+            return clarify(snapshot, "Please provide data nodes or storage units.");
         }
         return (request.getStorageUnits().isEmpty() ? ensureRequiredStrategyInputs(request, snapshot) : ensureRequiredAutoTableRuleInputs(request, snapshot))
                 && ensureRequiredTableRuleKeyGenerateInputs(request, snapshot) && ensureRequiredAuditInputs(request, snapshot);
@@ -290,14 +290,14 @@ final class ShardingWorkflowInputValidator {
             return false;
         }
         if (request.getSequenceName().isEmpty() && request.getTable().isEmpty() && request.getColumn().isEmpty()) {
-            return clarify(snapshot, List.of("table", "column", "sequence"), "Please provide table and column, or sequence.");
+            return clarify(snapshot, "Please provide table and column, or sequence.");
         }
         if (request.getSequenceName().isEmpty() && (!require(snapshot, request.getTable(), "table", "Please provide target logical table.")
                 || !require(snapshot, request.getColumn(), "column", "Please provide key generate column."))) {
             return false;
         }
         if (request.getKeyGeneratorName().isEmpty() && request.getKeyGeneratorType().isEmpty()) {
-            return clarify(snapshot, List.of("key_generator", "key_generator_type"), "Please provide key_generator or key_generator_type.");
+            return clarify(snapshot, "Please provide key_generator or key_generator_type.");
         }
         return true;
     }
@@ -333,15 +333,13 @@ final class ShardingWorkflowInputValidator {
     }
     
     private boolean clarify(final WorkflowContextSnapshot snapshot, final String fieldName, final String message) {
-        return clarify(snapshot, List.of(fieldName), message);
+        if (!snapshot.getClarifiedIntent().getUnresolvedFields().contains(fieldName)) {
+            snapshot.getClarifiedIntent().getUnresolvedFields().add(fieldName);
+        }
+        return clarify(snapshot, message);
     }
     
-    private boolean clarify(final WorkflowContextSnapshot snapshot, final Collection<String> fieldNames, final String message) {
-        for (String each : fieldNames) {
-            if (!snapshot.getClarifiedIntent().getUnresolvedFields().contains(each)) {
-                snapshot.getClarifiedIntent().getUnresolvedFields().add(each);
-            }
-        }
+    private boolean clarify(final WorkflowContextSnapshot snapshot, final String message) {
         if (!snapshot.getClarifiedIntent().getClarificationMessages().contains(message)) {
             snapshot.getClarifiedIntent().getClarificationMessages().add(message);
         }
