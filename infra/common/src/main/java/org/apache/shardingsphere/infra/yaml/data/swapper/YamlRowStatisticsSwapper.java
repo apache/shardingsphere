@@ -53,10 +53,9 @@ public final class YamlRowStatisticsSwapper implements YamlConfigurationSwapper<
     }
     
     private Object convertDataType(final Object data, final int dataType) {
-        if (Types.DECIMAL == dataType || Types.BIGINT == dataType) {
+        if (Types.DECIMAL == dataType || Types.NUMERIC == dataType) {
             return null == data ? null : data.toString();
         }
-        // TODO use general type convertor
         return data;
     }
     
@@ -76,16 +75,18 @@ public final class YamlRowStatisticsSwapper implements YamlConfigurationSwapper<
         if (null == data) {
             return null;
         }
-        if (Types.DECIMAL == dataType) {
+        if ((Types.DECIMAL == dataType || Types.NUMERIC == dataType) && !(data instanceof BigDecimal)) {
             return new BigDecimal(data.toString());
         }
         if (Types.BIGINT == dataType) {
-            return Long.valueOf(data.toString());
+            return data instanceof Long ? data : Long.valueOf(data.toString());
         }
-        if (Types.REAL == dataType || Types.FLOAT == dataType) {
-            return Float.parseFloat(data.toString());
+        if (Types.REAL == dataType) {
+            return data instanceof Float ? data : Float.valueOf(data.toString());
         }
-        // TODO use general type convertor
+        if ((Types.FLOAT == dataType || Types.DOUBLE == dataType) && !(data instanceof Double)) {
+            return Double.valueOf(data.toString());
+        }
         return data;
     }
 }
