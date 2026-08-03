@@ -41,13 +41,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
@@ -56,7 +54,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -149,24 +146,33 @@ class EncryptWorkflowPlanningServiceTest {
         assertThat(actual.getIssues().size(), is(1));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertPlanWithNaturalLanguageInferenceArguments")
-    void assertPlanWithNaturalLanguageInference(final String name, final String naturalLanguageIntent, final boolean ruleExists,
-                                                final String expectedOperationType, final String expectedFieldSemantics, final String expectedStatus) {
-        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("logic_column", "phone")) : List.of());
-        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(Map.of("type", "AES", "supports_like", false)));
-        EncryptWorkflowRequest request = createNaturalLanguageRequest(naturalLanguageIntent);
-        request.getOptions().setCipherColumnName("phone_cipher");
-        request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
-        WorkflowContextSnapshot actual = createService(ruleInspectionService, new EncryptAlgorithmRecommendationService(), new EncryptAlgorithmPropertyTemplateService(),
-                new EncryptRuleDistSQLPlanningService()).plan(new TestWorkflowSessionContext(), createMetadataQueryFacade(), createQueryFacade(), request);
-        assertThat(actual.getClarifiedIntent().getOperationType(), is(expectedOperationType));
-        assertThat(actual.getClarifiedIntent().getFieldSemantics(), is(expectedFieldSemantics));
-        assertThat(actual.getStatus(), is(expectedStatus));
-        if ("failed".equals(expectedStatus)) {
-            assertRuleDistSQLOnlyPayloadClearsOperationType(actual);
-        }
+    @Test
+    void assertPlanClarifiesNaturalLanguageWithoutOperation() {
+        EncryptWorkflowRequest request = createRequestWithoutProperties();
+        request.setOperationType("");
+        request.setNaturalLanguageIntent("opaque request text");
+        WorkflowContextSnapshot actual = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
+                mock(EncryptAlgorithmPropertyTemplateService.class), mock(EncryptRuleDistSQLPlanningService.class))
+                .plan(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is("clarifying"));
+        assertThat(actual.getClarifiedIntent().getOperationType(), is(""));
+        assertThat(actual.getClarifiedIntent().getUnresolvedFields(), is(List.of(WorkflowFieldNames.OPERATION_TYPE)));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
+    }
+    
+    @Test
+    void assertPlanClarifiesMissingEncryptRequirements() {
+        EncryptWorkflowRequest request = createRequest("create");
+        request.getOptions().setRequiresDecrypt(null);
+        request.getOptions().setRequiresEqualityFilter(null);
+        request.getOptions().setRequiresLikeQuery(null);
+        WorkflowContextSnapshot actual = planWithPrimaryCandidate(request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getClarifiedIntent().getUnresolvedFields(),
+                is(List.of(WorkflowFieldNames.REQUIRES_DECRYPT, WorkflowFieldNames.REQUIRES_EQUALITY_FILTER, WorkflowFieldNames.REQUIRES_LIKE_QUERY)));
+        assertThat(actual.getClarifiedIntent().getClarificationMessages(),
+                is(List.of("Do you need reversible decryption?", "Do you need equality query?", "Do you need LIKE query?")));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test
@@ -353,13 +359,6 @@ class EncryptWorkflowPlanningServiceTest {
         return result;
     }
     
-    private EncryptWorkflowRequest createNaturalLanguageRequest(final String naturalLanguageIntent) {
-        EncryptWorkflowRequest result = createRequestWithoutProperties();
-        result.setOperationType("");
-        result.setNaturalLanguageIntent(naturalLanguageIntent);
-        return result;
-    }
-    
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.SCHEMA, "public", "public")).thenReturn(true);
@@ -423,18 +422,4 @@ class EncryptWorkflowPlanningServiceTest {
         assertFalse(String.valueOf(actualPayload).toLowerCase(Locale.ENGLISH).contains(term));
     }
     
-    private void assertRuleDistSQLOnlyPayloadClearsOperationType(final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> actualPayload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
-        Map<?, ?> actualIntentInference = (Map<?, ?>) actualPayload.get("intent_inference");
-        assertThat(actualIntentInference.get(WorkflowFieldNames.OPERATION_TYPE), is(""));
-        assertFalse(((Map<?, ?>) actualIntentInference.get("inferred_values")).containsKey(WorkflowFieldNames.OPERATION_TYPE));
-        assertFalse(((Map<?, ?>) actualPayload.get("argument_provenance")).containsKey(WorkflowFieldNames.OPERATION_TYPE));
-    }
-    
-    private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {
-        return Stream.of(
-                Arguments.of("create from default verb", "encrypt phone column", false, "create", "phone", "planned"),
-                Arguments.of("unsupported update verb", "update phone number encrypt rule", true, "", "phone", "failed"),
-                Arguments.of("drop from english verb", "delete phone number encrypt rule", true, "drop", "phone", "planned"));
-    }
 }

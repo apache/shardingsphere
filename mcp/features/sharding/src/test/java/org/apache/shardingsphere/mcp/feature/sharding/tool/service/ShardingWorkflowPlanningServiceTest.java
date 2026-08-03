@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.feature.sharding.TestWorkflowSessionContext
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
@@ -71,6 +72,22 @@ class ShardingWorkflowPlanningServiceTest {
         assertThat(actual.getClarifiedIntent().getOperationType(), is(""));
         assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         assertRuleDistSQLOnlyPayloadDoesNotExpose(actual, "replace");
+    }
+    
+    @Test
+    void assertPlanTableRuleContinuesAfterOperationClarification() {
+        TestWorkflowSessionContext sessionContext = new TestWorkflowSessionContext();
+        ShardingWorkflowRequest initialRequest = createTableRuleRequest();
+        initialRequest.setNaturalLanguageIntent("opaque request text");
+        WorkflowContextSnapshot initial = planningService.planTableRule(sessionContext, mock(MCPFeatureQueryFacade.class), initialRequest);
+        assertThat(initial.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(initial.getClarifiedIntent().getUnresolvedFields(), is(List.of(WorkflowFieldNames.OPERATION_TYPE)));
+        ShardingWorkflowRequest continuation = new ShardingWorkflowRequest();
+        continuation.setPlanId(initial.getPlanId());
+        continuation.setOperationType(WorkflowLifecycle.OPERATION_CREATE);
+        WorkflowContextSnapshot actual = planningService.planTableRule(sessionContext, createQueryFacade(List.of()), continuation);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+        assertThat(actual.getRequest().getTable(), is("t_order"));
     }
     
     @Test

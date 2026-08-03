@@ -56,7 +56,7 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPFeatureR
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
-        WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(arguments, this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(arguments, this::bindFeatureArguments);
         WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getMetadataQueryFacade(),
                 requestContext.getQueryFacade(), request);
         return new MCPMapPayload(buildPlanResponse(snapshot));
@@ -82,10 +82,4 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPFeatureR
         request.getPrimaryAlgorithmSecretReferences().putAll(workflowPlanningArguments.getSecretReferenceMapArgument(WorkflowFieldNames.PRIMARY_ALGORITHM_PROPERTIES));
     }
     
-    private void applyStructuredIntentEvidence(final WorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        Object fieldSemantics = structuredIntentEvidence.get(WorkflowFieldNames.FIELD_SEMANTICS);
-        if (null != fieldSemantics) {
-            request.setFieldSemantics(String.valueOf(fieldSemantics).trim());
-        }
-    }
 }

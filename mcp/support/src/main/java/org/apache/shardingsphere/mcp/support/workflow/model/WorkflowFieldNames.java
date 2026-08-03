@@ -46,8 +46,6 @@ public final class WorkflowFieldNames {
     
     public static final String EXECUTION_MODE = "execution_mode";
     
-    public static final String FIELD_SEMANTICS = "field_semantics";
-    
     public static final String LIKE_QUERY_ALGORITHM_PROPERTIES = "like_query_algorithm_properties";
     
     public static final String LIKE_QUERY_ALGORITHM_TYPE = "like_query_algorithm_type";
@@ -69,8 +67,6 @@ public final class WorkflowFieldNames {
     public static final String REQUIRES_LIKE_QUERY = "requires_like_query";
     
     public static final String SCHEMA = "schema";
-    
-    public static final String STRUCTURED_INTENT_EVIDENCE = "structured_intent_evidence";
     
     public static final String TABLE = "table";
     

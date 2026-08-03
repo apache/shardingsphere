@@ -43,8 +43,6 @@ public class WorkflowRequest {
     
     private String naturalLanguageIntent = "";
     
-    private String fieldSemantics = "";
-    
     private String deliveryMode = WorkflowLifecycle.DELIVERY_MODE_ALL_AT_ONCE;
     
     private String executionMode = WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE;
@@ -125,15 +123,6 @@ public class WorkflowRequest {
      */
     public void setNaturalLanguageIntent(final String naturalLanguageIntent) {
         this.naturalLanguageIntent = normalize(naturalLanguageIntent);
-    }
-    
-    /**
-     * Set field semantics.
-     *
-     * @param fieldSemantics field semantics
-     */
-    public void setFieldSemantics(final String fieldSemantics) {
-        this.fieldSemantics = normalize(fieldSemantics);
     }
     
     /**
@@ -240,7 +229,6 @@ public class WorkflowRequest {
         target.setColumn(column);
         target.setOperationType(operationType);
         target.setNaturalLanguageIntent(naturalLanguageIntent);
-        target.setFieldSemantics(fieldSemantics);
         target.setDeliveryMode(deliveryMode);
         target.setExecutionMode(executionMode);
         target.setAlgorithmType(algorithmType);
@@ -264,7 +252,6 @@ public class WorkflowRequest {
         target.setColumn(resolveValue(target.getColumn(), column));
         target.setOperationType(resolveValue(target.getOperationType(), operationType));
         target.setNaturalLanguageIntent(resolveValue(target.getNaturalLanguageIntent(), naturalLanguageIntent));
-        target.setFieldSemantics(resolveValue(target.getFieldSemantics(), fieldSemantics));
         target.setDeliveryMode(resolveValue(target.getDeliveryMode(), deliveryMode));
         target.setExecutionMode(resolveValue(target.getExecutionMode(), executionMode));
         target.setAlgorithmType(resolveValue(target.getAlgorithmType(), algorithmType));

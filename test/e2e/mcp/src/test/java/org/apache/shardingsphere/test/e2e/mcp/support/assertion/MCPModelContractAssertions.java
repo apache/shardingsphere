@@ -38,7 +38,8 @@ public final class MCPModelContractAssertions {
     
     private static final Collection<String> REMOVED_MODEL_FACING_FIELDS = Set.of(
             "target_tool", "target_resource", "required_arguments", "action_kind", "suggested_next_tool", "suggested_next_tools", "recommended_next_tool",
-            "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required", "user_overrides");
+            "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required", "user_overrides",
+            "structured_intent_evidence", "field_semantics", "reasoning_notes");
     
     private static final Map<String, Collection<String>> NEXT_ACTION_REQUIRED_FIELDS = Map.of(
             "resource_read", Set.of("order", "type", "title", "resource_uri"),

@@ -61,8 +61,6 @@ public final class EncryptWorkflowPlanningService {
     
     private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
-    private final EncryptWorkflowIntentResolver intentResolver = new EncryptWorkflowIntentResolver();
-    
     private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
     private final EncryptAlgorithmRecommendationService algorithmRecommendationService = new EncryptAlgorithmRecommendationService();
@@ -87,7 +85,8 @@ public final class EncryptWorkflowPlanningService {
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
         if (!planningSupport.ensureSupportedOperationType(clarifiedIntent, SUPPORTED_OPERATION_TYPES, result)) {
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
         if (!planningSupport.ensurePlanningContext(metadataQueryFacade, queryFacade, mergedRequest, clarifiedIntent, result)) {
             String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
@@ -115,7 +114,34 @@ public final class EncryptWorkflowPlanningService {
         EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), request);
         RuleWorkflowFeatureData workflowState = getWorkflowState(snapshot);
         return planningSupport.prepareSnapshot(snapshot, EncryptFeatureDefinition.WORKFLOW_KIND, result, workflowState,
-                intentResolver.resolve(result), "Encrypt workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+                resolveIntent(result), "Encrypt workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+    }
+    
+    private ClarifiedIntent resolveIntent(final EncryptWorkflowRequest request) {
+        ClarifiedIntent result = new ClarifiedIntent();
+        resolveOperationType(request, result);
+        if (WorkflowLifecycle.OPERATION_CREATE.equalsIgnoreCase(result.getOperationType())) {
+            addMissingRequirement(result, WorkflowFieldNames.REQUIRES_DECRYPT, request.getOptions().getRequiresDecrypt(), "Do you need reversible decryption?");
+            addMissingRequirement(result, WorkflowFieldNames.REQUIRES_EQUALITY_FILTER, request.getOptions().getRequiresEqualityFilter(), "Do you need equality query?");
+            addMissingRequirement(result, WorkflowFieldNames.REQUIRES_LIKE_QUERY, request.getOptions().getRequiresLikeQuery(), "Do you need LIKE query?");
+        }
+        return result;
+    }
+    
+    private void resolveOperationType(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+        if (!request.getOperationType().isEmpty()) {
+            clarifiedIntent.setOperationType(request.getOperationType());
+        } else if (request.getNaturalLanguageIntent().isEmpty()) {
+            clarifiedIntent.setOperationType(WorkflowLifecycle.OPERATION_CREATE);
+            clarifiedIntent.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, WorkflowLifecycle.OPERATION_CREATE);
+        }
+    }
+    
+    private void addMissingRequirement(final ClarifiedIntent clarifiedIntent, final String fieldName, final Boolean value, final String message) {
+        if (null == value) {
+            clarifiedIntent.getUnresolvedFields().add(fieldName);
+            clarifiedIntent.getClarificationMessages().add(message);
+        }
     }
     
     private RuleWorkflowFeatureData getWorkflowState(final WorkflowContextSnapshot snapshot) {

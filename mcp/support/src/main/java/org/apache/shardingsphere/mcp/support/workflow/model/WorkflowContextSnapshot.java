@@ -108,8 +108,6 @@ public final class WorkflowContextSnapshot {
         }
         ClarifiedIntent result = new ClarifiedIntent();
         result.setOperationType(original.getOperationType());
-        result.setFieldSemantics(original.getFieldSemantics());
-        result.setReasoningNotes(original.getReasoningNotes());
         result.getClarificationMessages().addAll(original.getClarificationMessages());
         result.getUnresolvedFields().addAll(original.getUnresolvedFields());
         original.getInferredValues().forEach((key, value) -> result.getInferredValues().put(key, copyValue(value)));

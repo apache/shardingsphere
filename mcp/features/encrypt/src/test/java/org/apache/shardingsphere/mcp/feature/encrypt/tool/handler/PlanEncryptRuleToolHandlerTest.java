@@ -64,16 +64,21 @@ class PlanEncryptRuleToolHandlerTest {
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone",
+                    "operation_type", "create",
                     "algorithm_type", "AES",
                     "cipher_column_name", "phone_cipher",
-                    "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true)));
+                    "requires_decrypt", true,
+                    "requires_equality_filter", false,
+                    "requires_like_query", false));
             assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
             ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
             verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), requestCaptor.capture());
             EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
             assertThat(actualRequest.getAlgorithmType(), is("AES"));
-            assertThat(actualRequest.getFieldSemantics(), is("phone"));
             assertThat(actualRequest.getOptions().getCipherColumnName(), is("phone_cipher"));
+            assertTrue(actualRequest.getOptions().getRequiresDecrypt());
+            assertFalse(actualRequest.getOptions().getRequiresEqualityFilter());
+            assertFalse(actualRequest.getOptions().getRequiresLikeQuery());
         }
     }
     

@@ -349,33 +349,7 @@ tools:
             type: string
         natural_language_intent:
           type: string
-          description: "User request in natural language, used to infer create, alter, or drop when operation_type is absent."
-        structured_intent_evidence:
-          type: object
-          description: "Readwrite-splitting structured intent extracted from the user request."
-          properties:
-            rule:
-              type: string
-              description: "Inferred rule name."
-            write_storage_unit:
-              type: string
-              description: "Inferred write storage unit."
-            read_storage_units:
-              type: string
-              description: "Inferred comma-separated read storage units."
-            transactional_read_query_strategy:
-              type: string
-              description: "Inferred transactional read query strategy."
-            load_balancer_type:
-              type: string
-              description: "Inferred load-balance algorithm type."
-            load_balancer_properties:
-              type: object
-              description: "Inferred load-balance algorithm properties."
-              additionalProperties:
-                type: string
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
         delivery_mode:
           type: string
           description: "Whether the plan should return all artifacts at once or guide the user step by step."
@@ -449,10 +423,10 @@ tools:
           description: "Preferred later apply mode captured by the plan."
         intent_inference:
           type: object
-          description: "Resolved intent fields, inferred values, unresolved fields, and reasoning notes."
+          description: "Resolved operation type, server-derived or defaulted values, and unresolved fields."
         argument_provenance:
           type: object
-          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
+          description: "Source of important workflow arguments, such as user-provided, server-derived, or server-defaulted values."
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
@@ -590,22 +564,7 @@ tools:
             - disable
         natural_language_intent:
           type: string
-          description: "User request in natural language, used to infer enable or disable when target_status is absent."
-        structured_intent_evidence:
-          type: object
-          description: "Readwrite-splitting status structured intent extracted from the user request."
-          properties:
-            rule:
-              type: string
-              description: "Inferred rule name."
-            storage_unit:
-              type: string
-              description: "Inferred read storage unit."
-            target_status:
-              type: string
-              description: "Inferred target status."
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
         delivery_mode:
           type: string
           description: "Whether the plan should return all artifacts at once or guide the user step by step."
