@@ -199,10 +199,16 @@ final class ShardingWorkflowInputValidator {
             }
             return require(snapshot, "", "key_generate_column", "Please provide key generate column when configuring a key generator.");
         }
-        if (!request.getKeyGeneratorName().isEmpty()) {
+        return ensureRequiredKeyGeneratorSelection(request, snapshot);
+    }
+    
+    private boolean ensureRequiredKeyGeneratorSelection(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        if (!request.getKeyGeneratorName().isEmpty() || !request.getKeyGeneratorType().isEmpty()) {
             return true;
         }
-        return require(snapshot, request.getKeyGeneratorType(), "key_generator_type", "Please provide key generator type or key generator name for key generate strategy.");
+        return request.getKeyGeneratorProperties().isEmpty()
+                ? clarify(snapshot, "Please provide key_generator or key_generator_type.")
+                : require(snapshot, "", "key_generator_type", "Please provide key generator type.");
     }
     
     private boolean ensureRequiredAuditInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
@@ -296,10 +302,7 @@ final class ShardingWorkflowInputValidator {
                 || !require(snapshot, request.getColumn(), "column", "Please provide key generate column."))) {
             return false;
         }
-        if (request.getKeyGeneratorName().isEmpty() && request.getKeyGeneratorType().isEmpty()) {
-            return clarify(snapshot, "Please provide key_generator or key_generator_type.");
-        }
-        return true;
+        return ensureRequiredKeyGeneratorSelection(request, snapshot);
     }
     
     boolean ensureRequiredCleanupInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
