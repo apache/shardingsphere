@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.PostgreSQLStatisticsAppender
+org.apache.shardingsphere.infra.metadata.statistics.builder.dialect.OpenGaussStatisticsAppender
