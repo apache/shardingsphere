@@ -99,6 +99,35 @@ class ShardingWorkflowPlanningServiceTest {
     }
     
     @Test
+    void assertPlanTableRuleContinuesAfterDataNodeModeClarification() {
+        TestWorkflowSessionContext sessionContext = new TestWorkflowSessionContext();
+        ShardingWorkflowRequest initialRequest = createDatabaseRequest();
+        initialRequest.setTable("t_order");
+        WorkflowContextSnapshot initial = planningService.planTableRule(sessionContext, mock(MCPFeatureQueryFacade.class), initialRequest);
+        assertChoiceClarification(initial, "Please provide data nodes or storage units.");
+        ShardingWorkflowRequest continuation = new ShardingWorkflowRequest();
+        continuation.setPlanId(initial.getPlanId());
+        continuation.setDataNodes("ds_0.t_order");
+        continuation.setStrategyType("none");
+        WorkflowContextSnapshot actual = planningService.planTableRule(sessionContext, createQueryFacade(List.of()), continuation);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+    }
+    
+    @Test
+    void assertPlanTableRuleContinuesAfterKeyGeneratorModeClarification() {
+        TestWorkflowSessionContext sessionContext = new TestWorkflowSessionContext();
+        ShardingWorkflowRequest initialRequest = createTableRuleRequest();
+        initialRequest.setKeyGenerateColumn("order_id");
+        WorkflowContextSnapshot initial = planningService.planTableRule(sessionContext, mock(MCPFeatureQueryFacade.class), initialRequest);
+        assertChoiceClarification(initial, "Please provide key_generator or key_generator_type.");
+        ShardingWorkflowRequest continuation = new ShardingWorkflowRequest();
+        continuation.setPlanId(initial.getPlanId());
+        continuation.setKeyGeneratorName("snowflake_generator");
+        WorkflowContextSnapshot actual = planningService.planTableRule(sessionContext, createQueryFacade(List.of()), continuation);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+    }
+    
+    @Test
     void assertPlanTableReferenceRuleClarifiesMissingInputs() {
         ShardingWorkflowRequest request = createDatabaseRequest();
         WorkflowContextSnapshot actual = planningService.planTableReferenceRule(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
@@ -243,6 +272,62 @@ class ShardingWorkflowPlanningServiceTest {
         assertThat(actual.getWorkflowKind().getValue(), is("sharding.key.generate.strategy"));
         assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide key generate strategy name.")));
         assertThat(WorkflowPlanPayloadBuilder.build(actual).get("missing_required_inputs"), is(List.of("key_generate_strategy")));
+    }
+    
+    @Test
+    void assertPlanKeyGenerateStrategyContinuesAfterTargetModeClarification() {
+        TestWorkflowSessionContext sessionContext = new TestWorkflowSessionContext();
+        ShardingWorkflowRequest initialRequest = createDatabaseRequest();
+        initialRequest.setKeyGenerateStrategyName("order_sequence_strategy");
+        initialRequest.setKeyGeneratorName("snowflake_generator");
+        WorkflowContextSnapshot initial = planningService.planKeyGenerateStrategy(sessionContext, mock(MCPFeatureQueryFacade.class), initialRequest);
+        assertChoiceClarification(initial, "Please provide table and column, or sequence.");
+        ShardingWorkflowRequest continuation = new ShardingWorkflowRequest();
+        continuation.setPlanId(initial.getPlanId());
+        continuation.setSequenceName("order_seq");
+        WorkflowContextSnapshot actual = planningService.planKeyGenerateStrategy(sessionContext, createQueryFacade(List.of()), continuation);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+    }
+    
+    @Test
+    void assertPlanKeyGenerateStrategyContinuesAfterGeneratorModeClarification() {
+        TestWorkflowSessionContext sessionContext = new TestWorkflowSessionContext();
+        ShardingWorkflowRequest initialRequest = createDatabaseRequest();
+        initialRequest.setKeyGenerateStrategyName("order_sequence_strategy");
+        initialRequest.setSequenceName("order_seq");
+        WorkflowContextSnapshot initial = planningService.planKeyGenerateStrategy(sessionContext, mock(MCPFeatureQueryFacade.class), initialRequest);
+        assertChoiceClarification(initial, "Please provide key_generator or key_generator_type.");
+        ShardingWorkflowRequest continuation = new ShardingWorkflowRequest();
+        continuation.setPlanId(initial.getPlanId());
+        continuation.setKeyGeneratorName("snowflake_generator");
+        WorkflowContextSnapshot actual = planningService.planKeyGenerateStrategy(sessionContext, createQueryFacade(List.of()), continuation);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+    }
+    
+    @Test
+    void assertPlanKeyGenerateStrategyContinuesAfterMissingKeyGeneratorTypeClarification() {
+        TestWorkflowSessionContext sessionContext = new TestWorkflowSessionContext();
+        ShardingWorkflowRequest initialRequest = createDatabaseRequest();
+        initialRequest.setKeyGenerateStrategyName("order_sequence_strategy");
+        initialRequest.setSequenceName("order_seq");
+        initialRequest.putKeyGeneratorProperties(Map.of("worker-id", "1"));
+        WorkflowContextSnapshot initial = planningService.planKeyGenerateStrategy(sessionContext, mock(MCPFeatureQueryFacade.class), initialRequest);
+        assertThat(initial.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(initial.getClarifiedIntent().getUnresolvedFields(), is(List.of("key_generator_type")));
+        assertThat(initial.getClarifiedIntent().getClarificationMessages(), is(List.of("Please provide key generator type.")));
+        Map<String, Object> initialPayload = WorkflowPlanPayloadBuilder.build(initial);
+        assertThat(initialPayload.get("missing_required_inputs"), is(List.of("key_generator_type")));
+        Map<?, ?> actualQuestion = (Map<?, ?>) ((List<?>) initialPayload.get("clarification_questions")).getFirst();
+        assertThat(actualQuestion.get("field"), is("key_generator_type"));
+        assertThat(actualQuestion.get("display_message"), is("Please provide key generator type."));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) initialPayload.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("required_inputs"), is(List.of("key_generator_type")));
+        ShardingWorkflowRequest continuation = new ShardingWorkflowRequest();
+        continuation.setPlanId(initial.getPlanId());
+        continuation.setKeyGeneratorType("SNOWFLAKE");
+        WorkflowContextSnapshot actual = planningService.planKeyGenerateStrategy(sessionContext, createQueryFacade(List.of()), continuation);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
+        assertThat(((ShardingWorkflowRequest) actual.getRequest()).getKeyGeneratorProperties(), is(Map.of("worker-id", "1")));
     }
     
     @Test
@@ -544,6 +629,20 @@ class ShardingWorkflowPlanningServiceTest {
                 ? List.of(Map.of("type", "SNOWFLAKE"), Map.of("type", "UUID"))
                 : List.of(Map.of("type", "INLINE"), Map.of("type", "MOD"), Map.of("type", "HASH_MOD"), Map.of("type", "CLASS_BASED")));
         return result;
+    }
+    
+    private void assertChoiceClarification(final WorkflowContextSnapshot actual, final String expectedMessage) {
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getClarifiedIntent().getUnresolvedFields(), is(List.of()));
+        assertThat(actual.getClarifiedIntent().getClarificationMessages(), is(List.of(expectedMessage)));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
+        Map<String, Object> payload = WorkflowPlanPayloadBuilder.build(actual);
+        assertThat(payload.get("missing_required_inputs"), is(List.of("user_clarification")));
+        Map<?, ?> actualQuestion = (Map<?, ?>) ((List<?>) payload.get("clarification_questions")).getFirst();
+        assertThat(actualQuestion.get("field"), is("user_clarification"));
+        assertThat(actualQuestion.get("display_message"), is(expectedMessage));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) payload.get("next_actions")).getFirst();
+        assertThat(actualNextAction.get("required_inputs"), is(List.of("user_clarification")));
     }
     
     private void assertTableRuleInputConflict(final ShardingWorkflowRequest request, final List<String> expectedConflictingInputs) {
