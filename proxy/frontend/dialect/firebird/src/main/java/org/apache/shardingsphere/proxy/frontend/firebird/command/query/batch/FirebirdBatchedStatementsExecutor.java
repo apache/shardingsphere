@@ -354,7 +354,7 @@ public final class FirebirdBatchedStatementsExecutor {
     private List<BatchExecution> createWholeUnitBatchExecutions(final Collection<JDBCExecutionUnit> executionUnits) throws SQLException {
         List<BatchExecution> result = new ArrayList<>(executionUnits.size());
         for (JDBCExecutionUnit each : executionUnits) {
-            BatchExecution batchExecution = new BatchExecution(each, 0, executionUnitParams.getOrDefault(each.getExecutionUnit(), Collections.emptyList()).size(), false);
+            BatchExecution batchExecution = new BatchExecution(each, 0, executionUnitParams.getOrDefault(each.getExecutionUnit(), Collections.emptyList()).size());
             addPendingBatch(batchExecution);
             result.add(batchExecution);
         }
@@ -371,27 +371,16 @@ public final class FirebirdBatchedStatementsExecutor {
         List<BatchExecution> result = new ArrayList<>(batchMessageCount);
         Map<JDBCExecutionUnit, Integer> consumedOffsets = new IdentityHashMap<>();
         for (Entry<Integer, Collection<JDBCExecutionUnit>> entry : unitsByBatchMessageIndex.entrySet()) {
-            boolean isSharedMessage = 1 < entry.getValue().size();
             for (JDBCExecutionUnit each : entry.getValue()) {
-                appendBatchExecution(result, each, consumedOffsets, isSharedMessage);
+                int offset = consumedOffsets.merge(each, 1, Integer::sum) - 1;
+                result.add(new BatchExecution(each, offset, offset + 1));
             }
         }
         return result;
     }
     
-    private void appendBatchExecution(final List<BatchExecution> batchExecutions, final JDBCExecutionUnit executionUnit,
-                                      final Map<JDBCExecutionUnit, Integer> consumedOffsets, final boolean isSharedMessage) {
-        int offset = consumedOffsets.merge(executionUnit, 1, Integer::sum) - 1;
-        BatchExecution last = batchExecutions.isEmpty() ? null : batchExecutions.get(batchExecutions.size() - 1);
-        if (null != last && !last.sharedMessage && !isSharedMessage && last.executionUnit == executionUnit) {
-            last.toOffset = offset + 1;
-            return;
-        }
-        batchExecutions.add(new BatchExecution(executionUnit, offset, offset + 1, isSharedMessage));
-    }
-    
     private boolean isHaltedOnFirstFailure() {
-        return !multiError && 1 < executionUnitParams.size();
+        return !multiError;
     }
     
     private void mergeUpdateCounts(final int[] result, final List<Integer> batchMessageIndexes, final int[] updateCounts) {
@@ -510,22 +499,14 @@ public final class FirebirdBatchedStatementsExecutor {
         }
     }
     
+    @RequiredArgsConstructor
     private static final class BatchExecution {
         
         private final JDBCExecutionUnit executionUnit;
         
         private final int fromOffset;
         
-        private int toOffset;
-        
-        private final boolean sharedMessage;
-        
-        private BatchExecution(final JDBCExecutionUnit executionUnit, final int fromOffset, final int toOffset, final boolean sharedMessage) {
-            this.executionUnit = executionUnit;
-            this.fromOffset = fromOffset;
-            this.toOffset = toOffset;
-            this.sharedMessage = sharedMessage;
-        }
+        private final int toOffset;
     }
     
     @RequiredArgsConstructor
