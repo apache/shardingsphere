@@ -83,7 +83,7 @@ class FirebirdBlobHandleGeneratorTest {
         assertThat(generator.nextBlobHandle(CONNECTION_ID), is(releasedHandle));
         assertThat(generator.nextBlobHandle(CONNECTION_ID), is(lastHandle + 1));
     }
-
+    
     @Test
     void assertNextBlobHandleReusesLowestReleasedHandle() {
         FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
