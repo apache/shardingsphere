@@ -46,9 +46,33 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
      * @return revised column meta data
      */
     public Collection<ColumnMetaData> revise(final String tableName, final Collection<ColumnMetaData> originalMetaDataList) {
+        return revise(tableName, null, originalMetaDataList);
+    }
+    
+    /**
+     * Revise column meta data with storage unit context.
+     *
+     * @param tableName table name
+     * @param storageUnitName storage unit name
+     * @param originalMetaDataList original column meta data list
+     * @return revised column meta data
+     */
+    public Collection<ColumnMetaData> revise(final String tableName, final String storageUnitName, final Collection<ColumnMetaData> originalMetaDataList) {
+        return revise(tableName, originalMetaDataList, reviseEntry.getColumnGeneratedReviser(rule, tableName, storageUnitName));
+    }
+    
+    /**
+     * Revise column meta data with bound generated reviser.
+     *
+     * @param tableName table name
+     * @param originalMetaDataList original column meta data list
+     * @param generatedReviser column generated reviser
+     * @return revised column meta data
+     */
+    public Collection<ColumnMetaData> revise(final String tableName, final Collection<ColumnMetaData> originalMetaDataList,
+                                             final Optional<? extends ColumnGeneratedReviser> generatedReviser) {
         Optional<? extends ColumnExistedReviser> existedReviser = reviseEntry.getColumnExistedReviser(rule, tableName);
         Optional<? extends ColumnNameReviser> nameReviser = reviseEntry.getColumnNameReviser(rule, tableName);
-        Optional<? extends ColumnGeneratedReviser> generatedReviser = reviseEntry.getColumnGeneratedReviser(rule, tableName);
         Collection<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : originalMetaDataList) {
             if (existedReviser.isPresent() && !existedReviser.get().isExisted(each.getName())) {

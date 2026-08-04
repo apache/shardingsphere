@@ -51,7 +51,7 @@ class ConstraintReviseEngineTest {
     @Test
     void assertReviseWithReturnsOriginalConstraints() {
         String tableName = "tableName";
-        when(mockMetaDataReviseEntry.getConstraintReviser(mockRule, tableName)).thenReturn(Optional.empty());
+        when(mockMetaDataReviseEntry.getConstraintReviser(mockRule, tableName, null)).thenReturn(Optional.empty());
         Collection<ConstraintMetaData> expectedConstraints = Arrays.asList(new ConstraintMetaData("constraint1", tableName), new ConstraintMetaData("constraint2", tableName));
         assertThat(engine.revise(tableName, expectedConstraints), is(expectedConstraints));
     }
@@ -61,7 +61,7 @@ class ConstraintReviseEngineTest {
     void assertReviseWithReturnsRevisedConstraints() {
         String tableName = "tableName";
         ConstraintReviser<ShardingSphereRule> reviser = mock(ConstraintReviser.class);
-        doReturn(Optional.of(reviser)).when(mockMetaDataReviseEntry).getConstraintReviser(mockRule, tableName);
+        doReturn(Optional.of(reviser)).when(mockMetaDataReviseEntry).getConstraintReviser(mockRule, tableName, null);
         ConstraintMetaData constraint1 = new ConstraintMetaData("constraint1", tableName);
         ConstraintMetaData constraint2 = new ConstraintMetaData("constraint2", tableName);
         ConstraintMetaData constraint3 = new ConstraintMetaData("constraint3", tableName);

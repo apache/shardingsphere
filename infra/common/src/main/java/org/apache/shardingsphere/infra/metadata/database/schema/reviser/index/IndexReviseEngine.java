@@ -51,7 +51,39 @@ public final class IndexReviseEngine<T extends ShardingSphereRule> {
     public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList,
                                             final Collection<TableMetaData> originalTableMetaDataList,
                                             final Collection<TableMetaData> indexNameRecoveryCandidateTables) {
-        Optional<? extends IndexReviser<T>> reviser = reviseEntry.getIndexReviser(rule, tableName);
+        return revise(tableName, null, originalMetaDataList, originalTableMetaDataList, indexNameRecoveryCandidateTables);
+    }
+    
+    /**
+     * Revise index meta data with storage unit context.
+     *
+     * @param tableName table name
+     * @param storageUnitName storage unit name
+     * @param originalMetaDataList original index meta data list
+     * @param originalTableMetaDataList original table meta data list
+     * @param indexNameRecoveryCandidateTables index name recovery candidate tables
+     * @return revised index meta data
+     */
+    public Collection<IndexMetaData> revise(final String tableName, final String storageUnitName, final Collection<IndexMetaData> originalMetaDataList,
+                                            final Collection<TableMetaData> originalTableMetaDataList,
+                                            final Collection<TableMetaData> indexNameRecoveryCandidateTables) {
+        return revise(tableName, originalMetaDataList, originalTableMetaDataList, indexNameRecoveryCandidateTables, reviseEntry.getIndexReviser(rule, tableName, storageUnitName));
+    }
+    
+    /**
+     * Revise index meta data with bound index reviser.
+     *
+     * @param tableName table name
+     * @param originalMetaDataList original index meta data list
+     * @param originalTableMetaDataList original table meta data list
+     * @param indexNameRecoveryCandidateTables index name recovery candidate tables
+     * @param reviser index reviser
+     * @return revised index meta data
+     */
+    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList,
+                                            final Collection<TableMetaData> originalTableMetaDataList,
+                                            final Collection<TableMetaData> indexNameRecoveryCandidateTables,
+                                            final Optional<? extends IndexReviser<T>> reviser) {
         return reviser.isPresent()
                 ? originalMetaDataList.stream()
                         .map(each -> reviser.get().revise(tableName, each, originalTableMetaDataList, indexNameRecoveryCandidateTables, rule))
