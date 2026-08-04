@@ -95,6 +95,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateLockdownProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewLogContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateObjectTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePFileContext;
@@ -111,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateXMLTypeTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorParameterDecContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorForLoopStatementContext;
@@ -202,6 +204,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Statem
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SwitchContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TablePropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TriggerBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TriggerNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
@@ -412,12 +415,39 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                 }
             }
         }
-        return CreateTableStatement.builder()
+        SelectStatement selectStatement = getCreateTableSelectStatement(ctx.createDefinitionClause());
+        CreateTableStatement result = CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
+                .selectStatement(selectStatement)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
+        if (null != selectStatement) {
+            result.addParameterMarkers(getGlobalParameterMarkerSegments());
+        }
+        return result;
+    }
+    
+    private SelectStatement getCreateTableSelectStatement(final CreateDefinitionClauseContext ctx) {
+        TablePropertiesContext tableProperties = null;
+        if (null != ctx.createRelationalTableClause()) {
+            tableProperties = ctx.createRelationalTableClause().tableProperties();
+        } else if (null != ctx.createObjectTableClause()) {
+            CreateObjectTableClauseContext objectTable = ctx.createObjectTableClause();
+            tableProperties = objectTable.tableProperties();
+        } else if (null != ctx.createXMLTypeTableClause()) {
+            CreateXMLTypeTableClauseContext xmlTypeTable = ctx.createXMLTypeTableClause();
+            tableProperties = xmlTypeTable.tableProperties();
+        }
+        if (null == tableProperties || null == tableProperties.selectSubquery()) {
+            return null;
+        }
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor(getDatabaseType());
+        SelectStatement result = (SelectStatement) visitor.visit(tableProperties.selectSubquery());
+        getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
+        getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
+        return result;
     }
     
     @Override

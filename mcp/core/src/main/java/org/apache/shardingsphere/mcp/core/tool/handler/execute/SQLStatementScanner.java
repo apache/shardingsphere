@@ -50,42 +50,112 @@ final class SQLStatementScanner {
     
     private final String sql;
     
-    private final boolean lineCommentsHandledByLexer;
-    
-    private final List<Token> rawTokens;
-    
     private final List<Token> visibleTokens;
     
-    private final List<SQLStatementToken> tokens;
+    private final boolean executableComment;
     
     SQLStatementScanner(final String databaseTypeName, final String sql) {
         this(getParserFacade(databaseTypeName), sql);
     }
     
     private SQLStatementScanner(final DialectSQLParserFacade parserFacade, final String sql) {
-        this(parserFacade.getLexerClass(), parserFacade.getParserClass(), sql);
-    }
-    
-    private SQLStatementScanner(final Class<? extends SQLLexer> lexerClass, final Class<? extends SQLParser> parserClass, final String sql) {
-        this.lexerClass = lexerClass;
-        this.parserClass = parserClass;
+        lexerClass = parserFacade.getLexerClass();
+        parserClass = parserFacade.getParserClass();
         String trimmedSQL = sql.trim();
         ShardingSpherePreconditions.checkState(!trimmedSQL.isEmpty(), () -> new MCPInvalidRequestException("sql cannot be empty."));
         List<Token> allTokens = getTokens(trimmedSQL);
-        lineCommentsHandledByLexer = areLineCommentsHandledByLexer(allTokens);
-        List<Token> allVisibleTokens = getVisibleTokens(trimmedSQL, allTokens);
+        boolean lineCommentsHandledByLexer = areLineCommentsHandledByLexer(allTokens);
+        List<Token> allVisibleTokens = getVisibleTokens(trimmedSQL, allTokens, lineCommentsHandledByLexer);
         int statementEndIndex = findStatementEndIndex(allVisibleTokens, trimmedSQL.length());
         this.sql = trimmedSQL.substring(0, statementEndIndex).trim();
         ShardingSpherePreconditions.checkState(!this.sql.isEmpty(), () -> new MCPInvalidRequestException("sql cannot be empty."));
-        rawTokens = getTokensBefore(allTokens, this.sql.length());
         visibleTokens = getTokensBefore(allVisibleTokens, this.sql.length());
-        tokens = createStatementTokens(visibleTokens);
+        executableComment = containsExecutableComment(this.sql, getTokensBefore(allTokens, this.sql.length()), lineCommentsHandledByLexer);
     }
     
     private static DialectSQLParserFacade getParserFacade(final String databaseTypeName) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseTypeName);
         return DatabaseTypedSPILoader.findService(DialectSQLParserFacade.class, databaseType).orElseThrow(
                 () -> new MCPUnsupportedException(String.format("SQL parser is not available for database type `%s`.", databaseTypeName)));
+    }
+    
+    String sql() {
+        return sql;
+    }
+    
+    String leadingSql() {
+        return sql.substring(visibleTokens.isEmpty() ? sql.length() : visibleTokens.get(0).getStartIndex()).trim();
+    }
+    
+    String extractLeadingKeyword() {
+        int startIndex = visibleTokens.isEmpty() ? sql.length() : visibleTokens.get(0).getStartIndex();
+        int stopIndex = startIndex;
+        while (stopIndex < sql.length() && Character.isLetter(sql.charAt(stopIndex))) {
+            stopIndex++;
+        }
+        if (startIndex == stopIndex) {
+            throw new MCPUnsupportedSQLStatementException();
+        }
+        return sql.substring(startIndex, stopIndex).toUpperCase(Locale.ENGLISH);
+    }
+    
+    boolean containsExecutableComment() {
+        return executableComment;
+    }
+    
+    private boolean containsExecutableComment(final String sql, final List<Token> tokens, final boolean lineCommentsHandledByLexer) {
+        int nextIndex = 0;
+        int skippedCommentEnd = -1;
+        for (int index = 0; index < tokens.size(); index++) {
+            Token each = tokens.get(index);
+            if (each.getStartIndex() <= skippedCommentEnd) {
+                continue;
+            }
+            if (each.getStartIndex() > nextIndex && containsExecutableCommentMarker(sql.substring(nextIndex, each.getStartIndex()))) {
+                return true;
+            }
+            if (Token.DEFAULT_CHANNEL != each.getChannel() && startsWithExecutableCommentMarker(each.getText())) {
+                return true;
+            }
+            int blockCommentEnd = findBlockCommentEnd(sql, tokens, index);
+            if (-1 != blockCommentEnd) {
+                if (startsWithExecutableCommentMarker(sql.substring(each.getStartIndex()))) {
+                    return true;
+                }
+                skippedCommentEnd = blockCommentEnd;
+                nextIndex = blockCommentEnd + 1;
+                continue;
+            }
+            int lineCommentEnd = findLineCommentEnd(sql, tokens, index, lineCommentsHandledByLexer);
+            if (-1 != lineCommentEnd) {
+                skippedCommentEnd = lineCommentEnd;
+                nextIndex = lineCommentEnd + 1;
+                continue;
+            }
+            nextIndex = Math.max(nextIndex, each.getStopIndex() + 1);
+        }
+        return nextIndex < sql.length() && containsExecutableCommentMarker(sql.substring(nextIndex));
+    }
+    
+    private boolean containsExecutableCommentMarker(final String text) {
+        int currentIndex = 0;
+        while (currentIndex < text.length()) {
+            if (text.startsWith("--", currentIndex) || '#' == text.charAt(currentIndex)) {
+                int lineEndIndex = text.indexOf('\n', currentIndex + 1);
+                currentIndex = -1 == lineEndIndex ? text.length() : lineEndIndex + 1;
+                continue;
+            }
+            if (!text.startsWith("/*", currentIndex)) {
+                currentIndex++;
+                continue;
+            }
+            if (startsWithExecutableCommentMarker(text.substring(currentIndex))) {
+                return true;
+            }
+            int commentEndIndex = text.indexOf("*/", currentIndex + 2);
+            currentIndex = -1 == commentEndIndex ? text.length() : commentEndIndex + 2;
+        }
+        return false;
     }
     
     private int findStatementEndIndex(final List<Token> tokens, final int sqlLength) {
@@ -112,188 +182,7 @@ final class SQLStatementScanner {
         return result;
     }
     
-    SQLStatementScanner scan(final String sql) {
-        return new SQLStatementScanner(lexerClass, parserClass, sql);
-    }
-    
-    String sql() {
-        return sql;
-    }
-    
-    String leadingSql() {
-        return sql.substring(visibleTokens.isEmpty() ? sql.length() : visibleTokens.get(0).getStartIndex()).trim();
-    }
-    
-    String extractLeadingKeyword() {
-        int startIndex = visibleTokens.isEmpty() ? sql.length() : visibleTokens.get(0).getStartIndex();
-        int stopIndex = startIndex;
-        while (stopIndex < sql.length() && Character.isLetter(sql.charAt(stopIndex))) {
-            stopIndex++;
-        }
-        if (startIndex == stopIndex) {
-            throw new MCPUnsupportedSQLStatementException();
-        }
-        return sql.substring(startIndex, stopIndex).toUpperCase(Locale.ENGLISH);
-    }
-    
-    List<SQLStatementToken> tokens() {
-        return tokens;
-    }
-    
-    private List<SQLStatementToken> createStatementTokens(final List<Token> tokens) {
-        List<SQLStatementToken> result = new ArrayList<>();
-        for (Token each : tokens) {
-            if (BEGIN_DOLLAR_STRING_CONSTANT.equals(getTokenName(each))) {
-                continue;
-            }
-            if (".*".equals(each.getText())) {
-                result.add(new SQLStatementToken(".", each.getStartIndex()));
-                result.add(new SQLStatementToken("*", each.getStartIndex() + 1));
-            } else {
-                result.add(new SQLStatementToken(each.getText(), each.getStartIndex()));
-            }
-        }
-        return result;
-    }
-    
-    boolean isKeyword(final SQLStatementToken token, final String... keywords) {
-        for (String each : keywords) {
-            if (isKeyword(token, each)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    boolean isKeyword(final SQLStatementToken token, final String keyword) {
-        return !token.quotedIdentifier() && token.upperText().equals(keyword);
-    }
-    
-    boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final String... keywords) {
-        for (int index = 0; index + keywords.length <= tokens.size(); index++) {
-            if (containsKeywordSequence(tokens, index, keywords)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final int startIndex, final String... keywords) {
-        for (int index = 0; index < keywords.length; index++) {
-            if (!isKeyword(tokens.get(startIndex + index), keywords[index])) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    boolean containsExecutableComment() {
-        int nextIndex = 0;
-        int skippedCommentEnd = -1;
-        for (int index = 0; index < rawTokens.size(); index++) {
-            Token each = rawTokens.get(index);
-            if (each.getStartIndex() <= skippedCommentEnd) {
-                continue;
-            }
-            if (each.getStartIndex() > nextIndex && containsExecutableCommentMarker(sql.substring(nextIndex, each.getStartIndex()))) {
-                return true;
-            }
-            if (Token.DEFAULT_CHANNEL != each.getChannel() && startsWithExecutableCommentMarker(each.getText())) {
-                return true;
-            }
-            int blockCommentEnd = findBlockCommentEnd(sql, rawTokens, index);
-            if (-1 != blockCommentEnd) {
-                if (startsWithExecutableCommentMarker(sql, each.getStartIndex())) {
-                    return true;
-                }
-                skippedCommentEnd = blockCommentEnd;
-                nextIndex = blockCommentEnd + 1;
-                continue;
-            }
-            int lineCommentEnd = findLineCommentEnd(sql, rawTokens, index);
-            if (-1 != lineCommentEnd) {
-                skippedCommentEnd = lineCommentEnd;
-                nextIndex = lineCommentEnd + 1;
-                continue;
-            }
-            nextIndex = Math.max(nextIndex, each.getStopIndex() + 1);
-        }
-        return nextIndex < sql.length() && containsExecutableCommentMarker(sql.substring(nextIndex));
-    }
-    
-    private boolean containsExecutableCommentMarker(final String text) {
-        int currentIndex = 0;
-        while (currentIndex < text.length()) {
-            if (text.startsWith("--", currentIndex) || '#' == text.charAt(currentIndex)) {
-                int lineEndIndex = text.indexOf('\n', currentIndex + 1);
-                currentIndex = -1 == lineEndIndex ? text.length() : lineEndIndex + 1;
-                continue;
-            }
-            if (!text.startsWith("/*", currentIndex)) {
-                currentIndex++;
-                continue;
-            }
-            if (startsWithExecutableCommentMarker(text, currentIndex)) {
-                return true;
-            }
-            int commentEndIndex = text.indexOf("*/", currentIndex + 2);
-            currentIndex = -1 == commentEndIndex ? text.length() : commentEndIndex + 2;
-        }
-        return false;
-    }
-    
-    private boolean startsWithExecutableCommentMarker(final String text) {
-        return text.startsWith("/*!") || text.toUpperCase(Locale.ENGLISH).startsWith("/*M!");
-    }
-    
-    private boolean startsWithExecutableCommentMarker(final String sql, final int startIndex) {
-        return sql.startsWith("/*!", startIndex) || sql.regionMatches(true, startIndex, "/*M!", 0, 4);
-    }
-    
-    boolean containsUserVariableAssignment() {
-        for (int index = 0; index < visibleTokens.size(); index++) {
-            Token variable = visibleTokens.get(index);
-            if (variable.getText().startsWith("@") && containsUserVariableAssignment(index)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsUserVariableAssignment(final int variableIndex) {
-        Token variable = visibleTokens.get(variableIndex);
-        int assignmentIndex = variableIndex + 1;
-        if ("@".equals(variable.getText())) {
-            if (assignmentIndex >= visibleTokens.size() || visibleTokens.get(assignmentIndex).getStartIndex() != variable.getStopIndex() + 1) {
-                return false;
-            }
-            variable = visibleTokens.get(assignmentIndex++);
-        }
-        if (1 >= variable.getText().length() && !isVariableName(variable.getText())) {
-            return false;
-        }
-        return assignmentIndex < visibleTokens.size() && ":=".equals(visibleTokens.get(assignmentIndex).getText())
-                && isWhitespace(variable.getStopIndex() + 1, visibleTokens.get(assignmentIndex).getStartIndex());
-    }
-    
-    private boolean isVariableName(final String text) {
-        if (text.isEmpty()) {
-            return false;
-        }
-        char firstChar = text.charAt(0);
-        return Character.isLetterOrDigit(firstChar) || '_' == firstChar || '$' == firstChar || '\'' == firstChar || '"' == firstChar || '`' == firstChar;
-    }
-    
-    private boolean isWhitespace(final int startIndex, final int stopIndex) {
-        for (int index = startIndex; index < stopIndex; index++) {
-            if (!Character.isWhitespace(sql.charAt(index))) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private List<Token> getVisibleTokens(final String sql, final List<Token> tokens) {
+    private List<Token> getVisibleTokens(final String sql, final List<Token> tokens, final boolean lineCommentsHandledByLexer) {
         List<Token> result = new ArrayList<>();
         boolean executableComment = false;
         boolean dollarQuotedString = false;
@@ -326,7 +215,7 @@ final class SQLStatementScanner {
                 skippedCommentEnd = blockCommentEnd;
                 continue;
             }
-            int lineCommentEnd = findLineCommentEnd(sql, tokens, index);
+            int lineCommentEnd = findLineCommentEnd(sql, tokens, index, lineCommentsHandledByLexer);
             if (-1 != lineCommentEnd) {
                 skippedCommentEnd = lineCommentEnd;
                 continue;
@@ -355,7 +244,7 @@ final class SQLStatementScanner {
         return result + 1;
     }
     
-    private int findLineCommentEnd(final String sql, final List<Token> tokens, final int startIndex) {
+    private int findLineCommentEnd(final String sql, final List<Token> tokens, final int startIndex, final boolean lineCommentsHandledByLexer) {
         Token start = tokens.get(startIndex);
         if (lineCommentsHandledByLexer || !"-".equals(start.getText()) || startIndex + 1 >= tokens.size() || !"-".equals(tokens.get(startIndex + 1).getText())
                 || tokens.get(startIndex + 1).getStartIndex() != start.getStopIndex() + 1) {
@@ -363,6 +252,10 @@ final class SQLStatementScanner {
         }
         int result = sql.indexOf('\n', start.getStartIndex() + 2);
         return -1 == result ? sql.length() - 1 : result;
+    }
+    
+    private boolean startsWithExecutableCommentMarker(final String text) {
+        return text.startsWith("/*!") || text.toUpperCase(Locale.ENGLISH).startsWith("/*M!");
     }
     
     private boolean areLineCommentsHandledByLexer(final List<Token> tokens) {

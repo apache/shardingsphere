@@ -100,6 +100,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Mer
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MergeWhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTablesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NextValueForContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenDatasourceFunctionContext;
@@ -649,6 +650,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.literals()) {
             return SQLUtils.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
         }
+        if (null != ctx.nextValueFor()) {
+            return visit(ctx.nextValueFor());
+        }
         if (null != ctx.functionCall()) {
             return visit(ctx.functionCall());
         }
@@ -662,6 +666,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return visit(ctx.expr(0));
         }
         return visitRemainSimpleExpr(ctx);
+    }
+    
+    @Override
+    public ASTNode visitNextValueFor(final NextValueForContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), "NEXT VALUE FOR", getOriginalText(ctx));
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
@@ -1751,7 +1760,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return false;
         }
         if (fromSegment instanceof SimpleTableSegment) {
-            return targetName.equalsIgnoreCase(((SimpleTableSegment) fromSegment).getAliasName().orElse(null));
+            return targetName.equalsIgnoreCase(fromSegment.getAliasName().orElse(null));
         }
         if (fromSegment instanceof JoinTableSegment) {
             return isAliasInFromClause(targetTable, targetName, ((JoinTableSegment) fromSegment).getLeft())
