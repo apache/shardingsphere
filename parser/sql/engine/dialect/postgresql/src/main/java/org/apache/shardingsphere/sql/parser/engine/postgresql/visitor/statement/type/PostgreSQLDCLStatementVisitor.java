@@ -22,16 +22,30 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AnyNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FunctionWithArgtypesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GrantContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndirectionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumericOnlyContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OnObjectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrivilegeClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrivilegeLevelContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReassignOwnedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.PostgreSQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeObjectSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
@@ -42,11 +56,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.us
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLCreateGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * DCL statement visitor for PostgreSQL.
@@ -59,12 +77,16 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        return new GrantStatement(getDatabaseType(), containsTableSegment(ctx.privilegeClause()) ? getTableSegments(ctx.privilegeClause()) : Collections.emptyList());
+        GrantStatement result = new GrantStatement(getDatabaseType(), containsTableSegment(ctx.privilegeClause()) ? getTableSegments(ctx.privilegeClause()) : Collections.emptyList());
+        fillPrivilegeObjects(result.getPrivilegeObjects(), ctx.privilegeClause());
+        return result;
     }
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        return new RevokeStatement(getDatabaseType(), containsTableSegment(ctx.privilegeClause()) ? getTableSegments(ctx.privilegeClause()) : Collections.emptyList());
+        RevokeStatement result = new RevokeStatement(getDatabaseType(), containsTableSegment(ctx.privilegeClause()) ? getTableSegments(ctx.privilegeClause()) : Collections.emptyList());
+        fillPrivilegeObjects(result.getPrivilegeObjects(), ctx.privilegeClause());
+        return result;
     }
     
     private boolean containsTableSegment(final PrivilegeClauseContext ctx) {
@@ -74,6 +96,191 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     private Collection<SimpleTableSegment> getTableSegments(final PrivilegeClauseContext ctx) {
         return ((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().privilegeLevel().tableNames())).getValue();
+    }
+    
+    private void fillPrivilegeObjects(final Collection<PrivilegeObjectSegment> result, final PrivilegeClauseContext ctx) {
+        if (null == ctx || null == ctx.onObjectClause()) {
+            return;
+        }
+        OnObjectClauseContext onObjectClause = ctx.onObjectClause();
+        String objectType = getObjectType(onObjectClause);
+        if (null != onObjectClause.nameList()) {
+            fillNamePrivilegeObjects(result, objectType, onObjectClause.nameList());
+        } else if (null != onObjectClause.anyNameList()) {
+            for (AnyNameContext each : onObjectClause.anyNameList().anyName()) {
+                addPrivilegeObject(result, objectType, each, getAnyNameIdentifiers(each));
+            }
+        } else if (null != onObjectClause.functionWithArgtypesList()) {
+            for (FunctionWithArgtypesContext each : onObjectClause.functionWithArgtypesList().functionWithArgtypes()) {
+                addPrivilegeObject(result, objectType, each, getFunctionIdentifiers(each));
+            }
+        } else if (null != onObjectClause.numericOnlyList()) {
+            for (NumericOnlyContext each : onObjectClause.numericOnlyList().numericOnly()) {
+                addPrivilegeObject(result, objectType, each, Collections.singletonList(new IdentifierValue(each.getText())));
+            }
+        } else if (null != onObjectClause.qualifiedNameList()) {
+            fillQualifiedNamePrivilegeObjects(result, objectType, onObjectClause.qualifiedNameList());
+        } else {
+            fillPrivilegeLevelObjects(result, objectType, onObjectClause.privilegeLevel());
+        }
+    }
+    
+    private String getObjectType(final OnObjectClauseContext ctx) {
+        if (null != ctx.ALL() || null != ctx.SCHEMA()) {
+            return "SCHEMA";
+        }
+        if (null != ctx.DATABASE()) {
+            return "DATABASE";
+        }
+        if (null != ctx.DOMAIN()) {
+            return "DOMAIN";
+        }
+        if (null != ctx.FUNCTION()) {
+            return "FUNCTION";
+        }
+        if (null != ctx.PROCEDURE()) {
+            return "PROCEDURE";
+        }
+        if (null != ctx.ROUTINE()) {
+            return "ROUTINE";
+        }
+        if (null != ctx.LANGUAGE()) {
+            return "LANGUAGE";
+        }
+        if (null != ctx.LARGE()) {
+            return "LARGE OBJECT";
+        }
+        if (null != ctx.TABLESPACE()) {
+            return "TABLESPACE";
+        }
+        if (null != ctx.TYPE()) {
+            return "TYPE";
+        }
+        if (null != ctx.SEQUENCE()) {
+            return "SEQUENCE";
+        }
+        if (null != ctx.FOREIGN()) {
+            return null == ctx.DATA() ? "FOREIGN SERVER" : "FOREIGN DATA WRAPPER";
+        }
+        return "TABLE";
+    }
+    
+    private void fillNamePrivilegeObjects(final Collection<PrivilegeObjectSegment> result, final String objectType,
+                                          final NameListContext ctx) {
+        if (null != ctx.nameList()) {
+            fillNamePrivilegeObjects(result, objectType, ctx.nameList());
+        }
+        NameContext name = ctx.name();
+        addPrivilegeObject(result, objectType, name, Collections.singletonList(new IdentifierValue(name.getText())));
+    }
+    
+    private List<IdentifierValue> getAnyNameIdentifiers(final AnyNameContext ctx) {
+        List<IdentifierValue> result = new LinkedList<>();
+        result.add(new IdentifierValue(ctx.colId().getText()));
+        if (null != ctx.attrs()) {
+            fillAttrsIdentifiers(result, ctx.attrs());
+        }
+        return result;
+    }
+    
+    private void fillAttrsIdentifiers(final Collection<IdentifierValue> result, final AttrsContext ctx) {
+        if (null != ctx.attrs()) {
+            fillAttrsIdentifiers(result, ctx.attrs());
+        }
+        result.add(new IdentifierValue(ctx.attrName().getText()));
+    }
+    
+    private List<IdentifierValue> getFunctionIdentifiers(final FunctionWithArgtypesContext ctx) {
+        if (null != ctx.funcName()) {
+            return getFunctionIdentifiers(ctx.funcName());
+        }
+        List<IdentifierValue> result = new LinkedList<>();
+        if (null != ctx.typeFuncNameKeyword()) {
+            result.add(new IdentifierValue(ctx.typeFuncNameKeyword().getText()));
+        } else {
+            result.add(new IdentifierValue(ctx.colId().getText()));
+            fillIndirectionIdentifiers(result, ctx.indirection());
+        }
+        return result;
+    }
+    
+    private List<IdentifierValue> getFunctionIdentifiers(final FuncNameContext ctx) {
+        List<IdentifierValue> result = new LinkedList<>();
+        if (null == ctx.typeFunctionName()) {
+            result.add(new IdentifierValue(ctx.colId().getText()));
+            fillIndirectionIdentifiers(result, ctx.indirection());
+            return result;
+        }
+        if (null != ctx.owner()) {
+            result.add(new IdentifierValue(ctx.owner().getText()));
+        }
+        result.add(new IdentifierValue(ctx.typeFunctionName().getText()));
+        return result;
+    }
+    
+    private void fillIndirectionIdentifiers(final Collection<IdentifierValue> result, final IndirectionContext ctx) {
+        if (null == ctx) {
+            return;
+        }
+        if (null != ctx.indirection()) {
+            fillIndirectionIdentifiers(result, ctx.indirection());
+        }
+        if (null != ctx.indirectionEl().attrName()) {
+            result.add(new IdentifierValue(ctx.indirectionEl().attrName().getText()));
+        }
+    }
+    
+    private void fillQualifiedNamePrivilegeObjects(final Collection<PrivilegeObjectSegment> result, final String objectType, final QualifiedNameListContext ctx) {
+        if (null != ctx.qualifiedNameList()) {
+            fillQualifiedNamePrivilegeObjects(result, objectType, ctx.qualifiedNameList());
+        }
+        QualifiedNameContext qualifiedName = ctx.qualifiedName();
+        addSimpleTablePrivilegeObject(result, objectType, (SimpleTableSegment) visit(qualifiedName));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void fillPrivilegeLevelObjects(final Collection<PrivilegeObjectSegment> result, final String objectType, final PrivilegeLevelContext ctx) {
+        if (null != ctx.tableNames()) {
+            for (SimpleTableSegment each : ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue()) {
+                addSimpleTablePrivilegeObject(result, objectType, each);
+            }
+            return;
+        }
+        List<IdentifierValue> identifiers = new LinkedList<>();
+        if (null != ctx.identifier()) {
+            identifiers.add((IdentifierValue) visit(ctx.identifier()));
+            identifiers.add(new IdentifierValue("*"));
+        } else if (null != ctx.schemaName()) {
+            identifiers.add((IdentifierValue) visit(ctx.schemaName()));
+            identifiers.add(new IdentifierValue(ctx.routineName().getText()));
+        } else {
+            identifiers.add(new IdentifierValue("*"));
+            if (null != ctx.DOT_ASTERISK_()) {
+                identifiers.add(new IdentifierValue("*"));
+            }
+        }
+        addPrivilegeObject(result, objectType, ctx, identifiers);
+    }
+    
+    private void addSimpleTablePrivilegeObject(final Collection<PrivilegeObjectSegment> result, final String objectType, final SimpleTableSegment table) {
+        List<IdentifierValue> identifiers = new LinkedList<>();
+        table.getOwner().ifPresent(owner -> fillOwnerIdentifiers(identifiers, owner));
+        identifiers.add(table.getTableName().getIdentifier());
+        PrivilegeObjectSegment privilegeObject = new PrivilegeObjectSegment(table.getStartIndex(), table.getStopIndex(), objectType);
+        privilegeObject.getIdentifiers().addAll(identifiers);
+        result.add(privilegeObject);
+    }
+    
+    private void fillOwnerIdentifiers(final Collection<IdentifierValue> result, final OwnerSegment owner) {
+        owner.getOwner().ifPresent(each -> fillOwnerIdentifiers(result, each));
+        result.add(owner.getIdentifier());
+    }
+    
+    private void addPrivilegeObject(final Collection<PrivilegeObjectSegment> result, final String objectType, final ParserRuleContext ctx,
+                                    final Collection<IdentifierValue> identifiers) {
+        PrivilegeObjectSegment privilegeObject = new PrivilegeObjectSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), objectType);
+        privilegeObject.getIdentifiers().addAll(identifiers);
+        result.add(privilegeObject);
     }
     
     @Override

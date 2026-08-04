@@ -19,11 +19,14 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeObjectSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Revoke statement.
@@ -32,6 +35,8 @@ import java.util.Collection;
 public class RevokeStatement extends DCLStatement {
     
     private final Collection<SimpleTableSegment> tables;
+    
+    private final List<PrivilegeObjectSegment> privilegeObjects = new LinkedList<>();
     
     private final SQLStatementAttributes attributes;
     

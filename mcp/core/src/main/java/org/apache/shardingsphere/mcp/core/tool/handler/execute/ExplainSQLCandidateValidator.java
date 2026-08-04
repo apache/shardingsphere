@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
-import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
@@ -47,24 +46,18 @@ final class ExplainSQLCandidateValidator {
         String actualExplainSql = scanner.sql();
         ShardingSpherePreconditions.checkState(!scanner.containsExecutableComment(),
                 () -> new MCPInvalidRequestException("Executable comments are not supported by the MCP explain query tool."));
-        List<SQLStatementToken> tokens = scanner.tokens();
-        checkExplainCandidate(scanner, tokens, explainedStatement.getNormalizedSql(), actualExplainSql);
-        return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, "", explainedStatement.getReferencedObjects(), false);
-    }
-    
-    private void checkExplainCandidate(final SQLStatementScanner scanner, final List<SQLStatementToken> tokens, final String sql, final String explainSql) {
-        ShardingSpherePreconditions.checkState(!tokens.isEmpty() && scanner.isKeyword(tokens.get(0), "EXPLAIN"),
+        ShardingSpherePreconditions.checkState(scanner.startsWithKeyword("EXPLAIN"),
                 () -> new MCPInvalidRequestException("explain_sql must start with EXPLAIN."));
-        String explainPrefix = extractExplainPrefix(explainSql, sql);
-        List<SQLStatementToken> explainPrefixTokens = scanner.scan(explainPrefix).tokens();
-        ShardingSpherePreconditions.checkState(!scanner.containsKeywordSequence(explainPrefixTokens, "EXPLAIN", "PLAN", "FOR"),
+        SQLStatementScanner prefixScanner = scanner.scan(extractExplainPrefix(actualExplainSql, explainedStatement.getNormalizedSql()));
+        ShardingSpherePreconditions.checkState(!prefixScanner.containsKeywordSequence("EXPLAIN", "PLAN", "FOR"),
                 () -> new MCPInvalidRequestException("EXPLAIN PLAN FOR workflows are not supported by the MCP explain query tool."));
-        ShardingSpherePreconditions.checkState(!containsKeyword(scanner, explainPrefixTokens, "ANALYZE", "ANALYSE"),
+        ShardingSpherePreconditions.checkState(!prefixScanner.containsKeyword("ANALYZE", "ANALYSE"),
                 () -> new MCPInvalidRequestException("EXPLAIN ANALYZE is not supported by the MCP explain query tool."));
-        ShardingSpherePreconditions.checkState(!containsKeyword(scanner, explainPrefixTokens, "INTO"),
+        ShardingSpherePreconditions.checkState(!prefixScanner.containsKeyword("INTO"),
                 () -> new MCPInvalidRequestException("EXPLAIN output redirection is not supported by the MCP explain query tool."));
-        ShardingSpherePreconditions.checkState(!containsStatementStartKeyword(explainPrefixTokens),
+        ShardingSpherePreconditions.checkState(!prefixScanner.containsKeywordAfterFirst(STATEMENT_START_KEYWORDS),
                 () -> new MCPInvalidRequestException("explain_sql must not wrap the original sql argument in another statement."));
+        return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, "", explainedStatement.getReferencedObjects(), false);
     }
     
     private String extractExplainPrefix(final String explainSql, final String sql) {
@@ -72,23 +65,4 @@ final class ExplainSQLCandidateValidator {
                 () -> new MCPInvalidRequestException("explain_sql must include the original sql argument without rewriting it."));
         return explainSql.substring(0, explainSql.length() - sql.length());
     }
-    
-    private boolean containsStatementStartKeyword(final List<SQLStatementToken> tokens) {
-        for (SQLStatementToken each : tokens.subList(1, tokens.size())) {
-            if (!each.quotedIdentifier() && STATEMENT_START_KEYWORDS.contains(each.upperText())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsKeyword(final SQLStatementScanner scanner, final List<SQLStatementToken> tokens, final String... keywords) {
-        for (SQLStatementToken each : tokens) {
-            if (scanner.isKeyword(each, keywords)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
 }

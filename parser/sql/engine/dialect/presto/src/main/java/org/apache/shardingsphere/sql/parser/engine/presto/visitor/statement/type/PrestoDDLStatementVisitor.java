@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.FunctionNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.TableElementContext;
 import org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.PrestoStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
@@ -96,9 +97,14 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .ifNotExists(null != ctx.ifNotExists())
+                .selectStatement(null == ctx.duplicateAsQueryExpression() ? null : createSelectStatement(ctx.duplicateAsQueryExpression().select()))
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
+    }
+    
+    private SelectStatement createSelectStatement(final SelectContext ctx) {
+        return (SelectStatement) new PrestoDMLStatementVisitor(getDatabaseType()).visit(ctx);
     }
     
     @Override
