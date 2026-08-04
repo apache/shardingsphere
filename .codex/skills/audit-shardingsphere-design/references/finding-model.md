@@ -52,11 +52,34 @@ Confirm the finding only when all six steps are supported by current repository 
 preferences, theoretical future risks, pattern names without a demonstrated consequence, and any
 candidate whose counter-evidence justifies the current design.
 
+## Rule-Applicability Gate
+
+Apply this gate before using a written rule to classify existing code as non-compliant:
+
+1. Identify the exact requirement, prohibition, permission, exception, and verification obligation;
+   do not infer a prohibition from a preference.
+2. Identify the rule's explicit subject and scope, such as all repository code, contributions,
+   newly created code, changed or touched code, an effective candidate, or Codex's own actions.
+3. Confirm that the reviewed artifact and its current state are inside that scope. A rule that tells
+   Codex how to implement or review a future change does not by itself establish that untouched
+   existing code is defective.
+4. Check higher-authority and repository-wide sources for an explicit permission or alternative
+   compliant form. A stricter workflow preference for future changes does not override an allowed
+   existing form outside that preference's stated scope.
+5. If the rule does not govern the current artifact, retain it only as a constraint on the proposed
+   correction. Publish a finding only when an independently proven semantic consequence passes the
+   ordinary proof gate.
+
+Treat `AGENTS.md` as authority for how the audit is performed. Treat an individual `AGENTS.md` rule
+as evidence against existing source only when that rule's wording applies to existing source, not
+merely to code Codex creates, changes, or hands off. When source applicability or precedence remains
+ambiguous, reject the standards candidate rather than broadening the rule.
+
 ## Evidence Quality
 
 Prefer evidence in this order:
 
-1. Applicable `AGENTS.md`, `CODE_OF_CONDUCT.md`, public API/SPI contracts, and module POMs.
+1. Written rules that pass the rule-applicability gate, public API/SPI contracts, and module POMs.
 2. Complete current production paths, registrations, resources, packaging, and tests.
 3. Closest maintained precedents with the same variation axis and runtime role.
 4. Engineering inference explicitly connected to the observations above.
