@@ -609,7 +609,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.pivotInClause()) {
             ctx.pivotInClause().pivotInClauseExpr().forEach(each -> {
                 ExpressionSegment expr = (ExpressionSegment) visit(each.expr());
-                String columnName = null == each.alias() || null == each.alias().identifier() ? expr.getText() : each.alias().identifier().IDENTIFIER_().getText();
+                String columnName = null == each.alias() || null == each.alias().identifier()
+                        ? expr.getText()
+                        : ((IdentifierValue) visit(each.alias().identifier())).getValue();
                 ColumnSegment columnSegment = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(columnName));
                 pivotInColumns.add(columnSegment);
             });

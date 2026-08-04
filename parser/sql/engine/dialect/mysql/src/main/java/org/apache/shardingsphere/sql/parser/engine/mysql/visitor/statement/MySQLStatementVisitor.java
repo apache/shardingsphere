@@ -408,6 +408,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitFunctionName(final FunctionNameContext ctx) {
+        return createFunctionSegment(ctx);
+    }
+    
+    private FunctionSegment createFunctionSegment(final FunctionNameContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.identifier().IDENTIFIER_().getText(), ctx.getText());
         if (null != ctx.owner()) {
             result.setOwner((OwnerSegment) visit(ctx.owner()));
@@ -1013,7 +1017,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitUdfFunction(final UdfFunctionContext ctx) {
-        FunctionSegment functionName = (FunctionSegment) visit(ctx.functionName());
+        FunctionSegment functionName = createFunctionSegment(ctx.functionName());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName.getFunctionName(), getOriginalText(ctx));
         result.setOwner(functionName.getOwner());
         if (null != ctx.expr()) {

@@ -3420,19 +3420,232 @@
                     </binary-operation-expression>
                 </expr>
             </expression-projection>
-            <expression-projection start-index="67" stop-index="212" alias="max_size" text="CASEdf.max_sizeWHEN0THEN'Autogrowth is off.'WHEN-1THEN'Autogrowth is on.'ELSE'Log file grows to a maximum size of 2 TB.'END">
+            <expression-projection start-index="67" stop-index="212" alias="max_size" text="CASE df.max_size WHEN 0 THEN 'Autogrowth is off.' WHEN -1 THEN 'Autogrowth is on.' ELSE 'Log file grows to a maximum size of 2 TB.' END">
                 <expr>
-                    <common-expression literal-text="CASEdf.max_sizeWHEN0THEN'Autogrowth is off.'WHEN-1THEN'Autogrowth is on.'ELSE'Log file grows to a maximum size of 2 TB.'END" start-index="78" stop-index="212"/>
+                    <case-when-expression start-index="78" stop-index="212">
+                        <case-expr>
+                            <column name="max_size" start-index="83" stop-index="93">
+                                <owner name="df" start-index="83" stop-index="84" />
+                            </column>
+                        </case-expr>
+                        <when-exprs>
+                            <literal-expression value="0" start-index="100" stop-index="100" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="Autogrowth is off." start-index="107" stop-index="126" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="-1" start-index="133" stop-index="134" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="Autogrowth is on." start-index="141" stop-index="159" />
+                        </then-exprs>
+                        <else-expr>
+                            <literal-expression value="Log file grows to a maximum size of 2 TB." start-index="166" stop-index="208" />
+                        </else-expr>
+                    </case-when-expression>
                 </expr>
             </expression-projection>
-            <expression-projection start-index="215" stop-index="407" alias="growth_value" text="CASEWHENdf.growth=0THENdf.growthWHENdf.growth>0ANDdf.is_percent_growth=0THENdf.growth*1.0/128.0WHENdf.growth>0ANDdf.is_percent_growth=1THENdf.growthEND">
+            <expression-projection start-index="215" stop-index="407" alias="growth_value" text="CASE WHEN df.growth = 0 THEN df.growth WHEN df.growth > 0 AND df.is_percent_growth = 0 THEN df.growth*1.0/128.0 WHEN df.growth > 0 AND df.is_percent_growth = 1 THEN df.growth END">
                 <expr>
-                    <common-expression literal-text="CASEWHENdf.growth=0THENdf.growthWHENdf.growth>0ANDdf.is_percent_growth=0THENdf.growth*1.0/128.0WHENdf.growth>0ANDdf.is_percent_growth=1THENdf.growthEND" start-index="230" stop-index="407"/>
+                    <case-when-expression start-index="230" stop-index="407">
+                        <when-exprs>
+                            <binary-operation-expression start-index="240" stop-index="252">
+                                <left>
+                                    <column name="growth" start-index="240" stop-index="248">
+                                        <owner name="df" start-index="240" stop-index="241" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="0" start-index="252" stop-index="252" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <column name="growth" start-index="259" stop-index="267">
+                                <owner name="df" start-index="259" stop-index="260" />
+                            </column>
+                        </then-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="274" stop-index="315">
+                                <left>
+                                    <binary-operation-expression start-index="274" stop-index="286">
+                                        <left>
+                                            <column name="growth" start-index="274" stop-index="282">
+                                                <owner name="df" start-index="274" stop-index="275" />
+                                            </column>
+                                        </left>
+                                        <operator>&gt;</operator>
+                                        <right>
+                                            <literal-expression value="0" start-index="286" stop-index="286" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>AND</operator>
+                                <right>
+                                    <binary-operation-expression start-index="292" stop-index="315">
+                                        <left>
+                                            <column name="is_percent_growth" start-index="292" stop-index="311">
+                                                <owner name="df" start-index="292" stop-index="293" />
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <literal-expression value="0" start-index="315" stop-index="315" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <binary-operation-expression start-index="322" stop-index="340">
+                                <left>
+                                    <binary-operation-expression start-index="322" stop-index="334">
+                                        <left>
+                                            <column name="growth" start-index="322" stop-index="330">
+                                                <owner name="df" start-index="322" stop-index="323" />
+                                            </column>
+                                        </left>
+                                        <operator>*</operator>
+                                        <right>
+                                            <literal-expression value="1.0" start-index="332" stop-index="334" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <literal-expression value="128.0" start-index="336" stop-index="340" />
+                                </right>
+                            </binary-operation-expression>
+                        </then-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="347" stop-index="388">
+                                <left>
+                                    <binary-operation-expression start-index="347" stop-index="359">
+                                        <left>
+                                            <column name="growth" start-index="347" stop-index="355">
+                                                <owner name="df" start-index="347" stop-index="348" />
+                                            </column>
+                                        </left>
+                                        <operator>&gt;</operator>
+                                        <right>
+                                            <literal-expression value="0" start-index="359" stop-index="359" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>AND</operator>
+                                <right>
+                                    <binary-operation-expression start-index="365" stop-index="388">
+                                        <left>
+                                            <column name="is_percent_growth" start-index="365" stop-index="384">
+                                                <owner name="df" start-index="365" stop-index="366" />
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <literal-expression value="1" start-index="388" stop-index="388" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <column name="growth" start-index="395" stop-index="403">
+                                <owner name="df" start-index="395" stop-index="396" />
+                            </column>
+                        </then-exprs>
+                    </case-when-expression>
                 </expr>
             </expression-projection>
-            <expression-projection start-index="410" stop-index="644" alias="growth_increment_unit" text="CASEWHENdf.growth=0THEN'Size is fixed.'WHENdf.growth>0ANDdf.is_percent_growth=0THEN'Growth value is MB.'WHENdf.growth>0ANDdf.is_percent_growth=1THEN'Growth value is a percentage.'END">
+            <expression-projection start-index="410" stop-index="644" alias="growth_increment_unit" text="CASE WHEN df.growth = 0 THEN 'Size is fixed.' WHEN df.growth > 0 AND df.is_percent_growth = 0  THEN 'Growth value is MB.' WHEN df.growth > 0 AND df.is_percent_growth = 1  THEN 'Growth value is a percentage.' END">
                 <expr>
-                    <common-expression literal-text="CASEWHENdf.growth=0THEN'Size is fixed.'WHENdf.growth>0ANDdf.is_percent_growth=0THEN'Growth value is MB.'WHENdf.growth>0ANDdf.is_percent_growth=1THEN'Growth value is a percentage.'END" start-index="434" stop-index="644"/>
+                    <case-when-expression start-index="434" stop-index="644">
+                        <when-exprs>
+                            <binary-operation-expression start-index="444" stop-index="456">
+                                <left>
+                                    <column name="growth" start-index="444" stop-index="452">
+                                        <owner name="df" start-index="444" stop-index="445" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="0" start-index="456" stop-index="456" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="Size is fixed." start-index="463" stop-index="478" />
+                        </then-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="485" stop-index="526">
+                                <left>
+                                    <binary-operation-expression start-index="485" stop-index="497">
+                                        <left>
+                                            <column name="growth" start-index="485" stop-index="493">
+                                                <owner name="df" start-index="485" stop-index="486" />
+                                            </column>
+                                        </left>
+                                        <operator>&gt;</operator>
+                                        <right>
+                                            <literal-expression value="0" start-index="497" stop-index="497" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>AND</operator>
+                                <right>
+                                    <binary-operation-expression start-index="503" stop-index="526">
+                                        <left>
+                                            <column name="is_percent_growth" start-index="503" stop-index="522">
+                                                <owner name="df" start-index="503" stop-index="504" />
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <literal-expression value="0" start-index="526" stop-index="526" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="Growth value is MB." start-index="534" stop-index="554" />
+                        </then-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="561" stop-index="602">
+                                <left>
+                                    <binary-operation-expression start-index="561" stop-index="573">
+                                        <left>
+                                            <column name="growth" start-index="561" stop-index="569">
+                                                <owner name="df" start-index="561" stop-index="562" />
+                                            </column>
+                                        </left>
+                                        <operator>&gt;</operator>
+                                        <right>
+                                            <literal-expression value="0" start-index="573" stop-index="573" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>AND</operator>
+                                <right>
+                                    <binary-operation-expression start-index="579" stop-index="602">
+                                        <left>
+                                            <column name="is_percent_growth" start-index="579" stop-index="598">
+                                                <owner name="df" start-index="579" stop-index="580" />
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <literal-expression value="1" start-index="602" stop-index="602" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="Growth value is a percentage." start-index="610" stop-index="640" />
+                        </then-exprs>
+                    </case-when-expression>
                 </expr>
             </expression-projection>
         </projections>
