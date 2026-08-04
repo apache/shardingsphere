@@ -201,6 +201,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SqlSta
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.StatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SwitchContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SystemActionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TablePropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TriggerBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TriggerNameContext;
@@ -370,6 +371,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -400,24 +402,55 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
+        TablePropertiesContext tableProperties = null;
+        if (null != ctx.createDefinitionClause() && null != ctx.createDefinitionClause().createRelationalTableClause()) {
+            tableProperties = ctx.createDefinitionClause().createRelationalTableClause().tableProperties();
+        }
+        boolean createTableAsSelect = null != tableProperties && null != tableProperties.selectSubquery();
+        Collection<CreateDefinitionSegment> createDefinitions = new LinkedList<>();
         Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
         Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
-            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
-            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
-                if (each instanceof ColumnDefinitionSegment) {
+            createDefinitions.addAll(((CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause())).getValue());
+        }
+        boolean createTableAsSelectWithColumnNames = createTableAsSelect && isCreateTableAsSelectWithColumnNames(createDefinitions);
+        List<ColumnSegment> columns = new LinkedList<>();
+        for (CreateDefinitionSegment each : createDefinitions) {
+            if (each instanceof ColumnDefinitionSegment) {
+                if (createTableAsSelectWithColumnNames) {
+                    columns.add(((ColumnDefinitionSegment) each).getColumnName());
+                } else {
                     columnDefinitions.add((ColumnDefinitionSegment) each);
-                } else if (each instanceof ConstraintDefinitionSegment) {
-                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
+            } else if (each instanceof ConstraintDefinitionSegment) {
+                constraintDefinitions.add((ConstraintDefinitionSegment) each);
             }
+        }
+        SelectStatement selectStatement = null;
+        if (createTableAsSelect) {
+            OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor(getDatabaseType());
+            selectStatement = (SelectStatement) visitor.visit(tableProperties.selectSubquery());
+            getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
+            getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
         }
         return CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
+                .selectStatement(selectStatement)
+                .columns(columns)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
+    }
+    
+    private boolean isCreateTableAsSelectWithColumnNames(final Collection<CreateDefinitionSegment> createDefinitions) {
+        return !createDefinitions.isEmpty()
+                && createDefinitions.stream().allMatch(each -> each instanceof ColumnDefinitionSegment && isColumnName((ColumnDefinitionSegment) each));
+    }
+    
+    private boolean isColumnName(final ColumnDefinitionSegment columnDefinition) {
+        return null == columnDefinition.getDataType() && !columnDefinition.isPrimaryKey() && !columnDefinition.isNotNull()
+                && columnDefinition.getReferencedTables().isEmpty() && !columnDefinition.isRef();
     }
     
     @Override

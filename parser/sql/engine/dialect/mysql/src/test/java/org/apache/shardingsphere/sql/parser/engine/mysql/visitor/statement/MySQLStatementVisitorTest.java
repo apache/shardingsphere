@@ -21,10 +21,15 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,6 +47,25 @@ class MySQLStatementVisitorTest {
     void assertVisitCreateTableWithoutTemporary() {
         CreateTableStatement statement = (CreateTableStatement) parse("CREATE TABLE t_order (order_id INT)");
         assertFalse(statement.isTemporary());
+    }
+    
+    @Test
+    void assertVisitCreateTableAsSelect() {
+        CreateTableStatement statement = (CreateTableStatement) parse("CREATE TABLE t_projection AS SELECT id, name FROM source_table");
+        assertTrue(statement.getSelectStatement().isPresent());
+        SimpleTableSegment from = (SimpleTableSegment) statement.getSelectStatement().get().getFrom().get();
+        assertThat(from.getTableName().getIdentifier().getValue(), is("source_table"));
+    }
+    
+    @Test
+    void assertVisitCreateTableAsSelectWithWindowFunction() {
+        CreateTableStatement statement = (CreateTableStatement) parse(
+                "CREATE TABLE t_window AS SELECT a.*, ROW_NUMBER() OVER(PARTITION BY a.user_id ORDER BY a.join_date DESC) rw FROM t_user a");
+        ExpressionProjectionSegment projection = (ExpressionProjectionSegment) statement.getSelectStatement().get().getProjections().getProjections().get(1);
+        FunctionSegment function = (FunctionSegment) projection.getExpr();
+        assertTrue(function.getWindow().isPresent());
+        assertThat(function.getWindow().get().getPartitionListSegments().size(), is(1));
+        assertThat(function.getWindow().get().getOrderBySegment().getOrderByItems().size(), is(1));
     }
     
     @Test

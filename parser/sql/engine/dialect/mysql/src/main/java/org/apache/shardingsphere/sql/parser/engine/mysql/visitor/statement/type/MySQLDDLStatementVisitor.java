@@ -287,6 +287,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
                 .temporary(null != ctx.TEMPORARY())
                 .likeTable(null == ctx.createLikeClause() ? null : (SimpleTableSegment) visit(ctx.createLikeClause()))
                 .createTableOption(null == ctx.createTableOptions() ? null : (CreateTableOptionSegment) visit(ctx.createTableOptions()))
+                .selectStatement(null == ctx.duplicateAsQueryExpression() ? null : (SelectStatement) visit(ctx.duplicateAsQueryExpression().select()))
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
