@@ -47,6 +47,11 @@
             <artifactId>shardingsphere-parser-distsql-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-sql-engine-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -114,6 +119,12 @@
             <artifactId>shardingsphere-sharding-distsql-parser</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>${antlr4.version}</version>
         </dependency>
     </dependencies>
 </project>

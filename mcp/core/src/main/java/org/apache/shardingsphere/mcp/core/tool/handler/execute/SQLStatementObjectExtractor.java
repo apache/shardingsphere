@@ -73,7 +73,7 @@ final class SQLStatementObjectExtractor {
     
     private final SQLStatementScanner scanner;
     
-    Collection<SQLStatementObjectName> extract(final SQLStatement sqlStatement, final String sql) {
+    Collection<SQLStatementObjectName> extract(final SQLStatement sqlStatement) {
         Collection<SQLStatementObjectName> result = new LinkedHashSet<>();
         extractDirectTargets(sqlStatement, result);
         TableExtractor tableExtractor = new TableExtractor();
@@ -83,7 +83,7 @@ final class SQLStatementObjectExtractor {
         extractMergeTables(sqlStatement, result);
         extractCommonTableExpressionTables(sqlStatement, result);
         removeCommonTableExpressionAliases(sqlStatement, result);
-        List<SQLStatementToken> tokens = scanner.tokenize(sql);
+        List<SQLStatementToken> tokens = scanner.tokens();
         extractDCLTarget(sqlStatement, tokens, result);
         extractQualifiedFunctions(tokens, result);
         return result;
@@ -336,7 +336,7 @@ final class SQLStatementObjectExtractor {
         String identifierText = QuoteCharacter.NONE == quoteCharacter || quoteCharacter.isWrapped(identifier.getValue())
                 ? identifier.getValue()
                 : identifier.getValueWithQuoteCharacters();
-        List<SQLStatementToken> tokens = scanner.tokenize(identifierText);
+        List<SQLStatementToken> tokens = scanner.scan(identifierText).tokens();
         int objectNameEnd = findObjectNameEnd(tokens, 0);
         if (3 > objectNameEnd || objectNameEnd != tokens.size()) {
             return false;
