@@ -299,7 +299,7 @@ class FirebirdBatchedStatementsExecutorTest {
         BatchUpdateException failure = createFailure(new int[0]);
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1}).thenThrow(failure);
         FirebirdBatchCompletion actual = executeSameRouteBatch(preparedStatement, false);
-
+        
         assertThat(actual.getRecordsCount(), is(2));
         assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
         assertThat(actual.getFailures().size(), is(1));
