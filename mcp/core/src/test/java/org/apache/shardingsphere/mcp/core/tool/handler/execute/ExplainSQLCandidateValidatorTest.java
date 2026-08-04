@@ -42,18 +42,31 @@ class ExplainSQLCandidateValidatorTest {
     
     @Test
     void assertValidate() {
-        ClassificationResult actual = validator.validate("SELECT * FROM logic_db.foo_orders", "EXPLAIN SELECT * FROM logic_db.foo_orders", databaseCapability);
+        ClassificationResult actual = validator.validate("SELECT * FROM logic_db.foo_orders", "EXPLAIN FORMAT=JSON SELECT * FROM logic_db.foo_orders", databaseCapability);
         assertThat(actual.getStatementClass(), is(SupportedMCPStatement.EXPLAIN));
         assertThat(actual.getStatementType(), is("EXPLAIN"));
-        assertThat(actual.getNormalizedSql(), is("EXPLAIN SELECT * FROM logic_db.foo_orders"));
+        assertThat(actual.getNormalizedSql(), is("EXPLAIN FORMAT=JSON SELECT * FROM logic_db.foo_orders"));
         assertThat(actual.getReferencedObjects().stream().map(SQLStatementObjectName::getObjectName).toList(), contains("logic_db.foo_orders"));
     }
     
     @Test
     void assertValidateWithSignificantWhitespace() {
         ClassificationResult actual = validator.validate("SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'",
-                "EXPLAIN SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'", databaseCapability);
-        assertThat(actual.getNormalizedSql(), is("EXPLAIN SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'"));
+                "EXPLAIN QUERY TREE SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'", databaseCapability);
+        assertThat(actual.getNormalizedSql(), is("EXPLAIN QUERY TREE SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'"));
+    }
+    
+    @Test
+    void assertValidateHiveCBO() {
+        ClassificationResult actual = validator.validate("SELECT * FROM foo_orders", "EXPLAIN CBO SELECT * FROM foo_orders", databaseCapability);
+        assertThat(actual.getNormalizedSql(), is("EXPLAIN CBO SELECT * FROM foo_orders"));
+    }
+    
+    @Test
+    void assertValidateWithNonExecutableComments() {
+        ClassificationResult actual = validator.validate("SELECT '/*!80018 ANALYZE */' FROM foo_orders",
+                "EXPLAIN /* plan only */ SELECT '/*!80018 ANALYZE */' FROM foo_orders", databaseCapability);
+        assertThat(actual.getNormalizedSql(), is("EXPLAIN /* plan only */ SELECT '/*!80018 ANALYZE */' FROM foo_orders"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -69,32 +82,32 @@ class ExplainSQLCandidateValidatorTest {
                         "database_gateway_execute_explain_query only supports QUERY statements as the explained SQL."),
                 Arguments.of("missing explain prefix", "SELECT * FROM foo_orders", "SELECT * FROM foo_orders", "explain_sql must start with EXPLAIN."),
                 Arguments.of("explain analyze", "SELECT * FROM foo_orders", "EXPLAIN ANALYZE SELECT * FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "EXPLAIN ANALYZE is not supported by the MCP explain query tool."),
                 Arguments.of("explain analyse", "SELECT * FROM foo_orders", "EXPLAIN ANALYSE SELECT * FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "EXPLAIN ANALYZE is not supported by the MCP explain query tool."),
                 Arguments.of("mysql executable comment", "SELECT * FROM foo_orders", "EXPLAIN /*!80018 ANALYZE */ SELECT * FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "Executable comments are not supported by the MCP explain query tool."),
                 Arguments.of("mariadb executable comment", "SELECT * FROM foo_orders", "EXPLAIN /*M!100000 ANALYZE */ SELECT * FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "Executable comments are not supported by the MCP explain query tool."),
                 Arguments.of("explain plan for", "SELECT * FROM foo_orders", "EXPLAIN PLAN FOR SELECT * FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "EXPLAIN PLAN FOR workflows are not supported by the MCP explain query tool."),
                 Arguments.of("rewritten sql", "SELECT * FROM foo_orders", "EXPLAIN SELECT order_id FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "explain_sql must include the original sql argument without rewriting it."),
                 Arguments.of("quoted identifier case rewrite", "SELECT * FROM \"Foo_Orders\"", "EXPLAIN SELECT * FROM \"foo_orders\"",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "explain_sql must include the original sql argument without rewriting it."),
                 Arguments.of("literal whitespace rewrite", "SELECT * FROM foo_orders WHERE status = 'READY  TO SHIP'",
                         "EXPLAIN SELECT * FROM foo_orders WHERE status = 'READY TO SHIP'",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "explain_sql must include the original sql argument without rewriting it."),
                 Arguments.of("quoted identifier whitespace rewrite", "SELECT * FROM \"foo  orders\"", "EXPLAIN SELECT * FROM \"foo orders\"",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "explain_sql must include the original sql argument without rewriting it."),
                 Arguments.of("create table wrapper", "SELECT * FROM foo_orders", "EXPLAIN CREATE TABLE archived_orders AS SELECT * FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "explain_sql must not wrap the original sql argument in another statement."),
                 Arguments.of("nested explain wrapper", "SELECT * FROM foo_orders", "EXPLAIN EXPLAIN SELECT * FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "explain_sql must not wrap the original sql argument in another statement."),
                 Arguments.of("prepare wrapper", "SELECT * FROM foo_orders", "EXPLAIN PREPARE archived_orders FROM SELECT * FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."),
+                        "explain_sql must not wrap the original sql argument in another statement."),
                 Arguments.of("output redirection", "SELECT * FROM foo_orders", "EXPLAIN INTO OUTFILE SELECT * FROM foo_orders",
-                        "explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."));
+                        "EXPLAIN output redirection is not supported by the MCP explain query tool."));
     }
     
     private MCPDatabaseCapability createCapability() {

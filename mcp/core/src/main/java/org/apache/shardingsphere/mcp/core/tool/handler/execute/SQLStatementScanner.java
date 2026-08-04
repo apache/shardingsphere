@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 final class SQLStatementScanner {
     
@@ -59,8 +60,12 @@ final class SQLStatementScanner {
     }
     
     private SQLStatementScanner(final DialectSQLParserFacade parserFacade, final String sql) {
-        lexerClass = parserFacade.getLexerClass();
-        parserClass = parserFacade.getParserClass();
+        this(parserFacade.getLexerClass(), parserFacade.getParserClass(), sql);
+    }
+    
+    private SQLStatementScanner(final Class<? extends SQLLexer> lexerClass, final Class<? extends SQLParser> parserClass, final String sql) {
+        this.lexerClass = lexerClass;
+        this.parserClass = parserClass;
         String trimmedSQL = sql.trim();
         ShardingSpherePreconditions.checkState(!trimmedSQL.isEmpty(), () -> new MCPInvalidRequestException("sql cannot be empty."));
         List<Token> allTokens = getTokens(trimmedSQL);
@@ -81,6 +86,10 @@ final class SQLStatementScanner {
     
     String sql() {
         return sql;
+    }
+    
+    SQLStatementScanner scan(final String sql) {
+        return new SQLStatementScanner(lexerClass, parserClass, sql);
     }
     
     String leadingSql() {
@@ -135,6 +144,68 @@ final class SQLStatementScanner {
             nextIndex = Math.max(nextIndex, each.getStopIndex() + 1);
         }
         return nextIndex < sql.length() && containsExecutableCommentMarker(sql.substring(nextIndex));
+    }
+    
+    boolean startsWithKeyword(final String keyword) {
+        return !visibleTokens.isEmpty() && isKeyword(visibleTokens.get(0), keyword);
+    }
+    
+    private boolean isKeyword(final Token token, final String keyword) {
+        return !isQuotedIdentifier(token.getText()) && token.getText().equalsIgnoreCase(keyword);
+    }
+    
+    private boolean isKeyword(final Token token, final String... keywords) {
+        for (String each : keywords) {
+            if (isKeyword(token, each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    boolean containsKeyword(final String... keywords) {
+        for (Token each : visibleTokens) {
+            if (isKeyword(each, keywords)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    boolean containsKeywordSequence(final String... keywords) {
+        for (int index = 0; index + keywords.length <= visibleTokens.size(); index++) {
+            if (containsKeywordSequence(index, keywords)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsKeywordSequence(final int startIndex, final String... keywords) {
+        for (int index = 0; index < keywords.length; index++) {
+            if (!isKeyword(visibleTokens.get(startIndex + index), keywords[index])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    boolean containsKeywordAfterFirst(final Set<String> keywords) {
+        for (Token each : visibleTokens.subList(1, visibleTokens.size())) {
+            if (!isQuotedIdentifier(each.getText()) && keywords.contains(each.getText().toUpperCase(Locale.ENGLISH))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isQuotedIdentifier(final String text) {
+        if (2 > text.length()) {
+            return false;
+        }
+        char firstChar = text.charAt(0);
+        char lastChar = text.charAt(text.length() - 1);
+        return '"' == firstChar && '"' == lastChar || '`' == firstChar && '`' == lastChar || '[' == firstChar && ']' == lastChar;
     }
     
     private boolean containsExecutableCommentMarker(final String text) {

@@ -24,10 +24,17 @@ import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
+import java.util.Set;
+
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class ExplainSQLCandidateValidator {
     
-    private static final String EXPLAIN_PREFIX = "EXPLAIN ";
+    private static final Set<String> STATEMENT_START_KEYWORDS = Set.of(
+            "EXPLAIN", "SELECT", "WITH", "VALUES", "INSERT", "UPDATE", "DELETE", "MERGE", "REPLACE", "UPSERT",
+            "CREATE", "ALTER", "DROP", "TRUNCATE", "RENAME", "ATTACH", "DETACH", "EXCHANGE", "UNDROP", "OPTIMIZE",
+            "GRANT", "REVOKE", "CALL", "EXEC", "EXECUTE", "DECLARE", "PREPARE", "DEALLOCATE", "DESCRIBE", "SHOW",
+            "DO", "COPY", "LOAD", "UNLOAD", "IMPORT", "EXPORT", "BEGIN", "START", "COMMIT", "ROLLBACK", "SAVEPOINT", "RELEASE",
+            "SET", "RESET", "USE", "PARALLEL");
     
     private final MCPStatementAnalyzer statementAnalyzer;
     
@@ -35,11 +42,27 @@ final class ExplainSQLCandidateValidator {
         ClassificationResult explainedStatement = statementAnalyzer.analyze(sql, databaseCapability);
         ShardingSpherePreconditions.checkState(SupportedMCPStatement.QUERY == explainedStatement.getStatementClass(),
                 () -> new MCPInvalidRequestException("database_gateway_execute_explain_query only supports QUERY statements as the explained SQL."));
-        String actualExplainSql = new SQLStatementScanner(databaseCapability.getDatabaseType(), explainSql).sql();
-        ShardingSpherePreconditions.checkState(actualExplainSql.regionMatches(true, 0, EXPLAIN_PREFIX, 0, EXPLAIN_PREFIX.length()),
+        SQLStatementScanner scanner = new SQLStatementScanner(databaseCapability.getDatabaseType(), explainSql);
+        String actualExplainSql = scanner.sql();
+        ShardingSpherePreconditions.checkState(!scanner.containsExecutableComment(),
+                () -> new MCPInvalidRequestException("Executable comments are not supported by the MCP explain query tool."));
+        ShardingSpherePreconditions.checkState(scanner.startsWithKeyword("EXPLAIN"),
                 () -> new MCPInvalidRequestException("explain_sql must start with EXPLAIN."));
-        ShardingSpherePreconditions.checkState(actualExplainSql.substring(EXPLAIN_PREFIX.length()).equals(explainedStatement.getNormalizedSql()),
-                () -> new MCPInvalidRequestException("explain_sql must be EXPLAIN followed by the original sql argument without rewriting it."));
+        SQLStatementScanner prefixScanner = scanner.scan(extractExplainPrefix(actualExplainSql, explainedStatement.getNormalizedSql()));
+        ShardingSpherePreconditions.checkState(!prefixScanner.containsKeywordSequence("EXPLAIN", "PLAN", "FOR"),
+                () -> new MCPInvalidRequestException("EXPLAIN PLAN FOR workflows are not supported by the MCP explain query tool."));
+        ShardingSpherePreconditions.checkState(!prefixScanner.containsKeyword("ANALYZE", "ANALYSE"),
+                () -> new MCPInvalidRequestException("EXPLAIN ANALYZE is not supported by the MCP explain query tool."));
+        ShardingSpherePreconditions.checkState(!prefixScanner.containsKeyword("INTO"),
+                () -> new MCPInvalidRequestException("EXPLAIN output redirection is not supported by the MCP explain query tool."));
+        ShardingSpherePreconditions.checkState(!prefixScanner.containsKeywordAfterFirst(STATEMENT_START_KEYWORDS),
+                () -> new MCPInvalidRequestException("explain_sql must not wrap the original sql argument in another statement."));
         return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, "", explainedStatement.getReferencedObjects(), false);
+    }
+    
+    private String extractExplainPrefix(final String explainSql, final String sql) {
+        ShardingSpherePreconditions.checkState(explainSql.endsWith(sql),
+                () -> new MCPInvalidRequestException("explain_sql must include the original sql argument without rewriting it."));
+        return explainSql.substring(0, explainSql.length() - sql.length());
     }
 }

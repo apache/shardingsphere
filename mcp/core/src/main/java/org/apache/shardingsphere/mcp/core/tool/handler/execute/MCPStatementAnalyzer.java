@@ -43,18 +43,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -78,13 +71,15 @@ final class MCPStatementAnalyzer {
         SQLStatementSafetyValidator safetyValidator = new SQLStatementSafetyValidator();
         safetyValidator.checkLeadingStatement(upperLeadingSql, scanner.containsExecutableComment());
         if (isSavepointStatement(upperLeadingSql)) {
-            validateSavepointStatement(leadingSql);
+            return analyzeSavepointStatement(actualSql, leadingSql, upperLeadingSql);
+        }
+        if (isTransactionControlStatement(upperLeadingSql)) {
+            return createTCLResult(SupportedMCPStatement.TRANSACTION_CONTROL, extractTransactionStatementType(upperLeadingSql), actualSql, "");
         }
         SQLStatement sqlStatement = parse(actualSql, databaseType);
         safetyValidator.checkParsedStatement(sqlStatement);
-        Optional<ClassificationResult> tclStatement = analyzeTCLStatement(sqlStatement, actualSql, upperLeadingSql);
-        if (tclStatement.isPresent()) {
-            return tclStatement.get();
+        if (sqlStatement instanceof TCLStatement) {
+            throw new MCPUnsupportedSQLStatementException();
         }
         boolean ruleDistSQL = isRuleDistSQL(sqlStatement);
         String leadingKeyword = scanner.extractLeadingKeyword();
@@ -93,42 +88,10 @@ final class MCPStatementAnalyzer {
         return new ClassificationResult(statementClass, statementType, actualSql, "", new SQLStatementObjectExtractor().extract(sqlStatement), ruleDistSQL);
     }
     
-    private void validateSavepointStatement(final String leadingSql) {
+    private ClassificationResult analyzeSavepointStatement(final String actualSql, final String leadingSql, final String upperLeadingSql) {
         String savepointName = extractSavepointName(leadingSql);
         ShardingSpherePreconditions.checkState(!savepointName.isEmpty(), () -> new MCPInvalidRequestException("Savepoint name is required."));
-    }
-    
-    private Optional<ClassificationResult> analyzeTCLStatement(final SQLStatement sqlStatement, final String actualSql, final String upperLeadingSql) {
-        if (sqlStatement instanceof BeginTransactionStatement || sqlStatement instanceof StartTransactionStatement) {
-            if ("BEGIN".equals(upperLeadingSql)) {
-                return Optional.of(createTCLResult(SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", actualSql, ""));
-            }
-            if ("START TRANSACTION".equals(upperLeadingSql)) {
-                return Optional.of(createTCLResult(SupportedMCPStatement.TRANSACTION_CONTROL, "START TRANSACTION", actualSql, ""));
-            }
-        }
-        if (sqlStatement instanceof CommitStatement && "COMMIT".equals(upperLeadingSql)) {
-            return Optional.of(createTCLResult(SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", actualSql, ""));
-        }
-        if (sqlStatement instanceof RollbackStatement) {
-            Optional<String> savepointName = ((RollbackStatement) sqlStatement).getSavepointName();
-            if (savepointName.isPresent()) {
-                return Optional.of(createTCLResult(SupportedMCPStatement.SAVEPOINT, "ROLLBACK TO SAVEPOINT", actualSql, savepointName.get()));
-            }
-            if ("ROLLBACK".equals(upperLeadingSql)) {
-                return Optional.of(createTCLResult(SupportedMCPStatement.TRANSACTION_CONTROL, "ROLLBACK", actualSql, ""));
-            }
-        }
-        if (sqlStatement instanceof SavepointStatement) {
-            return Optional.of(createTCLResult(SupportedMCPStatement.SAVEPOINT, "SAVEPOINT", actualSql, ((SavepointStatement) sqlStatement).getSavepointName()));
-        }
-        if (sqlStatement instanceof ReleaseSavepointStatement) {
-            return Optional.of(createTCLResult(SupportedMCPStatement.SAVEPOINT, "RELEASE SAVEPOINT", actualSql, ((ReleaseSavepointStatement) sqlStatement).getSavepointName()));
-        }
-        if (sqlStatement instanceof TCLStatement) {
-            throw new MCPUnsupportedSQLStatementException();
-        }
-        return Optional.empty();
+        return createTCLResult(SupportedMCPStatement.SAVEPOINT, extractTransactionStatementType(upperLeadingSql), actualSql, savepointName);
     }
     
     private ClassificationResult createTCLResult(final SupportedMCPStatement statementClass, final String statementType, final String sql, final String savepointName) {
@@ -216,6 +179,23 @@ final class MCPStatementAnalyzer {
         return "SAVEPOINT".equals(upperSql) || upperSql.startsWith("SAVEPOINT ")
                 || "ROLLBACK TO".equals(upperSql) || upperSql.startsWith("ROLLBACK TO ")
                 || "RELEASE SAVEPOINT".equals(upperSql) || upperSql.startsWith("RELEASE SAVEPOINT ");
+    }
+    
+    private boolean isTransactionControlStatement(final String upperSql) {
+        return "BEGIN".equals(upperSql) || "START TRANSACTION".equals(upperSql) || "COMMIT".equals(upperSql) || "ROLLBACK".equals(upperSql);
+    }
+    
+    private String extractTransactionStatementType(final String upperSql) {
+        if (upperSql.startsWith("START TRANSACTION")) {
+            return "START TRANSACTION";
+        }
+        if (upperSql.startsWith("ROLLBACK TO")) {
+            return "ROLLBACK TO SAVEPOINT";
+        }
+        if (upperSql.startsWith("RELEASE SAVEPOINT")) {
+            return "RELEASE SAVEPOINT";
+        }
+        return upperSql.split("\\s+")[0];
     }
     
     private String extractSavepointName(final String sql) {
