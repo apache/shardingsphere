@@ -74,25 +74,30 @@ public final class ResponsePacketBuilder {
     
     private static int getColumnDefinitionFlag(final QueryHeader header) {
         int result = 0;
+        boolean characterLargeObject = isCharacterLargeObject(header.getColumnType());
         if (header.isPrimaryKey()) {
             result += MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue();
         }
         if (header.isNotNull()) {
             result += MySQLColumnDefinitionFlag.NOT_NULL.getValue();
         }
-        if (!header.isSigned()) {
+        if (!header.isSigned() && !characterLargeObject) {
             result += MySQLColumnDefinitionFlag.UNSIGNED.getValue();
         }
         if (header.isAutoIncrement()) {
             result += MySQLColumnDefinitionFlag.AUTO_INCREMENT.getValue();
         }
-        if (header.getColumnTypeName().contains(BINARY_COLUMN_TYPE_KEYWORD) || header.getColumnTypeName().contains(BLOB_COLUMN_TYPE_KEYWORD)) {
+        if (!characterLargeObject && (header.getColumnTypeName().contains(BINARY_COLUMN_TYPE_KEYWORD) || header.getColumnTypeName().contains(BLOB_COLUMN_TYPE_KEYWORD))) {
             result += MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue();
         }
-        if (BINARY_TYPES.contains(header.getColumnType())) {
+        if (BINARY_TYPES.contains(header.getColumnType()) || characterLargeObject) {
             result += MySQLColumnDefinitionFlag.BLOB.getValue();
         }
         return result;
+    }
+    
+    private static boolean isCharacterLargeObject(final int jdbcType) {
+        return Types.CLOB == jdbcType || Types.NCLOB == jdbcType;
     }
     
     /**

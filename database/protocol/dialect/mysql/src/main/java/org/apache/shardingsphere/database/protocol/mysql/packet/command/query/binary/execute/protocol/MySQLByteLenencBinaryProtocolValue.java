@@ -17,7 +17,14 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol;
 
+import com.google.common.io.CharStreams;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.sql.Clob;
+import java.sql.SQLException;
 
 /**
  * Binary protocol value for byte lenenc for MySQL. Actually this is string lenenc, but converting to {@link String} may corrupt the raw bytes.
@@ -33,8 +40,18 @@ public final class MySQLByteLenencBinaryProtocolValue implements MySQLBinaryProt
     public void write(final MySQLPacketPayload payload, final Object value) {
         if (value instanceof byte[]) {
             payload.writeBytesLenenc((byte[]) value);
+        } else if (value instanceof Clob) {
+            payload.writeStringLenenc(readClob((Clob) value));
         } else {
             payload.writeStringLenenc(value.toString());
+        }
+    }
+    
+    private String readClob(final Clob value) {
+        try (Reader reader = value.getCharacterStream()) {
+            return CharStreams.toString(reader);
+        } catch (final IOException | SQLException ex) {
+            throw new UnknownSQLException(ex);
         }
     }
 }

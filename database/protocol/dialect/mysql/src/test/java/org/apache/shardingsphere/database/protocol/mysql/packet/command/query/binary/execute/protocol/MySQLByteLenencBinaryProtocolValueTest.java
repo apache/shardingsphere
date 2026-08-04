@@ -21,12 +21,23 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.sql.Clob;
+import java.sql.SQLException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MySQLByteLenencBinaryProtocolValueTest {
     
@@ -48,5 +59,56 @@ class MySQLByteLenencBinaryProtocolValueTest {
         MySQLPacketPayload payload = new MySQLPacketPayload(actual, StandardCharsets.UTF_8);
         new MySQLByteLenencBinaryProtocolValue().write(payload, input);
         assertThat(ByteBufUtil.getBytes(actual), is(expected));
+    }
+    
+    @Test
+    void assertWriteString() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        new MySQLByteLenencBinaryProtocolValue().write(payload, "value");
+        assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringLenenc(), is("value"));
+    }
+    
+    @Test
+    void assertWriteClob() throws SQLException, IOException {
+        String expected = "ASCII|中文|🙂|é|𝄞";
+        Reader reader = spy(new StringReader(expected));
+        Clob clob = mock(Clob.class);
+        when(clob.getCharacterStream()).thenReturn(reader);
+        ByteBuf byteBuf = Unpooled.buffer();
+        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        new MySQLByteLenencBinaryProtocolValue().write(payload, clob);
+        assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringLenenc(), is(expected));
+        verify(reader).close();
+    }
+    
+    @Test
+    void assertWriteClobWithIOException() throws SQLException, IOException {
+        IOException expectedCause = new IOException("read error");
+        Reader reader = spy(new StringReader("") {
+            
+            @Override
+            public int read(final char[] chars, final int offset, final int length) throws IOException {
+                throw expectedCause;
+            }
+        });
+        Clob clob = mock(Clob.class);
+        when(clob.getCharacterStream()).thenReturn(reader);
+        ByteBuf byteBuf = Unpooled.buffer();
+        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> new MySQLByteLenencBinaryProtocolValue().write(payload, clob));
+        assertThat(actual.getCause(), is(expectedCause));
+        assertThat(byteBuf.writerIndex(), is(0));
+        verify(reader).close();
+    }
+    
+    @Test
+    void assertWriteClobWithSQLException() throws SQLException {
+        SQLException expectedCause = new SQLException("sql error");
+        Clob clob = mock(Clob.class);
+        when(clob.getCharacterStream()).thenThrow(expectedCause);
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> new MySQLByteLenencBinaryProtocolValue().write(payload, clob));
+        assertThat(actual.getCause(), is(expectedCause));
     }
 }
