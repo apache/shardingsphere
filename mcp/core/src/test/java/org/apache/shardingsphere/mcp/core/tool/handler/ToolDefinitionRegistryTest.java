@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
@@ -33,6 +34,8 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgum
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestContextFixture;
+import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -45,7 +48,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,31 +57,43 @@ import static org.mockito.Mockito.mockStatic;
 class ToolDefinitionRegistryTest {
     
     @Test
-    void assertGetSupportedTools() {
-        assertThat(ToolDefinitionRegistry.getSupportedTools(), contains("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query",
-                "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow"));
-    }
-    
-    @Test
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolDefinitionRegistry.getSupportedToolDescriptors();
         assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(),
-                is(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query", "database_gateway_execute_update",
-                        "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
-        assertToolFields(actual.get(0), List.of("database", "schema", "query", "object_types"));
+                is(List.of("database_gateway_search_metadata", "database_gateway_validate_runtime_database", "database_gateway_execute_query", "database_gateway_execute_explain_query",
+                        "database_gateway_execute_update", "database_gateway_apply_workflow", "database_gateway_validate_workflow")));
+        assertToolFields(actual.get(0), List.of("database", "schema", "query", "object_types", "limit", "offset"));
+        assertField(actual.get(0), "limit", "integer", List.of(), false);
+        assertField(actual.get(0), "offset", "integer", List.of(), false);
         assertToolFields(actual.get(1), List.of("database"));
         assertRequiredFields(actual.get(1), List.of("database"));
         assertToolFields(actual.get(2), List.of("database", "schema", "sql", "max_rows", "timeout_ms"));
         assertRequiredFields(actual.get(2), List.of("database", "sql"));
-        assertToolFields(actual.get(3), List.of("database", "schema", "sql", "execution_mode", "max_rows", "timeout_ms"));
-        assertRequiredFields(actual.get(3), List.of("database", "sql", "execution_mode"));
-        assertField(actual.get(3), "execution_mode", "string", List.of("execute", "preview"), true);
-        assertField(actual.get(3), "max_rows", "integer", List.of(), false);
-        assertField(actual.get(3), "timeout_ms", "integer", List.of(), false);
-        assertToolFields(actual.get(4), List.of("plan_id", "execution_mode", "approved_steps"));
-        assertRequiredFields(actual.get(4), List.of("plan_id", "execution_mode"));
-        assertField(actual.get(4), "execution_mode", "string", List.of("preview", "review-then-execute", "manual-only"), true);
-        assertField(actual.get(4), "approved_steps", "array", List.of(), false);
+        assertToolFields(actual.get(3), List.of("database", "schema", "sql", "explain_sql", "max_rows", "timeout_ms"));
+        assertRequiredFields(actual.get(3), List.of("database", "sql", "explain_sql"));
+        assertToolFields(actual.get(4), List.of("database", "schema", "sql", "execution_mode", "max_rows", "timeout_ms"));
+        assertRequiredFields(actual.get(4), List.of("database", "sql", "execution_mode"));
+        assertField(actual.get(4), "execution_mode", "string", List.of("execute", "preview"), true);
+        assertField(actual.get(4), "max_rows", "integer", List.of(), false);
+        assertField(actual.get(4), "timeout_ms", "integer", List.of(), false);
+        assertToolFields(actual.get(5), List.of("plan_id", "execution_mode", "approved_steps"));
+        assertRequiredFields(actual.get(5), List.of("plan_id", "execution_mode"));
+        assertField(actual.get(5), "execution_mode", "string", List.of("preview", "review-then-execute", "manual-only"), true);
+        assertField(actual.get(5), "approved_steps", "array", List.of(), false);
+    }
+    
+    @Test
+    void assertGetSupportedToolDescriptorsWithRuntimeProtectionLimits() {
+        List<MCPToolDescriptor> descriptors = ToolDefinitionRegistry.getSupportedToolDescriptors();
+        for (String each : List.of("database_gateway_execute_query", "database_gateway_execute_explain_query", "database_gateway_execute_update")) {
+            MCPToolDescriptor descriptor = descriptors.stream().filter(tool -> each.equals(tool.getName())).findFirst().orElseThrow();
+            Map<?, ?> actualMaxRows = findField(descriptor, "max_rows");
+            assertThat(actualMaxRows.get("default"), is(MCPRuntimeProtectionPolicy.DEFAULT_MAX_ROWS));
+            assertThat(actualMaxRows.get("maximum"), is(MCPRuntimeProtectionPolicy.MAX_ROWS_LIMIT));
+            Map<?, ?> actualTimeout = findField(descriptor, "timeout_ms");
+            assertThat(actualTimeout.get("default"), is(MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS));
+            assertThat(actualTimeout.get("maximum"), is(MCPRuntimeProtectionPolicy.MAX_TIMEOUT_MILLISECONDS));
+        }
     }
     
     @Test
@@ -90,10 +104,11 @@ class ToolDefinitionRegistryTest {
     @Test
     void assertDispatch() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-        runtimeContext.getSessionManager().createSession("session-1");
-        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
+        runtimeContext.getSessionManager().createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
+        try (RequestContextFixture requestContextFixture = ResourceTestDataFactory.createRequestContextFixture(runtimeContext, ResourceTestDataFactory.createDatabaseMetadata())) {
+            MCPFeatureRuntimeRequestContext requestContext = requestContextFixture.getRequestContext();
             MCPToolDefinition toolDefinition = ToolDefinitionRegistry.getToolDefinition("database_gateway_search_metadata");
-            MCPResponse actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, "session-1", Map.of("query", "order", "object_types", List.of("index")));
+            MCPSuccessPayload actual = ToolDefinitionRegistry.dispatch(requestContext, toolDefinition, Map.of("query", "order", "object_types", List.of("index")));
             assertThat(toolDefinition.getDescriptor().getName(), is("database_gateway_search_metadata"));
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
         }
@@ -178,8 +193,8 @@ class ToolDefinitionRegistryTest {
     void assertDispatchWithInvalidApprovedSteps() {
         MCPInvalidApprovedStepsException actual = assertThrows(MCPInvalidApprovedStepsException.class,
                 () -> dispatch("database_gateway_apply_workflow", Map.of("plan_id", "plan-1", "execution_mode", "preview", "approved_steps", List.of("all"))));
-        assertThat(actual.getMessage(), is("approved_steps must contain only [ddl, index_ddl, rule_distsql]."));
-        assertThat(actual.getAllowedValues(), is(List.of("ddl", "index_ddl", "rule_distsql")));
+        assertThat(actual.getMessage(), is("approved_steps must contain only [rule_distsql]."));
+        assertThat(actual.getAllowedValues(), is(List.of("rule_distsql")));
         assertThat(actual.getSuggestedArguments(), is(Map.of("plan_id", "plan-1", "execution_mode", "preview")));
     }
     
@@ -216,6 +231,17 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
+    void assertValidateWithInvalidNestedBoolean() {
+        MCPToolDescriptor descriptor = createNestedFixtureToolDescriptor();
+        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
+                () -> new MCPToolArgumentContract(descriptor.getName(), descriptor.getInputSchema()).validate(Map.of("options", Map.of("enabled", "true"))));
+        assertThat(actual.getMessage(), is("options.enabled must be a boolean."));
+        assertThat(actual.getArgumentPath(), is("options.enabled"));
+        assertThat(actual.getCategory(), is("invalid_argument_type"));
+        assertThat(actual.getExpectedType(), is("boolean"));
+    }
+    
+    @Test
     void assertValidateWithSchemaAdditionalProperties() {
         MCPToolDescriptor descriptor = createAdditionalPropertiesFixtureToolDescriptor();
         MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
@@ -229,12 +255,12 @@ class ToolDefinitionRegistryTest {
     }
     
     @Test
-    void assertGetSupportedToolsWithNoToolHandlers() {
+    void assertGetSupportedToolDescriptorsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(Collections.emptyList());
             Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ToolDefinitionRegistry.class.getName(), false, createIsolatedToolDefinitionRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
-                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedTools"), null));
+                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedToolDescriptors"), null));
             assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
             Throwable actualCause = actual.getCause().getCause();
             assertThat(actualCause.getClass(), is(IllegalStateException.class));
@@ -242,20 +268,27 @@ class ToolDefinitionRegistryTest {
         }
     }
     
-    private static MCPResponse dispatch(final String toolName, final Map<String, Object> arguments) {
-        return ToolDefinitionRegistry.dispatch(mock(MCPRequestScope.class), ToolDefinitionRegistry.getToolDefinition(toolName), "session-1", arguments);
+    private static MCPSuccessPayload dispatch(final String toolName, final Map<String, Object> arguments) {
+        return ToolDefinitionRegistry.dispatch(mock(MCPFeatureRuntimeRequestContext.class), ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
     }
     
     private static MCPToolDescriptor createNestedFixtureToolDescriptor() {
-        Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string")), "required", List.of(), "additionalProperties", false);
+        Map<String, Object> optionSchema = Map.of("type", "object", "properties", Map.of("mode", Map.of("type", "string"), "enabled", Map.of("type", "boolean")),
+                "required", List.of(), "additionalProperties", false);
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
-                "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
+                "additionalProperties", false), Collections.emptyMap(),
+                MCPToolAnnotations.builder()
+                        .title("Fixture Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     private static MCPToolDescriptor createAdditionalPropertiesFixtureToolDescriptor() {
         Map<String, Object> optionSchema = Map.of("type", "object", "additionalProperties", Map.of("type", "string"));
         return new MCPToolDescriptor("fixture_tool", "Fixture Tool", "Fixture tool.", Map.of("type", "object", "properties", Map.of("options", optionSchema), "required", List.of(),
-                "additionalProperties", false), Collections.emptyMap(), new MCPToolAnnotations("Fixture Tool", true, false, true, true), Collections.emptyMap());
+                "additionalProperties", false), Collections.emptyMap(),
+                MCPToolAnnotations.builder()
+                        .title("Fixture Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                Collections.emptyMap());
     }
     
     private static void assertToolFields(final MCPToolDescriptor descriptor, final List<String> expectedFieldNames) {

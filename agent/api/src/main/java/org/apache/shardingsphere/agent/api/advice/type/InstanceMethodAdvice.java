@@ -40,7 +40,7 @@ public interface InstanceMethodAdvice extends AgentAdvice {
     
     /**
      * Intercept the target method and weave the method after origin method.
-     * It will invoke after the origin calling
+     * It will invoke after the origin calling.
      *
      * @param target the target object
      * @param method the target method

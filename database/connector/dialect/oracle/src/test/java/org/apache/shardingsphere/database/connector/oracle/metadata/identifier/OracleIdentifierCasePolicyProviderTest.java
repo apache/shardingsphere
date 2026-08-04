@@ -48,7 +48,7 @@ class OracleIdentifierCasePolicyProviderTest {
     
     @Test
     void assertProvide() {
-        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(databaseType, null)).orElseThrow(AssertionError::new).getPolicy(IdentifierScope.TABLE);
+        IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(databaseType, null)).getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actual.matches("FOO", "foo", QuoteCharacter.NONE));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));

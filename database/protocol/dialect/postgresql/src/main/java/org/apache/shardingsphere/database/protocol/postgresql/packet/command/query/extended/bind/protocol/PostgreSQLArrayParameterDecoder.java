@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -170,7 +171,11 @@ public final class PostgreSQLArrayParameterDecoder {
     private Collection<String> decodeText(final String value) {
         Preconditions.checkArgument(value.length() >= 2, "value length less than 2");
         Preconditions.checkArgument('{' == value.charAt(0) && '}' == value.charAt(value.length() - 1), "value not start with '{' or not end with '}'");
-        String[] elements = value.substring(1, value.length() - 1).split(",");
+        String content = value.substring(1, value.length() - 1);
+        if (content.isEmpty()) {
+            return Collections.emptyList();
+        }
+        String[] elements = content.split(",");
         return Arrays.stream(elements).map(each -> "NULL".equals(each) ? null : decodeElementText(each)).collect(Collectors.toList());
     }
     

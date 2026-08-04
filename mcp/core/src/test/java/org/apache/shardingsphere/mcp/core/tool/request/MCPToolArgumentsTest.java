@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.request;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -52,12 +52,6 @@ class MCPToolArgumentsTest {
     @MethodSource("getStringArgumentCases")
     void assertGetStringArgument(final String name, final Map<String, Object> rawArguments, final String expectedValue) {
         assertThat(new MCPToolArguments(rawArguments).getStringArgument("name"), is(expectedValue));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getIntegerArgumentCases")
-    void assertGetIntegerArgument(final String name, final Map<String, Object> rawArguments, final int defaultValue, final int expectedValue) {
-        assertThat(new MCPToolArguments(rawArguments).getIntegerArgument("limit", defaultValue), is(expectedValue));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -104,15 +98,6 @@ class MCPToolArgumentsTest {
                 Arguments.of("number string", Map.of("name", 42), "42"));
     }
     
-    private static Stream<Arguments> getIntegerArgumentCases() {
-        return Stream.of(
-                Arguments.of("missing integer", Map.of(), 10, 10),
-                Arguments.of("number integer", Map.of("limit", 5), 10, 5),
-                Arguments.of("parsed integer", Map.of("limit", " 20 "), 10, 20),
-                Arguments.of("blank integer", Map.of("limit", "   "), 10, 10),
-                Arguments.of("invalid integer", Map.of("limit", "foo"), 10, 10));
-    }
-    
     private static Stream<Arguments> getBoundedIntegerArgumentCases() {
         return Stream.of(
                 Arguments.of("missing bounded integer", Map.of(), 10),
@@ -130,7 +115,7 @@ class MCPToolArgumentsTest {
     private static Stream<Arguments> getStringCollectionArgumentCases() {
         return Stream.of(
                 Arguments.of("missing collection", Map.of(), List.of()),
-                Arguments.of("normalized collection", Map.of("steps", List.of(" ddl ", "", "rule_distsql")), List.of("ddl", "rule_distsql")));
+                Arguments.of("normalized collection", Map.of("steps", List.of(" rule_distsql ", "", "logical_metadata")), List.of("rule_distsql", "logical_metadata")));
     }
     
 }

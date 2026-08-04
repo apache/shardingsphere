@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.broadcast;
 
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.resource.handler.BroadcastRuleCountHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.resource.handler.BroadcastRulesHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.resource.handler.BroadcastTableRuleHandler;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Broadcast MCP handler provider.
  */
-public final class BroadcastMCPHandlerProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
+public final class BroadcastMCPHandlerProvider implements MCPWorkflowDefinitionProvider {
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
@@ -44,6 +44,11 @@ public final class BroadcastMCPHandlerProvider implements MCPHandlerProvider, MC
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
         return List.of(new PlanBroadcastRuleToolHandler());
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of();
     }
     
     @Override

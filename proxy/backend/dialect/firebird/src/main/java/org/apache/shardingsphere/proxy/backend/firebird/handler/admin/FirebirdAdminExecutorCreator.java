@@ -25,7 +25,6 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,10 +37,6 @@ public final class FirebirdAdminExecutorCreator implements DatabaseAdminExecutor
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        // TODO add support for Firebird system tables
-        if (sqlStatement instanceof SelectStatement) {
-            return Optional.empty();
-        }
         if (sqlStatement instanceof SetStatement) {
             return Optional.of(new FirebirdSetVariableAdminExecutor((SetStatement) sqlStatement));
         }

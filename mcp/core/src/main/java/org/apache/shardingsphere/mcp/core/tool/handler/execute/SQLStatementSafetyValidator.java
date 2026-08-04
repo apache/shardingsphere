@@ -21,9 +21,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPLockingReadStatementException;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementSafetyValidator {
@@ -38,8 +46,8 @@ final class SQLStatementSafetyValidator {
     
     private final SQLStatementScanner scanner;
     
-    void checkLeadingStatement(final String upperSql, final String sql) {
-        if (isBannedCommand(upperSql, sql)) {
+    void checkLeadingStatement(final String upperSql) {
+        if (isBannedCommand(upperSql)) {
             throw new MCPBannedSQLStatementException();
         }
         if (isMetadataIntrospectionStatement(upperSql)) {
@@ -47,27 +55,55 @@ final class SQLStatementSafetyValidator {
         }
     }
     
-    void checkStructuredStatement(final SupportedMCPStatement statementClass, final SQLStatementStructure statementStructure) {
-        checkSideEffectingSelectInto(statementStructure);
-        checkLockingRead(statementClass, scanner.tokenize(statementStructure.mainSql()));
-        for (SQLCommonTableExpression each : statementStructure.commonTableExpressions()) {
-            checkStructuredStatement(resolveCommonTableExpressionStatementClass(each.statementStructure()), each.statementStructure());
+    void checkParsedStatement(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement || findWithSegment(sqlStatement).isPresent()) {
+            checkLockingRead(scanner.tokens());
         }
+        checkParsedStatementTree(sqlStatement);
     }
     
-    private SupportedMCPStatement resolveCommonTableExpressionStatementClass(final SQLStatementStructure statementStructure) {
-        return "SELECT".equals(statementStructure.statementType()) && !statementStructure.containsDataModifyingCommonTableExpression() ? SupportedMCPStatement.QUERY : SupportedMCPStatement.DML;
+    private void checkParsedStatementTree(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            SelectStatement selectStatement = (SelectStatement) sqlStatement;
+            if (selectStatement.getInto().isPresent() || selectStatement.getOutfile().isPresent()) {
+                throw new MCPBannedSQLStatementException();
+            }
+            if (selectStatement.getLock().isPresent()) {
+                throw new MCPLockingReadStatementException();
+            }
+        }
+        findWithSegment(sqlStatement).ifPresent(with -> {
+            for (CommonTableExpressionSegment each : with.getCommonTableExpressions()) {
+                checkParsedStatementTree(each.getSubquery().getSelect());
+            }
+        });
     }
     
-    private boolean isBannedCommand(final String upperSql, final String sql) {
+    private Optional<WithSegment> findWithSegment(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return ((SelectStatement) sqlStatement).getWith();
+        }
+        if (sqlStatement instanceof InsertStatement) {
+            return ((InsertStatement) sqlStatement).getWith();
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            return ((UpdateStatement) sqlStatement).getWith();
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return ((DeleteStatement) sqlStatement).getWith();
+        }
+        return sqlStatement instanceof MergeStatement ? ((MergeStatement) sqlStatement).getWith() : Optional.empty();
+    }
+    
+    private boolean isBannedCommand(final String upperSql) {
         return upperSql.startsWith("USE ")
                 || upperSql.startsWith("SET ")
                 || upperSql.startsWith("COPY ")
                 || upperSql.startsWith("LOAD ")
                 || upperSql.startsWith("CALL ")
-                || scanner.containsMySQLExecutableComment(sql)
-                || scanner.containsUserVariableAssignment(sql)
-                || containsBannedDialectPattern(scanner.tokenize(sql));
+                || scanner.containsExecutableComment()
+                || scanner.containsUserVariableAssignment()
+                || containsBannedDialectPattern(scanner.tokens());
     }
     
     private boolean isMetadataIntrospectionStatement(final String upperSql) {
@@ -81,7 +117,7 @@ final class SQLStatementSafetyValidator {
     
     private boolean containsBannedDialectPattern(final List<SQLStatementToken> tokens) {
         return containsSelectIntoFile(tokens)
-                || containsKeywordSequence(tokens, "ALTER", "SYSTEM")
+                || scanner.containsKeywordSequence(tokens, "ALTER", "SYSTEM")
                 || containsUserOrRoleManagement(tokens)
                 || containsSideEffectingQueryPattern(tokens)
                 || containsMetadataLookupFunction(tokens);
@@ -100,16 +136,16 @@ final class SQLStatementSafetyValidator {
     }
     
     private boolean containsUserOrRoleManagement(final List<SQLStatementToken> tokens) {
-        return containsKeywordSequence(tokens, "CREATE", "USER")
-                || containsKeywordSequence(tokens, "ALTER", "USER")
-                || containsKeywordSequence(tokens, "DROP", "USER")
-                || containsKeywordSequence(tokens, "CREATE", "ROLE")
-                || containsKeywordSequence(tokens, "ALTER", "ROLE")
-                || containsKeywordSequence(tokens, "DROP", "ROLE");
+        return scanner.containsKeywordSequence(tokens, "CREATE", "USER")
+                || scanner.containsKeywordSequence(tokens, "ALTER", "USER")
+                || scanner.containsKeywordSequence(tokens, "DROP", "USER")
+                || scanner.containsKeywordSequence(tokens, "CREATE", "ROLE")
+                || scanner.containsKeywordSequence(tokens, "ALTER", "ROLE")
+                || scanner.containsKeywordSequence(tokens, "DROP", "ROLE");
     }
     
     private boolean containsSideEffectingQueryPattern(final List<SQLStatementToken> tokens) {
-        return containsKeywordSequence(tokens, "NEXT", "VALUE", "FOR")
+        return scanner.containsKeywordSequence(tokens, "NEXT", "VALUE", "FOR")
                 || containsSequenceNextvalPseudocolumn(tokens)
                 || containsSideEffectingFunction(tokens)
                 || containsLastInsertIdMutation(tokens);
@@ -151,61 +187,12 @@ final class SQLStatementSafetyValidator {
         return false;
     }
     
-    private boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final String... keywords) {
-        for (int index = 0; index + keywords.length <= tokens.size(); index++) {
-            if (containsKeywordSequence(tokens, index, keywords)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean containsKeywordSequence(final List<SQLStatementToken> tokens, final int startIndex, final String... keywords) {
-        for (int index = 0; index < keywords.length; index++) {
-            if (!scanner.isKeyword(tokens.get(startIndex + index), keywords[index])) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private void checkLockingRead(final SupportedMCPStatement statementClass, final List<SQLStatementToken> tokens) {
-        if (SupportedMCPStatement.QUERY == statementClass && containsLockingReadClause(tokens)) {
-            throw new MCPLockingReadStatementException();
-        }
-    }
-    
-    private void checkSideEffectingSelectInto(final SQLStatementStructure statementStructure) {
-        if ("SELECT".equals(statementStructure.statementType()) && containsTopLevelKeyword(scanner.tokenize(statementStructure.mainSql()), "INTO")) {
-            throw new MCPBannedSQLStatementException();
-        }
-    }
-    
-    private boolean containsLockingReadClause(final List<SQLStatementToken> tokens) {
+    private void checkLockingRead(final List<SQLStatementToken> tokens) {
         for (int index = 0; index < tokens.size(); index++) {
             if (containsLockingReadForClause(tokens, index) || containsLockInShareModeClause(tokens, index)) {
-                return true;
+                throw new MCPLockingReadStatementException();
             }
         }
-        return false;
-    }
-    
-    private boolean containsTopLevelKeyword(final List<SQLStatementToken> tokens, final String keyword) {
-        int parenthesesDepth = 0;
-        for (SQLStatementToken each : tokens) {
-            if ("(".equals(each.text())) {
-                parenthesesDepth++;
-                continue;
-            }
-            if (")".equals(each.text())) {
-                parenthesesDepth--;
-                continue;
-            }
-            if (0 == parenthesesDepth && scanner.isKeyword(each, keyword)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private boolean containsLockingReadForClause(final List<SQLStatementToken> tokens, final int index) {
@@ -241,15 +228,6 @@ final class SQLStatementSafetyValidator {
         }
         if (upperSql.startsWith("SHOW SINGLE TABLE")) {
             return "SHOW SINGLE TABLE";
-        }
-        if (upperSql.startsWith("START TRANSACTION")) {
-            return "START TRANSACTION";
-        }
-        if (upperSql.startsWith("ROLLBACK TO SAVEPOINT")) {
-            return "ROLLBACK TO SAVEPOINT";
-        }
-        if (upperSql.startsWith("RELEASE SAVEPOINT")) {
-            return "RELEASE SAVEPOINT";
         }
         return upperSql.split("\\s+")[0];
     }

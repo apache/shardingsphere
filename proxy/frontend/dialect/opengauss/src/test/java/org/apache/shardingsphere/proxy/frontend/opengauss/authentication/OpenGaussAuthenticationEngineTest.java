@@ -200,11 +200,12 @@ class OpenGaussAuthenticationEngineTest {
                 authenticators, PostgreSQLAuthenticationMethod.MD5.getMethodName(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, true, DATABASE_NAME);
         mockProxyContext(metaDataContexts);
-        PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, DATABASE_NAME, OpenGaussProtocolVersion.PROTOCOL_351.getVersion());
+        PostgreSQLPacketPayload payload = createStartupPayloadWithConnectionAttributes();
         AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, payload);
         verify(channelHandlerContext).writeAndFlush(any(PostgreSQLMD5PasswordAuthenticationPacket.class));
         assertFalse(actual.isFinished());
         assertThat(getMd5Salt(authenticationEngine).length, is(4));
+        assertThat(actual.getConnectionAttributes(), is(Collections.singletonMap("application_name", "foo_app")));
     }
     
     @Test
@@ -347,6 +348,13 @@ class OpenGaussAuthenticationEngineTest {
         payload.writeStringNul("client_encoding");
         payload.writeStringNul("UTF8");
         return payload;
+    }
+    
+    private PostgreSQLPacketPayload createStartupPayloadWithConnectionAttributes() {
+        PostgreSQLPacketPayload result = createStartupPayload(USERNAME, DATABASE_NAME, OpenGaussProtocolVersion.PROTOCOL_351.getVersion());
+        result.writeStringNul("application_name");
+        result.writeStringNul("foo_app");
+        return result;
     }
     
     private PostgreSQLPacketPayload createPasswordMessage(final String digest) {

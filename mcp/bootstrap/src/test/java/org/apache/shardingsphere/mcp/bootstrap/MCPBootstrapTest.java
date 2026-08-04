@@ -19,19 +19,18 @@ package org.apache.shardingsphere.mcp.bootstrap;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicReference;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -65,22 +64,22 @@ class MCPBootstrapTest {
         MCPLaunchConfiguration launchConfig = createLaunchConfiguration();
         MCPRuntimeServer runtimeServer = mock(MCPRuntimeServer.class);
         Runtime runtime = mock(Runtime.class);
-        AtomicReference<Thread> shutdownHook = new AtomicReference<>();
         try (
                 MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
                 MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
+                MockedStatic<SLF4JBridgeHandler> mockedLoggingBridge = mockStatic(SLF4JBridgeHandler.class);
                 MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
                         (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeServer))) {
             mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
             mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load(expectedConfigPath)).thenReturn(launchConfig);
-            doAnswer(invocation -> {
-                shutdownHook.set(invocation.getArgument(0, Thread.class));
-                return null;
-            }).when(runtime).addShutdownHook(any(Thread.class));
             MCPBootstrap.main(args);
+            mockedLoggingBridge.verify(SLF4JBridgeHandler::removeHandlersForRootLogger);
+            mockedLoggingBridge.verify(SLF4JBridgeHandler::install);
             MCPRuntimeLauncher actualLauncher = mockedConstruction.constructed().get(0);
             verify(actualLauncher).launch(launchConfig);
-            Thread actualShutdownHook = shutdownHook.get();
+            ArgumentCaptor<Thread> shutdownHook = ArgumentCaptor.forClass(Thread.class);
+            verify(runtime).addShutdownHook(shutdownHook.capture());
+            Thread actualShutdownHook = shutdownHook.getValue();
             actualShutdownHook.run();
             if (runShutdownHookTwice) {
                 actualShutdownHook.run();
@@ -91,6 +90,6 @@ class MCPBootstrapTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration() {
-        return new MCPLaunchConfiguration(MCPTransportType.STREAMABLE_HTTP, new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), Collections.emptyMap());
+        return new MCPLaunchConfiguration(MCPTransportType.HTTP, new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), Collections.emptyMap());
     }
 }

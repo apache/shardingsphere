@@ -37,4 +37,8 @@ public final class MetadataSearchRequest {
     private final String query;
     
     private final Set<SupportedMCPMetadataObjectType> objectTypes;
+    
+    private final int limit;
+    
+    private final int offset;
 }

@@ -19,12 +19,17 @@ package org.apache.shardingsphere.mcp.core.protocol.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriPathSegmentUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,8 +53,76 @@ final class MCPSQLRecoveryPayloadFactory {
         cause.getClassificationResult().getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
         result.put("suggested_arguments", cause.getSuggestedArguments());
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(cause.getTargetTool(), createSQLToolMismatchActionReason(cause), cause.getSuggestedArguments())));
-        result.put("ask_user_when_uncertain", false);
         return result;
+    }
+    
+    static Map<String, Object> createExplainSQLSyntaxRecovery(final ExplainSQLSyntaxException cause) {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery("invalid_explain_sql",
+                "Regenerate explain_sql for the same sql using database-native EXPLAIN syntax, then retry database_gateway_execute_explain_query. Do not use EXPLAIN ANALYZE.");
+        result.put("database", cause.getDatabase());
+        result.put("schema", cause.getSchema());
+        result.put("sql", cause.getSql());
+        result.put("rejected_explain_sql", cause.getExplainSql());
+        result.put("suggested_arguments", createExplainRetryArguments(cause));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
+                MCPNextActionUtils.readResource(createDatabaseCapabilityUri(cause.getDatabase()),
+                        "Read the target database type before regenerating database-native explain_sql."),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_execute_explain_query",
+                        "Regenerate explain_sql from sql without changing sql, then retry the explain tool with the generated explain_sql.",
+                        createExplainRetryArguments(cause)), 1)));
+        return result;
+    }
+    
+    private static Map<String, Object> createExplainRetryArguments(final ExplainSQLSyntaxException cause) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("database", cause.getDatabase());
+        if (!cause.getSchema().isEmpty()) {
+            result.put("schema", cause.getSchema());
+        }
+        result.put("sql", cause.getSql());
+        return result;
+    }
+    
+    static Map<String, Object> createRuleDistSQLExecutionRecovery(final RuleDistSQLExecutionException cause) {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery("rule_distsql_execution_failed",
+                "Do not ask the user to rewrite the SQL yet; read workflow guidance and verify the runtime database can execute ShardingSphere rule DistSQL.");
+        ClassificationResult classificationResult = cause.getClassificationResult();
+        result.put("database", cause.getDatabase());
+        result.put("statement_class", classificationResult.getStatementClass().name().toLowerCase(Locale.ENGLISH));
+        result.put("statement_type", classificationResult.getStatementType());
+        result.put("side_effect_scope", List.of(classificationResult.getSideEffectScope()));
+        result.put("secret_safe", true);
+        result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, createRuleDistSQLExecutionResources(cause.getDatabase()));
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createRuleDistSQLExecutionNextActions(cause.getDatabase()));
+        return result;
+    }
+    
+    private static List<Map<String, Object>> createRuleDistSQLExecutionResources(final String database) {
+        return List.of(
+                MCPResourceHintUtils.create("shardingsphere://guidance", "guidance", "read_first",
+                        "Read workflow guidance before retrying rule DistSQL execution.", MCPPayloadFieldNames.RESOURCES_TO_READ),
+                createDatabaseCapabilityResourceHint(database));
+    }
+    
+    private static Map<String, Object> createDatabaseCapabilityResourceHint(final String database) {
+        return MCPResourceHintUtils.create(createDatabaseCapabilityUri(database), database.isEmpty() ? "logical-database" : "logical-database-capability", "read_first",
+                createDatabaseCapabilityReason(database), MCPPayloadFieldNames.RESOURCES_TO_READ);
+    }
+    
+    private static String createDatabaseCapabilityUri(final String database) {
+        return database.isEmpty() ? "shardingsphere://databases" : String.format("shardingsphere://databases/%s/capabilities", MCPUriPathSegmentUtils.encodePathSegment(database));
+    }
+    
+    private static String createDatabaseCapabilityReason(final String database) {
+        return database.isEmpty()
+                ? "Choose a configured logical database before retrying rule DistSQL execution."
+                : "Verify the runtime database capabilities before retrying rule DistSQL execution.";
+    }
+    
+    private static List<Map<String, Object>> createRuleDistSQLExecutionNextActions(final String database) {
+        return MCPNextActionUtils.ordered(
+                MCPNextActionUtils.readResource("shardingsphere://guidance", "Read workflow guidance and choose the matching database_gateway_plan_* workflow tool for rule changes."),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.readResource(createDatabaseCapabilityUri(database), createDatabaseCapabilityReason(database)), 1));
     }
     
     static Map<String, Object> createMetadataIntrospectionSQLRecovery(final MetadataIntrospectionSQLStatementException cause) {
@@ -61,7 +134,6 @@ final class MCPSQLRecoveryPayloadFactory {
         Map<String, Object> suggestedArguments = createMetadataSearchArguments(cause.getStatementType());
         result.put("suggested_arguments", suggestedArguments);
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, createMetadataIntrospectionNextActions(resourcesToRead, suggestedArguments));
-        result.put("ask_user_when_uncertain", false);
         return result;
     }
     
@@ -117,7 +189,6 @@ final class MCPSQLRecoveryPayloadFactory {
     static Map<String, Object> createMultipleStatementsRecovery() {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
                 "multiple_sql_statements", "Split the user intent into separate MCP calls and handle each statement independently.");
-        result.put("ask_user_when_uncertain", true);
         result.put("suggested_arguments", Map.of(MCPPayloadFieldNames.EXECUTION_MODE, "preview"));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.askUser(
                 "Ask the user which single statement should be handled first.", List.of("single_sql_statement"))));
@@ -126,11 +197,10 @@ final class MCPSQLRecoveryPayloadFactory {
     
     static Map<String, Object> createUnsupportedStatementRecovery() {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
-                "unsupported_sql_statement", "Ask the user for a supported SELECT, EXPLAIN ANALYZE, DML, DDL, DCL, transaction, or savepoint statement.");
+                "unsupported_sql_statement", "Ask the user for a supported SELECT, EXPLAIN, DML, DDL, DCL, transaction, or savepoint statement.");
         result.put(MCPPayloadFieldNames.RESOURCES_TO_READ, MCPRecoveryPayloadSupport.createResourceHintList(
                 "shardingsphere://capabilities", "capability", "Read supported SQL statement classes before retrying."));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read supported statement classes before retrying.")));
-        result.put("ask_user_when_uncertain", true);
         return result;
     }
     
@@ -141,7 +211,6 @@ final class MCPSQLRecoveryPayloadFactory {
                 "shardingsphere://capabilities", "capability", "Read supported safe alternatives before asking the user."));
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.askUser(
                 "Ask for a safer supported operation instead of executing the banned SQL.", List.of("safe_sql_or_metadata_request"))));
-        result.put("ask_user_when_uncertain", true);
         return result;
     }
     

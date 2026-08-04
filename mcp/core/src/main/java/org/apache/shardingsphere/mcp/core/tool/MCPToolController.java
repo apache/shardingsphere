@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.tool;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 
@@ -36,10 +36,13 @@ public final class MCPToolController {
     
     private final MCPToolCallLimiter toolCallLimiter;
     
+    private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
+    
     public MCPToolController(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
         toolCallLimiter = new MCPToolCallLimiter();
         runtimeContext.getSessionManager().addSessionCloseListener(toolCallLimiter::releaseSession);
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager());
     }
     
     /**
@@ -48,15 +51,11 @@ public final class MCPToolController {
      * @param sessionId session identifier
      * @param toolName tool name
      * @param arguments tool arguments
-     * @return tool response
+     * @return successful tool payload
      * @throws UnsupportedToolException unsupported tool exception
      */
-    public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        try {
-            return handle(sessionId, ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
-        } catch (final UnsupportedToolException ignored) {
-            throw new UnsupportedToolException(toolName);
-        }
+    public MCPSuccessPayload handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
+        return handle(sessionId, ToolDefinitionRegistry.getToolDefinition(toolName), arguments);
     }
     
     /**
@@ -65,18 +64,13 @@ public final class MCPToolController {
      * @param sessionId session identifier
      * @param toolDefinition tool definition
      * @param arguments tool arguments
-     * @return tool response
+     * @return successful tool payload
      */
-    public MCPResponse handle(final String sessionId, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
-        try {
+    public MCPSuccessPayload handle(final String sessionId, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
+        return sessionExecutionCoordinator.executeWithSessionLock(sessionId, () -> {
             toolCallLimiter.acquire(sessionId, toolDefinition.getDescriptor().getName());
-            try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext, sessionId)) {
-                return ToolDefinitionRegistry.dispatch(requestScope, toolDefinition, sessionId, arguments);
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return MCPErrorConverter.convert(ex);
-        }
+            return ToolDefinitionRegistry.dispatch(new MCPFeatureRuntimeRequestContext(runtimeContext,
+                    runtimeContext.getSessionManager().getRequiredSessionIdentity(sessionId)), toolDefinition, arguments);
+        });
     }
 }

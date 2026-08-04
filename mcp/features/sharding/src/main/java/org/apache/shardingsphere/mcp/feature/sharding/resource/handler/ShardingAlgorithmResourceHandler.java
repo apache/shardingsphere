@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.sharding.tool.service.ShardingInspectionService;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.List;
 import java.util.Map;
@@ -33,11 +32,7 @@ public final class ShardingAlgorithmResourceHandler extends AbstractShardingReso
     private final ResourceKind resourceKind;
     
     private ShardingAlgorithmResourceHandler(final String resourceUriTemplate, final ResourceKind resourceKind) {
-        this(resourceUriTemplate, resourceKind, new ShardingInspectionService());
-    }
-    
-    ShardingAlgorithmResourceHandler(final String resourceUriTemplate, final ResourceKind resourceKind, final ShardingInspectionService inspectionService) {
-        super(resourceUriTemplate, inspectionService);
+        super(resourceUriTemplate);
         this.resourceKind = resourceKind;
     }
     
@@ -87,14 +82,14 @@ public final class ShardingAlgorithmResourceHandler extends AbstractShardingReso
     }
     
     @Override
-    protected List<Map<String, Object>> query(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
+    protected List<Map<String, Object>> query(final MCPFeatureRequestContext requestContext, final MCPResourceURIVariables uriVariables) {
         return switch (resourceKind) {
-            case ALGORITHM_PLUGINS -> getInspectionService().queryAlgorithmPlugins(databaseContext.getQueryFacade());
-            case KEY_GENERATE_ALGORITHM_PLUGINS -> getInspectionService().queryKeyGenerateAlgorithmPlugins(databaseContext.getQueryFacade());
-            case ALGORITHMS -> getInspectionService().queryAlgorithms(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
-            case UNUSED_ALGORITHMS -> getInspectionService().queryUnusedAlgorithms(databaseContext.getQueryFacade(), uriVariables.getValue("database"));
+            case ALGORITHM_PLUGINS -> getInspectionService().queryAlgorithmPlugins(requestContext.getQueryFacade());
+            case KEY_GENERATE_ALGORITHM_PLUGINS -> getInspectionService().queryKeyGenerateAlgorithmPlugins(requestContext.getQueryFacade());
+            case ALGORITHMS -> getInspectionService().queryAlgorithms(requestContext.getQueryFacade(), uriVariables.getValue("database"));
+            case UNUSED_ALGORITHMS -> getInspectionService().queryUnusedAlgorithms(requestContext.getQueryFacade(), uriVariables.getValue("database"));
             case ALGORITHM_USED_TABLE_RULES -> getInspectionService().queryTableRulesUsedAlgorithm(
-                    databaseContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShardingFeatureDefinition.ALGORITHM_FIELD));
+                    requestContext.getQueryFacade(), uriVariables.getValue("database"), uriVariables.getValue(ShardingFeatureDefinition.ALGORITHM_FIELD));
         };
     }
     

@@ -28,10 +28,6 @@ class ClarifiedIntentTest {
     void assertNormalizeStringValues() {
         ClarifiedIntent actual = new ClarifiedIntent();
         actual.setOperationType(" create ");
-        actual.setFieldSemantics(null);
-        actual.setReasoningNotes(" explicit ");
         assertThat(actual.getOperationType(), is("create"));
-        assertThat(actual.getFieldSemantics(), is(""));
-        assertThat(actual.getReasoningNotes(), is("explicit"));
     }
 }

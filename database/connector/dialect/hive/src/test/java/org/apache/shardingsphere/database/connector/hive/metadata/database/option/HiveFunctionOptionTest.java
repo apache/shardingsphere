@@ -19,18 +19,11 @@ package org.apache.shardingsphere.database.connector.hive.metadata.database.opti
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HiveFunctionOptionTest {
     
     private final HiveFunctionOption functionOption = new HiveFunctionOption();
-    
-    @Test
-    void assertGetIfNullFunctionName() {
-        assertThat(functionOption.getIfNullFunctionName(), is("IFNULL"));
-    }
     
     @Test
     void assertGetUnparenthesizedFunctionNames() {

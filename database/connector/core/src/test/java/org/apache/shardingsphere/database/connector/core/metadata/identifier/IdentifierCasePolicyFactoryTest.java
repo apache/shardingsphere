@@ -18,13 +18,7 @@
 package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -36,14 +30,14 @@ class IdentifierCasePolicyFactoryTest {
     @Test
     void assertNewLowerCasePolicySet() {
         IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.normalize("Foo"), is("foo"));
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("foo"));
         assertFalse(actual.matches("Foo", "FOO", QuoteCharacter.NONE));
     }
     
     @Test
     void assertNewUpperCasePolicySet() {
         IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newUpperCasePolicySet().getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.normalize("Foo"), is("FOO"));
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("FOO"));
         assertFalse(actual.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
@@ -63,37 +57,28 @@ class IdentifierCasePolicyFactoryTest {
     }
     
     @Test
+    void assertNewCasePreservingInsensitivePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newCasePreservingInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.QUOTE), is("Foo"));
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("Foo"));
+        assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.BACK_QUOTE));
+        assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertNewLowerCaseInsensitivePolicySet() {
+        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newLowerCaseInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.QUOTE), is("foo"));
+        assertThat(actual.normalizeForDefinition("Foo", QuoteCharacter.NONE), is("foo"));
+        assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.BACK_QUOTE));
+        assertTrue(actual.matches("Foo", "FOO", QuoteCharacter.NONE));
+    }
+    
+    @Test
     void assertNewQuotedInsensitivePolicySet() {
         IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newQuotedInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
         assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
         assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
-    }
-    
-    @Test
-    void assertNewMySQLInsensitivePolicySet() {
-        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.NORMALIZED));
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("newDialectDefaultPolicySetArguments")
-    void assertNewDialectDefaultPolicySet(final String name, final IdentifierPatternType identifierPatternType, final boolean caseSensitive,
-                                          final LookupMode expectedQuotedLookupMode, final LookupMode expectedUnquotedLookupMode,
-                                          final String storedName, final String actualIdentifier, final boolean expected) {
-        IdentifierCasePolicy actual = IdentifierCasePolicyFactory.newDialectDefaultPolicySet(identifierPatternType, caseSensitive).getPolicy(IdentifierScope.TABLE);
-        assertThat(actual.getLookupMode(QuoteCharacter.QUOTE), is(expectedQuotedLookupMode));
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(expectedUnquotedLookupMode));
-        assertThat(actual.matches(storedName, actualIdentifier, QuoteCharacter.NONE), is(expected));
-    }
-    
-    private static Stream<Arguments> newDialectDefaultPolicySetArguments() {
-        return Stream.of(
-                Arguments.of("lower_case", IdentifierPatternType.LOWER_CASE, false, LookupMode.EXACT, LookupMode.NORMALIZED, "foo", "FOO", true),
-                Arguments.of("upper_case", IdentifierPatternType.UPPER_CASE, false, LookupMode.EXACT, LookupMode.NORMALIZED, "FOO", "foo", true),
-                Arguments.of("keep_origin_sensitive", IdentifierPatternType.KEEP_ORIGIN, true, LookupMode.EXACT, LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("keep_origin_insensitive", IdentifierPatternType.KEEP_ORIGIN, false, LookupMode.EXACT, LookupMode.NORMALIZED, "Foo", "FOO", true));
     }
 }

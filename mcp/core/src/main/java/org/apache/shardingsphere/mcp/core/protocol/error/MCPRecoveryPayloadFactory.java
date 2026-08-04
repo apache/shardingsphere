@@ -33,7 +33,9 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLSt
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 
@@ -49,6 +51,8 @@ final class MCPRecoveryPayloadFactory {
     
     private static final List<RecoveryMapping> RECOVERY_MAPPINGS = List.of(
             new RecoveryMapping(SQLToolMismatchException.class, cause -> MCPSQLRecoveryPayloadFactory.createSQLToolMismatchRecovery((SQLToolMismatchException) cause)),
+            new RecoveryMapping(ExplainSQLSyntaxException.class, cause -> MCPSQLRecoveryPayloadFactory.createExplainSQLSyntaxRecovery((ExplainSQLSyntaxException) cause)),
+            new RecoveryMapping(RuleDistSQLExecutionException.class, cause -> MCPSQLRecoveryPayloadFactory.createRuleDistSQLExecutionRecovery((RuleDistSQLExecutionException) cause)),
             new RecoveryMapping(MetadataIntrospectionSQLStatementException.class,
                     cause -> MCPSQLRecoveryPayloadFactory.createMetadataIntrospectionSQLRecovery((MetadataIntrospectionSQLStatementException) cause)),
             new RecoveryMapping(MCPMultipleSQLStatementsException.class, cause -> MCPSQLRecoveryPayloadFactory.createMultipleStatementsRecovery()),
@@ -65,7 +69,7 @@ final class MCPRecoveryPayloadFactory {
             new RecoveryMapping(UnsupportedResourceUriException.class,
                     cause -> MCPBasicRecoveryPayloadFactory.createUnsupportedResourceRecovery(((UnsupportedResourceUriException) cause).getResourceUri())),
             new RecoveryMapping(RuntimeDatabaseConnectionException.class,
-                    cause -> MCPBasicRecoveryPayloadFactory.createRuntimeDatabaseConnectionRecovery((RuntimeDatabaseConnectionException) cause)),
+                    cause -> MCPRuntimeDatabaseRecoveryPayloadFactory.create((RuntimeDatabaseConnectionException) cause)),
             new RecoveryMapping(MCPToolCallLimitExceededException.class,
                     cause -> MCPBasicRecoveryPayloadFactory.createToolCallLimitRecovery((MCPToolCallLimitExceededException) cause)),
             new RecoveryMapping(MCPInvalidToolArgumentException.class, cause -> MCPBasicRecoveryPayloadFactory.createInvalidToolArgumentRecovery((MCPInvalidToolArgumentException) cause)),

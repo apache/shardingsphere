@@ -17,14 +17,9 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -34,90 +29,11 @@ import java.util.Optional;
 public interface MCPDatabaseCapabilityOption extends TypedSPI {
     
     /**
-     * Get transaction capability.
+     * Judge whether MCP can execute a single database-native EXPLAIN statement and read its result set.
      *
-     * @return transaction capability
+     * @return whether MCP EXPLAIN execution is supported
      */
-    TransactionCapability getTransactionCapability();
-    
-    /**
-     * Judge whether index metadata is supported.
-     *
-     * @return whether index metadata is supported
-     */
-    boolean isIndexSupported();
-    
-    /**
-     * Get default schema semantics.
-     *
-     * @return default schema semantics
-     */
-    SchemaSemantics getDefaultSchemaSemantics();
-    
-    /**
-     * Get execution-time schema semantics.
-     *
-     * @return execution-time schema semantics
-     */
-    SchemaExecutionSemantics getSchemaExecutionSemantics();
-    
-    /**
-     * Judge whether cross-schema query is supported.
-     *
-     * @return whether cross-schema query is supported
-     */
-    boolean isCrossSchemaQuerySupported();
-    
-    /**
-     * Judge whether explain analyze is supported for database version.
-     *
-     * @param databaseVersion database version
-     * @return whether explain analyze is supported
-     */
-    boolean isExplainAnalyzeSupported(String databaseVersion);
-    
-    /**
-     * Judge whether sequence metadata is supported.
-     *
-     * @return whether sequence metadata is supported
-     */
-    boolean isSequenceSupported();
-    
-    /**
-     * Get identifier quote character.
-     *
-     * @return identifier quote character
-     */
-    default QuoteCharacter getIdentifierQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
-    }
-    
-    /**
-     * Get identifier case policy set.
-     *
-     * @return identifier case policy set
-     */
-    default IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return IdentifierCasePolicyFactory.newSensitivePolicySet();
-    }
-    
-    /**
-     * Judge whether unquoted identifiers are folded by database metadata lookup.
-     *
-     * @return whether unquoted identifiers are folded
-     */
-    default boolean isUnquotedIdentifierCaseFolded() {
-        return false;
-    }
-    
-    /**
-     * Get system schemas.
-     *
-     * @return system schemas
-     */
-    default Collection<String> getSystemSchemas() {
-        return List.of();
-    }
+    boolean isExplainSupported();
     
     /**
      * Get sequence metadata query.
@@ -126,15 +42,6 @@ public interface MCPDatabaseCapabilityOption extends TypedSPI {
      */
     default Optional<String> getSequenceQuery() {
         return Optional.empty();
-    }
-    
-    /**
-     * Judge whether information_schema column lookup should filter table_schema.
-     *
-     * @return whether information_schema column lookup should filter table_schema
-     */
-    default boolean isInformationSchemaColumnSchemaFilterRequired() {
-        return false;
     }
     
     @Override

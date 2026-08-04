@@ -34,8 +34,9 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-broadcast-api</artifactId>
+            <artifactId>shardingsphere-broadcast-distsql-parser</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

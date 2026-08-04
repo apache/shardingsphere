@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.opengauss.err;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.database.exception.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -75,6 +77,18 @@ class OpenGaussErrorPacketFactoryTest {
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY), is("ERROR"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE), is("58000"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE), is("Unknown exception." + System.lineSeparator() + "More details: java.lang.RuntimeException: No reason"));
+        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERROR_CODE), is("0"));
+    }
+    
+    @Test
+    void assertNewInstanceWithTableModifyInTransactionException() {
+        OpenGaussErrorResponsePacket actual = OpenGaussErrorPacketFactory.newInstance(new TableModifyInTransactionException("foo_table"));
+        Map<Character, String> actualFields = getFieldsInPacket(actual);
+        assertThat(actualFields.size(), is(4));
+        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY), is("ERROR"));
+        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE), is(PostgreSQLVendorError.METADATA_CHANGING_DDL_IN_TRANSACTION_NOT_SUPPORTED.getSqlState().getValue()));
+        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE),
+                is("ERROR: DDL statements that modify metadata are not supported in transactions by ShardingSphere-Proxy.\n  Server SQLState: 0A000"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERROR_CODE), is("0"));
     }
     

@@ -20,8 +20,10 @@ package org.apache.shardingsphere.sqlfederation.engine.processor.impl;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
 import org.apache.calcite.adapter.enumerable.EnumerableRel.Prefer;
+import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
@@ -31,15 +33,30 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
@@ -48,20 +65,29 @@ import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFeder
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
+import org.apache.shardingsphere.sqlfederation.executor.context.ExecutorBindContext;
 import org.apache.shardingsphere.sqlfederation.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -82,6 +108,8 @@ class StandardSQLFederationProcessorTest {
     private final String databaseName = "foo_db";
     
     private final String schemaName = "foo_schema";
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private SQLFederationProcessor processor;
     
@@ -196,7 +224,7 @@ class StandardSQLFederationProcessorTest {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
         SQLFederationContext federationContext = createFederationContext(true, null);
-        when(federationContext.getQueryContext().getParameters()).thenReturn(new LinkedList<>());
+        when(federationContext.getQueryContext().getParameters()).thenReturn(Collections.emptyList());
         CompilerContext compilerContext = mock(CompilerContext.class);
         SchemaPlus rootSchema = mockSchemaTreeWithTable();
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
@@ -212,7 +240,7 @@ class StandardSQLFederationProcessorTest {
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
         EnumerableRel physicalPlan = mock(EnumerableRel.class);
         when(executionPlan.getPhysicalPlan()).thenReturn(physicalPlan);
-        when(executionPlan.getResultColumnType()).thenReturn(mock(org.apache.calcite.rel.type.RelDataType.class));
+        when(executionPlan.getResultColumnType()).thenReturn(mock(RelDataType.class));
         SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
         Bindable<Object> bindable = mock(Bindable.class);
         Enumerator<Object> enumerator = mock(Enumerator.class);
@@ -227,6 +255,88 @@ class StandardSQLFederationProcessorTest {
                     .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
             ResultSet result = processor.executePlan(prepareEngine, callback, executionPlan, converter, federationContext, rootSchema);
             ((SQLFederationResultSet) result).close();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getPaginationParameterArguments")
+    void assertExecutePlanBindsPaginationParameters(final String name, final int offsetParameterIndex, final int rowCountParameterIndex, final List<Object> params,
+                                                    final Map<String, Object> expectedParams) throws SQLException {
+        SQLFederationContext federationContext = createFederationContext(false, offsetParameterIndex, rowCountParameterIndex, params);
+        SQLFederationExecutionPlan executionPlan = createExecutionPlan();
+        SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
+        Bindable<Object> bindable = mockBindable();
+        ArgumentCaptor<DataContext> dataContextCaptor = ArgumentCaptor.forClass(DataContext.class);
+        try (
+                MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class);
+                MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
+            mockedSpiLoader.when(() -> DatabaseTypedSPILoader
+                    .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
+            ResultSet result = processor.executePlan(mock(), mock(), executionPlan, converter, federationContext, mock(SchemaPlus.class));
+            ((SQLFederationResultSet) result).close();
+        }
+        verify(bindable).bind(dataContextCaptor.capture());
+        assertThat(((ExecutorBindContext) dataContextCaptor.getValue()).getParameters(), is(expectedParams));
+    }
+    
+    private static Stream<Arguments> getPaginationParameterArguments() {
+        return Stream.of(
+                Arguments.of("row_count_long", -1, 0, Collections.singletonList((Object) 20L), Collections.singletonMap("?0", (Object) 20)),
+                Arguments.of("offset_and_row_count_long", 0, 1, Arrays.asList((Object) 5L, 20L), createExpectedParams("?0", 5, "?1", 20)),
+                Arguments.of("preserve_non_pagination_long", -1, 1, Arrays.asList((Object) 11L, 20L), createExpectedParams("?0", 11L, "?1", 20)),
+                Arguments.of("preserve_non_number_pagination_parameter", -1, 0, Collections.singletonList((Object) "20"), Collections.singletonMap("?0", (Object) "20")));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertExecutePlanBindsNestedPaginationParameter() throws SQLException {
+        SelectStatement nestedSelectStatement = createSelectStatement(-1, 1);
+        SubqueryTableSegment from = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, nestedSelectStatement, ""));
+        SQLFederationContext federationContext = createFederationContext(false, createSelectStatement(-1, -1, from), Arrays.asList((Object) 11L, 20L));
+        SQLFederationExecutionPlan executionPlan = createExecutionPlan();
+        SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
+        Bindable<Object> bindable = mockBindable();
+        ArgumentCaptor<DataContext> dataContextCaptor = ArgumentCaptor.forClass(DataContext.class);
+        try (
+                MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class);
+                MockedStatic<DatabaseTypedSPILoader> mockedSpiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
+            mockedSpiLoader.when(() -> DatabaseTypedSPILoader
+                    .getService(eq(DialectSQLFederationColumnTypeConverter.class), any(DatabaseType.class))).thenReturn(mock(DialectSQLFederationColumnTypeConverter.class));
+            ResultSet result = processor.executePlan(mock(), mock(), executionPlan, converter, federationContext, mock(SchemaPlus.class));
+            ((SQLFederationResultSet) result).close();
+        }
+        verify(bindable).bind(dataContextCaptor.capture());
+        assertThat(((ExecutorBindContext) dataContextCaptor.getValue()).getParameters(), is(createExpectedParams("?0", 11L, "?1", 20)));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertExecutePlanRejectsOutOfRangePaginationParameter() {
+        SQLFederationContext federationContext = createFederationContext(false, -1, 0, Collections.singletonList((Object) (Integer.MAX_VALUE + 1L)));
+        SQLFederationExecutionPlan executionPlan = createExecutionPlan();
+        Bindable<Object> bindable = mockBindable();
+        try (MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class)) {
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                    () -> processor.executePlan(mock(), mock(), executionPlan, mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
+            assertThat(ex.getMessage(), is("SQL federation pagination parameter value `2147483648` is out of integer range."));
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertExecutePlanRejectsFractionalPaginationParameter() {
+        SQLFederationContext federationContext = createFederationContext(false, -1, 0, Collections.singletonList((Object) 20.5D));
+        SQLFederationExecutionPlan executionPlan = createExecutionPlan();
+        Bindable<Object> bindable = mockBindable();
+        try (MockedStatic<SQLFederationExecutionPlan> mockedExecutionPlan = mockStatic(SQLFederationExecutionPlan.class)) {
+            mockedExecutionPlan.when(() -> SQLFederationExecutionPlan.toBindable(executionPlan.getPhysicalPlan(), Collections.emptyMap(), null, Prefer.ARRAY)).thenReturn(bindable);
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                    () -> processor.executePlan(mock(), mock(), executionPlan, mock(SQLFederationRelConverter.class), federationContext, mock(SchemaPlus.class)));
+            assertThat(ex.getMessage(), is("SQL federation pagination parameter value `20.5` must be an integer."));
         }
     }
     
@@ -253,7 +363,7 @@ class StandardSQLFederationProcessorTest {
         SQLFederationExecutionPlan executionPlan = mock(SQLFederationExecutionPlan.class);
         EnumerableRel physicalPlan = mock(EnumerableRel.class);
         when(executionPlan.getPhysicalPlan()).thenReturn(physicalPlan);
-        when(executionPlan.getResultColumnType()).thenReturn(mock(org.apache.calcite.rel.type.RelDataType.class));
+        when(executionPlan.getResultColumnType()).thenReturn(mock(RelDataType.class));
         SQLFederationRelConverter converter = mock(SQLFederationRelConverter.class);
         Bindable<Object> bindable = mock(Bindable.class);
         Enumerator<Object> enumerator = mock(Enumerator.class);
@@ -281,6 +391,9 @@ class StandardSQLFederationProcessorTest {
     private SQLFederationContext createFederationContext(final boolean preview, final TableSegmentBoundInfo tableSegmentBoundInfo) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singleton("pg_catalog"));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(createSelectStatement(-1, -1));
+        when(sqlStatementContext.getPaginationContext()).thenReturn(new PaginationContext(null, null, Collections.emptyList()));
+        when(sqlStatementContext.getSubqueryContexts()).thenReturn(Collections.emptyMap());
         SimpleTableSegment tableSegment = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
         if (null == tableSegmentBoundInfo) {
             when(tableSegment.getTableName().getTableBoundInfo()).thenReturn(Optional.empty());
@@ -288,11 +401,77 @@ class StandardSQLFederationProcessorTest {
             when(tableSegment.getTableName().getTableBoundInfo()).thenReturn(Optional.of(tableSegmentBoundInfo));
         }
         when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(tableSegment));
+        return createFederationContext(preview, sqlStatementContext, Collections.singletonList((Object) 1));
+    }
+    
+    private SQLFederationContext createFederationContext(final boolean preview, final int offsetParameterIndex, final int rowCountParameterIndex, final List<Object> params) {
+        return createFederationContext(preview, createSelectStatementContext(createSelectStatement(offsetParameterIndex, rowCountParameterIndex)), params);
+    }
+    
+    private SQLFederationContext createFederationContext(final boolean preview, final SelectStatement selectStatement, final List<Object> params) {
+        return createFederationContext(preview, createSelectStatementContext(selectStatement), params);
+    }
+    
+    private SQLFederationContext createFederationContext(final boolean preview, final SelectStatementContext sqlStatementContext, final List<Object> params) {
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(queryContext.getSql()).thenReturn("SELECT 1");
-        when(queryContext.getParameters()).thenReturn(new ArrayList<>(Collections.singletonList(1)));
+        when(queryContext.getParameters()).thenReturn(params);
         return new SQLFederationContext(preview, queryContext, mock(), "pid");
+    }
+    
+    private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
+        return new SelectStatementContext(selectStatement, mockMetaData(), databaseName, Collections.emptyList());
+    }
+    
+    private ShardingSphereMetaData mockMetaData() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+        when(result.getDatabase(databaseName)).thenReturn(database);
+        return result;
+    }
+    
+    private SelectStatement createSelectStatement(final int offsetParameterIndex, final int rowCountParameterIndex) {
+        return createSelectStatement(offsetParameterIndex, rowCountParameterIndex, null);
+    }
+    
+    private SelectStatement createSelectStatement(final int offsetParameterIndex, final int rowCountParameterIndex, final TableSegment from) {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("foo_col"))));
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).from(from).limit(createLimitSegment(offsetParameterIndex, rowCountParameterIndex)).build();
+    }
+    
+    private LimitSegment createLimitSegment(final int offsetParameterIndex, final int rowCountParameterIndex) {
+        PaginationValueSegment offset = -1 == offsetParameterIndex ? null : new ParameterMarkerLimitValueSegment(0, 0, offsetParameterIndex);
+        PaginationValueSegment rowCount = -1 == rowCountParameterIndex ? null : new ParameterMarkerLimitValueSegment(0, 0, rowCountParameterIndex);
+        return null == offset && null == rowCount ? null : new LimitSegment(0, 0, offset, rowCount);
+    }
+    
+    private static Map<String, Object> createExpectedParams(final Object... values) {
+        Map<String, Object> result = new HashMap<>(values.length / 2, 1F);
+        for (int i = 0; i < values.length; i += 2) {
+            result.put((String) values[i], values[i + 1]);
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private SQLFederationExecutionPlan createExecutionPlan() {
+        SQLFederationExecutionPlan result = mock(SQLFederationExecutionPlan.class);
+        when(result.getPhysicalPlan()).thenReturn(mock(EnumerableRel.class));
+        when(result.getResultColumnType()).thenReturn(mock(RelDataType.class));
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Bindable<Object> mockBindable() {
+        Bindable<Object> result = mock(Bindable.class);
+        Enumerator<Object> enumerator = mock(Enumerator.class);
+        Enumerable<Object> enumerable = mock(Enumerable.class);
+        when(enumerable.enumerator()).thenReturn(enumerator);
+        when(result.bind(any())).thenReturn(enumerable);
+        return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

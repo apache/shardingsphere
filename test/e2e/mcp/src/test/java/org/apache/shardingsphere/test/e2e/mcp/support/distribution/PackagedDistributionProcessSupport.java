@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
 import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
 
 import java.io.BufferedReader;
@@ -78,16 +79,12 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
         return result;
     }
     
-    static List<String> createCommand(final Path distributionHome, final Path configFile, final String osName) {
+    private static List<String> createCommand(final Path distributionHome, final Path configFile, final String osName) {
         Path startScript = resolveStartScript(distributionHome, osName);
         return isWindows(osName) ? List.of("cmd", "/c", startScript.toString(), configFile.toString()) : List.of(startScript.toString(), configFile.toString());
     }
     
-    static Path resolveStartScript(final Path distributionHome) {
-        return resolveStartScript(distributionHome, System.getProperty("os.name", ""));
-    }
-    
-    static Path resolveStartScript(final Path distributionHome, final String osName) {
+    private static Path resolveStartScript(final Path distributionHome, final String osName) {
         return distributionHome.resolve(isWindows(osName) ? "bin/start.bat" : "bin/start.sh");
     }
     
@@ -123,6 +120,8 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
             } catch (final InterruptedException ignored) {
                 Thread.currentThread().interrupt();
             } finally {
+                MCPArtifactUtils.writeRuntimeLogIfConfigured(outputCollectorThreadName + "-process-", outputMessages);
+                MCPArtifactUtils.copyRuntimeLogIfConfigured(outputCollectorThreadName + "-server-", distributionHome.resolve("logs/mcp.log"));
                 process = null;
                 outputCollector = null;
                 outputMessages.clear();

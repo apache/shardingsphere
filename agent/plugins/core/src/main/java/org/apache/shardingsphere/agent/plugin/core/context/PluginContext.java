@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.core.context;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
@@ -31,12 +32,11 @@ import java.util.Optional;
  * Plugin Context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 @Setter
 public final class PluginContext {
     
     private static final PluginContext INSTANCE = new PluginContext();
-    
-    private ContextManager contextManager;
     
     private boolean isEnhancedForProxy;
     
@@ -55,13 +55,16 @@ public final class PluginContext {
      * @return true or false
      */
     public boolean isPluginEnabled() {
-        if (null == contextManager) {
-            contextManager = getContextManager().orElse(null);
-        }
-        return null == contextManager || contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED);
+        return getContextManager().map(optional -> optional.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED))
+                .orElse(true);
     }
     
-    private Optional<ContextManager> getContextManager() {
+    /**
+     * Get context manager.
+     *
+     * @return context manager
+     */
+    public Optional<ContextManager> getContextManager() {
         if (isEnhancedForProxy) {
             return Optional.ofNullable(ProxyContext.getInstance().getContextManager());
         }

@@ -25,7 +25,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * MCP payload assertions.
@@ -79,70 +78,12 @@ public final class MCPPayloadAssertions {
         return getItems(payload).stream().filter(each -> expectedValue.equals(each.get(key))).findFirst().orElseThrow();
     }
     
-    /**
-     * Get item values.
-     *
-     * @param payload MCP payload
-     * @param key item key
-     * @return item values
-     */
-    public static List<String> getItemValues(final Map<String, Object> payload, final String key) {
+    private static List<String> getItemValues(final Map<String, Object> payload, final String key) {
         return getItems(payload).stream().map(each -> String.valueOf(each.get(key))).toList();
     }
     
-    /**
-     * Get items.
-     *
-     * @param payload MCP payload
-     * @return items
-     */
-    public static List<Map<String, Object>> getItems(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.castToList(payload.get("items"));
+    private static List<Map<String, Object>> getItems(final Map<String, Object> payload) {
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "items");
     }
     
-    /**
-     * Get map payload.
-     *
-     * @param value payload value
-     * @return map payload
-     */
-    @SuppressWarnings("unchecked")
-    public static Map<String, Object> getMap(final Object value) {
-        return (Map<String, Object>) value;
-    }
-    
-    /**
-     * Get map list payload.
-     *
-     * @param value payload value
-     * @return map list payload
-     */
-    @SuppressWarnings("unchecked")
-    public static List<Map<String, Object>> getMapList(final Object value) {
-        return ((List<?>) value).stream().map(each -> (Map<String, Object>) each).toList();
-    }
-    
-    /**
-     * Assert tool definition.
-     *
-     * @param tools tool definitions
-     * @param toolName tool name
-     * @param expectedTitle expected title
-     * @param expectedRequiredField expected required field
-     * @param expectedPropertyField expected property field
-     * @param expectedPropertyType expected property type
-     */
-    public static void assertToolDefinition(final List<Map<String, Object>> tools, final String toolName, final String expectedTitle,
-                                            final String expectedRequiredField, final String expectedPropertyField, final String expectedPropertyType) {
-        Map<String, Object> actualTool = tools.stream().filter(each -> toolName.equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
-        assertThat(String.valueOf(actualTool.get("title")), is(expectedTitle));
-        Map<String, Object> actualInputSchema = getMap(actualTool.get("inputSchema"));
-        List<String> actualRequiredFields = ((List<?>) actualInputSchema.get("required")).stream().map(String::valueOf).toList();
-        Map<String, Object> actualProperties = getMap(actualInputSchema.get("properties"));
-        Map<String, Object> actualProperty = getMap(actualProperties.get(expectedPropertyField));
-        if (!expectedRequiredField.isEmpty()) {
-            assertTrue(actualRequiredFields.contains(expectedRequiredField));
-        }
-        assertThat(String.valueOf(actualProperty.get("type")), is(expectedPropertyType));
-    }
 }

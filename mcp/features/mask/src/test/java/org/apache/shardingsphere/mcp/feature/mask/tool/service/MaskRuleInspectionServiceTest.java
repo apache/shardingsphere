@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ class MaskRuleInspectionServiceTest {
     @Test
     void assertQueryMaskRulesForDatabase() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW MASK RULES FROM logic_db"))
+        when(queryFacade.query("logic_db", "SHOW MASK RULES FROM logic_db"))
                 .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y", "algorithm_props", "from-x=4")));
         List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db");
         assertThat(actual.size(), is(1));
@@ -53,7 +53,7 @@ class MaskRuleInspectionServiceTest {
     @Test
     void assertQueryMaskRulesForDatabaseWithUnavailableDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW MASK RULES FROM logic_db"))
+        when(queryFacade.query("logic_db", "SHOW MASK RULES FROM logic_db"))
                 .thenThrow(new MCPQueryFailedException("syntax error near 'MASK RULES FROM logic_db'", new SQLSyntaxErrorException("syntax error")));
         assertTrue(service.queryMaskRules(queryFacade, "logic_db").isEmpty());
     }
@@ -61,7 +61,7 @@ class MaskRuleInspectionServiceTest {
     @Test
     void assertQueryMaskRules() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW MASK RULE orders FROM logic_db"))
+        when(queryFacade.query("logic_db", "SHOW MASK RULE orders FROM logic_db"))
                 .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
         List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db", "orders");
         assertThat(actual.getFirst().get("column"), is("phone"));
@@ -70,7 +70,7 @@ class MaskRuleInspectionServiceTest {
     @Test
     void assertQueryMaskRulesWithUnavailableDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW MASK RULE orders FROM logic_db"))
+        when(queryFacade.query("logic_db", "SHOW MASK RULE orders FROM logic_db"))
                 .thenThrow(new MCPQueryFailedException("syntax error near 'MASK RULE orders FROM logic_db'", new SQLSyntaxErrorException("syntax error")));
         assertTrue(service.queryMaskRules(queryFacade, "logic_db", "orders").isEmpty());
     }
@@ -78,7 +78,7 @@ class MaskRuleInspectionServiceTest {
     @Test
     void assertQueryMaskRulesPropagatesQueryFailure() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW MASK RULE orders FROM logic_db"))
+        when(queryFacade.query("logic_db", "SHOW MASK RULE orders FROM logic_db"))
                 .thenThrow(new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused.")));
         assertThrows(MCPQueryFailedException.class, () -> service.queryMaskRules(queryFacade, "logic_db", "orders"));
     }
@@ -86,7 +86,7 @@ class MaskRuleInspectionServiceTest {
     @Test
     void assertQueryMaskRulesQuotesUnicodeNames() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("逻辑库", "", "SHOW MASK RULE `订单` FROM `逻辑库`"))
+        when(queryFacade.query("逻辑库", "SHOW MASK RULE `订单` FROM `逻辑库`"))
                 .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
         List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "逻辑库", "订单");
         assertThat(actual.getFirst().get("column"), is("phone"));
@@ -106,7 +106,7 @@ class MaskRuleInspectionServiceTest {
         assertThat(actual.getFirst().get("type"), is("MASK_FROM_X_TO_Y"));
         assertThat(actual.getFirst().get("required_properties"), is(List.of("from-x", "to-y", "replace-char")));
         assertThat(actual.getFirst().get("optional_properties"), is(List.of()));
-        List<?> propertyTemplates = (List<?>) actual.get(0).get("property_templates");
+        List<?> propertyTemplates = (List<?>) actual.getFirst().get("property_templates");
         assertThat(((Map<?, ?>) propertyTemplates.getFirst()).get("property_key"), is("from-x"));
         assertThat(actual.get(1).get("type"), is("CUSTOM"));
         assertThat(actual.get(1).get("property_templates"), is(List.of()));
@@ -115,18 +115,10 @@ class MaskRuleInspectionServiceTest {
     @Test
     void assertQueryMaskAlgorithmsWithUnavailableDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS"))
-                .thenThrow(new MCPQueryFailedException("syntax error near 'MASK ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
-        List<Map<String, Object>> actual = service.queryMaskAlgorithms(queryFacade);
-        assertThat(actual.getFirst().get("type"), is("KEEP_FIRST_N_LAST_M"));
-        assertThat(actual.getFirst().get("required_properties"), is(List.of("first-n", "last-m", "replace-char")));
-    }
-    
-    @Test
-    void assertQueryMaskAlgorithmsPropagatesQueryFailure() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS"))
-                .thenThrow(new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused.")));
-        assertThrows(MCPQueryFailedException.class, () -> service.queryMaskAlgorithms(queryFacade));
+        MCPQueryFailedException expected = new MCPQueryFailedException(
+                "syntax error near 'MASK ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error"));
+        when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenThrow(expected);
+        MCPQueryFailedException actual = assertThrows(MCPQueryFailedException.class, () -> service.queryMaskAlgorithms(queryFacade));
+        assertThat(actual, is(expected));
     }
 }

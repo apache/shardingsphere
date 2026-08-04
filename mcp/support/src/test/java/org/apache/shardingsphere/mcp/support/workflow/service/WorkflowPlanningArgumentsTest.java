@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,6 +35,26 @@ class WorkflowPlanningArgumentsTest {
     @MethodSource("getStringArgumentCases")
     void assertGetStringArgument(final String name, final Map<String, Object> rawArguments, final String expectedValue) {
         assertThat(new WorkflowPlanningArguments(rawArguments).getStringArgument("name"), is(expectedValue));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getBooleanArgumentCases")
+    void assertGetBooleanArgument(final String name, final Map<String, Object> rawArguments, final Boolean expectedValue) {
+        assertThat(new WorkflowPlanningArguments(rawArguments).getBooleanArgument("enabled"), is(expectedValue));
+    }
+    
+    @Test
+    void assertApplyStringArgument() {
+        AtomicReference<String> actual = new AtomicReference<>("unchanged");
+        new WorkflowPlanningArguments(Map.of("name", " foo_name ")).applyStringArgument("name", actual::set);
+        assertThat(actual.get(), is("foo_name"));
+    }
+    
+    @Test
+    void assertApplyStringArgumentWithMissingArgument() {
+        AtomicReference<String> actual = new AtomicReference<>("unchanged");
+        new WorkflowPlanningArguments(Map.of()).applyStringArgument("name", actual::set);
+        assertThat(actual.get(), is("unchanged"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -58,6 +80,13 @@ class WorkflowPlanningArgumentsTest {
                 Arguments.of("missing string", Map.of(), ""),
                 Arguments.of("trimmed string", Map.of("name", " foo_name "), "foo_name"),
                 Arguments.of("number string", Map.of("name", 42), "42"));
+    }
+    
+    private static Stream<Arguments> getBooleanArgumentCases() {
+        return Stream.of(
+                Arguments.of("missing boolean", Map.of(), null),
+                Arguments.of("true boolean", Map.of("enabled", true), true),
+                Arguments.of("false boolean", Map.of("enabled", false), false));
     }
     
     private static Stream<Arguments> getMapArgumentCases() {

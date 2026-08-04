@@ -17,25 +17,26 @@
 
 package org.apache.shardingsphere.mcp.support.database.tool.service;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationCheckResult;
-import org.apache.shardingsphere.mcp.support.database.tool.response.RuntimeDatabaseValidationResult;
+import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
+import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationResult;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -43,41 +44,32 @@ import java.util.function.Function;
 /**
  * Runtime database validation service.
  */
-@RequiredArgsConstructor
 public final class RuntimeDatabaseValidationService {
     
-    private static final String VALIDATION_BINDING_DATABASE = "__preflight_validation__";
+    private final MCPJdbcDatabaseProfileLoader profileLoader = new MCPJdbcDatabaseProfileLoader();
     
-    private final MCPJdbcDatabaseProfileLoader profileLoader;
-    
-    private final MCPJdbcMetadataLoader metadataLoader;
-    
-    public RuntimeDatabaseValidationService() {
-        this(new MCPJdbcDatabaseProfileLoader(), new MCPJdbcMetadataLoader());
-    }
+    private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
     
     /**
      * Validate runtime database.
      *
      * @param request validation request
      * @param runtimeDatabaseResolver runtime database resolver
-     * @param recoveryFactory runtime recovery factory
      * @return validation result
      */
     public RuntimeDatabaseValidationResult validate(final RuntimeDatabaseValidationRequest request,
-                                                    final Function<String, Optional<RuntimeDatabaseConfiguration>> runtimeDatabaseResolver,
-                                                    final Function<RuntimeDatabaseConnectionException, Map<String, Object>> recoveryFactory) {
+                                                    final Function<String, Optional<RuntimeDatabaseConfiguration>> runtimeDatabaseResolver) {
         List<RuntimeDatabaseValidationCheckResult> checks = new LinkedList<>();
         String database = normalize(request.getDatabase());
         Optional<RuntimeDatabaseConfiguration> runtimeDatabaseConfig = findRuntimeDatabaseConfiguration(database, runtimeDatabaseResolver);
         if (runtimeDatabaseConfig.isEmpty()) {
-            RuntimeDatabaseConnectionException ex = createMissingRuntimeDatabaseException(database);
-            checks.add(RuntimeDatabaseValidationCheckResult.failed("configuration", ex.getCategory(), "The requested database is not configured for this MCP runtime."));
+            checks.add(RuntimeDatabaseValidationCheckResult.failed("configuration", RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION,
+                    "The requested database is not configured for this MCP runtime."));
             appendSkippedChecks(checks, "jdbc_driver", "configuration validation did not finish");
             appendSkippedChecks(checks, "jdbc_connectivity", "configuration validation did not finish");
             appendSkippedChecks(checks, "metadata_read", "configuration validation did not finish");
             appendSkippedChecks(checks, "database_visibility", "configuration validation did not finish");
-            return createFailureResult(database, checks, ex, recoveryFactory);
+            return RuntimeDatabaseValidationResult.failed(database, checks, RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION);
         }
         checks.add(RuntimeDatabaseValidationCheckResult.passed("configuration", "Resolved the configured runtime database."));
         RuntimeDatabaseProfile databaseProfile;
@@ -89,23 +81,23 @@ public final class RuntimeDatabaseValidationService {
             appendProfileFailureChecks(checks, ex);
             appendSkippedChecks(checks, "metadata_read", "driver or connectivity validation failed");
             appendSkippedChecks(checks, "database_visibility", "driver or connectivity validation failed");
-            return createFailureResult(database, checks, ex, recoveryFactory);
+            return RuntimeDatabaseValidationResult.failed(database, checks, ex.getCategory());
         }
-        MCPDatabaseMetadata databaseMetadata;
+        Collection<ShardingSphereSchema> schemas;
         try {
-            databaseMetadata = metadataLoader.load(database, runtimeDatabaseConfig.get(), databaseProfile);
+            schemas = metadataLoader.load(database, runtimeDatabaseConfig.get(), databaseProfile).getSchemas();
             checks.add(RuntimeDatabaseValidationCheckResult.passed("metadata_read", "Read metadata through the configured JDBC connection."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(RuntimeDatabaseValidationCheckResult.failed("metadata_read", ex.getCategory(), "Failed to read metadata through the configured JDBC connection."));
             appendSkippedChecks(checks, "database_visibility", "metadata validation failed");
-            return createFailureResult(database, checks, ex, recoveryFactory);
+            return RuntimeDatabaseValidationResult.failed(database, checks, ex.getCategory());
         }
         try {
-            validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), databaseMetadata);
+            validateDatabaseVisibility(database, runtimeDatabaseConfig.get(), schemas, databaseProfile.getDatabaseType(), databaseProfile.getIdentifierContext());
             checks.add(RuntimeDatabaseValidationCheckResult.passed("database_visibility", "Validated the requested database name against visible JDBC metadata and connection context."));
         } catch (final RuntimeDatabaseConnectionException ex) {
             checks.add(RuntimeDatabaseValidationCheckResult.failed("database_visibility", ex.getCategory(), "The requested database name is not visible to the configured JDBC connection."));
-            return createFailureResult(database, checks, ex, recoveryFactory);
+            return RuntimeDatabaseValidationResult.failed(database, checks, ex.getCategory());
         }
         return RuntimeDatabaseValidationResult.ready(database, checks);
     }
@@ -113,11 +105,6 @@ public final class RuntimeDatabaseValidationService {
     private Optional<RuntimeDatabaseConfiguration> findRuntimeDatabaseConfiguration(final String database,
                                                                                     final Function<String, Optional<RuntimeDatabaseConfiguration>> runtimeDatabaseResolver) {
         return database.isEmpty() ? Optional.empty() : runtimeDatabaseResolver.apply(database);
-    }
-    
-    private RuntimeDatabaseConnectionException createMissingRuntimeDatabaseException(final String database) {
-        return RuntimeDatabaseConnectionException.invalidConfiguration(resolveExceptionDatabaseName(database),
-                new IllegalStateException("Runtime database validation requires one configured runtime database."));
     }
     
     private void appendProfileFailureChecks(final List<RuntimeDatabaseValidationCheckResult> checks, final RuntimeDatabaseConnectionException ex) {
@@ -134,46 +121,42 @@ public final class RuntimeDatabaseValidationService {
         checks.add(RuntimeDatabaseValidationCheckResult.skipped(name, String.format("Skipped because %s.", reason)));
     }
     
-    private RuntimeDatabaseValidationResult createFailureResult(final String database, final List<RuntimeDatabaseValidationCheckResult> checks, final RuntimeDatabaseConnectionException cause,
-                                                                final Function<RuntimeDatabaseConnectionException, Map<String, Object>> recoveryFactory) {
-        return RuntimeDatabaseValidationResult.failed(database, checks, cause.getCategory(), recoveryFactory.apply(cause));
-    }
-    
-    private void validateDatabaseVisibility(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final MCPDatabaseMetadata databaseMetadata) {
-        if (containsVisibleSchema(databaseMetadata, database)) {
+    private void validateDatabaseVisibility(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final Collection<ShardingSphereSchema> schemas,
+                                            final String databaseType, final DatabaseIdentifierContext identifierContext) {
+        if (containsVisibleSchema(schemas, database, identifierContext)) {
             return;
         }
-        try (Connection connection = runtimeDatabaseConfig.openConnection(resolveExceptionDatabaseName(database))) {
-            if (isVisibleDatabase(connection, database)) {
+        try (Connection connection = runtimeDatabaseConfig.openConnection(database)) {
+            if (isVisibleDatabase(connection, database, identifierContext)) {
                 return;
             }
         } catch (final SQLException ex) {
-            throw RuntimeDatabaseConnectionException.connectionFailed(resolveExceptionDatabaseName(database), ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(database, databaseType, ex);
         }
-        throw RuntimeDatabaseConnectionException.databaseNotVisible(resolveExceptionDatabaseName(database),
+        throw RuntimeDatabaseConnectionException.databaseNotVisible(database,
                 new IllegalStateException(String.format("Requested database `%s` is not visible to the configured JDBC connection.", database)));
     }
     
-    private boolean containsVisibleSchema(final MCPDatabaseMetadata databaseMetadata, final String database) {
-        for (MCPSchemaMetadata each : databaseMetadata.getSchemas()) {
-            if (database.equalsIgnoreCase(each.getSchema())) {
+    private boolean containsVisibleSchema(final Collection<ShardingSphereSchema> schemas, final String database, final DatabaseIdentifierContext identifierContext) {
+        for (ShardingSphereSchema each : schemas) {
+            if (matches(each.getName(), database, identifierContext, IdentifierScope.SCHEMA)) {
                 return true;
             }
         }
         return false;
     }
     
-    private boolean isVisibleDatabase(final Connection connection, final String database) throws SQLException {
-        return matches(connection.getCatalog(), database)
-                || matches(connection.getSchema(), database)
-                || containsCatalog(connection.getMetaData(), database)
-                || containsSchema(connection.getMetaData(), database);
+    private boolean isVisibleDatabase(final Connection connection, final String database, final DatabaseIdentifierContext identifierContext) throws SQLException {
+        return matches(connection.getCatalog(), database, identifierContext, IdentifierScope.DATABASE)
+                || matches(connection.getSchema(), database, identifierContext, IdentifierScope.SCHEMA)
+                || containsCatalog(connection.getMetaData(), database, identifierContext)
+                || containsSchema(connection.getMetaData(), database, identifierContext);
     }
     
-    private boolean containsCatalog(final DatabaseMetaData databaseMetaData, final String database) throws SQLException {
+    private boolean containsCatalog(final DatabaseMetaData databaseMetaData, final String database, final DatabaseIdentifierContext identifierContext) throws SQLException {
         try (ResultSet resultSet = databaseMetaData.getCatalogs()) {
             while (resultSet.next()) {
-                if (matches(resultSet.getString(1), database)) {
+                if (matches(resultSet.getString(1), database, identifierContext, IdentifierScope.DATABASE)) {
                     return true;
                 }
             }
@@ -181,10 +164,10 @@ public final class RuntimeDatabaseValidationService {
         return false;
     }
     
-    private boolean containsSchema(final DatabaseMetaData databaseMetaData, final String database) throws SQLException {
+    private boolean containsSchema(final DatabaseMetaData databaseMetaData, final String database, final DatabaseIdentifierContext identifierContext) throws SQLException {
         try (ResultSet resultSet = databaseMetaData.getSchemas()) {
             while (resultSet.next()) {
-                if (matches(resultSet.getString("TABLE_SCHEM"), database)) {
+                if (matches(resultSet.getString("TABLE_SCHEM"), database, identifierContext, IdentifierScope.SCHEMA)) {
                     return true;
                 }
             }
@@ -192,12 +175,9 @@ public final class RuntimeDatabaseValidationService {
         return false;
     }
     
-    private boolean matches(final String actualValue, final String expectedValue) {
-        return !Objects.toString(actualValue, "").trim().isEmpty() && actualValue.trim().equalsIgnoreCase(expectedValue);
-    }
-    
-    private String resolveExceptionDatabaseName(final String database) {
-        return database.isEmpty() ? VALIDATION_BINDING_DATABASE : database;
+    private boolean matches(final String storedName, final String identifier, final DatabaseIdentifierContext identifierContext, final IdentifierScope identifierScope) {
+        String actualStoredName = Objects.toString(storedName, "").trim();
+        return !actualStoredName.isEmpty() && identifierContext.matchesMetaData(identifierScope, actualStoredName, new IdentifierValue(identifier));
     }
     
     private String normalize(final String value) {

@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.handler;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.ReadwriteSplittingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingStatusWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service.ReadwriteSplittingStatusWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
@@ -37,23 +34,17 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Tool handler for readwrite-splitting storage-unit status workflow planning.
  */
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
-public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
+public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
-    private final ReadwriteSplittingStatusWorkflowPlanningService planningService;
-    
-    public PlanReadwriteSplittingStatusToolHandler() {
-        planningService = new ReadwriteSplittingStatusWorkflowPlanningService();
-    }
+    private final ReadwriteSplittingStatusWorkflowPlanningService planningService = new ReadwriteSplittingStatusWorkflowPlanningService();
     
     @Override
-    public Class<MCPWorkflowHandlerContext> getContextType() {
-        return MCPWorkflowHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -62,17 +53,15 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
-        ReadwriteSplittingStatusWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ReadwriteSplittingStatusWorkflowRequest::new, toolCall.getArguments(),
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
+        ReadwriteSplittingStatusWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ReadwriteSplittingStatusWorkflowRequest::new, arguments, this::bindFeatureArguments);
         request.setOperationType("");
-        WorkflowContextSnapshot snapshot = planningService.plan(
-                workflowContext.getWorkflowSessionContext(), workflowContext.getDatabaseContext().getQueryFacade(), toolCall.getSessionId(), request);
-        return new MCPMapResponse(createPlanResponse(snapshot));
+        WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
+        return new MCPMapPayload(createPlanResponse(snapshot));
     }
     
     private Map<String, Object> createPlanResponse(final WorkflowContextSnapshot snapshot) {
-        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildRuleDistSQLOnly(snapshot, snapshot.getRequest());
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         if (snapshot.getRequest() instanceof final ReadwriteSplittingStatusWorkflowRequest request) {
             replaceIntentInference(result, request);
             replaceArgumentProvenance(result, request);
@@ -103,18 +92,9 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
         Map<String, Object> argumentProvenance = copyFields(value);
         argumentProvenance.remove(WorkflowFieldNames.OPERATION_TYPE);
         if (!request.getTargetStatus().isEmpty()) {
-            argumentProvenance.put(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, isInferredTargetStatus(result) ? "inferred_from_intent" : "user_provided");
+            argumentProvenance.put(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, "user_provided");
         }
         result.put("argument_provenance", argumentProvenance);
-    }
-    
-    private boolean isInferredTargetStatus(final Map<String, Object> result) {
-        Object intentInference = result.get("intent_inference");
-        if (!(intentInference instanceof Map<?, ?>)) {
-            return false;
-        }
-        Object inferredValues = ((Map<?, ?>) intentInference).get("inferred_values");
-        return inferredValues instanceof Map<?, ?> && ((Map<?, ?>) inferredValues).containsKey(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD);
     }
     
     private void replaceDistSQLArtifacts(final Map<String, Object> result) {
@@ -150,28 +130,9 @@ public final class PlanReadwriteSplittingStatusToolHandler implements MCPToolHan
     }
     
     private void bindFeatureArguments(final ReadwriteSplittingStatusWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request::setStorageUnit);
-        applyStringArgument(workflowPlanningArguments, ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, request::setTargetStatus);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request::setStorageUnit);
+        workflowPlanningArguments.applyStringArgument(ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, request::setTargetStatus);
     }
     
-    private void applyStructuredIntentEvidence(final ReadwriteSplittingStatusWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.STORAGE_UNIT_FIELD, request::setStorageUnit);
-        applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.TARGET_STATUS_FIELD, request::setTargetStatus);
-    }
-    
-    private void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
-        Object value = values.get(fieldName);
-        if (null != value) {
-            consumer.accept(String.valueOf(value));
-        }
-    }
-    
-    private void applyStringArgument(final WorkflowPlanningArguments workflowPlanningArguments, final String fieldName, final Consumer<String> consumer) {
-        String value = workflowPlanningArguments.getStringArgument(fieldName);
-        if (!value.isEmpty()) {
-            consumer.accept(value);
-        }
-    }
 }

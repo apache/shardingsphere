@@ -28,16 +28,9 @@ import java.util.Collection;
  */
 public final class OracleFunctionOption implements DialectFunctionOption {
     
-    // TODO remove ROWNUM_ and ROW_NUMBER, move DAY to anthor method @duanzhengqiang
     private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Arrays.asList(
-            "CONNECT_BY_ISCYCLE", "CONNECT_BY_ISLEAF", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "CURRVAL", "DAY", "DBTIMEZONE", "DEFAULT", "LEVEL",
-            "LOCALTIME", "LOCALTIMESTAMP", "NEXTVAL", "ORA_ROWSCN", "ROWID", "ROWNUM", "ROWNUM_", "ROW_NUMBER", "SESSIONTIMEZONE", "SESSION_USER", "SYSDATE", "SYSTIMESTAMP", "UID",
-            "USER"));
-    
-    @Override
-    public String getIfNullFunctionName() {
-        return "NVL";
-    }
+            "CONNECT_BY_ISCYCLE", "CONNECT_BY_ISLEAF", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "CURRVAL", "DBTIMEZONE", "DEFAULT", "LEVEL", "LOCALTIME",
+            "LOCALTIMESTAMP", "NEXTVAL", "ORA_ROWSCN", "ROWID", "ROWNUM", "SESSIONTIMEZONE", "SESSION_USER", "SYSDATE", "SYSTIMESTAMP", "UID", "USER"));
     
     @Override
     public Collection<String> getUnparenthesizedFunctionNames() {

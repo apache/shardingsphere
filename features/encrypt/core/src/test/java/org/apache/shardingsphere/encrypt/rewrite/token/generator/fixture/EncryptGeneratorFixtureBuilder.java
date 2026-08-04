@@ -113,7 +113,7 @@ public final class EncryptGeneratorFixtureBuilder {
     public static InsertStatementContext createInsertStatementContext(final List<Object> params) {
         ShardingSphereDatabase database = createDatabase();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()), database.getProtocolType());
         InsertStatementContext result = new InsertStatementContext(createInsertStatement(), metaData, "foo_db");
         result.bindParameters(params);
         return result;
@@ -227,7 +227,7 @@ public final class EncryptGeneratorFixtureBuilder {
     public static InsertStatementContext createInsertSelectStatementContext(final boolean containsInsertColumns) {
         ShardingSphereDatabase database = createDatabase();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()), database.getProtocolType());
         return new InsertStatementContext(createInsertSelectStatement(containsInsertColumns), metaData, "foo_db");
     }
 }

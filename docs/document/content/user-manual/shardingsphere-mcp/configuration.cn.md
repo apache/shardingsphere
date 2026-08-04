@@ -14,7 +14,7 @@ HTTP 示例：
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     bindHost: 127.0.0.1
     port: 18088
@@ -30,8 +30,8 @@ transport:
 
 | 配置项                           | 说明                                                                                              |
 |-------------------------------|-------------------------------------------------------------------------------------------------|
-| `transport.type`              | 传输方式，支持 `STREAMABLE_HTTP` 和 `STDIO`。                                                            |
-| `transport.http`              | HTTP 传输配置，只在 `transport.type` 为 `STREAMABLE_HTTP` 时生效。                                          |
+| `transport.type`              | 传输方式，支持 `HTTP` 和 `STDIO`。                                                                       |
+| `transport.http`              | HTTP 传输配置，只在 `transport.type` 为 `HTTP` 时生效。                                                     |
 | `transport.http.bindHost`     | HTTP 监听地址，默认值为 `127.0.0.1`。`127.0.0.1`、`localhost`、`::1` 只允许本机访问；`0.0.0.0` 或指定内网 IP 允许对应网络接口访问。 |
 | `transport.http.port`         | HTTP 监听端口，默认值为 `18088`。                                                                         |
 | `transport.http.endpointPath` | HTTP 端点路径，默认值为 `/mcp`。                                                                          |
@@ -43,7 +43,7 @@ transport:
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     sessionAttributionSource:
       subjectHeader: X-ShardingSphere-MCP-Subject
@@ -59,6 +59,7 @@ transport:
 | `transport.http.sessionAttributionSource.attributeHeaderPrefix` | 自定义归属属性的请求头前缀。           |
 
 只有确认客户端不能直接伪造这些请求头时，才应启用该配置。
+同一个 MCP 会话的后续 HTTP 请求必须提供一致的 subject、source 和 attributes。
 
 ## 数据库配置
 
@@ -123,7 +124,10 @@ runtimeDatabases:
 
 ## 连接目标选择
 
-`runtimeDatabases` 可以配置任意可连接的 JDBC URL。用户能看到的数据库对象和可执行的治理任务取决于连接目标。
+只有当前发行包同时包含匹配的 ShardingSphere 数据库类型连接器和 JDBC 驱动时，`runtimeDatabases` 才能使用对应的可连接 JDBC URL。
+默认发行包包含 MySQL、PostgreSQL、Oracle、SQL Server 和 openGauss 数据库类型连接器，以及 MySQL、PostgreSQL 和 openGauss JDBC 驱动。
+Oracle、SQL Server 或其他未随包提供 JDBC 驱动的目标，需要把匹配的驱动 jar 放入 `plugins/`；只添加驱动并不能支持一个尚无数据库类型连接器的目标。
+用户能看到的数据库对象和可执行的治理任务取决于连接目标。
 
 ### 连接 ShardingSphere-Proxy 逻辑库
 

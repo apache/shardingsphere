@@ -20,12 +20,12 @@ package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Shadow algorithm recommendation service.
@@ -36,50 +36,42 @@ public final class ShadowAlgorithmRecommendationService {
      * Recommend shadow algorithm.
      *
      * @param request workflow request
-     * @param algorithmRows algorithm rows
+     * @param algorithms algorithms reported by the current Proxy
      * @param issues workflow issues
      * @return selected candidates
      */
-    public List<AlgorithmCandidate> recommendShadowAlgorithms(final WorkflowRequest request, final List<Map<String, Object>> algorithmRows,
+    public List<AlgorithmCandidate> recommendShadowAlgorithms(final WorkflowRequest request, final List<Map<String, Object>> algorithms,
                                                               final List<WorkflowIssue> issues) {
-        List<Map<String, Object>> actualAlgorithmRows = null == algorithmRows ? List.of() : algorithmRows;
-        String actualAlgorithmType = request.getAlgorithmType().toUpperCase(Locale.ENGLISH);
+        String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getAlgorithmType());
         if (!actualAlgorithmType.isEmpty()) {
-            if (actualAlgorithmRows.isEmpty() || containsAlgorithm(actualAlgorithmRows, actualAlgorithmType)) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithms, actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate(actualAlgorithmType, 100, "User specified shadow algorithm."));
             }
-            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     String.format("Shadow algorithm `%s` is not visible from the current Proxy.", actualAlgorithmType),
                     "Choose an available shadow algorithm.", false, Map.of()));
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(actualAlgorithmRows);
+        String recommendedType = resolveRecommendedAlgorithm(algorithms);
         if (recommendedType.isEmpty()) {
-            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     "No shadow algorithm is available from the current Proxy.", "Install or expose at least one shadow algorithm.", false, Map.of()));
             return List.of();
         }
-        return List.of(createCandidate(recommendedType, 90, "Recommended from current shadow algorithm availability."));
+        return List.of(createCandidate(recommendedType, 90,
+                "Selected from algorithms reported by the current Proxy using MCP's built-in shadow preference order."));
     }
     
     private AlgorithmCandidate createCandidate(final String algorithmType, final int score, final String reason) {
-        return new AlgorithmCandidate("primary", algorithmType, null, null, null, score, reason, "");
+        return AlgorithmCandidate.builder().algorithmRole("primary").algorithmType(algorithmType).recommendationScore(score).recommendationReason(reason).riskNotes("").build();
     }
     
     private String resolveRecommendedAlgorithm(final List<Map<String, Object>> algorithmRows) {
         for (String each : List.of("SQL_HINT", "VALUE_MATCH", "REGEX_MATCH")) {
-            if (containsAlgorithm(algorithmRows, each)) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithmRows, each, "type", "name")) {
                 return each;
             }
         }
-        return algorithmRows.isEmpty() ? "" : getAlgorithmType(algorithmRows.getFirst());
-    }
-    
-    private boolean containsAlgorithm(final List<Map<String, Object>> algorithmRows, final String algorithmType) {
-        return algorithmRows.stream().map(this::getAlgorithmType).anyMatch(algorithmType::equals);
-    }
-    
-    private String getAlgorithmType(final Map<String, Object> algorithmRow) {
-        return Objects.toString(algorithmRow.getOrDefault("type", algorithmRow.getOrDefault("name", "")), "").trim().toUpperCase(Locale.ENGLISH);
+        return algorithmRows.isEmpty() ? "" : WorkflowAlgorithmUtils.getAlgorithmType(algorithmRows.getFirst(), "type", "name");
     }
 }

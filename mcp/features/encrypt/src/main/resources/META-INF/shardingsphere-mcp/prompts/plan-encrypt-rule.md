@@ -19,7 +19,7 @@ Plan a ShardingSphere encrypt rule workflow.
 
 Scope:
 - This prompt plans supported encrypt rule DistSQL only.
-- Do not ask MCP to generate physical DDL, derived-column DDL, index DDL, data migration, backfill, repair, cleansing, plaintext restore, or physical cleanup tasks.
+- Do not ask MCP to generate physical DDL, derived-column DDL, index DDL, physical data-change tasks, plaintext restore, or physical cleanup tasks.
 - Treat cipher, assisted-query, and LIKE-query column names as rule DistSQL inputs.
   Use names explicitly provided by the user or already present in existing encrypt rules; do not invent names from physical table structure.
 
@@ -39,6 +39,7 @@ Model path:
 2. Read shardingsphere://features/encrypt/algorithms before choosing algorithm_type.
 3. Read existing encrypt rules for the database or table when database and table are known.
 4. Call database_gateway_plan_encrypt_rule with gathered logical names, explicit rule column names, and reviewed algorithm choices.
+   Omit plan_id for a new plan; pass plan_id only when continuing an actual current-session plan returned by a previous planning response.
 5. Use database_gateway_apply_workflow with execution_mode=preview before applying generated encrypt rule DistSQL.
    Call review-then-execute only after the user confirms explicit approved_steps from preview_artifacts.
 6. Before choosing uncertain database, schema, table, column, algorithm, or plan_id values, ask the user or read feature algorithm/rule resources.

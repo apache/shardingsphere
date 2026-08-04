@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
@@ -32,6 +31,12 @@ import java.util.Map;
  */
 public final class ReadwriteSplittingInspectionService {
     
+    String queryProxyMode(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
+        String result = queryFacade.query(databaseName, "SHOW COMPUTE NODE INFO").stream().findFirst()
+                .map(each -> WorkflowRuleValueUtils.getRuleValue(each, "mode_type")).orElse("");
+        return result.isEmpty() ? "unknown" : result;
+    }
+    
     /**
      * Query readwrite-splitting rules.
      *
@@ -40,7 +45,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return readwrite-splitting rules
      */
     public List<Map<String, Object>> queryRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW READWRITE_SPLITTING RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW READWRITE_SPLITTING RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -52,7 +57,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return readwrite-splitting rule rows
      */
     public List<Map<String, Object>> queryRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW READWRITE_SPLITTING RULE %s FROM %s",
+        return queryFacade.query(databaseName, String.format("SHOW READWRITE_SPLITTING RULE %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(ruleName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
@@ -64,7 +69,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return count rows
      */
     public List<Map<String, Object>> queryRuleCount(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("COUNT READWRITE_SPLITTING RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("COUNT READWRITE_SPLITTING RULE FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -75,7 +80,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return status rows
      */
     public List<Map<String, Object>> queryStatuses(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW STATUS FROM READWRITE_SPLITTING RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        return queryFacade.query(databaseName, String.format("SHOW STATUS FROM READWRITE_SPLITTING RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**
@@ -87,7 +92,7 @@ public final class ReadwriteSplittingInspectionService {
      * @return status rows
      */
     public List<Map<String, Object>> queryRuleStatus(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String ruleName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW STATUS FROM READWRITE_SPLITTING RULE %s FROM %s",
+        return queryFacade.query(databaseName, String.format("SHOW STATUS FROM READWRITE_SPLITTING RULE %s FROM %s",
                 WorkflowSQLUtils.formatDistSQLIdentifier(ruleName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
@@ -95,22 +100,10 @@ public final class ReadwriteSplittingInspectionService {
      * Query load-balance algorithm plugin catalog.
      *
      * @param queryFacade query facade
-     * @return algorithm plugin rows with built-in property hints
+     * @return algorithm plugin query result with built-in property hints
      */
     public List<Map<String, Object>> queryLoadBalanceAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        return queryAlgorithmRows(queryFacade).stream().map(this::appendPropertyGuidance).toList();
-    }
-    
-    private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
-        try {
-            List<Map<String, Object>> result = queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS");
-            return null == result ? List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN"), Map.of("type", "WEIGHT")) : result;
-        } catch (final MCPQueryFailedException ex) {
-            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN"), Map.of("type", "WEIGHT"));
-            }
-            throw ex;
-        }
+        return queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS").stream().map(this::appendPropertyGuidance).toList();
     }
     
     private Map<String, Object> appendPropertyGuidance(final Map<String, Object> row) {

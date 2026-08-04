@@ -25,13 +25,15 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLFunctionOption;
+import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLSQLOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLSchemaOption;
 
-import java.sql.Connection;
 import java.util.Collections;
 
 /**
@@ -78,17 +80,18 @@ public final class PostgreSQLDatabaseMetaData implements DialectDatabaseMetaData
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, false, false, true, false, Connection.TRANSACTION_READ_COMMITTED, true, true, Collections.singleton("org.postgresql.xa.PGXADataSource"));
+        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, false, true, true,
+                Collections.singleton("org.postgresql.xa.PGXADataSource"));
+    }
+    
+    @Override
+    public DialectSQLOption getSQLOption() {
+        return new PostgreSQLSQLOption();
     }
     
     @Override
     public DialectProtocolVersionOption getProtocolVersionOption() {
         return new DialectProtocolVersionOption("12.3");
-    }
-    
-    @Override
-    public boolean isCaseSensitive() {
-        return true;
     }
     
     @Override

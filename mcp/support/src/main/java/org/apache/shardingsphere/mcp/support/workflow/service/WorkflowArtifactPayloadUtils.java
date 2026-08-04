@@ -19,9 +19,8 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
-import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowKindDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Map;
 
@@ -31,21 +30,11 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowArtifactPayloadUtils {
     
-    public static final String ARTIFACT_TYPE_CREATE_INDEX = "create-index";
-    
     public static final String ARTIFACT_TYPE_RULE_DISTSQL = "rule_distsql";
-    
-    public static final String PAYLOAD_KEY_DDL_ARTIFACTS = "ddl_artifacts";
     
     public static final String PAYLOAD_KEY_DISTSQL_ARTIFACTS = "distsql_artifacts";
     
-    public static final String PAYLOAD_KEY_INDEX_PLAN = "index_plan";
-    
     public static final String PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE = "manual_artifact_package";
-    
-    public static final String STEP_DDL = "ddl";
-    
-    public static final String STEP_INDEX_DDL = "index_ddl";
     
     public static final String STEP_RULE_DISTSQL = "rule_distsql";
     
@@ -53,32 +42,11 @@ public final class WorkflowArtifactPayloadUtils {
      * Create masked workflow artifact payload.
      *
      * @param snapshot workflow snapshot
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @return masked workflow artifact payload
      */
-    public static Map<String, Object> createArtifactPayload(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
-        return WorkflowArtifactBundle.from(snapshot).toPayload(propertySource, snapshot.getPropertyRequirements());
+    public static Map<String, Object> createArtifactPayload(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        return WorkflowArtifactBundle.from(snapshot).toPayload(request, snapshot.getPropertyRequirements());
     }
     
-    /**
-     * Create rule DistSQL only workflow artifact payload.
-     *
-     * @param snapshot workflow snapshot
-     * @param propertySource workflow property source
-     * @return rule DistSQL only workflow artifact payload
-     */
-    public static Map<String, Object> createRuleArtifactPayload(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
-        return WorkflowArtifactBundle.from(snapshot).toRulePayload(propertySource, snapshot.getPropertyRequirements());
-    }
-    
-    /**
-     * Judge whether workflow must expose rule DistSQL artifacts only.
-     *
-     * @param snapshot workflow snapshot
-     * @return whether workflow is rule DistSQL only
-     */
-    public static boolean isRuleDistSQLOnlyWorkflow(final WorkflowContextSnapshot snapshot) {
-        String workflowKind = null == snapshot.getWorkflowKind() ? "" : snapshot.getWorkflowKind().getValue();
-        return WorkflowKindDescriptors.isRuleDistSQLOnly(workflowKind);
-    }
 }

@@ -24,13 +24,14 @@ import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Session attribution resolver.
@@ -45,36 +46,39 @@ public final class SessionAttributionResolver {
      * Resolve session identity from HTTP request.
      *
      * @param request HTTP request
+     * @param sessionId session identifier
      * @return session identity
      */
-    public Optional<MCPSessionIdentity> resolve(final HttpServletRequest request) {
+    public MCPSessionIdentity resolve(final HttpServletRequest request, final String sessionId) {
         if (!isEnabled()) {
-            return Optional.empty();
+            return new MCPSessionIdentity(sessionId, "", "", Map.of());
         }
         String subject = getHeaderValue(request, config.getSubjectHeader());
         if (subject.isEmpty()) {
-            return Optional.empty();
+            return new MCPSessionIdentity(sessionId, "", "", Map.of());
         }
-        return Optional.of(new MCPSessionIdentity(subject, getHeaderValue(request, config.getSourceHeader()),
-                resolveAttributes(Collections.list(request.getHeaderNames()), name -> getHeaderValue(request, name))));
+        Enumeration<String> headerNames = request.getHeaderNames();
+        return new MCPSessionIdentity(sessionId, subject, getHeaderValue(request, config.getSourceHeader()),
+                resolveAttributes(null == headerNames ? List.of() : Collections.list(headerNames), name -> getHeaderValue(request, name)));
     }
     
     /**
      * Resolve session identity from header map.
      *
      * @param headers headers
+     * @param sessionId session identifier
      * @return session identity
      */
-    public Optional<MCPSessionIdentity> resolve(final Map<String, List<String>> headers) {
+    public MCPSessionIdentity resolve(final Map<String, List<String>> headers, final String sessionId) {
         if (!isEnabled()) {
-            return Optional.empty();
+            return new MCPSessionIdentity(sessionId, "", "", Map.of());
         }
         String subject = getHeaderValue(headers, config.getSubjectHeader());
         if (subject.isEmpty()) {
-            return Optional.empty();
+            return new MCPSessionIdentity(sessionId, "", "", Map.of());
         }
-        return Optional.of(new MCPSessionIdentity(subject, getHeaderValue(headers, config.getSourceHeader()),
-                resolveAttributes(headers.keySet(), name -> getHeaderValue(headers, name))));
+        return new MCPSessionIdentity(sessionId, subject, getHeaderValue(headers, config.getSourceHeader()),
+                resolveAttributes(headers.keySet(), name -> getHeaderValue(headers, name)));
     }
     
     /**
@@ -95,7 +99,7 @@ public final class SessionAttributionResolver {
         return !isEnabled() ? "disabled" : String.format("trusted-header:%s", config.getSubjectHeader());
     }
     
-    private Map<String, String> resolveAttributes(final Iterable<String> headerNames, final HeaderValueReader headerValueReader) {
+    private Map<String, String> resolveAttributes(final Iterable<String> headerNames, final Function<String, String> headerValueReader) {
         Map<String, String> result = new LinkedHashMap<>();
         String attributeHeaderPrefix = config.getAttributeHeaderPrefix();
         if (attributeHeaderPrefix.isEmpty()) {
@@ -105,7 +109,7 @@ public final class SessionAttributionResolver {
         for (String each : headerNames) {
             String actualHeaderName = Objects.toString(each, "").trim();
             if (actualHeaderName.toLowerCase(Locale.ENGLISH).startsWith(normalizedPrefix)) {
-                result.put(actualHeaderName.substring(attributeHeaderPrefix.length()).toLowerCase(Locale.ENGLISH), headerValueReader.read(actualHeaderName));
+                result.put(actualHeaderName.substring(attributeHeaderPrefix.length()).toLowerCase(Locale.ENGLISH), headerValueReader.apply(actualHeaderName));
             }
         }
         return result;
@@ -124,9 +128,4 @@ public final class SessionAttributionResolver {
         return "";
     }
     
-    @FunctionalInterface
-    private interface HeaderValueReader {
-        
-        String read(String headerName);
-    }
 }

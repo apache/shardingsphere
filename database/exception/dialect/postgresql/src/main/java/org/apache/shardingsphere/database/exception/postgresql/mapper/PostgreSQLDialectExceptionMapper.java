@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.database.exception.postgresql.exception.PostgreSQLException;
 import org.apache.shardingsphere.database.exception.postgresql.exception.PostgreSQLException.ServerErrorMessage;
@@ -63,6 +64,9 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         if (sqlDialectException instanceof TableExistsException) {
             return new PostgreSQLException(new ServerErrorMessage(ERROR_SEVERITY, PostgreSQLVendorError.DUPLICATE_TABLE, ((TableExistsException) sqlDialectException).getTableName()));
         }
+        if (sqlDialectException instanceof TableModifyInTransactionException) {
+            return new PostgreSQLException(new ServerErrorMessage(ERROR_SEVERITY, PostgreSQLVendorError.METADATA_CHANGING_DDL_IN_TRANSACTION_NOT_SUPPORTED));
+        }
         if (sqlDialectException instanceof InTransactionException) {
             return new PostgreSQLException(new ServerErrorMessage(ERROR_SEVERITY, PostgreSQLVendorError.TRANSACTION_STATE_INVALID));
         }
@@ -97,7 +101,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         }
         if (sqlDialectException instanceof ColumnNotFoundException) {
             ColumnNotFoundException cause = (ColumnNotFoundException) sqlDialectException;
-            return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.UNDEFINED_COLUMN, cause.getTableName(), cause.getColumnName()));
+            return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.UNDEFINED_COLUMN, cause.getColumnName(), cause.getTableName()));
         }
         return new PostgreSQLException(sqlDialectException.getMessage(), PostgreSQLState.UNEXPECTED_ERROR.getValue());
     }

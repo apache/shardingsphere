@@ -34,7 +34,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.Scenari
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -98,7 +97,11 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private Map<String, String> generateMountedResources() {
-        return new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(getDefaultMajorVersion(), scenario);
+        return new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(getMajorVersion(), scenario);
+    }
+    
+    private int getMajorVersion() {
+        return getDefaultMajorVersion();
     }
     
     private int getDefaultMajorVersion() {
@@ -115,8 +118,8 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private DataSource createInitDataSource() {
-        return StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType)),
-                getInitUser(), env.getPassword(), 2);
+        String jdbcUrl = option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType));
+        return StorageContainerUtils.generateDataSource(jdbcUrl, getInitUser(), env.getPassword(), 2);
     }
     
     private String getInitUser() {
@@ -124,7 +127,7 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private String getInitDatabaseCacheKey() {
-        return String.join(":", String.valueOf(scenario), databaseType.getType(), env.getHost(), String.valueOf(env.getPort(databaseType)), String.valueOf(getDefaultMajorVersion()));
+        return String.join(":", String.valueOf(scenario), databaseType.getType(), env.getHost(), String.valueOf(env.getPort(databaseType)), String.valueOf(getMajorVersion()));
     }
     
     private Map<String, DataSource> createDataSourceMap(final Type type) {
@@ -134,11 +137,16 @@ public final class NativeStorageContainer implements StorageContainer {
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
         Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType), each),
-                    env.getUser(), env.getPassword(), 2);
+            DataSource dataSource = StorageContainerUtils.generateDataSource(getAccessURL(each), env.getUser(), env.getPassword(), 2);
             result.put(each, dataSource);
         }
         return result;
+    }
+    
+    private String getAccessURL(final String dataSourceName) {
+        return null == dataSourceName || dataSourceName.isEmpty()
+                ? option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType))
+                : option.getConnectOption().getURL(env.getHost(), env.getPort(databaseType), dataSourceName);
     }
     
     /**
@@ -161,7 +169,7 @@ public final class NativeStorageContainer implements StorageContainer {
     
     @Override
     public Map<String, String> getLinkReplacements() {
-        Map<String, String> result = new HashMap<>(getNetworkAliases().size() + 2, 1F);
+        Map<String, String> result = new LinkedHashMap<>(getNetworkAliases().size() + 2, 1F);
         for (String each : getNetworkAliases()) {
             result.put(each + ":" + getExposedPort(), env.getHost() + ":" + env.getPort(databaseType));
         }

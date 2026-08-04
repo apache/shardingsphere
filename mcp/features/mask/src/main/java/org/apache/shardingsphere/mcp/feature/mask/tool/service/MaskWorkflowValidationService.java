@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureD
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
@@ -35,7 +35,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
@@ -57,14 +56,10 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final MaskRuleInspectionService ruleInspectionService;
+    private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
-    
-    public MaskWorkflowValidationService() {
-        ruleInspectionService = new MaskRuleInspectionService();
-        workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
-    }
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
     
     @Override
     public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
@@ -77,9 +72,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     public List<Map<String, Object>> validate(final WorkflowContextSnapshot snapshot, final Collection<ExecutableWorkflowArtifact> artifacts) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (ExecutableWorkflowArtifact each : artifacts) {
-            if (each.ruleDistSql()) {
-                addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
-            }
+            addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
         }
         return result;
     }
@@ -99,38 +92,35 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
             return;
         }
         if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(MaskAlgorithm.class, request.getAlgorithmType(), request.getPrimaryAlgorithmProperties())) {
-            issues.add(createValidationIssue(String.format("Generated mask DistSQL references algorithm `%s`, but it cannot be loaded or initialized by MaskAlgorithm SPI.",
+            issues.add(validationSupport.createSQLExecutabilityIssue(String.format("Generated mask DistSQL references algorithm `%s`, but it cannot be loaded or initialized by MaskAlgorithm SPI.",
                     request.getAlgorithmType()), displaySql));
         }
     }
     
     private boolean isMaskRuleDistSQL(final String sql) {
         String actualSQL = sql.trim().toUpperCase(Locale.ENGLISH);
-        return actualSQL.startsWith("CREATE MASK RULE") || actualSQL.startsWith("ALTER MASK RULE");
-    }
-    
-    private Map<String, Object> createValidationIssue(final String message, final String sql) {
-        return new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", WorkflowLifecycle.STEP_REVIEW,
-                message, "Regenerate the workflow artifact through the feature planner before approval.", true, Map.of("sql", sql)).toMap();
+        return actualSQL.startsWith("CREATE MASK RULE");
     }
     
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         ValidationReport result = new ValidationReport();
-        String databaseType = queryFacade.getDatabaseType(snapshot.getRequest().getDatabase());
+        queryFacade.checkDatabaseCapability(snapshot.getRequest().getDatabase());
         List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(queryFacade, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
-        result.setRuleValidation(validateRules(snapshot, maskRules, result, databaseType));
+        result.setRuleValidation(validateRules(snapshot, maskRules, result, queryFacade));
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
         return result;
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> maskRules,
-                                            final ValidationReport validationReport, final String databaseType) {
+                                            final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
         Optional<RuleWorkflowFeatureData> ruleFeatureData = getRuleFeatureData(snapshot);
         if (ruleFeatureData.isPresent()) {
-            return validateExpectedRules(snapshot, ruleFeatureData.get().getExpectedRules(), maskRules, validationReport, databaseType);
+            return validateExpectedRules(snapshot, ruleFeatureData.get().getExpectedRules(), maskRules, validationReport, queryFacade);
         }
         Optional<Map<String, Object>> actualRule = maskRules.stream()
-                .filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, snapshot.getRequest().getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
+                .filter(each -> queryFacade.isSameIdentifier(snapshot.getRequest().getDatabase(), IdentifierScope.COLUMN, snapshot.getRequest().getColumn(),
+                        WorkflowRuleValueUtils.getRuleValue(each, "column")))
+                .findFirst();
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             if (actualRule.isEmpty()) {
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Mask rule has been removed.");
@@ -143,7 +133,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         }
         if (actualRule.isEmpty()) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
-                    "Mask rule is missing.", "Create or alter the mask rule again."));
+                    "Mask rule is missing.", "Generate the mask rule artifact again and re-run validation."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Mask rule is missing.");
         }
         Map<String, Object> actualRuleValue = actualRule.get();
@@ -158,12 +148,12 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private Optional<RuleWorkflowFeatureData> getRuleFeatureData(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getFeatureData() instanceof RuleWorkflowFeatureData ? Optional.of((RuleWorkflowFeatureData) snapshot.getFeatureData()) : Optional.empty();
+        return Optional.ofNullable(snapshot.getFeatureData());
     }
     
     private ValidationSection validateExpectedRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules, final List<Map<String, Object>> actualRules,
-                                                    final ValidationReport validationReport, final String databaseType) {
-        List<Map<String, Object>> mismatches = createExpectedRuleMismatches(snapshot, expectedRules, actualRules, databaseType);
+                                                    final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
+        List<Map<String, Object>> mismatches = createExpectedRuleMismatches(snapshot, expectedRules, actualRules, queryFacade);
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, createMaskedRules(snapshot, actualRules), "Mask table rule state does not match the planned state.");
@@ -184,11 +174,12 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private List<Map<String, Object>> createExpectedRuleMismatches(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules,
-                                                                   final List<Map<String, Object>> actualRules, final String databaseType) {
+                                                                   final List<Map<String, Object>> actualRules, final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
+        String databaseName = snapshot.getRequest().getDatabase();
         for (Map<String, Object> each : expectedRules) {
             String expectedColumn = WorkflowRuleValueUtils.getRuleValue(each, "column");
-            Optional<Map<String, Object>> actualRule = findRuleByColumn(actualRules, databaseType, expectedColumn);
+            Optional<Map<String, Object>> actualRule = findRuleByColumn(actualRules, queryFacade, databaseName, expectedColumn);
             if (actualRule.isEmpty()) {
                 result.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", formatFieldValue("column", expectedColumn), "",
                         "Expected mask rule column is missing.", "Re-apply the intended mask rule."));
@@ -198,7 +189,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         }
         for (Map<String, Object> each : actualRules) {
             String actualColumn = WorkflowRuleValueUtils.getRuleValue(each, "column");
-            if (findRuleByColumn(expectedRules, databaseType, actualColumn).isEmpty()) {
+            if (findRuleByColumn(expectedRules, queryFacade, databaseName, actualColumn).isEmpty()) {
                 result.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no extra mask rule column", formatFieldValue("column", actualColumn),
                         "Unexpected mask rule column exists.", "Inspect concurrent rule changes before retrying validation."));
             }
@@ -206,9 +197,10 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         return result;
     }
     
-    private Optional<Map<String, Object>> findRuleByColumn(final List<Map<String, Object>> rules, final String databaseType, final String column) {
+    private Optional<Map<String, Object>> findRuleByColumn(final List<Map<String, Object>> rules, final MCPFeatureQueryFacade queryFacade,
+                                                           final String databaseName, final String column) {
         return rules.stream()
-                .filter(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, column, WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
+                .filter(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.COLUMN, column, WorkflowRuleValueUtils.getRuleValue(each, "column"))).findFirst();
     }
     
     private void addExpectedRuleValueMismatches(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final Map<String, Object> expectedRule,
@@ -224,8 +216,8 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     }
     
     private void addPropertyMismatch(final List<Map<String, Object>> mismatches, final WorkflowContextSnapshot snapshot, final Object expected, final Object actual) {
-        Map<String, String> expectedProperties = WorkflowSQLUtils.createPropertyMap(expected);
-        Map<String, String> actualProperties = WorkflowSQLUtils.createPropertyMap(actual);
+        Map<String, String> expectedProperties = WorkflowAlgorithmUtils.createPropertyMap(expected);
+        Map<String, String> actualProperties = WorkflowAlgorithmUtils.createPropertyMap(actual);
         if (WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(expectedProperties, actualProperties, snapshot.getRequest(), "primary")) {
             return;
         }
@@ -239,7 +231,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : rules) {
             Map<String, Object> rule = new LinkedHashMap<>(each);
-            rule.put("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowSQLUtils.createPropertyMap(each.get("algorithm_props")), snapshot.getPropertyRequirements(),
+            rule.put("algorithm_props", WorkflowArtifactMaskUtils.maskPropertyMap(WorkflowAlgorithmUtils.createPropertyMap(each.get("algorithm_props")), snapshot.getPropertyRequirements(),
                     snapshot.getRequest(), "primary"));
             result.add(rule);
         }

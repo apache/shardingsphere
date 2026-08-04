@@ -28,6 +28,8 @@ public final class WorkflowFieldNames {
     
     public static final String ALGORITHM_TYPE = "algorithm_type";
     
+    public static final String APPROVED_STEPS = "approved_steps";
+    
     public static final String ASSISTED_QUERY_ALGORITHM_PROPERTIES = "assisted_query_algorithm_properties";
     
     public static final String ASSISTED_QUERY_ALGORITHM_TYPE = "assisted_query_algorithm_type";
@@ -43,8 +45,6 @@ public final class WorkflowFieldNames {
     public static final String DELIVERY_MODE = "delivery_mode";
     
     public static final String EXECUTION_MODE = "execution_mode";
-    
-    public static final String FIELD_SEMANTICS = "field_semantics";
     
     public static final String LIKE_QUERY_ALGORITHM_PROPERTIES = "like_query_algorithm_properties";
     
@@ -67,8 +67,6 @@ public final class WorkflowFieldNames {
     public static final String REQUIRES_LIKE_QUERY = "requires_like_query";
     
     public static final String SCHEMA = "schema";
-    
-    public static final String STRUCTURED_INTENT_EVIDENCE = "structured_intent_evidence";
     
     public static final String TABLE = "table";
     

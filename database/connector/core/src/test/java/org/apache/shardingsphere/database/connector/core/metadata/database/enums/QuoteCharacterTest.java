@@ -58,11 +58,6 @@ class QuoteCharacterTest {
         assertThat(QuoteCharacter.unwrapText(text), is(expectedText));
     }
     
-    @Test
-    void assertUnwrapAndTrimText() {
-        assertThat(QuoteCharacter.unwrapAndTrimText("` test `"), is("test"));
-    }
-    
     private static Stream<Arguments> getQuoteCharacterArguments() {
         return Stream.of(
                 Arguments.of("null value", null, QuoteCharacter.NONE),
@@ -98,6 +93,7 @@ class QuoteCharacterTest {
                 Arguments.of("double quote text", "\"test\"", "test"),
                 Arguments.of("brackets text", "[test]", "test"),
                 Arguments.of("parentheses text", "(test)", "test"),
+                Arguments.of("single quote text with boundary whitespace", "' test '", " test "),
                 Arguments.of("unrecognized wrapper text", "{test}", "{test}"),
                 Arguments.of("unmatched back quote text", "`test'", "`test'"));
     }

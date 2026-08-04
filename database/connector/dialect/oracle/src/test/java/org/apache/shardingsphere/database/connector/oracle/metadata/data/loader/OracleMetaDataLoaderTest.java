@@ -51,6 +51,8 @@ import static org.mockito.Mockito.when;
 
 class OracleMetaDataLoaderTest {
     
+    private static final String NO_COLLATION = "";
+    
     private static final String ALL_CONSTRAINTS_SQL_WITH_TABLES = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A"
             + " INNER JOIN ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = 'TEST' AND A.TABLE_NAME IN ('tbl')";
     
@@ -78,9 +80,10 @@ class OracleMetaDataLoaderTest {
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertLoadArguments")
-    void assertLoad(final String name, final int majorVersion, final int minorVersion, final boolean withPrimaryKey, final boolean withNullValue) throws SQLException {
+    void assertLoad(final String name, final int majorVersion, final int minorVersion,
+                    final boolean withPrimaryKey, final String collation, final boolean expectedCaseSensitive) throws SQLException {
         DataSource dataSource = mockDataSource();
-        ResultSet tableMetaDataResultSet = withNullValue ? mockTableMetaDataResultSetWithNullValue() : mockTableMetaDataResultSet();
+        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet(collation);
         ResultSet indexMetaDataResultSet = mockIndexMetaDataResultSet();
         ResultSet primaryKeysResultSet = withPrimaryKey ? mockPrimaryKeysMetaDataResultSet() : mock(ResultSet.class);
         when(dataSource.getConnection().prepareStatement(getTableMetaDataSQL(majorVersion, minorVersion)).executeQuery()).thenReturn(tableMetaDataResultSet);
@@ -93,17 +96,15 @@ class OracleMetaDataLoaderTest {
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         List<ColumnMetaData> columnMetaDataList = new ArrayList<>(actualTableMetaData.getColumns());
         assertColumnMetaData(columnMetaDataList.get(0), getExpectedFirstColumnMetaData(majorVersion, minorVersion, withPrimaryKey));
-        assertColumnMetaData(columnMetaDataList.get(1), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
-        assertColumnMetaData(columnMetaDataList.get(2), withNullValue
-                ? new ColumnMetaData("address", Types.VARCHAR, false, false, false, false, false, true)
-                : new ColumnMetaData("creation_time", Types.TIMESTAMP, false, false, false, true, false, true));
+        assertColumnMetaData(columnMetaDataList.get(1), new ColumnMetaData("name", Types.VARCHAR, false, false, expectedCaseSensitive, false, false, true));
+        assertColumnMetaData(columnMetaDataList.get(2), new ColumnMetaData("creation_time", Types.TIMESTAMP, false, false, false, true, false, true));
     }
     
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
     @Test
     void assertLoadWithViewAndMultipleIndexes() throws SQLException {
         DataSource dataSource = mockDataSource();
-        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet();
+        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet("BINARY");
         ResultSet indexMetaDataResultSet = mockIndexMetaDataResultSetWithMultipleIndexes();
         ResultSet indexColumnMetaDataResultSet = mockIndexColumnMetaDataResultSetWithMultipleIndexes();
         ResultSet viewMetaDataResultSet = mockViewMetaDataResultSet();
@@ -127,7 +128,7 @@ class OracleMetaDataLoaderTest {
     @Test
     void assertLoadWithoutIndexes() throws SQLException {
         DataSource dataSource = mockDataSource();
-        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet();
+        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet("BINARY");
         ResultSet primaryKeysResultSet = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION).executeQuery()).thenReturn(tableMetaDataResultSet);
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeysResultSet);
@@ -153,7 +154,7 @@ class OracleMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockTableMetaDataResultSet() throws SQLException {
+    private ResultSet mockTableMetaDataResultSet(final String collation) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
@@ -161,20 +162,7 @@ class OracleMetaDataLoaderTest {
         when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "TIMESTAMP(6)");
         when(result.getString("HIDDEN_COLUMN")).thenReturn("NO", "YES", "NO");
         when(result.getString("IDENTITY_COLUMN")).thenReturn("YES", "NO", "NO");
-        when(result.getString("COLLATION")).thenReturn("BINARY_CS", "BINARY_CI", "BINARY_CI");
-        when(result.getString("NULLABLE")).thenReturn("N", "Y", "Y");
-        return result;
-    }
-    
-    private ResultSet mockTableMetaDataResultSetWithNullValue() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "address");
-        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "varchar");
-        when(result.getString("HIDDEN_COLUMN")).thenReturn("NO", "YES", "YES");
-        when(result.getString("IDENTITY_COLUMN")).thenReturn("YES", "NO", "NO");
-        when(result.getString("COLLATION")).thenReturn("BINARY_CS", "BINARY_CI", null);
+        when(result.getString("COLLATION")).thenReturn(null, collation.isEmpty() ? null : collation, null);
         when(result.getString("NULLABLE")).thenReturn("N", "Y", "Y");
         return result;
     }
@@ -221,19 +209,18 @@ class OracleMetaDataLoaderTest {
     }
     
     private String getTableMetaDataSQL(final int majorVersion, final int minorVersion) {
-        if (majorVersion >= 12 && minorVersion >= 2) {
+        if (majorVersion > 12 || majorVersion == 12 && minorVersion >= 2) {
             return ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION;
         }
-        if (majorVersion >= 12 && minorVersion == 1) {
+        if (majorVersion == 12 && minorVersion == 1) {
             return ALL_TAB_COLUMNS_SQL_WITH_IDENTITY;
         }
         return ALL_TAB_COLUMNS_SQL_WITHOUT_IDENTITY_AND_COLLATION;
     }
     
     private ColumnMetaData getExpectedFirstColumnMetaData(final int majorVersion, final int minorVersion, final boolean withPrimaryKey) {
-        boolean generated = majorVersion >= 12 && minorVersion >= 1;
-        boolean caseSensitive = majorVersion >= 12 && minorVersion >= 2;
-        return new ColumnMetaData("id", Types.NUMERIC, withPrimaryKey, generated, caseSensitive, true, false, false);
+        boolean generated = majorVersion > 12 || majorVersion == 12 && minorVersion >= 1;
+        return new ColumnMetaData("id", Types.NUMERIC, withPrimaryKey, generated, false, true, false, false);
     }
     
     private Collection<SchemaMetaData> loadMetaData(final DataSource dataSource) throws SQLException {
@@ -269,13 +256,26 @@ class OracleMetaDataLoaderTest {
     
     private static Stream<Arguments> assertLoadArguments() {
         return Stream.of(
-                Arguments.of("major12Minor2WithoutPrimaryKey", 12, 2, false, false),
-                Arguments.of("major12Minor1WithoutPrimaryKey", 12, 1, false, false),
-                Arguments.of("major11Minor2WithoutPrimaryKey", 11, 2, false, false),
-                Arguments.of("major12Minor0WithoutPrimaryKey", 12, 0, false, false),
-                Arguments.of("major12Minor2WithPrimaryKey", 12, 2, true, false),
-                Arguments.of("major12Minor1WithPrimaryKey", 12, 1, true, false),
-                Arguments.of("major11Minor2WithPrimaryKey", 11, 2, true, false),
-                Arguments.of("major12Minor2WithPrimaryKeyAndNullCollation", 12, 2, true, true));
+                Arguments.of("major12Minor2WithoutPrimaryKey", 12, 2, false, "BINARY", true),
+                Arguments.of("major12Minor1WithoutPrimaryKey", 12, 1, false, NO_COLLATION, true),
+                Arguments.of("major11Minor2WithoutPrimaryKey", 11, 2, false, NO_COLLATION, true),
+                Arguments.of("major12Minor0WithoutPrimaryKey", 12, 0, false, NO_COLLATION, true),
+                Arguments.of("major12Minor2WithPrimaryKey", 12, 2, true, "BINARY", true),
+                Arguments.of("major12Minor1WithPrimaryKey", 12, 1, true, NO_COLLATION, true),
+                Arguments.of("major11Minor2WithPrimaryKey", 11, 2, true, NO_COLLATION, true),
+                Arguments.of("major19Minor0WithPrimaryKey", 19, 0, true, "BINARY", true),
+                Arguments.of("major12Minor2WithNullCollation", 12, 2, true, NO_COLLATION, false),
+                Arguments.of("major12Minor2WithNamedCollation", 12, 2, true, "FRENCH", true),
+                Arguments.of("major12Minor2WithCaseInsensitiveCollation", 12, 2, true, "BINARY_CI", false),
+                Arguments.of("major12Minor2WithAccentInsensitiveCollation", 12, 2, true, "BINARY_AI", false),
+                Arguments.of("major12Minor2WithUCAPrimaryStrength", 12, 2, true, "UCA0700_DUCET_S1", false),
+                Arguments.of("major12Minor2WithUCASecondaryStrength", 12, 2, true, "UCA0700_DUCET_S2", false),
+                Arguments.of("major12Minor2WithUCATertiaryStrength", 12, 2, true, "UCA0700_DUCET_S3", true),
+                Arguments.of("major12Minor2WithUCAQuaternaryStrength", 12, 2, true, "UCA0700_DUCET_S4", true),
+                Arguments.of("major12Minor2UsingNLSSortCaseSensitive", 12, 2, true, "USING_NLS_SORT_CS", true),
+                Arguments.of("major12Minor2UsingNLSSortCaseInsensitive", 12, 2, true, "USING_NLS_SORT_CI", false),
+                Arguments.of("major12Minor2UsingNLSSortAccentInsensitive", 12, 2, true, "USING_NLS_SORT_AI", false),
+                Arguments.of("major12Minor2UsingNLSComp", 12, 2, true, "USING_NLS_COMP", false),
+                Arguments.of("major12Minor2UsingNLSSort", 12, 2, true, "USING_NLS_SORT", false));
     }
 }

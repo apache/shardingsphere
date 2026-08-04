@@ -27,10 +27,13 @@ final class SQLStatementToken {
     
     private final boolean quotedIdentifier;
     
-    SQLStatementToken(final String text, final boolean quotedIdentifier) {
+    private final int startIndex;
+    
+    SQLStatementToken(final String text, final int startIndex) {
         this.text = text;
         upperText = text.toUpperCase(Locale.ENGLISH);
-        this.quotedIdentifier = quotedIdentifier;
+        quotedIdentifier = isQuotedIdentifier(text);
+        this.startIndex = startIndex;
     }
     
     String text() {
@@ -45,11 +48,24 @@ final class SQLStatementToken {
         return quotedIdentifier;
     }
     
+    int startIndex() {
+        return startIndex;
+    }
+    
     boolean identifier() {
         return quotedIdentifier || !text.isEmpty() && isIdentifierStart(text.charAt(0));
     }
     
     private boolean isIdentifierStart(final char value) {
         return Character.isLetterOrDigit(value) || '_' == value || '$' == value;
+    }
+    
+    private boolean isQuotedIdentifier(final String text) {
+        if (2 > text.length()) {
+            return false;
+        }
+        char firstChar = text.charAt(0);
+        char lastChar = text.charAt(text.length() - 1);
+        return '"' == firstChar && '"' == lastChar || '`' == firstChar && '`' == lastChar || '[' == firstChar && ']' == lastChar;
     }
 }

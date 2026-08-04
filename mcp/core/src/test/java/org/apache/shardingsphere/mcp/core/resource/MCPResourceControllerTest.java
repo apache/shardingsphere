@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.resource;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceDefinitionRegistry;
 import org.junit.jupiter.api.Test;
@@ -41,12 +43,12 @@ class MCPResourceControllerTest {
     
     @Test
     void assertHandle() {
-        MCPResponse response = mock(MCPResponse.class);
+        MCPSuccessPayload response = mock(MCPSuccessPayload.class);
         Map<String, Object> payload = Map.of("resource", "capabilities");
         when(response.toPayload()).thenReturn(payload);
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
-            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities"))).thenReturn(Optional.of(response));
-            Map<String, Object> actual = createController().handle("shardingsphere://capabilities").toPayload();
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://capabilities"))).thenReturn(Optional.of(response));
+            Map<String, Object> actual = createController().handle("session-1", "shardingsphere://capabilities").toPayload();
             assertThat(actual, is(payload));
         }
     }
@@ -54,8 +56,8 @@ class MCPResourceControllerTest {
     @Test
     void assertHandleWithUnsupportedResourceUri() {
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
-            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("unsupported://resource"))).thenReturn(Optional.empty());
-            UnsupportedResourceUriException actual = assertThrows(UnsupportedResourceUriException.class, () -> createController().handle("unsupported://resource"));
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("unsupported://resource"))).thenReturn(Optional.empty());
+            UnsupportedResourceUriException actual = assertThrows(UnsupportedResourceUriException.class, () -> createController().handle("session-1", "unsupported://resource"));
             assertThat(actual.getResourceUri(), is("unsupported://resource"));
         }
     }
@@ -63,14 +65,16 @@ class MCPResourceControllerTest {
     @Test
     void assertHandleWithHandlerException() {
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
-            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://indexes")))
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://indexes")))
                     .thenThrow(new MCPUnsupportedException("Index resources are not supported."));
-            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> createController().handle("shardingsphere://indexes"));
+            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> createController().handle("session-1", "shardingsphere://indexes"));
             assertThat(actual.getMessage(), is("Index resources are not supported."));
         }
     }
     
     private MCPResourceController createController() {
-        return new MCPResourceController(ResourceTestDataFactory.createRuntimeContext());
+        MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
+        runtimeContext.getSessionManager().createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
+        return new MCPResourceController(runtimeContext);
     }
 }

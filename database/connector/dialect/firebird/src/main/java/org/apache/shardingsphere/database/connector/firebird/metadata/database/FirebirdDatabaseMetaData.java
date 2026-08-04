@@ -23,12 +23,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.firebird.metadata.database.option.FirebirdFunctionOption;
 import org.apache.shardingsphere.database.connector.firebird.metadata.database.option.FirebirdSchemaOption;
 
-import java.sql.Connection;
 import java.util.Collections;
 
 /**
@@ -58,7 +58,8 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, true, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, true, Collections.singleton("org.firebirdsql.ds.FBXADataSource"));
+        return new DialectTransactionOption(false, DDLCommitPolicy.COMMIT_CURRENT_TRANSACTION, false, false, true, false, true,
+                Collections.singleton("org.firebirdsql.ds.FBXADataSource"));
     }
     
     @Override

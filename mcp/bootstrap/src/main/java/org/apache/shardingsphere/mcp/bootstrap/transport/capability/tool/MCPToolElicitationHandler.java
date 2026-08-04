@@ -21,8 +21,9 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
@@ -42,13 +43,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 final class MCPToolElicitationHandler {
     
-    private static final String STDIO_TRANSPORT = "stdio";
-    
     private static final Duration FORM_CONTINUATION_TTL = Duration.ofMinutes(10L);
     
     private final MCPToolController toolController;
     
-    private final String activeTransport;
+    private final MCPTransportType activeTransport;
     
     private final Clock clock;
     
@@ -60,7 +59,7 @@ final class MCPToolElicitationHandler {
         return clarificationPolicy.requiresPlanningClarification(descriptor, payload);
     }
     
-    Optional<MCPResponse> handle(final McpSyncServerExchange exchange, final MCPToolDefinition definition, final Map<String, Object> arguments, final Map<String, Object> payload) {
+    Optional<MCPSuccessPayload> handle(final McpSyncServerExchange exchange, final MCPToolDefinition definition, final Map<String, Object> arguments, final Map<String, Object> payload) {
         MCPClientElicitationCapabilities clientCapabilities = MCPClientElicitationCapabilities.from(exchange);
         Optional<MCPToolClarificationPolicy.ClarificationForm> clarificationForm = clarificationPolicy.createClarificationForm(payload, definition.getDescriptor());
         if (clarificationForm.isEmpty()) {
@@ -69,7 +68,7 @@ final class MCPToolElicitationHandler {
         if (!clientCapabilities.isFormModeSupported()) {
             return Optional.of(fallbackResponseFactory.create(payload, MCPToolElicitationFallbackReason.CLIENT_UNSUPPORTED, clientCapabilities));
         }
-        if (!STDIO_TRANSPORT.equals(activeTransport)) {
+        if (MCPTransportType.STDIO != activeTransport) {
             return Optional.of(fallbackResponseFactory.create(payload, MCPToolElicitationFallbackReason.REMOTE_IDENTITY_REQUIRED, clientCapabilities));
         }
         FormContinuationContext continuationContext = new FormContinuationContext(
@@ -108,10 +107,10 @@ final class MCPToolElicitationHandler {
                 MCPShardingSphereMetadataKeys.FORM_REQUEST_ID, formRequestId);
     }
     
-    private Optional<MCPResponse> continueOrFallback(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
-                                                     final Map<String, Object> payload, final MCPToolClarificationPolicy.ClarificationForm clarificationForm,
-                                                     final FormContinuationContext continuationContext, final McpSchema.ElicitResult elicitedResult,
-                                                     final MCPClientElicitationCapabilities clientCapabilities) {
+    private Optional<MCPSuccessPayload> continueOrFallback(final McpSyncServerExchange exchange, final MCPToolDefinition toolDefinition, final Map<String, Object> arguments,
+                                                           final Map<String, Object> payload, final MCPToolClarificationPolicy.ClarificationForm clarificationForm,
+                                                           final FormContinuationContext continuationContext, final McpSchema.ElicitResult elicitedResult,
+                                                           final MCPClientElicitationCapabilities clientCapabilities) {
         if (null == elicitedResult || null == elicitedResult.action()) {
             return Optional.of(fallbackResponseFactory.create(payload, MCPToolElicitationFallbackReason.MALFORMED_ELICITATION_RESULT, clientCapabilities));
         }
@@ -132,9 +131,9 @@ final class MCPToolElicitationHandler {
     
     private record FormContinuationContext(String toolName, String sessionId, String planId, int argumentsHashCode, Instant expiresAt, String formRequestId) {
 
-        private boolean isActive(final String activeTransport, final Clock clock, final McpSyncServerExchange exchange, final MCPToolDescriptor toolDescriptor,
+        private boolean isActive(final MCPTransportType activeTransport, final Clock clock, final McpSyncServerExchange exchange, final MCPToolDescriptor toolDescriptor,
                                  final Map<String, Object> arguments, final MCPToolClarificationPolicy.ClarificationForm clarificationForm) {
-            return STDIO_TRANSPORT.equals(activeTransport) && sessionId.equals(exchange.sessionId())
+            return MCPTransportType.STDIO == activeTransport && sessionId.equals(exchange.sessionId())
                     && toolName.equals(toolDescriptor.getName()) && planId.equals(clarificationForm.planId())
                     && argumentsHashCode == arguments.hashCode() && clock.instant().isBefore(expiresAt);
         }

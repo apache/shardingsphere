@@ -19,8 +19,6 @@ package org.apache.shardingsphere.single.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -30,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSo
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.single.rule.attribute.SingleTableMapperRuleAttr
 import org.apache.shardingsphere.single.rule.attribute.SingleUnregisterStorageUnitRuleAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -156,19 +156,18 @@ public final class SingleRule implements DatabaseRule {
      */
     public Collection<QualifiedTable> getSingleTables(final Collection<QualifiedTable> qualifiedTables, final ShardingSphereDatabase database) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        IdentifierCasePolicy schemaRule = database.getIdentifierCasePolicy(IdentifierScope.SCHEMA);
         for (QualifiedTable each : qualifiedTables) {
             Collection<DataNode> dataNodes = mutableDataNodeRuleAttribute.findTableDataNodes(each.getTableName());
-            if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes, schemaRule)) {
+            if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes, database.getIdentifierContext())) {
                 result.add(each);
             }
         }
         return result;
     }
     
-    private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes, final IdentifierCasePolicy databasePolicy) {
+    private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes, final DatabaseIdentifierContext identifierContext) {
         for (DataNode each : dataNodes) {
-            if (databasePolicy.matches(each.getSchemaName(), qualifiedTable.getSchemaName(), QuoteCharacter.NONE)) {
+            if (identifierContext.matchesMetaData(IdentifierScope.SCHEMA, each.getSchemaName(), new IdentifierValue(qualifiedTable.getSchemaName()))) {
                 return true;
             }
         }
@@ -210,10 +209,9 @@ public final class SingleRule implements DatabaseRule {
      * @return matched data node
      */
     public Optional<DataNode> findTableDataNode(final ShardingSphereDatabase database, final QualifiedTable qualifiedTable) {
-        IdentifierCasePolicy schemaRule = database.getIdentifierCasePolicy(IdentifierScope.SCHEMA);
         Collection<DataNode> dataNodes = mutableDataNodeRuleAttribute.findTableDataNodes(qualifiedTable.getTableName());
         for (DataNode each : dataNodes) {
-            if (schemaRule.matches(each.getSchemaName(), qualifiedTable.getSchemaName(), QuoteCharacter.NONE)) {
+            if (database.getIdentifierContext().matchesMetaData(IdentifierScope.SCHEMA, each.getSchemaName(), new IdentifierValue(qualifiedTable.getSchemaName()))) {
                 return Optional.of(each);
             }
         }

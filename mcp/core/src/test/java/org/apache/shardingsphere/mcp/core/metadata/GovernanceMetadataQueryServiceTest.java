@@ -35,7 +35,7 @@ class GovernanceMetadataQueryServiceTest {
     @Test
     void assertQueryStorageUnits() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of(
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of(
                 "name", "write_ds", "password", "root", "key-value", "plain",
                 "other_attributes", "{\"credential\":\"secret\",\"healthCheckProperties\":{\"token\":\"abc\"},\"key\":\"visible\"}")));
         List<Map<String, Object>> actual = service.queryStorageUnits(queryFacade, "logic_db");
@@ -50,7 +50,7 @@ class GovernanceMetadataQueryServiceTest {
     @Test
     void assertQueryStorageUnit() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds"), Map.of("name", "read_ds")));
+        when(queryFacade.query("logic_db", "SHOW STORAGE UNITS FROM logic_db")).thenReturn(List.of(Map.of("name", "write_ds"), Map.of("name", "read_ds")));
         List<Map<String, Object>> actual = service.queryStorageUnit(queryFacade, "logic_db", "write_ds");
         assertThat(actual, is(List.of(Map.of("name", "write_ds"))));
     }
@@ -58,7 +58,7 @@ class GovernanceMetadataQueryServiceTest {
     @Test
     void assertQueryRulesUsedStorageUnit() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW RULES USED STORAGE UNIT write_ds FROM logic_db"))
+        when(queryFacade.query("logic_db", "SHOW RULES USED STORAGE UNIT write_ds FROM logic_db"))
                 .thenReturn(List.of(Map.of("type", "readwrite_splitting", "name", "ms_group_0")));
         List<Map<String, Object>> actual = service.queryRulesUsedStorageUnit(queryFacade, "logic_db", "write_ds");
         assertThat(actual, is(List.of(Map.of("type", "readwrite_splitting", "name", "ms_group_0"))));
@@ -67,7 +67,7 @@ class GovernanceMetadataQueryServiceTest {
     @Test
     void assertQuerySingleTables() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW SINGLE TABLES FROM logic_db")).thenReturn(List.of(Map.of("table_name", "t_user", "storage_unit_name", "ds_0")));
+        when(queryFacade.query("logic_db", "SHOW SINGLE TABLES FROM logic_db")).thenReturn(List.of(Map.of("table_name", "t_user", "storage_unit_name", "ds_0")));
         List<Map<String, Object>> actual = service.querySingleTables(queryFacade, "logic_db");
         assertThat(actual, is(List.of(Map.of("table_name", "t_user", "storage_unit_name", "ds_0"))));
     }
@@ -75,7 +75,7 @@ class GovernanceMetadataQueryServiceTest {
     @Test
     void assertQuerySingleTable() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW SINGLE TABLE t_user FROM logic_db")).thenReturn(List.of(Map.of("table_name", "t_user", "storage_unit_name", "ds_0")));
+        when(queryFacade.query("logic_db", "SHOW SINGLE TABLE t_user FROM logic_db")).thenReturn(List.of(Map.of("table_name", "t_user", "storage_unit_name", "ds_0")));
         List<Map<String, Object>> actual = service.querySingleTable(queryFacade, "logic_db", "t_user");
         assertThat(actual, is(List.of(Map.of("table_name", "t_user", "storage_unit_name", "ds_0"))));
     }
@@ -83,7 +83,7 @@ class GovernanceMetadataQueryServiceTest {
     @Test
     void assertQueryDefaultSingleTableStorageUnit() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM logic_db")).thenReturn(List.of(Map.of("storage_unit_name", "ds_0")));
+        when(queryFacade.query("logic_db", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM logic_db")).thenReturn(List.of(Map.of("storage_unit_name", "ds_0")));
         List<Map<String, Object>> actual = service.queryDefaultSingleTableStorageUnit(queryFacade, "logic_db");
         assertThat(actual, is(List.of(Map.of("storage_unit_name", "ds_0"))));
     }

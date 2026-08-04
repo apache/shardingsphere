@@ -32,11 +32,6 @@ public final class FirebirdFunctionOption implements DialectFunctionOption {
             "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER"));
     
     @Override
-    public String getIfNullFunctionName() {
-        return "IFNULL";
-    }
-    
-    @Override
     public Collection<String> getUnparenthesizedFunctionNames() {
         return UNPARENTHESIZED_FUNCTION_NAMES;
     }

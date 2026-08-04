@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.support.database.spi;
 
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 
 /**
  * MCP feature execution facade.
@@ -29,7 +29,16 @@ public interface MCPFeatureExecutionFacade {
      * Execute SQL request.
      *
      * @param executionRequest SQL execution request
-     * @return execution response
+     * @return execution result
      */
-    SQLExecutionResponse execute(SQLExecutionRequest executionRequest);
+    SQLExecutionResult execute(SQLExecutionRequest executionRequest);
+    
+    /**
+     * Execute database-native EXPLAIN SQL for an original query.
+     *
+     * @param executionRequest EXPLAIN SQL execution request
+     * @param sql original query SQL
+     * @return execution result
+     */
+    SQLExecutionResult executeExplain(SQLExecutionRequest executionRequest, String sql);
 }

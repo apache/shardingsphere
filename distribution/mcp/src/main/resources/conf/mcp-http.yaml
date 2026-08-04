@@ -14,7 +14,7 @@
 # limitations under the License.
 
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     # Use 127.0.0.1 for local debugging. Bind to a controlled intranet or container interface only behind a trusted gateway.
     bindHost: 127.0.0.1

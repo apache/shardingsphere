@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +26,7 @@ import java.util.List;
 /**
  * LLM chat message.
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class LLMChatMessage {
     

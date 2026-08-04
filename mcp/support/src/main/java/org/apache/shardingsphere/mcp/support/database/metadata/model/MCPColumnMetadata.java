@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.support.database.metadata.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.DatabaseMetaData;
+
 /**
  * MCP column metadata.
  */
@@ -27,13 +29,48 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class MCPColumnMetadata {
     
-    private final String database;
+    private final String relationName;
     
-    private final String schema;
+    private final String name;
     
-    private final String table;
+    private final int ordinalPosition;
     
-    private final String view;
+    private final int jdbcType;
     
-    private final String column;
+    private final String nativeTypeName;
+    
+    private final Nullability nullability;
+    
+    /**
+     * JDBC column nullability.
+     */
+    @Getter
+    @RequiredArgsConstructor
+    public enum Nullability {
+        
+        NULLABLE("nullable"),
+        
+        NOT_NULLABLE("not_nullable"),
+        
+        UNKNOWN("unknown");
+        
+        private final String value;
+        
+        /**
+         * Create nullability from JDBC metadata value.
+         *
+         * @param jdbcValue JDBC metadata value
+         * @return nullability
+         */
+        public static Nullability fromJdbcValue(final int jdbcValue) {
+            if (DatabaseMetaData.columnNullable == jdbcValue) {
+                return NULLABLE;
+            }
+            if (DatabaseMetaData.columnNoNulls == jdbcValue) {
+                return NOT_NULLABLE;
+            }
+            return UNKNOWN;
+        }
+        
+    }
 }

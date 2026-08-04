@@ -40,7 +40,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -78,8 +77,7 @@ public final class MySQLProjectionMetadataResolver {
             QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
             Collection<MySQLPacket> result = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections().size());
             for (int columnIndex = 1; columnIndex <= selectStatementContext.getProjectionsContext().getExpandProjections().size(); columnIndex++) {
-                QueryHeader queryHeader =
-                        queryHeaderBuilderEngine.build(selectStatementContext, resultSetMetaData, database, Collections.singleton(database), columnIndex);
+                QueryHeader queryHeader = queryHeaderBuilderEngine.build(selectStatementContext, resultSetMetaData, database, columnIndex);
                 result.add(createMySQLColumnDefinition41Packet(queryHeader, characterSet));
             }
             return result;

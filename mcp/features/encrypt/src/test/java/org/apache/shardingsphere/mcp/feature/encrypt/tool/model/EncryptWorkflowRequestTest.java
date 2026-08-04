@@ -53,7 +53,7 @@ class EncryptWorkflowRequestTest {
         previousRequest.getOptions().setAssistedQueryAlgorithmType("MD5");
         previousRequest.getOptions().getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
         EncryptWorkflowRequest currentRequest = new EncryptWorkflowRequest();
-        currentRequest.setOperationType("alter");
+        currentRequest.setOperationType("drop");
         currentRequest.getOptions().setRequiresLikeQuery(true);
         currentRequest.getOptions().setLikeQueryAlgorithmType("CHAR_DIGEST_LIKE");
         currentRequest.getPrimaryAlgorithmProperties().put("aes-key-value", "current-key");
@@ -62,7 +62,7 @@ class EncryptWorkflowRequestTest {
         assertThat(actualRequest.getDatabase(), is("logic_db"));
         assertThat(actualRequest.getTable(), is("orders"));
         assertThat(actualRequest.getColumn(), is("phone"));
-        assertThat(actualRequest.getOperationType(), is("alter"));
+        assertThat(actualRequest.getOperationType(), is("drop"));
         assertTrue(actualRequest.getOptions().getRequiresDecrypt());
         assertTrue(actualRequest.getOptions().getRequiresLikeQuery());
         assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmType(), is("MD5"));

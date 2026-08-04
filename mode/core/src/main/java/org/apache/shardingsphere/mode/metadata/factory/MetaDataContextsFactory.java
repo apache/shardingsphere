@@ -79,7 +79,7 @@ public final class MetaDataContextsFactory {
         return initFactory.create(param);
     }
     
-    private static boolean containsRegisteredDatabases(final PersistRepository repository) {
+    private boolean containsRegisteredDatabases(final PersistRepository repository) {
         return !new DatabaseMetaDataPersistService(repository).loadAllDatabaseNames().isEmpty();
     }
     

@@ -17,33 +17,27 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * MCP database capability option for Oracle.
  */
-public final class OracleMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
-    
-    private static final String SEQUENCE_QUERY = "SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES";
-    
-    public OracleMCPDatabaseCapabilityOption() {
-        super("Oracle", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
-    }
+public final class OracleMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
     @Override
-    public Collection<String> getSystemSchemas() {
-        return List.of("sys", "system_lobs");
+    public boolean isExplainSupported() {
+        return false;
     }
     
     @Override
     public Optional<String> getSequenceQuery() {
-        return Optional.of(SEQUENCE_QUERY);
+        return Optional.of("SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES");
+    }
+    
+    @Override
+    public String getType() {
+        return "Oracle";
     }
 }

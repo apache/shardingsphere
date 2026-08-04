@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Mask rule inspection service.
@@ -68,24 +66,13 @@ public final class MaskRuleInspectionService {
      * @return mask algorithms
      */
     public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
-        return decorateMaskAlgorithms(queryAlgorithmRows(queryFacade));
-    }
-    
-    private List<Map<String, Object>> queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
-        try {
-            return queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
-        } catch (final MCPQueryFailedException ex) {
-            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return propertyTemplateService.getSupportedAlgorithmTypes().stream().map(each -> Map.<String, Object>of("type", each)).toList();
-            }
-            throw ex;
-        }
+        return decorateMaskAlgorithms(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS"));
     }
     
     private List<Map<String, Object>> decorateMaskAlgorithms(final List<Map<String, Object>> maskAlgorithms) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : maskAlgorithms) {
-            String type = Objects.toString(each.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
+            String type = WorkflowAlgorithmUtils.getAlgorithmType(each);
             List<AlgorithmPropertyRequirement> propertyTemplates = propertyTemplateService.findRequirements(type);
             Map<String, Object> row = new LinkedHashMap<>(each);
             row.put("property_templates", propertyTemplates.stream().map(AlgorithmPropertyRequirement::toMap).toList());

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting;
 
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
 import org.junit.jupiter.api.Test;
@@ -28,12 +28,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class ReadwriteSplittingFeatureDefinitionTest {
-    
-    @Test
-    void assertWorkflowKinds() {
-        assertThat(ReadwriteSplittingFeatureDefinition.RULE_WORKFLOW_KIND.getValue(), is("readwrite.rule"));
-        assertThat(ReadwriteSplittingFeatureDefinition.STATUS_WORKFLOW_KIND.getValue(), is("readwrite.status"));
-    }
     
     @Test
     void assertPromptCompletionArguments() {

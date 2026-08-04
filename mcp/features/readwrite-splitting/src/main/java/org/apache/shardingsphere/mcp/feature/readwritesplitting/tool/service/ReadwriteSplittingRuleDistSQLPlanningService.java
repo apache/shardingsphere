@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model.ReadwriteSplittingRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.Locale;
@@ -36,7 +37,7 @@ public final class ReadwriteSplittingRuleDistSQLPlanningService {
      * @return rule artifact
      */
     public RuleArtifact planCreateRule(final ReadwriteSplittingRuleWorkflowRequest request) {
-        return new RuleArtifact("create", String.format("CREATE READWRITE_SPLITTING RULE %s", createRuleDefinition(request)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_CREATE, String.format("CREATE READWRITE_SPLITTING RULE %s", createRuleDefinition(request)));
     }
     
     /**
@@ -46,7 +47,7 @@ public final class ReadwriteSplittingRuleDistSQLPlanningService {
      * @return rule artifact
      */
     public RuleArtifact planAlterRule(final ReadwriteSplittingRuleWorkflowRequest request) {
-        return new RuleArtifact("alter", String.format("ALTER READWRITE_SPLITTING RULE %s", createRuleDefinition(request)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_ALTER, String.format("ALTER READWRITE_SPLITTING RULE %s", createRuleDefinition(request)));
     }
     
     /**
@@ -56,7 +57,7 @@ public final class ReadwriteSplittingRuleDistSQLPlanningService {
      * @return rule artifact
      */
     public RuleArtifact planDropRule(final String ruleName) {
-        return new RuleArtifact("drop", String.format("DROP READWRITE_SPLITTING RULE %s", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(ruleName)));
+        return new RuleArtifact(WorkflowLifecycle.OPERATION_DROP, String.format("DROP READWRITE_SPLITTING RULE %s", WorkflowSQLUtils.formatGeneratedRuleDistSQLIdentifier(ruleName)));
     }
     
     private String createRuleDefinition(final ReadwriteSplittingRuleWorkflowRequest request) {

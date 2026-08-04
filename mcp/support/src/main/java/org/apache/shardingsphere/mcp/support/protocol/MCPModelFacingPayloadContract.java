@@ -34,27 +34,28 @@ public final class MCPModelFacingPayloadContract {
     
     private static final Collection<String> REMOVED_MODEL_FACING_FIELDS = Set.of(
             "target_tool", "target_resource", "required_arguments", "action_kind", "suggested_next_tool", "suggested_next_tools", "recommended_next_tool",
-            "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required", "user_overrides");
+            "recommended_recovery", "suggested_next_action", "approved_by_user", "requires_user_approval", "approval_required", "user_overrides",
+            "structured_intent_evidence", "field_semantics", "reasoning_notes");
     
     private static final Map<String, Collection<String>> NEXT_ACTION_REQUIRED_FIELDS = Map.of(
-            "resource_read", Set.of("order", "type", "title", "resource_uri"),
-            "tool_call", Set.of("order", "type", "title", "tool_name", "arguments"),
-            "completion", Set.of("order", "type", "title", "ref", "argument"),
-            "ask_user", Set.of("order", "type", "title", "question"),
-            "terminal", Set.of("order", "type", "title"));
+            "resource_read", List.of("order", "type", "title", "resource_uri"),
+            "tool_call", List.of("order", "type", "title", "tool_name", "arguments"),
+            "completion", List.of("order", "type", "title", "ref", "argument"),
+            "ask_user", List.of("order", "type", "title", "question"),
+            "terminal", List.of("order", "type", "title"));
     
     private static final Map<String, Collection<String>> NEXT_ACTION_ALLOWED_FIELDS = Map.of(
-            "resource_read", Set.of("order", "type", "title", "resource_uri", "reason", "depends_on"),
-            "tool_call", Set.of("order", "type", "title", "tool_name", "arguments", "reason", "depends_on"),
-            "completion", Set.of("order", "type", "title", "ref", "argument", "context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on"),
-            "ask_user", Set.of("order", "type", "title", "question", "required_inputs", "reason", "depends_on"),
-            "terminal", Set.of("order", "type", "title", "reason", "depends_on"));
+            "resource_read", List.of("order", "type", "title", "resource_uri", "reason", "depends_on"),
+            "tool_call", List.of("order", "type", "title", "tool_name", "arguments", "reason", "depends_on"),
+            "completion", List.of("order", "type", "title", "ref", "argument", "context", "missing_context_arguments", "resume_ref", "resume_arguments", "reason", "depends_on"),
+            "ask_user", List.of("order", "type", "title", "question", "required_inputs", "depends_on"),
+            "terminal", List.of("order", "type", "title", "reason", "depends_on"));
     
     private static final Collection<String> NEXT_ACTION_SCHEMA_ALLOWED_FIELDS = createNextActionSchemaAllowedFields();
     
     private static final Collection<String> MODEL_CRITICAL_FIELD_NAMES = List.of(
             MCPPayloadFieldNames.SUMMARY, MCPPayloadFieldNames.NEXT_ACTIONS, MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.RESOURCE,
-            MCPPayloadFieldNames.SELF_RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE, MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary", "manual_follow_up",
+            MCPPayloadFieldNames.SELF_RESOURCE, MCPPayloadFieldNames.PARENT_RESOURCE, MCPPayloadFieldNames.NEXT_RESOURCES, "manual_artifact_summary",
             "empty_state", "ambiguity_state", MCPPayloadFieldNames.RECOVERY, "recovery_guidance", "remediation");
     
     private static Collection<String> createNextActionSchemaAllowedFields() {

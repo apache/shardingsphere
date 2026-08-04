@@ -17,24 +17,23 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.MCPRequestContext;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 
 import java.util.Map;
 
 /**
  * Test-only tool handler used to prove packaged distribution plugin discovery.
  */
-public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPServiceHandlerContext> {
+public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPRequestContext> {
     
     private static final String TOOL_NAME = "fixture_ping";
     
     @Override
-    public Class<MCPServiceHandlerContext> getContextType() {
-        return MCPServiceHandlerContext.class;
+    public Class<MCPRequestContext> getContextType() {
+        return MCPRequestContext.class;
     }
     
     @Override
@@ -43,7 +42,7 @@ public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPSer
     }
     
     @Override
-    public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPToolCall toolCall) {
-        return new MCPMapResponse(Map.of("status", "ready", "echo", String.valueOf(toolCall.getArguments().get("message"))));
+    public MCPSuccessPayload handle(final MCPRequestContext handlerContext, final Map<String, Object> arguments) {
+        return new MCPMapPayload(Map.of("status", "ready", "echo", String.valueOf(arguments.get("message"))));
     }
 }

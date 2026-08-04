@@ -295,7 +295,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
             }
             return option.getConnectOption().getURL(host, port, storageContainer.getToBeConnectedDataSourceName(databaseName));
         }
-        return option.getConnectOption().getURL("127.0.0.1", E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPort(databaseType), databaseName);
+        String host = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getHost();
+        int port = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPort(databaseType);
+        return option.getConnectOption().getURL(host, port, databaseName);
     }
     
     /**

@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -69,6 +70,13 @@ class MySQLJsonValueDecoderTest {
         jsonEntries.add(new Object[]{JsonValueTypes.LITERAL, "key3", JsonValueTypes.LITERAL_FALSE});
         ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, false);
         assertThat(MySQLJsonValueDecoder.decode(payload), is("{\"key1\":null,\"key2\":true,\"key3\":false}"));
+    }
+    
+    @Test
+    void assertDecodeSmallJsonObjectWithMultibyteUtf8KeyAndValue() {
+        List<Object[]> jsonEntries = Collections.singletonList(new Object[]{JsonValueTypes.STRING, "名前", "café"});
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
+        assertThat(MySQLJsonValueDecoder.decode(payload), is("{\"名前\":\"café\"}"));
     }
     
     @Test
@@ -179,7 +187,7 @@ class MySQLJsonValueDecoderTest {
         ByteBuf result = Unpooled.buffer();
         for (Object[] each : jsonEntries) {
             writeInt(jsonByteBuf, startOffset + result.readableBytes(), isSmall);
-            byte[] keyBytes = ((String) each[1]).getBytes();
+            byte[] keyBytes = ((String) each[1]).getBytes(StandardCharsets.UTF_8);
             jsonByteBuf.writeShortLE(keyBytes.length);
             result.writeBytes(keyBytes);
         }
@@ -248,9 +256,10 @@ class MySQLJsonValueDecoderTest {
     }
     
     private void writeString(final ByteBuf jsonByteBuf, final String value) {
-        byte[] result = codecDataLength(value.length());
+        byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
+        byte[] result = codecDataLength(valueBytes.length);
         jsonByteBuf.writeBytes(result, 0, result.length);
-        jsonByteBuf.writeBytes(value.getBytes());
+        jsonByteBuf.writeBytes(valueBytes);
     }
     
     private byte[] codecDataLength(final int length) {

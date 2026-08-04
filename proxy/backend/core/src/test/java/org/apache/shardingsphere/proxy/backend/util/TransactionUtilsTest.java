@@ -56,15 +56,6 @@ class TransactionUtilsTest {
     }
     
     @Test
-    void assertGetTransactionIsolationLevelByInt() {
-        assertThat(TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_READ_UNCOMMITTED), is(TransactionIsolationLevel.READ_UNCOMMITTED));
-        assertThat(TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED), is(TransactionIsolationLevel.READ_COMMITTED));
-        assertThat(TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ), is(TransactionIsolationLevel.REPEATABLE_READ));
-        assertThat(TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_SERIALIZABLE), is(TransactionIsolationLevel.SERIALIZABLE));
-        assertThat(TransactionUtils.getTransactionIsolationLevel(-1), is(TransactionIsolationLevel.NONE));
-    }
-    
-    @Test
     void assertGetTransactionTypeFromContext() {
         TransactionConnectionContext transactionContext = new TransactionConnectionContext();
         transactionContext.beginTransaction(TransactionType.XA.name(), transactionManager);

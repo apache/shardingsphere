@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -60,19 +60,8 @@ class WorkflowSecretReferenceUtilsTest {
     
     @Test
     void assertCreateSafeSummaries() {
-        WorkflowPropertySource propertySource = new WorkflowPropertySource() {
-            
-            @Override
-            public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
-                return Map.of();
-            }
-            
-            @Override
-            public Map<String, Map<String, SecretReferenceValue>> getSecretReferences() {
-                return Map.of("primary", Map.of("aes-key-value", SecretReferenceValue.create()));
-            }
-        };
-        List<Map<String, Object>> actual = WorkflowSecretReferenceUtils.createSafeSummaries(propertySource);
+        WorkflowRequest request = createSecretReferenceRequest();
+        List<Map<String, Object>> actual = WorkflowSecretReferenceUtils.createSafeSummaries(request);
         assertThat(actual.size(), is(1));
         assertThat(actual.getFirst().get("label"), is("secret_placeholder:primary.aes-key-value"));
         assertFalse(String.valueOf(actual).contains("placeholder://secret-value-1"));
@@ -82,7 +71,7 @@ class WorkflowSecretReferenceUtilsTest {
     @Test
     void assertReplacePlaceholdersWithManualPlaceholders() {
         assertThat(WorkflowSecretReferenceUtils.replacePlaceholdersWithManualPlaceholders(
-                "PROPERTIES('aes-key-value'='secret_reference:primary.aes-key-value')", createSecretReferencePropertySource()),
+                "PROPERTIES('aes-key-value'='secret_reference:primary.aes-key-value')", createSecretReferenceRequest()),
                 is("PROPERTIES('aes-key-value'='<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>')"));
     }
     
@@ -91,7 +80,7 @@ class WorkflowSecretReferenceUtilsTest {
         assertTrue(WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(
                 Map.of("aes-key-value", "secret_reference:primary.aes-key-value", "digest-algorithm-name", "SHA-256"),
                 Map.of("aes-key-value", "manually-filled-secret", "digest-algorithm-name", "SHA-256"),
-                createSecretReferencePropertySource(), "primary"));
+                createSecretReferenceRequest(), "primary"));
     }
     
     @Test
@@ -99,7 +88,7 @@ class WorkflowSecretReferenceUtilsTest {
         assertFalse(WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(
                 Map.of("aes-key-value", "secret_reference:primary.aes-key-value"),
                 Map.of("aes-key-value", "secret_reference:primary.aes-key-value"),
-                createSecretReferencePropertySource(), "primary"));
+                createSecretReferenceRequest(), "primary"));
     }
     
     @Test
@@ -107,7 +96,7 @@ class WorkflowSecretReferenceUtilsTest {
         assertFalse(WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(
                 Map.of("aes-key-value", "secret_reference:primary.aes-key-value"),
                 Map.of("aes-key-value", "<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>"),
-                createSecretReferencePropertySource(), "primary"));
+                createSecretReferenceRequest(), "primary"));
     }
     
     @Test
@@ -115,21 +104,12 @@ class WorkflowSecretReferenceUtilsTest {
         assertFalse(WorkflowSecretReferenceUtils.matchesManualPlaceholderProperties(
                 Map.of("aes-key-value", "secret_reference:primary.aes-key-value"),
                 Map.of(),
-                createSecretReferencePropertySource(), "primary"));
+                createSecretReferenceRequest(), "primary"));
     }
     
-    private WorkflowPropertySource createSecretReferencePropertySource() {
-        return new WorkflowPropertySource() {
-            
-            @Override
-            public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
-                return Map.of();
-            }
-            
-            @Override
-            public Map<String, Map<String, SecretReferenceValue>> getSecretReferences() {
-                return Map.of("primary", Map.of("aes-key-value", SecretReferenceValue.create()));
-            }
-        };
+    private WorkflowRequest createSecretReferenceRequest() {
+        WorkflowRequest result = new WorkflowRequest();
+        result.getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
+        return result;
     }
 }

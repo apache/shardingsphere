@@ -17,36 +17,27 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
-import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
-import org.apache.shardingsphere.mcp.support.database.tool.service.RuntimeDatabaseValidationService;
-import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.payload.RuntimeDatabaseValidationPayload;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.Map;
+import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
+import org.apache.shardingsphere.mcp.support.database.tool.service.RuntimeDatabaseValidationService;
 
 /**
  * Handler for runtime database validation tool.
  */
-@RequiredArgsConstructor
-public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
+public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
     public static final String TOOL_NAME = "database_gateway_validate_runtime_database";
     
-    private final RuntimeDatabaseValidationService validationService;
-    
-    public ValidateRuntimeDatabaseToolHandler() {
-        this(new RuntimeDatabaseValidationService());
-    }
+    private final RuntimeDatabaseValidationService validationService = new RuntimeDatabaseValidationService();
     
     @Override
-    public Class<MCPDatabaseHandlerContext> getContextType() {
-        return MCPDatabaseHandlerContext.class;
+    public Class<MCPFeatureRequestContext> getContextType() {
+        return MCPFeatureRequestContext.class;
     }
     
     @Override
@@ -55,13 +46,8 @@ public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
-        return validationService.validate(RuntimeDatabaseValidationRequest.from(toolCall.getArguments()), databaseContext::findRuntimeDatabaseConfiguration, this::createRecoveryPayload);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> createRecoveryPayload(final RuntimeDatabaseConnectionException cause) {
-        Object result = MCPErrorConverter.convert(cause).toPayload().get(MCPPayloadFieldNames.RECOVERY);
-        return result instanceof Map ? (Map<String, Object>) result : Map.of();
+    public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
+        return RuntimeDatabaseValidationPayload.from(
+                validationService.validate(RuntimeDatabaseValidationRequest.from(arguments), requestContext::findRuntimeDatabaseConfiguration));
     }
 }

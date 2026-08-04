@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
 import java.util.Map;
@@ -41,17 +40,16 @@ import static org.mockito.Mockito.when;
 final class WorkflowHandlerTestFixture {
     
     static Context createContext(final WorkflowContextSnapshot snapshot) {
-        MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
-        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        when(result.getDatabaseContext()).thenReturn(databaseContext);
+        when(result.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
-        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        when(result.getExecutionFacade()).thenReturn(executionFacade);
         when(workflowSessionContext.getRequired("plan-1")).thenReturn(snapshot);
         return new Context(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
@@ -70,23 +68,15 @@ final class WorkflowHandlerTestFixture {
     }
     
     static WorkflowRuntimeDefinition createDefinition(final String workflowKind) {
-        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), (workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, sessionId, snapshot) -> Map.of(),
-                (snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId) -> {
-                });
+        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), mock(MCPWorkflowRuntimeHandler.class));
     }
     
-    static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowValidationHandler validationHandler,
-                                                      final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler) {
-        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler);
-    }
-    
-    static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowValidationHandler validationHandler,
-                                                      final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler,
+    static WorkflowRuntimeDefinition createDefinition(final String workflowKind, final MCPWorkflowRuntimeHandler runtimeHandler,
                                                       final MCPWorkflowApplyArtifactValidator applyArtifactValidator) {
-        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), validationHandler, applySynchronizationHandler, applyArtifactValidator);
+        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), runtimeHandler, applyArtifactValidator);
     }
     
-    record Context(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    record Context(MCPFeatureRequestContext requestContext, WorkflowSessionContext workflowSessionContext,
                    MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

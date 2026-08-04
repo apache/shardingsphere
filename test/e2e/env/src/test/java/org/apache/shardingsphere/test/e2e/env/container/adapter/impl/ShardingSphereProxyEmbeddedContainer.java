@@ -38,6 +38,7 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
@@ -59,15 +60,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere proxy embedded container.
@@ -159,26 +159,29 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     }
     
     private Map<String, String> getNetworkAliasAndHostLinkMap() {
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new LinkedHashMap<>();
         for (Startable each : dependencies) {
             if (each instanceof GenericContainer) {
                 result.putAll(getNetworkAliasAndHostLinkMap((GenericContainer<?>) each));
+            } else if (each instanceof StorageContainer) {
+                result.putAll(((StorageContainer) each).getLinkReplacements());
             }
         }
         return result;
     }
     
     private Map<String, String> getNetworkAliasAndHostLinkMap(final GenericContainer<?> genericContainer) {
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new LinkedHashMap<>();
         for (String each : genericContainer.getNetworkAliases()) {
-            result.putAll(genericContainer.getExposedPorts().stream()
-                    .collect(Collectors.toMap(exposedPort -> each + ":" + exposedPort, exposedPort -> "127.0.0.1:" + genericContainer.getMappedPort(exposedPort))));
+            for (Integer exposedPort : genericContainer.getExposedPorts()) {
+                result.put(each + ":" + exposedPort, "127.0.0.1:" + genericContainer.getMappedPort(exposedPort));
+            }
         }
         return result;
     }
     
     private Map<String, String> getStorageConnectionInfoMap() {
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new LinkedHashMap<>();
         for (Startable each : dependencies) {
             if (each instanceof NativeStorageContainer) {
                 result.putAll(getStorageConnectionInfoMap((NativeStorageContainer) each));
@@ -190,9 +193,12 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     }
     
     private Map<String, String> getStorageConnectionInfoMap(final NativeStorageContainer container) {
-        return container.getNetworkAliases().stream().collect(Collectors.toMap(
-                each -> each + ":" + container.getExposedPort(),
-                each -> E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getHost() + ":" + E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPort(databaseType)));
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : container.getNetworkAliases()) {
+            result.put(each + ":" + container.getExposedPort(), E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getHost() + ":"
+                    + E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPort(container.getDatabaseType()));
+        }
+        return result;
     }
     
     private File createTempDirectory() {

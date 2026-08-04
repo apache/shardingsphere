@@ -24,6 +24,7 @@ resources:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -41,6 +42,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -80,6 +82,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_status
@@ -102,6 +105,7 @@ resourceTemplates:
           required: true
           scope: logical-rule
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_status
@@ -119,6 +123,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: readwrite-splitting
       relatedTools:
         - database_gateway_plan_readwrite_splitting_rule
@@ -160,7 +165,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a readwrite-splitting rule plan."
+        description: "Existing current-session workflow plan identifier used only to continue a readwrite-splitting rule plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -178,7 +183,7 @@ prompts:
         - "Ask before applying generated readwrite-splitting rule DistSQL that changes runtime state."
   - name: plan_readwrite_splitting_status
     title: Plan Readwrite-Splitting Status
-    description: "Guide the model to plan a readwrite-splitting storage-unit enable or disable workflow by reading current status first."
+    description: "Guide the model to plan a Cluster-mode readwrite-splitting storage-unit enable or disable workflow by reading current status first."
     binding:
       templateResource: META-INF/shardingsphere-mcp/prompts/plan-readwrite-splitting-status.md
     arguments:
@@ -200,7 +205,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a readwrite-splitting status plan."
+        description: "Existing current-session workflow plan identifier used only to continue a readwrite-splitting status plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -213,6 +218,7 @@ prompts:
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_readwrite_splitting_status returns a planned workflow with plan_id and reviewable artifacts."
         - "Stop after a clarifying response lists missing inputs instead of guessing storage unit status."
+        - "Stop and report the Cluster-mode requirement after a failed plan returns WF-MODE-002; do not call apply or repeat the planning tool."
       org.apache.shardingsphere/ask-user-conditions:
         - "Ask when database, rule name, read storage unit, or target status is unclear."
         - "Ask before applying generated readwrite-splitting status DistSQL that changes runtime state."
@@ -310,7 +316,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Optional existing workflow plan identifier used to continue or revise a previous readwrite-splitting plan."
+          description: "Existing workflow plan identifier used only to continue the same readwrite.rule workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the readwrite-splitting rule."
@@ -343,33 +349,7 @@ tools:
             type: string
         natural_language_intent:
           type: string
-          description: "User request in natural language, used to infer create, alter, or drop when operation_type is absent."
-        structured_intent_evidence:
-          type: object
-          description: "Readwrite-splitting structured intent extracted from the user request."
-          properties:
-            rule:
-              type: string
-              description: "Inferred rule name."
-            write_storage_unit:
-              type: string
-              description: "Inferred write storage unit."
-            read_storage_units:
-              type: string
-              description: "Inferred comma-separated read storage units."
-            transactional_read_query_strategy:
-              type: string
-              description: "Inferred transactional read query strategy."
-            load_balancer_type:
-              type: string
-              description: "Inferred load-balance algorithm type."
-            load_balancer_properties:
-              type: object
-              description: "Inferred load-balance algorithm properties."
-              additionalProperties:
-                type: string
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
         delivery_mode:
           type: string
           description: "Whether the plan should return all artifacts at once or guide the user step by step."
@@ -443,10 +423,10 @@ tools:
           description: "Preferred later apply mode captured by the plan."
         intent_inference:
           type: object
-          description: "Resolved intent fields, inferred values, unresolved fields, and reasoning notes."
+          description: "Resolved operation type, server-derived or defaulted values, and unresolved fields."
         argument_provenance:
           type: object
-          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
+          description: "Source of important workflow arguments, such as user-provided, server-derived, or server-defaulted values."
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
@@ -539,7 +519,7 @@ tools:
       readOnlyHint: false
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
     runtime:
       workflowRole: plan
     meta:
@@ -558,14 +538,15 @@ tools:
   - name: database_gateway_plan_readwrite_splitting_status
     title: Plan Readwrite-Splitting Status
     description: >-
-      Plan a ShardingSphere readwrite-splitting read storage-unit enable or disable workflow. This tool creates reviewable status DistSQL artifacts
-      but does not execute them; use database_gateway_apply_workflow only after user review.
+      Plan a ShardingSphere readwrite-splitting read storage-unit enable or disable workflow. The current Proxy must run in Cluster mode;
+      otherwise this tool returns a failed plan without DistSQL artifacts. It does not execute generated artifacts;
+      use database_gateway_apply_workflow only after user review.
     inputSchema:
       type: object
       properties:
         plan_id:
           type: string
-          description: "Optional existing workflow plan identifier used to continue or revise a previous readwrite-splitting status plan."
+          description: "Existing workflow plan identifier used only to continue the same readwrite.status workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the readwrite-splitting rule."
@@ -583,22 +564,7 @@ tools:
             - disable
         natural_language_intent:
           type: string
-          description: "User request in natural language, used to infer enable or disable when target_status is absent."
-        structured_intent_evidence:
-          type: object
-          description: "Readwrite-splitting status structured intent extracted from the user request."
-          properties:
-            rule:
-              type: string
-              description: "Inferred rule name."
-            storage_unit:
-              type: string
-              description: "Inferred read storage unit."
-            target_status:
-              type: string
-              description: "Inferred target status."
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
         delivery_mode:
           type: string
           description: "Whether the plan should return all artifacts at once or guide the user step by step."
@@ -656,7 +622,7 @@ tools:
       readOnlyHint: false
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
     runtime:
       workflowRole: plan
     meta:

@@ -74,4 +74,9 @@
                scenario-comments="Test ShardingSphere-Proxy compatibility for MySQL/PostgreSQL/openGauss date type">
         <assertion parameters="1:int" expected-data-source-name="expected_dataset" />
     </test-case>
+
+    <test-case sql="SELECT t FROM t_with_generated_id AS t WHERE id = -1" db-types="PostgreSQL,openGauss" scenario-types="passthrough" adapters="proxy"
+               scenario-comments="Test PostgreSQL/openGauss composite result type metadata">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
 </e2e-test-cases>

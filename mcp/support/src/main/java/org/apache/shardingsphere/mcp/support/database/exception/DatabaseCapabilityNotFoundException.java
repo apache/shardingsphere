@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPNotFoundException;
+import org.apache.shardingsphere.mcp.api.exception.MCPNotFoundException;
 
 /**
  * Exception for absent database capabilities.

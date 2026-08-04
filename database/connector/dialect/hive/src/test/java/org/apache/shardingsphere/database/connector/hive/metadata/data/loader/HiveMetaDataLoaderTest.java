@@ -116,8 +116,8 @@ class HiveMetaDataLoaderTest {
     void assertLoadWithoutInformationSchemaFallbackToDefaultLoader() throws SQLException {
         DataSource dataSource = mockDataSource(mockInformationSchemaConnection(false));
         TableMetaData tableMetaData = new TableMetaData("present_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        when(TableMetaDataLoader.load(dataSource, "missing_table", databaseType)).thenReturn(Optional.empty());
-        when(TableMetaDataLoader.load(dataSource, "present_table", databaseType)).thenReturn(Optional.of(tableMetaData));
+        when(TableMetaDataLoader.loadNormalized(dataSource, "missing_table", databaseType)).thenReturn(Optional.empty());
+        when(TableMetaDataLoader.loadNormalized(dataSource, "present_table", databaseType)).thenReturn(Optional.of(tableMetaData));
         Collection<SchemaMetaData> fallbackSchemas = loader.load(new MetaDataLoaderMaterial(Arrays.asList("missing_table", "present_table"), "ds_2", dataSource, databaseType, "fallback_schema"));
         TableMetaData defaultLoadedTable = fallbackSchemas.iterator().next().getTables().iterator().next();
         assertThat(defaultLoadedTable.getName(), is("present_table"));

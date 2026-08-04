@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -473,7 +473,7 @@ public final class ShardingTableRuleStatementChecker {
             }
         }
         ShardingSpherePreconditions.checkState(isValidStrategy(tableRuleSegment.getDatabaseStrategySegment()),
-                () -> new InvalidAlgorithmConfigurationException("sharding", null == databaseShardingAlgorithm ? null : databaseShardingAlgorithm.getName()));
+                () -> new InvalidAlgorithmDefinitionException("sharding", null == databaseShardingAlgorithm ? null : databaseShardingAlgorithm.getName()));
     }
     
     private static void checkTableShardingAlgorithm(final TableRuleSegment tableRuleSegment, final ShardingStrategySegment tableStrategySegment) {
@@ -488,7 +488,7 @@ public final class ShardingTableRuleStatementChecker {
             }
         }
         ShardingSpherePreconditions.checkState(isValidStrategy(tableRuleSegment.getTableStrategySegment()),
-                () -> new InvalidAlgorithmConfigurationException("sharding", null == tableShardingAlgorithm ? null : tableShardingAlgorithm.getName()));
+                () -> new InvalidAlgorithmDefinitionException("sharding", null == tableShardingAlgorithm ? null : tableShardingAlgorithm.getName()));
     }
     
     private static boolean isValidStrategy(final ShardingStrategySegment shardingStrategySegment) {

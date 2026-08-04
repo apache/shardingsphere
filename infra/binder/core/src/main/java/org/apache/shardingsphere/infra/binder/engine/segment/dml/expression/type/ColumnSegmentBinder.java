@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -49,10 +50,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Column segment binder.
@@ -61,6 +64,9 @@ import java.util.Optional;
 public final class ColumnSegmentBinder {
     
     private static final String EXCLUDED_TABLE_NAME = "excluded";
+    
+    private static final Set<SegmentType> COLUMN_ONLY_SEGMENT_TYPES = EnumSet.of(
+            SegmentType.LOCK, SegmentType.SET_ASSIGNMENT_COLUMNS, SegmentType.COPY, SegmentType.INSERT_COLUMNS, SegmentType.DEFINITION_COLUMNS);
     
     private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
             SegmentType.PREDICATE, "where clause", SegmentType.HAVING, "having clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS,
@@ -84,15 +90,17 @@ public final class ColumnSegmentBinder {
         if (isExcludedColumn(segment, parentSegmentType)) {
             return segment;
         }
-        if (isUnparenthesizedFunction(segment, binderContext)) {
-            return segment;
-        }
         ColumnSegment columnSegment = createNestedObjectColumnSegment(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts).orElse(segment);
         ColumnSegment result = copy(columnSegment);
         Collection<TableSegmentBinderContext> tableSegmentBinderContexts =
                 getTableSegmentBinderContexts(columnSegment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         ColumnSegmentInfo columnSegmentInfo = getColumnSegmentInfo(columnSegment, parentSegmentType, tableSegmentBinderContexts, outerTableBinderContexts, binderContext);
         Optional<ColumnSegment> inputColumnSegment = columnSegmentInfo.getInputColumnSegment();
+        if (!inputColumnSegment.isPresent() && isUnparenthesizedFunction(segment, parentSegmentType, binderContext)) {
+            return segment;
+        }
+        ShardingSpherePreconditions.checkState(inputColumnSegment.isPresent() || isSkipColumnBind(tableSegmentBinderContexts, outerTableBinderContexts.values()),
+                () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         columnSegment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
         result.setColumnBoundInfo(createColumnSegmentBoundInfo(columnSegment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));
@@ -138,9 +146,10 @@ public final class ColumnSegmentBinder {
         return result;
     }
     
-    private static boolean isUnparenthesizedFunction(final ColumnSegment segment, final SQLStatementBinderContext binderContext) {
-        return new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType())
-                .getDialectDatabaseMetaData().getFunctionOption().getUnparenthesizedFunctionNames().contains(segment.getIdentifier().getValue());
+    private static boolean isUnparenthesizedFunction(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext) {
+        return QuoteCharacter.NONE == segment.getIdentifier().getQuoteCharacter() && !COLUMN_ONLY_SEGMENT_TYPES.contains(parentSegmentType)
+                && new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType())
+                        .getDialectDatabaseMetaData().getFunctionOption().getUnparenthesizedFunctionNames().contains(segment.getIdentifier().getValue());
     }
     
     private static OwnerSegment bindOwnerTableContext(final OwnerSegment owner, final ColumnSegment inputColumnSegment) {
@@ -204,7 +213,7 @@ public final class ColumnSegmentBinder {
             ColumnSegment inputColumnSegment = findInputColumnSegmentFromExternalTables(segment, binderContext.getExternalTableBinderContexts()).orElse(null);
             result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
         }
-        if (isNotFoundInputColumn(result, segment)) {
+        if (isNeedFindInputColumnByVariables(result, segment, binderContext.getSqlStatement().getVariableNames())) {
             result = new ColumnSegmentInfo(findInputColumnSegmentByVariables(segment, binderContext.getSqlStatement().getVariableNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         if (isNotFoundInputColumn(result, segment)) {
@@ -213,8 +222,6 @@ public final class ColumnSegmentBinder {
         if (isNotFoundInputColumn(result, segment)) {
             result = new ColumnSegmentInfo(findInputColumnSegmentByModelColumns(segment, binderContext.getModelColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
-        ShardingSpherePreconditions.checkState(result.getInputColumnSegment().isPresent() || isSkipColumnBind(tableBinderContexts, outerTableBinderContexts.values()),
-                () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return result;
     }
     
@@ -224,6 +231,10 @@ public final class ColumnSegmentBinder {
     
     private static boolean isNotFoundInputColumn(final ColumnSegmentInfo segmentInfo, final ColumnSegment segment) {
         return !segmentInfo.getInputColumnSegment().isPresent() && !segment.getOwner().isPresent();
+    }
+    
+    private static boolean isNeedFindInputColumnByVariables(final ColumnSegmentInfo segmentInfo, final ColumnSegment segment, final Collection<String> variableNames) {
+        return !segmentInfo.getInputColumnSegment().isPresent() && (!segment.getOwner().isPresent() || isVariableOwner(segment, variableNames));
     }
     
     private static ColumnSegmentInfo getInputInfoFromTableBinderContexts(final Collection<TableSegmentBinderContext> tableBinderContexts,
@@ -309,12 +320,25 @@ public final class ColumnSegmentBinder {
         if (variableNames.isEmpty()) {
             return Optional.empty();
         }
-        if (variableNames.contains(segment.getIdentifier().getValue())) {
-            ColumnSegment result = new ColumnSegment(0, 0, segment.getIdentifier());
-            result.setVariable(true);
-            return Optional.of(result);
+        if (!segment.getOwner().isPresent() && containsVariableName(variableNames, segment.getIdentifier().getValue()) || isVariableOwner(segment, variableNames)) {
+            return Optional.of(createVariableColumnSegment(segment));
         }
         return Optional.empty();
+    }
+    
+    private static boolean isVariableOwner(final ColumnSegment segment, final Collection<String> variableNames) {
+        return segment.getOwner().isPresent() && containsVariableName(variableNames, segment.getOwner().get().getIdentifier().getValue());
+    }
+    
+    private static boolean containsVariableName(final Collection<String> variableNames, final String variableName) {
+        return variableNames.stream().anyMatch(each -> each.equalsIgnoreCase(variableName));
+    }
+    
+    private static ColumnSegment createVariableColumnSegment(final ColumnSegment segment) {
+        ColumnSegment result = copy(segment);
+        segment.getOwner().ifPresent(result::setOwner);
+        result.setVariable(true);
+        return result;
     }
     
     private static boolean isSkipColumnBind(final Collection<TableSegmentBinderContext> tableBinderContexts, final Collection<TableSegmentBinderContext> outerBinderContexts) {

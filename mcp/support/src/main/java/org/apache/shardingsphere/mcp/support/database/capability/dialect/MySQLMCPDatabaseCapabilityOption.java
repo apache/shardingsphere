@@ -17,49 +17,20 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.mcp.support.database.capability.DatabaseVersionUtil;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
-
-import java.util.Collection;
-import java.util.List;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
 /**
  * MCP database capability option for MySQL.
  */
-public final class MySQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
-    
-    public MySQLMCPDatabaseCapabilityOption() {
-        super("MySQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, false);
-    }
+public final class MySQLMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
     @Override
-    public QuoteCharacter getIdentifierQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
-    }
-    
-    @Override
-    public IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return List.of("information_schema", "mysql", "performance_schema", "shardingsphere", "sys");
-    }
-    
-    @Override
-    public boolean isInformationSchemaColumnSchemaFilterRequired() {
+    public boolean isExplainSupported() {
         return true;
     }
     
     @Override
-    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);
+    public String getType() {
+        return "MySQL";
     }
 }

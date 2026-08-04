@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +26,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WorkflowRequestBinderTest {
     
@@ -44,15 +42,10 @@ class WorkflowRequestBinderTest {
         arguments.put("delivery_mode", "step-by-step");
         arguments.put("execution_mode", "manual-only");
         arguments.put("algorithm_type", "MD5");
-        arguments.put("structured_intent_evidence", Map.of("field_semantics", "identifier"));
         AtomicReference<String> actualFeatureAlgorithm = new AtomicReference<>();
-        AtomicReference<Map<String, Object>> actualStructuredIntentEvidence = new AtomicReference<>();
         WorkflowRequest actual = WorkflowRequestBinder.bindPlanningRequest(arguments, (request, workflowPlanningArguments) -> {
             request.setAlgorithmType(workflowPlanningArguments.getStringArgument("algorithm_type"));
             actualFeatureAlgorithm.set(workflowPlanningArguments.getStringArgument("algorithm_type"));
-        }, (request, structuredIntentEvidence) -> {
-            request.setFieldSemantics(String.valueOf(structuredIntentEvidence.get("field_semantics")));
-            actualStructuredIntentEvidence.set(structuredIntentEvidence);
         });
         assertThat(actual.getPlanId(), is("plan-1"));
         assertThat(actual.getDatabase(), is("logic_db"));
@@ -63,29 +56,17 @@ class WorkflowRequestBinderTest {
         assertThat(actual.getNaturalLanguageIntent(), is("encrypt the user id"));
         assertThat(actual.getDeliveryMode(), is("step-by-step"));
         assertThat(actual.getExecutionMode(), is("manual-only"));
-        assertThat(actual.getFieldSemantics(), is("identifier"));
         assertThat(actual.getAlgorithmType(), is("MD5"));
         assertThat(actualFeatureAlgorithm.get(), is("MD5"));
-        assertThat(actualStructuredIntentEvidence.get(), is(Map.of("field_semantics", "identifier")));
     }
     
     @Test
     void assertBindPlanningRequestKeepsPlanIdValue() {
         WorkflowRequest actual = WorkflowRequestBinder.bindPlanningRequest(Map.of("plan_id", "plan_id", "database", "logic_db"),
                 (request, workflowPlanningArguments) -> {
-                }, (request, structuredIntentEvidence) -> {
                 });
         assertThat(actual.getPlanId(), is("plan_id"));
         assertThat(actual.getDatabase(), is("logic_db"));
     }
     
-    @Test
-    void assertBindPlanningRequestRejectsInvalidStructuredIntentEvidence() {
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> WorkflowRequestBinder.bindPlanningRequest(Map.of(
-                "database", "logic_db",
-                "structured_intent_evidence", "invalid"), (request, workflowPlanningArguments) -> request.setAlgorithmType("AES"),
-                (request, structuredIntentEvidence) -> {
-                }));
-        assertThat(actual.getMessage(), is("structured_intent_evidence must be an object."));
-    }
 }

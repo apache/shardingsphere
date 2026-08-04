@@ -22,9 +22,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
-
-import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -41,22 +38,16 @@ final class LLMMCPJsonValues {
         }
     }
     
-    static List<List<Object>> castToRows(final Object value) {
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
-    }
-    
+    @SuppressWarnings("unchecked")
     static Map<String, Object> castToMap(final Object value) {
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
-    }
-    
-    static <T> List<T> castToList(final Object value) {
-        if (null == value) {
-            return List.of();
+        if (!(value instanceof Map)) {
+            throw new IllegalArgumentException("Expected a JSON object.");
         }
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
+        Map<?, ?> result = (Map<?, ?>) value;
+        if (!result.keySet().stream().allMatch(String.class::isInstance)) {
+            throw new IllegalArgumentException("Expected a JSON object with string keys.");
+        }
+        return (Map<String, Object>) result;
     }
     
 }

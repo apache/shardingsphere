@@ -27,6 +27,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class PostgreSQLColumnDescriptionTest {
     
     @Test
+    void assertNativeTypeOid() {
+        PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("record_value", 1, 2249, 32, 0);
+        assertThat(description.getTypeOID(), is(2249));
+        assertThat(description.getColumnLength(), is(32));
+    }
+    
+    @Test
     void assertIntegerTypeOid() {
         PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("age", 1, Types.INTEGER, 4, null);
         assertThat(description.getTypeOID(), is(23));

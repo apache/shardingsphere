@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.protocol.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
+import org.apache.shardingsphere.mcp.api.exception.ShardingSphereMCPException;
 
 /**
  * Exception thrown when one MCP session exceeds the tool call quota.

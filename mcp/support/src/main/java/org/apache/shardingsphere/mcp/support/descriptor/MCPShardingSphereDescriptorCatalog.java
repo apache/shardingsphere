@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 
 import java.util.Collection;
 

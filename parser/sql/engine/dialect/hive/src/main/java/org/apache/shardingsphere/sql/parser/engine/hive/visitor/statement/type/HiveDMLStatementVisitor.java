@@ -57,8 +57,11 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.FieldsCo
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.GroupByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.GroupByModifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.GroupConcatFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.GroupingSetContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HavingClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveFileSystemInsertStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveInsertStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveSelectTailClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveMultipleInsertsContext;
@@ -67,6 +70,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertCo
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertDataIntoTablesFromQueriesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertOverwriteStandardSyntaxContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertSelectColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.IntervalExpressionContext;
@@ -75,6 +79,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JoinedTa
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JsonFunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LateralViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LeadLagInfoContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeWhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitClauseContext;
@@ -85,6 +90,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadStat
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LockClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LockClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MatchExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MapReduceClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MultipleInsertsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.NaturalJoinTypeContext;
@@ -123,6 +129,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableRef
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableValueConstructorContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TransformClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TransformMapReduceQuerySpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TransformOutputColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TransformOutputContext;
@@ -138,6 +145,8 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WhereCla
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WritingDataIntoFileSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertingValuesIntoTablesContext;
@@ -415,6 +424,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         SelectStatement result = selectStatementBuilder.build();
         addHiveSystemColumnVariableNames(result);
         if (null != ctx.projections().transformClause()) {
+            result.getTransformSegments().add(createTransformSegment(ctx.projections().transformClause()));
             addTransformOutputVariableNames(result, ctx.projections().transformClause().transformOutput());
         }
         return result;
@@ -429,6 +439,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         SelectStatement result = selectStatementBuilder.build();
         addHiveSystemColumnVariableNames(result);
+        result.getTransformSegments().add(createMapReduceSegment(ctx.mapReduceClause()));
         addTransformOutputVariableNames(result, ctx.mapReduceClause().transformOutput());
         return result;
     }
@@ -483,6 +494,24 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.windowSpecification().frameClause()) {
             result.setFrameClause(new CommonExpressionSegment(ctx.windowSpecification().frameClause().start.getStartIndex(), ctx.windowSpecification().frameClause().stop.getStopIndex(),
                     ctx.windowSpecification().frameClause().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWindowSpecification(final WindowSpecificationContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.PARTITION()) {
+            result.setPartitionListSegments(getExpressionsFromExprList(ctx.expr()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.frameClause()) {
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().getStart().getStartIndex(), ctx.frameClause().getStop().getStopIndex(), ctx.frameClause().getText()));
+        }
+        if (null != ctx.identifier()) {
+            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
         }
         return result;
     }
@@ -576,11 +605,19 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                     type, innerExpression, getDistinctExpression(ctx));
             result.getParameters().addAll(getExpressions(ctx));
+            setAggregationWindow(ctx, result);
             return result;
         }
         AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
         result.getParameters().addAll(getExpressions(ctx));
+        setAggregationWindow(ctx, result);
         return result;
+    }
+    
+    private void setAggregationWindow(final AggregationFunctionContext ctx, final AggregationProjectionSegment result) {
+        if (null != ctx.overClause() && null != ctx.overClause().windowSpecification()) {
+            result.setWindow((WindowItemSegment) visit(ctx.overClause().windowSpecification()));
+        }
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
@@ -654,8 +691,56 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
-        super.visitWindowFunction(ctx);
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        if (null != ctx.NTILE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
+        }
+        if (null != ctx.LEAD() || null != ctx.LAG() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+            appendLeadLagParameters(result.getParameters(), ctx.leadLagInfo());
+        }
+        if (null != ctx.NTH_VALUE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+            result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
+        }
+        result.setWindow((WindowItemSegment) visit(ctx.windowingClause()));
+        return result;
+    }
+    
+    private void appendLeadLagParameters(final Collection<ExpressionSegment> parameters, final LeadLagInfoContext ctx) {
+        if (null == ctx) {
+            return;
+        }
+        if (null != ctx.NUMBER_()) {
+            parameters
+                    .add(new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(), new NumberLiteralValue(ctx.NUMBER_().getText()).getValue()));
+        } else {
+            int startIndex = ctx.QUESTION_().getSymbol().getStartIndex();
+            int stopIndex = ctx.QUESTION_().getSymbol().getStopIndex();
+            ParameterMarkerExpressionSegment parameterMarker = new ParameterMarkerExpressionSegment(startIndex, stopIndex, getParameterMarkerSegments().size());
+            getParameterMarkerSegments().add(parameterMarker);
+            parameters.add(parameterMarker);
+        }
+        if (null != ctx.expr()) {
+            parameters.add((ExpressionSegment) visit(ctx.expr()));
+        }
+    }
+    
+    @Override
+    public ASTNode visitWindowingClause(final WindowingClauseContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.windowName) {
+            result.setWindowName((IdentifierValue) visit(ctx.windowName));
+        }
+        if (null != ctx.windowSpecification()) {
+            WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+            result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+            result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+            result.setFrameClause(windowItemSegment.getFrameClause());
+        }
+        return result;
     }
     
     @Override
@@ -997,7 +1082,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 .setAssignment(insertStatement.getSetAssignment().orElse(null))
                 .onDuplicateKeyColumns(null == ctx.onDuplicateKeyClause() ? insertStatement.getOnDuplicateKeyColumns().orElse(null) : (OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()))
                 .valueReference(insertStatement.getValueReference().orElse(null)).returning(insertStatement.getReturning().orElse(null))
-                .output(insertStatement.getOutput().orElse(null)).with(insertStatement.getWith().orElse(null))
+                .output(insertStatement.getOutput().orElse(null)).with(null == ctx.withClause() ? insertStatement.getWith().orElse(null) : (WithSegment) visit(ctx.withClause()))
                 .multiTableInsertType(insertStatement.getMultiTableInsertType().orElse(null)).multiTableInsertInto(insertStatement.getMultiTableInsertInto().orElse(null))
                 .multiTableConditionalInto(insertStatement.getMultiTableConditionalInto().orElse(null)).where(insertStatement.getWhere().orElse(null))
                 .exec(insertStatement.getExec().orElse(null)).withTableHint(insertStatement.getWithTableHint().orElse(null))
@@ -1026,7 +1111,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitStandardSyntax(final StandardSyntaxContext ctx) {
-        return createHiveInsertStatement(ctx.tableName(), ctx.select(), ctx.start.getStartIndex());
+        return createHiveInsertStatement(ctx.tableName(), ctx.insertSelectColumns(), ctx.select(), ctx.start.getStartIndex());
     }
     
     @Override
@@ -1040,7 +1125,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitDynamicPartitionInserts(final DynamicPartitionInsertsContext ctx) {
-        return createHiveInsertStatement(ctx.tableName(), ctx.select(), ctx.start.getStartIndex());
+        return createHiveInsertStatement(ctx.tableName(), ctx.insertSelectColumns(), ctx.select(), ctx.start.getStartIndex());
     }
     
     @Override
@@ -1078,9 +1163,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 .ifPresent(selectStmt -> subquery.setSelect(createSelectStatementBuilder(selectStmt).from(sourceTable).build()));
     }
     
-    private InsertStatement createHiveInsertStatement(final TableNameContext tableName, final SelectContext select, final int startIndex) {
+    private InsertStatement createHiveInsertStatement(final TableNameContext tableName, final InsertSelectColumnsContext insertSelectColumns, final SelectContext select, final int startIndex) {
         InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(tableName))
-                .insertColumns(new InsertColumnsSegment(startIndex, startIndex, Collections.emptyList())).insertSelect(createInsertSelectSegment(select)).build();
+                .insertColumns(createInsertColumns(insertSelectColumns, startIndex)).insertSelect(createInsertSelectSegment(select)).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -1088,7 +1173,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitHiveInsertStatement(final HiveInsertStatementContext ctx) {
         return InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
-                .insertColumns(new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex(), Collections.emptyList()))
+                .insertColumns(createInsertColumns(ctx.insertSelectColumns(), ctx.start.getStartIndex()))
                 .insertSelect(null == ctx.select() ? null : createInsertSelectSegment(ctx.select())).build();
     }
     
@@ -1104,26 +1189,22 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitWritingDataIntoFileSystem(final WritingDataIntoFileSystemContext ctx) {
-        List<InsertOverwriteStandardSyntaxContext> statements = ctx.insertOverwriteStandardSyntax();
-        if (1 == statements.size() && null == ctx.fromClause()) {
-            return visit(statements.get(0));
+        if (null != ctx.insertOverwriteStandardSyntax()) {
+            return visit(ctx.insertOverwriteStandardSyntax());
         }
-        TableSegment sourceTable = null != ctx.fromClause() ? (TableSegment) visit(ctx.fromClause()) : null;
+        List<HiveFileSystemInsertStatementContext> statements = ctx.hiveFileSystemInsertStatement();
+        TableSegment sourceTable = (TableSegment) visit(ctx.fromClause());
         if (1 == statements.size()) {
             InsertStatement single = (InsertStatement) visit(statements.get(0));
-            if (null != sourceTable) {
-                single.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
-            }
+            single.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
             single.addParameterMarkers(getParameterMarkerSegments());
             return single;
         }
         MultiTableInsertIntoSegment multiTableInsertInto = new MultiTableInsertIntoSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        for (InsertOverwriteStandardSyntaxContext each : statements) {
+        for (HiveFileSystemInsertStatementContext each : statements) {
             InsertStatement insertStmt = (InsertStatement) visit(each);
-            if (null != sourceTable) {
-                insertStmt.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
-            }
+            insertStmt.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
             insertStmt.addParameterMarkers(getParameterMarkerSegments());
             multiTableInsertInto.getInsertStatements().add(insertStmt);
         }
@@ -1227,6 +1308,14 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             result.add((ColumnSegment) visit(each));
         }
         return result;
+    }
+    
+    private InsertColumnsSegment createInsertColumns(final InsertSelectColumnsContext insertSelectColumns, final int defaultIndex) {
+        if (null == insertSelectColumns) {
+            return new InsertColumnsSegment(defaultIndex, defaultIndex, Collections.emptyList());
+        }
+        return new InsertColumnsSegment(insertSelectColumns.LP_().getSymbol().getStartIndex(), insertSelectColumns.RP_().getSymbol().getStopIndex(),
+                null == insertSelectColumns.fields() ? Collections.emptyList() : createInsertColumns(insertSelectColumns.fields()));
     }
     
     @Override
@@ -1455,6 +1544,22 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     private ColumnProjectionSegment createTransformProjection(final int startIndex, final int stopIndex, final String name) {
         return new ColumnProjectionSegment(new ColumnSegment(startIndex, stopIndex, new IdentifierValue(name)));
+    }
+    
+    private FunctionSegment createTransformSegment(final TransformClauseContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRANSFORM().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    private FunctionSegment createMapReduceSegment(final MapReduceClauseContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getStart().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
     }
     
     @Override
@@ -1735,7 +1840,16 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         for (OrderByItemContext each : ctx.orderByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, null != ctx.groupByModifier() && null != ctx.groupByModifier().ROLLUP());
+        GroupByModifierContext groupByModifier = ctx.groupByModifier();
+        if (null != groupByModifier) {
+            for (GroupingSetContext each : groupByModifier.groupingSet()) {
+                for (OrderByItemContext orderByItem : each.orderByItem()) {
+                    items.add((OrderByItemSegment) visit(orderByItem));
+                }
+            }
+        }
+        boolean withRollup = null != groupByModifier && null != groupByModifier.ROLLUP();
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, withRollup, null != groupByModifier);
     }
     
     @Override
@@ -1818,6 +1932,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     private SelectStatement buildSelectStatement(final SelectStatement.SelectStatementBuilder builder, final SelectStatement source) {
         SelectStatement result = builder.build();
         result.getVariableNames().addAll(source.getVariableNames());
+        result.getTransformSegments().addAll(source.getTransformSegments());
         return result;
     }
     

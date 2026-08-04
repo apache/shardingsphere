@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.spi;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
@@ -25,30 +24,37 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
  * Workflow runtime definition.
  */
 @Getter
-@AllArgsConstructor
 public final class WorkflowRuntimeDefinition {
     
     private final WorkflowKind workflowKind;
     
-    private final MCPWorkflowValidationHandler validationHandler;
-    
-    private final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler;
+    private final MCPWorkflowRuntimeHandler runtimeHandler;
     
     private final MCPWorkflowApplyArtifactValidator applyArtifactValidator;
     
-    public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowValidationHandler validationHandler,
-                                     final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler) {
-        this(workflowKind, validationHandler, applySynchronizationHandler, MCPWorkflowApplyArtifactValidator.NO_OP);
-    }
-    
     /**
      * Create workflow runtime definition with one handler for validation and apply synchronization.
+     * If the handler also implements {@link MCPWorkflowApplyArtifactValidator}, it validates apply artifacts; otherwise no additional artifact validation is performed.
      *
      * @param workflowKind workflow kind
      * @param runtimeHandler workflow runtime handler
      */
     public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowRuntimeHandler runtimeHandler) {
-        this(workflowKind, runtimeHandler, runtimeHandler, createApplyArtifactValidator(runtimeHandler));
+        this(workflowKind, runtimeHandler, createApplyArtifactValidator(runtimeHandler));
+    }
+    
+    /**
+     * Create workflow runtime definition with an explicit apply artifact validator.
+     *
+     * @param workflowKind workflow kind
+     * @param runtimeHandler workflow runtime handler
+     * @param applyArtifactValidator apply artifact validator
+     */
+    public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowRuntimeHandler runtimeHandler,
+                                     final MCPWorkflowApplyArtifactValidator applyArtifactValidator) {
+        this.workflowKind = workflowKind;
+        this.runtimeHandler = runtimeHandler;
+        this.applyArtifactValidator = applyArtifactValidator;
     }
     
     private static MCPWorkflowApplyArtifactValidator createApplyArtifactValidator(final MCPWorkflowRuntimeHandler runtimeHandler) {

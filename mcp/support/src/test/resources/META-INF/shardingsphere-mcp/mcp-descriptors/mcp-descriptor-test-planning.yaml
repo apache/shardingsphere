@@ -23,6 +23,27 @@ resources:
     shardingSphereMetadata:
       resourceKind: detail
 
+prompts:
+  - name: configure_encryption
+    title: Configure Encryption
+    description: "Test prompt whose name is intentionally independent from its planning tool."
+    binding:
+      templateResource: META-INF/shardingsphere-mcp/prompts/fixture-markdown-resource.md
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "Logical database used by the test prompt."
+        required: false
+    meta:
+      org.apache.shardingsphere/related-tools:
+        - database_gateway_plan_encrypt_rule
+        - database_gateway_apply_workflow
+        - database_gateway_validate_workflow
+      org.apache.shardingsphere/stop-conditions:
+        - "Stop after creating a reviewable test plan."
+      org.apache.shardingsphere/ask-user-conditions:
+        - "Ask when required test input is unavailable."
+
 tools:
   - name: database_gateway_plan_encrypt_rule
     title: Plan Encrypt Rule
@@ -54,16 +75,7 @@ tools:
             - drop
         natural_language_intent:
           type: string
-          description: "Natural language user request."
-        structured_intent_evidence:
-          type: object
-          description: "Structured intent evidence."
-          properties:
-            field_semantics:
-              type: string
-              description: "Field semantics."
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
         delivery_mode:
           type: string
           description: "Delivery mode."
@@ -137,7 +149,7 @@ tools:
           description: "Preferred later apply mode captured by the plan."
         intent_inference:
           type: object
-          description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+          description: "Resolved operation type, server-derived or defaulted values, and unresolved fields."
         argument_provenance:
           type: object
           description: "Source of important workflow arguments."
@@ -171,6 +183,14 @@ tools:
               reason:
                 type: string
                 description: "Why the model should take this action."
+      required:
+        - response_mode
+        - plan_id
+        - workflow_kind
+        - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       examples:
         - response_mode: planning
           summary: Workflow plan `encrypt-rule-20260505-001` for encrypt.rule is ready for preview.

@@ -19,18 +19,11 @@ package org.apache.shardingsphere.database.connector.postgresql.metadata.databas
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgreSQLFunctionOptionTest {
     
     private final PostgreSQLFunctionOption functionOption = new PostgreSQLFunctionOption();
-    
-    @Test
-    void assertGetIfNullFunctionName() {
-        assertThat(functionOption.getIfNullFunctionName(), is("COALESCE"));
-    }
     
     @Test
     void assertGetUnparenthesizedFunctionNames() {

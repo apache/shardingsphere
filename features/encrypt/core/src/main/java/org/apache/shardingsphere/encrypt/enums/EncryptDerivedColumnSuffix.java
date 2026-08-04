@@ -19,8 +19,9 @@ package org.apache.shardingsphere.encrypt.enums;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Encrypt derived column suffix.
@@ -38,10 +39,10 @@ public enum EncryptDerivedColumnSuffix {
      * Get derived column name.
      *
      * @param columnName column name
-     * @param databaseType database type
+     * @param identifierContext database identifier context
      * @return derived column name
      */
-    public String getDerivedColumnName(final String columnName, final DatabaseType databaseType) {
-        return String.format("%s%s", columnName, new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(suffix));
+    public String getDerivedColumnName(final String columnName, final DatabaseIdentifierContext identifierContext) {
+        return String.format("%s%s", columnName, identifierContext.normalizeStorage(IdentifierScope.COLUMN, new IdentifierValue(suffix)));
     }
 }

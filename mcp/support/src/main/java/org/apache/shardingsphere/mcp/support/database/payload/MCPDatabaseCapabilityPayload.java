@@ -1,0 +1,52 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.support.database.payload;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * Database capability resource payload.
+ */
+@RequiredArgsConstructor
+public final class MCPDatabaseCapabilityPayload implements MCPSuccessPayload {
+    
+    private final MCPDatabaseCapability databaseCapability;
+    
+    @Override
+    public Map<String, Object> toPayload() {
+        Map<String, Object> result = new LinkedHashMap<>(32, 1F);
+        result.put("response_mode", MCPResponseMode.DETAIL);
+        result.put("database", databaseCapability.getDatabaseName());
+        result.put("databaseType", databaseCapability.getDatabaseType());
+        result.put("supportedObjectTypes", databaseCapability.getSupportedMetadataObjectTypes());
+        result.put("supportedStatementClasses", databaseCapability.getSupportedStatementClasses());
+        result.put("supportsTransactionControl", databaseCapability.supportsTransactionControl());
+        result.put("supportsSavepoint", databaseCapability.supportsSavepoint());
+        result.put("defaultSchemaSemantics", databaseCapability.getDefaultSchemaSemantics());
+        result.put("schemaExecutionSemantics", databaseCapability.getSchemaExecutionSemantics());
+        result.put("supportsCrossSchemaSql", databaseCapability.supportsCrossSchemaSql());
+        result.put("supportsExplain", databaseCapability.supportsExplain());
+        return result;
+    }
+}

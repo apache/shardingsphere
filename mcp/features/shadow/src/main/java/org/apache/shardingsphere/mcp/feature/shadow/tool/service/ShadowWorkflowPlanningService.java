@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.shadow.ShadowFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -34,7 +36,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,6 +47,11 @@ import java.util.Map;
  * Shadow workflow planning service.
  */
 public final class ShadowWorkflowPlanningService {
+    
+    private static final List<String> SUPPORTED_RULE_OPERATION_TYPES = List.of(
+            WorkflowLifecycle.OPERATION_CREATE, WorkflowLifecycle.OPERATION_ALTER, WorkflowLifecycle.OPERATION_DROP);
+    
+    private static final List<String> SUPPORTED_CLEANUP_OPERATION_TYPES = List.of(WorkflowLifecycle.OPERATION_DROP);
     
     private static final List<String> RULE_INTERACTION_STEPS = List.of(
             "Confirm database, rule name, storage units, table and algorithm",
@@ -77,52 +83,44 @@ public final class ShadowWorkflowPlanningService {
     
     private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
-    private final ShadowInspectionService inspectionService;
+    private final ShadowInspectionService inspectionService = new ShadowInspectionService();
     
-    private final ShadowAlgorithmRecommendationService algorithmRecommendationService;
+    private final ShadowAlgorithmRecommendationService algorithmRecommendationService = new ShadowAlgorithmRecommendationService();
     
-    private final ShadowAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    private final ShadowAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new ShadowAlgorithmPropertyTemplateService();
     
-    private final ShadowDistSQLPlanningService distSQLPlanningService;
-    
-    public ShadowWorkflowPlanningService() {
-        inspectionService = new ShadowInspectionService();
-        algorithmRecommendationService = new ShadowAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new ShadowAlgorithmPropertyTemplateService();
-        distSQLPlanningService = new ShadowDistSQLPlanningService();
-    }
-    
-    ShadowWorkflowPlanningService(final ShadowInspectionService inspectionService, final ShadowDistSQLPlanningService distSQLPlanningService) {
-        this.inspectionService = inspectionService;
-        algorithmRecommendationService = new ShadowAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new ShadowAlgorithmPropertyTemplateService();
-        this.distSQLPlanningService = distSQLPlanningService;
-    }
+    private final ShadowDistSQLPlanningService distSQLPlanningService = new ShadowDistSQLPlanningService();
     
     /**
      * Plan shadow rule workflow.
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
-    public WorkflowContextSnapshot planRule(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade, final String sessionId,
+    public WorkflowContextSnapshot planRule(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                             final ShadowRuleWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ShadowRuleWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.RULE_WORKFLOW_KIND,
-                resolveIntent(request, "create"), "Shadow rule workflow plan.", RULE_INTERACTION_STEPS);
+                WorkflowLifecycle.OPERATION_CREATE, "Shadow rule workflow plan.", RULE_INTERACTION_STEPS);
+        result.getResourceUriTemplates().addAll(List.of(ShadowFeatureDefinition.STORAGE_UNITS_RESOURCE_URI,
+                ShadowFeatureDefinition.SINGLE_TABLES_RESOURCE_URI, ShadowFeatureDefinition.SINGLE_TABLE_RESOURCE_URI));
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
+        if (!planningSupport.ensureSupportedOperationType(result.getClarifiedIntent(), SUPPORTED_RULE_OPERATION_TYPES, result)) {
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
+        }
         planAlgorithmsIfRequired(queryFacade, mergedRequest, result);
         if (!ensureRulePlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
         if (!isReadyForAlgorithmArtifactPlanning(mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
-        String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
-        if (!ensureRuleLifecycle(result.getClarifiedIntent(), mergedRequest, inspectionService.queryRules(queryFacade, mergedRequest.getDatabase()), result, databaseType)) {
+        queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
+        if (!ensureRuleLifecycle(result.getClarifiedIntent(), mergedRequest, inspectionService.queryRules(queryFacade, mergedRequest.getDatabase()), result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         addRuleArtifact(result, mergedRequest, result.getClarifiedIntent().getOperationType());
@@ -134,22 +132,26 @@ public final class ShadowWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot planDefaultAlgorithm(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
-                                                        final String sessionId, final ShadowDefaultAlgorithmWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+                                                        final ShadowDefaultAlgorithmWorkflowRequest request) {
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ShadowDefaultAlgorithmWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.DEFAULT_ALGORITHM_WORKFLOW_KIND,
-                resolveIntent(request, "create"), "Default shadow algorithm workflow plan.", DEFAULT_ALGORITHM_INTERACTION_STEPS);
+                WorkflowLifecycle.OPERATION_CREATE, "Default shadow algorithm workflow plan.", DEFAULT_ALGORITHM_INTERACTION_STEPS);
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
+        if (!planningSupport.ensureSupportedOperationType(result.getClarifiedIntent(), SUPPORTED_RULE_OPERATION_TYPES, result)) {
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
+        }
         planAlgorithmsIfRequired(queryFacade, mergedRequest, result);
         if (!ensureDefaultAlgorithmPlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
-        if (!isReadyForAlgorithmArtifactPlanning(mergedRequest, result)) {
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
+        if (!ensureDefaultAlgorithmType(mergedRequest, result)) {
+            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         boolean exists = !inspectionService.queryDefaultAlgorithm(queryFacade, mergedRequest.getDatabase()).isEmpty();
         if (!planningSupport.ensureLifecycleState("Default shadow algorithm", result.getClarifiedIntent(), exists, result)) {
@@ -164,23 +166,28 @@ public final class ShadowWorkflowPlanningService {
      *
      * @param workflowSessionContext workflow session context
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot planAlgorithmCleanup(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
-                                                        final String sessionId, final ShadowAlgorithmCleanupWorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+                                                        final ShadowAlgorithmCleanupWorkflowRequest request) {
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         ShadowAlgorithmCleanupWorkflowRequest mergedRequest = prepareSnapshot(result, request, ShadowFeatureDefinition.ALGORITHM_CLEANUP_WORKFLOW_KIND,
-                resolveIntent(request, WorkflowLifecycle.OPERATION_DROP), "Shadow algorithm cleanup workflow plan.", CLEANUP_INTERACTION_STEPS);
+                WorkflowLifecycle.OPERATION_DROP, "Shadow algorithm cleanup workflow plan.", CLEANUP_INTERACTION_STEPS);
         planningSupport.applyResolvedIntent(mergedRequest, result.getClarifiedIntent());
+        if (!planningSupport.ensureSupportedOperationType(result.getClarifiedIntent(), SUPPORTED_CLEANUP_OPERATION_TYPES, result)) {
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
+        }
         if (!ensureCleanupPlanningContext(mergedRequest, result.getClarifiedIntent(), result)) {
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
         List<Map<String, Object>> algorithms = inspectionService.queryAlgorithms(queryFacade, mergedRequest.getDatabase());
         List<Map<String, Object>> tableRules = inspectionService.queryTableRules(queryFacade, mergedRequest.getDatabase());
         List<Map<String, Object>> defaultAlgorithm = inspectionService.queryDefaultAlgorithm(queryFacade, mergedRequest.getDatabase());
-        if (!ensureAlgorithmCleanupState(mergedRequest, algorithms, tableRules, defaultAlgorithm, result, queryFacade.getDatabaseType(mergedRequest.getDatabase()))) {
+        queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
+        if (!ensureAlgorithmCleanupState(mergedRequest, algorithms, tableRules, defaultAlgorithm, result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         result.getRuleArtifacts().add(distSQLPlanningService.planDropAlgorithm(mergedRequest.getAlgorithmName()));
@@ -188,30 +195,47 @@ public final class ShadowWorkflowPlanningService {
     }
     
     private ShadowRuleWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final ShadowRuleWorkflowRequest request, final WorkflowKind workflowKind,
-                                                      final ClarifiedIntent clarifiedIntent, final String summary, final List<String> interactionSteps) {
-        return planningSupport.prepareSnapshot(snapshot, workflowKind, ShadowRuleWorkflowRequest.merge(snapshot.getRequest(), request), null,
-                clarifiedIntent, summary, interactionSteps, VALIDATION_LAYERS);
+                                                      final String defaultOperationType, final String summary, final List<String> interactionSteps) {
+        ShadowRuleWorkflowRequest result = ShadowRuleWorkflowRequest.merge(snapshot.getRequest(), request);
+        return planningSupport.prepareSnapshot(snapshot, workflowKind, result, null,
+                resolveIntent(result, defaultOperationType), summary, interactionSteps, VALIDATION_LAYERS);
     }
     
     private ShadowDefaultAlgorithmWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final ShadowDefaultAlgorithmWorkflowRequest request,
-                                                                  final WorkflowKind workflowKind, final ClarifiedIntent clarifiedIntent, final String summary,
+                                                                  final WorkflowKind workflowKind, final String defaultOperationType, final String summary,
                                                                   final List<String> interactionSteps) {
-        return planningSupport.prepareSnapshot(snapshot, workflowKind, ShadowDefaultAlgorithmWorkflowRequest.merge(snapshot.getRequest(), request), null,
-                clarifiedIntent, summary, interactionSteps, VALIDATION_LAYERS);
+        ShadowDefaultAlgorithmWorkflowRequest result = ShadowDefaultAlgorithmWorkflowRequest.merge(snapshot.getRequest(), request);
+        return planningSupport.prepareSnapshot(snapshot, workflowKind, result, null,
+                resolveIntent(result, defaultOperationType), summary, interactionSteps, VALIDATION_LAYERS);
     }
     
     private ShadowAlgorithmCleanupWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final ShadowAlgorithmCleanupWorkflowRequest request,
-                                                                  final WorkflowKind workflowKind, final ClarifiedIntent clarifiedIntent, final String summary,
+                                                                  final WorkflowKind workflowKind, final String defaultOperationType, final String summary,
                                                                   final List<String> interactionSteps) {
-        return planningSupport.prepareSnapshot(snapshot, workflowKind, ShadowAlgorithmCleanupWorkflowRequest.merge(snapshot.getRequest(), request), null,
-                clarifiedIntent, summary, interactionSteps, VALIDATION_LAYERS);
+        ShadowAlgorithmCleanupWorkflowRequest result = ShadowAlgorithmCleanupWorkflowRequest.merge(snapshot.getRequest(), request);
+        return planningSupport.prepareSnapshot(snapshot, workflowKind, result, null,
+                resolveFixedOperationIntent(result, defaultOperationType), summary, interactionSteps, VALIDATION_LAYERS);
     }
     
     private ClarifiedIntent resolveIntent(final WorkflowRequest request, final String defaultOperationType) {
         ClarifiedIntent result = new ClarifiedIntent();
-        String operationType = request.getOperationType();
-        result.setOperationType(operationType.isEmpty() ? defaultOperationType : operationType);
-        result.setFieldSemantics("DistSQL-visible shadow rule and algorithm fields only.");
+        if (!request.getOperationType().isEmpty()) {
+            result.setOperationType(request.getOperationType());
+        } else if (request.getNaturalLanguageIntent().isEmpty()) {
+            result.setOperationType(defaultOperationType);
+            result.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, defaultOperationType);
+        }
+        return result;
+    }
+    
+    private ClarifiedIntent resolveFixedOperationIntent(final WorkflowRequest request, final String defaultOperationType) {
+        ClarifiedIntent result = new ClarifiedIntent();
+        if (request.getOperationType().isEmpty()) {
+            result.setOperationType(defaultOperationType);
+            result.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, defaultOperationType);
+        } else {
+            result.setOperationType(request.getOperationType());
+        }
         return result;
     }
     
@@ -242,6 +266,18 @@ public final class ShadowWorkflowPlanningService {
         return ensureNoMissingInputs(missingInputs, clarifiedIntent, snapshot, "Default shadow algorithm DistSQL requires an explicit algorithm type and properties.");
     }
     
+    private boolean ensureDefaultAlgorithmType(final ShadowDefaultAlgorithmWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())
+                || ShadowFeatureDefinition.DEFAULT_ALGORITHM_TYPE.equalsIgnoreCase(request.getAlgorithmType())) {
+            return true;
+        }
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
+                "Default shadow algorithm must implement the hint algorithm contract.",
+                "Use algorithm_type=SQL_HINT for the default shadow algorithm.", false, Map.of("algorithm_type", request.getAlgorithmType())));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        return false;
+    }
+    
     private boolean ensureCleanupPlanningContext(final ShadowAlgorithmCleanupWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         return ensureDatabase(request, clarifiedIntent, snapshot) && ensureSupportedIdentifiers(snapshot, request.getDatabase(), request.getAlgorithmName())
                 && ensureNoMissingInputs(request.getAlgorithmName().isEmpty() ? List.of(ShadowFeatureDefinition.ALGORITHM_NAME_FIELD) : List.of(), clarifiedIntent, snapshot,
@@ -251,7 +287,7 @@ public final class ShadowWorkflowPlanningService {
     private boolean ensureDatabase(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (request.getDatabase().isEmpty()) {
             clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Database is required before planning shadow DistSQL.", "Provide the logical database name.", true, Map.of()));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
@@ -264,7 +300,7 @@ public final class ShadowWorkflowPlanningService {
     }
     
     private boolean ensureSupportedIdentifiers(final WorkflowContextSnapshot snapshot, final String... identifiers) {
-        if (planningSupport.ensureOptionalSupportedIdentifiers("", List.of(identifiers), snapshot, "intaking")) {
+        if (planningSupport.ensureOptionalSupportedIdentifiers("", List.of(identifiers), snapshot, WorkflowLifecycle.STEP_INTAKING)) {
             return true;
         }
         snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
@@ -287,7 +323,7 @@ public final class ShadowWorkflowPlanningService {
     }
     
     private void addMissingInput(final Collection<String> missingInputs, final String value, final String fieldName) {
-        if (null == value || value.trim().isEmpty()) {
+        if (value.trim().isEmpty()) {
             missingInputs.add(fieldName);
         }
     }
@@ -298,31 +334,34 @@ public final class ShadowWorkflowPlanningService {
             return true;
         }
         clarifiedIntent.getClarificationMessages().add(message);
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", "intaking", message,
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING, message,
                 "Provide the missing fields instead of guessing storage units, tables or algorithms.", true, Map.of("missing_inputs", missingInputs)));
         snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
         return false;
     }
     
     private boolean ensureRuleLifecycle(final ClarifiedIntent clarifiedIntent, final ShadowRuleWorkflowRequest request, final List<Map<String, Object>> rules,
-                                        final WorkflowContextSnapshot snapshot, final String databaseType) {
+                                        final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         return planningSupport.ensureLifecycleState("Shadow rule", clarifiedIntent,
-                rules.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name"))), snapshot);
+                rules.stream().anyMatch(each -> queryFacade.isSameIdentifier(
+                        request.getDatabase(), IdentifierScope.TABLE, request.getRuleName(), WorkflowRuleValueUtils.getRuleValue(each, "rule_name"))),
+                snapshot);
     }
     
     private boolean ensureAlgorithmCleanupState(final ShadowAlgorithmCleanupWorkflowRequest request, final List<Map<String, Object>> algorithms,
                                                 final List<Map<String, Object>> tableRules, final List<Map<String, Object>> defaultAlgorithm,
-                                                final WorkflowContextSnapshot snapshot, final String databaseType) {
-        boolean configured = algorithms.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getAlgorithmName(),
-                WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
+                                                final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
+        boolean configured = algorithms.stream().anyMatch(each -> queryFacade.isSameIdentifier(
+                request.getDatabase(), IdentifierScope.TABLE, request.getAlgorithmName(), WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
         if (!configured) {
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", WorkflowLifecycle.STEP_DISCOVERING,
                     String.format("Shadow algorithm `%s` is not configured.", request.getAlgorithmName()),
                     "Inspect configured shadow algorithms before cleanup.", false, Map.of("algorithm", request.getAlgorithmName())));
             return false;
         }
-        if (isReferencedByTableRule(request.getAlgorithmName(), tableRules, databaseType) || isDefaultAlgorithm(request.getAlgorithmName(), defaultAlgorithm, databaseType)) {
-            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
+        if (isReferencedByTableRule(queryFacade, request.getDatabase(), request.getAlgorithmName(), tableRules)
+                || isDefaultAlgorithm(queryFacade, request.getDatabase(), request.getAlgorithmName(), defaultAlgorithm)) {
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", WorkflowLifecycle.STEP_DISCOVERING,
                     String.format("Shadow algorithm `%s` is still referenced.", request.getAlgorithmName()),
                     "Remove table-rule or default-algorithm references before cleanup.", false, Map.of("algorithm", request.getAlgorithmName())));
             return false;
@@ -330,14 +369,16 @@ public final class ShadowWorkflowPlanningService {
         return true;
     }
     
-    private boolean isReferencedByTableRule(final String algorithmName, final List<Map<String, Object>> tableRules, final String databaseType) {
+    private boolean isReferencedByTableRule(final MCPFeatureQueryFacade queryFacade, final String databaseName,
+                                            final String algorithmName, final List<Map<String, Object>> tableRules) {
         return tableRules.stream().map(each -> WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name"))
                 .flatMap(each -> Arrays.stream(each.split(","))).map(String::trim).filter(each -> !each.isEmpty())
-                .anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, algorithmName, each));
+                .anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, algorithmName, each));
     }
     
-    private boolean isDefaultAlgorithm(final String algorithmName, final List<Map<String, Object>> defaultAlgorithm, final String databaseType) {
-        return defaultAlgorithm.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, algorithmName,
+    private boolean isDefaultAlgorithm(final MCPFeatureQueryFacade queryFacade, final String databaseName,
+                                       final String algorithmName, final List<Map<String, Object>> defaultAlgorithm) {
+        return defaultAlgorithm.stream().anyMatch(each -> queryFacade.isSameIdentifier(databaseName, IdentifierScope.TABLE, algorithmName,
                 WorkflowRuleValueUtils.getRuleValue(each, "shadow_algorithm_name")));
     }
     
@@ -357,7 +398,7 @@ public final class ShadowWorkflowPlanningService {
     private void addRuleArtifact(final WorkflowContextSnapshot snapshot, final ShadowRuleWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
             snapshot.getRuleArtifacts().add(distSQLPlanningService.planDropRule(request.getRuleName()));
-        } else if ("alter".equalsIgnoreCase(operationType)) {
+        } else if (WorkflowLifecycle.OPERATION_ALTER.equalsIgnoreCase(operationType)) {
             snapshot.getRuleArtifacts().add(distSQLPlanningService.planAlterRule(request));
         } else {
             snapshot.getRuleArtifacts().add(distSQLPlanningService.planCreateRule(request));
@@ -367,7 +408,7 @@ public final class ShadowWorkflowPlanningService {
     private void addDefaultAlgorithmArtifact(final WorkflowContextSnapshot snapshot, final ShadowDefaultAlgorithmWorkflowRequest request, final String operationType) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(operationType)) {
             snapshot.getRuleArtifacts().add(distSQLPlanningService.planDropDefaultAlgorithm());
-        } else if ("alter".equalsIgnoreCase(operationType)) {
+        } else if (WorkflowLifecycle.OPERATION_ALTER.equalsIgnoreCase(operationType)) {
             snapshot.getRuleArtifacts().add(distSQLPlanningService.planAlterDefaultAlgorithm(request));
         } else {
             snapshot.getRuleArtifacts().add(distSQLPlanningService.planCreateDefaultAlgorithm(request));

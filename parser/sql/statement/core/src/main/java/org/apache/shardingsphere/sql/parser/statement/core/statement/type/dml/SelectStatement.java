@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
@@ -40,6 +41,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -81,6 +84,8 @@ public final class SelectStatement extends DMLStatement {
     private final OutfileSegment outfile;
     
     private final WithTableHintSegment withTableHint;
+    
+    private final Collection<FunctionSegment> transformSegments = new LinkedList<>();
     
     private final SQLStatementAttributes attributes;
     
@@ -199,9 +204,11 @@ public final class SelectStatement extends DMLStatement {
      * @return select statement
      */
     public SelectStatement withSubqueryType(final SubqueryType subqueryType) {
-        return builder().databaseType(getDatabaseType()).projections(projections).from(from).where(where).hierarchicalQuery(hierarchicalQuery)
+        SelectStatement result = builder().databaseType(getDatabaseType()).projections(projections).from(from).where(where).hierarchicalQuery(hierarchicalQuery)
                 .groupBy(groupBy).having(having).orderBy(orderBy).combine(combine).with(with).subqueryType(subqueryType).limit(limit).lock(lock).window(window)
                 .into(into).model(model).outfile(outfile).withTableHint(withTableHint).build();
+        result.getTransformSegments().addAll(transformSegments);
+        return result;
     }
     
     /**

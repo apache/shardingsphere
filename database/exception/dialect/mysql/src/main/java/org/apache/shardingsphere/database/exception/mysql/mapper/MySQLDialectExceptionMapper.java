@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.exception.core.exception.SQLDialectExc
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.database.exception.core.exception.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
@@ -121,6 +122,9 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         if (sqlDialectException instanceof IncorrectGlobalLocalVariableException) {
             IncorrectGlobalLocalVariableException ex = (IncorrectGlobalLocalVariableException) sqlDialectException;
             return toSQLException(MySQLVendorError.ER_INCORRECT_GLOBAL_LOCAL_VAR, ex.getVariableName(), ex.getScope());
+        }
+        if (sqlDialectException instanceof ColumnNotFoundException) {
+            return toSQLException(MySQLVendorError.ER_BAD_FIELD_ERROR, ((ColumnNotFoundException) sqlDialectException).getColumnName(), "field list");
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }

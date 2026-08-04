@@ -21,12 +21,14 @@ import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
 import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationResponse;
 import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
+import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -36,24 +38,27 @@ final class MCPCallToolResultFactory {
     
     private final JsonSchemaValidator outputSchemaValidator = new DefaultJsonSchemaValidator();
     
-    CallToolResult create(final MCPToolDescriptor descriptor, final MCPResponse response) {
-        if (response instanceof MCPErrorResponse) {
-            return create(response.toPayload(), true);
-        }
-        Map<String, Object> payload = response.toPayload();
+    CallToolResult create(final MCPToolDescriptor descriptor, final MCPSuccessPayload successPayload) {
+        Map<String, Object> payload = successPayload.toPayload();
         if (descriptor.getOutputSchema().isEmpty()) {
-            return create(payload, false);
+            return createSuccess(payload);
         }
         ValidationResponse validation = outputSchemaValidator.validate(descriptor.getOutputSchema(), payload);
         return validation.valid()
-                ? create(payload, false)
-                : create(new MCPErrorResponse(String.format(
-                        "Tool `%s` structuredContent does not match declared outputSchema: %s", descriptor.getName(),
-                        Objects.toString(validation.errorMessage(), "validation failed"))).toPayload(), true);
+                ? createSuccess(payload)
+                : create(new MCPErrorPayload(String.format("Tool `%s` structuredContent does not match declared outputSchema: %s",
+                        descriptor.getName(), Objects.toString(validation.errorMessage(), "validation failed"))));
     }
     
-    private CallToolResult create(final Map<String, Object> payload, final boolean isError) {
-        CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isError);
+    CallToolResult create(final MCPErrorPayload errorPayload) {
+        Map<String, Object> payload = errorPayload.toPayload();
+        CallToolResult.Builder result = CallToolResult.builder().addTextContent(JsonUtils.toJsonString(payload)).isError(true);
+        appendResourceLinks(payload, result);
+        return result.build();
+    }
+    
+    private CallToolResult createSuccess(final Map<String, Object> payload) {
+        CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(false);
         appendResourceLinks(payload, result);
         return result.build();
     }
@@ -62,7 +67,7 @@ final class MCPCallToolResultFactory {
         MCPResourceLinkCandidateCollector.ResourceLinkCandidates candidates = new MCPResourceLinkCandidateCollector(RESOURCE_LINK_LIMIT).collect(payload);
         int emittedCount = 0;
         for (MCPResourceLinkCandidateCollector.ResourceLinkCandidate each : candidates.candidates()) {
-            builder.addContent(MCPResourceLinkContract.createResourceLink(each));
+            builder.addContent(createResourceLink(each));
             emittedCount++;
         }
         if (0 < candidates.totalCount()) {
@@ -75,5 +80,29 @@ final class MCPCallToolResultFactory {
                 MCPShardingSphereMetadataKeys.RESOURCE_LINKS_EMITTED, emittedCount,
                 MCPShardingSphereMetadataKeys.RESOURCE_LINKS_OMITTED, Math.max(0, totalCount - emittedCount),
                 MCPShardingSphereMetadataKeys.RESOURCE_LINK_LIMIT, RESOURCE_LINK_LIMIT);
+    }
+    
+    private McpSchema.ResourceLink createResourceLink(final MCPResourceLinkCandidateCollector.ResourceLinkCandidate candidate) {
+        return McpSchema.ResourceLink.builder()
+                .name(resolveResourceLinkName(candidate.uri()))
+                .title(candidate.title())
+                .uri(candidate.uri())
+                .description(candidate.description())
+                .mimeType("application/json")
+                .meta(createResourceLinkMeta(candidate))
+                .build();
+    }
+    
+    private String resolveResourceLinkName(final String uri) {
+        int separatorIndex = uri.lastIndexOf('/');
+        return separatorIndex < 0 || separatorIndex == uri.length() - 1 ? uri : uri.substring(separatorIndex + 1);
+    }
+    
+    private Map<String, Object> createResourceLinkMeta(final MCPResourceLinkCandidateCollector.ResourceLinkCandidate candidate) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put(MCPShardingSphereMetadataKeys.RESOURCE_KIND, candidate.resourceKind());
+        result.put(MCPShardingSphereMetadataKeys.PURPOSE, candidate.purpose());
+        result.put(MCPShardingSphereMetadataKeys.SOURCE_FIELD, candidate.sourceField());
+        return result;
     }
 }

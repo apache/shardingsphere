@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryCol
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
@@ -46,6 +45,8 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     private static final int ITERATION_COUNT = 1;
     
     private static final int NULL_BITMAP_OFFSET = 0;
+    
+    private static final int UNSIGNED_FLAG = 0x80;
     
     private final MySQLPacketPayload payload;
     
@@ -94,28 +95,50 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
      *
      * @param paramTypes parameter type of values
      * @param longDataIndexes indexes of long data
-     * @param parameterFlags column definition flag of parameters
      * @param parameterColumnTypes column type of parameters from COM_STMT_PREPARE
      * @return parameter values
      * @throws SQLException SQL exception
      */
     public List<Object> readParameters(final List<MySQLPreparedStatementParameterType> paramTypes, final Set<Integer> longDataIndexes,
-                                       final List<Integer> parameterFlags, final List<MySQLBinaryColumnType> parameterColumnTypes) throws SQLException {
+                                       final List<MySQLBinaryColumnType> parameterColumnTypes) throws SQLException {
         List<Object> result = new ArrayList<>(paramTypes.size());
         for (int paramIndex = 0; paramIndex < paramTypes.size(); paramIndex++) {
             if (longDataIndexes.contains(paramIndex)) {
                 result.add(null);
                 continue;
             }
-            MySQLBinaryColumnType parameterType = paramTypes.get(paramIndex).getColumnType();
+            MySQLPreparedStatementParameterType parameter = paramTypes.get(paramIndex);
+            MySQLBinaryColumnType parameterType = parameter.getColumnType();
             MySQLBinaryProtocolValue binaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterType);
             Object value = nullBitmap.isNullParameter(paramIndex)
                     ? null
-                    : binaryProtocolValue.read(payload, (parameterFlags.get(paramIndex) & MySQLColumnDefinitionFlag.UNSIGNED.getValue()) == MySQLColumnDefinitionFlag.UNSIGNED.getValue());
+                    : readParameterValue(binaryProtocolValue, parameterColumnTypes, paramIndex, parameterType, parameter.getUnsignedFlag());
             value = decodeStringParameterValue(parameterColumnTypes, paramIndex, parameterType, value);
             result.add(value);
         }
         return result;
+    }
+    
+    private Object readParameterValue(final MySQLBinaryProtocolValue binaryProtocolValue, final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex,
+                                      final MySQLBinaryColumnType parameterType, final int unsignedFlag) throws SQLException {
+        if (isStringParameterType(parameterType) && isBinaryColumnType(parameterColumnTypes, paramIndex)) {
+            return payload.readStringLenencByBytes();
+        }
+        return binaryProtocolValue.read(payload, (unsignedFlag & UNSIGNED_FLAG) == UNSIGNED_FLAG);
+    }
+    
+    private MySQLBinaryColumnType getParameterColumnType(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex) {
+        return paramIndex < parameterColumnTypes.size() ? parameterColumnTypes.get(paramIndex) : null;
+    }
+    
+    private boolean isStringParameterType(final MySQLBinaryColumnType parameterType) {
+        return MySQLBinaryColumnType.STRING == parameterType || MySQLBinaryColumnType.VAR_STRING == parameterType || MySQLBinaryColumnType.VARCHAR == parameterType;
+    }
+    
+    private boolean isBinaryColumnType(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex) {
+        MySQLBinaryColumnType columnType = getParameterColumnType(parameterColumnTypes, paramIndex);
+        return MySQLBinaryColumnType.LONG_BLOB == columnType || MySQLBinaryColumnType.MEDIUM_BLOB == columnType
+                || MySQLBinaryColumnType.BLOB == columnType || MySQLBinaryColumnType.TINY_BLOB == columnType;
     }
     
     private Object decodeStringParameterValue(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex, final MySQLBinaryColumnType parameterType, final Object value) {

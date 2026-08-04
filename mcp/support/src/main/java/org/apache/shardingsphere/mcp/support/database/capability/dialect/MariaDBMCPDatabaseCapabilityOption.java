@@ -17,52 +17,27 @@
 
 package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.support.database.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * MCP database capability option for MariaDB.
  */
-public final class MariaDBMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
-    
-    private static final String SEQUENCE_QUERY =
-            "SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'";
-    
-    public MariaDBMCPDatabaseCapabilityOption() {
-        super("MariaDB", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
-                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, true);
-    }
+public final class MariaDBMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
     @Override
-    public QuoteCharacter getIdentifierQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
-    }
-    
-    @Override
-    public IdentifierCasePolicySet getIdentifierCasePolicySet() {
-        return IdentifierCasePolicyFactory.newMySQLInsensitivePolicySet();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return List.of("information_schema", "mysql", "performance_schema", "shardingsphere", "sys");
+    public boolean isExplainSupported() {
+        return true;
     }
     
     @Override
     public Optional<String> getSequenceQuery() {
-        return Optional.of(SEQUENCE_QUERY);
+        return Optional.of("SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'");
     }
     
     @Override
-    public boolean isInformationSchemaColumnSchemaFilterRequired() {
-        return true;
+    public String getType() {
+        return "MariaDB";
     }
 }

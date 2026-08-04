@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
+import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -57,8 +59,54 @@ class ShardingDescriptorContractTest {
         assertCompletionTargetArguments(catalog, ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_PROMPT_NAME, "database", "plan_id");
     }
     
+    @Test
+    void assertPlanTableRuleToolGuidesNaturalLanguageRuleChanges() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        MCPPromptDescriptor actualPrompt = findPrompt(catalog, ShardingFeatureDefinition.PLAN_TABLE_RULE_PROMPT_NAME);
+        assertThat(actualPrompt.getDescription(), is("Guide the model to plan sharding table rule DistSQL, including database/table sharding and key generation."));
+        MCPToolDescriptor actual = findTool(catalog, ShardingFeatureDefinition.PLAN_TABLE_RULE_TOOL_NAME);
+        assertThat(actual.getDescription(),
+                is("Plan reviewable sharding table rule DistSQL without executing it. "
+                        + "Use this before raw SQL for natural-language requests to create or drop database/table sharding rules."));
+    }
+    
+    @Test
+    void assertPlanningToolOperationTypesExposeOnlySupportedLifecycleActions() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        for (String each : List.of(
+                ShardingFeatureDefinition.PLAN_TABLE_RULE_TOOL_NAME,
+                ShardingFeatureDefinition.PLAN_TABLE_REFERENCE_TOOL_NAME,
+                ShardingFeatureDefinition.PLAN_DEFAULT_STRATEGY_TOOL_NAME,
+                ShardingFeatureDefinition.PLAN_KEY_GENERATOR_TOOL_NAME,
+                ShardingFeatureDefinition.PLAN_KEY_GENERATE_STRATEGY_TOOL_NAME)) {
+            assertOperationTypeEnum(findTool(catalog, each), List.of("create", "drop"));
+        }
+        assertOperationTypeEnum(findTool(catalog, ShardingFeatureDefinition.PLAN_COMPONENT_CLEANUP_TOOL_NAME), List.of("drop"));
+    }
+    
+    @Test
+    void assertAlgorithmResourceScopes() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        assertThat(findResourceMetadata(catalog, "shardingsphere://features/sharding/databases/{database}/algorithms").getObjectScope(), is("algorithm"));
+        assertThat(findResourceMetadata(catalog, "shardingsphere://features/sharding/databases/{database}/unused-algorithms").getObjectScope(), is("algorithm"));
+    }
+    
+    private MCPPromptDescriptor findPrompt(final MCPDescriptorCatalog catalog, final String promptName) {
+        return catalog.getProtocolDescriptors().getPromptDescriptors().stream().filter(each -> promptName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getProtocolDescriptors().getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private ShardingSphereMCPResourceMetadata findResourceMetadata(final MCPDescriptorCatalog catalog, final String uriTemplate) {
+        return catalog.getShardingSphereDescriptors().getResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
+    }
+    
+    private void assertOperationTypeEnum(final MCPToolDescriptor descriptor, final List<String> expectedValues) {
+        Map<?, ?> properties = (Map<?, ?>) descriptor.getInputSchema().get("properties");
+        Map<?, ?> operationType = (Map<?, ?>) properties.get("operation_type");
+        assertThat(operationType.get("enum"), is(expectedValues));
     }
     
     private void assertCompletionTargetArguments(final MCPDescriptorCatalog catalog, final String promptName, final String... expectedArguments) {

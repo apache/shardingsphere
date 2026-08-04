@@ -27,7 +27,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class DialectAddColumnOption {
     
-    private final String beforeAllAddColumns;
-    
     private final String beforeEachAddColumn;
 }

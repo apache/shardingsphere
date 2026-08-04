@@ -50,14 +50,17 @@ public final class SQLStatementCompiler {
      * @return SQL federation execution plan
      */
     public SQLFederationExecutionPlan compile(final SQLStatement sqlStatement, final String databaseType) {
-        RelMetadataQueryBase.THREAD_PROVIDERS.set(JaninoRelMetadataProvider.DEFAULT);
-        SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
-        RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
-        RelDataType resultColumnType = converter.getValidatedNodeType(sqlNode);
-        RelNode rewrittenPlan = rewrite(logicalPlan, databaseType);
-        RelNode physicalPlan = optimize(rewrittenPlan, converter, databaseType);
-        RelMetadataQueryBase.THREAD_PROVIDERS.remove();
-        return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
+        try {
+            RelMetadataQueryBase.THREAD_PROVIDERS.set(JaninoRelMetadataProvider.DEFAULT);
+            SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
+            RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
+            RelDataType resultColumnType = converter.getValidatedNodeType(sqlNode);
+            RelNode rewrittenPlan = rewrite(logicalPlan, databaseType);
+            RelNode physicalPlan = optimize(rewrittenPlan, converter, databaseType);
+            return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
+        } finally {
+            RelMetadataQueryBase.THREAD_PROVIDERS.remove();
+        }
     }
     
     private RelNode rewrite(final RelNode logicalPlan, final String databaseType) {

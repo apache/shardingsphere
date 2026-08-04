@@ -236,6 +236,7 @@
     <sql-case id="select_ps_thread_id" value="SELECT PS_THREAD_ID(5)" db-types="MySQL" />
     <sql-case id="select_quote" value="SELECT QUOTE('Don\'t!')" db-types="MySQL" />
     <sql-case id="select_from_table_function" value="SELECT * FROM GENERATE_SERIES(1, name)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_from_table_function_with_alias_columns" value="SELECT s.r FROM generate_series(1, 3) AS s(r)" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_json_objectagg" value="SELECT JSON_OBJECTAGG(attribute, value) FROM t GROUP BY id" db-types="MySQL" />
     <sql-case id="select_json_overlaps" value="SELECT JSON_OVERLAPS(&quot;[1,3,5,7]&quot;, &quot;[2,5,7]&quot;)" db-types="MySQL" />
     <sql-case id="select_json_pretty" value="SELECT JSON_PRETTY('123')" db-types="MySQL" />
@@ -343,4 +344,8 @@
     <sql-case id="select_cast_with_placeholder_clickhouse" value="SELECT CAST(? AS INT8) FROM t_order" case-types="placeholder" db-types="ClickHouse" />
     <sql-case id="select_cast_with_placeholder_standard" value="SELECT CAST(? AS INT) FROM t_order" case-types="placeholder" db-types="SQL92,Firebird,SQLServer" />
     <sql-case id="select_interval_with_placeholder" value="SELECT INTERVAL ? DAY FROM t_order" case-types="placeholder" db-types="MySQL,ClickHouse,SQL92,Firebird" />
+    <sql-case id="select_split_by_string" value="SELECT SPLIT_BY_STRING('apple::banana::cherry', '::')" db-types="Doris" />
+    <sql-case id="select_split_by_string_with_column" value="SELECT SPLIT_BY_STRING(order_notes, '::') FROM t_order" db-types="Doris" />
+    <sql-case id="select_split_by_string_with_placeholder" value="SELECT SPLIT_BY_STRING(?, ?) FROM t_order" case-types="placeholder" db-types="Doris" />
+    <sql-case id="select_split_by_string_with_nested_function" value="SELECT SPLIT_BY_STRING(CONCAT(order_notes, '-'), '::') FROM t_order" db-types="Doris" />
 </sql-cases>

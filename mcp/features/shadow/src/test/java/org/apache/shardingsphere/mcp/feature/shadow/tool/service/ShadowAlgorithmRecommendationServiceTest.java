@@ -39,15 +39,19 @@ class ShadowAlgorithmRecommendationServiceTest {
     void assertRecommendSpecifiedAlgorithm() {
         WorkflowRequest request = new WorkflowRequest();
         request.setAlgorithmType("value_match");
-        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(request, List.of(Map.of("type", "VALUE_MATCH")), new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(
+                request, List.of(Map.of("type", "VALUE_MATCH")), new LinkedList<>());
         assertThat(actual.getFirst().getAlgorithmType(), is("VALUE_MATCH"));
     }
     
     @Test
     void assertRecommendSqlHintDefault() {
         WorkflowRequest request = new WorkflowRequest();
-        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(request, List.of(Map.of("type", "VALUE_MATCH"), Map.of("type", "SQL_HINT")), new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(
+                request, List.of(Map.of("type", "VALUE_MATCH"), Map.of("type", "SQL_HINT")), new LinkedList<>());
         assertThat(actual.getFirst().getAlgorithmType(), is("SQL_HINT"));
+        assertThat(actual.getFirst().getRecommendationReason(), is(
+                "Selected from algorithms reported by the current Proxy using MCP's built-in shadow preference order."));
     }
     
     @Test

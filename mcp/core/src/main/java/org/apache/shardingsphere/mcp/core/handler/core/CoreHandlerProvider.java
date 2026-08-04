@@ -17,11 +17,23 @@
 
 package org.apache.shardingsphere.mcp.core.handler.core;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.core.completion.handler.MetadataCompletionHandler;
+import org.apache.shardingsphere.mcp.core.completion.handler.WorkflowPlanIdCompletionHandler;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteExplainToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteQueryToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExecuteUpdateToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadataToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.handler.metadata.ValidateRuntimeDatabaseToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.handler.workflow.WorkflowExecutionToolHandler;
+import org.apache.shardingsphere.mcp.core.tool.handler.workflow.WorkflowValidationToolHandler;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Core MCP handler provider.
@@ -35,6 +47,19 @@ public final class CoreHandlerProvider implements MCPHandlerProvider {
     
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
-        return CoreToolHandlers.createHandlers();
+        WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry = WorkflowRuntimeDefinitionRegistry.load();
+        return List.of(
+                new SearchMetadataToolHandler(),
+                new ValidateRuntimeDatabaseToolHandler(),
+                new ExecuteQueryToolHandler(),
+                new ExecuteExplainToolHandler(),
+                new ExecuteUpdateToolHandler(),
+                new WorkflowExecutionToolHandler(workflowRuntimeDefinitionRegistry),
+                new WorkflowValidationToolHandler(workflowRuntimeDefinitionRegistry));
+    }
+    
+    @Override
+    public Collection<MCPCompletionHandler<?>> getCompletionHandlers() {
+        return List.of(new MetadataCompletionHandler(), new WorkflowPlanIdCompletionHandler());
     }
 }

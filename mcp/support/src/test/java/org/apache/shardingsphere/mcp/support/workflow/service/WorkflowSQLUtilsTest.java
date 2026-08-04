@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,27 +64,6 @@ class WorkflowSQLUtilsTest {
         assertThat(WorkflowSQLUtils.normalizeIdentifier("`bad table`"), is("bad table"));
         assertThat(WorkflowSQLUtils.normalizeIdentifier("\"Order Detail\""), is("Order Detail"));
         assertThat(WorkflowSQLUtils.normalizeIdentifier("[Order Detail]"), is("Order Detail"));
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierFoldsPostgreSQLUnquotedIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone"), is("phone"));
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("openGauss", "Phone"), is("phone"));
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierKeepsMySQLUnquotedIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("MySQL", "Phone"), is("Phone"));
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierPreservesSpecialIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "Phone Number"), is("Phone Number"));
-    }
-    
-    @Test
-    void assertCanonicalizeIdentifierPreservesDelimitedIdentifier() {
-        assertThat(WorkflowSQLUtils.canonicalizeIdentifier("PostgreSQL", "\"Phone\""), is("Phone"));
     }
     
     @Test
@@ -153,89 +134,34 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertFormatSQLIdentifierUsesMysqlQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "order detail");
-        assertThat(actualValue, is("`order detail`"));
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierKeepsSafeIdentifier() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("MySQL", "orders_01");
-        assertThat(actualValue, is("orders_01"));
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierKeepsPostgreSQLMixedCaseIdentifier() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "Phone");
-        assertThat(actualValue, is("Phone"));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getSQLPlainIdentifierCases")
-    void assertFormatSQLIdentifierKeepsPlainIdentifier(final String name, final String databaseType, final String identifier, final String expectedValue) {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier(databaseType, identifier);
-        assertThat(actualValue, is(expectedValue));
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierUsesFallbackQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("", "order detail");
-        assertThat(actualValue, is("`order detail`"));
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierUsesPostgreSQLQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "order detail");
-        assertThat(actualValue, is("\"order detail\""));
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierUsesSQLServerQuoteStyle() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("SQLServer", "order detail");
-        assertThat(actualValue, is("[order detail]"));
-    }
-    
-    @Test
-    void assertFormatSQLIdentifierPreservesDelimitedSafeIdentifier() {
-        String actualValue = WorkflowSQLUtils.formatSQLIdentifier("PostgreSQL", "\"orders\"");
-        assertThat(actualValue, is("\"orders\""));
-    }
-    
-    @Test
     void assertIsSameIdentifierWithCaseInsensitiveDatabase() {
-        assertTrue(WorkflowSQLUtils.isSameIdentifier("MySQL", "Phone", "phone"));
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newInsensitivePolicySet()), IdentifierScope.TABLE, "Phone", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierFoldsPostgreSQLUnquotedIdentifier() {
-        assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "phone"));
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), IdentifierScope.TABLE, "Phone", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierPreservesPostgreSQLDelimitedIdentifier() {
-        assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "phone"));
+        assertFalse(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), IdentifierScope.TABLE, "\"Phone\"", "phone"));
     }
     
     @Test
     void assertIsSameIdentifierRejectsUnquotedPostgreSQLQuotedName() {
-        assertFalse(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "Phone", "Phone"));
+        assertFalse(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), IdentifierScope.TABLE, "Phone", "Phone"));
     }
     
     @Test
     void assertIsSameIdentifierMatchesQuotedPostgreSQLName() {
-        assertTrue(WorkflowSQLUtils.isSameIdentifier("PostgreSQL", "\"Phone\"", "Phone"));
+        assertTrue(WorkflowSQLUtils.isSameIdentifier(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newLowerCasePolicySet()), IdentifierScope.TABLE, "\"Phone\"", "Phone"));
     }
     
     @Test
     void assertEscapeLiteralEscapesSingleQuote() {
         String actualValue = WorkflowSQLUtils.escapeLiteral("O'Brien");
         assertThat(actualValue, is("O''Brien"));
-    }
-    
-    @Test
-    void assertCreatePropertiesTrimsValues() {
-        Properties actualProperties = WorkflowSQLUtils.createProperties(Map.of("aes-key-value", " 123456 "));
-        assertThat(actualProperties.getProperty("aes-key-value"), is("123456"));
     }
     
     @Test
@@ -257,29 +183,9 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
-    void assertCreatePropertyMapReturnsEmptyForNull() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(null);
-        assertThat(actualEntries, is(Map.of()));
-    }
-    
-    @Test
-    void assertCreatePropertyMapHandlesProperties() {
-        Properties props = new Properties();
-        props.setProperty("aes-key-value", " 123456 ");
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(props);
-        assertThat(actualEntries, is(Map.of("aes-key-value", "123456")));
-    }
-    
-    @Test
-    void assertCreatePropertyMapHandlesMap() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(Map.of("aes-key-value", " 123456 "));
-        assertThat(actualEntries, is(Map.of("aes-key-value", "123456")));
-    }
-    
-    @Test
-    void assertCreatePropertyMapHandlesString() {
-        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap("{'aes-key-value':'123456','iv':'abc'}");
-        assertThat(actualEntries, is(Map.of("aes-key-value", "123456", "iv", "abc")));
+    void assertCreateAlgorithmFragmentWithExactTypePreservesCase() {
+        String actualFragment = WorkflowSQLUtils.createAlgorithmFragmentWithExactType(" SQL_HINT ", Map.of());
+        assertThat(actualFragment, is("TYPE(NAME='SQL_HINT')"));
     }
     
     private static Stream<Arguments> getDistSQLKeywordCases() {
@@ -301,11 +207,4 @@ class WorkflowSQLUtilsTest {
                 Arguments.of("quote uppercase algorithm keyword", "AES", "`AES`"));
     }
     
-    private static Stream<Arguments> getSQLPlainIdentifierCases() {
-        return Stream.of(
-                Arguments.of("keep MySQL rank identifier", "MySQL", "rank", "rank"),
-                Arguments.of("keep MySQL user identifier", "MySQL", "user", "user"),
-                Arguments.of("keep PostgreSQL key identifier", "PostgreSQL", "key", "key"),
-                Arguments.of("keep PostgreSQL user identifier", "PostgreSQL", "user", "user"));
-    }
 }

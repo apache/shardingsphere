@@ -80,8 +80,7 @@ class AlterStorageUnitExecutorTest {
     
     @Test
     void assertExecuteUpdateWithNotExistedStorageUnitNames() {
-        assertThrows(MissingRequiredStorageUnitsException.class,
-                () -> executor.executeUpdate(createAlterStorageUnitStatement("not_existed"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.executeUpdate(createAlterStorageUnitStatement("not_existed"), mock(ContextManager.class)));
     }
     
     @Test
@@ -92,8 +91,7 @@ class AlterStorageUnitExecutorTest {
         when(storageUnit.getConnectionProperties()).thenReturn(connectionProps);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        assertThrows(AlterStorageUnitConnectionInfoException.class,
-                () -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
+        assertThrows(AlterStorageUnitConnectionInfoException.class, () -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mock(ContextManager.class)));
     }
     
     private ContextManager mockContextManager(final MetaDataContexts metaDataContexts) {

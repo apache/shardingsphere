@@ -37,7 +37,7 @@ When HTTP mode runs in a container, `bindHost` should bind to a network interfac
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     bindHost: 0.0.0.0
     port: 18088
@@ -104,7 +104,7 @@ ShardingSphere-MCP configuration example:
 
 ```yaml
 transport:
-  type: STREAMABLE_HTTP
+  type: HTTP
   http:
     bindHost: 127.0.0.1
     port: 18088
@@ -179,6 +179,9 @@ Follow these rules when wiring attribution:
 - `subjectHeader` represents the external subject, such as a trial user, a commercial customer identifier, or an internal caller identity.
 - `sourceHeader` identifies the request source, such as `gateway-nginx`, `internal-alb`, or another trusted ingress name.
 - `attributeHeaderPrefix` can carry a small amount of non-sensitive context such as environment, region, or integration channel; do not pass passwords, keys, or tokens through these headers.
+- The subject, source, and attributes are captured with the session ID when the session is initialized. Every later request for that session must carry the same attribution snapshot; missing, added, or changed values are rejected.
+- Use only values that remain stable for the entire session. Do not map request IDs, trace IDs, timestamps, or other per-request values into attribution attributes.
+- Session attribution is diagnostic context, not proof of authentication or authorization. Continue to enforce both at the trusted gateway.
 - If the deployment does not need to bind request attribution into the session context, omit `sessionAttributionSource`.
 
 After wiring the gateway, continue with the health checks below to confirm that:

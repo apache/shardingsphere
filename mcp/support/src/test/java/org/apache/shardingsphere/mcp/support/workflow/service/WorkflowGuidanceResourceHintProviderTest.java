@@ -22,67 +22,31 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowGuidanceResourceHintProviderTest {
     
     @Test
-    void assertCreateResourcesToReadWithEncryptRule() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("encrypt.rule", "logic_db", "", "t_order")));
-        assertTrue(actual.contains("shardingsphere://features/encrypt/algorithms"));
-        assertTrue(actual.contains("shardingsphere://features/encrypt/databases/logic_db/rules"));
-        assertTrue(actual.contains("shardingsphere://features/encrypt/databases/logic_db/tables/t_order/rules"));
-    }
-    
-    @Test
-    void assertCreateResourcesToReadWithShardingTableRule() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("sharding.table.rule", "logic_db", "", "t_order")));
-        assertTrue(actual.contains("shardingsphere://features/sharding/algorithm-plugins"));
-        assertTrue(actual.contains("shardingsphere://features/sharding/databases/logic_db/table-rules"));
-        assertTrue(actual.contains("shardingsphere://features/sharding/databases/logic_db/table-nodes"));
-        assertTrue(actual.contains("shardingsphere://databases/logic_db/storage-units"));
-        assertTrue(actual.contains("shardingsphere://databases/logic_db/single-tables"));
-        assertTrue(actual.contains("shardingsphere://databases/logic_db/single-tables/t_order"));
-        assertTrue(actual.contains("shardingsphere://features/sharding/databases/logic_db/tables/t_order/table-rule"));
-        assertTrue(actual.contains("shardingsphere://features/sharding/databases/logic_db/tables/t_order/nodes"));
-    }
-    
-    @Test
     void assertCreateResourcesToReadWithDescriptorResources() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("encrypt.rule", "logic_db", "", "t_order")));
-        assertTrue(actual.contains("shardingsphere://workflow/test-resource"));
+        List<Map<String, Object>> actual = new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("encrypt.rule", "logic_db", "", "t_order"));
+        assertThat(actual, is(List.of(Map.of(
+                "uri", "shardingsphere://workflow/test-resource",
+                "resource_kind", "detail",
+                "purpose", "read_first",
+                "reason", "Workflow descriptor resource used by descriptor catalog loader tests.",
+                "source_field", "resources_to_read"))));
     }
     
     @Test
-    void assertCreateResourcesToReadWithShardingComponentCleanup() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("sharding.component.cleanup", "logic_db", "", "")));
-        assertThat(actual, is(List.of(
-                "shardingsphere://features/sharding/databases/logic_db/algorithms",
-                "shardingsphere://features/sharding/databases/logic_db/key-generators",
-                "shardingsphere://features/sharding/databases/logic_db/auditors",
-                "shardingsphere://features/sharding/databases/logic_db/unused-algorithms",
-                "shardingsphere://features/sharding/databases/logic_db/unused-key-generators",
-                "shardingsphere://features/sharding/databases/logic_db/unused-auditors")));
-    }
-    
-    @Test
-    void assertCreateResourcesToReadWithColumnWorkflow() {
-        List<String> actual = extractResourceUris(new WorkflowGuidanceResourceHintProvider().createResourcesToRead(createSnapshot("encrypt.table", "logic_db", "public", "t_order")));
-        assertThat(actual, is(List.of("shardingsphere://databases/logic_db/schemas/public/tables/t_order/columns")));
-    }
-    
-    private List<String> extractResourceUris(final List<Map<String, Object>> resourcesToRead) {
-        List<String> result = new LinkedList<>();
-        for (Map<String, Object> each : resourcesToRead) {
-            result.add((String) each.get("uri"));
-        }
-        return result;
+    void assertCreateResourcesToReadWithSnapshotResources() {
+        WorkflowContextSnapshot snapshot = createSnapshot("test.workflow", "logic_db", "", "t_order");
+        snapshot.getResourceUriTemplates().add("shardingsphere://workflow/test-resource");
+        List<Map<String, Object>> actual = new WorkflowGuidanceResourceHintProvider().createResourcesToRead(snapshot);
+        assertThat(actual.getFirst().get("uri"), is("shardingsphere://workflow/test-resource"));
     }
     
     private WorkflowContextSnapshot createSnapshot(final String workflowKind, final String database, final String schema, final String table) {

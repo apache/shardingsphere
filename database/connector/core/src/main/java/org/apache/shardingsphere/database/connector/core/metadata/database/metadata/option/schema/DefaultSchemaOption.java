@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,12 +29,15 @@ import java.util.Optional;
  * Default schema option.
  */
 @RequiredArgsConstructor
+@Getter
 public final class DefaultSchemaOption implements DialectSchemaOption {
     
-    @Getter
-    private final boolean isSchemaAvailable;
+    private final boolean schemaAvailable;
     
+    @Getter(AccessLevel.NONE)
     private final String defaultSchema;
+    
+    private final DialectSchemaSemantics schemaSemantics;
     
     @Override
     @SuppressWarnings("ReturnOfNull")

@@ -19,29 +19,35 @@ package org.apache.shardingsphere.mcp.support.database.metadata.jdbc;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseDialect;
-import org.apache.shardingsphere.mcp.support.database.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPMetadataSnapshot;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * MCP JDBC metadata loader.
@@ -54,29 +60,90 @@ public final class MCPJdbcMetadataLoader {
      * @param databaseName database name
      * @param runtimeDatabaseConfig runtime database configuration
      * @param databaseProfile runtime database profile
-     * @return database metadata
+     * @return database metadata snapshot
      * @throws RuntimeDatabaseConnectionException when metadata loading fails
      */
-    public MCPDatabaseMetadata load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final RuntimeDatabaseProfile databaseProfile) {
+    public MCPMetadataSnapshot load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final RuntimeDatabaseProfile databaseProfile) {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
-            return loadDatabaseMetadata(databaseName, databaseProfile, connection, connection.getMetaData());
+            return loadMetadata(databaseName, databaseProfile, connection, connection.getMetaData());
         } catch (final SQLException ex) {
-            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, databaseProfile.getDatabaseType(), ex);
         }
     }
     
-    private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final RuntimeDatabaseProfile databaseProfile,
-                                                     final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
+    /**
+     * Load columns for one relation.
+     *
+     * @param databaseName database name
+     * @param runtimeDatabaseConfig runtime database configuration
+     * @param databaseProfile runtime database profile
+     * @param schemaName schema name
+     * @param relationName table or view name
+     * @return column metadata
+     * @throws RuntimeDatabaseConnectionException when metadata loading fails
+     */
+    public List<MCPColumnMetadata> loadColumns(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
+                                               final RuntimeDatabaseProfile databaseProfile, final String schemaName, final String relationName) {
+        try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            return loadColumnMetadata(connection, databaseMetaData, databaseProfile, schemaName, escapePattern(databaseMetaData, relationName));
+        } catch (final SQLException ex) {
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, databaseProfile.getDatabaseType(), ex);
+        }
+    }
+    
+    /**
+     * Load all columns in one schema.
+     *
+     * @param databaseName database name
+     * @param runtimeDatabaseConfig runtime database configuration
+     * @param databaseProfile runtime database profile
+     * @param schemaName schema name
+     * @return column metadata
+     * @throws RuntimeDatabaseConnectionException when metadata loading fails
+     */
+    public List<MCPColumnMetadata> loadSchemaColumns(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
+                                                     final RuntimeDatabaseProfile databaseProfile, final String schemaName) {
+        try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
+            return loadColumnMetadata(connection, connection.getMetaData(), databaseProfile, schemaName, "%");
+        } catch (final SQLException ex) {
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, databaseProfile.getDatabaseType(), ex);
+        }
+    }
+    
+    /**
+     * Load indexes for one table.
+     *
+     * @param databaseName database name
+     * @param runtimeDatabaseConfig runtime database configuration
+     * @param databaseProfile runtime database profile
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return index metadata
+     * @throws RuntimeDatabaseConnectionException when metadata loading fails
+     */
+    public List<ShardingSphereIndex> loadIndexes(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
+                                                 final RuntimeDatabaseProfile databaseProfile, final String schemaName, final String tableName) {
+        try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
+            return loadIndexMetadata(connection, connection.getMetaData(), databaseProfile, schemaName, tableName);
+        } catch (final SQLException ex) {
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, databaseProfile.getDatabaseType(), ex);
+        }
+    }
+    
+    private MCPMetadataSnapshot loadMetadata(final String databaseName, final RuntimeDatabaseProfile databaseProfile,
+                                             final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
+        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, databaseProfile.getDatabaseType());
         MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(databaseProfile.getDatabaseType());
-        SchemaSemantics defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
-        DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, databaseProfile.getDatabaseType(), databaseProfile.getDatabaseVersion());
+        DialectSchemaSemantics defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
+        DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, protocolType);
         loadTables(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, databaseMetaData);
         loadViews(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, databaseMetaData);
         loadSequences(databaseName, defaultSchemaSemantics, databaseDialect, accumulator, connection);
         return accumulator.build();
     }
     
-    private void loadTables(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
+    private void loadTables(final String databaseName, final DialectSchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
                             final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
@@ -85,23 +152,16 @@ public final class MCPJdbcMetadataLoader {
                 if (databaseDialect.isSystemSchema(schemaName, catalogName, defaultSchemaSemantics)) {
                     continue;
                 }
-                String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
                 String tableName = Objects.toString(tables.getString("TABLE_NAME"), "").trim();
                 if (tableName.isEmpty()) {
                     continue;
                 }
-                TableMetadataAccumulator tableMetadata = accumulator.getSchemaAccumulator(normalizedSchemaName).getTableAccumulator(tableName);
-                for (String each : loadColumns(databaseMetaData, catalogName, schemaName, tableName)) {
-                    tableMetadata.addColumn(each);
-                }
-                for (String each : loadIndexes(databaseMetaData, catalogName, schemaName, tableName)) {
-                    tableMetadata.addIndex(each);
-                }
+                accumulator.getSchemaAccumulator(normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName)).addRelation(tableName, TableType.TABLE);
             }
         }
     }
     
-    private void loadViews(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
+    private void loadViews(final String databaseName, final DialectSchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
                            final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
@@ -110,20 +170,16 @@ public final class MCPJdbcMetadataLoader {
                 if (databaseDialect.isSystemSchema(schemaName, catalogName, defaultSchemaSemantics)) {
                     continue;
                 }
-                String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
                 String viewName = Objects.toString(views.getString("TABLE_NAME"), "").trim();
                 if (viewName.isEmpty()) {
                     continue;
                 }
-                ViewMetadataAccumulator viewMetadata = accumulator.getSchemaAccumulator(normalizedSchemaName).getViewAccumulator(viewName);
-                for (String each : loadColumns(databaseMetaData, catalogName, schemaName, viewName)) {
-                    viewMetadata.addColumn(each);
-                }
+                accumulator.getSchemaAccumulator(normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName)).addRelation(viewName, TableType.VIEW);
             }
         }
     }
     
-    private void loadSequences(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
+    private void loadSequences(final String databaseName, final DialectSchemaSemantics defaultSchemaSemantics, final MCPDatabaseDialect databaseDialect,
                                final DatabaseMetadataAccumulator accumulator, final Connection connection) throws SQLException {
         Optional<String> sequenceQuery = databaseDialect.getSequenceQuery();
         if (sequenceQuery.isEmpty()) {
@@ -135,53 +191,95 @@ public final class MCPJdbcMetadataLoader {
                 if (databaseDialect.isSystemSchema(schemaName)) {
                     continue;
                 }
-                String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
-                String sequenceName = Objects.toString(sequences.getString("SEQUENCE_NAME"), "").trim();
+                String sequenceName = Objects.toString(sequences.getString("SEQUENCE_NAME"), "");
                 if (!sequenceName.isEmpty()) {
-                    accumulator.getSchemaAccumulator(normalizedSchemaName).addSequence(sequenceName);
+                    accumulator.getSchemaAccumulator(normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName)).addSequence(sequenceName);
                 }
             }
         }
     }
     
-    private List<String> loadColumns(final DatabaseMetaData databaseMetaData, final String catalogName, final String schemaName, final String objectName) throws SQLException {
-        List<String> result = new LinkedList<>();
-        try (ResultSet columns = databaseMetaData.getColumns(getPattern(catalogName), getPattern(schemaName), objectName, "%")) {
+    private List<MCPColumnMetadata> loadColumnMetadata(final Connection connection, final DatabaseMetaData databaseMetaData, final RuntimeDatabaseProfile databaseProfile,
+                                                       final String schemaName, final String relationNamePattern) throws SQLException {
+        DialectSchemaSemantics schemaSemantics = MCPDatabaseDialect.of(databaseProfile.getDatabaseType()).getDefaultSchemaSemantics();
+        String catalogName = DialectSchemaSemantics.DATABASE_AS_SCHEMA == schemaSemantics ? resolveCatalogName(connection, schemaName) : null;
+        String schemaNamePattern = DialectSchemaSemantics.NATIVE_SCHEMA == schemaSemantics ? escapePattern(databaseMetaData, schemaName) : null;
+        List<MCPColumnMetadata> result = queryColumnMetadata(databaseMetaData, catalogName, schemaNamePattern, relationNamePattern);
+        if (result.isEmpty() && null != catalogName) {
+            result = queryColumnMetadata(databaseMetaData, null, schemaNamePattern, relationNamePattern);
+        }
+        result.sort(Comparator.comparing(MCPColumnMetadata::getRelationName)
+                .thenComparingInt(MCPColumnMetadata::getOrdinalPosition).thenComparing(MCPColumnMetadata::getName));
+        return result;
+    }
+    
+    private List<MCPColumnMetadata> queryColumnMetadata(final DatabaseMetaData databaseMetaData, final String catalogName,
+                                                        final String schemaNamePattern, final String relationNamePattern) throws SQLException {
+        List<MCPColumnMetadata> result = new LinkedList<>();
+        try (ResultSet columns = databaseMetaData.getColumns(catalogName, schemaNamePattern, relationNamePattern, "%")) {
             while (columns.next()) {
                 String columnName = Objects.toString(columns.getString("COLUMN_NAME"), "").trim();
                 if (!columnName.isEmpty()) {
-                    result.add(columnName);
+                    result.add(new MCPColumnMetadata(
+                            Objects.toString(columns.getString("TABLE_NAME"), "").trim(), columnName, columns.getInt("ORDINAL_POSITION"),
+                            columns.getInt("DATA_TYPE"), Objects.toString(columns.getString("TYPE_NAME"), "").trim(),
+                            Nullability.fromJdbcValue(columns.getInt("NULLABLE"))));
                 }
             }
         }
         return result;
     }
     
-    private List<String> loadIndexes(final DatabaseMetaData databaseMetaData, final String catalogName, final String schemaName, final String tableName) throws SQLException {
-        List<String> result = new LinkedList<>();
-        Set<String> loadedIndexNames = new LinkedHashSet<>();
-        try (ResultSet indexes = databaseMetaData.getIndexInfo(getPattern(catalogName), getPattern(schemaName), tableName, false, false)) {
+    private List<ShardingSphereIndex> loadIndexMetadata(final Connection connection, final DatabaseMetaData databaseMetaData, final RuntimeDatabaseProfile databaseProfile,
+                                                        final String schemaName, final String tableName) throws SQLException {
+        Map<String, IndexMetadataAccumulator> result = new LinkedHashMap<>(16, 1F);
+        DialectSchemaSemantics schemaSemantics = MCPDatabaseDialect.of(databaseProfile.getDatabaseType()).getDefaultSchemaSemantics();
+        String catalogName = DialectSchemaSemantics.DATABASE_AS_SCHEMA == schemaSemantics ? resolveCatalogName(connection, schemaName) : null;
+        String jdbcSchemaName = DialectSchemaSemantics.NATIVE_SCHEMA == schemaSemantics ? trimToNull(schemaName) : null;
+        try (ResultSet indexes = databaseMetaData.getIndexInfo(catalogName, jdbcSchemaName, tableName, false, false)) {
             while (indexes.next()) {
                 String indexName = Objects.toString(indexes.getString("INDEX_NAME"), "").trim();
-                if (!indexName.isEmpty() && loadedIndexNames.add(indexName)) {
-                    result.add(indexName);
+                if (indexName.isEmpty() || DatabaseMetaData.tableIndexStatistic == indexes.getShort("TYPE")) {
+                    continue;
                 }
+                boolean unique = !indexes.getBoolean("NON_UNIQUE");
+                IndexMetadataAccumulator accumulator = result.computeIfAbsent(indexName, ignored -> new IndexMetadataAccumulator(unique));
+                accumulator.addColumn(indexes.getInt("ORDINAL_POSITION"), Objects.toString(indexes.getString("COLUMN_NAME"), "").trim());
             }
+        } catch (final SQLFeatureNotSupportedException ignored) {
+            return Collections.emptyList();
         }
-        return result;
+        return result.entrySet().stream().map(each -> each.getValue().build(each.getKey())).toList();
     }
     
-    private String getPattern(final String value) {
+    private String resolveCatalogName(final Connection connection, final String schemaName) throws SQLException {
+        String result = trimToNull(connection.getCatalog());
+        return null == result ? trimToNull(schemaName) : result;
+    }
+    
+    private String escapePattern(final DatabaseMetaData databaseMetaData, final String value) throws SQLException {
+        String result = Objects.toString(value, "").trim();
+        if (result.isEmpty()) {
+            return null;
+        }
+        String escape = Objects.toString(databaseMetaData.getSearchStringEscape(), "");
+        if (escape.isEmpty()) {
+            return result;
+        }
+        return result.replace(escape, escape + escape).replace("%", escape + "%").replace("_", escape + "_");
+    }
+    
+    private String trimToNull(final String value) {
         String result = Objects.toString(value, "").trim();
         return result.isEmpty() ? null : result;
     }
     
-    private String normalizeSchemaName(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final String schemaName) {
+    private String normalizeSchemaName(final String databaseName, final DialectSchemaSemantics defaultSchemaSemantics, final String schemaName) {
         String result = Objects.toString(schemaName, "").trim();
         if (!result.isEmpty()) {
             return result;
         }
-        return SchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? databaseName : result;
+        return DialectSchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? databaseName : result;
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -189,27 +287,27 @@ public final class MCPJdbcMetadataLoader {
         
         private final String database;
         
-        private final String databaseType;
-        
-        private final String databaseVersion;
+        private final DatabaseType protocolType;
         
         private final Map<String, SchemaMetadataAccumulator> schemaAccumulators = new LinkedHashMap<>(16, 1F);
         
         private SchemaMetadataAccumulator getSchemaAccumulator(final String schema) {
             SchemaMetadataAccumulator result = schemaAccumulators.get(schema);
             if (null == result) {
-                result = new SchemaMetadataAccumulator(database, schema);
+                result = new SchemaMetadataAccumulator(database, schema, protocolType);
                 schemaAccumulators.put(schema, result);
             }
             return result;
         }
         
-        private MCPDatabaseMetadata build() {
-            List<MCPSchemaMetadata> schemas = new LinkedList<>();
+        private MCPMetadataSnapshot build() {
+            List<ShardingSphereSchema> schemas = new LinkedList<>();
+            Map<String, Collection<MCPSequenceMetadata>> sequences = new LinkedHashMap<>(schemaAccumulators.size(), 1F);
             for (SchemaMetadataAccumulator each : schemaAccumulators.values()) {
-                schemas.add(each.build());
+                schemas.add(each.buildSchema());
+                sequences.put(each.schema, new LinkedList<>(each.sequences.values()));
             }
-            return new MCPDatabaseMetadata(database, databaseType, databaseVersion, schemas);
+            return new MCPMetadataSnapshot(schemas, sequences);
         }
     }
     
@@ -220,90 +318,40 @@ public final class MCPJdbcMetadataLoader {
         
         private final String schema;
         
-        private final Map<String, TableMetadataAccumulator> tableAccumulators = new LinkedHashMap<>(16, 1F);
+        private final DatabaseType protocolType;
         
-        private final Map<String, ViewMetadataAccumulator> viewAccumulators = new LinkedHashMap<>(16, 1F);
+        private final Map<String, ShardingSphereTable> relations = new LinkedHashMap<>(16, 1F);
         
         private final Map<String, MCPSequenceMetadata> sequences = new LinkedHashMap<>(16, 1F);
         
-        private TableMetadataAccumulator getTableAccumulator(final String table) {
-            TableMetadataAccumulator result = tableAccumulators.get(table);
-            if (null == result) {
-                result = new TableMetadataAccumulator(database, schema, table);
-                tableAccumulators.put(table, result);
-            }
-            return result;
-        }
-        
-        private ViewMetadataAccumulator getViewAccumulator(final String view) {
-            ViewMetadataAccumulator result = viewAccumulators.get(view);
-            if (null == result) {
-                result = new ViewMetadataAccumulator(database, schema, view);
-                viewAccumulators.put(view, result);
-            }
-            return result;
+        private void addRelation(final String name, final TableType type) {
+            relations.putIfAbsent(name, new ShardingSphereTable(name, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), type));
         }
         
         private void addSequence(final String sequence) {
             sequences.putIfAbsent(sequence, new MCPSequenceMetadata(database, schema, sequence));
         }
         
-        private MCPSchemaMetadata build() {
-            List<MCPTableMetadata> tables = new LinkedList<>();
-            for (TableMetadataAccumulator each : tableAccumulators.values()) {
-                tables.add(each.build());
-            }
-            List<MCPViewMetadata> views = new LinkedList<>();
-            for (ViewMetadataAccumulator each : viewAccumulators.values()) {
-                views.add(each.build());
-            }
-            return new MCPSchemaMetadata(database, schema, tables, views, new LinkedList<>(sequences.values()));
+        private ShardingSphereSchema buildSchema() {
+            return new ShardingSphereSchema(schema, protocolType, relations.values(), Collections.emptyList());
         }
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private static final class TableMetadataAccumulator {
+    private static final class IndexMetadataAccumulator {
         
-        private final String database;
+        private final boolean unique;
         
-        private final String schema;
+        private final Map<Integer, String> columns = new LinkedHashMap<>(4, 1F);
         
-        private final String table;
-        
-        private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
-        
-        private final Map<String, MCPIndexMetadata> indexes = new LinkedHashMap<>(16, 1F);
-        
-        private void addColumn(final String column) {
-            columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, table, "", column));
+        private void addColumn(final int ordinalPosition, final String columnName) {
+            if (!columnName.isEmpty()) {
+                columns.putIfAbsent(ordinalPosition, columnName);
+            }
         }
         
-        private void addIndex(final String index) {
-            indexes.putIfAbsent(index, new MCPIndexMetadata(database, schema, table, index));
-        }
-        
-        private MCPTableMetadata build() {
-            return new MCPTableMetadata(database, schema, table, new LinkedList<>(columns.values()), new LinkedList<>(indexes.values()));
-        }
-    }
-    
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private static final class ViewMetadataAccumulator {
-        
-        private final String database;
-        
-        private final String schema;
-        
-        private final String view;
-        
-        private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
-        
-        private void addColumn(final String column) {
-            columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, "", view, column));
-        }
-        
-        private MCPViewMetadata build() {
-            return new MCPViewMetadata(database, schema, view, new LinkedList<>(columns.values()));
+        private ShardingSphereIndex build(final String name) {
+            return new ShardingSphereIndex(name, columns.entrySet().stream().sorted(Entry.comparingByKey()).map(Entry::getValue).toList(), unique);
         }
     }
 }

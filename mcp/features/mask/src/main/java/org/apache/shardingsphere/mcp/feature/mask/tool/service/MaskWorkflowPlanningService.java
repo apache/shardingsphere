@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
@@ -25,13 +26,13 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyReq
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
 import java.util.LinkedHashMap;
@@ -43,6 +44,8 @@ import java.util.Map;
  * Mask workflow planning service.
  */
 public final class MaskWorkflowPlanningService {
+    
+    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of(WorkflowLifecycle.OPERATION_CREATE, WorkflowLifecycle.OPERATION_DROP);
     
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, table, column and target lifecycle",
@@ -56,26 +59,15 @@ public final class MaskWorkflowPlanningService {
     
     private static final List<String> VALIDATION_LAYERS = List.of("rules");
     
-    private final WorkflowPlanningSupport planningSupport;
+    private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
-    private final MaskWorkflowIntentResolver intentResolver;
+    private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
-    private final MaskRuleInspectionService ruleInspectionService;
+    private final MaskAlgorithmRecommendationService algorithmRecommendationService = new MaskAlgorithmRecommendationService();
     
-    private final MaskAlgorithmRecommendationService algorithmRecommendationService;
+    private final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new MaskAlgorithmPropertyTemplateService();
     
-    private final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
-    
-    private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService;
-    
-    public MaskWorkflowPlanningService() {
-        planningSupport = new WorkflowPlanningSupport();
-        intentResolver = new MaskWorkflowIntentResolver();
-        ruleInspectionService = new MaskRuleInspectionService();
-        algorithmRecommendationService = new MaskAlgorithmRecommendationService();
-        algorithmPropertyTemplateService = new MaskAlgorithmPropertyTemplateService();
-        ruleDistSQLPlanningService = new MaskRuleDistSQLPlanningService();
-    }
+    private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = new MaskRuleDistSQLPlanningService();
     
     /**
      * Plan mask workflow.
@@ -83,33 +75,36 @@ public final class MaskWorkflowPlanningService {
      * @param workflowSessionContext workflow session context
      * @param metadataQueryFacade metadata query facade
      * @param queryFacade query facade
-     * @param sessionId session id
      * @param request workflow request
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot plan(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
-                                        final String sessionId, final WorkflowRequest request) {
-        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(sessionId, request.getPlanId());
+                                        final WorkflowRequest request) {
+        WorkflowContextSnapshot result = workflowSessionContext.getOrCreate(request.getPlanId());
         WorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
-        if (!planningSupport.ensurePlanningContext(metadataQueryFacade, mergedRequest, clarifiedIntent, result)) {
+        if (!planningSupport.ensureSupportedOperationType(clarifiedIntent, SUPPORTED_OPERATION_TYPES, result)) {
             String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
             return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
-        String databaseType = queryFacade.getDatabaseType(mergedRequest.getDatabase());
+        if (!planningSupport.ensurePlanningContext(metadataQueryFacade, queryFacade, mergedRequest, clarifiedIntent, result)) {
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
+        }
+        queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
         List<Map<String, Object>> existingRules = ruleInspectionService.queryMaskRules(queryFacade, mergedRequest.getDatabase(), mergedRequest.getTable());
-        if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result, databaseType)) {
+        if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
-        if (!ensureSupportedRuleMutation(clarifiedIntent, mergedRequest, existingRules, result, databaseType)) {
+        if (!ensureSupportedRuleMutation(clarifiedIntent, mergedRequest, existingRules, result, queryFacade)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
         if (isDropWorkflow(clarifiedIntent)) {
-            planArtifacts(clarifiedIntent, mergedRequest, existingRules, result);
+            planArtifacts(clarifiedIntent, mergedRequest, result);
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
         }
-        if (!planNonDrop(queryFacade, clarifiedIntent, mergedRequest, existingRules, result)) {
+        if (!planNonDrop(queryFacade, clarifiedIntent, mergedRequest, result)) {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
         return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
@@ -117,34 +112,47 @@ public final class MaskWorkflowPlanningService {
     
     private WorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         WorkflowRequest result = WorkflowRequest.merge(snapshot.getRequest(), request);
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        resolveOperationType(result, clarifiedIntent);
         return planningSupport.prepareSnapshot(snapshot, MaskFeatureDefinition.WORKFLOW_KIND, result, null,
-                intentResolver.resolve(result), "Mask workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+                clarifiedIntent, "Mask workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+    }
+    
+    private void resolveOperationType(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+        if (!request.getOperationType().isEmpty()) {
+            clarifiedIntent.setOperationType(request.getOperationType());
+        } else if (request.getNaturalLanguageIntent().isEmpty()) {
+            clarifiedIntent.setOperationType(WorkflowLifecycle.OPERATION_CREATE);
+            clarifiedIntent.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, WorkflowLifecycle.OPERATION_CREATE);
+        }
     }
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
-                                         final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot, final String databaseType) {
-        boolean ruleExists = maskRules.stream().anyMatch(each -> WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column")));
+                                         final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
+        boolean ruleExists = maskRules.stream().anyMatch(each -> queryFacade.isSameIdentifier(
+                request.getDatabase(), IdentifierScope.COLUMN, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column")));
         return planningSupport.ensureLifecycleState("Mask rule", clarifiedIntent, ruleExists, snapshot);
     }
     
     private boolean ensureSupportedRuleMutation(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
-                                                final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot, final String databaseType) {
+                                                final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         if (isDropWorkflow(clarifiedIntent)) {
-            return !hasRemainingRulesAfterDrop(request, maskRules, databaseType) || rejectExistingTableRuleMutation(clarifiedIntent, request, maskRules, snapshot);
+            return !hasRemainingRulesAfterDrop(queryFacade, request, maskRules) || rejectExistingTableRuleMutation(clarifiedIntent, request, maskRules, snapshot);
         }
         return maskRules.isEmpty() || rejectExistingTableRuleMutation(clarifiedIntent, request, maskRules, snapshot);
     }
     
-    private boolean hasRemainingRulesAfterDrop(final WorkflowRequest request, final List<Map<String, Object>> maskRules, final String databaseType) {
-        return maskRules.stream().anyMatch(each -> !WorkflowSQLUtils.isSameIdentifier(databaseType, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column")));
+    private boolean hasRemainingRulesAfterDrop(final MCPFeatureQueryFacade queryFacade, final WorkflowRequest request, final List<Map<String, Object>> maskRules) {
+        return maskRules.stream().anyMatch(each -> !queryFacade.isSameIdentifier(
+                request.getDatabase(), IdentifierScope.COLUMN, request.getColumn(), WorkflowRuleValueUtils.getRuleValue(each, "column")));
     }
     
     private boolean rejectExistingTableRuleMutation(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
                                                     final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
         snapshot.getClarifiedIntent().getClarificationMessages().add(
                 "Current Proxy DistSQL cannot automatically mutate an existing mask table rule. Recreate the mask rule manually with the complete column set during a maintenance window.");
-        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.MASK_ALTER_SCOPE_LIMITED, "error", "planning-artifacts",
-                "Mask planning cannot automatically alter an existing table rule or shrink it while preserving remaining columns in V1.",
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.MASK_RULE_REWRITE_LIMITED, "error", WorkflowLifecycle.STEP_PLANNING_ARTIFACTS,
+                "Mask planning cannot automatically rewrite an existing table rule or shrink it while preserving remaining columns.",
                 "Manually recreate the mask rule with the complete column set after reviewing data impact.", true,
                 Map.of("operation_type", clarifiedIntent.getOperationType(), "target_column", request.getColumn(), "existing_columns", createExistingRuleColumns(maskRules))));
         return false;
@@ -162,19 +170,18 @@ public final class MaskWorkflowPlanningService {
         return WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(clarifiedIntent.getOperationType());
     }
     
-    private boolean planNonDrop(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
-                                final List<Map<String, Object>> existingRules, final WorkflowContextSnapshot snapshot) {
-        planAlgorithms(queryFacade, clarifiedIntent, request, snapshot);
+    private boolean planNonDrop(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        planAlgorithms(queryFacade, request, snapshot);
         if (!planningSupport.isReadyForArtifactPlanning(request, clarifiedIntent, snapshot, findPropertyRequirements(request), "Please use a mask algorithm visible in the current Proxy.")) {
             return false;
         }
-        planArtifacts(clarifiedIntent, request, existingRules, snapshot);
+        planArtifacts(clarifiedIntent, request, snapshot);
         return true;
     }
     
-    private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+    private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         List<Map<String, Object>> maskAlgorithms = ruleInspectionService.queryMaskAlgorithms(queryFacade);
-        List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendMaskAlgorithms(clarifiedIntent, request, maskAlgorithms, snapshot.getIssues());
+        List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendMaskAlgorithms(request, maskAlgorithms, snapshot.getIssues());
         snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
         if (!algorithmCandidates.isEmpty()) {
             request.setAlgorithmType(algorithmCandidates.getFirst().getAlgorithmType());
@@ -185,12 +192,11 @@ public final class MaskWorkflowPlanningService {
         return algorithmPropertyTemplateService.findRequirements(request.getAlgorithmType());
     }
     
-    private void planArtifacts(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
-                               final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
+    private void planArtifacts(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         snapshot.getRuleArtifacts().add(isDropWorkflow(clarifiedIntent)
                 ? ruleDistSQLPlanningService.planMaskDropRule(request)
                 : ruleDistSQLPlanningService.planMaskRule(request));
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(maskRules, isDropWorkflow(clarifiedIntent) ? List.of() : List.of(createExpectedTargetRule(request))));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(isDropWorkflow(clarifiedIntent) ? List.of() : List.of(createExpectedTargetRule(request))));
     }
     
     private Map<String, Object> createExpectedTargetRule(final WorkflowRequest request) {

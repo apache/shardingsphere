@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 import org.junit.jupiter.api.Test;
@@ -35,57 +37,54 @@ class RuntimeStatusHandlerTest {
     
     @Test
     void assertHandle() {
-        try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), "http"))) {
-            Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
-            assertThat(actual.get("response_mode"), is("runtime"));
-            assertThat(actual.get("summary"), is("Runtime is ready with 3 configured logical database(s)."));
-            assertThat(actual.get("server_status"), is("ready"));
-            assertThat(actual.get("status"), is("available"));
-            assertThat(actual.get("transport"), is("http"));
-            assertThat(actual.get("active_transport"), is("http"));
-            assertThat(((Map<?, ?>) actual.get("transport_security_summary")).get("recommended_exposure"), is("loopback_or_trusted_gateway"));
-            assertThat(actual.get("configured_database_count"), is(3));
-            assertTrue(((List<?>) actual.get("databases")).stream().map(each -> ((Map<?, ?>) each).get("database")).anyMatch("logic_db"::equals));
-            assertThat(((Map<?, ?>) actual.get("redaction_summary")).get("marker"), is("******"));
-            assertRuntimeDiagnostics(actual, "ready");
-            assertRuntimeProtection(actual);
-            assertFalse(actual.containsKey("capability_fingerprint"));
-            assertRuntimeCapability((List<?>) actual.get("databases"), "logic_db");
-            assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities", "shardingsphere://databases")));
-            assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("resource_uri"), is("shardingsphere://databases"));
-        }
+        MCPFeatureRuntimeRequestContext requestContext =
+                new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), MCPTransportType.HTTP),
+                        new MCPSessionIdentity("session-1", "", "", Map.of()));
+        Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPResourceURIVariables(Map.of())).toPayload();
+        assertThat(actual.get("response_mode"), is("runtime"));
+        assertThat(actual.get("summary"), is("Runtime is ready with 3 configured logical database(s)."));
+        assertThat(actual.get("status"), is("available"));
+        assertThat(actual.get("active_transport"), is("http"));
+        assertThat(((Map<?, ?>) actual.get("transport_security_summary")).get("recommended_exposure"), is("loopback_or_trusted_gateway"));
+        assertThat(actual.get("configured_database_count"), is(3));
+        assertTrue(((List<?>) actual.get("databases")).stream().map(each -> ((Map<?, ?>) each).get("database")).anyMatch("logic_db"::equals));
+        assertRuntimeDiagnostics(actual, "ready");
+        assertRuntimeProtection(actual);
+        assertFalse(actual.containsKey("capability_fingerprint"));
+        assertRuntimeCapability((List<?>) actual.get("databases"), "logic_db");
+        assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities", "shardingsphere://databases")));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst()).get("resource_uri"), is("shardingsphere://databases"));
     }
     
     @Test
     void assertHandleWithStdioTransport() {
-        try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), "stdio"))) {
-            Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
-            assertThat(actual.get("transport"), is("stdio"));
-            assertThat(actual.get("active_transport"), is("stdio"));
-            assertThat(((Map<?, ?>) actual.get("transport_security_summary")).get("recommended_exposure"), is("local_stdio_session"));
-        }
+        MCPFeatureRuntimeRequestContext requestContext =
+                new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata(), MCPTransportType.STDIO),
+                        new MCPSessionIdentity("session-1", "", "", Map.of()));
+        Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPResourceURIVariables(Map.of())).toPayload();
+        assertThat(actual.get("active_transport"), is("stdio"));
+        assertThat(((Map<?, ?>) actual.get("transport_security_summary")).get("recommended_exposure"), is("local_stdio_session"));
     }
     
     @Test
     void assertHandleWithEmptyRuntimeDatabase() {
-        try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of(), "http"))) {
-            Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
-            assertThat(actual.get("server_status"), is("configuration_required"));
-            assertThat(actual.get("summary"), is("Runtime requires at least one configured logical database before metadata discovery or SQL execution."));
-            assertThat(actual.get("status"), is("configuration_required"));
-            assertThat(actual.get("configured_database_count"), is(0));
-            assertThat(((List<?>) actual.get("databases")).size(), is(0));
-            Map<?, ?> readiness = (Map<?, ?>) actual.get("readiness");
-            assertFalse((Boolean) readiness.get("ready"));
-            assertThat(readiness.get("reason"), is("No runtime databases are configured."));
-            assertRuntimeDiagnostics(actual, "invalid_configuration");
-            assertRuntimeProtection(actual);
-            assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities")));
-            List<?> nextActions = (List<?>) actual.get("next_actions");
-            assertThat(((Map<?, ?>) nextActions.get(0)).get("type"), is("resource_read"));
-            assertThat(((Map<?, ?>) nextActions.get(1)).get("type"), is("ask_user"));
-            assertThat(((Map<?, ?>) nextActions.get(1)).get("required_inputs"), is(List.of("runtimeDatabases")));
-        }
+        MCPFeatureRuntimeRequestContext requestContext = new MCPFeatureRuntimeRequestContext(ResourceTestDataFactory.createRuntimeContext(List.of(), MCPTransportType.HTTP),
+                new MCPSessionIdentity("session-1", "", "", Map.of()));
+        Map<String, Object> actual = new RuntimeStatusHandler().handle(requestContext, new MCPResourceURIVariables(Map.of())).toPayload();
+        assertThat(actual.get("summary"), is("Runtime requires at least one configured logical database before metadata discovery or SQL execution."));
+        assertThat(actual.get("status"), is("configuration_required"));
+        assertThat(actual.get("configured_database_count"), is(0));
+        assertThat(((List<?>) actual.get("databases")).size(), is(0));
+        Map<?, ?> readiness = (Map<?, ?>) actual.get("readiness");
+        assertFalse((Boolean) readiness.get("ready"));
+        assertThat(readiness.get("reason"), is("No runtime databases are configured."));
+        assertRuntimeDiagnostics(actual, "invalid_configuration");
+        assertRuntimeProtection(actual);
+        assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities")));
+        List<?> nextActions = (List<?>) actual.get("next_actions");
+        assertThat(((Map<?, ?>) nextActions.get(0)).get("type"), is("resource_read"));
+        assertThat(((Map<?, ?>) nextActions.get(1)).get("type"), is("ask_user"));
+        assertThat(((Map<?, ?>) nextActions.get(1)).get("required_inputs"), is(List.of("runtimeDatabases")));
     }
     
     private void assertRuntimeDiagnostics(final Map<String, Object> payload, final String expectedCategory) {
@@ -129,9 +128,6 @@ class RuntimeStatusHandlerTest {
     
     private void assertRuntimeCapability(final List<?> databases, final String databaseName) {
         Map<?, ?> actualDatabase = databases.stream().map(each -> (Map<?, ?>) each).filter(each -> databaseName.equals(each.get("database"))).findFirst().orElseThrow();
-        assertThat(actualDatabase.get("metadata_visibility"), is("ready"));
-        assertThat(actualDatabase.get("capability_visibility"), is("ready"));
-        assertThat(actualDatabase.get("feature_visibility"), is("ready"));
         Map<?, ?> actualCapabilities = (Map<?, ?>) actualDatabase.get("capabilities");
         assertTrue((Boolean) actualCapabilities.get("available"));
         assertTrue(((List<?>) actualCapabilities.get("supported_statement_classes")).contains("QUERY"));

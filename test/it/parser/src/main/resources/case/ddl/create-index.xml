@@ -467,4 +467,12 @@
         </properties>
         <comment text="full syntax" start-index="115" stop-index="127" />
     </create-index>
+
+    <create-index sql-case-id="create_index_with_domain_index_type" index-type="ctxsys.context">
+        <index name="doc_idx" start-index="13" stop-index="19" />
+        <table>
+            <simple-table name="docs" start-index="24" stop-index="27" />
+        </table>
+        <column start-index="29" stop-index="36" name="document" />
+    </create-index>
 </sql-parser-test-cases>

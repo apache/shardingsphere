@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPToolDescriptorValidationUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -51,6 +52,31 @@ class EncryptDescriptorContractTest {
     void assertPromptCompletionArguments() {
         assertCompletionTargetArguments(EncryptFeatureDefinition.PLAN_PROMPT_NAME, "database", "schema", "table", "column", "algorithm_type", "assisted_query_algorithm_type",
                 "like_query_algorithm_type", "plan_id");
+    }
+    
+    @Test
+    void assertPlanIdInputGuidesNewPlanOmission() {
+        MCPToolDescriptor actualDescriptor = findToolDescriptor();
+        Map<?, ?> actualPlanIdInput = MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "plan_id").orElseThrow();
+        String actualDescription = actualPlanIdInput.get("description").toString();
+        assertFalse(MCPToolDescriptorValidationUtils.isRequiredToolInput(actualDescriptor, "plan_id"));
+        assertTrue(actualDescription.contains("Omit when starting a new plan"));
+        assertTrue(actualDescription.contains("never use placeholder values"));
+    }
+    
+    @Test
+    void assertPlanToolOperationTypesExposeOnlySupportedLifecycleActions() {
+        Map<?, ?> actualOperationType = MCPToolDescriptorValidationUtils.findToolInputProperty(findToolDescriptor(), "operation_type").orElseThrow();
+        assertThat(actualOperationType.get("enum"), is(List.of("create", "drop")));
+    }
+    
+    @Test
+    void assertPlanToolExposesEncryptRequirementsAtTopLevel() {
+        MCPToolDescriptor actualDescriptor = findToolDescriptor();
+        assertThat(MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "requires_decrypt").orElseThrow().get("type"), is("boolean"));
+        assertThat(MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "requires_equality_filter").orElseThrow().get("type"), is("boolean"));
+        assertThat(MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "requires_like_query").orElseThrow().get("type"), is("boolean"));
+        assertFalse(MCPToolDescriptorValidationUtils.findToolInputProperty(actualDescriptor, "structured_intent_evidence").isPresent());
     }
     
     private MCPToolDescriptor findToolDescriptor() {
@@ -87,7 +113,7 @@ class EncryptDescriptorContractTest {
     
     private boolean isEncryptRuleDistSQL(final String sql) {
         String actualSQL = sql.toUpperCase(Locale.ENGLISH);
-        return actualSQL.contains("CREATE ENCRYPT RULE") || actualSQL.contains("ALTER ENCRYPT RULE");
+        return actualSQL.contains("CREATE ENCRYPT RULE");
     }
     
     private void assertEncryptRuleDistSQL(final String sql) {

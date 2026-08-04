@@ -187,7 +187,6 @@
     </test-case>
     
     <test-case sql="INSERT INTO t_data_type_integer_unsigned (id, col_bigint_unsigned, col_int_unsigned, col_mediumint_unsigned, col_smallint_unsigned, col_tinyint_unsigned) values (?, ?, ?, ?, ?, ?)" db-types="MySQL" scenario-types="passthrough">
-        <!-- TODO Test unsigned with MySQL Connector/J 8.0.x client https://github.com/apache/shardingsphere/issues/14349 -->
         <assertion parameters="1:int, 18446744073709551615:decimal, 4294967295:long, 16777215:int, 65535:int, 255:smallint" expected-data-file="insert_max_values_into_single_table_integer_unsigned.xml" />
         <assertion parameters="2:int, 0:long, 0:int, 0:int, 0:smallint, 0:tinyint" expected-data-file="insert_min_values_into_single_table_integer_unsigned.xml" />
     </test-case>

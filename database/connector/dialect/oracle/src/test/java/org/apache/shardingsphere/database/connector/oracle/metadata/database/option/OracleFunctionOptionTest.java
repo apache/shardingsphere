@@ -19,18 +19,12 @@ package org.apache.shardingsphere.database.connector.oracle.metadata.database.op
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OracleFunctionOptionTest {
     
     private final OracleFunctionOption functionOption = new OracleFunctionOption();
-    
-    @Test
-    void assertGetIfNullFunctionName() {
-        assertThat(functionOption.getIfNullFunctionName(), is("NVL"));
-    }
     
     @Test
     void assertGetUnparenthesizedFunctionNames() {
@@ -41,7 +35,6 @@ class OracleFunctionOptionTest {
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_TIMESTAMP"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_USER"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRVAL"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("DAY"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("DBTIMEZONE"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("DEFAULT"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("LEVEL"));
@@ -51,13 +44,14 @@ class OracleFunctionOptionTest {
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ORA_ROWSCN"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROWID"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM_"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROW_NUMBER"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SESSIONTIMEZONE"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SESSION_USER"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SYSDATE"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SYSTIMESTAMP"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("UID"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("USER"));
+        assertFalse(functionOption.getUnparenthesizedFunctionNames().contains("DAY"));
+        assertFalse(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM_"));
+        assertFalse(functionOption.getUnparenthesizedFunctionNames().contains("ROW_NUMBER"));
     }
 }

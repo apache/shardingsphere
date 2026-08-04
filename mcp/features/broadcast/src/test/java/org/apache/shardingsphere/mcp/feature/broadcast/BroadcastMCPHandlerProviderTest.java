@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.mcp.feature.broadcast;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.service.BroadcastWorkflowValidationService;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +43,7 @@ class BroadcastMCPHandlerProviderTest {
                 BroadcastFeatureDefinition.RULES_RESOURCE_URI,
                 BroadcastFeatureDefinition.TABLE_RULE_RESOURCE_URI,
                 BroadcastFeatureDefinition.RULE_COUNT_RESOURCE_URI)));
+        assertTrue(actual.stream().allMatch(each -> MCPFeatureRequestContext.class.equals(each.getContextType())));
     }
     
     @Test
@@ -51,11 +53,15 @@ class BroadcastMCPHandlerProviderTest {
     }
     
     @Test
+    void assertGetCompletionHandlers() {
+        assertTrue(new BroadcastMCPHandlerProvider().getCompletionHandlers().isEmpty());
+    }
+    
+    @Test
     void assertGetWorkflowDefinitions() {
         WorkflowRuntimeDefinition actual = new BroadcastMCPHandlerProvider().getWorkflowDefinitions().iterator().next();
         assertThat(actual.getWorkflowKind(), is(BroadcastFeatureDefinition.WORKFLOW_KIND));
-        assertThat(actual.getApplySynchronizationHandler(), isA(BroadcastWorkflowValidationService.class));
-        assertThat(actual.getValidationHandler(), isA(BroadcastWorkflowValidationService.class));
+        assertThat(actual.getRuntimeHandler(), isA(BroadcastWorkflowValidationService.class));
     }
     
     @Test

@@ -39,7 +39,8 @@ class ReadwriteSplittingAlgorithmRecommendationServiceTest {
     void assertRecommendSpecifiedAlgorithm() {
         ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
         request.setLoadBalancerType("round_robin");
-        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(request, List.of(Map.of("type", "ROUND_ROBIN")), new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(
+                request, List.of(Map.of("type", "ROUND_ROBIN")), new LinkedList<>());
         assertThat(actual.getFirst().getAlgorithmType(), is("ROUND_ROBIN"));
         assertThat(actual.getFirst().getAlgorithmRole(), is("primary"));
     }
@@ -47,8 +48,11 @@ class ReadwriteSplittingAlgorithmRecommendationServiceTest {
     @Test
     void assertRecommendDefaultAlgorithm() {
         ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
-        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(request, List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN")), new LinkedList<>());
+        List<AlgorithmCandidate> actual = service.recommendLoadBalanceAlgorithms(
+                request, List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN")), new LinkedList<>());
         assertThat(actual.getFirst().getAlgorithmType(), is("ROUND_ROBIN"));
+        assertThat(actual.getFirst().getRecommendationReason(), is(
+                "Selected from algorithms reported by the current Proxy using MCP's built-in load-balance preference order."));
     }
     
     @Test

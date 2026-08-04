@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mcp.feature.shadow;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalog;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogLoader;
+import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ShadowDescriptorContractTest {
     
@@ -51,8 +53,27 @@ class ShadowDescriptorContractTest {
         assertCompletionTargetArguments(catalog, ShadowFeatureDefinition.PLAN_ALGORITHM_CLEANUP_PROMPT_NAME, "database", "plan_id");
     }
     
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertDefaultAlgorithmTypeContract() {
+        Map<String, Object> properties = (Map<String, Object>) findTool(MCPDescriptorCatalogLoader.load(),
+                ShadowFeatureDefinition.PLAN_DEFAULT_ALGORITHM_TOOL_NAME).getInputSchema().get("properties");
+        assertThat(((Map<String, Object>) properties.get("algorithm_type")).get("enum"), is(List.of("SQL_HINT")));
+        assertFalse(properties.containsKey("structured_intent_evidence"));
+    }
+    
+    @Test
+    void assertAlgorithmResourceScope() {
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        assertThat(findResourceMetadata(catalog, "shardingsphere://features/shadow/databases/{database}/algorithms").getObjectScope(), is("algorithm"));
+    }
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getProtocolDescriptors().getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private ShardingSphereMCPResourceMetadata findResourceMetadata(final MCPDescriptorCatalog catalog, final String uriTemplate) {
+        return catalog.getShardingSphereDescriptors().getResourceMetadata().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
     
     private void assertCompletionTargetArguments(final MCPDescriptorCatalog catalog, final String promptName, final String... expectedArguments) {

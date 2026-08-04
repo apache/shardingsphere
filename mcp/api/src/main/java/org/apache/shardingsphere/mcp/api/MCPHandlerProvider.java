@@ -19,13 +19,16 @@ package org.apache.shardingsphere.mcp.api;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 
 import java.util.Collection;
 
 /**
  * MCP handler provider.
+ *
+ * <p>Handler instances returned by this provider are retained by the runtime and may be invoked concurrently.</p>
  */
 @SingletonSPI
 public interface MCPHandlerProvider extends ShardingSphereSPI {
@@ -43,4 +46,11 @@ public interface MCPHandlerProvider extends ShardingSphereSPI {
      * @return tool handlers
      */
     Collection<MCPToolHandler<?>> getToolHandlers();
+    
+    /**
+     * Get completion handlers.
+     *
+     * @return completion handlers
+     */
+    Collection<MCPCompletionHandler<?>> getCompletionHandlers();
 }

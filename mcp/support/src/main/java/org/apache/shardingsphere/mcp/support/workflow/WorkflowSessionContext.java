@@ -20,54 +20,36 @@ package org.apache.shardingsphere.mcp.support.workflow;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Workflow session context.
+ * Workflow context bound to one MCP session.
  */
 public interface WorkflowSessionContext {
     
     /**
-     * Create plan identifier.
-     *
-     * @return plan identifier
-     */
-    String createPlanId();
-    
-    /**
      * Get an existing workflow snapshot or create a new one.
      *
-     * @param sessionId session identifier
      * @param planId plan identifier
      * @return workflow snapshot
      */
-    WorkflowContextSnapshot getOrCreate(String sessionId, String planId);
+    WorkflowContextSnapshot getOrCreate(String planId);
     
     /**
-     * Save snapshot.
+     * Save snapshot for the current MCP session.
      *
      * @param snapshot workflow snapshot
      */
     void save(WorkflowContextSnapshot snapshot);
     
     /**
-     * Find snapshot.
+     * List snapshots owned by the current MCP session.
      *
-     * @param planId plan identifier
-     * @return snapshot when present
+     * @return workflow snapshots owned by the current MCP session
      */
-    Optional<WorkflowContextSnapshot> find(String planId);
+    List<WorkflowContextSnapshot> list();
     
     /**
-     * List snapshots owned by one MCP session.
-     *
-     * @param sessionId session identifier
-     * @return workflow snapshots owned by the session
-     */
-    List<WorkflowContextSnapshot> list(String sessionId);
-    
-    /**
-     * Persist snapshot with lifecycle state.
+     * Persist snapshot with lifecycle state for the current MCP session.
      *
      * @param snapshot workflow snapshot
      * @param currentStep current interaction step
@@ -77,24 +59,11 @@ public interface WorkflowSessionContext {
     WorkflowContextSnapshot persist(WorkflowContextSnapshot snapshot, String currentStep, String status);
     
     /**
-     * Get required snapshot.
+     * Get required snapshot owned by the current MCP session.
      *
      * @param planId plan identifier
      * @return workflow snapshot
      */
     WorkflowContextSnapshot getRequired(String planId);
     
-    /**
-     * Remove snapshot.
-     *
-     * @param planId plan identifier
-     */
-    void remove(String planId);
-    
-    /**
-     * Remove snapshots owned by one MCP session.
-     *
-     * @param sessionId session identifier
-     */
-    void removeBySessionId(String sessionId);
 }

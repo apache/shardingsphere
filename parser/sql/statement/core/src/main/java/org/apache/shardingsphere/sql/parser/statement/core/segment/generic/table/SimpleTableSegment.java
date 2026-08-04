@@ -51,6 +51,9 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     @Setter
     private ExpressionSegment tableSampleExpression;
     
+    @Setter
+    private boolean tableSampled;
+    
     private final Collection<IndexHintSegment> indexHintSegments = new LinkedList<>();
     
     @Setter

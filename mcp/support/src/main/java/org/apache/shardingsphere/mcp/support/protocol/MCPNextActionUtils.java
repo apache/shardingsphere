@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -81,33 +82,22 @@ public final class MCPNextActionUtils {
     /**
      * Create a completion action.
      *
-     * @param referenceType completion reference type
-     * @param reference completion reference
-     * @param argumentName argument name
-     * @param argumentPrefix argument prefix
-     * @param contextArguments context arguments
-     * @param missingContextArguments missing context arguments
-     * @param resumeTargetType resume target type
-     * @param resumeTarget resume target
-     * @param resumeArguments resume arguments
-     * @param reason action reason
+     * @param action completion action
      * @return action payload
      */
-    public static Map<String, Object> completeArgument(final String referenceType, final String reference, final String argumentName, final String argumentPrefix,
-                                                       final Map<String, ?> contextArguments, final Collection<String> missingContextArguments, final String resumeTargetType,
-                                                       final String resumeTarget, final Map<String, ?> resumeArguments, final String reason) {
-        Map<String, Object> result = createBaseAction("completion", "Complete " + argumentName, reason);
-        result.put("ref", createCompletionRef(referenceType, reference));
-        result.put("argument", Map.of("name", argumentName, "value", argumentPrefix));
-        if (!contextArguments.isEmpty()) {
-            result.put("context", Map.of("arguments", contextArguments));
+    public static Map<String, Object> completeArgument(final MCPCompletionAction action) {
+        Map<String, Object> result = createBaseAction("completion", "Complete " + action.getArgumentName(), action.getReason());
+        result.put("ref", createCompletionRef(action.getReferenceType(), action.getReference()));
+        result.put("argument", Map.of("name", action.getArgumentName(), "value", action.getArgumentPrefix()));
+        if (!action.getContextArguments().isEmpty()) {
+            result.put("context", Map.of("arguments", action.getContextArguments()));
         }
-        result.put("missing_context_arguments", missingContextArguments);
-        if (!resumeTargetType.isEmpty()) {
-            result.put("resume_ref", createCompletionRef(resumeTargetType, resumeTarget));
+        result.put("missing_context_arguments", action.getMissingContextArguments());
+        if (!action.getResumeTargetType().isEmpty()) {
+            result.put("resume_ref", createCompletionRef(action.getResumeTargetType(), action.getResumeTarget()));
         }
-        if (!resumeArguments.isEmpty()) {
-            result.put("resume_arguments", resumeArguments);
+        if (!action.getResumeArguments().isEmpty()) {
+            result.put("resume_arguments", action.getResumeArguments());
         }
         return result;
     }
@@ -133,13 +123,13 @@ public final class MCPNextActionUtils {
     /**
      * Create an ask-user action.
      *
-     * @param reason action reason
+     * @param question question for the user
      * @param requiredInputs required user inputs
      * @return action payload
      */
-    public static Map<String, Object> askUser(final String reason, final List<String> requiredInputs) {
-        Map<String, Object> result = createBaseAction("ask_user", "Ask user", reason);
-        result.put("question", reason);
+    public static Map<String, Object> askUser(final String question, final List<String> requiredInputs) {
+        Map<String, Object> result = createBaseAction("ask_user", "Ask user");
+        result.put("question", question);
         result.put("required_inputs", requiredInputs);
         return result;
     }
@@ -155,11 +145,16 @@ public final class MCPNextActionUtils {
     }
     
     private static Map<String, Object> createBaseAction(final String type, final String title, final String reason) {
-        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
+        Map<String, Object> result = createBaseAction(type, title);
+        result.put(MCPPayloadFieldNames.REASON, reason);
+        return result;
+    }
+    
+    private static Map<String, Object> createBaseAction(final String type, final String title) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("order", 1);
         result.put("type", type);
         result.put("title", title);
-        result.put(MCPPayloadFieldNames.REASON, reason);
         return result;
     }
     
@@ -171,10 +166,21 @@ public final class MCPNextActionUtils {
      */
     @SafeVarargs
     public static List<Map<String, Object>> ordered(final Map<String, Object>... actions) {
-        List<Map<String, Object>> result = new ArrayList<>(actions.length);
-        for (int index = 0; index < actions.length; index++) {
-            Map<String, Object> action = new LinkedHashMap<>(actions[index]);
-            action.put("order", index + 1);
+        return ordered(Arrays.asList(actions));
+    }
+    
+    /**
+     * Add 1-based order values to actions.
+     *
+     * @param actions actions
+     * @return ordered actions
+     */
+    public static List<Map<String, Object>> ordered(final Collection<Map<String, Object>> actions) {
+        List<Map<String, Object>> result = new ArrayList<>(actions.size());
+        int index = 0;
+        for (Map<String, Object> each : actions) {
+            Map<String, Object> action = new LinkedHashMap<>(each);
+            action.put("order", ++index);
             result.add(action);
         }
         return result;

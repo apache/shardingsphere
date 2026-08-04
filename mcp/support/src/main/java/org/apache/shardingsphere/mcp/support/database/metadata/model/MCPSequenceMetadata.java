@@ -32,22 +32,4 @@ public final class MCPSequenceMetadata {
     private final String schema;
     
     private final String sequence;
-    
-    /**
-     * Create summary.
-     *
-     * @return sequence metadata summary
-     */
-    public MCPSequenceMetadata createSummary() {
-        return new MCPSequenceMetadata(database, schema, sequence);
-    }
-    
-    /**
-     * Create detail.
-     *
-     * @return sequence metadata detail
-     */
-    public MCPSequenceMetadata createDetail() {
-        return new MCPSequenceMetadata(database, schema, sequence);
-    }
 }

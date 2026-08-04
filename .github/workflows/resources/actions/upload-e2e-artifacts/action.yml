@@ -18,22 +18,53 @@
 name: 'Upload E2E Artifacts'
 description: 'Package and upload E2E build artifacts including Maven repository and Docker image'
 
+inputs:
+  artifact-name:
+    description: 'Uploaded artifact name'
+    required: false
+    default: 'build-outputs'
+  artifact-dir:
+    description: 'Directory used to stage packaged artifacts'
+    required: false
+    default: '/tmp/e2e-build-artifacts'
+  include-maven-repository:
+    description: 'Whether to package the ShardingSphere Maven repository output'
+    required: false
+    default: 'true'
+  docker-images:
+    description: 'Docker images to save, one per line as image=archive-file-name'
+    required: false
+    default: 'apache/shardingsphere-proxy-test:latest=apache-shardingsphere-proxy-test.tar'
+
 runs:
   using: composite
   steps:
+    - name: Prepare E2E Artifact Directory
+      shell: bash
+      run: |
+        mkdir -p "${{ inputs.artifact-dir }}"
     - name: Package shardingsphere Maven Repository
+      if: inputs.include-maven-repository == 'true'
       shell: bash
       run: |
-        tar -czf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository org/apache/shardingsphere
-    - name: Save E2E Image
+        tar -czf "${{ inputs.artifact-dir }}/maven-repo-output.tar.gz" -C ~/.m2/repository org/apache/shardingsphere
+    - name: Save E2E Images
       shell: bash
+      env:
+        E2E_DOCKER_IMAGES: ${{ inputs.docker-images }}
       run: |
-        docker save -o /tmp/apache-shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
+        set -euo pipefail
+        while IFS= read -r each; do
+          if [[ -z "${each}" ]]; then
+            continue
+          fi
+          image="${each%%=*}"
+          archive_name="${each#*=}"
+          docker save -o "${{ inputs.artifact-dir }}/${archive_name}" "${image}"
+        done <<< "${E2E_DOCKER_IMAGES}"
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v6
       with:
-        name: build-outputs
-        path: |
-          /tmp/maven-repo-output.tar.gz
-          /tmp/apache-shardingsphere-proxy-test.tar
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.artifact-dir }}/*
         retention-days: 3

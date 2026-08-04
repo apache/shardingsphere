@@ -20,8 +20,9 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
@@ -40,11 +41,11 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPToolDescriptorCatalogValidator {
     
-    private static final Collection<String> SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS = Set.of("type", "properties", "required", "additionalProperties");
-    
     private static final String SEARCH_METADATA = "database_gateway_search_metadata";
     
     private static final String EXECUTE_QUERY = "database_gateway_execute_query";
+    
+    private static final String EXECUTE_EXPLAIN = "database_gateway_execute_explain_query";
     
     private static final String EXECUTE_UPDATE = "database_gateway_execute_update";
     
@@ -60,6 +61,7 @@ public final class MCPToolDescriptorCatalogValidator {
     public static void validate(final MCPDescriptorCatalog catalog) {
         Collection<MCPToolDescriptor> descriptors = catalog.getProtocolDescriptors().getToolDescriptors();
         Collection<MCPToolRuntimeDescriptor> runtimeDescriptors = catalog.getShardingSphereDescriptors().getToolRuntimeDescriptors();
+        validateToolRuntimeDescriptors(runtimeDescriptors);
         Map<String, MCPToolDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         Map<String, MCPToolRuntimeDescriptor> runtimes = runtimeDescriptors.stream()
                 .collect(Collectors.toMap(MCPToolRuntimeDescriptor::getToolName, each -> each));
@@ -69,27 +71,21 @@ public final class MCPToolDescriptorCatalogValidator {
         for (MCPToolDescriptor each : descriptors) {
             ShardingSpherePreconditions.checkState(null == registered.putIfAbsent(each.getName(), each),
                     () -> new IllegalStateException(String.format("Duplicate MCP tool descriptor `%s`.", each.getName())));
-            validateToolInputSchema(each);
+            MCPToolInputSchemaValidator.validate(each);
             MCPToolOutputSchemaValidator.validate(each);
             validateToolDescriptorContract(each, runtimes.get(each.getName()));
-            validateDestructiveToolDescriptor(each, runtimes.get(each.getName()));
-            validatePlanningExecutionMode(each);
+            validateDestructiveToolDescriptor(each);
+            validateNonDestructiveExecutionMode(each);
             validateRelatedResourceUris(each, resourceIdentifiers, shardingSphereResourceIdentifiers);
         }
         validatePlanningToolRuntimeDescriptors(registered, runtimeDescriptors);
     }
     
-    private static void validateToolInputSchema(final MCPToolDescriptor descriptor) {
-        Map<String, Object> inputSchema = descriptor.getInputSchema();
-        for (String each : inputSchema.keySet()) {
-            ShardingSpherePreconditions.checkState(SUPPORTED_INPUT_SCHEMA_TOP_LEVEL_FIELDS.contains(each),
-                    () -> new IllegalStateException(String.format("Tool `%s` inputSchema contains unsupported top-level field `%s`.", descriptor.getName(), each)));
+    private static void validateToolRuntimeDescriptors(final Collection<MCPToolRuntimeDescriptor> runtimeDescriptors) {
+        for (MCPToolRuntimeDescriptor each : runtimeDescriptors) {
+            ShardingSpherePreconditions.checkState(each.getWorkflowRole().isBlank() || "plan".equals(each.getWorkflowRole()),
+                    () -> new IllegalStateException(String.format("Tool `%s` runtime workflowRole `%s` is unsupported.", each.getToolName(), each.getWorkflowRole())));
         }
-        ShardingSpherePreconditions.checkState("object".equals(inputSchema.get("type")),
-                () -> new IllegalStateException(String.format("Tool `%s` inputSchema must be an object.", descriptor.getName())));
-        Object properties = inputSchema.get("properties");
-        ShardingSpherePreconditions.checkState(properties instanceof Map, () -> new IllegalStateException(String.format("Tool `%s` inputSchema must declare properties.", descriptor.getName())));
-        MCPToolOutputSchemaValidator.validateInputSchemaFields(descriptor);
     }
     
     private static void validateToolDescriptorContract(final MCPToolDescriptor descriptor, final MCPToolRuntimeDescriptor runtimeDescriptor) {
@@ -99,6 +95,10 @@ public final class MCPToolDescriptorCatalogValidator {
         }
         if (EXECUTE_QUERY.equals(descriptor.getName())) {
             validateExecuteQueryDescriptor(descriptor);
+            return;
+        }
+        if (EXECUTE_EXPLAIN.equals(descriptor.getName())) {
+            validateExecuteExplainDescriptor(descriptor);
             return;
         }
         if (EXECUTE_UPDATE.equals(descriptor.getName())) {
@@ -119,6 +119,7 @@ public final class MCPToolDescriptorCatalogValidator {
         }
         if (null != runtimeDescriptor && "plan".equals(runtimeDescriptor.getWorkflowRole())) {
             validatePlanningWorkflowDescriptor(descriptor);
+            validatePlanningToolAnnotations(descriptor);
         }
     }
     
@@ -157,9 +158,23 @@ public final class MCPToolDescriptorCatalogValidator {
                 "applied_max_rows", "applied_timeout_ms", "truncated", MCPPayloadFieldNames.NEXT_ACTIONS));
     }
     
+    private static void validateExecuteExplainDescriptor(final MCPToolDescriptor descriptor) {
+        validateRequiredInput(descriptor, "database");
+        validateRequiredInput(descriptor, "sql");
+        validateRequiredInput(descriptor, "explain_sql");
+        validateExecuteQueryDescriptor(descriptor);
+    }
+    
+    private static void validateRequiredInput(final MCPToolDescriptor descriptor, final String fieldName) {
+        ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, fieldName).isPresent(),
+                () -> new IllegalStateException(String.format("Tool `%s` must declare `%s`.", descriptor.getName(), fieldName)));
+        ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.isRequiredToolInput(descriptor, fieldName),
+                () -> new IllegalStateException(String.format("Tool `%s` `%s` must be required.", descriptor.getName(), fieldName)));
+    }
+    
     private static void validateExecuteUpdateDescriptor(final MCPToolDescriptor descriptor) {
-        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor, List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
-                "applied_max_rows", "applied_timeout_ms", "suggested_arguments", MCPPayloadFieldNames.NEXT_ACTIONS));
+        MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor, List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "columns", "rows",
+                "returned_row_count", "applied_max_rows", "applied_timeout_ms", "suggested_arguments", MCPPayloadFieldNames.NEXT_ACTIONS));
         Map<?, ?> executionMode = MCPToolDescriptorValidationUtils.findToolInputProperty(descriptor, MCPPayloadFieldNames.EXECUTION_MODE).orElseThrow(
                 () -> new IllegalStateException("Tool `database_gateway_execute_update` must declare execution_mode."));
         ShardingSpherePreconditions.checkState(MCPToolDescriptorValidationUtils.isRequiredToolInput(descriptor, MCPPayloadFieldNames.EXECUTION_MODE),
@@ -207,7 +222,7 @@ public final class MCPToolDescriptorCatalogValidator {
     private static void validateApplyWorkflowDescriptor(final MCPToolDescriptor descriptor) {
         MCPToolDescriptorValidationUtils.validateRequiredOutputFields(descriptor,
                 List.of("response_mode", MCPPayloadFieldNames.SUMMARY, WorkflowFieldNames.PLAN_ID, "status", WorkflowFieldNames.EXECUTION_MODE, MCPPayloadFieldNames.NEXT_ACTIONS,
-                        "manual_artifact_summary", "category", "message", "secret_reference_summary"));
+                        "manual_artifact_summary", "category", "secret_reference_summary"));
     }
     
     private static void validateValidateWorkflowDescriptor(final MCPToolDescriptor descriptor) {
@@ -261,7 +276,17 @@ public final class MCPToolDescriptorCatalogValidator {
         }
     }
     
-    private static void validateDestructiveToolDescriptor(final MCPToolDescriptor descriptor, final MCPToolRuntimeDescriptor runtimeDescriptor) {
+    private static void validatePlanningToolAnnotations(final MCPToolDescriptor descriptor) {
+        MCPToolAnnotations annotations = descriptor.getAnnotations();
+        ShardingSpherePreconditions.checkState(!annotations.isReadOnlyHint(),
+                () -> new IllegalStateException(String.format("Planning tool `%s` annotations.readOnlyHint must be false.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(!annotations.isDestructiveHint(),
+                () -> new IllegalStateException(String.format("Planning tool `%s` annotations.destructiveHint must be false.", descriptor.getName())));
+        ShardingSpherePreconditions.checkState(!annotations.isIdempotentHint(),
+                () -> new IllegalStateException(String.format("Planning tool `%s` annotations.idempotentHint must be false.", descriptor.getName())));
+    }
+    
+    private static void validateDestructiveToolDescriptor(final MCPToolDescriptor descriptor) {
         if (!descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
@@ -274,11 +299,9 @@ public final class MCPToolDescriptorCatalogValidator {
                 () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must allow preview.", descriptor.getName())));
         ShardingSpherePreconditions.checkState(!executionModes.contains("auto-execute"),
                 () -> new IllegalStateException(String.format("Destructive tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
-        ShardingSpherePreconditions.checkState(null != runtimeDescriptor && !runtimeDescriptor.getSideEffectScope().isEmpty(),
-                () -> new IllegalStateException(String.format("Destructive tool `%s` must declare sideEffectScope in internal runtime.", descriptor.getName())));
     }
     
-    private static void validatePlanningExecutionMode(final MCPToolDescriptor descriptor) {
+    private static void validateNonDestructiveExecutionMode(final MCPToolDescriptor descriptor) {
         if (descriptor.getAnnotations().isDestructiveHint()) {
             return;
         }
@@ -288,9 +311,9 @@ public final class MCPToolDescriptorCatalogValidator {
         }
         Collection<?> executionModes = executionMode.get().get("enum") instanceof Collection ? (Collection<?>) executionMode.get().get("enum") : List.of();
         ShardingSpherePreconditions.checkState(!executionModes.contains("preview"),
-                () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose preview.", descriptor.getName())));
+                () -> new IllegalStateException(String.format("Non-destructive tool `%s` execution_mode must not expose preview.", descriptor.getName())));
         ShardingSpherePreconditions.checkState(!executionModes.contains("auto-execute"),
-                () -> new IllegalStateException(String.format("Planning tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
+                () -> new IllegalStateException(String.format("Non-destructive tool `%s` execution_mode must not expose auto-execute.", descriptor.getName())));
     }
     
 }

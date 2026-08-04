@@ -24,6 +24,7 @@ resources:
       org.apache.shardingsphere/runtime-visibility: ShardingSphere-Proxy
     shardingSphereMetadata:
       resourceKind: list
+      objectScope: algorithm
       feature: shadow
       relatedTools:
         - database_gateway_plan_shadow_rule
@@ -42,6 +43,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: shadow
       relatedTools:
         - database_gateway_plan_shadow_rule
@@ -82,6 +84,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: shadow
       relatedTools:
         - database_gateway_plan_shadow_rule
@@ -122,6 +125,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: algorithm
       feature: shadow
       relatedTools:
         - database_gateway_plan_default_shadow_algorithm
@@ -158,6 +162,7 @@ resourceTemplates:
           required: true
           scope: logical-database
       resourceKind: list
+      objectScope: rule
       feature: shadow
       relatedTools:
         - database_gateway_plan_shadow_rule
@@ -199,7 +204,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a shadow rule plan."
+        description: "Existing current-session workflow plan identifier used only to continue a shadow rule plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -209,6 +214,7 @@ prompts:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/shadow/databases/{database}/rules
         - shardingsphere://features/shadow/databases/{database}/table-rules
+        - shardingsphere://features/shadow/databases/{database}/tables/{table}/rules
         - shardingsphere://features/shadow/algorithm-plugins
       org.apache.shardingsphere/stop-conditions:
         - "Stop after database_gateway_plan_shadow_rule returns a planned workflow with plan_id and reviewable artifacts."
@@ -232,11 +238,11 @@ prompts:
         required: false
       - name: algorithm_type
         title: Algorithm Type
-        description: "Default shadow algorithm type."
+        description: "Default shadow algorithm type. ShardingSphere requires SQL_HINT for the default algorithm."
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a default shadow algorithm plan."
+        description: "Existing current-session workflow plan identifier used only to continue a default shadow algorithm plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -268,7 +274,7 @@ prompts:
         required: false
       - name: plan_id
         title: Workflow Plan ID
-        description: "Optional current-session workflow plan identifier used to continue a shadow algorithm cleanup plan."
+        description: "Existing current-session workflow plan identifier used only to continue a shadow algorithm cleanup plan. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         required: false
     meta:
       org.apache.shardingsphere/related-tools:
@@ -403,7 +409,7 @@ tools:
       properties:
         plan_id:
           type: string
-          description: "Optional existing workflow plan identifier used to continue or revise a previous shadow plan."
+          description: "Existing workflow plan identifier used only to continue the same shadow.rule workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
           description: "ShardingSphere logical database that owns the shadow rule."
@@ -436,30 +442,16 @@ tools:
             type: string
         natural_language_intent:
           type: string
-          description: "User request in natural language."
-        structured_intent_evidence:
-          type: object
-          description: "Shadow structured intent extracted from the user request."
-          properties:
-            rule:
-              type: string
-            source_storage_unit:
-              type: string
-            shadow_storage_unit:
-              type: string
-            table:
-              type: string
-            algorithm_type:
-              type: string
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
         delivery_mode:
           type: string
+          description: "Preferred delivery mode for the generated workflow plan."
           enum:
             - all-at-once
             - step-by-step
         execution_mode:
           type: string
+          description: "Preferred apply mode recorded in the workflow plan."
           enum:
             - review-then-execute
             - manual-only
@@ -528,10 +520,10 @@ tools:
           description: "Preferred later apply mode captured by the plan."
         intent_inference:
           type: object
-          description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+          description: "Resolved operation type, server-derived or defaulted values, and unresolved fields."
         argument_provenance:
           type: object
-          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
+          description: "Source of important workflow arguments, such as user-provided, server-derived, or server-defaulted values."
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
@@ -583,6 +575,9 @@ tools:
         - plan_id
         - workflow_kind
         - status
+        - missing_required_inputs
+        - resources_to_read
+        - next_actions
       additionalProperties: true
       examples:
         - response_mode: planning
@@ -610,7 +605,7 @@ tools:
       title: Plan Shadow Rule
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime:
       workflowRole: plan
@@ -623,6 +618,7 @@ tools:
       org.apache.shardingsphere/related-resource-uris:
         - shardingsphere://features/shadow/databases/{database}/rules
         - shardingsphere://features/shadow/databases/{database}/table-rules
+        - shardingsphere://features/shadow/databases/{database}/tables/{table}/rules
         - shardingsphere://features/shadow/algorithm-plugins
       org.apache.shardingsphere/follow-up-tools:
         - database_gateway_apply_workflow
@@ -637,36 +633,39 @@ tools:
       properties:
         plan_id:
           type: string
+          description: "Existing workflow plan identifier used only to continue the same shadow.default workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
+          description: "ShardingSphere logical database that owns the default shadow algorithm."
         operation_type:
           type: string
+          description: "Default shadow algorithm lifecycle operation."
           enum:
             - create
             - alter
             - drop
         algorithm_type:
           type: string
+          enum:
+            - SQL_HINT
+          description: "Default shadow algorithm type. ShardingSphere requires SQL_HINT."
         algorithm_properties:
           type: object
+          description: "Default shadow algorithm properties."
           additionalProperties:
             type: string
         natural_language_intent:
           type: string
-        structured_intent_evidence:
-          type: object
-          properties:
-            algorithm_type:
-              type: string
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
         delivery_mode:
           type: string
+          description: "Preferred delivery mode for the generated workflow plan."
           enum:
             - all-at-once
             - step-by-step
         execution_mode:
           type: string
+          description: "Preferred apply mode recorded in the workflow plan."
           enum:
             - review-then-execute
             - manual-only
@@ -699,7 +698,7 @@ tools:
       title: Plan Default Shadow Algorithm
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime:
       workflowRole: plan
@@ -726,26 +725,25 @@ tools:
       properties:
         plan_id:
           type: string
+          description: "Existing workflow plan identifier used only to continue the same shadow.cleanup workflow kind. Omit when starting a new plan; never use placeholder values such as `plan_id`."
         database:
           type: string
+          description: "ShardingSphere logical database that owns the shadow algorithm."
         algorithm_name:
           type: string
+          description: "Unused shadow algorithm to remove."
         natural_language_intent:
           type: string
-        structured_intent_evidence:
-          type: object
-          properties:
-            algorithm_name:
-              type: string
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. This cleanup tool has a fixed drop operation and does not infer other structured arguments from this field."
         delivery_mode:
           type: string
+          description: "Preferred delivery mode for the generated workflow plan."
           enum:
             - all-at-once
             - step-by-step
         execution_mode:
           type: string
+          description: "Preferred apply mode recorded in the workflow plan."
           enum:
             - review-then-execute
             - manual-only
@@ -778,7 +776,7 @@ tools:
       title: Plan Shadow Algorithm Cleanup
       destructiveHint: false
       idempotentHint: false
-      openWorldHint: false
+      openWorldHint: true
       readOnlyHint: false
     runtime:
       workflowRole: plan

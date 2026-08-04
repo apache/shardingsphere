@@ -21,12 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.mockito.MockedStatic;
 
 import java.sql.DatabaseMetaData;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -65,18 +62,6 @@ public final class SupportDatabaseTypeFactoryMocker {
         result.when(() -> DatabaseTypeFactory.get(any(DatabaseMetaData.class)))
                 .thenAnswer(invocation -> createDatabaseType(invocation.getArgument(0, DatabaseMetaData.class).getURL()));
         return result;
-    }
-    
-    /**
-     * Create MCP database capability provider with database type factory mocked by JDBC connection metadata.
-     *
-     * @param runtimeDatabases runtime database configurations
-     * @return MCP database capability provider
-     */
-    public static MCPDatabaseCapabilityProvider createDatabaseCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        try (MockedStatic<DatabaseTypeFactory> ignored = mockByConnectionMetadata()) {
-            return new MCPDatabaseCapabilityProvider(runtimeDatabases);
-        }
     }
     
     private static DatabaseType createDatabaseType(final String url) {

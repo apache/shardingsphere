@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Default function option.
  */
 public final class DefaultFunctionOption implements DialectFunctionOption {
     
     @Override
-    public String getIfNullFunctionName() {
-        return "IFNULL";
+    public Collection<String> getUnparenthesizedFunctionNames() {
+        return Collections.emptySet();
     }
 }

@@ -114,7 +114,7 @@ public final class DatabaseRulePersistService {
     
     private Collection<MetaDataVersion> persistTuples(final Collection<RuleNodeTuple> tuples) {
         return tuples.stream().map(each -> new MetaDataVersion(each.getNodePath(),
-                Math.max(MetaDataVersion.INIT_VERSION, versionPersistService.persist(new VersionNodePath(each.getNodePath()), each.getContent()) - 1))).collect(Collectors.toList());
+                versionPersistService.persist(new VersionNodePath(each.getNodePath()), each.getContent()))).collect(Collectors.toList());
     }
     
     /**

@@ -136,7 +136,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                         unused -> new TreeMap<>()).put(resultSet.getShort("ORDINAL_POSITION"), new ShardingSphereIdentifier(resultSet.getString("COLUMN_NAME")));
             }
         }
-        Map<ShardingSphereIdentifier, Collection<ShardingSphereIdentifier>> result = new LinkedHashMap<>();
+        Map<ShardingSphereIdentifier, Collection<ShardingSphereIdentifier>> result = new LinkedHashMap<>(orderedColumnsOfIndexes.size(), 1F);
         for (Entry<String, SortedMap<Short, ShardingSphereIdentifier>> entry : orderedColumnsOfIndexes.entrySet()) {
             Collection<ShardingSphereIdentifier> columnNames = result.computeIfAbsent(new ShardingSphereIdentifier(entry.getKey()), unused -> new LinkedList<>());
             columnNames.addAll(entry.getValue().values());

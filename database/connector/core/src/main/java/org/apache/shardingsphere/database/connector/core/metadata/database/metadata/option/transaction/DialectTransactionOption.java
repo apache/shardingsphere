@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -31,20 +32,27 @@ public final class DialectTransactionOption {
     
     private final boolean isSupportGlobalCSN;
     
-    private final boolean isDDLNeedImplicitCommit;
+    @Getter(AccessLevel.NONE)
+    private final DDLCommitPolicy ddlCommitPolicy;
     
     private final boolean isSupportAutoCommitInNestedTransaction;
     
     private final boolean isSupportDDLInXATransaction;
     
-    // TODO Investigate the reason of some databases cannot support meta data refreshed in transaction. The method should be removed finally after metadata refresh supported for all database.
     private final boolean isSupportMetaDataRefreshInTransaction;
-    
-    private final int defaultIsolationLevel;
     
     private final boolean isReturnRollbackStatementWhenCommitFailed;
     
     private final boolean isAllowCommitAndRollbackOnlyWhenTransactionFailed;
     
     private final Collection<String> xaDriverClassNames;
+    
+    /**
+     * Get DDL commit policy.
+     *
+     * @return DDL commit policy
+     */
+    public DDLCommitPolicy getDDLCommitPolicy() {
+        return ddlCommitPolicy;
+    }
 }

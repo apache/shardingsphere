@@ -68,6 +68,9 @@ final class MCPRecoveryPayloadSupport {
         if ("invalid_enum_value".equals(category)) {
             return "invalid_enum";
         }
+        if ("rule_distsql_execution_failed".equals(category)) {
+            return "rule_metadata_execution";
+        }
         if ("unsafe_sql_attempted".equals(category) || "multiple_sql_statements".equals(category)) {
             return "unsafe_sql";
         }

@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionTargetDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptArgumentDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.prompt.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,13 +52,13 @@ class MCPDescriptorCatalogValidatorTest {
     void assertValidateScopedProtocolNonGoalFieldsAreNotRequired() {
         assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(
                 List.of(createResourceDescriptor(MCPResourceAnnotations.EMPTY)),
-                List.of(createToolDescriptor(new MCPToolAnnotations("Test Tool", true, false, true, true))))));
+                List.of(createToolDescriptor(createReadOnlyToolAnnotations())))));
     }
     
     @Test
     void assertValidateRejectsRemovedModelFacingOutputField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                "database_gateway_test_tool", createReadOnlyToolAnnotations(),
                 createOutputSchema(Map.of("recommended_next_tool", Map.of("type", "string", "description", "Removed alias.")))))),
                 "Tool `database_gateway_test_tool` model-facing contract must use canonical fields instead of removed `recommended_next_tool`.");
     }
@@ -66,7 +69,7 @@ class MCPDescriptorCatalogValidatorTest {
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.",
                 createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query."),
                         "user_overrides", Map.of("type", "object", "description", "Removed duplicate input."))),
-                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
                 "Tool `database_gateway_test_tool` model-facing contract must use canonical fields instead of removed `user_overrides`.");
     }
     
@@ -75,7 +78,7 @@ class MCPDescriptorCatalogValidatorTest {
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.",
                 createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query.")), List.of("query", "required_arguments")),
-                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
                 "Tool `database_gateway_test_tool` model-facing contract must use canonical fields instead of removed `required_arguments`.");
     }
     
@@ -85,15 +88,34 @@ class MCPDescriptorCatalogValidatorTest {
         inputSchema.put("oneOf", List.of(Map.of("required", List.of("query"))));
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.", inputSchema,
-                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true), Map.of()))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
                 "Tool `database_gateway_test_tool` inputSchema contains unsupported top-level field `oneOf`.");
+    }
+    
+    @Test
+    void assertValidateRejectsUnsupportedNestedInputSchemaField() {
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.",
+                createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query.", "pattern", ".+"))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
+                "Tool `database_gateway_test_tool` inputSchema at `inputSchema.properties.query` contains unsupported field `pattern`.");
+    }
+    
+    @Test
+    void assertValidateRejectsMissingNestedInputDescription() {
+        assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
+                "database_gateway_test_tool", "Test Tool", "Run a test tool.",
+                createInputSchema(Map.of("intent", Map.of("type", "object", "description", "Structured intent.", "properties",
+                        Map.of("query", Map.of("type", "string"))))),
+                createOutputSchema(), createReadOnlyToolAnnotations(), Map.of()))),
+                "Tool `database_gateway_test_tool` inputSchema property `inputSchema.properties.intent.properties.query` description is required.");
     }
     
     @Test
     void assertValidateRejectsUnknownRelatedResourceUri() {
         assertValidationError(createCatalog(List.of(), List.of(new MCPToolDescriptor(
                 "database_gateway_test_tool", "Test Tool", "Run a test tool.", createInputSchema(),
-                createOutputSchema(), new MCPToolAnnotations("Test Tool", true, false, true, true),
+                createOutputSchema(), createReadOnlyToolAnnotations(),
                 Map.of(MCPShardingSphereMetadataKeys.RELATED_RESOURCE_URIS, List.of("shardingsphere://unknown"))))),
                 "Tool `database_gateway_test_tool` metadata `org.apache.shardingsphere/related-resource-uris` references unknown resource `shardingsphere://unknown`.");
     }
@@ -101,28 +123,95 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsPlanningRuntimeWithoutWorkflowKind() {
         String toolName = "database_gateway_test_plan_rule";
-        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, new MCPToolAnnotations("Test Tool", true, false, true, true),
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, createPlanningToolAnnotations(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMetaWithoutWorkflowKind())),
-                List.of(new MCPToolRuntimeDescriptor(toolName, "plan", List.of()))),
+                List.of(new MCPToolRuntimeDescriptor(toolName, "plan"))),
                 "Tool `database_gateway_test_plan_rule` metadata must declare `org.apache.shardingsphere/workflow-kind`.");
     }
     
     @Test
     void assertValidateRejectsDuplicatePlanningWorkflowKind() {
-        MCPToolDescriptor firstTool = createToolDescriptor("database_gateway_test_plan_rule", new MCPToolAnnotations("Test Tool", true, false, true, true),
+        MCPToolDescriptor firstTool = createToolDescriptor("database_gateway_test_plan_rule", createPlanningToolAnnotations(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"));
-        MCPToolDescriptor secondTool = createToolDescriptor("database_gateway_test_plan_rule_again", new MCPToolAnnotations("Test Tool", true, false, true, true),
+        MCPToolDescriptor secondTool = createToolDescriptor("database_gateway_test_plan_rule_again", createPlanningToolAnnotations(),
                 createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"));
         assertValidationError(createToolRuntimeCatalog(List.of(), List.of(firstTool, secondTool), List.of(
-                new MCPToolRuntimeDescriptor(firstTool.getName(), "plan", List.of()),
-                new MCPToolRuntimeDescriptor(secondTool.getName(), "plan", List.of()))),
+                new MCPToolRuntimeDescriptor(firstTool.getName(), "plan"),
+                new MCPToolRuntimeDescriptor(secondTool.getName(), "plan"))),
                 "Planning workflow kind `test.rule` is used by both `database_gateway_test_plan_rule` and `database_gateway_test_plan_rule_again`.");
+    }
+    
+    @Test
+    void assertValidateRejectsUnsupportedWorkflowRole() {
+        MCPToolDescriptor descriptor = createToolDescriptor(createReadOnlyToolAnnotations());
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor),
+                List.of(new MCPToolRuntimeDescriptor(descriptor.getName(), "execute"))),
+                "Tool `database_gateway_test_tool` runtime workflowRole `execute` is unsupported.");
+    }
+    
+    @Test
+    void assertValidateRejectsPlanningToolReadOnlyHint() {
+        String toolName = "database_gateway_test_plan_rule";
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, MCPToolAnnotations.builder()
+                .title("Test Tool").readOnlyHint(true).destructiveHint(false).idempotentHint(false).openWorldHint(true).build(),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan"))),
+                "Planning tool `database_gateway_test_plan_rule` annotations.readOnlyHint must be false.");
+    }
+    
+    @Test
+    void assertValidateRejectsPlanningToolDestructiveHint() {
+        String toolName = "database_gateway_test_plan_rule";
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, MCPToolAnnotations.builder()
+                .title("Test Tool").readOnlyHint(false).destructiveHint(true).idempotentHint(false).openWorldHint(true).build(),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan"))),
+                "Planning tool `database_gateway_test_plan_rule` annotations.destructiveHint must be false.");
+    }
+    
+    @Test
+    void assertValidateRejectsPlanningToolIdempotentHint() {
+        String toolName = "database_gateway_test_plan_rule";
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(createToolDescriptor(toolName, MCPToolAnnotations.builder()
+                .title("Test Tool").readOnlyHint(false).destructiveHint(false).idempotentHint(true).openWorldHint(true).build(),
+                createWorkflowPlanOutputSchema(), createPlanningToolMeta("test.rule"))), List.of(new MCPToolRuntimeDescriptor(toolName, "plan"))),
+                "Planning tool `database_gateway_test_plan_rule` annotations.idempotentHint must be false.");
+    }
+    
+    @Test
+    void assertValidateRejectsDestructiveToolWithoutExecutionMode() {
+        assertDestructiveToolValidationError(false, List.of(), false,
+                "Destructive tool `database_gateway_test_tool` must declare execution_mode.");
+    }
+    
+    @Test
+    void assertValidateRejectsDestructiveToolWithOptionalExecutionMode() {
+        assertDestructiveToolValidationError(true, List.of("preview"), false,
+                "Destructive tool `database_gateway_test_tool` execution_mode must be required.");
+    }
+    
+    @Test
+    void assertValidateRejectsDestructiveToolWithoutPreview() {
+        assertDestructiveToolValidationError(true, List.of("review-then-execute"), true,
+                "Destructive tool `database_gateway_test_tool` execution_mode must allow preview.");
+    }
+    
+    @Test
+    void assertValidateRejectsDestructiveToolWithAutoExecute() {
+        assertDestructiveToolValidationError(true, List.of("preview", "auto-execute"), true,
+                "Destructive tool `database_gateway_test_tool` execution_mode must not expose auto-execute.");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"preview", "auto-execute"})
+    void assertValidateRejectsNonDestructiveExecutionMode(final String executionMode) {
+        MCPToolDescriptor descriptor = createExecutionModeTool(false, true, List.of(executionMode), true);
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor), List.of()),
+                String.format("Non-destructive tool `database_gateway_test_tool` execution_mode must not expose %s.", executionMode));
     }
     
     @Test
     void assertValidateRejectsUnsupportedNextActionSchemaField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                "database_gateway_test_tool", createReadOnlyToolAnnotations(),
                 createOutputSchema(Map.of("next_actions", createNextActionsSchema("extra_context")))))),
                 "Tool `database_gateway_test_tool` next_actions item contains unsupported field `extra_context`.");
     }
@@ -130,7 +219,7 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsUnsupportedNextActionExampleField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                "database_gateway_test_tool", createReadOnlyToolAnnotations(),
                 createOutputSchema(Map.of("next_actions", createNextActionsSchema()), List.of(Map.of("next_actions", List.of(
                         Map.of("order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_test_tool", "arguments", Map.of(), "extra_context", "bad")))))))),
                 "Tool `database_gateway_test_tool` next_actions example `tool_call` contains unsupported field `extra_context`.");
@@ -139,7 +228,7 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateRejectsMissingNextActionExampleField() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_test_tool", new MCPToolAnnotations("Test Tool", true, false, true, true),
+                "database_gateway_test_tool", createReadOnlyToolAnnotations(),
                 createOutputSchema(Map.of("next_actions", createNextActionsSchema()), List.of(Map.of("next_actions", List.of(
                         Map.of("order", 1, "type", "tool_call", "title", "Retry", "tool_name", "database_gateway_test_tool")))))))),
                 "Tool `database_gateway_test_tool` next_actions example `tool_call` must contain `arguments`.");
@@ -148,14 +237,21 @@ class MCPDescriptorCatalogValidatorTest {
     @Test
     void assertValidateAcceptsFeatureOwnedToolDescriptorWithoutExtensionMarker() {
         assertDoesNotThrow(() -> MCPDescriptorCatalogValidator.validate(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_extension_test_tool", new MCPToolAnnotations("Extension Tool", true, false, true, true), createOutputSchema())))));
+                "database_gateway_extension_test_tool", createReadOnlyToolAnnotations("Extension Tool"), createOutputSchema())))));
     }
     
     @Test
     void assertValidateRejectsIncompleteCoreToolDescriptor() {
         assertValidationError(createCatalog(List.of(), List.of(createToolDescriptor(
-                "database_gateway_search_metadata", new MCPToolAnnotations("Search Metadata", true, false, true, true), createOutputSchema()))),
+                "database_gateway_search_metadata", createReadOnlyToolAnnotations("Search Metadata"), createOutputSchema()))),
                 "Tool `database_gateway_search_metadata` outputSchema must declare `response_mode`.");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"columns", "rows"})
+    void assertValidateRejectsExecuteUpdateDescriptorWithoutResultSetField(final String fieldName) {
+        assertValidationError(createCatalog(List.of(), List.of(createExecuteUpdateDescriptorWithout(fieldName))),
+                String.format("Tool `database_gateway_execute_update` outputSchema must declare `%s`.", fieldName));
     }
     
     @Test
@@ -223,6 +319,24 @@ class MCPDescriptorCatalogValidatorTest {
         assertThat(actual.getMessage(), is(expectedMessage));
     }
     
+    private void assertDestructiveToolValidationError(final boolean executionModePresent, final List<String> executionModes, final boolean executionModeRequired,
+                                                      final String expectedMessage) {
+        MCPToolDescriptor descriptor = createExecutionModeTool(true, executionModePresent, executionModes, executionModeRequired);
+        assertValidationError(createToolRuntimeCatalog(List.of(), List.of(descriptor), List.of()), expectedMessage);
+    }
+    
+    private MCPToolDescriptor createExecutionModeTool(final boolean destructive, final boolean executionModePresent, final List<String> executionModes,
+                                                      final boolean executionModeRequired) {
+        Map<String, Object> properties = executionModePresent
+                ? Map.of(MCPPayloadFieldNames.EXECUTION_MODE, Map.of("type", "string", "description", "Execution mode.", "enum", executionModes))
+                : Map.of();
+        List<String> required = executionModeRequired ? List.of(MCPPayloadFieldNames.EXECUTION_MODE) : List.of();
+        MCPToolAnnotations annotations = MCPToolAnnotations.builder().title("Test Tool").readOnlyHint(false).destructiveHint(destructive)
+                .idempotentHint(false).openWorldHint(true).build();
+        return new MCPToolDescriptor("database_gateway_test_tool", "Test Tool", "Run a test tool.", createInputSchema(properties, required),
+                createOutputSchema(), annotations, Map.of());
+    }
+    
     private MCPDescriptorCatalog createCatalog(final List<MCPResourceDescriptor> resourceDescriptors, final List<MCPToolDescriptor> toolDescriptors) {
         return createCatalog(resourceDescriptors, List.of(), toolDescriptors);
     }
@@ -274,6 +388,38 @@ class MCPDescriptorCatalogValidatorTest {
         return new MCPToolDescriptor(toolName, "Test Tool", "Run a test tool.", createInputSchema(), outputSchema, annotations, meta);
     }
     
+    private MCPToolDescriptor createExecuteUpdateDescriptorWithout(final String fieldName) {
+        Map<String, Object> outputProperties = new LinkedHashMap<>();
+        for (String each : List.of("response_mode", "result_kind", "statement_class", "statement_type", "status")) {
+            outputProperties.put(each, Map.of("type", "string", "description", "Execution result field."));
+        }
+        for (String each : List.of("columns", "rows")) {
+            outputProperties.put(each, Map.of("type", "array", "description", "Result-set field."));
+        }
+        for (String each : List.of("returned_row_count", "applied_max_rows", "applied_timeout_ms")) {
+            outputProperties.put(each, Map.of("type", "integer", "description", "Execution limit field."));
+        }
+        outputProperties.put("suggested_arguments", Map.of("type", "object", "description", "Suggested execution arguments."));
+        outputProperties.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActionsSchema());
+        outputProperties.remove(fieldName);
+        Map<String, Object> inputSchema = createInputSchema(Map.of(MCPPayloadFieldNames.EXECUTION_MODE,
+                Map.of("type", "string", "description", "Execution mode.", "enum", List.of("execute", "preview"))), List.of(MCPPayloadFieldNames.EXECUTION_MODE));
+        return new MCPToolDescriptor("database_gateway_execute_update", "Execute Update", "Execute a side-effecting statement.", inputSchema,
+                createOutputSchema(outputProperties, List.of(Map.of("response_mode", "preview"))), createReadOnlyToolAnnotations("Execute Update"), Map.of());
+    }
+    
+    private MCPToolAnnotations createPlanningToolAnnotations() {
+        return MCPToolAnnotations.builder().title("Test Tool").readOnlyHint(false).destructiveHint(false).idempotentHint(false).openWorldHint(true).build();
+    }
+    
+    private MCPToolAnnotations createReadOnlyToolAnnotations() {
+        return createReadOnlyToolAnnotations("Test Tool");
+    }
+    
+    private MCPToolAnnotations createReadOnlyToolAnnotations(final String title) {
+        return MCPToolAnnotations.builder().title(title).readOnlyHint(true).destructiveHint(false).idempotentHint(true).openWorldHint(true).build();
+    }
+    
     private Map<String, Object> createInputSchema() {
         return createInputSchema(Map.of("query", Map.of("type", "string", "description", "Query.")));
     }
@@ -308,7 +454,11 @@ class MCPDescriptorCatalogValidatorTest {
             properties.put(each, Map.of("type", "object", "description", "Workflow plan field."));
         }
         properties.put(MCPPayloadFieldNames.NEXT_ACTIONS, createNextActionsSchema());
-        return createOutputSchema(properties, List.of(Map.of("response_mode", "planning")));
+        Map<String, Object> result = new LinkedHashMap<>(createOutputSchema(properties, List.of(Map.of("response_mode", "planning"))));
+        result.put("required", List.of(
+                "response_mode", WorkflowFieldNames.PLAN_ID, "workflow_kind", "status", "missing_required_inputs",
+                MCPPayloadFieldNames.RESOURCES_TO_READ, MCPPayloadFieldNames.NEXT_ACTIONS));
+        return result;
     }
     
     private Map<String, Object> createPlanningToolMeta(final String workflowKind) {

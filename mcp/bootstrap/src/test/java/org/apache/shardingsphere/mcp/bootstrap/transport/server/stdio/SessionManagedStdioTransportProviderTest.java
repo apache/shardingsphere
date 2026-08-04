@@ -21,12 +21,12 @@ import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
-import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.io.InputStream;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,15 +38,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class SessionManagedStdioTransportProviderTest {
     
     @Test
     void assertProtocolVersions() {
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(new MCPSessionManager(Collections.emptyMap()), MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(new MCPSessionManager(Collections.emptyMap()));
         List<String> actual = provider.protocolVersions();
         assertThat(actual, is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
     }
@@ -58,15 +56,16 @@ class SessionManagedStdioTransportProviderTest {
         McpServerSession session = mock(McpServerSession.class);
         when(sessionFactory.create(any(McpServerTransport.class))).thenReturn(session);
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         assertTrue(sessionManager.hasSession("session-id"));
     }
     
     @Test
-    void assertCloseManagedSessionWhenTransportCloseGracefully() throws ReflectiveOperationException {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = createSessionManager(transactionResourceManager);
+    void assertCloseManagedSessionWhenTransportCloseGracefully() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        List<String> actualClosedSessionIds = new LinkedList<>();
+        sessionManager.addSessionCloseListener(actualClosedSessionIds::add);
         McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
         McpServerSession session = mock(McpServerSession.class);
         AtomicReference<McpServerTransport> transport = new AtomicReference<>();
@@ -75,18 +74,18 @@ class SessionManagedStdioTransportProviderTest {
             return session;
         });
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         transport.get().closeGracefully().block();
-        verify(transactionResourceManager).closeSession("session-id");
-        verifyNoMoreInteractions(transactionResourceManager);
+        assertThat(actualClosedSessionIds, is(List.of("session-id")));
         assertFalse(sessionManager.hasSession("session-id"));
     }
     
     @Test
-    void assertSetSessionFactoryAfterTransportClose() throws ReflectiveOperationException {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = createSessionManager(transactionResourceManager);
+    void assertSetSessionFactoryAfterTransportClose() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        List<String> actualClosedSessionIds = new LinkedList<>();
+        sessionManager.addSessionCloseListener(actualClosedSessionIds::add);
         McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
         McpServerSession firstSession = mock(McpServerSession.class);
         McpServerSession secondSession = mock(McpServerSession.class);
@@ -104,21 +103,21 @@ class SessionManagedStdioTransportProviderTest {
         });
         when(firstSession.getId()).thenReturn("session-id-1");
         when(secondSession.getId()).thenReturn("session-id-2");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         firstTransport.get().close();
         provider.setSessionFactory(sessionFactory);
-        verify(transactionResourceManager).closeSession("session-id-1");
-        verifyNoMoreInteractions(transactionResourceManager);
+        assertThat(actualClosedSessionIds, is(List.of("session-id-1")));
         assertFalse(sessionManager.hasSession("session-id-1"));
         assertTrue(sessionManager.hasSession("session-id-2"));
         assertNotNull(secondTransport.get());
     }
     
     @Test
-    void assertCloseManagedSessionWhenTransportClose() throws ReflectiveOperationException {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = createSessionManager(transactionResourceManager);
+    void assertCloseManagedSessionWhenTransportClose() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        List<String> actualClosedSessionIds = new LinkedList<>();
+        sessionManager.addSessionCloseListener(actualClosedSessionIds::add);
         McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
         McpServerSession session = mock(McpServerSession.class);
         AtomicReference<McpServerTransport> transport = new AtomicReference<>();
@@ -127,18 +126,18 @@ class SessionManagedStdioTransportProviderTest {
             return session;
         });
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         transport.get().close();
-        verify(transactionResourceManager).closeSession("session-id");
-        verifyNoMoreInteractions(transactionResourceManager);
+        assertThat(actualClosedSessionIds, is(List.of("session-id")));
         assertFalse(sessionManager.hasSession("session-id"));
     }
     
     @Test
-    void assertCloseManagedSessionOnlyOnceWhenTransportClosedRepeatedly() throws ReflectiveOperationException {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = createSessionManager(transactionResourceManager);
+    void assertCloseManagedSessionOnlyOnceWhenTransportClosedRepeatedly() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        List<String> actualClosedSessionIds = new LinkedList<>();
+        sessionManager.addSessionCloseListener(actualClosedSessionIds::add);
         McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
         McpServerSession session = mock(McpServerSession.class);
         AtomicReference<McpServerTransport> transport = new AtomicReference<>();
@@ -147,18 +146,21 @@ class SessionManagedStdioTransportProviderTest {
             return session;
         });
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        SessionManagedStdioTransportProvider provider = createProvider(sessionManager);
         provider.setSessionFactory(sessionFactory);
         transport.get().close();
         transport.get().closeGracefully().block();
-        verify(transactionResourceManager).closeSession("session-id");
-        verifyNoMoreInteractions(transactionResourceManager);
+        assertThat(actualClosedSessionIds, is(List.of("session-id")));
         assertFalse(sessionManager.hasSession("session-id"));
     }
     
-    private MCPSessionManager createSessionManager(final MCPJdbcTransactionResourceManager transactionResourceManager) throws ReflectiveOperationException {
-        MCPSessionManager result = new MCPSessionManager(Collections.emptyMap());
-        Plugins.getMemberAccessor().set(MCPSessionManager.class.getDeclaredField("transactionResourceManager"), result, transactionResourceManager);
-        return result;
+    private SessionManagedStdioTransportProvider createProvider(final MCPSessionManager sessionManager) {
+        InputStream originalInput = System.in;
+        try {
+            System.setIn(InputStream.nullInputStream());
+            return new SessionManagedStdioTransportProvider(sessionManager, MCPTransportJsonMapperFactory.create());
+        } finally {
+            System.setIn(originalInput);
+        }
     }
 }
