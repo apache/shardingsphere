@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol;
 
+import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
 
@@ -40,10 +43,20 @@ public final class MySQLByteLenencBinaryProtocolValue implements MySQLBinaryProt
     public void write(final MySQLPacketPayload payload, final Object value) {
         if (value instanceof byte[]) {
             payload.writeBytesLenenc((byte[]) value);
+        } else if (value instanceof Blob) {
+            payload.writeBytesLenenc(readBlob((Blob) value));
         } else if (value instanceof Clob) {
             payload.writeStringLenenc(readClob((Clob) value));
         } else {
             payload.writeStringLenenc(value.toString());
+        }
+    }
+    
+    private byte[] readBlob(final Blob value) {
+        try (InputStream inputStream = value.getBinaryStream()) {
+            return ByteStreams.toByteArray(inputStream);
+        } catch (final IOException | SQLException ex) {
+            throw new UnknownSQLException(ex);
         }
     }
     

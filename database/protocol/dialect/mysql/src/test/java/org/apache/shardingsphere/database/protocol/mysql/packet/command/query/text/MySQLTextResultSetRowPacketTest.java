@@ -28,10 +28,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -46,6 +49,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -108,6 +112,45 @@ class MySQLTextResultSetRowPacketTest {
     void assertWriteLocalTime(final String name, final LocalTime value, final String expectedValue) {
         new MySQLTextResultSetRowPacket(Collections.singletonList(value)).write((PacketPayload) payload);
         verify(payload).writeStringLenenc(expectedValue);
+    }
+    
+    @Test
+    void assertWriteBlob() throws SQLException, IOException {
+        byte[] expected = {0x00, (byte) 0x80, (byte) 0xff, 0x41};
+        InputStream inputStream = spy(new ByteArrayInputStream(expected));
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenReturn(inputStream);
+        new MySQLTextResultSetRowPacket(Collections.singletonList(blob)).write((PacketPayload) payload);
+        verify(payload).writeBytesLenenc(argThat(actual -> Arrays.equals(actual, expected)));
+        verify(inputStream).close();
+    }
+    
+    @Test
+    void assertWriteBlobWithIOException() throws SQLException, IOException {
+        IOException expectedCause = new IOException("read error");
+        InputStream inputStream = spy(new InputStream() {
+            
+            @Override
+            public int read() throws IOException {
+                throw expectedCause;
+            }
+        });
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenReturn(inputStream);
+        MySQLTextResultSetRowPacket packet = new MySQLTextResultSetRowPacket(Collections.singletonList(blob));
+        UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> packet.write((PacketPayload) payload));
+        assertThat(actual.getCause(), is(expectedCause));
+        verify(inputStream).close();
+        verify(payload, never()).writeBytesLenenc(any());
+    }
+    
+    @Test
+    void assertWriteBlobWithSQLException() throws SQLException {
+        SQLException expectedCause = new SQLException("sql error");
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenThrow(expectedCause);
+        UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> new MySQLTextResultSetRowPacket(Collections.singletonList(blob)).write((PacketPayload) payload));
+        assertThat(actual.getCause(), is(expectedCause));
     }
     
     @Test

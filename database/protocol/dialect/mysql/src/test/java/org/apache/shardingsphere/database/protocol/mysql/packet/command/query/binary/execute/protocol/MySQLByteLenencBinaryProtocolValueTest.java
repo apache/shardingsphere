@@ -24,10 +24,13 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
 
@@ -67,6 +70,49 @@ class MySQLByteLenencBinaryProtocolValueTest {
         MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         new MySQLByteLenencBinaryProtocolValue().write(payload, "value");
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringLenenc(), is("value"));
+    }
+    
+    @Test
+    void assertWriteBlob() throws SQLException, IOException {
+        byte[] expected = {0x00, (byte) 0x80, (byte) 0xff, 0x41};
+        InputStream inputStream = spy(new ByteArrayInputStream(expected));
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenReturn(inputStream);
+        ByteBuf byteBuf = Unpooled.buffer();
+        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        new MySQLByteLenencBinaryProtocolValue().write(payload, blob);
+        assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringLenencByBytes(), is(expected));
+        verify(inputStream).close();
+    }
+    
+    @Test
+    void assertWriteBlobWithIOException() throws SQLException, IOException {
+        IOException expectedCause = new IOException("read error");
+        InputStream inputStream = spy(new InputStream() {
+            
+            @Override
+            public int read() throws IOException {
+                throw expectedCause;
+            }
+        });
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenReturn(inputStream);
+        ByteBuf byteBuf = Unpooled.buffer();
+        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> new MySQLByteLenencBinaryProtocolValue().write(payload, blob));
+        assertThat(actual.getCause(), is(expectedCause));
+        assertThat(byteBuf.writerIndex(), is(0));
+        verify(inputStream).close();
+    }
+    
+    @Test
+    void assertWriteBlobWithSQLException() throws SQLException {
+        SQLException expectedCause = new SQLException("sql error");
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenThrow(expectedCause);
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> new MySQLByteLenencBinaryProtocolValue().write(payload, blob));
+        assertThat(actual.getCause(), is(expectedCause));
     }
     
     @Test
