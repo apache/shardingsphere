@@ -21,7 +21,8 @@
 
 Judge whether tests protect meaningful production-owned behavior and its boundaries. Do not turn
 coverage percentage, test count, or conformance to a preferred test shape into a design finding.
-Apply `CODE_OF_CONDUCT.md` and the applicable `AGENTS.md` test rules first.
+Apply the rule-applicability gate in `finding-model.md` before using `CODE_OF_CONDUCT.md` or an
+applicable `AGENTS.md` test rule against existing tests.
 
 ## Capability Areas
 
@@ -57,6 +58,13 @@ environment dependencies, and static resources that are not released.
 Prefer direct mocks and the nearest stable boundary. Treat a helper or fixture as a smell only
 when it creates a test-only API, hides the scenario, duplicates thin delegation, or crosses module
 ownership for convenience.
+
+Do not report an allowed, correctly closed direct static or construction mock merely because
+`AutoMockExtension` is preferred for newly changed tests. If the repository-wide test standard
+permits direct mocking with try-with-resources or explicit cleanup and the test satisfies that
+lifecycle, require an independent leak, isolation failure, behavioral distortion, or material
+maintenance consequence before publishing a finding. A possible mechanical migration or a few
+local setup lines are not such a consequence.
 
 ### SPI and Plugin Tests
 

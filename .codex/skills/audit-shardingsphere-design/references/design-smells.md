@@ -82,8 +82,11 @@ shared abstraction must own a stable concept; reducing line count alone does not
 
 ## Standards and Style Essence
 
-First identify explicit violations of `CODE_OF_CONDUCT.md`, applicable `AGENTS.md`, Checkstyle, or
-established public API/SPI documentation requirements. State the exact rule.
+First apply the rule-applicability gate in `finding-model.md`, then identify explicit violations of
+`CODE_OF_CONDUCT.md`, applicable `AGENTS.md`, Checkstyle, or established public API/SPI documentation
+requirements. State the exact rule and confirm that its subject and scope cover the existing code.
+Do not convert a future-change preference, a more convenient maintained idiom, or a stricter Codex
+handoff rule into a retrospective repository violation.
 
 Review semantic style separately. Apply the project's development philosophy:
 

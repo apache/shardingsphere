@@ -69,8 +69,11 @@ Read these files directly from this Skill before classifying findings:
    repository, enumerate leaf Maven modules and review them in bounded partitions; account for
    every leaf module rather than substituting a sample. Do not switch to PR scope.
 2. Read the applicable `AGENTS.md`, `CODE_OF_CONDUCT.md`, module POMs, registrations, and the
-   closest maintained production and test precedents. Treat written rules as authority and
-   nearby code as evidence of project idiom, not as automatic proof that a pattern is good.
+   closest maintained production and test precedents. Before treating a written rule as evidence
+   against existing code, apply the rule-applicability gate in `finding-model.md`; a rule scoped to
+   Codex actions, candidate changes, or newly touched code governs this audit or a future correction
+   but does not retrospectively prohibit untouched code. Treat applicable written rules as authority
+   and nearby code as evidence of project idiom, not as automatic proof that a pattern is good.
 3. Map each examined behavior to its owner, callers, dependencies, extension axis, SPI contract,
    implementations, registrations, packaging path, and tests. Trace cross-module behavior end
    to end before judging placement or coupling.
@@ -100,6 +103,10 @@ Read these files directly from this Skill before classifying findings:
 - Separate an explicit standards violation from a semantic style problem. Prove semantic style
   problems through reduced readability, inconsistent abstraction, needless concepts, or a
   maintained precedent that better expresses the same responsibility.
+- Do not publish a standards violation until the exact rule is proven to govern the existing
+  artifact and situation under review. If a repository-wide standard permits the current pattern
+  while an agent workflow merely prefers a different pattern for new or changed code, reject the
+  standards candidate unless the current code has an independent material consequence.
 - Treat one implementation, one caller, a wrapper, a factory, or an interface as a signal only.
   Report over-design only when the concept lacks a real stable boundary and adds demonstrated
   navigation, state, dependency, testing, or extension cost.
@@ -176,6 +183,8 @@ Before returning the report, verify that:
 - SPI findings apply the correct category profile rather than a universal placement rule, and SPI
   placement findings satisfy the internal proof gate in `spi-plugin-design.md`;
 - style findings distinguish written rules from engineering judgment;
+- every standards finding passes the rule-applicability gate and is not based only on a preference
+  whose explicit scope is future, generated, candidate, or touched code;
 - test findings protect production-owned behavior rather than coverage appearance;
 - no finding depends on another Skill, a single regex match, or an unverified deletion premise;
 - effort does not affect priority or whether a finding passes the proof gate;
