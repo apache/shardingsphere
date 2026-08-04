@@ -41,7 +41,11 @@ public final class YamlProxyDatabaseConfiguration implements YamlConfiguration {
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     
-    @Override
+    /**
+     * Check whether the YAML database configuration is empty.
+     *
+     * @return whether the YAML database configuration is empty
+     */
     public boolean isEmpty() {
         return Strings.isNullOrEmpty(databaseName) && dataSources.isEmpty() && rules.isEmpty();
     }
