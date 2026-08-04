@@ -62,9 +62,11 @@ reuse of shared semantics without erasing their plugin identities.
 
 A database-specific implementation in `infra`, `kernel`, or another shared module is a candidate,
 not an automatic finding. Prove that the shared module now knows a database variant, that a
-maintained dialect module can own it without reversing dependencies, and that the move preserves
-registration and packaging. Conversely, keep an infrastructure-owned extension in infrastructure
-when the variation itself is infrastructure behavior rather than a database plugin.
+maintained dialect module can own it without reversing dependencies or that no current module can
+own it and the evidence requires a new database-plugin boundary, and that the correction preserves
+registration and packaging. For a new boundary, name the responsibility and variation axis rather
+than inventing a module path or hierarchy. Conversely, keep an infrastructure-owned extension in
+infrastructure when the variation itself is infrastructure behavior rather than a database plugin.
 
 ### Feature or Function Plugins
 
@@ -124,7 +126,10 @@ finding, report:
 4. The current consequence, such as requiring a neutral caller to change for another plugin,
    forcing a shared artifact to carry plugin-only dependencies, or preventing independent
    packaging.
-5. The maintained module that should own the implementation and the evidence for that ownership.
+5. The maintained module that should own the implementation and the evidence for that ownership;
+   or, when no current module can own it without violating responsibility or dependency direction,
+   the evidence that a new boundary is necessary and the responsibility and variation axis that
+   boundary owns.
 6. The minimum correction boundary:
    - what contract, neutral loader, and genuinely shared behavior remain in the current owner;
    - what implementation, dependency, registration, configuration, or resource moves;
@@ -133,10 +138,15 @@ finding, report:
 7. The strongest counterexample checked, including infrastructure-owned variation, bootstrap
    assembly, deliberately closed sets, default implementations, and dependency reversal.
 
-Use actual repository identifiers to summarize both `Current ownership` and `Expected ownership`.
+Use actual repository identifiers to summarize `Current ownership`. Summarize `Expected ownership`
+with an existing module when one is proven, or with an evidence-backed responsibility boundary when
+no existing module can own the behavior. For a new boundary, do not invent a module name, path, or
+hierarchy; explain why current owners are invalid, name the implementation, dependencies,
+registrations, and resources it would own, and state the required packaging or assembly changes.
 For example, a proven database placement issue may keep the SPI contract and neutral loader in a
 shared module, move the database implementation, registration, resources, and dedicated
-dependencies to the maintained database plugin module, and keep explicit plugin inclusion in the
-distribution assembly. This is only a structure for reporting; derive every named move from the
-current repository. If the report cannot identify these facts, retain the item as a candidate or
-evidence limitation rather than asking the reader to infer the problem.
+dependencies to the maintained database plugin module or a proven new database-plugin boundary,
+and keep explicit plugin inclusion in the distribution assembly. This is only a structure for
+reporting; derive every named move from the current repository. If the report cannot identify these
+facts, retain the item as a candidate or evidence limitation rather than asking the reader to infer
+the problem.

@@ -51,8 +51,11 @@ finding must answer:
 4. **What it causes:** Which current correctness, maintenance, extension, packaging, navigation, or
    test-protection consequence follows from that path.
 5. **What must change:** Which responsibility stays, which concrete artifacts move or change, and
-   which behavior must remain verified. Do not invent a target module or hierarchy without
-   maintained ownership evidence.
+   which behavior must remain verified. Prove current ownership wrong independently from whether
+   the correct owner already exists. Do not invent a target module name or hierarchy. When no
+   existing module can own the behavior without violating responsibility or dependency direction,
+   require current variation and packaging evidence that a new boundary is necessary; describe
+   its responsibility and variation axis, and cite maintained precedents when available.
 6. **Why the alternative explanation fails:** Which framework, bootstrap, compatibility,
    packaging, closed-set, default-implementation, or nearby-precedent justification was checked.
 
