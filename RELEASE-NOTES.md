@@ -13,6 +13,7 @@
 ### Bug Fixes
 
 1. Infra: Avoid retaining transient multi-object lookup keys in `OrderedSPILoader` - [#38980](https://github.com/apache/shardingsphere/pull/38980)
+1. Infra: Fix invalid target selection after counter overflow in `RoundRobinLoadBalanceAlgorithm` - [#39340](https://github.com/apache/shardingsphere/pull/39340)
 1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
 1. SQL Parser: Fix wrong parameter index parse in MySQL, Doris - [#38624](https://github.com/apache/shardingsphere/pull/38624)
 1. SQL Parser: Fix No value specified for parameter exception when sql is 'INSERT INTO tableName ON CONFLICT  DO UPDATE set  WHERE ' - [#38668](https://github.com/apache/shardingsphere/pull/38668)
@@ -40,6 +41,8 @@
 1. Proxy: Fix Proxy Native Docker image failing to start due to unexpanded LOCAL_PATH in ENTRYPOINT - [#39146](https://github.com/apache/shardingsphere/pull/39146)
 1. Proxy: Fix incorrect PostgreSQL composite column type OIDs in simple and extended query row descriptions - [#39241](https://github.com/apache/shardingsphere/pull/39241)
 1. Proxy: Fix incorrect openGauss composite column type OIDs in simple and extended query row descriptions - [#39253](https://github.com/apache/shardingsphere/pull/39253)
+1. Proxy: Fix MySQL CLOB and NCLOB result set handling - [#39338](https://github.com/apache/shardingsphere/pull/39338)
+1. Proxy: Fix MySQL BLOB result set handling in text and binary protocols - [#39340](https://github.com/apache/shardingsphere/pull/39340)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
 1. Agent: Fix wrong target class name in StaticMethodAdviceExecutor error logs - [#39077](https://github.com/apache/shardingsphere/pull/39077)
