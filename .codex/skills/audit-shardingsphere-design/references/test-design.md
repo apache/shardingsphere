@@ -72,6 +72,7 @@ before adding a coverage-only test.
 ## Reporting
 
 Tie every test finding to the production regression that can currently escape or to the production
-design distorted for testing. State the smallest correction direction without generating tests or
-patches. Keep explicit naming, assertion, Mockito, and JUnit rule violations separate from semantic
-test-design findings.
+design distorted for testing. Complete the test entry, setup, invocation, assertion, owner, and
+counter-evidence analysis internally. Publish only the final diagnosis and remediation conclusions
+required by `SKILL.md`; do not output the test-path walkthrough or candidate analysis. Keep explicit
+naming, assertion, Mockito, and JUnit rule violations separate from semantic test-design findings.

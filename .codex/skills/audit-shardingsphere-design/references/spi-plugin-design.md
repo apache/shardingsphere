@@ -21,7 +21,7 @@
 - [Common Plugin Invariants](#common-plugin-invariants)
 - [Category Profiles](#category-profiles)
 - [High-Value Smells](#high-value-smells)
-- [SPI Placement Finding Contract](#spi-placement-finding-contract)
+- [SPI Placement Proof Gate](#spi-placement-proof-gate)
 
 ## Model
 
@@ -112,11 +112,11 @@ For every smell, inspect counterexamples such as framework discovery constraints
 registries, deliberately closed sets, default implementations, and distribution assembly. Report
 the issue only when those facts do not justify the design.
 
-## SPI Placement Finding Contract
+## SPI Placement Proof Gate
 
-Do not publish a statement such as `a database plugin implementation is packaged in a shared core
-module` as a finding by itself. It names only a candidate smell. For every plugin placement
-finding, report:
+Treat a statement such as `a database plugin implementation is packaged in a shared core module`
+as a candidate smell, not a conclusion. Before confirming a plugin placement finding, establish
+these facts internally:
 
 1. The concrete SPI implementation, current module, and tight source location.
 2. Why the current module is shared or neutral, proven through its POM, consumers, public contract,
@@ -138,15 +138,14 @@ finding, report:
 7. The strongest counterexample checked, including infrastructure-owned variation, bootstrap
    assembly, deliberately closed sets, default implementations, and dependency reversal.
 
-Use actual repository identifiers to summarize `Current ownership`. Summarize `Expected ownership`
-with an existing module when one is proven, or with an evidence-backed responsibility boundary when
-no existing module can own the behavior. For a new boundary, do not invent a module name, path, or
-hierarchy; explain why current owners are invalid, name the implementation, dependencies,
-registrations, and resources it would own, and state the required packaging or assembly changes.
-For example, a proven database placement issue may keep the SPI contract and neutral loader in a
-shared module, move the database implementation, registration, resources, and dedicated
-dependencies to the maintained database plugin module or a proven new database-plugin boundary,
-and keep explicit plugin inclusion in the distribution assembly. This is only a structure for
-reporting; derive every named move from the current repository. If the report cannot identify these
-facts, retain the item as a candidate or evidence limitation rather than asking the reader to infer
-the problem.
+Use actual repository identifiers to derive current ownership. Derive expected ownership from an
+existing module when one is proven, or from an evidence-backed responsibility boundary when no
+existing module can own the behavior. For a new boundary, do not invent a module name, path, or
+hierarchy; establish why current owners are invalid, which implementation, dependencies,
+registrations, and resources the new boundary owns, and which packaging or assembly declarations
+change. If these facts cannot be established, retain the item as an internal candidate and do not
+publish it.
+
+Use this proof only to produce the concise diagnosis, key locations, minimum correction, change
+scope, and development-effort conclusion required by `SKILL.md`. Do not reproduce the numbered
+proof, complete path, counterexamples, or ownership derivation in the report.
