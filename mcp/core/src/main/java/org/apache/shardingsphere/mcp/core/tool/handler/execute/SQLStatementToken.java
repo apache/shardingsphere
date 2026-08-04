@@ -29,10 +29,10 @@ final class SQLStatementToken {
     
     private final int startIndex;
     
-    SQLStatementToken(final String text, final boolean quotedIdentifier, final int startIndex) {
+    SQLStatementToken(final String text, final int startIndex) {
         this.text = text;
         upperText = text.toUpperCase(Locale.ENGLISH);
-        this.quotedIdentifier = quotedIdentifier;
+        quotedIdentifier = isQuotedIdentifier(text);
         this.startIndex = startIndex;
     }
     
@@ -58,5 +58,14 @@ final class SQLStatementToken {
     
     private boolean isIdentifierStart(final char value) {
         return Character.isLetterOrDigit(value) || '_' == value || '$' == value;
+    }
+    
+    private boolean isQuotedIdentifier(final String text) {
+        if (2 > text.length()) {
+            return false;
+        }
+        char firstChar = text.charAt(0);
+        char lastChar = text.charAt(text.length() - 1);
+        return '"' == firstChar && '"' == lastChar || '`' == firstChar && '`' == lastChar || '[' == firstChar && ']' == lastChar;
     }
 }

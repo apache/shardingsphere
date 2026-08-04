@@ -43,11 +43,11 @@ final class ExplainSQLCandidateValidator {
         ClassificationResult explainedStatement = statementAnalyzer.analyze(sql, databaseCapability);
         ShardingSpherePreconditions.checkState(SupportedMCPStatement.QUERY == explainedStatement.getStatementClass(),
                 () -> new MCPInvalidRequestException("database_gateway_execute_explain_query only supports QUERY statements as the explained SQL."));
-        SQLStatementScanner scanner = new SQLStatementScanner(databaseCapability.getDatabaseType());
-        String actualExplainSql = scanner.normalizeSingleStatement(explainSql);
-        ShardingSpherePreconditions.checkState(!scanner.containsExecutableComment(actualExplainSql),
+        SQLStatementScanner scanner = new SQLStatementScanner(databaseCapability.getDatabaseType(), explainSql);
+        String actualExplainSql = scanner.sql();
+        ShardingSpherePreconditions.checkState(!scanner.containsExecutableComment(),
                 () -> new MCPInvalidRequestException("Executable comments are not supported by the MCP explain query tool."));
-        List<SQLStatementToken> tokens = scanner.tokenize(actualExplainSql);
+        List<SQLStatementToken> tokens = scanner.tokens();
         checkExplainCandidate(scanner, tokens, explainedStatement.getNormalizedSql(), actualExplainSql);
         return new ClassificationResult(SupportedMCPStatement.EXPLAIN, "EXPLAIN", actualExplainSql, "", explainedStatement.getReferencedObjects(), false);
     }
@@ -56,7 +56,7 @@ final class ExplainSQLCandidateValidator {
         ShardingSpherePreconditions.checkState(!tokens.isEmpty() && scanner.isKeyword(tokens.get(0), "EXPLAIN"),
                 () -> new MCPInvalidRequestException("explain_sql must start with EXPLAIN."));
         String explainPrefix = extractExplainPrefix(explainSql, sql);
-        List<SQLStatementToken> explainPrefixTokens = scanner.tokenize(explainPrefix);
+        List<SQLStatementToken> explainPrefixTokens = scanner.scan(explainPrefix).tokens();
         ShardingSpherePreconditions.checkState(!scanner.containsKeywordSequence(explainPrefixTokens, "EXPLAIN", "PLAN", "FOR"),
                 () -> new MCPInvalidRequestException("EXPLAIN PLAN FOR workflows are not supported by the MCP explain query tool."));
         ShardingSpherePreconditions.checkState(!containsKeyword(scanner, explainPrefixTokens, "ANALYZE", "ANALYSE"),

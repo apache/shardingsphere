@@ -66,12 +66,12 @@ final class MCPStatementAnalyzer {
     
     ClassificationResult analyze(final String sql, final MCPDatabaseCapability databaseCapability) {
         String databaseType = databaseCapability.getDatabaseType();
-        SQLStatementScanner scanner = new SQLStatementScanner(databaseType);
-        String actualSql = scanner.normalizeSingleStatement(sql);
-        String leadingSql = actualSql.substring(scanner.skipInsignificant(actualSql, 0)).trim();
+        SQLStatementScanner scanner = new SQLStatementScanner(databaseType, sql);
+        String actualSql = scanner.sql();
+        String leadingSql = scanner.leadingSql();
         String upperLeadingSql = leadingSql.toUpperCase(Locale.ENGLISH);
         SQLStatementSafetyValidator safetyValidator = new SQLStatementSafetyValidator(scanner);
-        safetyValidator.checkLeadingStatement(upperLeadingSql, actualSql);
+        safetyValidator.checkLeadingStatement(upperLeadingSql);
         if (isSavepointStatement(upperLeadingSql)) {
             return analyzeSavepointStatement(actualSql, leadingSql, upperLeadingSql);
         }
@@ -79,23 +79,25 @@ final class MCPStatementAnalyzer {
             return new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, extractTransactionStatementType(upperLeadingSql), actualSql, "", Set.of(), false);
         }
         SQLStatement sqlStatement = parse(actualSql, databaseType);
-        safetyValidator.checkParsedStatement(sqlStatement, actualSql);
+        safetyValidator.checkParsedStatement(sqlStatement);
         boolean ruleDistSQL = isRuleDistSQL(sqlStatement);
-        String leadingKeyword = scanner.extractLeadingKeyword(actualSql);
+        String leadingKeyword = scanner.extractLeadingKeyword();
         SupportedMCPStatement statementClass = resolveStatementClass(sqlStatement, leadingKeyword, ruleDistSQL);
         String statementType = resolveStatementType(sqlStatement, statementClass, leadingKeyword);
-        return new ClassificationResult(statementClass, statementType, actualSql, "", extractReferencedObjects(sqlStatement, actualSql, databaseType, scanner), ruleDistSQL);
+        return new ClassificationResult(statementClass, statementType, actualSql, "", extractReferencedObjects(sqlStatement, databaseType, scanner), ruleDistSQL);
     }
     
-    private Collection<SQLStatementObjectName> extractReferencedObjects(final SQLStatement sqlStatement, final String sql, final String databaseType,
-                                                                        final SQLStatementScanner scanner) {
+    private Collection<SQLStatementObjectName> extractReferencedObjects(final SQLStatement sqlStatement, final String databaseType, final SQLStatementScanner scanner) {
         SQLStatementObjectExtractor extractor = new SQLStatementObjectExtractor(scanner);
-        Collection<SQLStatementObjectName> result = extractor.extract(sqlStatement, sql);
-        findCreateTableQuery(sqlStatement, sql, scanner).ifPresent(query -> result.addAll(extractor.extract(parse(query, databaseType), query)));
+        Collection<SQLStatementObjectName> result = extractor.extract(sqlStatement);
+        findCreateTableQuery(sqlStatement, scanner).ifPresent(query -> {
+            SQLStatementScanner queryScanner = scanner.scan(query);
+            result.addAll(new SQLStatementObjectExtractor(queryScanner).extract(parse(queryScanner.sql(), databaseType)));
+        });
         return result;
     }
     
-    private Optional<String> findCreateTableQuery(final SQLStatement sqlStatement, final String sql, final SQLStatementScanner scanner) {
+    private Optional<String> findCreateTableQuery(final SQLStatement sqlStatement, final SQLStatementScanner scanner) {
         if (!(sqlStatement instanceof CreateTableStatement)) {
             return Optional.empty();
         }
@@ -103,7 +105,7 @@ final class MCPStatementAnalyzer {
         if (createTableStatement.getSelectStatement().isPresent()) {
             return Optional.empty();
         }
-        List<SQLStatementToken> tokens = scanner.tokenize(sql);
+        List<SQLStatementToken> tokens = scanner.tokens();
         int tableStopIndex = createTableStatement.getTable().getStopIndex();
         int parenthesisDepth = 0;
         for (int index = 0; index < tokens.size(); index++) {
@@ -114,7 +116,7 @@ final class MCPStatementAnalyzer {
             if (0 == parenthesisDepth) {
                 int queryStartIndex = scanner.isKeyword(token, "AS") ? index + 1 : index;
                 if (isCreateTableQueryStart(tokens, queryStartIndex, scanner)) {
-                    return Optional.of(sql.substring(tokens.get(queryStartIndex).startIndex()));
+                    return Optional.of(scanner.sql().substring(tokens.get(queryStartIndex).startIndex()));
                 }
             }
             if ("(".equals(token.text())) {

@@ -46,8 +46,8 @@ final class SQLStatementSafetyValidator {
     
     private final SQLStatementScanner scanner;
     
-    void checkLeadingStatement(final String upperSql, final String sql) {
-        if (isBannedCommand(upperSql, sql)) {
+    void checkLeadingStatement(final String upperSql) {
+        if (isBannedCommand(upperSql)) {
             throw new MCPBannedSQLStatementException();
         }
         if (isMetadataIntrospectionStatement(upperSql)) {
@@ -55,9 +55,9 @@ final class SQLStatementSafetyValidator {
         }
     }
     
-    void checkParsedStatement(final SQLStatement sqlStatement, final String sql) {
+    void checkParsedStatement(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement || findWithSegment(sqlStatement).isPresent()) {
-            checkLockingRead(scanner.tokenize(sql));
+            checkLockingRead(scanner.tokens());
         }
         checkParsedStatementTree(sqlStatement);
     }
@@ -95,15 +95,15 @@ final class SQLStatementSafetyValidator {
         return sqlStatement instanceof MergeStatement ? ((MergeStatement) sqlStatement).getWith() : Optional.empty();
     }
     
-    private boolean isBannedCommand(final String upperSql, final String sql) {
+    private boolean isBannedCommand(final String upperSql) {
         return upperSql.startsWith("USE ")
                 || upperSql.startsWith("SET ")
                 || upperSql.startsWith("COPY ")
                 || upperSql.startsWith("LOAD ")
                 || upperSql.startsWith("CALL ")
-                || scanner.containsExecutableComment(sql)
-                || scanner.containsUserVariableAssignment(sql)
-                || containsBannedDialectPattern(scanner.tokenize(sql));
+                || scanner.containsExecutableComment()
+                || scanner.containsUserVariableAssignment()
+                || containsBannedDialectPattern(scanner.tokens());
     }
     
     private boolean isMetadataIntrospectionStatement(final String upperSql) {
