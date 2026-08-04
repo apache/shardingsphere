@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -79,6 +80,8 @@ public final class MySQLTextResultSetRowPacket extends MySQLPacket {
             payload.writeStringLenenc(formatLocalDateTime((LocalDateTime) data));
         } else if (data instanceof LocalTime) {
             payload.writeStringLenenc(formatLocalTime((LocalTime) data));
+        } else if (data instanceof Time) {
+            payload.writeStringLenenc(formatTime((Time) data));
         } else if (data instanceof Clob) {
             try {
                 // TODO Verify the correct approach for this in MySQL.
@@ -125,5 +128,19 @@ public final class MySQLTextResultSetRowPacket extends MySQLPacket {
         }
         result.append(microsecondsText, 0, endIndex);
         return result.toString();
+    }
+    
+    private String formatTime(final Time value) {
+        int milliseconds = (int) Math.floorMod(value.getTime(), 1000L);
+        if (0 == milliseconds) {
+            return value.toString();
+        }
+        StringBuilder result = new StringBuilder(value.toString()).append('.');
+        String millisecondsText = String.format("%03d", milliseconds);
+        int endIndex = millisecondsText.length();
+        while (endIndex > 0 && '0' == millisecondsText.charAt(endIndex - 1)) {
+            endIndex--;
+        }
+        return result.append(millisecondsText, 0, endIndex).toString();
     }
 }

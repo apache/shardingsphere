@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -144,12 +145,19 @@ class MySQLTextResultSetRowPacketTest {
     
     private static Stream<Arguments> writeBasicValueArguments() {
         byte[] binary = new byte[]{1, 2, 3};
+        Time withMilliseconds = Time.valueOf("11:22:33");
+        withMilliseconds.setTime(withMilliseconds.getTime() + 123L);
+        Time withTrailingMillisecondZero = Time.valueOf("11:22:33");
+        withTrailingMillisecondZero.setTime(withTrailingMillisecondZero.getTime() + 120L);
         return Stream.of(
                 Arguments.of("Null", null, true, null, null),
                 Arguments.of("ByteArray", binary, false, null, binary),
                 Arguments.of("BigDecimal", new BigDecimal("123.4500"), false, "123.4500", null),
                 Arguments.of("BooleanTrue", Boolean.TRUE, false, null, new byte[]{1}),
                 Arguments.of("BooleanFalse", Boolean.FALSE, false, null, new byte[]{0}),
+                Arguments.of("TimeWithoutMilliseconds", Time.valueOf("11:22:33"), false, "11:22:33", null),
+                Arguments.of("TimeWithoutTrailingMillisecondZero", withMilliseconds, false, "11:22:33.123", null),
+                Arguments.of("TimeWithTrailingMillisecondZero", withTrailingMillisecondZero, false, "11:22:33.12", null),
                 Arguments.of("DefaultToString", "value_a", false, "value_a", null));
     }
     
