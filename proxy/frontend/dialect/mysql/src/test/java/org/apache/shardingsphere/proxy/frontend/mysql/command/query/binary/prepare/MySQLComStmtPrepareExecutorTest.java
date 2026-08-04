@@ -144,6 +144,43 @@ class MySQLComStmtPrepareExecutorTest {
     }
     
     @Test
+    void assertPrepareCharacterLargeObjectStatement() {
+        String sql = "SELECT content, national_content FROM foo_db.user WHERE content = ? AND national_content = ?";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 5;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        assertCharacterLargeObjectParameterDefinition((MySQLColumnDefinition41Packet) actualIterator.next());
+        assertCharacterLargeObjectParameterDefinition((MySQLColumnDefinition41Packet) actualIterator.next());
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+        assertCharacterLargeObjectProjectionDefinition((MySQLColumnDefinition41Packet) actualIterator.next());
+        assertCharacterLargeObjectProjectionDefinition((MySQLColumnDefinition41Packet) actualIterator.next());
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+        assertFalse(actualIterator.hasNext());
+        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+        assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Arrays.asList(MySQLBinaryColumnType.VAR_STRING, MySQLBinaryColumnType.VAR_STRING)));
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
+    }
+    
+    private void assertCharacterLargeObjectParameterDefinition(final MySQLColumnDefinition41Packet actual) {
+        assertThat(getColumnDefinitionCharacterSet(actual), is(MySQLCharacterSets.UTF8MB4_UNICODE_CI.getId()));
+        assertThat(getColumnDefinitionType(actual), is(MySQLBinaryColumnType.LONG_BLOB.getValue()));
+        assertThat(getColumnDefinitionFlag(actual), is(0));
+    }
+    
+    private void assertCharacterLargeObjectProjectionDefinition(final MySQLColumnDefinition41Packet actual) {
+        assertThat(getColumnDefinitionCharacterSet(actual), is(MySQLCharacterSets.UTF8MB4_UNICODE_CI.getId()));
+        assertThat(getColumnDefinitionType(actual), is(MySQLBinaryColumnType.BLOB.getValue()));
+        assertThat(getColumnDefinitionFlag(actual), is(MySQLColumnDefinitionFlag.BLOB.getValue()));
+    }
+    
+    @Test
     void assertPrepareSelectExpressionStatementByProbe() throws Exception {
         String sql = "SELECT ~id AS bitwise_not FROM foo_db.user";
         when(packet.getSQL()).thenReturn(sql);
@@ -223,6 +260,13 @@ class MySQLComStmtPrepareExecutorTest {
         payload.skipReserved(2);
         payload.skipReserved(4);
         payload.skipReserved(1);
+        return payload.readInt2();
+    }
+    
+    private int getColumnDefinitionCharacterSet(final MySQLColumnDefinition41Packet packet) {
+        MySQLPacketPayload payload = createPayload(packet);
+        skipColumnDefinitionStrings(payload);
+        payload.readIntLenenc();
         return payload.readInt2();
     }
     
@@ -346,7 +390,9 @@ class MySQLComStmtPrepareExecutorTest {
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
-                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false),
+                new ShardingSphereColumn("content", Types.CLOB, false, false, false, false, false, true),
+                new ShardingSphereColumn("national_content", Types.NCLOB, false, false, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
                 new ConfigurationProperties(new Properties()));

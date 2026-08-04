@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text;
 
-import com.google.common.io.ByteStreams;
+import com.google.common.io.CharStreams;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -83,14 +84,17 @@ public final class MySQLTextResultSetRowPacket extends MySQLPacket {
         } else if (data instanceof Time) {
             payload.writeStringLenenc(formatTime((Time) data));
         } else if (data instanceof Clob) {
-            try {
-                // TODO Verify the correct approach for this in MySQL.
-                payload.writeBytesLenenc(ByteStreams.toByteArray(((Clob) data).getAsciiStream()));
-            } catch (final IOException | SQLException ex) {
-                throw new UnknownSQLException(ex);
-            }
+            payload.writeStringLenenc(readClob((Clob) data));
         } else {
             payload.writeStringLenenc(data.toString());
+        }
+    }
+    
+    private String readClob(final Clob value) {
+        try (Reader reader = value.getCharacterStream()) {
+            return CharStreams.toString(reader);
+        } catch (final IOException | SQLException ex) {
+            throw new UnknownSQLException(ex);
         }
     }
     

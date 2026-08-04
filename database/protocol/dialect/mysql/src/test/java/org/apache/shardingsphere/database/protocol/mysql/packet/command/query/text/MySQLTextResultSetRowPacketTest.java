@@ -28,9 +28,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -47,8 +47,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -109,36 +111,40 @@ class MySQLTextResultSetRowPacketTest {
     }
     
     @Test
-    void assertWriteClob() throws SQLException {
-        byte[] expectedBytes = new byte[]{10, 20};
+    void assertWriteClob() throws SQLException, IOException {
+        String expected = "ASCII|中文|🙂|é|𝄞";
+        Reader reader = spy(new StringReader(expected));
         Clob clob = mock(Clob.class);
-        when(clob.getAsciiStream()).thenReturn(new ByteArrayInputStream(expectedBytes));
+        when(clob.getCharacterStream()).thenReturn(reader);
         new MySQLTextResultSetRowPacket(Collections.singletonList(clob)).write((PacketPayload) payload);
-        verify(payload).writeBytesLenenc(argThat(actual -> Arrays.equals(actual, expectedBytes)));
+        verify(payload).writeStringLenenc(expected);
+        verify(reader).close();
     }
     
     @Test
-    void assertWriteClobWithIOException() throws SQLException {
+    void assertWriteClobWithIOException() throws SQLException, IOException {
         IOException expectedCause = new IOException("read error");
-        InputStream inputStream = new InputStream() {
+        Reader reader = spy(new StringReader("") {
             
             @Override
-            public int read() throws IOException {
+            public int read(final char[] chars, final int offset, final int length) throws IOException {
                 throw expectedCause;
             }
-        };
+        });
         Clob clob = mock(Clob.class);
-        when(clob.getAsciiStream()).thenReturn(inputStream);
+        when(clob.getCharacterStream()).thenReturn(reader);
         MySQLTextResultSetRowPacket packet = new MySQLTextResultSetRowPacket(Collections.singletonList(clob));
         UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> packet.write((PacketPayload) payload));
         assertThat(actual.getCause(), is(expectedCause));
+        verify(reader).close();
+        verify(payload, never()).writeStringLenenc(anyString());
     }
     
     @Test
     void assertWriteClobWithSQLException() throws SQLException {
         SQLException expectedCause = new SQLException("sql error");
         Clob clob = mock(Clob.class);
-        when(clob.getAsciiStream()).thenThrow(expectedCause);
+        when(clob.getCharacterStream()).thenThrow(expectedCause);
         UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> new MySQLTextResultSetRowPacket(Collections.singletonList(clob)).write((PacketPayload) payload));
         assertThat(actual.getCause(), is(expectedCause));
     }
