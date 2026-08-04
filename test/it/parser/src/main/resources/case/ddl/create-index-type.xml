@@ -19,5 +19,6 @@
 <sql-parser-test-cases>
     <create-index-type sql-case-id="create_index_type_with_system_managed_storage" />
     <create-index-type sql-case-id="create_index_type_basic" />
+    <create-index-type sql-case-id="create_index_type_with_single_operators" />
     <create-index-type sql-case-id="create_index_type_with_multiple_operators" />
 </sql-parser-test-cases>

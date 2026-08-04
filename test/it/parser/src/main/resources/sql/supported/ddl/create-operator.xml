@@ -24,4 +24,5 @@
     <sql-case id="create_operator_with_binding" value="CREATE OPERATOR Contains BINDING (VARCHAR2, VARCHAR2) RETURN NUMBER USING TextContains;" db-types="Oracle" />
     <sql-case id="create_operator_with_binding_custom_datatype" value="CREATE OPERATOR Contains BINDING (VARCHAR2, VARCHAR2) RETURN NUMBER USING text.contains, (Spatial.Geo, Spatial.Geo) RETURN NUMBER USING Spatial.contains;" db-types="Oracle" />
     <sql-case id="create_operator_with_compute_ancillary_data" value="CREATE OPERATOR Contains BINDING (VARCHAR2, VARCHAR2) RETURN NUMBER WITH INDEX CONTEXT, SCAN CONTEXT TextIndexMethods COMPUTE ANCILLARY DATA USING TextContains;" db-types="Oracle" />
+    <sql-case id="create_operator_with_single_binding" value="CREATE OPERATOR userOp BINDING (NUMBER) RETURN NUMBER USING userOp_func;" db-types="Oracle" />
 </sql-cases>

@@ -24,4 +24,5 @@
     <create-operator sql-case-id="create_operator_with_binding" />
     <create-operator sql-case-id="create_operator_with_binding_custom_datatype" />
     <create-operator sql-case-id="create_operator_with_compute_ancillary_data" />
+    <create-operator sql-case-id="create_operator_with_single_binding" />
 </sql-parser-test-cases>
