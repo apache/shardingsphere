@@ -159,31 +159,6 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
         return baseContext.containsDerivedProjections();
     }
     
-    @Override
-    public Collection<WhereSegment> getWhereSegments() {
-        return baseContext.getWhereSegments();
-    }
-    
-    @Override
-    public Collection<ColumnSegment> getColumnSegments() {
-        return baseContext.getColumnSegments();
-    }
-    
-    @Override
-    public Collection<BinaryOperationExpression> getJoinConditions() {
-        return baseContext.getJoinConditions();
-    }
-    
-    @Override
-    public SelectStatement getSqlStatement() {
-        return baseContext.getSqlStatement();
-    }
-    
-    @Override
-    public TablesContext getTablesContext() {
-        return baseContext.getTablesContext();
-    }
-    
     /**
      * Set subquery type.
      *
@@ -272,6 +247,31 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      */
     public PaginationContext getPaginationContext() {
         return bindingContext.getPaginationContext();
+    }
+    
+    @Override
+    public Collection<WhereSegment> getWhereSegments() {
+        return baseContext.getWhereSegments();
+    }
+    
+    @Override
+    public Collection<ColumnSegment> getColumnSegments() {
+        return baseContext.getColumnSegments();
+    }
+    
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return baseContext.getJoinConditions();
+    }
+    
+    @Override
+    public SelectStatement getSqlStatement() {
+        return baseContext.getSqlStatement();
+    }
+    
+    @Override
+    public TablesContext getTablesContext() {
+        return baseContext.getTablesContext();
     }
     
     @Override
