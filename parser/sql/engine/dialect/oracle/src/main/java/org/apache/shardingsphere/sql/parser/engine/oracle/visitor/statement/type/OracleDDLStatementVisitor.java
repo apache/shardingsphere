@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.typ
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
@@ -95,7 +96,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateLockdownProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewLogContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateObjectTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePFileContext;
@@ -112,7 +112,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateViewContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateXMLTypeTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorParameterDecContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorForLoopStatementContext;
@@ -199,12 +198,12 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Rename
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectIntoStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SqlStatementInPlsqlContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.StatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SwitchContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TablePropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TriggerBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TriggerNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
@@ -373,6 +372,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -403,23 +403,31 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
+        SelectStatement selectStatement = null == ctx.createDefinitionClause() ? null : getCreateTableSelectStatement(ctx.createDefinitionClause());
+        Collection<CreateDefinitionSegment> createDefinitions = new LinkedList<>();
         Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
         Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
-            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
-            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
-                if (each instanceof ColumnDefinitionSegment) {
+            createDefinitions.addAll(((CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause())).getValue());
+        }
+        boolean createTableAsSelectWithColumnNames = null != selectStatement && isCreateTableAsSelectWithColumnNames(createDefinitions);
+        List<ColumnSegment> columns = new LinkedList<>();
+        for (CreateDefinitionSegment each : createDefinitions) {
+            if (each instanceof ColumnDefinitionSegment) {
+                if (createTableAsSelectWithColumnNames) {
+                    columns.add(((ColumnDefinitionSegment) each).getColumnName());
+                } else {
                     columnDefinitions.add((ColumnDefinitionSegment) each);
-                } else if (each instanceof ConstraintDefinitionSegment) {
-                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
+            } else if (each instanceof ConstraintDefinitionSegment) {
+                constraintDefinitions.add((ConstraintDefinitionSegment) each);
             }
         }
-        SelectStatement selectStatement = getCreateTableSelectStatement(ctx.createDefinitionClause());
         CreateTableStatement result = CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .selectStatement(selectStatement)
+                .columns(columns)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
@@ -430,24 +438,44 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     }
     
     private SelectStatement getCreateTableSelectStatement(final CreateDefinitionClauseContext ctx) {
-        TablePropertiesContext tableProperties = null;
-        if (null != ctx.createRelationalTableClause()) {
-            tableProperties = ctx.createRelationalTableClause().tableProperties();
-        } else if (null != ctx.createObjectTableClause()) {
-            CreateObjectTableClauseContext objectTable = ctx.createObjectTableClause();
-            tableProperties = objectTable.tableProperties();
-        } else if (null != ctx.createXMLTypeTableClause()) {
-            CreateXMLTypeTableClauseContext xmlTypeTable = ctx.createXMLTypeTableClause();
-            tableProperties = xmlTypeTable.tableProperties();
+        if (null == ctx) {
+            return null;
         }
-        if (null == tableProperties || null == tableProperties.selectSubquery()) {
+        SelectSubqueryContext selectSubquery = findCreateTableSelectSubquery(ctx);
+        if (null == selectSubquery) {
             return null;
         }
         OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor(getDatabaseType());
-        SelectStatement result = (SelectStatement) visitor.visit(tableProperties.selectSubquery());
+        SelectStatement result = (SelectStatement) visitor.visit(selectSubquery);
         getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
         getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
         return result;
+    }
+    
+    private SelectSubqueryContext findCreateTableSelectSubquery(final ParserRuleContext ctx) {
+        if (ctx instanceof SelectSubqueryContext) {
+            return (SelectSubqueryContext) ctx;
+        }
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            ParseTree each = ctx.getChild(i);
+            if (each instanceof ParserRuleContext) {
+                SelectSubqueryContext result = findCreateTableSelectSubquery((ParserRuleContext) each);
+                if (null != result) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private boolean isCreateTableAsSelectWithColumnNames(final Collection<CreateDefinitionSegment> createDefinitions) {
+        return !createDefinitions.isEmpty()
+                && createDefinitions.stream().allMatch(each -> each instanceof ColumnDefinitionSegment && isColumnName((ColumnDefinitionSegment) each));
+    }
+    
+    private boolean isColumnName(final ColumnDefinitionSegment columnDefinition) {
+        return null == columnDefinition.getDataType() && !columnDefinition.isPrimaryKey() && !columnDefinition.isNotNull()
+                && columnDefinition.getReferencedTables().isEmpty() && !columnDefinition.isRef();
     }
     
     @Override

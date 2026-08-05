@@ -22,20 +22,20 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
  * SQL statement binder context.
  */
-@RequiredArgsConstructor
 @Getter
 public final class SQLStatementBinderContext {
     
@@ -46,6 +46,8 @@ public final class SQLStatementBinderContext {
     private final HintValueContext hintValueContext;
     
     private final SQLStatement sqlStatement;
+    
+    private final Collection<IdentifierValue> currentSchema;
     
     private final Collection<String> commonTableExpressionsSegmentsUniqueAliases = new CaseInsensitiveSet<>();
     
@@ -58,4 +60,17 @@ public final class SQLStatementBinderContext {
     private final Collection<String> pivotColumnNames = new CaseInsensitiveSet<>();
     
     private final Collection<String> modelColumnNames = new CaseInsensitiveSet<>();
+    
+    public SQLStatementBinderContext(final ShardingSphereMetaData metaData, final String currentDatabaseName, final HintValueContext hintValueContext, final SQLStatement sqlStatement) {
+        this(metaData, currentDatabaseName, hintValueContext, sqlStatement, Collections.emptyList());
+    }
+    
+    public SQLStatementBinderContext(final ShardingSphereMetaData metaData, final String currentDatabaseName, final HintValueContext hintValueContext, final SQLStatement sqlStatement,
+                                     final Collection<IdentifierValue> currentSchema) {
+        this.metaData = metaData;
+        this.currentDatabaseName = currentDatabaseName;
+        this.hintValueContext = hintValueContext;
+        this.sqlStatement = sqlStatement;
+        this.currentSchema = null == currentSchema ? Collections.emptyList() : currentSchema;
+    }
 }
