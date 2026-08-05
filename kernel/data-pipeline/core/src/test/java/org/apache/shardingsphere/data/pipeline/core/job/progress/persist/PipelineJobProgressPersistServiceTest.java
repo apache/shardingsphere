@@ -114,9 +114,7 @@ class PipelineJobProgressPersistServiceTest {
         when(jobOption.getYamlJobItemProgressSwapper()).thenReturn(null);
         when(jobType.getOption()).thenReturn(jobOption);
         when(jobType.getType()).thenReturn("TEST");
-        ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
-        when(ThreadLocalRandom.current()).thenReturn(randomMock);
-        when(randomMock.nextInt(100)).thenReturn(0);
+        mockThreadLocalRandom(0);
         try (
                 MockedStatic<PipelineJobIdUtils> jobIdUtilsMock = mockStatic(PipelineJobIdUtils.class);
                 MockedStatic<TypedSPILoader> typedSpiLoaderStatic = mockStatic(TypedSPILoader.class);
@@ -152,9 +150,7 @@ class PipelineJobProgressPersistServiceTest {
         when(jobOption.getYamlJobItemProgressSwapper()).thenReturn(null);
         when(jobType.getOption()).thenReturn(jobOption);
         when(jobType.getType()).thenReturn("TEST");
-        ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
-        when(ThreadLocalRandom.current()).thenReturn(randomMock);
-        when(randomMock.nextInt(100)).thenReturn(0);
+        mockThreadLocalRandom(0);
         try (
                 MockedStatic<PipelineJobIdUtils> jobIdUtilsMock = mockStatic(PipelineJobIdUtils.class);
                 MockedStatic<TypedSPILoader> typedSpiLoaderStatic = mockStatic(TypedSPILoader.class);
@@ -182,9 +178,7 @@ class PipelineJobProgressPersistServiceTest {
         when(jobOption.getYamlJobItemProgressSwapper()).thenReturn(null);
         when(jobType.getOption()).thenReturn(jobOption);
         when(jobType.getType()).thenReturn("TEST");
-        ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
-        when(ThreadLocalRandom.current()).thenReturn(randomMock);
-        when(randomMock.nextInt(100)).thenReturn(6);
+        mockThreadLocalRandom(6);
         try (
                 MockedStatic<PipelineJobIdUtils> jobIdUtilsMock = mockStatic(PipelineJobIdUtils.class);
                 MockedStatic<TypedSPILoader> typedSpiLoaderStatic = mockStatic(TypedSPILoader.class);
@@ -225,5 +219,11 @@ class PipelineJobProgressPersistServiceTest {
         assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
         verify(randomMock, times(2)).nextInt(60);
         assertTrue(persistContext.getFirstExceptionLogged().get());
+    }
+    
+    private void mockThreadLocalRandom(final int nextIntValue) {
+        ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
+        when(ThreadLocalRandom.current()).thenReturn(randomMock);
+        when(randomMock.nextInt(100)).thenReturn(nextIntValue);
     }
 }
