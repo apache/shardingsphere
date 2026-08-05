@@ -174,7 +174,11 @@ public final class SimpleTableSegmentBinder {
                 return getCreateSchemaName(database, getDefaultSchemaName(database, binderContext.getCurrentSchema()));
             }
             Optional<IdentifierValue> result = findSchemaIdentifierByTableName(database, segment.getTableName().getIdentifier(), binderContext.getCurrentSchema());
-            return result.isPresent() ? result : findUniqueSchemaIdentifierByTableName(database, segment.getTableName().getIdentifier());
+            if (result.isPresent()) {
+                return result;
+            }
+            result = findUniqueSchemaIdentifierByTableName(database, segment.getTableName().getIdentifier());
+            return result.isPresent() ? result : Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
         }
         ShardingSphereDatabase database = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName());
         return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
