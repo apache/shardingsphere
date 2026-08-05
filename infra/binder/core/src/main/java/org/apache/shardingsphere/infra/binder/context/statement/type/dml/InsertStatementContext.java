@@ -116,38 +116,6 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
         return baseContext.getInsertColumnNames();
     }
     
-    @Override
-    public InsertStatement getSqlStatement() {
-        return baseContext.getSqlStatement();
-    }
-    
-    @Override
-    public TablesContext getTablesContext() {
-        return baseContext.getTablesContext();
-    }
-    
-    @Override
-    public void bindParameters(final List<Object> params) {
-        if (!params.isEmpty()) {
-            bindingContext = new InsertStatementBindingContext(baseContext, params, baseContext.getMetaData(), baseContext.getCurrentDatabaseName());
-        }
-    }
-    
-    @Override
-    public Collection<WhereSegment> getWhereSegments() {
-        return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getWhereSegments();
-    }
-    
-    @Override
-    public Collection<ColumnSegment> getColumnSegments() {
-        return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getColumnSegments();
-    }
-    
-    @Override
-    public Collection<BinaryOperationExpression> getJoinConditions() {
-        return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getJoinConditions();
-    }
-    
     /**
      * Get insert select context.
      *
@@ -182,5 +150,37 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
      */
     public OnDuplicateUpdateContext getOnDuplicateKeyUpdateValueContext() {
         return bindingContext.getOnDuplicateKeyUpdateValueContext();
+    }
+    
+    @Override
+    public InsertStatement getSqlStatement() {
+        return baseContext.getSqlStatement();
+    }
+    
+    @Override
+    public TablesContext getTablesContext() {
+        return baseContext.getTablesContext();
+    }
+    
+    @Override
+    public void bindParameters(final List<Object> params) {
+        if (!params.isEmpty()) {
+            bindingContext = new InsertStatementBindingContext(baseContext, params, baseContext.getMetaData(), baseContext.getCurrentDatabaseName());
+        }
+    }
+    
+    @Override
+    public Collection<WhereSegment> getWhereSegments() {
+        return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getWhereSegments();
+    }
+    
+    @Override
+    public Collection<ColumnSegment> getColumnSegments() {
+        return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getColumnSegments();
+    }
+    
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getJoinConditions();
     }
 }
