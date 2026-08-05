@@ -97,8 +97,8 @@ class OpenGaussMetaDataLoaderTest {
         ResultSet viewResultSet = mockViewMetaDataResultSet(hasView);
         when(dataSource.getConnection().prepareStatement(viewMetaDataSQL).executeQuery()).thenReturn(viewResultSet);
         DataTypeRegistry.load(dataSource, "openGauss");
-        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db")),
-                expectedTableType, expectedNameColumnCaseSensitive);
+        Collection<SchemaMetaData> schemaMetaData = dialectMetaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db"));
+        assertTableMetaDataMap(schemaMetaData, expectedTableType, expectedNameColumnCaseSensitive);
     }
     
     private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
