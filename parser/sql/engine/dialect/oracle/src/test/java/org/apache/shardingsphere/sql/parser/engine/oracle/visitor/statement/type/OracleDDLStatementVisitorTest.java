@@ -49,6 +49,25 @@ class OracleDDLStatementVisitorTest {
         assertTrue(actual.getSelectStatement().isPresent());
     }
     
+    @Test
+    void assertVisitCreateTableAsSelectWithIndexOrganizationColumnDefinitions() {
+        CreateTableStatement actual = parse("CREATE TABLE admin_iot3(i PRIMARY KEY, j, k, l) ORGANIZATION INDEX PARALLEL AS SELECT * FROM hr.jobs");
+        assertThat(actual.getTable().getTableName().getIdentifier().getValue(), is("admin_iot3"));
+        assertTrue(actual.getColumns().isEmpty());
+        assertThat(actual.getColumnDefinitions().size(), is(4));
+        assertTrue(actual.getColumnDefinitions().iterator().next().isPrimaryKey());
+        assertTrue(actual.getSelectStatement().isPresent());
+    }
+    
+    @Test
+    void assertVisitCreateTableAsSelectWithClusterClause() {
+        CreateTableStatement actual = parse("CREATE TABLE dept_10 CLUSTER personnel (department_id) AS SELECT * FROM employees WHERE department_id = 10");
+        assertThat(actual.getTable().getTableName().getIdentifier().getValue(), is("dept_10"));
+        assertTrue(actual.getColumns().isEmpty());
+        assertTrue(actual.getColumnDefinitions().isEmpty());
+        assertTrue(actual.getSelectStatement().isPresent());
+    }
+    
     private CreateTableStatement parse(final String sql) {
         return (CreateTableStatement) new SQLStatementVisitorEngine("Oracle").visit(new SQLParserEngine("Oracle", CACHE_OPTION).parse(sql, false));
     }
