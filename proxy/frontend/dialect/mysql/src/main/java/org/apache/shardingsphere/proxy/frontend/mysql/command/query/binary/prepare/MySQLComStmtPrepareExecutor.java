@@ -126,8 +126,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private Collection<MySQLPacket> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
                                                                              final MySQLServerPreparedStatement serverPreparedStatement) {
-        List<ShardingSphereColumn> columnsOfParameterMarkers =
-                MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, getSchema(sqlStatementContext));
+        List<ShardingSphereColumn> columnsOfParameterMarkers = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, getSchema(sqlStatementContext));
         Map<ShardingSphereColumn, MySQLColumnDefinition41Packet> columnPacketCache = new HashMap<>();
         MySQLColumnDefinition41Packet defaultColumnPacket = null;
         Collection<ParameterMarkerSegment> parameterMarkerSegments = sqlStatementContext.getSqlStatement().getParameterMarkers();
@@ -160,8 +159,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private MySQLColumnDefinition41Packet createMySQLColumnDefinition41PacketByCache(final int characterSet, final Map<ShardingSphereColumn, MySQLColumnDefinition41Packet> columnPacketCache,
-                                                                                     final ShardingSphereColumn column,
-                                                                                     final int columnDefinitionFlag, final MySQLBinaryColumnType columnType) {
+                                                                                     final ShardingSphereColumn column, final int columnDefinitionFlag, final MySQLBinaryColumnType columnType) {
         MySQLColumnDefinition41Packet cachedPacket = columnPacketCache.get(column);
         if (null != cachedPacket) {
             return cachedPacket;
