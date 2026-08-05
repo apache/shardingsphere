@@ -34,7 +34,7 @@ ASTERISK_:           '*' | '\uFF0A';
 SLASH_:              '/' | '\uFF0F';
 BACKSLASH_:          '\\';
 DOT_:                '.';
-DOT_ASTERISK_:       '.*';
+DOT_ASTERISK_:       '.*' | '.\uFF0A';
 SAFE_EQ_:            '<=>';
 DEQ_:                '==';
 EQ_:                 '=' | '\uFF1D';

@@ -346,6 +346,17 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_oracle_full_width_qualified_shorthand_projection">
+        <from>
+            <simple-table name="t_order" alias="t" start-index="16" stop-index="24" />
+        </from>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="t" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_encode_function">
         <from>
             <simple-table name="test_bytea" start-index="54" stop-index="63" />
