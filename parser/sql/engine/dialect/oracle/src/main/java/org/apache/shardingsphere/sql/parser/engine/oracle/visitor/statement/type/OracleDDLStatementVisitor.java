@@ -95,6 +95,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateLockdownProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewLogContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateObjectTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePFileContext;
@@ -111,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateXMLTypeTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorParameterDecContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorForLoopStatementContext;
@@ -402,18 +404,14 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        TablePropertiesContext tableProperties = null;
-        if (null != ctx.createDefinitionClause() && null != ctx.createDefinitionClause().createRelationalTableClause()) {
-            tableProperties = ctx.createDefinitionClause().createRelationalTableClause().tableProperties();
-        }
-        boolean createTableAsSelect = null != tableProperties && null != tableProperties.selectSubquery();
+        SelectStatement selectStatement = null == ctx.createDefinitionClause() ? null : getCreateTableSelectStatement(ctx.createDefinitionClause());
         Collection<CreateDefinitionSegment> createDefinitions = new LinkedList<>();
         Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
         Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
             createDefinitions.addAll(((CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause())).getValue());
         }
-        boolean createTableAsSelectWithColumnNames = createTableAsSelect && isCreateTableAsSelectWithColumnNames(createDefinitions);
+        boolean createTableAsSelectWithColumnNames = null != selectStatement && isCreateTableAsSelectWithColumnNames(createDefinitions);
         List<ColumnSegment> columns = new LinkedList<>();
         for (CreateDefinitionSegment each : createDefinitions) {
             if (each instanceof ColumnDefinitionSegment) {
@@ -426,14 +424,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                 constraintDefinitions.add((ConstraintDefinitionSegment) each);
             }
         }
-        SelectStatement selectStatement = null;
-        if (createTableAsSelect) {
-            OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor(getDatabaseType());
-            selectStatement = (SelectStatement) visitor.visit(tableProperties.selectSubquery());
-            getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
-            getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
-        }
-        return CreateTableStatement.builder()
+        CreateTableStatement result = CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .selectStatement(selectStatement)
@@ -441,6 +432,31 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
+        if (null != selectStatement) {
+            result.addParameterMarkers(getGlobalParameterMarkerSegments());
+        }
+        return result;
+    }
+    
+    private SelectStatement getCreateTableSelectStatement(final CreateDefinitionClauseContext ctx) {
+        TablePropertiesContext tableProperties = null;
+        if (null != ctx.createRelationalTableClause()) {
+            tableProperties = ctx.createRelationalTableClause().tableProperties();
+        } else if (null != ctx.createObjectTableClause()) {
+            CreateObjectTableClauseContext objectTable = ctx.createObjectTableClause();
+            tableProperties = objectTable.tableProperties();
+        } else if (null != ctx.createXMLTypeTableClause()) {
+            CreateXMLTypeTableClauseContext xmlTypeTable = ctx.createXMLTypeTableClause();
+            tableProperties = xmlTypeTable.tableProperties();
+        }
+        if (null == tableProperties || null == tableProperties.selectSubquery()) {
+            return null;
+        }
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor(getDatabaseType());
+        SelectStatement result = (SelectStatement) visitor.visit(tableProperties.selectSubquery());
+        getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
+        getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
+        return result;
     }
     
     private boolean isCreateTableAsSelectWithColumnNames(final Collection<CreateDefinitionSegment> createDefinitions) {

@@ -1941,9 +1941,39 @@
                     </function>
                 </expr>
             </expression-projection>
-            <expression-projection text="CASEtat.transaction_typeWHEN1THEN'Read/write transaction'WHEN2THEN'Read-only transaction'WHEN3THEN'System transaction'WHEN4THEN'Distributed transaction'END" start-index="175" stop-index="367" alias="transaction_type">
+            <expression-projection text="CASE tat.transaction_type  WHEN 1 THEN 'Read/write transaction' WHEN 2 THEN 'Read-only transaction' WHEN 3 THEN 'System transaction' WHEN 4 THEN 'Distributed transaction' END" start-index="175" stop-index="367" alias="transaction_type">
                 <expr>
-                    <common-expression literal-text="CASEtat.transaction_typeWHEN1THEN'Read/write transaction'WHEN2THEN'Read-only transaction'WHEN3THEN'System transaction'WHEN4THEN'Distributed transaction'END" start-index="194" stop-index="367"/>
+                    <case-when-expression start-index="194" stop-index="367">
+                        <case-expr>
+                            <column name="transaction_type" start-index="199" stop-index="218">
+                                <owner name="tat" start-index="199" stop-index="201" />
+                            </column>
+                        </case-expr>
+                        <when-exprs>
+                            <literal-expression value="1" start-index="226" stop-index="226" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="Read/write transaction" start-index="233" stop-index="256" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="2" start-index="263" stop-index="263" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="Read-only transaction" start-index="270" stop-index="292" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="3" start-index="299" stop-index="299" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="System transaction" start-index="306" stop-index="325" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="4" start-index="332" stop-index="332" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="Distributed transaction" start-index="339" stop-index="363" />
+                        </then-exprs>
+                    </case-when-expression>
                 </expr>
             </expression-projection>
             <column-projection name="event_info" start-index="370" stop-index="397" alias="input_buffer">
@@ -1952,9 +1982,69 @@
             <column-projection name="transaction_uow" start-index="400" stop-index="418">
                 <owner name="tat" start-index="400" stop-index="402"/>
             </column-projection>
-            <expression-projection text="CASEtat.transaction_stateWHEN0THEN'The transaction has not been completely initialized yet.'WHEN1THEN'The transaction has been initialized but has not started.'WHEN2THEN'The transaction is active - has not been committed or rolled back.'WHEN3THEN'The transaction has ended. This is used for read-only transactions.'WHEN4THEN'The commit process has been initiated on the distributed transaction.'WHEN5THEN'The transaction is in a prepared state and waiting resolution.'WHEN6THEN'The transaction has been committed.'WHEN7THEN'The transaction is being rolled back.'WHEN8THEN'The transaction has been rolled back.'END" alias="transaction_state" start-index="421" stop-index="1092">
+            <expression-projection text="CASE tat.transaction_state WHEN 0 THEN 'The transaction has not been completely initialized yet.' WHEN 1 THEN 'The transaction has been initialized but has not started.' WHEN 2 THEN 'The transaction is active - has not been committed or rolled back.' WHEN 3 THEN 'The transaction has ended. This is used for read-only transactions.' WHEN 4 THEN 'The commit process has been initiated on the distributed transaction.' WHEN 5 THEN 'The transaction is in a prepared state and waiting resolution.' WHEN 6 THEN 'The transaction has been committed.' WHEN 7 THEN 'The transaction is being rolled back.' WHEN 8 THEN 'The transaction has been rolled back.' END" alias="transaction_state" start-index="421" stop-index="1092">
                 <expr>
-                    <common-expression literal-text="CASEtat.transaction_stateWHEN0THEN'The transaction has not been completely initialized yet.'WHEN1THEN'The transaction has been initialized but has not started.'WHEN2THEN'The transaction is active - has not been committed or rolled back.'WHEN3THEN'The transaction has ended. This is used for read-only transactions.'WHEN4THEN'The commit process has been initiated on the distributed transaction.'WHEN5THEN'The transaction is in a prepared state and waiting resolution.'WHEN6THEN'The transaction has been committed.'WHEN7THEN'The transaction is being rolled back.'WHEN8THEN'The transaction has been rolled back.'END" start-index="442" stop-index="1092"/>
+                    <case-when-expression start-index="442" stop-index="1092">
+                        <case-expr>
+                            <column name="transaction_state" start-index="447" stop-index="467">
+                                <owner name="tat" start-index="447" stop-index="449" />
+                            </column>
+                        </case-expr>
+                        <when-exprs>
+                            <literal-expression value="0" start-index="474" stop-index="474" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="The transaction has not been completely initialized yet." start-index="481" stop-index="538" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="1" start-index="545" stop-index="545" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="The transaction has been initialized but has not started." start-index="552" stop-index="610" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="2" start-index="617" stop-index="617" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="The transaction is active - has not been committed or rolled back." start-index="624" stop-index="691" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="3" start-index="698" stop-index="698" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="The transaction has ended. This is used for read-only transactions." start-index="705" stop-index="773" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="4" start-index="780" stop-index="780" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="The commit process has been initiated on the distributed transaction." start-index="787" stop-index="857" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="5" start-index="864" stop-index="864" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="The transaction is in a prepared state and waiting resolution." start-index="871" stop-index="934" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="6" start-index="941" stop-index="941" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="The transaction has been committed." start-index="948" stop-index="984" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="7" start-index="991" stop-index="991" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="The transaction is being rolled back." start-index="998" stop-index="1036" />
+                        </then-exprs>
+                        <when-exprs>
+                            <literal-expression value="8" start-index="1043" stop-index="1043" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="The transaction has been rolled back." start-index="1050" stop-index="1088" />
+                        </then-exprs>
+                    </case-when-expression>
                 </expr>
             </expression-projection>
             <column-projection name="name" start-index="1095" stop-index="1121" alias="transaction_name">
@@ -2226,7 +2316,28 @@
                                                                     <binary-operation-expression start-index="249" stop-index="370">
                                                                         <operator>-</operator>
                                                                         <left>
-                                                                            <common-expression literal-text="CASEstatement_end_offsetWHEN-1THENDATALENGTH(ST.text)ELSEreq.statement_end_offsetEND" start-index="249" stop-index="341"/>
+                                                                            <case-when-expression start-index="249" stop-index="341">
+                                                                                <case-expr>
+                                                                                    <column name="statement_end_offset" start-index="254" stop-index="273" />
+                                                                                </case-expr>
+                                                                                <when-exprs>
+                                                                                    <literal-expression value="-1" start-index="280" stop-index="281" />
+                                                                                </when-exprs>
+                                                                                <then-exprs>
+                                                                                    <function function-name="DATALENGTH" text="DATALENGTH(ST.text)" start-index="288" stop-index="306">
+                                                                                        <parameter>
+                                                                                            <column name="text" start-index="299" stop-index="305">
+                                                                                                <owner name="ST" start-index="299" stop-index="300" />
+                                                                                            </column>
+                                                                                        </parameter>
+                                                                                    </function>
+                                                                                </then-exprs>
+                                                                                <else-expr>
+                                                                                    <column name="statement_end_offset" start-index="314" stop-index="337">
+                                                                                        <owner name="req" start-index="314" stop-index="316" />
+                                                                                    </column>
+                                                                                </else-expr>
+                                                                            </case-when-expression>
                                                                         </left>
                                                                         <right>
                                                                             <column name="statement_start_offset" start-index="345" stop-index="370">

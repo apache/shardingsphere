@@ -50,6 +50,8 @@ class MySQLBinaryColumnTypeTest {
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(MySQLBinaryColumnType.BLOB));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NULL), is(MySQLBinaryColumnType.NULL));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BLOB), is(MySQLBinaryColumnType.BLOB));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.CLOB), is(MySQLBinaryColumnType.BLOB));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NCLOB), is(MySQLBinaryColumnType.BLOB));
     }
     
     @Test

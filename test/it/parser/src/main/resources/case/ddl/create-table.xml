@@ -2315,12 +2315,20 @@
             <projections start-index="35" stop-index="35">
                 <shorthand-projection start-index="35" stop-index="35" />
             </projections>
-            <from start-index="42" stop-index="206">
+            <from>
                 <subquery-table start-index="42" stop-index="121">
                     <subquery>
                         <select>
                             <projections start-index="50" stop-index="108">
-                                <expression-projection text="EXTRACT(YEAR FROM order_date)" alias="year" start-index="50" stop-index="83" />
+                                <expression-projection text="EXTRACT(YEAR FROM order_date)" alias="year" start-index="50" stop-index="83">
+                                    <expr>
+                                        <function function-name="EXTRACT" text="EXTRACT(YEAR FROM order_date)" start-index="50" stop-index="78">
+                                            <parameter>
+                                                <column name="order_date" start-index="68" stop-index="77" />
+                                            </parameter>
+                                        </function>
+                                    </expr>
+                                </expression-projection>
                                 <column-projection name="order_mode" start-index="86" stop-index="95" />
                                 <column-projection name="order_total" start-index="98" stop-index="108" />
                             </projections>
@@ -2329,6 +2337,18 @@
                             </from>
                         </select>
                     </subquery>
+                    <pivot start-index="123" stop-index="206">
+                        <aggregation-columns>
+                            <column name="order_total" start-index="134" stop-index="144" />
+                        </aggregation-columns>
+                        <for-columns>
+                            <column name="order_mode" start-index="151" stop-index="160" />
+                        </for-columns>
+                        <in-columns>
+                            <column name="Store" start-index="166" stop-index="182" />
+                            <column name="Internet" start-index="185" stop-index="204" />
+                        </in-columns>
+                    </pivot>
                 </subquery-table>
             </from>
         </select>
@@ -2777,7 +2797,16 @@
         <table name="tab" start-index="13" stop-index="15"/>
         <select>
             <projections start-index="27" stop-index="63">
-                <expression-projection text="DBMS_LOB.GETLENGTH@dbs2(clob_col)" alias="len" start-index="27" stop-index="63" />
+                <expression-projection text="DBMS_LOB.GETLENGTH@dbs2(clob_col)" alias="len" start-index="27" stop-index="63">
+                    <expr>
+                        <function function-name="GETLENGTH" text="DBMS_LOB.GETLENGTH@dbs2(clob_col)" start-index="27" stop-index="59">
+                            <owner name="DBMS_LOB" start-index="27" stop-index="34" />
+                            <parameter>
+                                <column name="clob_col" start-index="51" stop-index="58" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
             </projections>
             <from>
                 <simple-table name="tab" start-index="70" stop-index="72" />

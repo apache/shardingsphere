@@ -619,16 +619,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
     
-    @Override
-    public ASTNode visitBuiltinFunctionsExpr(final BuiltinFunctionsExprContext ctx) {
-        FunctionSegment result = new FunctionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.builtinFunction().getText(), getOriginalText(ctx));
-        result.setOwner(new OwnerSegment(ctx.packageIdentifier().getStart().getStartIndex(), ctx.packageIdentifier().getStop().getStopIndex(),
-                (IdentifierValue) visit(ctx.packageIdentifier().identifier())));
-        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
-        return result;
-    }
-    
     private ASTNode createMultisetExpression(final ExprContext ctx) {
         ExpressionSegment left = (ColumnSegment) visitColumnName(ctx.multisetExpr().columnName(0));
         ExpressionSegment right = (ColumnSegment) visitColumnName(ctx.multisetExpr().columnName(1));
@@ -1525,6 +1515,15 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         result.getParameters().addAll(getExpressions(ctx.expr()));
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitBuiltinFunctionsExpr(final BuiltinFunctionsExprContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.builtinFunction().getText(), getOriginalText(ctx));
+        result.setOwner(new OwnerSegment(ctx.packageIdentifier().getStart().getStartIndex(), ctx.packageIdentifier().getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.packageIdentifier().identifier())));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
     

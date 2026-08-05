@@ -22,7 +22,7 @@
             <shorthand-projection start-index="0" stop-index="0" />
         </projections>
         <from>
-            <simple-table name="f" start-index="0" stop-index="6" />
+            <simple-table name="f" start-index="6" stop-index="6" />
         </from>
     </select>
 
@@ -31,7 +31,7 @@
             <shorthand-projection start-index="0" stop-index="0" />
         </projections>
         <from>
-            <simple-table name="t_order" start-index="0" stop-index="12" />
+            <simple-table name="t_order" start-index="6" stop-index="12" />
         </from>
         <order-by>
             <column-item name="order_id" start-index="23" stop-index="30" />
@@ -47,7 +47,7 @@
             <shorthand-projection start-index="0" stop-index="0" />
         </projections>
         <from>
-            <simple-table name="T1" start-index="0" stop-index="7" />
+            <simple-table name="T1" start-index="6" stop-index="7" />
         </from>
         <combine combine-type="UNION" start-index="0" stop-index="22">
             <left>
@@ -55,7 +55,7 @@
                     <shorthand-projection start-index="0" stop-index="0" />
                 </projections>
                 <from>
-                    <simple-table name="T1" start-index="0" stop-index="7" />
+                    <simple-table name="T1" start-index="6" stop-index="7" />
                 </from>
             </left>
             <right>
@@ -63,7 +63,7 @@
                     <shorthand-projection start-index="15" stop-index="15" />
                 </projections>
                 <from>
-                    <simple-table name="T2" start-index="15" stop-index="22" />
+                    <simple-table name="T2" start-index="21" stop-index="22" />
                 </from>
             </right>
         </combine>
@@ -81,7 +81,7 @@
                             <shorthand-projection start-index="15" stop-index="15" />
                         </projections>
                         <from>
-                            <simple-table name="t0" start-index="15" stop-index="22" />
+                            <simple-table name="t0" start-index="21" stop-index="22" />
                         </from>
                     </select>
                 </subquery>

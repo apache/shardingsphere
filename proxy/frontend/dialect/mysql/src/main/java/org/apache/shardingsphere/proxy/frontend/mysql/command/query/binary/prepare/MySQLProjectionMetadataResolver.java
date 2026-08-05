@@ -101,24 +101,30 @@ public final class MySQLProjectionMetadataResolver {
     
     private static int getColumnDefinitionFlag(final QueryHeader queryHeader) {
         int result = 0;
+        boolean characterLargeObject = isCharacterLargeObject(queryHeader.getColumnType());
         if (queryHeader.isPrimaryKey()) {
             result += MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue();
         }
         if (queryHeader.isNotNull()) {
             result += MySQLColumnDefinitionFlag.NOT_NULL.getValue();
         }
-        if (!queryHeader.isSigned()) {
+        if (!queryHeader.isSigned() && !characterLargeObject) {
             result += MySQLColumnDefinitionFlag.UNSIGNED.getValue();
         }
         if (queryHeader.isAutoIncrement()) {
             result += MySQLColumnDefinitionFlag.AUTO_INCREMENT.getValue();
         }
-        if (queryHeader.getColumnTypeName().contains(BINARY_COLUMN_TYPE_KEYWORD) || queryHeader.getColumnTypeName().contains(BLOB_COLUMN_TYPE_KEYWORD)) {
+        if (!characterLargeObject
+                && (queryHeader.getColumnTypeName().contains(BINARY_COLUMN_TYPE_KEYWORD) || queryHeader.getColumnTypeName().contains(BLOB_COLUMN_TYPE_KEYWORD))) {
             result += MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue();
         }
-        if (BINARY_TYPES.contains(queryHeader.getColumnType())) {
+        if (BINARY_TYPES.contains(queryHeader.getColumnType()) || characterLargeObject) {
             result += MySQLColumnDefinitionFlag.BLOB.getValue();
         }
         return result;
+    }
+    
+    private static boolean isCharacterLargeObject(final int jdbcType) {
+        return Types.CLOB == jdbcType || Types.NCLOB == jdbcType;
     }
 }

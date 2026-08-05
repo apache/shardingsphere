@@ -33,8 +33,8 @@ description: >-
 Find current, material design problems that an experienced ShardingSphere engineer can
 verify and act on. Review a named Maven module or the complete repository. Include production
 and test code by default. When the invocation provides no scope, review the complete repository
-without asking for one. Explain the minimum correction direction, but never modify code or produce
-a patch.
+without asking for one. Report the minimum correction, required change scope, and development-effort
+range for each confirmed problem, but never modify code or produce a patch.
 
 ## Boundaries
 
@@ -52,8 +52,8 @@ a patch.
 
 Read these files directly from this Skill before classifying findings:
 
-- Always read [finding-model.md](references/finding-model.md) for proof, priority,
-  confidence, and output rules.
+- Always read [finding-model.md](references/finding-model.md) for internal diagnosis, proof,
+  priority, remediation assessment, and publication rules.
 - Always read [design-smells.md](references/design-smells.md) for responsibility,
   coupling, complexity, duplication, and style criteria.
 - Read [spi-plugin-design.md](references/spi-plugin-design.md) whenever the scope contains
@@ -69,8 +69,11 @@ Read these files directly from this Skill before classifying findings:
    repository, enumerate leaf Maven modules and review them in bounded partitions; account for
    every leaf module rather than substituting a sample. Do not switch to PR scope.
 2. Read the applicable `AGENTS.md`, `CODE_OF_CONDUCT.md`, module POMs, registrations, and the
-   closest maintained production and test precedents. Treat written rules as authority and
-   nearby code as evidence of project idiom, not as automatic proof that a pattern is good.
+   closest maintained production and test precedents. Before treating a written rule as evidence
+   against existing code, apply the rule-applicability gate in `finding-model.md`; a rule scoped to
+   Codex actions, candidate changes, or newly touched code governs this audit or a future correction
+   but does not retrospectively prohibit untouched code. Treat applicable written rules as authority
+   and nearby code as evidence of project idiom, not as automatic proof that a pattern is good.
 3. Map each examined behavior to its owner, callers, dependencies, extension axis, SPI contract,
    implementations, registrations, packaging path, and tests. Trace cross-module behavior end
    to end before judging placement or coupling.
@@ -85,12 +88,14 @@ Read these files directly from this Skill before classifying findings:
 5. Apply the proof gate in `finding-model.md`. Inspect the strongest counter-evidence. Reject
    checklist matches that do not demonstrate a real consequence in this codebase.
 6. Consolidate findings that share one root cause and correction boundary. Rank findings by
-   impact, scope, and confidence; do not rank by how easy they are to describe.
-7. Return the report defined below. If no candidate passes the proof gate, say that no confirmed
-   design problem was found and list any material evidence limitation without inventing findings.
-   If an aggregate scope cannot be completed, return `Review incomplete`, preserve confirmed
-   findings as partial facts, and identify the unreviewed modules; never present partial coverage
-   as a complete repository or module conclusion.
+   impact, scope, and confidence; do not rank by implementation effort. Derive the minimum change
+   scope and development-effort range for each consolidated finding as defined in
+   `finding-model.md`.
+7. Return only the conclusions defined below. Do not expose candidate analysis, evidence chains,
+   path walkthroughs, counter-evidence checks, or confidence. If no candidate passes the proof
+   gate, say that no confirmed design problem was found. If an aggregate scope cannot be completed,
+   return `Review incomplete`, preserve confirmed findings as partial facts, and identify the
+   unreviewed modules and decisive missing facts; never present partial coverage as complete.
 
 ## Judgment Rules
 
@@ -98,6 +103,10 @@ Read these files directly from this Skill before classifying findings:
 - Separate an explicit standards violation from a semantic style problem. Prove semantic style
   problems through reduced readability, inconsistent abstraction, needless concepts, or a
   maintained precedent that better expresses the same responsibility.
+- Do not publish a standards violation until the exact rule is proven to govern the existing
+  artifact and situation under review. If a repository-wide standard permits the current pattern
+  while an agent workflow merely prefers a different pattern for new or changed code, reject the
+  standards candidate unless the current code has an independent material consequence.
 - Treat one implementation, one caller, a wrapper, a factory, or an interface as a signal only.
   Report over-design only when the concept lacks a real stable boundary and adds demonstrated
   navigation, state, dependency, testing, or extension cost.
@@ -119,40 +128,44 @@ available. Translate headings and field labels as well as the finding text; keep
 and repository paths unchanged.
 
 Start with the reviewed scope and a one-sentence conclusion. Then list confirmed findings in
-priority order. Apply the self-contained finding rules in `finding-model.md` and use this shape for
-every finding:
+priority order. Publish only final diagnoses and remediation conclusions. Do not publish the
+internal reasoning fields from `finding-model.md` or category references. Use this report shape and
+repeat only the finding section for additional findings:
 
 ```markdown
-### [P1|P2|P3] Concise problem title
+Reviewed scope: the complete repository or exact modules examined
+Conclusion: the count and highest-priority confirmed design result
 
-- Location: repository-relative file and line, or the smallest responsible module
-- Capability: one capability group from the workflow
-- Evidence: applicable exact code, dependency, registration, rule, or maintained precedent
-- Path: the relevant owner, caller, dependency, loading, registration, and packaging path
-- Problem: the violated responsibility, contract, or project principle
-- Impact: current maintenance, extension, correctness, packaging, or test consequence
-- Direction: the smallest correction boundary, naming what stays, moves, or changes and how to
-  verify the preserved behavior, without patch content
-- Counter-evidence: the strongest alternative explanation checked and why it does not reverse the
-  finding
-- Confidence: High or Medium, with the reason
+### [P1|P2|P3] Root problem and current consequence
+
+One concise paragraph states the final diagnosis: what is wrong in current ShardingSphere code and
+which concrete consequence it causes. It must not narrate how the analysis reached the conclusion.
+
+- Key locations: the minimum repository-relative files, classes, resources, POMs, and tight lines
+  needed to verify the conclusion
+- Minimum correction: the final responsibility boundary, naming what stays, moves, or changes,
+  without patch content
+- Change scope: the minimum required production owners and callers, dependencies, SPI contracts or
+  registrations, configuration, resources, packaging, compatibility work, and tests
+- Development effort: a numeric person-day range for one engineer familiar with ShardingSphere,
+  followed by the assumption that materially controls the range
 ```
 
 Use `P1` for a confirmed wrong ownership or contract that creates broad or immediate risk, `P2`
 for a material extension or maintenance cost, and `P3` for a localized but non-trivial clarity,
-consistency, or test-design problem. Do not publish low-confidence candidates as findings.
+consistency, or test-design problem. Priority is independent from development effort. Do not
+publish low-confidence candidates as findings.
 
-End with:
-
-- `Coverage`: capability groups and modules actually examined.
-- `Not findings`: important candidates rejected by counter-evidence, only when this helps prevent
-  the same false positive from recurring.
-- `Evidence limits`: facts that could materially change the conclusion.
+If there are no confirmed findings, output only the reviewed scope and the conclusion. If the
+review is incomplete, state `Review incomplete`, the unreviewed modules or partitions, and the
+decisive missing facts; include already confirmed findings using the same conclusion shape. Do not
+output `Coverage`, `Not findings`, `Evidence limits`, candidate logs, or rejected findings as
+separate analysis sections.
 
 Keep the report concise. Do not add a generic checklist, praise unaffected code, or recommend a
-large redesign when a smaller ownership correction addresses the evidence. A finding must explain
-the concrete project problem and correction without requiring the reader to infer the meaning of a
-smell label or ask a follow-up question.
+large redesign when a smaller ownership correction addresses the evidence. The title and diagnosis
+paragraph must explain the concrete project problem without requiring the reader to decode a smell
+label or reconstruct the analysis.
 
 ## Completion Gate
 
@@ -160,12 +173,20 @@ Before returning the report, verify that:
 
 - every finding traces a complete relevant path and cites current repository evidence;
 - every finding identifies a concrete consequence and minimum correction boundary;
-- every finding is self-contained and explains project-specific terms that are necessary to
-  understand the problem;
+- every finding is consolidated by root cause before change scope and development effort are
+  estimated;
+- every published finding contains only the final diagnosis, key locations, minimum correction,
+  minimum change scope, and numeric person-day range with its controlling assumption;
+- no published finding exposes capability tags, evidence chains, path walkthroughs,
+  counter-evidence checks, confidence, candidates, or rejected items;
 - every leaf module in an aggregate scope is accounted for, or the result is explicitly incomplete;
 - SPI findings apply the correct category profile rather than a universal placement rule, and SPI
-  placement findings satisfy the reporting contract in `spi-plugin-design.md`;
+  placement findings satisfy the internal proof gate in `spi-plugin-design.md`;
 - style findings distinguish written rules from engineering judgment;
+- every standards finding passes the rule-applicability gate and is not based only on a preference
+  whose explicit scope is future, generated, candidate, or touched code;
 - test findings protect production-owned behavior rather than coverage appearance;
 - no finding depends on another Skill, a single regex match, or an unverified deletion premise;
-- the report covers every applicable capability group and contains no patch or source edit.
+- effort does not affect priority or whether a finding passes the proof gate;
+- the report covers every applicable capability group internally and contains no patch or source
+  edit.

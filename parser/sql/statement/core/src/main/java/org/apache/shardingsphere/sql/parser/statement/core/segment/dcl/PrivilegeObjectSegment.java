@@ -15,15 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.dcl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * Privilege object segment.
+ */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlShortcutsConfigurationFixture implements YamlConfiguration {
+public final class PrivilegeObjectSegment implements SQLSegment {
     
-    private String name;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String objectType;
+    
+    private final List<IdentifierValue> identifiers = new LinkedList<>();
 }

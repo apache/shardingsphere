@@ -161,11 +161,13 @@ class SimpleTableSegmentBinderTest {
     
     private ShardingSphereMetaData createHiveMetaDataWithLoadedSchema() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        ShardingSphereSchema systemSchema = mock(ShardingSphereSchema.class);
         IdentifierValue fooDatabase = new IdentifierValue("foo_db");
         IdentifierValue shardingDatabase = new IdentifierValue("sharding_db");
         IdentifierValue loadedSchema = new IdentifierValue("ds_sharding_db");
         IdentifierValue tOrder = new IdentifierValue("t_order");
         when(schema.getName()).thenReturn("ds_sharding_db");
+        when(systemSchema.getName()).thenReturn("shardingsphere");
         when(schema.containsTable(tOrder)).thenReturn(true);
         when(schema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
@@ -176,8 +178,10 @@ class SimpleTableSegmentBinderTest {
         when(result.containsDatabase(shardingDatabase)).thenReturn(true);
         when(result.getDatabase("foo_db").containsSchema(shardingDatabase)).thenReturn(false);
         when(result.getDatabase(fooDatabase).containsSchema(shardingDatabase)).thenReturn(false);
-        when(result.getDatabase("sharding_db").getAllSchemas()).thenReturn(Collections.singleton(schema));
-        when(result.getDatabase(shardingDatabase).getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(result.getDatabase("sharding_db").getProtocolType()).thenReturn(hiveDatabaseType);
+        when(result.getDatabase(shardingDatabase).getProtocolType()).thenReturn(hiveDatabaseType);
+        when(result.getDatabase("sharding_db").getAllSchemas()).thenReturn(Arrays.asList(schema, systemSchema));
+        when(result.getDatabase(shardingDatabase).getAllSchemas()).thenReturn(Arrays.asList(schema, systemSchema));
         when(result.getDatabase("sharding_db").containsSchema(loadedSchema)).thenReturn(true);
         when(result.getDatabase(shardingDatabase).containsSchema(loadedSchema)).thenReturn(true);
         when(result.getDatabase("sharding_db").getSchema(loadedSchema)).thenReturn(schema);

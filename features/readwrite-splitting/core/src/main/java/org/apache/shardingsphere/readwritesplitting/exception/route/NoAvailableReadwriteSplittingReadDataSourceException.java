@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts;
+package org.apache.shardingsphere.readwritesplitting.exception.route;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
-@Getter
-@Setter
-public final class YamlShortcutsConfigurationFixture implements YamlConfiguration {
+/**
+ * No available readwrite-splitting read data source exception.
+ */
+public final class NoAvailableReadwriteSplittingReadDataSourceException extends ReadwriteSplittingSQLException {
     
-    private String name;
+    private static final long serialVersionUID = 5132658319931046280L;
+    
+    public NoAvailableReadwriteSplittingReadDataSourceException(final String dataSourceRuleName) {
+        super(XOpenSQLState.NOT_FOUND, 6, "No available read data source in readwrite-splitting data source rule '%s'.", dataSourceRuleName);
+    }
 }
