@@ -41,8 +41,8 @@ public final class SelectStatementBindingContext implements SQLStatementContext 
     public SelectStatementBindingContext(final List<Object> params, final SelectStatementBaseContext baseContext) {
         this.baseContext = baseContext;
         DialectPaginationOption paginationOption = new DatabaseTypeRegistry(baseContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getPaginationOption();
-        paginationContext =
-                new PaginationContextEngine(paginationOption).createPaginationContext(baseContext.getSqlStatement(), baseContext.getProjectionsContext(), params, baseContext.getWhereSegments());
+        paginationContext = new PaginationContextEngine(paginationOption)
+                .createPaginationContext(baseContext.getSqlStatement(), baseContext.getProjectionsContext(), params, baseContext.getWhereSegments());
     }
     
     @Override
