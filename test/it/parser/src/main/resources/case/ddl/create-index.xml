@@ -475,4 +475,12 @@
         </table>
         <column start-index="29" stop-index="36" name="document" />
     </create-index>
+
+    <create-index sql-case-id="create_index_with_indextype_and_parameters" index-type="indtype">
+        <index name="Test_indx" start-index="13" stop-index="21" />
+        <table>
+            <simple-table name="Test_tab" start-index="26" stop-index="33" />
+        </table>
+        <column start-index="35" stop-index="39" name="col_a" />
+    </create-index>
 </sql-parser-test-cases>

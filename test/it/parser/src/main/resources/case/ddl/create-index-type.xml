@@ -17,12 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <create-operator sql-case-id="create_operator" />
-    <create-operator sql-case-id="create_operator_with_procedure" />
-    <create-operator sql-case-id="create_operator_with_function" />
-    <create-operator sql-case-id="create_operator_with_schema_qualified_name" />
-    <create-operator sql-case-id="create_operator_with_binding" />
-    <create-operator sql-case-id="create_operator_with_binding_custom_datatype" />
-    <create-operator sql-case-id="create_operator_with_compute_ancillary_data" />
-    <create-operator sql-case-id="create_operator_with_single_binding" />
+    <create-index-type sql-case-id="create_index_type_with_system_managed_storage" />
+    <create-index-type sql-case-id="create_index_type_basic" />
+    <create-index-type sql-case-id="create_index_type_with_single_operators" />
+    <create-index-type sql-case-id="create_index_type_with_multiple_operators" />
 </sql-parser-test-cases>

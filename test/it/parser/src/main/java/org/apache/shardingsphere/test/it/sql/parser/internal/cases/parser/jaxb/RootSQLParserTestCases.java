@@ -201,6 +201,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.flashback.OracleFlashbackDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.flashback.OracleFlashbackTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.index.OracleAlterIndexTypeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.index.OracleCreateIndexTypeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.index.OracleDropIndexTypeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.java.OracleAlterJavaStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.java.OracleCreateJavaStatementTestCase;
@@ -1676,6 +1677,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-index-type")
     private final List<OracleAlterIndexTypeStatementTestCase> alterIndexTypeTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-index-type")
+    private final List<OracleCreateIndexTypeStatementTestCase> createIndexTypeTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-lockdown-profile")
     private final List<OracleAlterLockdownProfileStatementTestCase> alterLockdownProfileTestCases = new LinkedList<>();

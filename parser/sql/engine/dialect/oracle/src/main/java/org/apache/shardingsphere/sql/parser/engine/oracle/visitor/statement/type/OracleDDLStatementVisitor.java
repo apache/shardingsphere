@@ -211,6 +211,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Trunca
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VarrayTypeSpecContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexTypeContext;
 import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
@@ -334,6 +335,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.Oracl
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.function.OracleCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleAlterIndexTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleCreateIndexTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleDropIndexTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.java.OracleAlterJavaStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.java.OracleCreateJavaStatement;
@@ -1404,6 +1406,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitAlterIndexType(final AlterIndexTypeContext ctx) {
         return new OracleAlterIndexTypeStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateIndexType(final CreateIndexTypeContext ctx) {
+        return new OracleCreateIndexTypeStatement(getDatabaseType());
     }
     
     @Override
