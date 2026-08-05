@@ -66,7 +66,7 @@ class ReadwriteSplittingDataSourceRouterTest {
     @Test
     void assertRouteWithStandardRouters() {
         when(rule.getDisabledDataSourceNames()).thenReturn(Collections.emptyList());
-        when(rule.getReadwriteSplittingGroup().getReadDataSources()).thenReturn(Collections.emptyList());
+        when(rule.getReadwriteSplittingGroup().getReadDataSources()).thenReturn(Collections.singletonList("standard_ds"));
         when(rule.getLoadBalancer().getTargetName(any(), any())).thenReturn("standard_ds");
         ReadwriteSplittingDataSourceRouter router = new ReadwriteSplittingDataSourceRouter(rule, mock(ConnectionContext.class));
         setQualifiedRouters(router, mock(QualifiedReadwriteSplittingDataSourceRouter.class));
