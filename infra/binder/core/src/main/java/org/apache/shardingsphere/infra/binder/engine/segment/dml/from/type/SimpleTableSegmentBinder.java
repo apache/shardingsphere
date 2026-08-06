@@ -309,8 +309,7 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final Optional<IdentifierValue> schemaName,
-                                         final IdentifierValue tableName, final SimpleTableSegment segment,
-                                         final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
+                                         final IdentifierValue tableName, final SimpleTableSegment segment, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         String tableNameValue = tableName.getValue();
         if (isUpdateTargetTableAlias(binderContext, tableBinderContexts, schemaName, tableNameValue, segment)) {
             return;

@@ -106,8 +106,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     }
     
     private Collection<SQLToken> generateSQLTokens(final String schemaName, final EncryptTable encryptTable,
-                                                   final EncryptColumn encryptColumn, final ColumnAssignmentSegment assignmentSegment,
-                                                   final QuoteCharacter quoteCharacter) {
+                                                   final EncryptColumn encryptColumn, final ColumnAssignmentSegment assignmentSegment, final QuoteCharacter quoteCharacter) {
         if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
             return Collections.singletonList(generateParameterSQLToken(encryptTable, assignmentSegment, quoteCharacter));
         }
