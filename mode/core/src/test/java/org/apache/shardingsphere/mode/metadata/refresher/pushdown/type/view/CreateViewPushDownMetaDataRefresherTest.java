@@ -169,6 +169,16 @@ class CreateViewPushDownMetaDataRefresherTest {
         private final DataNode dataNode;
         
         @Override
+        public ShardingSphereRule copyRuleAndPut(final String dataSourceName, final String schemaName, final String tableName) {
+            return new SingleTableRule(new DataNode(dataSourceName, schemaName, tableName));
+        }
+        
+        @Override
+        public ShardingSphereRule copyRuleAndRemove(final String schemaName, final String tableName) {
+            return new SingleTableRule(dataNode);
+        }
+        
+        @Override
         public void put(final String dataSourceName, final String schemaName, final String tableName) {
         }
         
@@ -182,7 +192,7 @@ class CreateViewPushDownMetaDataRefresherTest {
         
         @Override
         public Optional<DataNode> findTableDataNode(final String schemaName, final String tableName) {
-            return Optional.of(dataNode);
+            return dataNode.getSchemaName().equals(schemaName) && dataNode.getTableName().equals(tableName) ? Optional.of(dataNode) : Optional.empty();
         }
         
         @Override

@@ -44,6 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class SingleMutableDataNodeRuleAttributeTest {
     
@@ -223,7 +224,7 @@ class SingleMutableDataNodeRuleAttributeTest {
     private static SingleMutableDataNodeRuleAttribute createRuleAttribute(final SingleRuleConfiguration configuration, final Collection<String> dataSourceNames,
                                                                           final Map<String, Collection<DataNode>> singleTableDataNodes,
                                                                           final SingleTableMapperRuleAttribute tableMapperRuleAttribute) {
-        return new SingleMutableDataNodeRuleAttribute(configuration, new LinkedHashSet<>(dataSourceNames), singleTableDataNodes, DATABASE_TYPE, tableMapperRuleAttribute);
+        return new SingleMutableDataNodeRuleAttribute(mock(SingleRule.class), configuration, new LinkedHashSet<>(dataSourceNames), singleTableDataNodes, DATABASE_TYPE, tableMapperRuleAttribute);
     }
     
     private static Collection<String> createDataNodeStrings(final Collection<DataNode> dataNodes) {

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -230,17 +229,17 @@ class DatabaseMetaDataManagerTest {
     @Test
     void assertDropTable() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(createToBeAlteredSchema()));
-        mockMutableDataNodeRuleAttribute();
         databaseMetaDataManager.dropTable("foo_db", "foo_schema", "foo_tbl");
         assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsTable("foo_tbl"));
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db")).removeDataNode("foo_schema", "foo_tbl");
     }
     
     @Test
     void assertDropView() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(createToBeAlteredSchema()));
-        mockMutableDataNodeRuleAttribute();
         databaseMetaDataManager.dropView("foo_db", "foo_schema", "foo_view");
         assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").containsView("foo_view"));
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db")).removeDataNode("foo_schema", "foo_view");
     }
     
     @Test
@@ -255,11 +254,6 @@ class DatabaseMetaDataManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(false);
         databaseMetaDataManager.dropView("foo_db", "foo_schema", "foo_view");
         verify(metaDataContexts.getMetaData().getDatabase("foo_db"), never()).getSchema(anyString());
-    }
-    
-    private void mockMutableDataNodeRuleAttribute() {
-        MutableDataNodeRuleAttribute attribute = mock(MutableDataNodeRuleAttribute.class);
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class)).thenReturn(Collections.singleton(attribute));
     }
     
     private ShardingSphereSchema createToBeAlteredSchema() {
