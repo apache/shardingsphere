@@ -72,6 +72,8 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -178,11 +180,55 @@ class ShardingSphereDatabaseTest {
                 "foo_db", databaseType, new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource())), ruleMetaData, Collections.emptyList(),
                 new ConfigurationProperties(new Properties()));
         database.reloadRules();
+        assertThat(database.getRuleMetaData(), not(sameInstance(ruleMetaData)));
+        assertTrue(ruleMetaData.getRules().contains(mutableRule));
         Collection<ShardingSphereRule> actualRules = database.getRuleMetaData().getRules();
         assertThat(actualRules.size(), is(2));
         assertFalse(actualRules.contains(mutableRule));
         assertTrue(actualRules.contains(immutableRule));
         assertTrue(actualRules.contains(reloadedRule));
+    }
+    
+    @Test
+    void assertPutDataNode() {
+        RuleMetaData original = mock(RuleMetaData.class);
+        RuleMetaData updated = mock(RuleMetaData.class);
+        when(original.copyAndPutDataNode("foo_ds", "foo_schema", "foo_tbl")).thenReturn(updated);
+        ShardingSphereDatabase database = createDatabaseWithRuleMetaData(original);
+        assertTrue(database.putDataNode("foo_ds", "foo_schema", "foo_tbl"));
+        assertThat(database.getRuleMetaData(), sameInstance(updated));
+    }
+    
+    @Test
+    void assertPutDataNodeWhenUnchanged() {
+        RuleMetaData original = mock(RuleMetaData.class);
+        when(original.copyAndPutDataNode("foo_ds", "foo_schema", "foo_tbl")).thenReturn(original);
+        ShardingSphereDatabase database = createDatabaseWithRuleMetaData(original);
+        assertFalse(database.putDataNode("foo_ds", "foo_schema", "foo_tbl"));
+        assertThat(database.getRuleMetaData(), sameInstance(original));
+    }
+    
+    @Test
+    void assertRemoveDataNode() {
+        RuleMetaData original = mock(RuleMetaData.class);
+        RuleMetaData updated = mock(RuleMetaData.class);
+        when(original.copyAndRemoveDataNode("foo_schema", "foo_tbl")).thenReturn(updated);
+        ShardingSphereDatabase database = createDatabaseWithRuleMetaData(original);
+        assertTrue(database.removeDataNode("foo_schema", "foo_tbl"));
+        assertThat(database.getRuleMetaData(), sameInstance(updated));
+    }
+    
+    @Test
+    void assertRemoveDataNodeWhenUnchanged() {
+        RuleMetaData original = mock(RuleMetaData.class);
+        when(original.copyAndRemoveDataNode("foo_schema", "foo_tbl")).thenReturn(original);
+        ShardingSphereDatabase database = createDatabaseWithRuleMetaData(original);
+        assertFalse(database.removeDataNode("foo_schema", "foo_tbl"));
+        assertThat(database.getRuleMetaData(), sameInstance(original));
+    }
+    
+    private ShardingSphereDatabase createDatabaseWithRuleMetaData(final RuleMetaData ruleMetaData) {
+        return new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData, Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     
     @Test
