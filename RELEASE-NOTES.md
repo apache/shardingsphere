@@ -55,6 +55,7 @@
 1. Sharding: Fix AUTO_INTERVAL sharding failure under JVM default locales that use comma decimal separators - [#38806](https://github.com/apache/shardingsphere/pull/38806)
 1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
+1. Mask: Allow position 0 for from-x and to-y in MASK_FROM_X_TO_Y and KEEP_FROM_X_TO_Y - [#39364](https://github.com/apache/shardingsphere/pull/39364)
 
 ### Enhancements
 
