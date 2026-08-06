@@ -280,17 +280,22 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
                 }
             }
         }
-        return CreateTableStatement.builder()
+        SelectStatement selectStatement = null == ctx.duplicateAsQueryExpression() ? null : (SelectStatement) visit(ctx.duplicateAsQueryExpression().select());
+        CreateTableStatement result = CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .ifNotExists(null != ctx.ifNotExists())
                 .temporary(null != ctx.TEMPORARY())
                 .likeTable(null == ctx.createLikeClause() ? null : (SimpleTableSegment) visit(ctx.createLikeClause()))
                 .createTableOption(null == ctx.createTableOptions() ? null : (CreateTableOptionSegment) visit(ctx.createTableOptions()))
-                .selectStatement(null == ctx.duplicateAsQueryExpression() ? null : (SelectStatement) visit(ctx.duplicateAsQueryExpression().select()))
+                .selectStatement(selectStatement)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
+        if (null != selectStatement) {
+            result.addParameterMarkers(selectStatement.getParameterMarkers());
+        }
+        return result;
     }
     
     @Override

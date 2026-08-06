@@ -29,6 +29,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -105,6 +107,26 @@ class MySQLComStmtExecutePacketTest {
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
         assertThat(actual.readParameters(parameterTypes, Collections.singleton(0), Collections.emptyList()), is(Collections.singletonList(null)));
+    }
+    
+    @Test
+    void assertReadParametersWithDateParameter() throws SQLException {
+        byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0a, 0x00, 0x04, (byte) 0xe1, 0x07, 0x08, 0x08};
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
+        Object actualValue = actual.readParameters(actual.getNewParameterTypes(), Collections.emptySet(), Collections.singletonList(MySQLBinaryColumnType.DATE)).get(0);
+        assertThat(actualValue, isA(Date.class));
+        assertThat(actualValue, is(Date.valueOf("2017-08-08")));
+    }
+    
+    @Test
+    void assertReadParametersWithDatetimeParameterBoundToDateColumn() throws SQLException {
+        byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0c, 0x00, 0x04, (byte) 0xe1, 0x07, 0x08, 0x08};
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
+        Object actualValue = actual.readParameters(actual.getNewParameterTypes(), Collections.emptySet(), Collections.singletonList(MySQLBinaryColumnType.DATE)).get(0);
+        assertThat(actualValue, isA(Date.class));
+        assertThat(actualValue, is(Date.valueOf("2017-08-08")));
     }
     
     @ParameterizedTest(name = "{0}")

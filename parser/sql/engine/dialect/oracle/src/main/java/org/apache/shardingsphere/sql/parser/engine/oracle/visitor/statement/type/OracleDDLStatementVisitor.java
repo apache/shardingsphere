@@ -23,6 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
@@ -99,6 +100,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePackageContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRelationalTableClauseContext;
@@ -187,6 +189,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Packag
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterDeclarationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlFunctionSourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlPackageSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlProcedureSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlStatementsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlTriggerSourceContext;
@@ -228,6 +231,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
@@ -349,6 +353,9 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.Oracle
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleAlterOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleCreateOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleDropOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement.Authorization;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement.Edition;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.procedure.OracleCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.profile.OracleAlterProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.profile.OracleCreateProfileStatement;
@@ -843,6 +850,60 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitDropPackage(final DropPackageContext ctx) {
         return new DropPackageStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreatePackage(final CreatePackageContext ctx) {
+        OracleStatementParser.PlsqlPackageBodySourceContext body = ctx.plsqlPackageBodySource();
+        if (null != body) {
+            body.declareItem().forEach(this::visit);
+        }
+        RoutineBodySegment initialization = null;
+        if (null != body && null != body.packageInitialization()) {
+            OracleStatementParser.PackageInitializationContext packageInitialization = body.packageInitialization();
+            visitPlsqlStatementList(packageInitialization.plsqlStatements());
+            for (ExceptionHandlerContext each : packageInitialization.exceptionHandler()) {
+                visitPlsqlStatementList(each.plsqlStatements());
+            }
+            initialization = new RoutineBodySegment(packageInitialization.start.getStartIndex(), packageInitialization.stop.getStopIndex());
+        }
+        getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
+        getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
+        getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
+        PlsqlPackageSourceContext specification = ctx.plsqlPackageSource();
+        PackageSegment packageName = null == specification
+                ? createPackageNameSegment(body.schemaName(), body.packageName(0))
+                : createPackageNameSegment(specification.schemaName(), specification.packageName(0));
+        OracleCreatePackageStatement result = new OracleCreatePackageStatement(
+                getDatabaseType(), packageName, null != body, null != ctx.REPLACE(),
+                null == specification ? null != body.packageIfNotExists() : null != specification.packageIfNotExists(),
+                getEdition(ctx), getAuthorization(specification), initialization);
+        result.getSqlStatements().addAll(getSqlStatementsInPlsql());
+        result.getProcedureCallNames().addAll(getProcedureCallNames());
+        result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
+        return result;
+    }
+    
+    private PackageSegment createPackageNameSegment(final SchemaNameContext schemaName, final PackageNameContext packageName) {
+        PackageSegment result = (PackageSegment) visit(packageName);
+        if (null != schemaName) {
+            result.setOwner(new OwnerSegment(schemaName.start.getStartIndex(), schemaName.stop.getStopIndex(), (IdentifierValue) visit(schemaName.identifier())));
+        }
+        return result;
+    }
+    
+    private Edition getEdition(final CreatePackageContext ctx) {
+        if (null != ctx.EDITIONABLE()) {
+            return Edition.EDITIONABLE;
+        }
+        return null == ctx.NONEDITIONABLE() ? null : Edition.NONEDITIONABLE;
+    }
+    
+    private Authorization getAuthorization(final PlsqlPackageSourceContext ctx) {
+        if (null == ctx || ctx.invokerRightsClause().isEmpty()) {
+            return null;
+        }
+        return null == ctx.invokerRightsClause(0).CURRENT_USER() ? Authorization.DEFINER : Authorization.CURRENT_USER;
     }
     
     @Override

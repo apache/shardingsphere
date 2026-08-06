@@ -69,6 +69,7 @@ execute
     | alterDimension
     | dropDimension
     | createFunction
+    | createPackage
     | dropDatabaseLink
     | dropDirectory
     | dropView
