@@ -55,7 +55,16 @@ class CreateMaskRuleExecutorTest {
     void assertExecuteUpdateWithDuplicateMaskRule() {
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
-        assertThrows(DuplicateRuleException.class, () -> new DistSQLUpdateExecuteEngine(createDuplicatedSQLStatement(false, "MD5"), "foo_db", mockContextManager(rule), null).executeUpdate());
+        assertThrows(DuplicateRuleException.class,
+                () -> new DistSQLUpdateExecuteEngine(createDuplicatedSQLStatement(false, "MD5", "t_mask", "t_order"), "foo_db", mockContextManager(rule), null).executeUpdate());
+    }
+    
+    @Test
+    void assertExecuteUpdateWithDuplicateMaskRuleInDifferentCase() {
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
+        assertThrows(DuplicateRuleException.class,
+                () -> new DistSQLUpdateExecuteEngine(createDuplicatedSQLStatement(false, "MD5", "T_MASK", "T_ORDER"), "foo_db", mockContextManager(rule), null).executeUpdate());
     }
     
     @Test
@@ -93,11 +102,11 @@ class CreateMaskRuleExecutorTest {
         return new CreateMaskRuleStatement(ifNotExists, rules);
     }
     
-    private CreateMaskRuleStatement createDuplicatedSQLStatement(final boolean ifNotExists, final String algorithmType) {
+    private CreateMaskRuleStatement createDuplicatedSQLStatement(final boolean ifNotExists, final String algorithmType, final String maskTableName, final String orderTableName) {
         MaskColumnSegment tMaskColumnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment(algorithmType, new Properties()));
         MaskColumnSegment tOrderColumnSegment = new MaskColumnSegment("order_id", new AlgorithmSegment(algorithmType, new Properties()));
-        MaskRuleSegment tMaskRuleSegment = new MaskRuleSegment("t_mask", Collections.singleton(tMaskColumnSegment));
-        MaskRuleSegment tOrderRuleSegment = new MaskRuleSegment("t_order", Collections.singleton(tOrderColumnSegment));
+        MaskRuleSegment tMaskRuleSegment = new MaskRuleSegment(maskTableName, Collections.singleton(tMaskColumnSegment));
+        MaskRuleSegment tOrderRuleSegment = new MaskRuleSegment(orderTableName, Collections.singleton(tOrderColumnSegment));
         Collection<MaskRuleSegment> rules = new LinkedList<>();
         rules.add(tMaskRuleSegment);
         rules.add(tOrderRuleSegment);
