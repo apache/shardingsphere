@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
@@ -55,7 +56,7 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
     }
     
     private void checkToBeAlteredRules(final AlterMaskRuleStatement sqlStatement) {
-        Collection<String> currentMaskTableNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> currentMaskTableNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
         Collection<String> notExistedMaskTableNames = getToBeAlteredMaskTableNames(sqlStatement).stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkMustEmpty(notExistedMaskTableNames, () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedMaskTableNames));
     }
@@ -71,7 +72,7 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
     
     @Override
     public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final MaskRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> toBeAlteredTableNames = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
         Collection<MaskColumnRuleConfiguration> columns = rule.getConfiguration().getTables().stream().filter(each -> !toBeAlteredTableNames.contains(each.getName()))
                 .flatMap(each -> each.getColumns().stream()).collect(Collectors.toList());
         columns.addAll(toBeAlteredRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).collect(Collectors.toList()));
