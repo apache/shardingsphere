@@ -22,11 +22,12 @@ import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -43,31 +44,27 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class EncryptUpdateAssignmentTokenGeneratorTest {
     
-    private EncryptUpdateAssignmentTokenGenerator tokenGenerator;
-    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private UpdateStatementContext updateStatementContext;
     
-    @BeforeEach
-    void setup() {
-        EncryptRule encryptRule = mockEncryptRule();
-        tokenGenerator = new EncryptUpdateAssignmentTokenGenerator(encryptRule, mock(ShardingSphereDatabase.class));
+    @Test
+    void assertIsGenerateSQLTokenUpdateSQLSuccess() {
+        EncryptRule encryptRule = mock(EncryptRule.class);
+        when(encryptRule.findEncryptTable("table")).thenReturn(Optional.of(mock(EncryptTable.class)));
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("table"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")));
         when(updateStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(tableNameSegment)));
-        ColumnAssignmentSegment assignmentSegment = mock(ColumnAssignmentSegment.class);
-        when(updateStatementContext.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
-    }
-    
-    private EncryptRule mockEncryptRule() {
-        EncryptRule result = mock(EncryptRule.class);
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        when(result.findEncryptTable("table")).thenReturn(Optional.of(encryptTable));
-        return result;
+        when(updateStatementContext.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singleton(mock(ColumnAssignmentSegment.class)));
+        EncryptUpdateAssignmentTokenGenerator tokenGenerator = new EncryptUpdateAssignmentTokenGenerator(encryptRule, mock(ShardingSphereDatabase.class));
+        assertTrue(tokenGenerator.isGenerateSQLToken(updateStatementContext));
     }
     
     @Test
-    void assertIsGenerateSQLTokenUpdateSQLSuccess() {
+    void assertIsGenerateSQLTokenWithOpenQueryTarget() {
+        EncryptUpdateAssignmentTokenGenerator tokenGenerator = new EncryptUpdateAssignmentTokenGenerator(mock(EncryptRule.class), mock(ShardingSphereDatabase.class));
+        when(updateStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.emptyList());
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "OPENQUERY", "OPENQUERY (foo_server, 'SELECT foo_col FROM foo_schema.foo_tbl')");
+        when(updateStatementContext.getSqlStatement().getTable()).thenReturn(new FunctionTableSegment(0, 0, functionSegment));
         assertTrue(tokenGenerator.isGenerateSQLToken(updateStatementContext));
     }
 }

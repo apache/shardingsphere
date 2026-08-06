@@ -32,6 +32,9 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -71,6 +74,15 @@ public final class EncryptTable {
             result.setLikeQuery(likeQueryColumn);
         }
         return result;
+    }
+    
+    /**
+     * Get encrypt columns.
+     *
+     * @return encrypt columns
+     */
+    public Collection<EncryptColumn> getEncryptColumns() {
+        return Collections.unmodifiableCollection(new LinkedList<>(columns.values()));
     }
     
     /**

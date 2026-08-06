@@ -61,6 +61,20 @@ class EncryptTableTest {
     }
     
     @Test
+    void assertGetEncryptColumnsReturnsConfiguredColumns() {
+        assertThat(encryptTable.getEncryptColumns().size(), is(2));
+        assertTrue(encryptTable.getEncryptColumns().contains(encryptTable.getEncryptColumn("foo_col")));
+        assertTrue(encryptTable.getEncryptColumns().contains(encryptTable.getEncryptColumn("bar_col")));
+    }
+    
+    @Test
+    void assertGetEncryptColumnsMutationDoesNotAlterRuleState() {
+        assertThrows(UnsupportedOperationException.class, () -> encryptTable.getEncryptColumns().clear());
+        assertTrue(encryptTable.isEncryptColumn("foo_col"));
+        assertTrue(encryptTable.isEncryptColumn("bar_col"));
+    }
+    
+    @Test
     void assertFindEncryptorName() {
         assertTrue(encryptTable.findEncryptor("foo_col").isPresent());
     }
