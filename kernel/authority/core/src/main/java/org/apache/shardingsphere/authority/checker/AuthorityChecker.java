@@ -36,12 +36,38 @@ public final class AuthorityChecker {
     /**
      * Check database authority.
      *
+     * <p>Returns {@code true} when any of the following hold:</p>
+     * <ul>
+     *   <li>The grantee is {@code null} (unauthenticated / internal connection).</li>
+     *   <li>The grantee is configured with {@code admin: true}.</li>
+     *   <li>The grantee holds privileges on the specified database under the
+     *       configured privilege provider (e.g. {@code DATABASE_PERMITTED}).</li>
+     * </ul>
+     *
      * @param database database name
      * @return authorized or not
      */
     @HighFrequencyInvocation
     public boolean isAuthorized(final String database) {
-        return null == grantee || rule.findUser(grantee).map(ShardingSphereUser::isAdmin).orElse(false)
+        return null == grantee || isAdmin()
                 || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
+    }
+    
+    /**
+     * Check whether the grantee holds global admin privileges.
+     *
+     * <p>This is the query-time evaluation of the {@code admin} flag configured in
+     * {@code global.yaml}. It is used by both the regular SQL authorization path
+     * (via {@link #isAuthorized(String)}) and the DistSQL authorization path
+     * (via {@link AuthorityDistSQLExecutionChecker}), which bypasses
+     * {@code isAuthorized} because DistSQL statements have no per-database scope.</p>
+     *
+     * <p>Returns {@code true} when the grantee is {@code null} (no authentication
+     * configured) or the matching user has {@code admin: true}.</p>
+     *
+     * @return whether the grantee has admin privileges
+     */
+    public boolean isAdmin() {
+        return null == grantee || rule.findUser(grantee).map(ShardingSphereUser::isAdmin).orElse(false);
     }
 }
