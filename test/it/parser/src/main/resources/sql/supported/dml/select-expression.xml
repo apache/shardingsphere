@@ -26,6 +26,9 @@
     <sql-case id="select_with_expression" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="MySQL, H2, SQL92, SQLServer" />
     <sql-case id="select_with_expression_for_postgresql" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_oracle_unary_expression_projection" value="SELECT user_id, +user_id AS positive_user_id, -user_id AS negative_user_id FROM t_user" db-types="Oracle" />
+    <sql-case id="select_oracle_full_width_arithmetic_and_concat" value="SELECT 3 － 1， 2 ＊ 3， 4 ／ 2， 'A' ｜｜ 'B' FROM dual" db-types="Oracle" />
+    <sql-case id="select_oracle_full_width_comparison" value="SELECT CASE WHEN 1 ＜ 2 AND 2 ＞ 1 AND 1 ＜＝ 1 AND 2 ＞＝ 2 AND 1 ！＝ 2 AND 1 ＜＞ 2 THEN 1 ELSE 0 END FROM dual" db-types="Oracle" />
+    <sql-case id="select_oracle_full_width_qualified_shorthand_projection" value="SELECT t.＊ FROM t_order t" db-types="Oracle" />
     <sql-case id="select_with_encode_function" value="SELECT ENCODE(test_datetype_col::bytea,'escape') FROM test_bytea" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_date_function" value="SELECT DATE(i.creation_date) AS creation_date FROM `t_order_item` AS i ORDER BY DATE(i.creation_date) DESC" db-types="MySQL" />
     <sql-case id="select_with_regexp" value="SELECT * FROM t_order_item t WHERE t.status REGEXP ? AND t.item_id IN (?, ?)" db-types="MySQL,Doris,Hive" />

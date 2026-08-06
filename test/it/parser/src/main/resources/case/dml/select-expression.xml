@@ -325,6 +325,38 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_oracle_full_width_arithmetic_and_concat">
+        <from>
+            <simple-table name="dual" start-index="44" stop-index="47" />
+        </from>
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="3 － 1" start-index="7" stop-index="11" />
+            <expression-projection text="2 ＊ 3" start-index="14" stop-index="18" />
+            <expression-projection text="4 ／ 2" start-index="21" stop-index="25" />
+            <expression-projection text="'A' ｜｜ 'B'" start-index="28" stop-index="37" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_full_width_comparison">
+        <from>
+            <simple-table name="dual" start-index="100" stop-index="103" />
+        </from>
+        <projections start-index="7" stop-index="93">
+            <expression-projection text="" start-index="7" stop-index="93" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_oracle_full_width_qualified_shorthand_projection">
+        <from>
+            <simple-table name="t_order" alias="t" start-index="16" stop-index="24" />
+        </from>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="t" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_encode_function">
         <from>
             <simple-table name="test_bytea" start-index="54" stop-index="63" />

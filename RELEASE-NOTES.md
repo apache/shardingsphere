@@ -84,6 +84,7 @@
 1. SQL Parser: Support parsing Oracle CREATE INDEX sql - [#39292](https://github.com/apache/shardingsphere/pull/39292)
 1. SQL Parser: Support function table alias column parsing for PostgreSQL and openGauss - [#39268](https://github.com/apache/shardingsphere/pull/39268)
 1. SQL Parser: Support MySQL and Oracle CTAS parsing and binding enhancements, and Doris TABLE statement segment extraction - [#39332](https://github.com/apache/shardingsphere/pull/39332)
+1. SQL Parser: Support Oracle full width SQL symbols parsing - [#39349](https://github.com/apache/shardingsphere/pull/39349)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. SQL Binder: Support PostgreSQL whole-row projection binding - [#39276](https://github.com/apache/shardingsphere/pull/39276)

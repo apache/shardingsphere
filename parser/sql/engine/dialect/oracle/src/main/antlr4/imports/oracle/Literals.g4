@@ -20,7 +20,7 @@ lexer grammar Literals;
 import Alphabet, Symbol;
 
 IDENTIFIER_
-    : [A-Za-z\u0080-\u2FFF\u3001-\uFF0B\uFF0D-\uFFFF]+[A-Za-z_$#0-9\u0080-\u2FFF\u3001-\uFF0B\uFF0D-\uFFFF]*
+    : IDENTIFIER_START_ IDENTIFIER_PART_*
     ;
 
 STRING_
@@ -137,4 +137,12 @@ fragment INT_
 
 fragment HEX_
     : [0-9a-fA-F]
+    ;
+
+fragment IDENTIFIER_START_
+    : [A-Za-z\u0080-\u2FFF\u3001-\uFF00\uFF02-\uFF07\uFF0E\uFF10-\uFF1B\uFF1F-\uFF5B\uFF5D-\uFFFF]
+    ;
+
+fragment IDENTIFIER_PART_
+    : [A-Za-z_$#0-9\u0080-\u2FFF\u3001-\uFF00\uFF02-\uFF07\uFF0E\uFF10-\uFF1B\uFF1F-\uFF5B\uFF5D-\uFFFF]
     ;
