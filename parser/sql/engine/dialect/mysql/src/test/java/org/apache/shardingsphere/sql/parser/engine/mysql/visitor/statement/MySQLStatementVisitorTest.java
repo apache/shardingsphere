@@ -58,6 +58,13 @@ class MySQLStatementVisitorTest {
     }
     
     @Test
+    void assertVisitCreateTableAsSelectWithParameterMarkers() {
+        CreateTableStatement statement = (CreateTableStatement) parse("CREATE TABLE t_projection AS SELECT id, name FROM source_table WHERE status = ? AND type IN (?, ?)");
+        assertThat(statement.getParameterCount(), is(3));
+        assertThat(statement.getParameterMarkers().size(), is(3));
+    }
+    
+    @Test
     void assertVisitCreateTableAsSelectWithWindowFunction() {
         CreateTableStatement statement = (CreateTableStatement) parse(
                 "CREATE TABLE t_window AS SELECT a.*, ROW_NUMBER() OVER(PARTITION BY a.user_id ORDER BY a.join_date DESC) rw FROM t_user a");
