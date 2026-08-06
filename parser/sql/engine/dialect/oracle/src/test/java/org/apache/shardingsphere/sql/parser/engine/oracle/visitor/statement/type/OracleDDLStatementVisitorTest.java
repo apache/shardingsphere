@@ -21,10 +21,14 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement.Authorization;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement.Edition;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OracleDDLStatementVisitorTest {
@@ -68,7 +72,45 @@ class OracleDDLStatementVisitorTest {
         assertTrue(actual.getSelectStatement().isPresent());
     }
     
+    @Test
+    void assertVisitCreatePackage() {
+        OracleCreatePackageStatement actual = parseCreatePackage(
+                "CREATE OR REPLACE EDITIONABLE PACKAGE IF NOT EXISTS foo_schema.foo_pkg AUTHID CURRENT_USER AS g_public NUMBER := 1; PROCEDURE set_value(p_value IN NUMBER); END foo_pkg;");
+        assertThat(actual.getPackageName().getIdentifier().getValue(), is("foo_pkg"));
+        assertThat(actual.getPackageName().getOwner().get().getIdentifier().getValue(), is("foo_schema"));
+        assertFalse(actual.isBody());
+        assertTrue(actual.isReplace());
+        assertTrue(actual.isIfNotExists());
+        assertThat(actual.getEdition().get(), is(Edition.EDITIONABLE));
+        assertThat(actual.getAuthorization().get(), is(Authorization.CURRENT_USER));
+        assertFalse(actual.getInitialization().isPresent());
+    }
+    
+    @Test
+    void assertVisitCreatePackageBody() {
+        OracleCreatePackageStatement actual = parseCreatePackage("CREATE OR REPLACE NONEDITIONABLE PACKAGE BODY foo_schema.foo_pkg AS"
+                + " PROCEDURE set_value(p_value IN NUMBER) AS BEGIN INSERT INTO t_order VALUES (p_value); END;"
+                + " BEGIN UPDATE t_order SET order_id = 1; END foo_pkg;");
+        assertThat(actual.getPackageName().getIdentifier().getValue(), is("foo_pkg"));
+        assertThat(actual.getPackageName().getOwner().get().getIdentifier().getValue(), is("foo_schema"));
+        assertTrue(actual.isBody());
+        assertTrue(actual.isReplace());
+        assertFalse(actual.isIfNotExists());
+        assertThat(actual.getEdition().get(), is(Edition.NONEDITIONABLE));
+        assertFalse(actual.getAuthorization().isPresent());
+        assertTrue(actual.getInitialization().isPresent());
+        assertThat(actual.getSqlStatements().size(), is(2));
+    }
+    
     private CreateTableStatement parse(final String sql) {
-        return (CreateTableStatement) new SQLStatementVisitorEngine("Oracle").visit(new SQLParserEngine("Oracle", CACHE_OPTION).parse(sql, false));
+        return (CreateTableStatement) parseStatement(sql);
+    }
+    
+    private OracleCreatePackageStatement parseCreatePackage(final String sql) {
+        return (OracleCreatePackageStatement) parseStatement(sql);
+    }
+    
+    private Object parseStatement(final String sql) {
+        return new SQLStatementVisitorEngine("Oracle").visit(new SQLParserEngine("Oracle", CACHE_OPTION).parse(sql, false));
     }
 }
