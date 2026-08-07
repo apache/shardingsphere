@@ -172,6 +172,40 @@ class TableExtractorTest {
     }
     
     @Test
+    void assertExtractTablesFromUpdateWithTableVariableTargetRepeatedInFromExcludesVariableTable() {
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertTrue(actual.isEmpty());
+        assertFalse(actual.stream().anyMatch(each -> "@MyTableVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithTableVariableTargetRepeatedInJoinIncludesPhysicalTable() {
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        JoinTableSegment joinTable = new JoinTableSegment();
+        joinTable.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))));
+        joinTable.setRight(employee);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .from(joinTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        assertTableSegment(actual.iterator().next(), 0, 0, "Employee");
+        assertFalse(actual.stream().anyMatch(each -> "@MyTableVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
     void assertExtractTablesFromUpdateWithBracketDelimitedAtSignTargetIncludesPhysicalTable() {
         SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
         UpdateStatement updateStatement = UpdateStatement.builder()

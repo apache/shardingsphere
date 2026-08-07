@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -209,17 +212,44 @@ class UpdateStatementBinderTest {
     
     @Test
     void assertBindAliasedTableVariableTarget() {
+        UpdateStatement updateStatement = createAliasedTableVariableTargetUpdateStatement();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        assertAliasedTableVariableTarget(actual);
+    }
+    
+    @Test
+    void assertBindAliasedTableVariableTargetPrecedesSameNamedPhysicalTable() {
+        UpdateStatement updateStatement = createAliasedTableVariableTargetUpdateStatement();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithAtSignTable(), "foo_db", new HintValueContext(), updateStatement));
+        assertAliasedTableVariableTarget(actual);
+    }
+    
+    @Test
+    void assertBindAliasedTableVariableTargetPrecedesSameNamedExternalContext() {
+        UpdateStatement updateStatement = createAliasedTableVariableTargetUpdateStatement();
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement);
+        binderContext.getExternalTableBinderContexts().put(CaseInsensitiveString.of("@MyTableVar"),
+                new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE));
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, binderContext);
+        assertAliasedTableVariableTarget(actual);
+    }
+    
+    private UpdateStatement createAliasedTableVariableTargetUpdateStatement() {
         SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
         tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
-        UpdateStatement updateStatement = UpdateStatement.builder()
+        return UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
                 .from(tableVariable)
-                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("Value"))), new LiteralExpressionSegment(0, 0, 1)))))
                 .targetTableIsFromAlias(true)
                 .build();
-        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
-                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+    }
+    
+    private void assertAliasedTableVariableTarget(final UpdateStatement actual) {
         assertThat(((SimpleTableSegment) actual.getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
         assertThat(((SimpleTableSegment) actual.getTable()).getAliasName().get(), is("target"));
         assertTrue(actual.isTargetTableIsFromAlias());
@@ -303,6 +333,24 @@ class UpdateStatementBinderTest {
         when(result.getDatabase(fooDatabase).getSchema(humanResources)).thenReturn(humanResourcesSchema);
         when(result.getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(humanResourcesSchema));
         when(result.getDatabase(fooDatabase).getAllSchemas()).thenReturn(Collections.singleton(humanResourcesSchema));
+        return result;
+    }
+    
+    private ShardingSphereMetaData createSQLServerMetaDataWithAtSignTable() {
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue dboSchema = new IdentifierValue("dbo");
+        IdentifierValue atSignTable = new IdentifierValue("@MyTableVar");
+        when(schema.getName()).thenReturn("dbo");
+        when(schema.containsTable(atSignTable)).thenReturn(true);
+        when(schema.containsTable("@MyTableVar")).thenReturn(true);
+        when(schema.getTable(atSignTable).getAllColumns()).thenReturn(Collections.singletonList(
+                new ShardingSphereColumn("OtherColumn", Types.INTEGER, false, false, false, true, false, false)));
+        ShardingSphereMetaData result = createSQLServerMetaData();
+        when(result.getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(result.getDatabase(fooDatabase).getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(result.getDatabase("foo_db").getSchema("dbo")).thenReturn(schema);
+        when(result.getDatabase(fooDatabase).getSchema(dboSchema)).thenReturn(schema);
         return result;
     }
 }

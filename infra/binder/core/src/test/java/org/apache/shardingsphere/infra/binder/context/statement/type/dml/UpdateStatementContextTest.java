@@ -116,6 +116,20 @@ class UpdateStatementContextTest {
     }
     
     @Test
+    void assertGetTableNamesWithSQLServerUpdateTableVariableTargetRepeatedInFromExcludesVariableTable() {
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertTrue(actual.getTablesContext().getTableNames().isEmpty());
+        assertFalse(actual.getTablesContext().getTableNames().contains("@MyTableVar"));
+        assertThat(((SimpleTableSegment) actual.getSqlStatement().getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
+    }
+    
+    @Test
     void assertGetTableNamesWithSQLServerBracketDelimitedAtSignTargetIncludesPhysicalTable() {
         SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
         UpdateStatement updateStatement = UpdateStatement.builder()

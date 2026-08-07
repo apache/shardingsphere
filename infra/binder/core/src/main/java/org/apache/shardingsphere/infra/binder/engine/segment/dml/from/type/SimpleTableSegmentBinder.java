@@ -347,13 +347,6 @@ public final class SimpleTableSegmentBinder {
         return dialectDatabaseMetaData.getVariableTableNamePrefix().filter(tableName.getValue()::startsWith).isPresent();
     }
     
-    private static boolean isUpdateTargetTableVariable(final SQLStatementBinderContext binderContext, final SimpleTableSegment segment) {
-        if (!isVariableTable(binderContext, segment)) {
-            return false;
-        }
-        return ((UpdateStatement) binderContext.getSqlStatement()).getTable() == segment;
-    }
-    
     private static boolean isCreateTable(final SimpleTableSegment simpleTableSegment, final String tableName) {
         return simpleTableSegment.getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName);
     }
@@ -406,8 +399,8 @@ public final class SimpleTableSegmentBinder {
     private static Optional<SimpleTableSegmentBinderContext> createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
                                                                                             final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
-        if (isUpdateTargetTableVariable(binderContext, segment)) {
-            SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        if (isVariableTable(binderContext, segment)) {
+            SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE, tableName);
             result.setContainsTableVariable(true);
             return Optional.of(result);
         }
@@ -424,10 +417,6 @@ public final class SimpleTableSegmentBinder {
         }
         SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
         segment.getDbLink().ifPresent(optional -> result.setContainsDBLink(true));
-        if (isVariableTable(binderContext, segment)) {
-            result.setContainsTableVariable(true);
-            result.setOriginalTableName(tableName);
-        }
         return Optional.of(result);
     }
     
