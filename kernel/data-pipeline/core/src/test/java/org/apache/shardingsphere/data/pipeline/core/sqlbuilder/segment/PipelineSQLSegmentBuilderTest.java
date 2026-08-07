@@ -42,6 +42,18 @@ class PipelineSQLSegmentBuilderTest {
     }
     
     @Test
+    void assertGetEscapedActualIdentifier() {
+        assertThat(postgresqlBuilder.getEscapedActualIdentifier("T_Order"), is("\"T_Order\""));
+        assertThat(postgresqlBuilder.getEscapedActualIdentifier("*"), is("*"));
+    }
+    
+    @Test
+    void assertGetQualifiedActualTableName() {
+        assertThat(postgresqlBuilder.getQualifiedActualTableName("TEST", "T_Order"), is("\"TEST\".\"T_Order\""));
+        assertThat(mysqlBuilder.getQualifiedActualTableName("SHARDING_DB", "T_Order"), is("`T_Order`"));
+    }
+    
+    @Test
     void assertGetQualifiedTableNameWithUnsupportedSchema() {
         assertThat(mysqlBuilder.getQualifiedTableName("foo_schema", "foo_tbl"), is("`foo_tbl`"));
         assertThat(mysqlBuilder.getQualifiedTableName(new QualifiedTable("foo_schema", "foo_tbl")), is("`foo_tbl`"));

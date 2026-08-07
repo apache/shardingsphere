@@ -43,8 +43,8 @@ public final class PipelineInventoryDumpSQLBuilder {
      * @return built SQL
      */
     public String buildFetchAllSQL(final String schemaName, final String tableName, final Collection<String> columnNames) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedActualTableName(schemaName, tableName);
+        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedActualIdentifier).collect(Collectors.joining(","));
         return String.format("SELECT %s FROM %s", queryColumns, qualifiedTableName);
     }
 }

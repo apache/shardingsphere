@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCheckUtils;
@@ -25,8 +26,12 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalEx
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -50,20 +55,23 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     
     private final PipelineDataSource dataSource;
     
-    private final Map<ShardingSphereIdentifier, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
+    private volatile IdentifierCasePolicy tableIdentifierCasePolicy;
+    
+    private final Map<TableMetaDataCacheKey, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
     @Override
     public PipelineTableMetaData getTableMetaData(final String schemaName, final String tableName) {
-        PipelineTableMetaData result = tableMetaDataMap.get(new ShardingSphereIdentifier(tableName));
+        String qualifiedSchemaName = getQualifiedSchemaName(schemaName, new DatabaseTypeRegistry(dataSource.getDatabaseType()));
+        PipelineTableMetaData result = findTableMetaData(qualifiedSchemaName, tableName);
         if (null != result) {
             return result;
         }
         try {
-            loadTableMetaData(schemaName, tableName);
+            loadTableMetaData(qualifiedSchemaName, tableName);
         } catch (final SQLException ex) {
             throw new PipelineInternalException(String.format("Load meta data for schema '%s' and table '%s' failed", schemaName, tableName), ex);
         }
-        result = tableMetaDataMap.get(new ShardingSphereIdentifier(tableName));
+        result = findTableMetaData(qualifiedSchemaName, tableName);
         if (null == result) {
             log.warn("Can not load meta data for table '{}'", tableName);
         }
@@ -72,8 +80,8 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     
     private void loadTableMetaData(final String schemaName, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(dataSource.getDatabaseType());
-            tableMetaDataMap.putAll(loadTableMetaData(connection, databaseTypeRegistry.getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable() ? schemaName : null, tableName));
+            Map<ShardingSphereIdentifier, PipelineTableMetaData> loadedTableMetaData = loadTableMetaData(connection, schemaName, tableName);
+            loadedTableMetaData.forEach((key, value) -> tableMetaDataMap.put(new TableMetaDataCacheKey(schemaName, key.getValue()), value));
         }
     }
     
@@ -142,5 +150,46 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             columnNames.addAll(entry.getValue().values());
         }
         return result;
+    }
+    
+    private String getQualifiedSchemaName(final String schemaName, final DatabaseTypeRegistry databaseTypeRegistry) {
+        return null == schemaName || !databaseTypeRegistry.getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable() ? null : schemaName;
+    }
+    
+    private PipelineTableMetaData findTableMetaData(final String schemaName, final String tableName) {
+        PipelineTableMetaData result = tableMetaDataMap.get(new TableMetaDataCacheKey(schemaName, tableName));
+        if (null != result) {
+            return result;
+        }
+        return tableMetaDataMap.entrySet().stream()
+                .filter(entry -> null == schemaName ? null == entry.getKey().schemaName : schemaName.equals(entry.getKey().schemaName))
+                .filter(entry -> isSameTable(entry.getKey().tableName, tableName)).map(Entry::getValue).findFirst().orElse(null);
+    }
+    
+    private boolean isSameTable(final String storedTableName, final String tableName) {
+        return storedTableName.equals(tableName) || getTableIdentifierCasePolicy().matches(storedTableName, tableName, QuoteCharacter.NONE);
+    }
+    
+    private IdentifierCasePolicy getTableIdentifierCasePolicy() {
+        IdentifierCasePolicy result = tableIdentifierCasePolicy;
+        if (null == result) {
+            synchronized (this) {
+                result = tableIdentifierCasePolicy;
+                if (null == result) {
+                    result = IdentifierCasePolicyResolver.resolveStorage(dataSource.getDatabaseType(), dataSource).getPolicy(IdentifierScope.TABLE);
+                    tableIdentifierCasePolicy = result;
+                }
+            }
+        }
+        return result;
+    }
+    
+    @RequiredArgsConstructor
+    @EqualsAndHashCode
+    private static final class TableMetaDataCacheKey {
+        
+        private final String schemaName;
+        
+        private final String tableName;
     }
 }
