@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 /**
- * Set readwrite-splitting status statement.
+ * Alter readwrite-splitting storage unit status statement.
  */
 @Getter
 public final class AlterReadwriteSplittingStorageUnitStatusStatement extends UpdatableRALStatement {
