@@ -26,6 +26,9 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingReq
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredStrategyException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
@@ -34,6 +37,7 @@ import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRul
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +59,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -70,7 +75,7 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     @BeforeEach
     void setUp() {
         when(database.getName()).thenReturn("foo_db");
-        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         lenient().when(resourceMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
         lenient().when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Collections.emptySet());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -131,9 +136,20 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     }
     
     @Test
+    void assertCheckCreationWithIfNotExistsWhenRuleNameExistsInOwnLogicDataSources() {
+        RuleMetaData ruleMetaData = mockRuleMetaDataWithLogicDataSource(ReadwriteSplittingRule.class, "foo_rule_0");
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Collections.singleton(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_rule_0", "write_ds_9", Collections.singletonList("read_ds_9"), "RANDOM"));
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
+        assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), currentRuleConfig, true));
+    }
+    
+    @Test
     void assertCheckCreationWithDuplicateRuleNameInLogicDataSources() {
-        DataSourceMapperRuleAttribute ruleAttribute = () -> Collections.singletonMap("foo_rule_0", Collections.singleton("actual_ds_0"));
-        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
+        RuleMetaData ruleMetaData = mockRuleMetaDataWithLogicDataSource(ShardingSphereRule.class, "foo_rule_0");
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
         assertThrows(InvalidRuleConfigurationException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
     }
@@ -184,6 +200,13 @@ class ReadwriteSplittingRuleStatementCheckerTest {
                 new ReadwriteSplittingDataSourceGroupRuleConfiguration("bar_rule_0", "write_ds_9", Collections.singletonList("read_ds_9"), "RANDOM"));
         ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
         assertThrows(MissingRequiredRuleException.class, () -> ReadwriteSplittingRuleStatementChecker.checkAlteration(database, Collections.singleton(segment), currentRuleConfig));
+    }
+    
+    private RuleMetaData mockRuleMetaDataWithLogicDataSource(final Class<? extends ShardingSphereRule> ruleClass, final String logicDataSourceName) {
+        ShardingSphereRule rule = mock(ruleClass);
+        DataSourceMapperRuleAttribute ruleAttribute = () -> Collections.singletonMap(logicDataSourceName, Collections.singleton("actual_ds_0"));
+        lenient().when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        return new RuleMetaData(Collections.singleton(rule));
     }
     
     private static Stream<Arguments> invalidWeightConfigurationArguments() {
