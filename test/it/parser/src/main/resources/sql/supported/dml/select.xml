@@ -561,5 +561,6 @@
     <sql-case id="select_oracle_percentile_cont_window" value="SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price) OVER (PARTITION BY status) AS median_price FROM t_product" db-types="Oracle" />
     <sql-case id="select_oracle_first_value_ignore_nulls_window" value="SELECT FIRST_VALUE(price) IGNORE NULLS OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
     <sql-case id="select_oracle_first_value_window" value="SELECT FIRST_VALUE(price) OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
+    <sql-case id="select_with_log_table_alias_oracle" value="SELECT * FROM t_order LOG" db-types="Oracle" />
     <sql-case id="select_for_system_version_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_VERSION AS OF 1234567;" db-types="Hive" />
 </sql-cases>
