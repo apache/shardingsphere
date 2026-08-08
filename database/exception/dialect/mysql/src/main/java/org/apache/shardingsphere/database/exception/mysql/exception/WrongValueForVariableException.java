@@ -18,37 +18,19 @@
 package org.apache.shardingsphere.database.exception.mysql.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Unknown collation exception.
+ * Wrong value for variable exception.
  */
+@RequiredArgsConstructor
 @Getter
-public final class UnknownCollationException extends SQLDialectException {
+public final class WrongValueForVariableException extends SQLDialectException {
     
-    private static final long serialVersionUID = 6920150607711135228L;
+    private static final long serialVersionUID = 7832630692242160301L;
     
-    private final int collationId;
+    private final String variableName;
     
-    private final String collation;
-    
-    /**
-     * Construct an unknown collation exception by collation ID.
-     *
-     * @param collationId collation ID
-     */
-    public UnknownCollationException(final int collationId) {
-        this.collationId = collationId;
-        collation = String.valueOf(collationId);
-    }
-    
-    /**
-     * Construct an unknown collation exception by collation name.
-     *
-     * @param collation collation name
-     */
-    public UnknownCollationException(final String collation) {
-        collationId = -1;
-        this.collation = collation;
-    }
+    private final String value;
 }

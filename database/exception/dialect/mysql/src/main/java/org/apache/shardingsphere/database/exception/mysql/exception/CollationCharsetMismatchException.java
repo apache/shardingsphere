@@ -18,37 +18,19 @@
 package org.apache.shardingsphere.database.exception.mysql.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 
 /**
- * Unknown collation exception.
+ * Collation and character set mismatch exception.
  */
+@RequiredArgsConstructor
 @Getter
-public final class UnknownCollationException extends SQLDialectException {
+public final class CollationCharsetMismatchException extends SQLDialectException {
     
-    private static final long serialVersionUID = 6920150607711135228L;
-    
-    private final int collationId;
+    private static final long serialVersionUID = -4699705254666505781L;
     
     private final String collation;
     
-    /**
-     * Construct an unknown collation exception by collation ID.
-     *
-     * @param collationId collation ID
-     */
-    public UnknownCollationException(final int collationId) {
-        this.collationId = collationId;
-        collation = String.valueOf(collationId);
-    }
-    
-    /**
-     * Construct an unknown collation exception by collation name.
-     *
-     * @param collation collation name
-     */
-    public UnknownCollationException(final String collation) {
-        collationId = -1;
-        this.collation = collation;
-    }
+    private final String charset;
 }

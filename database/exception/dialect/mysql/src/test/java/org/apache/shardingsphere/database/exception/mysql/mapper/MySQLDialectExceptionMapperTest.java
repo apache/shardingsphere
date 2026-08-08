@@ -33,6 +33,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.table.
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.mysql.exception.CollationCharsetMismatchException;
 import org.apache.shardingsphere.database.exception.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorLocalVariableException;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.database.exception.mysql.exception.UnknownChars
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.database.exception.mysql.exception.WrongValueForVariableException;
 import org.apache.shardingsphere.database.exception.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
@@ -123,6 +125,8 @@ class MySQLDialectExceptionMapperTest {
                 Arguments.of("too_many_placeholders", TooManyPlaceholdersException.class, MySQLVendorError.ER_PS_MANY_PARAM),
                 Arguments.of("unknown_charset", UnknownCharsetException.class, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET),
                 Arguments.of("unknown_collation", UnknownCollationException.class, MySQLVendorError.ER_UNKNOWN_COLLATION),
+                Arguments.of("wrong_value_for_variable", WrongValueForVariableException.class, MySQLVendorError.ER_WRONG_VALUE_FOR_VAR),
+                Arguments.of("collation_charset_mismatch", CollationCharsetMismatchException.class, MySQLVendorError.ER_COLLATION_CHARSET_MISMATCH),
                 Arguments.of("handshake", HandshakeException.class, MySQLVendorError.ER_HANDSHAKE_ERROR),
                 Arguments.of("access_denied_without_password", AccessDeniedException.class, MySQLVendorError.ER_ACCESS_DENIED_ERROR),
                 Arguments.of("database_access_denied", DatabaseAccessDeniedException.class, MySQLVendorError.ER_DBACCESS_DENIED_ERROR),

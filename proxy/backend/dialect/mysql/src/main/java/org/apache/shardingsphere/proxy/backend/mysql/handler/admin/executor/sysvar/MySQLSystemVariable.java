@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionIsolationValueProvider;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionReadOnlyValueProvider;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.VersionValueProvider;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.CharsetValueProvider;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.Arrays;
@@ -144,16 +145,15 @@ public enum MySQLSystemVariable {
     
     BULK_INSERT_BUFFER_SIZE(MySQLSystemVariableFlag.SESSION | MySQLSystemVariableFlag.HINT_UPDATEABLE, "8388608"),
     
-    // TODO Properly handling character set of session.
-    CHARACTER_SET_CLIENT(MySQLSystemVariableFlag.SESSION, "utf8mb4"),
+    CHARACTER_SET_CLIENT(MySQLSystemVariableFlag.SESSION, "utf8mb4", new CharsetValueProvider()),
     
-    CHARACTER_SET_CONNECTION(MySQLSystemVariableFlag.SESSION, "utf8mb4"),
+    CHARACTER_SET_CONNECTION(MySQLSystemVariableFlag.SESSION, "utf8mb4", new CharsetValueProvider()),
     
     CHARACTER_SET_DATABASE(MySQLSystemVariableFlag.SESSION, "utf8mb4"),
     
     CHARACTER_SET_FILESYSTEM(MySQLSystemVariableFlag.SESSION, "binary"),
     
-    CHARACTER_SET_RESULTS(MySQLSystemVariableFlag.SESSION, "utf8mb4"),
+    CHARACTER_SET_RESULTS(MySQLSystemVariableFlag.SESSION, "utf8mb4", new CharsetValueProvider()),
     
     CHARACTER_SET_SERVER(MySQLSystemVariableFlag.SESSION, "utf8mb4"),
     
@@ -163,7 +163,7 @@ public enum MySQLSystemVariable {
     
     CHECK_PROXY_USERS(MySQLSystemVariableFlag.GLOBAL, "0"),
     
-    COLLATION_CONNECTION(MySQLSystemVariableFlag.SESSION, "utf8mb4_unicode_ci"),
+    COLLATION_CONNECTION(MySQLSystemVariableFlag.SESSION, "utf8mb4_unicode_ci", new CharsetValueProvider()),
     
     COLLATION_DATABASE(MySQLSystemVariableFlag.SESSION, "utf8mb4_unicode_ci"),
     
@@ -1113,6 +1113,18 @@ public enum MySQLSystemVariable {
     public String getValue(final MySQLSystemVariableScope scope, final ConnectionSession connectionSession) {
         validateGetScope(scope);
         return variableValueProvider.get(scope, connectionSession, this);
+    }
+    
+    /**
+     * Get optional value of system variable.
+     *
+     * @param scope scope
+     * @param connectionSession connection session
+     * @return optional value
+     */
+    public Optional<String> getOptionalValue(final MySQLSystemVariableScope scope, final ConnectionSession connectionSession) {
+        validateGetScope(scope);
+        return variableValueProvider.getOptional(scope, connectionSession, this);
     }
     
     private void validateGetScope(final MySQLSystemVariableScope scope) {
