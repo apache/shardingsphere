@@ -54,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceInnodbContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceNdbContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterWorkloadGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BeginStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BinlogDescriptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BuildIndexContext;
@@ -107,6 +108,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropVie
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExecuteStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FileNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FileSizeLiteralContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FlowControlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IdentifierContext;
@@ -216,6 +218,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Ren
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.workloadgroup.WorkloadGroupNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -271,6 +274,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterColocateGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterWorkloadGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateStreamingJobStatement;
@@ -362,7 +366,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.RENAME() && null != ctx.identifier()) {
             result.setRenameDatabaseName(new IdentifierValue(ctx.identifier().getText()).getValue());
         }
-        if (null != ctx.QUOTA() && null != ctx.NUMBER_()) {
+        if (null != ctx.QUOTA() && null != ctx.fileSizeLiteral()) {
             if (null != ctx.DATA()) {
                 result.setQuotaType("DATA");
             } else if (null != ctx.REPLICA()) {
@@ -370,7 +374,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             } else if (null != ctx.TRANSACTION()) {
                 result.setQuotaType("TRANSACTION");
             }
-            result.setQuotaValue(Long.parseLong(ctx.NUMBER_().getText()));
+            result.setQuotaValue(getCapacityValue(ctx.fileSizeLiteral()));
         }
         if (null != ctx.PROPERTIES() && null != ctx.properties()) {
             PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().getStart().getStartIndex(), ctx.properties().getStop().getStopIndex());
@@ -383,6 +387,26 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             result.setProperties(propertiesSegment);
         }
         return result;
+    }
+    
+    private long getCapacityValue(final FileSizeLiteralContext ctx) {
+        if (null == ctx.FILESIZE_LITERAL()) {
+            return Long.parseLong(ctx.numberLiterals().getText());
+        }
+        String text = ctx.FILESIZE_LITERAL().getText();
+        long result = Long.parseLong(text.substring(0, text.length() - 1));
+        switch (text.charAt(text.length() - 1)) {
+            case 'K':
+                return result * 1024L;
+            case 'M':
+                return result * 1024L * 1024L;
+            case 'G':
+                return result * 1024L * 1024L * 1024L;
+            case 'T':
+                return result * 1024L * 1024L * 1024L * 1024L;
+            default:
+                return result;
+        }
     }
     
     @Override
@@ -1520,6 +1544,14 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         PropertiesSegment propertiesSegment = extractPropertiesSegmentFromPropertiesContext(ctx.properties());
         return new DorisAlterColocateGroupStatement(getDatabaseType(), groupSegment, propertiesSegment);
+    }
+    
+    @Override
+    public ASTNode visitAlterWorkloadGroup(final AlterWorkloadGroupContext ctx) {
+        IdentifierValue identifier = (IdentifierValue) visit(ctx.identifier());
+        WorkloadGroupNameSegment workloadGroupNameSegment = new WorkloadGroupNameSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), identifier);
+        PropertiesSegment propertiesSegment = extractPropertiesSegment(ctx.propertiesClause());
+        return new DorisAlterWorkloadGroupStatement(getDatabaseType(), workloadGroupNameSegment, propertiesSegment);
     }
     
     private PropertiesSegment extractPropertiesSegment(final PropertiesClauseContext ctx) {

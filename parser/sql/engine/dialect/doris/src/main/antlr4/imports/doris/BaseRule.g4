@@ -579,6 +579,9 @@ identifierKeywordsUnambiguous
     | WEIGHT_STRING
     | WITHOUT
     | WORK
+    // DORIS ADDED BEGIN
+    | WORKLOAD
+    // DORIS ADDED END
     | WRAPPER
     | X509
     | XID

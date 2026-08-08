@@ -32,6 +32,9 @@ alterStatement
     | alterCatalog
     | alterStoragePolicy
     | alterColocateGroup
+    // DORIS ADDED BEGIN
+    | alterWorkloadGroup
+    // DORIS ADDED END
     ;
 
 createTable
@@ -172,6 +175,12 @@ alterStoragePolicy
 alterColocateGroup
     : ALTER COLOCATE GROUP (databaseName DOT_)? identifier SET LP_ properties RP_
     ;
+
+// DORIS ADDED BEGIN
+alterWorkloadGroup
+    : ALTER WORKLOAD GROUP identifier propertiesClause
+    ;
+// DORIS ADDED END
 
 tableConstraintDef
     : keyOrIndex indexName? indexTypeClause? keyListWithExpression indexOption*
@@ -317,7 +326,9 @@ createDatabase
 alterDatabase
     : ALTER (DATABASE | SCHEMA) databaseName? alterDatabaseSpecification_*
     | ALTER (DATABASE | SCHEMA) databaseName RENAME identifier
-    | ALTER (DATABASE | SCHEMA) databaseName SET (DATA | REPLICA | TRANSACTION) QUOTA NUMBER_
+    // DORIS CHANGED BEGIN
+    | ALTER (DATABASE | SCHEMA) databaseName SET (DATA | REPLICA | TRANSACTION) QUOTA fileSizeLiteral
+    // DORIS CHANGED END
     | ALTER (DATABASE | SCHEMA) databaseName SET PROPERTIES LP_ properties RP_
     ;
 

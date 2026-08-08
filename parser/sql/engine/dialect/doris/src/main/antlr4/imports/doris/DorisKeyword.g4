@@ -3316,6 +3316,12 @@ WORK
     : W O R K
     ;
 
+// DORIS ADDED BEGIN
+WORKLOAD
+    : W O R K L O A D
+    ;
+// DORIS ADDED END
+
 WRAPPER
     : W R A P P E R
     ;
