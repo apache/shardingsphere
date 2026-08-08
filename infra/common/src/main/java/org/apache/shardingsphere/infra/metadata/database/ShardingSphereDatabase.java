@@ -84,8 +84,7 @@ public final class ShardingSphereDatabase {
     }
     
     private ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                   final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas,
-                                   final DatabaseIdentifierContext identifierContext) {
+                                   final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas, final DatabaseIdentifierContext identifierContext) {
         this.name = name;
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
