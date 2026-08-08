@@ -180,6 +180,12 @@ rules:
           cipher:
             name: commission_pct_cipher
             encryptorName: rewrite_normal_fixture
+    Employee:
+      columns:
+        VacationNote:
+          cipher:
+            name: vacation_note_cipher
+            encryptorName: rewrite_normal_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE

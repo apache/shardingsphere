@@ -82,6 +82,11 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
+    public Optional<String> getVariableTableNamePrefix() {
+        return Optional.of("@");
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "SQLServer";
     }

@@ -54,6 +54,8 @@ public final class SimpleTableSegmentBinderContext implements TableSegmentBinder
     
     private boolean containsDBLink;
     
+    private boolean containsTableVariable;
+    
     public SimpleTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments, final TableSourceType tableSourceType) {
         columnLabelProjectionSegments = new CaseInsensitiveMap<>(projectionSegments.size(), 1F);
         projectionSegments.forEach(each -> putColumnLabelProjectionSegments(each, columnLabelProjectionSegments));

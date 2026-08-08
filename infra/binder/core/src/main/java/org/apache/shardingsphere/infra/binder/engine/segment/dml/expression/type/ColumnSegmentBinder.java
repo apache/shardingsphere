@@ -342,23 +342,23 @@ public final class ColumnSegmentBinder {
     }
     
     private static boolean isSkipColumnBind(final Collection<TableSegmentBinderContext> tableBinderContexts, final Collection<TableSegmentBinderContext> outerBinderContexts) {
+        return containsMetadataUnavailableContext(tableBinderContexts) || containsMetadataUnavailableContext(outerBinderContexts);
+    }
+    
+    private static boolean containsMetadataUnavailableContext(final Collection<TableSegmentBinderContext> tableBinderContexts) {
         for (TableSegmentBinderContext each : tableBinderContexts) {
             if (each instanceof FunctionTableSegmentBinderContext) {
                 return true;
             }
-            if (each instanceof SimpleTableSegmentBinderContext) {
-                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
-            }
-        }
-        for (TableSegmentBinderContext each : outerBinderContexts) {
-            if (each instanceof FunctionTableSegmentBinderContext) {
+            if (each instanceof SimpleTableSegmentBinderContext && isMetadataUnavailable((SimpleTableSegmentBinderContext) each)) {
                 return true;
-            }
-            if (each instanceof SimpleTableSegmentBinderContext) {
-                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
             }
         }
         return false;
+    }
+    
+    private static boolean isMetadataUnavailable(final SimpleTableSegmentBinderContext tableBinderContext) {
+        return tableBinderContext.isContainsDBLink() || tableBinderContext.isContainsTableVariable();
     }
     
     /**

@@ -361,6 +361,9 @@ public final class SimpleTableSegmentBinder {
         if (segment.getDbLink().isPresent()) {
             return;
         }
+        if (isVariableTable(binderContext, segment)) {
+            return;
+        }
         if (binderContext.getExternalTableBinderContexts().containsKey(CaseInsensitiveString.of(tableNameValue))) {
             return;
         }
@@ -368,6 +371,21 @@ public final class SimpleTableSegmentBinder {
             return;
         }
         ShardingSpherePreconditions.checkState(null != schema && schema.containsTable(tableName), () -> new TableNotFoundException(tableNameValue));
+    }
+    
+    private static boolean isVariableTable(final SQLStatementBinderContext binderContext, final SimpleTableSegment segment) {
+        if (!(binderContext.getSqlStatement() instanceof UpdateStatement)) {
+            return false;
+        }
+        if (segment.getOwner().isPresent()) {
+            return false;
+        }
+        IdentifierValue tableName = segment.getTableName().getIdentifier();
+        if (QuoteCharacter.NONE != tableName.getQuoteCharacter()) {
+            return false;
+        }
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.getVariableTableNamePrefix().filter(tableName.getValue()::startsWith).isPresent();
     }
     
     private static boolean isCreateTable(final SimpleTableSegment simpleTableSegment, final String tableName) {
@@ -422,6 +440,11 @@ public final class SimpleTableSegmentBinder {
     private static Optional<SimpleTableSegmentBinderContext> createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
                                                                                             final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
+        if (isVariableTable(binderContext, segment)) {
+            SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE, tableName);
+            result.setContainsTableVariable(true);
+            return Optional.of(result);
+        }
         Optional<SimpleTableSegmentBinderContext> externalTableBinderContext = createExternalTableBinderContext(segment, tableName, binderContext);
         if (externalTableBinderContext.isPresent()) {
             return externalTableBinderContext;

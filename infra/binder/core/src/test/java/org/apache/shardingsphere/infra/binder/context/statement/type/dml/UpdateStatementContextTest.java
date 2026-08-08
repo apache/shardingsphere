@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -45,12 +46,15 @@ import java.util.stream.Collectors;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateStatementContextTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
     @Mock
     private WhereSegment whereSegment;
@@ -93,6 +97,89 @@ class UpdateStatementContextTest {
         UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("ScrapReason", "WorkOrder"))));
         assertFalse(actual.getTablesContext().getTableNames().contains("sr"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithSQLServerUpdateTableVariableTargetExcludesVariableTable() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@MyTableVar"));
+        assertThat(((SimpleTableSegment) actual.getSqlStatement().getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithSQLServerUpdateTableVariableTargetRepeatedInFromExcludesVariableTable() {
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertTrue(actual.getTablesContext().getTableNames().isEmpty());
+        assertFalse(actual.getTablesContext().getTableNames().contains("@MyTableVar"));
+        assertThat(((SimpleTableSegment) actual.getSqlStatement().getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithSQLServerBracketDelimitedAtSignTargetIncludesPhysicalTable() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("@MyTable", "Employee"))));
+    }
+    
+    @Test
+    void assertGetTableNamesWithSQLServerAliasedTableVariableTargetExcludesVariableTable() {
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(tableVariable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertTrue(actual.getTablesContext().getTableNames().isEmpty());
+        assertFalse(actual.getTablesContext().getTableNames().contains("@MyTableVar"));
+        assertThat(((SimpleTableSegment) actual.getSqlStatement().getTable()).getTableName().getIdentifier().getValue(), is("target"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithSQLServerAliasedTableVariableAndJoinIncludesPhysicalTable() {
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment joinTable = new JoinTableSegment();
+        joinTable.setLeft(tableVariable);
+        joinTable.setRight(employee);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(joinTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@MyTableVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("target"));
     }
     
     @Test

@@ -107,6 +107,12 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("YearToDateAmt", Types.DECIMAL, false, false, false, true, false, false),
                 new ShardingSphereColumn("RegionCode", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         result.add(new ShardingSphereSchema("Sales", mock(DatabaseType.class), salesSchemaTables, Collections.emptyList()));
+        Collection<ShardingSphereTable> humanResourcesSchemaTables = new LinkedList<>();
+        humanResourcesSchemaTables.add(new ShardingSphereTable("Employee", Arrays.asList(
+                new ShardingSphereColumn("BusinessEntityID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationHours", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationNote", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        result.add(new ShardingSphereSchema("HumanResources", mock(DatabaseType.class), humanResourcesSchemaTables, Collections.emptyList()));
         return result;
     }
     
@@ -126,6 +132,7 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "SalesPerson");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "SalesOrderHeader");
             singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", "Sales", "SalesPerson");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", "HumanResources", "Employee");
         }
     }
 }
