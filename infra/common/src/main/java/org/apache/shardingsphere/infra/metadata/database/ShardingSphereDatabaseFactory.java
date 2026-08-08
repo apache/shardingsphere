@@ -113,8 +113,7 @@ public final class ShardingSphereDatabaseFactory {
      * @return created database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
-                                                final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                                                final Collection<ShardingSphereSchema> schemas) {
+                                                final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext, final Collection<ShardingSphereSchema> schemas) {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         Collection<ShardingSphereRule> rules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(rules), schemas, props);
