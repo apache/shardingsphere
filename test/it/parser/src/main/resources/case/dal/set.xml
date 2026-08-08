@@ -95,7 +95,7 @@
             <parameter name="extra_float_digits" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_names">
+    <set-parameter sql-case-id="set_names_mysql">
         <parameter-assign value="'utf8'">
             <parameter name="character_set_client" />
         </parameter-assign>
@@ -104,6 +104,53 @@
         </parameter-assign>
         <parameter-assign value="'utf8'">
             <parameter name="character_set_connection" />
+        </parameter-assign>
+        <parameter-assign value="'utf8_general_ci'">
+            <parameter name="collation_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_names_doris">
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_names_default_mysql">
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_character_set_mysql">
+        <parameter-assign value="latin1">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="latin1">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="@@collation_database">
+            <parameter name="collation_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_character_set_default_mysql">
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="@@collation_database">
+            <parameter name="collation_connection" />
         </parameter-assign>
     </set-parameter>
     <set-parameter sql-case-id="set_character_set_doris">

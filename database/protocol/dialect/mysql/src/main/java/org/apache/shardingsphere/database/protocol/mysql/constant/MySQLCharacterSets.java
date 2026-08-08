@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.mysql.constant;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
@@ -26,6 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -315,6 +318,12 @@ public enum MySQLCharacterSets {
     
     private static final Map<Integer, MySQLCharacterSets> CHARACTER_SET_MAP = Collections.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(each -> each.id, Function.identity())));
     
+    private static final Map<String, MySQLCharacterSets> DEFAULT_COLLATION_MAP = Collections.unmodifiableMap(Arrays.stream(values()).filter(each -> null != each.charset)
+            .collect(Collectors.toMap(MySQLCharacterSets::getCharacterSetName, Function.identity(), MySQLCharacterSets::getDefaultCollation, LinkedHashMap::new)));
+    
+    private static final Map<String, MySQLCharacterSets> COLLATION_MAP = Collections.unmodifiableMap(Arrays.stream(values()).filter(each -> null != each.charset)
+            .collect(Collectors.toMap(MySQLCharacterSets::getCollationName, Function.identity())));
+    
     private final int id;
     
     private final Charset charset;
@@ -329,6 +338,14 @@ public enum MySQLCharacterSets {
         charset = result;
     }
     
+    private static MySQLCharacterSets getDefaultCollation(final MySQLCharacterSets oldValue, final MySQLCharacterSets newValue) {
+        if (LATIN1_SWEDISH_CI == oldValue || LATIN1_SWEDISH_CI == newValue) {
+            return LATIN1_SWEDISH_CI;
+        }
+        String generalCollationName = newValue.getCharacterSetName() + "_general_ci";
+        return generalCollationName.equals(newValue.getCollationName()) ? newValue : oldValue;
+    }
+    
     /**
      * Get character set by id.
      *
@@ -340,5 +357,51 @@ public enum MySQLCharacterSets {
         ShardingSpherePreconditions.checkNotNull(result, () -> new UnknownCollationException(id));
         ShardingSpherePreconditions.checkNotNull(result.getCharset(), () -> new UnknownCollationException(id));
         return result;
+    }
+    
+    /**
+     * Get default collation by character set name.
+     *
+     * @param characterSetName character set name
+     * @return default collation
+     */
+    public static MySQLCharacterSets findByCharacterSetName(final String characterSetName) {
+        String normalizedName = characterSetName.toLowerCase(Locale.ROOT);
+        MySQLCharacterSets result = DEFAULT_COLLATION_MAP.get(normalizedName);
+        ShardingSpherePreconditions.checkNotNull(result, () -> new UnknownCharsetException(normalizedName));
+        return result;
+    }
+    
+    /**
+     * Get character set by collation name.
+     *
+     * @param collationName collation name
+     * @return character set
+     */
+    public static MySQLCharacterSets findByCollationName(final String collationName) {
+        String normalizedName = collationName.toLowerCase(Locale.ROOT);
+        MySQLCharacterSets result = COLLATION_MAP.get(normalizedName);
+        ShardingSpherePreconditions.checkNotNull(result, () -> new UnknownCollationException(normalizedName));
+        return result;
+    }
+    
+    /**
+     * Get character set name.
+     *
+     * @return character set name
+     */
+    public String getCharacterSetName() {
+        String result = name();
+        int separatorIndex = result.indexOf('_');
+        return (-1 == separatorIndex ? result : result.substring(0, separatorIndex)).toLowerCase(Locale.ROOT);
+    }
+    
+    /**
+     * Get collation name.
+     *
+     * @return collation name
+     */
+    public String getCollationName() {
+        return name().toLowerCase(Locale.ROOT);
     }
 }
