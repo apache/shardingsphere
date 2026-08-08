@@ -292,4 +292,14 @@ class ColumnSegmentBinderTest {
         assertTrue(actual.getOwner().isPresent());
         assertThat(actual.getOwner().get().getIdentifier().getValue(), is("EXCLUDED"));
     }
+    
+    @Test
+    void assertBindUnparenthesizedSystemUserForPostgreSQL() {
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        SQLStatementBinderContext bindContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("SYSTEM_USER"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, bindContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertThat(actual, is(columnSegment));
+    }
 }
