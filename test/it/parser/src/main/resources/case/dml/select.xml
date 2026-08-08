@@ -15111,4 +15111,10 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_system_user_postgresql">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="SYSTEM_USER" start-index="7" stop-index="17" />
+        </projections>
+    </select>
+
 </sql-parser-test-cases>
