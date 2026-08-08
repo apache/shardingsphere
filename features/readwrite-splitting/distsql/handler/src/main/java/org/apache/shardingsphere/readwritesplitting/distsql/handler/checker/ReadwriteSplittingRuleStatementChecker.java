@@ -220,10 +220,10 @@ public final class ReadwriteSplittingRuleStatementChecker {
         }
     }
     
-    private static void checkProperties(final ReadwriteSplittingRuleSegment each) {
-        if ("WEIGHT".equalsIgnoreCase(each.getLoadBalancer().getName())) {
-            ShardingSpherePreconditions.checkNotEmpty(each.getLoadBalancer().getProps(), () -> new InvalidAlgorithmDefinitionException("Load balancer", each.getLoadBalancer().getName()));
-            checkDataSource(each);
+    private static void checkProperties(final ReadwriteSplittingRuleSegment segment) {
+        if ("WEIGHT".equalsIgnoreCase(segment.getLoadBalancer().getName())) {
+            ShardingSpherePreconditions.checkNotEmpty(segment.getLoadBalancer().getProps(), () -> new InvalidAlgorithmDefinitionException("Load balancer", segment.getLoadBalancer().getName()));
+            checkDataSource(segment);
         }
     }
     
