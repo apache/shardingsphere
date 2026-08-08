@@ -19,11 +19,14 @@ package org.apache.shardingsphere.sqlfederation.resultset;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeField;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +49,7 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -578,6 +582,47 @@ class SQLFederationResultSetTest {
         assertThat(federationResultSet.getObject(1), is(10));
         assertFalse(federationResultSet.wasNull());
         assertThat(federationResultSet.getObject("order_id"), is(10));
+    }
+    
+    @Test
+    void assertColumnClassNameMatchesGetObjectValueClass() throws SQLException {
+        assertColumnClassNameMatchesGetObjectValueClass(SqlTypeName.BIGINT, 1L);
+        assertColumnClassNameMatchesGetObjectValueClass(SqlTypeName.TINYINT, (byte) 1);
+        assertColumnClassNameMatchesGetObjectValueClass(SqlTypeName.SMALLINT, (short) 1);
+        assertColumnClassNameMatchesGetObjectValueClass(SqlTypeName.FLOAT, 1D);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void assertColumnClassNameMatchesGetObjectValueClass(final SqlTypeName sqlTypeName, final Object value) throws SQLException {
+        Enumerator<Object> testEnumerator = mock(Enumerator.class);
+        when(testEnumerator.moveNext()).thenReturn(true, false);
+        when(testEnumerator.current()).thenReturn(new Object[]{value});
+        RelDataType columnType = SQLFederationDataTypeFactory.getInstance().createSqlType(sqlTypeName);
+        RelDataType resultType = createResultType(new String[]{"value"}, columnType);
+        SQLFederationResultSet resultSet = new SQLFederationResultSet(
+                testEnumerator, mock(SQLFederationSchema.class),
+                Collections.singletonList(new ColumnProjection(null, "value", null, databaseType)),
+                databaseType, resultType, "contract");
+        try {
+            assertTrue(resultSet.next());
+            Object actualValue = resultSet.getObject(1);
+            assertThat(resultSet.getMetaData().getColumnClassName(1), is(actualValue.getClass().getName()));
+        } finally {
+            resultSet.close();
+        }
+    }
+    
+    private RelDataType createResultType(final String[] names, final RelDataType... types) {
+        List<RelDataTypeField> fields = new ArrayList<>(names.length);
+        for (int i = 0; i < names.length; i++) {
+            RelDataTypeField field = mock(RelDataTypeField.class);
+            when(field.getName()).thenReturn(names[i]);
+            when(field.getType()).thenReturn(types[i]);
+            fields.add(field);
+        }
+        RelDataType result = mock(RelDataType.class);
+        when(result.getFieldList()).thenReturn(fields);
+        return result;
     }
     
     @Test
