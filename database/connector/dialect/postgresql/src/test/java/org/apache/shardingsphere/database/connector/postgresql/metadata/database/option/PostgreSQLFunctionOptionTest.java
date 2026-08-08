@@ -37,6 +37,7 @@ class PostgreSQLFunctionOptionTest {
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("LOCALTIME"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("LOCALTIMESTAMP"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SESSION_USER"));
+        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SYSTEM_USER"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("USER"));
     }
 }
