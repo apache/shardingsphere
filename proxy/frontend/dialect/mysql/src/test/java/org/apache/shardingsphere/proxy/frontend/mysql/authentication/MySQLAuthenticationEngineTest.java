@@ -24,7 +24,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.epoll.EpollDomainSocketChannel;
-import io.netty.util.Attribute;
+import io.netty.util.DefaultAttributeMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authentication.Authenticator;
 import org.apache.shardingsphere.authentication.AuthenticatorFactory;
@@ -39,10 +39,8 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.database.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.database.exception.mysql.vendor.MySQLVendorError;
-import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConnectionPhase;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
@@ -67,7 +65,6 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedConstruction.Context;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -142,23 +139,17 @@ class MySQLAuthenticationEngineTest {
         assertThat(arguments.get(1), is(new Object[0]));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertAuthenticationMethodMismatch() {
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
-        ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         Channel channel = mock(Channel.class);
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
-        when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.RESULT_CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLSessionCharsetContext.ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        mockAttributes(channel);
+        ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(payload.readInt1()).thenReturn(1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
@@ -321,12 +312,9 @@ class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = mockChannelHandlerContext();
         ContextManager contextManager = mockContextManager(rule);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Attribute<MySQLSessionCharsetContext> charsetContextAttribute = context.channel().attr(MySQLSessionCharsetContext.ATTRIBUTE_KEY);
         authenticationEngine.authenticate(context, getPayload("root", null, authResponse));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
-        ArgumentCaptor<MySQLSessionCharsetContext> charsetContextCaptor = ArgumentCaptor.forClass(MySQLSessionCharsetContext.class);
-        verify(charsetContextAttribute).set(charsetContextCaptor.capture());
-        assertThat(charsetContextCaptor.getValue().getClientCharacterSet(), is(MySQLCharacterSets.BIG5_CHINESE_CI));
+        assertThat(MySQLSessionCharsetContext.get(context.channel()).getClientCharacterSetName(), is("big5"));
     }
     
     @Test
@@ -381,38 +369,29 @@ class MySQLAuthenticationEngineTest {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private ChannelHandlerContext mockDomainSocketChannelHandlerContext() {
-        ChannelHandlerContext result = mock(ChannelHandlerContext.class);
         EpollDomainSocketChannel channel = mock(EpollDomainSocketChannel.class, RETURNS_DEEP_STUBS);
         Channel parentChannel = mock(Channel.class);
         SocketAddress socketAddress = mock(SocketAddress.class);
         when(socketAddress.toString()).thenReturn("local_host");
         when(parentChannel.localAddress()).thenReturn(socketAddress);
         when(channel.parent()).thenReturn(parentChannel);
-        when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.RESULT_CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLSessionCharsetContext.ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        mockAttributes(channel);
+        ChannelHandlerContext result = mock(ChannelHandlerContext.class);
         doReturn(channel).when(result).channel();
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private Channel getChannel() {
         Channel result = mock(Channel.class);
         doReturn(getRemoteAddress()).when(result).remoteAddress();
-        when(result.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.RESULT_CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLSessionCharsetContext.ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        mockAttributes(result);
         return result;
+    }
+    
+    private void mockAttributes(final Channel channel) {
+        DefaultAttributeMap attributes = new DefaultAttributeMap();
+        when(channel.attr(any())).thenAnswer(invocation -> attributes.attr(invocation.getArgument(0)));
     }
     
     private SocketAddress getRemoteAddress() {

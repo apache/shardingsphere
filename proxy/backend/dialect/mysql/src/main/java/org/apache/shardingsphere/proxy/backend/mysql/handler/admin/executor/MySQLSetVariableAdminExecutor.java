@@ -143,7 +143,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
             case CHARACTER_SET_RESULTS:
                 return updateResultCharacterSet(context, variableAssign.getAssignValue());
             case CHARACTER_SET_CONNECTION:
-                return context.withConnectionCharacterSet(parseConnectionCharacterSet(variableAssign.getAssignValue()));
+                return context.withConnectionCollation(parseConnectionCharacterSet(variableAssign.getAssignValue()));
             case COLLATION_CONNECTION:
                 MySQLCharacterSets collation = parseCollation(variableAssign.getAssignValue());
                 if (setNamesWithCollationAssignment && !context.getConnectionCharacterSetName().equals(collation.getCharacterSetName())) {
