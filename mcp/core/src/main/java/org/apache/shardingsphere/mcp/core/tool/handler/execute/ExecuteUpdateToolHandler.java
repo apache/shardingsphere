@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecution
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -40,8 +41,6 @@ import java.util.Map;
  * Execute side-effecting SQL tool handler.
  */
 public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
-    
-    private static final String TOOL_NAME = "database_gateway_execute_update";
     
     private static final String EXECUTION_MODE_EXECUTE = "execute";
     
@@ -68,28 +67,28 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeature
     
     @Override
     public String getToolName() {
-        return TOOL_NAME;
+        return CoreToolNames.EXECUTE_UPDATE;
     }
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String executionMode = resolveExecutionMode(toolArguments);
-        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
+        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, CoreToolNames.EXECUTE_UPDATE);
         String sql = toolArguments.getStringArgument("sql");
         ClassificationResult classificationResult = checkUpdateStatement(requestContext, toolArguments, sql);
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return createPreviewResponse(toolArguments, classificationResult);
         }
         return SQLExecutionPayload.executed(requestContext.getExecutionFacade().execute(
-                SQLExecutionToolHandlerSupport.createExecutionRequest(requestContext.getSessionIdentity().getSessionId(), toolArguments, sql, TOOL_NAME)));
+                SQLExecutionToolHandlerSupport.createExecutionRequest(requestContext.getSessionIdentity().getSessionId(), toolArguments, sql, CoreToolNames.EXECUTE_UPDATE)));
     }
     
     private ClassificationResult checkUpdateStatement(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = SQLExecutionToolHandlerSupport.analyze(requestContext, toolArguments, sql);
         if (SQLExecutionToolHandlerSupport.isQueryStatement(classificationResult)) {
             throw new SQLToolMismatchException("database_gateway_execute_update does not accept read-only SQL. Use database_gateway_execute_query for read-only SQL.",
-                    TOOL_NAME, "database_gateway_execute_query", classificationResult,
+                    CoreToolNames.EXECUTE_UPDATE, CoreToolNames.EXECUTE_QUERY, classificationResult,
                     createQuerySuggestedArguments(toolArguments, classificationResult));
         }
         return classificationResult;
@@ -98,12 +97,12 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeature
     private String resolveExecutionMode(final MCPToolArguments toolArguments) {
         String result = toolArguments.getStringArgument(MCPPayloadFieldNames.EXECUTION_MODE);
         if (result.isEmpty()) {
-            throw new MCPExecutionModeRequiredException(TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
+            throw new MCPExecutionModeRequiredException(CoreToolNames.EXECUTE_UPDATE, EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
         }
         if (EXECUTION_MODE_EXECUTE.equals(result) || EXECUTION_MODE_PREVIEW.equals(result)) {
             return result;
         }
-        throw new MCPInvalidExecutionModeException(TOOL_NAME, EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
+        throw new MCPInvalidExecutionModeException(CoreToolNames.EXECUTE_UPDATE, EXECUTION_MODES, createPreviewSuggestedArguments(toolArguments));
     }
     
     private MCPSuccessPayload createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
@@ -135,7 +134,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPFeature
     private List<Map<String, Object>> createPreviewNextActions(final Map<String, Object> suggestedArguments) {
         return MCPNextActionUtils.ordered(
                 MCPNextActionUtils.askUser(PREVIEW_CONFIRMATION_REASON, List.of("execution_approved")),
-                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(TOOL_NAME, PREVIEW_EXECUTION_REASON, suggestedArguments), 1));
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(CoreToolNames.EXECUTE_UPDATE, PREVIEW_EXECUTION_REASON, suggestedArguments), 1));
     }
     
     private String createReviewSummary(final ClassificationResult classificationResult) {

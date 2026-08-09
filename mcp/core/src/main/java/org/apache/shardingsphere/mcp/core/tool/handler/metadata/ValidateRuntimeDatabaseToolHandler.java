@@ -21,17 +21,16 @@ import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.payload.RuntimeDatabaseValidationPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
-
-import java.util.Map;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.service.RuntimeDatabaseValidationService;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
+
+import java.util.Map;
 
 /**
  * Handler for runtime database validation tool.
  */
 public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
-    
-    public static final String TOOL_NAME = "database_gateway_validate_runtime_database";
     
     private final RuntimeDatabaseValidationService validationService = new RuntimeDatabaseValidationService();
     
@@ -42,7 +41,7 @@ public final class ValidateRuntimeDatabaseToolHandler implements MCPToolHandler<
     
     @Override
     public String getToolName() {
-        return TOOL_NAME;
+        return CoreToolNames.VALIDATE_RUNTIME_DATABASE;
     }
     
     @Override

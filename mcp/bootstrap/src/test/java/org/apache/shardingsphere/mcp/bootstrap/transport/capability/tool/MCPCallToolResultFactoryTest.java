@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
-import org.apache.shardingsphere.mcp.core.tool.handler.metadata.ValidateRuntimeDatabaseToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.payload.RuntimeDatabaseValidationPayload;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
@@ -46,6 +45,7 @@ import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabas
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
@@ -111,7 +111,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
                 List.of(RuntimeDatabaseValidationCheckResult.failed("configuration", RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION,
                         "The requested database is not configured for this MCP runtime.")),
                 RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
-        CallToolResult actual = createRealDescriptorCallToolResult(ValidateRuntimeDatabaseToolHandler.TOOL_NAME, response);
+        CallToolResult actual = createRealDescriptorCallToolResult(CoreToolNames.VALIDATE_RUNTIME_DATABASE, response);
         Map<String, Object> actualPayload = getStructuredContent(actual);
         assertFalse(actual.isError());
         assertThat(actualPayload.get("status"), is("failed"));
