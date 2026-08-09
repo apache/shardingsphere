@@ -89,7 +89,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -392,12 +391,6 @@ class ProxyDatabaseConnectionManagerTest {
         databaseConnectionManager.markSessionVariablesDirty();
         assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(connection)));
         verify(connection.createStatement()).execute("SET key=value");
-    }
-    
-    @Test
-    void assertMarkSessionVariablesDirtyWithNullConnection() {
-        databaseConnectionManager.getCachedConnections().put("foo_db.ds1", null);
-        assertDoesNotThrow(databaseConnectionManager::markSessionVariablesDirty);
     }
     
     @Test

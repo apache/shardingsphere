@@ -272,11 +272,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public void markSessionVariablesDirty() {
         synchronized (cachedConnections) {
-            for (Connection each : cachedConnections.values()) {
-                if (null != each) {
-                    connectionsRequiringSessionVariableReplay.add(each);
-                }
-            }
+            connectionsRequiringSessionVariableReplay.addAll(cachedConnections.values());
         }
     }
     

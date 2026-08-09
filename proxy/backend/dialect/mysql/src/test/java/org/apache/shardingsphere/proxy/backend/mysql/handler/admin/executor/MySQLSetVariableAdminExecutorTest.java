@@ -19,12 +19,12 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.mysql.exception.CollationCharsetMismatchException;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSystemVariableException;
-import org.apache.shardingsphere.database.exception.mysql.exception.WrongValueForVariableException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
@@ -240,8 +240,26 @@ class MySQLSetVariableAdminExecutorTest {
         ConnectionSession connectionSession = mockConnectionSession();
         MySQLSessionCharsetContext expected = MySQLSessionCharsetContext.create(MySQLCharacterSets.LATIN1_SWEDISH_CI);
         expected.apply(connectionSession.getAttributeMap());
-        assertThrows(WrongValueForVariableException.class, () -> new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock()));
+        InvalidParameterValueException actual = assertThrows(
+                InvalidParameterValueException.class, () -> new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock()));
+        assertThat(actual.getParameterName(), is("character_set_client"));
+        assertThat(actual.getParameterValue(), is("ucs2"));
         assertThat(MySQLSessionCharsetContext.get(connectionSession.getAttributeMap()), is(expected));
+    }
+    
+    @Test
+    void assertExecuteSetNamesWithImpermissibleClientCharacterSet() {
+        SetStatement setStatement = parseSetStatement("SET NAMES utf16 COLLATE utf16_general_ci");
+        InvalidParameterValueException actual = assertThrows(
+                InvalidParameterValueException.class, () -> new MySQLSetVariableAdminExecutor(setStatement).execute(mock(ConnectionSession.class), mock()));
+        assertThat(actual.getParameterName(), is("character_set_client"));
+        assertThat(actual.getParameterValue(), is("utf16"));
+    }
+    
+    @Test
+    void assertExecuteSetNamesWithImpermissibleClientCharacterSetAndMismatchedCollation() {
+        SetStatement setStatement = parseSetStatement("SET NAMES utf16 COLLATE utf8mb4_bin");
+        assertThrows(CollationCharsetMismatchException.class, () -> new MySQLSetVariableAdminExecutor(setStatement).execute(mock(ConnectionSession.class), mock()));
     }
     
     @Test

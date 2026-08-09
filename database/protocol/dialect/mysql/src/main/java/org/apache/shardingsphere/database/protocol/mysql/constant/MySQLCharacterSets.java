@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
@@ -319,7 +318,7 @@ public enum MySQLCharacterSets {
     private static final Map<Integer, MySQLCharacterSets> CHARACTER_SET_MAP = Collections.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(each -> each.id, Function.identity())));
     
     private static final Map<String, MySQLCharacterSets> DEFAULT_COLLATION_MAP = Collections.unmodifiableMap(Arrays.stream(values()).filter(each -> null != each.charset)
-            .collect(Collectors.toMap(MySQLCharacterSets::getCharacterSetName, Function.identity(), MySQLCharacterSets::getDefaultCollation, LinkedHashMap::new)));
+            .collect(Collectors.toMap(MySQLCharacterSets::getCharacterSetName, Function.identity(), MySQLCharacterSets::getDefaultCollation)));
     
     private static final Map<String, MySQLCharacterSets> COLLATION_MAP = Collections.unmodifiableMap(Arrays.stream(values()).filter(each -> null != each.charset)
             .collect(Collectors.toMap(MySQLCharacterSets::getCollationName, Function.identity())));
