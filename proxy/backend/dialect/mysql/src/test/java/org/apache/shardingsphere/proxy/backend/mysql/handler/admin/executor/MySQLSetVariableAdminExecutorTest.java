@@ -149,7 +149,8 @@ class MySQLSetVariableAdminExecutorTest {
         assertThat(actual.getResultCharacterSetName(), is(Optional.of("latin1")));
         assertThat(actual.getConnectionCharacterSetName(), is("utf8mb4"));
         assertThat(actual.getConnectionCollationName(), is("utf8mb4_unicode_ci"));
-        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET collation_connection=@@collation_database")));
+        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
+                is(Collections.singletonList("SET collation_connection='utf8mb4_unicode_ci'")));
     }
     
     @Test
@@ -200,7 +201,19 @@ class MySQLSetVariableAdminExecutorTest {
         assertThat(actual.getClientCharacterSet(), is(MySQLConstants.DEFAULT_CHARSET));
         assertThat(actual.getResultCharacterSet(), is(Optional.of(MySQLConstants.DEFAULT_CHARSET)));
         assertThat(actual.getConnectionCollation(), is(MySQLCharacterSets.UTF8MB4_UNICODE_CI));
-        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET collation_connection=DEFAULT")));
+        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
+                is(Collections.singletonList("SET collation_connection='utf8mb4_unicode_ci'")));
+    }
+    
+    @Test
+    void assertExecuteWithDefaultConnectionCollation() throws SQLException {
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(
+                new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "collation_connection"), "DEFAULT")));
+        ConnectionSession connectionSession = mockReplayableConnectionSession();
+        new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock());
+        assertThat(MySQLSessionCharsetContext.get(connectionSession.getAttributeMap()).getConnectionCollation(), is(MySQLCharacterSets.UTF8MB4_UNICODE_CI));
+        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
+                is(Collections.singletonList("SET collation_connection='utf8mb4_unicode_ci'")));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -243,9 +256,8 @@ class MySQLSetVariableAdminExecutorTest {
         SetStatement setStatement = parseSetStatement("SET @test_var = 1");
         assertThat(setStatement.getVariableAssigns().iterator().next().getVariable().getVariableType(), is(VariableType.USER));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
-        RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
-        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
+        ConnectionSession connectionSession = mockSessionVariableConnectionSession();
+        RequiredSessionVariableRecorder recorder = connectionSession.getRequiredSessionVariableRecorder();
         executor.execute(connectionSession, mock());
         assertThat(recorder.toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET @test_var=1")));
     }
@@ -255,9 +267,8 @@ class MySQLSetVariableAdminExecutorTest {
         SetStatement setStatement = parseSetStatement("SET @test_var := 1");
         assertThat(setStatement.getVariableAssigns().iterator().next().getVariable().getVariableType(), is(VariableType.USER));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
-        RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
-        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
+        ConnectionSession connectionSession = mockSessionVariableConnectionSession();
+        RequiredSessionVariableRecorder recorder = connectionSession.getRequiredSessionVariableRecorder();
         executor.execute(connectionSession, mock());
         assertThat(recorder.toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET @test_var=1")));
     }
@@ -275,8 +286,15 @@ class MySQLSetVariableAdminExecutorTest {
     }
     
     private ConnectionSession mockReplayableConnectionSession() {
-        ConnectionSession result = mockConnectionSession();
+        ConnectionSession result = mockSessionVariableConnectionSession();
+        when(result.getAttributeMap()).thenReturn(new DefaultAttributeMap());
+        return result;
+    }
+    
+    private ConnectionSession mockSessionVariableConnectionSession() {
+        ConnectionSession result = mock(ConnectionSession.class);
         when(result.getRequiredSessionVariableRecorder()).thenReturn(new RequiredSessionVariableRecorder());
+        when(result.getDatabaseConnectionManager()).thenReturn(mock(ProxyDatabaseConnectionManager.class));
         return result;
     }
     

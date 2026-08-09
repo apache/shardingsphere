@@ -69,16 +69,27 @@ class MySQLSessionCharsetContextTest {
     
     @Test
     void assertWithoutResultConversion() {
-        MySQLSessionCharsetContext actual = MySQLSessionCharsetContext.create(MySQLConstants.DEFAULT_CHARSET).withoutResultConversion();
+        MySQLSessionCharsetContext actual = MySQLSessionCharsetContext.create(MySQLCharacterSets.LATIN1_SWEDISH_CI).withoutResultConversion();
         assertThat(actual.getResultCharacterSetName(), is(Optional.empty()));
+        assertThat(actual.getResultCharset(), is(StandardCharsets.UTF_8));
         assertThat(actual.getResultCollation(), is(MySQLConstants.DEFAULT_CHARSET));
     }
     
     @Test
     void assertWithBinaryResult() {
-        MySQLSessionCharsetContext actual = MySQLSessionCharsetContext.create(MySQLConstants.DEFAULT_CHARSET).withBinaryResult();
+        MySQLSessionCharsetContext actual = MySQLSessionCharsetContext.create(MySQLCharacterSets.LATIN1_SWEDISH_CI).withBinaryResult();
         assertThat(actual.getResultCharacterSetName(), is(Optional.of("binary")));
         assertThat(actual.getResultCharset(), is(StandardCharsets.UTF_8));
+        assertThat(actual.getResultCollation(), is(MySQLConstants.DEFAULT_CHARSET));
+    }
+    
+    @Test
+    void assertApplyWithoutResultConversion() {
+        DefaultAttributeMap attributeMap = new DefaultAttributeMap();
+        MySQLSessionCharsetContext.create(MySQLCharacterSets.LATIN1_SWEDISH_CI).withoutResultConversion().apply(attributeMap);
+        assertThat(attributeMap.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.ISO_8859_1));
+        assertThat(attributeMap.attr(MySQLConstants.RESULT_CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
+        assertThat(attributeMap.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get(), is(MySQLConstants.DEFAULT_CHARSET));
     }
     
     @Test

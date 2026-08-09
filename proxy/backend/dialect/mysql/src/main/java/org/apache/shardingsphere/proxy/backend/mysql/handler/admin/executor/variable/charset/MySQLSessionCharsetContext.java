@@ -136,7 +136,7 @@ public final class MySQLSessionCharsetContext {
      * @return result encoding character set
      */
     public Charset getResultCharset() {
-        return resultCharacterSet.orElse(clientCharacterSet).getCharset();
+        return resultCharacterSet.orElse(MySQLConstants.DEFAULT_CHARSET).getCharset();
     }
     
     /**
@@ -145,7 +145,7 @@ public final class MySQLSessionCharsetContext {
      * @return result metadata collation
      */
     public MySQLCharacterSets getResultCollation() {
-        return resultCharacterSet.orElse(clientCharacterSet);
+        return resultCharacterSet.orElse(MySQLConstants.DEFAULT_CHARSET);
     }
     
     /**

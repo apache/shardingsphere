@@ -218,9 +218,9 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
         for (VariableAssignSegment each : variableAssigns) {
             String variableName = each.getVariable().getVariable();
             if (CHARACTER_SET_CONNECTION.equalsIgnoreCase(variableName)) {
-                result = isKeyword(each.getAssignValue(), "default") ? "DEFAULT" : String.format("'%s'", parseConnectionCharacterSet(each.getAssignValue()).getCollationName());
+                result = String.format("'%s'", parseConnectionCharacterSet(each.getAssignValue()).getCollationName());
             } else if (COLLATION_CONNECTION.equalsIgnoreCase(variableName)) {
-                result = each.getAssignValue();
+                result = String.format("'%s'", parseCollation(each.getAssignValue()).getCollationName());
             }
         }
         return Optional.ofNullable(result);
