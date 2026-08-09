@@ -19,12 +19,12 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.mysql.exception.CollationCharsetMismatchException;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSystemVariableException;
-import org.apache.shardingsphere.database.exception.mysql.exception.WrongValueForVariableException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
@@ -187,7 +187,7 @@ class MySQLSetVariableAdminExecutorTest {
                 new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "character_set_connection"), "utf8mb4")));
         ConnectionSession connectionSession = mockReplayableConnectionSession();
         new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock());
-        assertThat(MySQLSessionCharsetContext.get(connectionSession.getAttributeMap()).getConnectionCollation(), is(MySQLCharacterSets.UTF8MB4_UNICODE_CI));
+        assertThat(MySQLSessionCharsetContext.get(connectionSession.getAttributeMap()).getConnectionCollationName(), is("utf8mb4_unicode_ci"));
         assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
                 is(Collections.singletonList("SET collation_connection='utf8mb4_unicode_ci'")));
     }
@@ -198,9 +198,9 @@ class MySQLSetVariableAdminExecutorTest {
         ConnectionSession connectionSession = mockReplayableConnectionSession();
         new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock());
         MySQLSessionCharsetContext actual = MySQLSessionCharsetContext.get(connectionSession.getAttributeMap());
-        assertThat(actual.getClientCharacterSet(), is(MySQLConstants.DEFAULT_CHARSET));
-        assertThat(actual.getResultCharacterSet(), is(Optional.of(MySQLConstants.DEFAULT_CHARSET)));
-        assertThat(actual.getConnectionCollation(), is(MySQLCharacterSets.UTF8MB4_UNICODE_CI));
+        assertThat(actual.getClientCharacterSetName(), is(MySQLConstants.DEFAULT_CHARSET.getCharacterSetName()));
+        assertThat(actual.getResultCharacterSetName(), is(Optional.of(MySQLConstants.DEFAULT_CHARSET.getCharacterSetName())));
+        assertThat(actual.getConnectionCollationName(), is("utf8mb4_unicode_ci"));
         assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
                 is(Collections.singletonList("SET collation_connection='utf8mb4_unicode_ci'")));
     }
@@ -211,7 +211,7 @@ class MySQLSetVariableAdminExecutorTest {
                 new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "collation_connection"), "DEFAULT")));
         ConnectionSession connectionSession = mockReplayableConnectionSession();
         new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock());
-        assertThat(MySQLSessionCharsetContext.get(connectionSession.getAttributeMap()).getConnectionCollation(), is(MySQLCharacterSets.UTF8MB4_UNICODE_CI));
+        assertThat(MySQLSessionCharsetContext.get(connectionSession.getAttributeMap()).getConnectionCollationName(), is("utf8mb4_unicode_ci"));
         assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
                 is(Collections.singletonList("SET collation_connection='utf8mb4_unicode_ci'")));
     }
@@ -240,8 +240,26 @@ class MySQLSetVariableAdminExecutorTest {
         ConnectionSession connectionSession = mockConnectionSession();
         MySQLSessionCharsetContext expected = MySQLSessionCharsetContext.create(MySQLCharacterSets.LATIN1_SWEDISH_CI);
         expected.apply(connectionSession.getAttributeMap());
-        assertThrows(WrongValueForVariableException.class, () -> new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock()));
+        InvalidParameterValueException actual = assertThrows(
+                InvalidParameterValueException.class, () -> new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock()));
+        assertThat(actual.getParameterName(), is("character_set_client"));
+        assertThat(actual.getParameterValue(), is("ucs2"));
         assertThat(MySQLSessionCharsetContext.get(connectionSession.getAttributeMap()), is(expected));
+    }
+    
+    @Test
+    void assertExecuteSetNamesWithImpermissibleClientCharacterSet() {
+        SetStatement setStatement = parseSetStatement("SET NAMES utf16 COLLATE utf16_general_ci");
+        InvalidParameterValueException actual = assertThrows(
+                InvalidParameterValueException.class, () -> new MySQLSetVariableAdminExecutor(setStatement).execute(mock(ConnectionSession.class), mock()));
+        assertThat(actual.getParameterName(), is("character_set_client"));
+        assertThat(actual.getParameterValue(), is("utf16"));
+    }
+    
+    @Test
+    void assertExecuteSetNamesWithImpermissibleClientCharacterSetAndMismatchedCollation() {
+        SetStatement setStatement = parseSetStatement("SET NAMES utf16 COLLATE utf8mb4_bin");
+        assertThrows(CollationCharsetMismatchException.class, () -> new MySQLSetVariableAdminExecutor(setStatement).execute(mock(ConnectionSession.class), mock()));
     }
     
     @Test

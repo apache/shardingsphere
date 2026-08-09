@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.exception.mysql.mapper;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.TooManyConnectionsException;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
@@ -42,7 +43,6 @@ import org.apache.shardingsphere.database.exception.mysql.exception.UnknownChars
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.database.exception.mysql.exception.WrongValueForVariableException;
 import org.apache.shardingsphere.database.exception.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
@@ -101,9 +101,9 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         if (sqlDialectException instanceof UnknownCollationException) {
             return toSQLException(MySQLVendorError.ER_UNKNOWN_COLLATION, ((UnknownCollationException) sqlDialectException).getCollation());
         }
-        if (sqlDialectException instanceof WrongValueForVariableException) {
-            WrongValueForVariableException ex = (WrongValueForVariableException) sqlDialectException;
-            return toSQLException(MySQLVendorError.ER_WRONG_VALUE_FOR_VAR, ex.getVariableName(), ex.getValue());
+        if (sqlDialectException instanceof InvalidParameterValueException) {
+            InvalidParameterValueException ex = (InvalidParameterValueException) sqlDialectException;
+            return toSQLException(MySQLVendorError.ER_WRONG_VALUE_FOR_VAR, ex.getParameterName(), ex.getParameterValue());
         }
         if (sqlDialectException instanceof CollationCharsetMismatchException) {
             CollationCharsetMismatchException ex = (CollationCharsetMismatchException) sqlDialectException;

@@ -24,21 +24,20 @@ import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 
-import java.nio.charset.Charset;
 import java.util.Optional;
 
 /**
  * MySQL session character set context.
  */
-@Getter
 public final class MySQLSessionCharsetContext {
     
-    public static final AttributeKey<MySQLSessionCharsetContext> ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLSessionCharsetContext.class.getName());
+    private static final AttributeKey<MySQLSessionCharsetContext> ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLSessionCharsetContext.class.getName());
     
     private final MySQLCharacterSets clientCharacterSet;
     
     private final Optional<MySQLCharacterSets> resultCharacterSet;
     
+    @Getter
     private final Optional<String> resultCharacterSetName;
     
     private final MySQLCharacterSets connectionCollation;
@@ -111,16 +110,6 @@ public final class MySQLSessionCharsetContext {
     }
     
     /**
-     * Create a context with the default collation of the specified connection character set.
-     *
-     * @param characterSet connection character set and its default collation
-     * @return updated context
-     */
-    public MySQLSessionCharsetContext withConnectionCharacterSet(final MySQLCharacterSets characterSet) {
-        return new MySQLSessionCharsetContext(clientCharacterSet, resultCharacterSet, resultCharacterSetName, characterSet);
-    }
-    
-    /**
      * Create a context with the specified connection collation.
      *
      * @param collation connection collation
@@ -128,24 +117,6 @@ public final class MySQLSessionCharsetContext {
      */
     public MySQLSessionCharsetContext withConnectionCollation(final MySQLCharacterSets collation) {
         return new MySQLSessionCharsetContext(clientCharacterSet, resultCharacterSet, resultCharacterSetName, collation);
-    }
-    
-    /**
-     * Get result encoding character set.
-     *
-     * @return result encoding character set
-     */
-    public Charset getResultCharset() {
-        return resultCharacterSet.orElse(MySQLConstants.DEFAULT_CHARSET).getCharset();
-    }
-    
-    /**
-     * Get result metadata collation.
-     *
-     * @return result metadata collation
-     */
-    public MySQLCharacterSets getResultCollation() {
-        return resultCharacterSet.orElse(MySQLConstants.DEFAULT_CHARSET);
     }
     
     /**
@@ -181,9 +152,10 @@ public final class MySQLSessionCharsetContext {
      * @param attributeMap attribute map
      */
     public void apply(final AttributeMap attributeMap) {
+        MySQLCharacterSets resultCollation = resultCharacterSet.orElse(MySQLConstants.DEFAULT_CHARSET);
         attributeMap.attr(ATTRIBUTE_KEY).set(this);
         attributeMap.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(clientCharacterSet.getCharset());
-        attributeMap.attr(MySQLConstants.RESULT_CHARSET_ATTRIBUTE_KEY).set(getResultCharset());
-        attributeMap.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).set(getResultCollation());
+        attributeMap.attr(MySQLConstants.RESULT_CHARSET_ATTRIBUTE_KEY).set(resultCollation.getCharset());
+        attributeMap.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).set(resultCollation);
     }
 }

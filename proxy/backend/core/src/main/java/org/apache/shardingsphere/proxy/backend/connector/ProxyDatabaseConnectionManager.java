@@ -74,7 +74,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
     @Getter(AccessLevel.NONE)
-    private final Set<Connection> connectionsRequiringSessionVariableReplay = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Set<Connection> pendingReplayConnections = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final ConnectionResourceLock connectionResourceLock = new ConnectionResourceLock();
     
@@ -125,12 +125,12 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     }
     
     private void replaySessionVariablesIfNecessary(final List<Connection> connections) throws SQLException {
-        if (connectionsRequiringSessionVariableReplay.isEmpty()) {
+        if (pendingReplayConnections.isEmpty()) {
             return;
         }
         List<Connection> replayConnections = new LinkedList<>();
         for (Connection each : connections) {
-            if (null != each && connectionsRequiringSessionVariableReplay.contains(each)) {
+            if (null != each && pendingReplayConnections.contains(each)) {
                 replayConnections.add(each);
             }
         }
@@ -145,7 +145,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             }
             throw ex;
         } finally {
-            connectionsRequiringSessionVariableReplay.removeAll(replayConnections);
+            pendingReplayConnections.removeAll(replayConnections);
         }
     }
     
@@ -272,11 +272,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public void markSessionVariablesDirty() {
         synchronized (cachedConnections) {
-            for (Connection each : cachedConnections.values()) {
-                if (null != each) {
-                    connectionsRequiringSessionVariableReplay.add(each);
-                }
-            }
+            pendingReplayConnections.addAll(cachedConnections.values());
         }
     }
     
@@ -417,7 +413,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                 }
             }
             cachedConnections.clear();
-            connectionsRequiringSessionVariableReplay.clear();
+            pendingReplayConnections.clear();
         }
         connectionSession.getPreparedStatementCacheContext().closeAll();
         if (!forceRollback) {
