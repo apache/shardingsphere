@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionResourceLock;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
@@ -48,6 +50,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -68,6 +72,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     private final Collection<ProxyBackendHandler> inUseProxyBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
+    
+    @Getter(AccessLevel.NONE)
+    private final Set<Connection> connectionsRequiringSessionVariableReplay = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final ConnectionResourceLock connectionResourceLock = new ConnectionResourceLock();
     
@@ -109,11 +116,37 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                 cachedConnections.putAll(cacheKey, newConnections);
             }
         }
+        replaySessionVariablesIfNecessary(result);
         return result;
     }
     
     private String getKey(final String databaseName, final String dataSourceName) {
         return databaseName.toLowerCase() + "." + dataSourceName;
+    }
+    
+    private void replaySessionVariablesIfNecessary(final List<Connection> connections) throws SQLException {
+        if (connectionsRequiringSessionVariableReplay.isEmpty()) {
+            return;
+        }
+        List<Connection> replayConnections = new LinkedList<>();
+        for (Connection each : connections) {
+            if (null != each && connectionsRequiringSessionVariableReplay.contains(each)) {
+                replayConnections.add(each);
+            }
+        }
+        if (replayConnections.isEmpty()) {
+            return;
+        }
+        try {
+            setSessionVariablesIfNecessary(replayConnections);
+        } catch (final SQLException ex) {
+            synchronized (cachedConnections) {
+                cachedConnections.values().removeAll(replayConnections);
+            }
+            throw ex;
+        } finally {
+            connectionsRequiringSessionVariableReplay.removeAll(replayConnections);
+        }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -144,14 +177,27 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         if (connectionSession.getRequiredSessionVariableRecorder().isEmpty() || connections.isEmpty()) {
             return;
         }
-        String databaseType = connections.iterator().next().getMetaData().getDatabaseProductName();
-        List<String> setSQLs = connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType);
         try {
+            Optional<String> databaseType = getReplayDatabaseType(connections.iterator().next().getMetaData().getDatabaseProductName());
+            if (!databaseType.isPresent()) {
+                return;
+            }
+            List<String> setSQLs = connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.get());
+            if (setSQLs.isEmpty()) {
+                return;
+            }
             executeSetSessionVariables(connections, setSQLs);
         } catch (final SQLException ex) {
             releaseConnection(connections, ex);
             throw ex;
         }
+    }
+    
+    private Optional<String> getReplayDatabaseType(final String databaseType) {
+        DatabaseType protocolType = connectionSession.getProtocolType();
+        DatabaseType trunkProtocolType = protocolType.getTrunkDatabaseType().orElse(protocolType);
+        return TypedSPILoader.findService(DatabaseType.class, databaseType).map(each -> each.getTrunkDatabaseType().orElse(each))
+                .filter(each -> trunkProtocolType.getType().equalsIgnoreCase(each.getType())).map(DatabaseType::getType);
     }
     
     private void executeSetSessionVariables(final List<Connection> connections, final List<String> setSQLs) throws SQLException {
@@ -219,6 +265,19 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public int getConnectionSize() {
         return cachedConnections.values().size();
+    }
+    
+    /**
+     * Mark cached connections as requiring session variable replay.
+     */
+    public void markSessionVariablesDirty() {
+        synchronized (cachedConnections) {
+            for (Connection each : cachedConnections.values()) {
+                if (null != each) {
+                    connectionsRequiringSessionVariableReplay.add(each);
+                }
+            }
+        }
     }
     
     /**
@@ -358,6 +417,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                 }
             }
             cachedConnections.clear();
+            connectionsRequiringSessionVariableReplay.clear();
         }
         connectionSession.getPreparedStatementCacheContext().closeAll();
         if (!forceRollback) {
@@ -380,18 +440,20 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         if (connectionSession.getRequiredSessionVariableRecorder().isEmpty() || values.isEmpty()) {
             return;
         }
-        String databaseType;
-        try {
-            databaseType = values.iterator().next().getMetaData().getDatabaseProductName();
-        } catch (final SQLException ex) {
-            exceptions.add(ex);
-            return;
-        }
-        List<String> resetSQLs = connectionSession.getRequiredSessionVariableRecorder().toResetSQLs(databaseType);
         for (Connection each : values) {
-            try (Statement statement = each.createStatement()) {
-                for (String eachResetSQL : resetSQLs) {
-                    statement.execute(eachResetSQL);
+            try {
+                Optional<String> databaseType = getReplayDatabaseType(each.getMetaData().getDatabaseProductName());
+                if (!databaseType.isPresent()) {
+                    continue;
+                }
+                List<String> resetSQLs = connectionSession.getRequiredSessionVariableRecorder().toResetSQLs(databaseType.get());
+                if (resetSQLs.isEmpty()) {
+                    continue;
+                }
+                try (Statement statement = each.createStatement()) {
+                    for (String eachResetSQL : resetSQLs) {
+                        statement.execute(eachResetSQL);
+                    }
                 }
             } catch (final SQLException ex) {
                 exceptions.add(ex);

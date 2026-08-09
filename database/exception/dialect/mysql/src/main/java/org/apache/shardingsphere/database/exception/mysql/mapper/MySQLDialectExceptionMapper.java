@@ -31,6 +31,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.table.
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.mysql.exception.CollationCharsetMismatchException;
 import org.apache.shardingsphere.database.exception.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorLocalVariableException;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.database.exception.mysql.exception.UnknownChars
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.database.exception.mysql.exception.WrongValueForVariableException;
 import org.apache.shardingsphere.database.exception.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
@@ -97,7 +99,15 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
             return toSQLException(MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, ((UnknownCharsetException) sqlDialectException).getCharset());
         }
         if (sqlDialectException instanceof UnknownCollationException) {
-            return toSQLException(MySQLVendorError.ER_UNKNOWN_COLLATION, ((UnknownCollationException) sqlDialectException).getCollationId());
+            return toSQLException(MySQLVendorError.ER_UNKNOWN_COLLATION, ((UnknownCollationException) sqlDialectException).getCollation());
+        }
+        if (sqlDialectException instanceof WrongValueForVariableException) {
+            WrongValueForVariableException ex = (WrongValueForVariableException) sqlDialectException;
+            return toSQLException(MySQLVendorError.ER_WRONG_VALUE_FOR_VAR, ex.getVariableName(), ex.getValue());
+        }
+        if (sqlDialectException instanceof CollationCharsetMismatchException) {
+            CollationCharsetMismatchException ex = (CollationCharsetMismatchException) sqlDialectException;
+            return toSQLException(MySQLVendorError.ER_COLLATION_CHARSET_MISMATCH, ex.getCollation(), ex.getCharset());
         }
         if (sqlDialectException instanceof HandshakeException) {
             return toSQLException(MySQLVendorError.ER_HANDSHAKE_ERROR);

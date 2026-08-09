@@ -33,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -141,9 +142,24 @@ class MySQLPacketCodecEngineTest {
         new MySQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
         verify(byteBuf).writeInt(0);
         verify(byteBuf).markWriterIndex();
-        verify(actualMessage).write(any(MySQLPacketPayload.class));
+        ArgumentCaptor<MySQLPacketPayload> payloadCaptor = ArgumentCaptor.forClass(MySQLPacketPayload.class);
+        verify(actualMessage).write(payloadCaptor.capture());
+        assertThat(payloadCaptor.getValue().getCharset(), is(StandardCharsets.UTF_8));
         verify(byteBuf).setMediumLE(0, 4);
         verify(byteBuf).setByte(3, 1);
+    }
+    
+    @Test
+    void assertEncodeWithResultCharset() {
+        when(byteBuf.writeInt(anyInt())).thenReturn(byteBuf);
+        when(byteBuf.markWriterIndex()).thenReturn(byteBuf);
+        when(byteBuf.readableBytes()).thenReturn(8);
+        when(context.channel().attr(MySQLConstants.RESULT_CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.ISO_8859_1);
+        MySQLPacket actualMessage = mock(MySQLPacket.class);
+        new MySQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
+        ArgumentCaptor<MySQLPacketPayload> payloadCaptor = ArgumentCaptor.forClass(MySQLPacketPayload.class);
+        verify(actualMessage).write(payloadCaptor.capture());
+        assertThat(payloadCaptor.getValue().getCharset(), is(StandardCharsets.ISO_8859_1));
     }
     
     @Test

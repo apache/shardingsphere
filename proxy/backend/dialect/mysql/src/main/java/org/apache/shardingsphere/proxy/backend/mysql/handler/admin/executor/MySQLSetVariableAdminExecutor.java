@@ -18,7 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.exception.mysql.exception.CollationCharsetMismatchException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownSystemVariableException;
+import org.apache.shardingsphere.database.exception.mysql.exception.WrongValueForVariableException;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -27,11 +32,11 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminUpdateExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableScope;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset.MySQLSessionCharsetContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
@@ -40,10 +45,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -52,35 +61,169 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateExecutor {
     
+    private static final String CHARACTER_SET_CLIENT = "character_set_client";
+    
+    private static final String CHARACTER_SET_RESULTS = "character_set_results";
+    
+    private static final String CHARACTER_SET_CONNECTION = "character_set_connection";
+    
+    private static final String COLLATION_CONNECTION = "collation_connection";
+    
+    private static final Collection<String> IMPERMISSIBLE_CLIENT_CHARACTER_SETS = Arrays.asList("ucs2", "utf16", "utf16le", "utf32");
+    
     private final SetStatement sqlStatement;
     
     @Override
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
-        Map<String, String> sessionVariables = extractSessionVariables();
-        validateSessionVariables(extractSessionVariableSegments());
-        CharsetSetExecutor charsetSetExecutor = new CharsetSetExecutor(sqlStatement.getDatabaseType(), connectionSession);
-        sessionVariables.forEach(charsetSetExecutor::set);
-        new SessionVariableRecordExecutor(sqlStatement.getDatabaseType(), connectionSession).recordVariable(sessionVariables);
+        List<VariableAssignSegment> sessionVariableAssigns = extractSessionVariableAssigns();
+        validateSessionVariables(sessionVariableAssigns.stream().map(VariableAssignSegment::getVariable).collect(Collectors.toList()));
+        validateSetNamesCollation(sessionVariableAssigns);
+        updateCharsetContext(connectionSession, sessionVariableAssigns);
+        SessionVariableRecordExecutor sessionVariableRecordExecutor = new SessionVariableRecordExecutor(sqlStatement.getDatabaseType(), connectionSession);
+        sessionVariableRecordExecutor.recordVariable(extractReplayedSessionVariables(sessionVariableAssigns));
+        getConnectionCollationReplayValue(sessionVariableAssigns).ifPresent(each -> sessionVariableRecordExecutor.recordVariable(COLLATION_CONNECTION, each));
         executeSetGlobalVariablesIfPresent(connectionSession, metaData);
     }
     
-    private Map<String, String> extractSessionVariables() {
-        return sqlStatement.getVariableAssigns().stream().filter(each -> !"global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
-                .collect(Collectors.toMap(each -> each.getVariable().getVariable(), VariableAssignSegment::getAssignValue));
+    private List<VariableAssignSegment> extractSessionVariableAssigns() {
+        return sqlStatement.getVariableAssigns().stream().filter(each -> !"global".equalsIgnoreCase(each.getVariable().getScope().orElse(""))).collect(Collectors.toList());
     }
     
-    private Collection<VariableSegment> extractSessionVariableSegments() {
-        return sqlStatement.getVariableAssigns().stream().map(VariableAssignSegment::getVariable).filter(each -> !"global".equalsIgnoreCase(each.getScope().orElse(""))).collect(Collectors.toList());
-    }
-    
-    private void validateSessionVariables(final Collection<VariableSegment> sessionVariables) {
-        for (VariableSegment each : sessionVariables) {
+    private void validateSessionVariables(final Collection<VariableSegment> variables) {
+        for (VariableSegment each : variables) {
             if (VariableType.USER == each.getVariableType()) {
                 continue;
             }
             MySQLSystemVariable systemVariable = MySQLSystemVariable.findSystemVariable(each.getVariable()).orElseThrow(() -> new UnknownSystemVariableException(each.getVariable()));
             systemVariable.validateSetTargetScope(MySQLSystemVariableScope.SESSION);
         }
+    }
+    
+    private void validateSetNamesCollation(final List<VariableAssignSegment> variableAssigns) {
+        if (!isSetNamesWithCollation(variableAssigns)) {
+            return;
+        }
+        MySQLCharacterSets characterSet = parseCharacterSet(variableAssigns.get(2).getAssignValue());
+        MySQLCharacterSets collation = parseCollation(variableAssigns.get(3).getAssignValue());
+        if (!characterSet.getCharacterSetName().equals(collation.getCharacterSetName())) {
+            throw new CollationCharsetMismatchException(collation.getCollationName(), characterSet.getCharacterSetName());
+        }
+    }
+    
+    private boolean isSetNamesWithCollation(final List<VariableAssignSegment> variableAssigns) {
+        if (variableAssigns.size() < 4) {
+            return false;
+        }
+        VariableAssignSegment first = variableAssigns.get(0);
+        return CHARACTER_SET_CLIENT.equalsIgnoreCase(first.getVariable().getVariable())
+                && CHARACTER_SET_RESULTS.equalsIgnoreCase(variableAssigns.get(1).getVariable().getVariable())
+                && CHARACTER_SET_CONNECTION.equalsIgnoreCase(variableAssigns.get(2).getVariable().getVariable())
+                && COLLATION_CONNECTION.equalsIgnoreCase(variableAssigns.get(3).getVariable().getVariable())
+                && variableAssigns.subList(1, 4).stream().allMatch(each -> first.getStartIndex() == each.getStartIndex() && first.getStopIndex() == each.getStopIndex());
+    }
+    
+    private void updateCharsetContext(final ConnectionSession connectionSession, final List<VariableAssignSegment> variableAssigns) {
+        if (variableAssigns.stream().noneMatch(each -> isCharsetVariable(each.getVariable().getVariable()))) {
+            return;
+        }
+        MySQLSessionCharsetContext result = MySQLSessionCharsetContext.get(connectionSession.getAttributeMap());
+        for (VariableAssignSegment each : variableAssigns) {
+            result = updateCharsetContext(result, each);
+        }
+        result.apply(connectionSession.getAttributeMap());
+    }
+    
+    private MySQLSessionCharsetContext updateCharsetContext(final MySQLSessionCharsetContext context, final VariableAssignSegment variableAssign) {
+        String variableName = variableAssign.getVariable().getVariable().toLowerCase(Locale.ROOT);
+        switch (variableName) {
+            case CHARACTER_SET_CLIENT:
+                return context.withClientCharacterSet(parseClientCharacterSet(variableAssign.getAssignValue()));
+            case CHARACTER_SET_RESULTS:
+                return updateResultCharacterSet(context, variableAssign.getAssignValue());
+            case CHARACTER_SET_CONNECTION:
+                return context.withConnectionCharacterSet(parseConnectionCharacterSet(variableAssign.getAssignValue()));
+            case COLLATION_CONNECTION:
+                return context.withConnectionCollation(parseCollation(variableAssign.getAssignValue()));
+            default:
+                return context;
+        }
+    }
+    
+    private MySQLCharacterSets parseClientCharacterSet(final String value) {
+        String normalizedValue = formatVariableValue(value).toLowerCase(Locale.ROOT);
+        if (IMPERMISSIBLE_CLIENT_CHARACTER_SETS.contains(normalizedValue)) {
+            throw new WrongValueForVariableException(CHARACTER_SET_CLIENT, normalizedValue);
+        }
+        return parseCharacterSet(value);
+    }
+    
+    private MySQLSessionCharsetContext updateResultCharacterSet(final MySQLSessionCharsetContext context, final String value) {
+        String normalizedValue = formatVariableValue(value).toLowerCase(Locale.ROOT);
+        if (isKeyword(value, "null")) {
+            return context.withoutResultConversion();
+        }
+        return "binary".equals(normalizedValue) ? context.withBinaryResult() : context.withResultCharacterSet(parseCharacterSet(value));
+    }
+    
+    private MySQLCharacterSets parseCharacterSet(final String value) {
+        String normalizedValue = formatVariableValue(value);
+        return isKeyword(value, "default") ? MySQLConstants.DEFAULT_CHARSET : MySQLCharacterSets.findByCharacterSetName(normalizedValue);
+    }
+    
+    private MySQLCharacterSets parseConnectionCharacterSet(final String value) {
+        if (isKeyword(value, "default")) {
+            return parseCollation(value);
+        }
+        MySQLCharacterSets result = parseCharacterSet(value);
+        return "utf8mb4".equals(result.getCharacterSetName())
+                ? MySQLCharacterSets.findByCollationName(MySQLSystemVariable.DEFAULT_COLLATION_FOR_UTF8MB4.getDefaultValue())
+                : result;
+    }
+    
+    private MySQLCharacterSets parseCollation(final String value) {
+        String normalizedValue = formatVariableValue(value);
+        if (isKeyword(value, "@@collation_database")) {
+            return MySQLCharacterSets.findByCollationName(MySQLSystemVariable.COLLATION_DATABASE.getDefaultValue());
+        }
+        return isKeyword(value, "default")
+                ? MySQLCharacterSets.findByCollationName(MySQLSystemVariable.COLLATION_CONNECTION.getDefaultValue())
+                : MySQLCharacterSets.findByCollationName(normalizedValue);
+    }
+    
+    private boolean isKeyword(final String value, final String keyword) {
+        return keyword.equalsIgnoreCase(value.trim());
+    }
+    
+    private String formatVariableValue(final String value) {
+        return QuoteCharacter.SINGLE_QUOTE.isWrapped(value) || QuoteCharacter.QUOTE.isWrapped(value) ? value.substring(1, value.length() - 1) : value.trim();
+    }
+    
+    private Map<String, String> extractReplayedSessionVariables(final Collection<VariableAssignSegment> variableAssigns) {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (VariableAssignSegment each : variableAssigns) {
+            if (!isCharsetVariable(each.getVariable().getVariable())) {
+                result.put(each.getVariable().getVariable(), each.getAssignValue());
+            }
+        }
+        return result;
+    }
+    
+    private boolean isCharsetVariable(final String variableName) {
+        return CHARACTER_SET_CLIENT.equalsIgnoreCase(variableName) || CHARACTER_SET_RESULTS.equalsIgnoreCase(variableName)
+                || CHARACTER_SET_CONNECTION.equalsIgnoreCase(variableName) || COLLATION_CONNECTION.equalsIgnoreCase(variableName);
+    }
+    
+    private Optional<String> getConnectionCollationReplayValue(final Collection<VariableAssignSegment> variableAssigns) {
+        String result = null;
+        for (VariableAssignSegment each : variableAssigns) {
+            String variableName = each.getVariable().getVariable();
+            if (CHARACTER_SET_CONNECTION.equalsIgnoreCase(variableName)) {
+                result = String.format("'%s'", parseConnectionCharacterSet(each.getAssignValue()).getCollationName());
+            } else if (COLLATION_CONNECTION.equalsIgnoreCase(variableName)) {
+                result = String.format("'%s'", parseCollation(each.getAssignValue()).getCollationName());
+            }
+        }
+        return Optional.ofNullable(result);
     }
     
     private void executeSetGlobalVariablesIfPresent(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
