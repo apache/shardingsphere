@@ -46,6 +46,16 @@ class SecretReferenceValueTest {
     }
     
     @Test
+    void assertIsPlaceholder() {
+        assertTrue(SecretReferenceValue.isPlaceholder("secret_reference:primary.aes-key-value"));
+    }
+    
+    @Test
+    void assertIsPlaceholderWithOrdinaryValue() {
+        assertFalse(SecretReferenceValue.isPlaceholder("foo_value"));
+    }
+    
+    @Test
     void assertCreateManualPlaceholder() {
         assertThat(SecretReferenceValue.createManualPlaceholder("primary", "aes-key-value"), is("<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>"));
     }
