@@ -102,6 +102,18 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     }
     
     @Test
+    void assertCheckWeightLoadBalanceWithInlineExpressionDataSourceNames() {
+        ReadwriteSplittingRuleConfiguration ruleConfig = mock(ReadwriteSplittingRuleConfiguration.class);
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> configs = Collections.singleton(
+                createDataSourceGroupRuleConfiguration("write_ds_0", Collections.singletonList("read_ds_${0..1}")));
+        when(ruleConfig.getDataSourceGroups()).thenReturn(configs);
+        AlgorithmConfiguration algorithm = new AlgorithmConfiguration("WEIGHT", PropertiesBuilder.build(new Property("read_ds_0", "1"), new Property("read_ds_1", "2")));
+        when(ruleConfig.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        assertDoesNotThrow(() -> checker.check("test", ruleConfig, mockDataSources(), Collections.emptyList()));
+    }
+    
+    @Test
     void assertCheckWhenConfigOtherRulesDatasource() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createContainsOtherRulesDatasourceConfiguration();
         DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
@@ -147,6 +159,15 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig), Collections.emptyMap());
         DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         assertThat(checker.getRequiredDataSourceNames(ruleConfig), is(new LinkedHashSet<>(Arrays.asList("write_ds", "read_ds0", "read_ds1"))));
+    }
+    
+    @Test
+    void assertGetRequiredDataSourceNamesWithInlineExpression() {
+        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
+                "foo_group_${0..1}", "write_ds_${0..1}", Collections.singletonList("read_ds_${0..1}"), "foo_algo");
+        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig), Collections.emptyMap());
+        DatabaseRuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        assertThat(checker.getRequiredDataSourceNames(ruleConfig), is(new LinkedHashSet<>(Arrays.asList("write_ds_0", "write_ds_1", "read_ds_0", "read_ds_1"))));
     }
     
     @Test
