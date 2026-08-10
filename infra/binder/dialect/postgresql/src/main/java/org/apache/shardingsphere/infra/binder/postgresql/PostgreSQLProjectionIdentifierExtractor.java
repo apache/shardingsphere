@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.postgresql;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -47,13 +48,20 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
         }
         ExpressionSegment innerExpressionSegment = ((ExpressionProjectionSegment) expressionSegment).getExpr();
         if (innerExpressionSegment instanceof FunctionSegment) {
-            return ((FunctionSegment) innerExpressionSegment).getFunctionName();
+            return getColumnNameFromFunctionSegment((FunctionSegment) innerExpressionSegment);
         }
         if (innerExpressionSegment instanceof AggregationProjectionSegment) {
             AggregationProjectionSegment aggregationProjectionSegment = (AggregationProjectionSegment) innerExpressionSegment;
             return getColumnNameFromFunction(aggregationProjectionSegment.getType().name(), aggregationProjectionSegment.getExpression());
         }
         return "?column?";
+    }
+    
+    private String getColumnNameFromFunctionSegment(final FunctionSegment functionSegment) {
+        IdentifierValue functionName = new IdentifierValue(functionSegment.getFunctionName());
+        return QuoteCharacter.NONE == functionName.getQuoteCharacter()
+                ? getColumnNameFromFunction(functionName.getValue(), functionSegment.getText())
+                : functionName.getValue();
     }
     
     @Override
