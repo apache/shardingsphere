@@ -186,6 +186,12 @@ rules:
           cipher:
             name: vacation_note_cipher
             encryptorName: rewrite_normal_fixture
+    "@MyTable":
+      columns:
+        Remark:
+          cipher:
+            name: remark_cipher
+            encryptorName: rewrite_normal_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE

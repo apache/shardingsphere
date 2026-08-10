@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
@@ -54,6 +55,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -211,6 +213,168 @@ class UpdateStatementBinderTest {
     }
     
     @Test
+    void assertBindBracketDelimitedAtSignTargetRetainsPhysicalTableValidation() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Status"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Status"));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("@MyTable", "Employee"))));
+    }
+    
+    @Test
+    void assertBindQuoteDelimitedAtSignTargetRetainsPhysicalTableValidation() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Status"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Status"));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("@MyTable", "Employee"))));
+    }
+    
+    @Test
+    void assertBindSchemaQualifiedBracketDelimitedAtSignTargetRetainsPhysicalTableValidation() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
+        targetTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("dbo")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Status"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        assertTrue(boundTable.getOwner().isPresent());
+        assertThat(boundTable.getOwner().get().getIdentifier().getValue(), is("dbo"));
+        assertThat(boundTable.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("dbo"));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Status"));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("@MyTable", "Employee"))));
+    }
+    
+    @Test
+    void assertBindSchemaQualifiedQuoteDelimitedAtSignTargetRetainsPhysicalTableValidation() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
+        targetTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("dbo")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Status"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        assertTrue(boundTable.getOwner().isPresent());
+        assertThat(boundTable.getOwner().get().getIdentifier().getValue(), is("dbo"));
+        assertThat(boundTable.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("dbo"));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Status"));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("@MyTable", "Employee"))));
+    }
+    
+    @Test
+    void assertBindBracketDelimitedAtSignTargetAndFromRetainsPhysicalTableValidation() {
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Status"));
+        setColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundFrom = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(boundFrom.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundFrom.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Status"));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+    }
+    
+    @Test
+    void assertBindQuoteDelimitedAtSignTargetAndFromRetainsPhysicalTableValidation() {
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Status"));
+        setColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundFrom = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(boundFrom.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundFrom.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Status"));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+    }
+    
+    @Test
     void assertBindAliasedTableVariableTarget() {
         UpdateStatement updateStatement = createAliasedTableVariableTargetUpdateStatement();
         UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
@@ -351,6 +515,54 @@ class UpdateStatementBinderTest {
         when(result.getDatabase(fooDatabase).getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(result.getDatabase("foo_db").getSchema("dbo")).thenReturn(schema);
         when(result.getDatabase(fooDatabase).getSchema(dboSchema)).thenReturn(schema);
+        return result;
+    }
+    
+    private ShardingSphereMetaData createSQLServerMetaDataWithDelimitedAtSignPhysicalTable() {
+        ShardingSphereSchema dboSchema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        ShardingSphereSchema humanResourcesSchema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue dbo = new IdentifierValue("dbo");
+        IdentifierValue humanResources = new IdentifierValue("HumanResources");
+        IdentifierValue bracketAtSignTable = new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS);
+        IdentifierValue quoteAtSignTable = new IdentifierValue("@MyTable", QuoteCharacter.QUOTE);
+        IdentifierValue employee = new IdentifierValue("Employee");
+        when(dboSchema.getName()).thenReturn("dbo");
+        when(dboSchema.containsTable(bracketAtSignTable)).thenReturn(true);
+        when(dboSchema.containsTable(quoteAtSignTable)).thenReturn(true);
+        when(dboSchema.containsTable("@MyTable")).thenReturn(true);
+        when(dboSchema.getTable(bracketAtSignTable).getAllColumns()).thenReturn(Collections.singletonList(
+                new ShardingSphereColumn("Status", Types.INTEGER, false, false, false, true, false, false)));
+        when(dboSchema.getTable(quoteAtSignTable).getAllColumns()).thenReturn(Collections.singletonList(
+                new ShardingSphereColumn("Status", Types.INTEGER, false, false, false, true, false, false)));
+        when(dboSchema.getTable("@MyTable").getAllColumns()).thenReturn(Collections.singletonList(
+                new ShardingSphereColumn("Status", Types.INTEGER, false, false, false, true, false, false)));
+        when(humanResourcesSchema.getName()).thenReturn("HumanResources");
+        when(humanResourcesSchema.containsTable(employee)).thenReturn(true);
+        when(humanResourcesSchema.containsTable("Employee")).thenReturn(true);
+        when(humanResourcesSchema.getTable(employee).getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("BusinessEntityID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationHours", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationNote", Types.VARCHAR, false, false, false, true, false, false)));
+        when(humanResourcesSchema.getTable("Employee").getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("BusinessEntityID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationHours", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("VacationNote", Types.VARCHAR, false, false, false, true, false, false)));
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.containsDatabase(fooDatabase)).thenReturn(true);
+        when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("dbo");
+        when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("dbo");
+        when(result.getDatabase("foo_db").containsSchema("dbo")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).containsSchema(dbo)).thenReturn(true);
+        when(result.getDatabase("foo_db").containsSchema("HumanResources")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).containsSchema(humanResources)).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("dbo")).thenReturn(dboSchema);
+        when(result.getDatabase(fooDatabase).getSchema(dbo)).thenReturn(dboSchema);
+        when(result.getDatabase("foo_db").getSchema("HumanResources")).thenReturn(humanResourcesSchema);
+        when(result.getDatabase(fooDatabase).getSchema(humanResources)).thenReturn(humanResourcesSchema);
+        when(result.getDatabase("foo_db").getAllSchemas()).thenReturn(Arrays.asList(dboSchema, humanResourcesSchema));
+        when(result.getDatabase(fooDatabase).getAllSchemas()).thenReturn(Arrays.asList(dboSchema, humanResourcesSchema));
         return result;
     }
 }

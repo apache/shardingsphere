@@ -223,6 +223,121 @@ class TableExtractorTest {
     }
     
     @Test
+    void assertExtractTablesFromUpdateWithSchemaQualifiedBracketDelimitedAtSignTargetIncludesPhysicalTable() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
+        targetTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("dbo")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.BRACKETS == each.getTableName().getIdentifier().getQuoteCharacter()
+                && each.getOwner().isPresent()
+                && "dbo".equals(each.getOwner().get().getIdentifier().getValue())));
+        assertTrue(actual.stream().anyMatch(each -> "Employee".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithSchemaQualifiedQuoteDelimitedAtSignTargetIncludesPhysicalTable() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
+        targetTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("dbo")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.QUOTE == each.getTableName().getIdentifier().getQuoteCharacter()
+                && each.getOwner().isPresent()
+                && "dbo".equals(each.getOwner().get().getIdentifier().getValue())));
+        assertTrue(actual.stream().anyMatch(each -> "Employee".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithBracketDelimitedAtSignTargetAndFromIncludesPhysicalTable() {
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS))))
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.stream().allMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.BRACKETS == each.getTableName().getIdentifier().getQuoteCharacter()));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithQuoteDelimitedAtSignTargetAndFromIncludesPhysicalTable() {
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE))))
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.stream().allMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.QUOTE == each.getTableName().getIdentifier().getQuoteCharacter()));
+    }
+    
+    @Test
+    void assertExtractTablesFromSelectWithBracketDelimitedAtSignFromIncludesPhysicalTable() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("Remark"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(sqlServerDatabaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)))).build();
+        tableExtractor.extractTablesFromSelect(selectStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.BRACKETS == each.getTableName().getIdentifier().getQuoteCharacter()));
+    }
+    
+    @Test
+    void assertExtractTablesFromSelectWithQuoteDelimitedAtSignFromIncludesPhysicalTable() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("Remark"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(sqlServerDatabaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)))).build();
+        tableExtractor.extractTablesFromSelect(selectStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.QUOTE == each.getTableName().getIdentifier().getQuoteCharacter()));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithQuoteDelimitedAtSignTargetIncludesPhysicalTable() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.QUOTE == each.getTableName().getIdentifier().getQuoteCharacter()));
+        assertTrue(actual.stream().anyMatch(each -> "Employee".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
     void assertExtractTablesFromUpdateWithAliasedTableVariableTargetExcludesVariableTable() {
         SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
         tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
@@ -249,6 +364,30 @@ class TableExtractorTest {
         JoinTableSegment joinTable = new JoinTableSegment();
         joinTable.setLeft(tableVariable);
         joinTable.setRight(employee);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(joinTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        assertTableSegment(actual.iterator().next(), 0, 0, "Employee");
+        assertFalse(actual.stream().anyMatch(each -> "@MyTableVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithPhysicalTableBeforeAliasedTableVariableJoinIncludesPhysicalTable() {
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment joinTable = new JoinTableSegment();
+        joinTable.setLeft(employee);
+        joinTable.setRight(tableVariable);
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))

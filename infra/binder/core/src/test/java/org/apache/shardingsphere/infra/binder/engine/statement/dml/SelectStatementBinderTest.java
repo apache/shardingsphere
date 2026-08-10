@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -66,6 +72,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -79,6 +86,8 @@ import static org.mockito.Mockito.when;
 class SelectStatementBinderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
     @Test
     void assertBind() {
@@ -119,6 +128,52 @@ class SelectStatementBinderTest {
         assertThat(((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next(), isA(ColumnSegment.class));
         assertThat(((ColumnSegment) ((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next())
                 .getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindBracketDelimitedAtSignFromRetainsPhysicalTableValidation() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        ColumnProjectionSegment remarkProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("Remark")));
+        projections.getProjections().add(remarkProjection);
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(sqlServerDatabaseType).projections(projections).from(fromTable).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), selectStatement));
+        SimpleTableSegment boundFrom = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(boundFrom.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundFrom.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        ColumnSegment actualRemark = ((ColumnProjectionSegment) actual.getProjections().getProjections().iterator().next()).getColumn();
+        assertThat(actualRemark.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualRemark.getColumnBoundInfo().getOriginalColumn().getValue(), is("Remark"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        SelectStatementContext selectStatementContext = new SelectStatementContext(actual,
+                new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())),
+                "foo_db", Collections.emptyList());
+        assertThat(selectStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+    }
+    
+    @Test
+    void assertBindQuoteDelimitedAtSignFromRetainsPhysicalTableValidation() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        ColumnProjectionSegment remarkProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("Remark")));
+        projections.getProjections().add(remarkProjection);
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(sqlServerDatabaseType).projections(projections).from(fromTable).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), selectStatement));
+        SimpleTableSegment boundFrom = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(boundFrom.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundFrom.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        ColumnSegment actualRemark = ((ColumnProjectionSegment) actual.getProjections().getProjections().iterator().next()).getColumn();
+        assertThat(actualRemark.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualRemark.getColumnBoundInfo().getOriginalColumn().getValue(), is("Remark"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        SelectStatementContext selectStatementContext = new SelectStatementContext(actual,
+                new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())),
+                "foo_db", Collections.emptyList());
+        assertThat(selectStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
     }
     
     @Test
@@ -519,6 +574,36 @@ class SelectStatementBinderTest {
         when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_user")).thenReturn(true);
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tUser)).thenReturn(true);
+        return result;
+    }
+    
+    private ShardingSphereMetaData createSQLServerMetaDataWithDelimitedAtSignPhysicalTable() {
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue dbo = new IdentifierValue("dbo");
+        IdentifierValue bracketAtSignTable = new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS);
+        IdentifierValue quoteAtSignTable = new IdentifierValue("@MyTable", QuoteCharacter.QUOTE);
+        when(schema.getName()).thenReturn("dbo");
+        when(schema.containsTable(bracketAtSignTable)).thenReturn(true);
+        when(schema.containsTable(quoteAtSignTable)).thenReturn(true);
+        when(schema.containsTable("@MyTable")).thenReturn(true);
+        when(schema.getTable(bracketAtSignTable).getAllColumns()).thenReturn(Collections.singletonList(
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)));
+        when(schema.getTable(quoteAtSignTable).getAllColumns()).thenReturn(Collections.singletonList(
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)));
+        when(schema.getTable("@MyTable").getAllColumns()).thenReturn(Collections.singletonList(
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)));
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.containsDatabase(fooDatabase)).thenReturn(true);
+        when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("dbo");
+        when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("dbo");
+        when(result.getDatabase("foo_db").containsSchema("dbo")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).containsSchema(dbo)).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("dbo")).thenReturn(schema);
+        when(result.getDatabase(fooDatabase).getSchema(dbo)).thenReturn(schema);
+        when(result.getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(result.getDatabase(fooDatabase).getAllSchemas()).thenReturn(Collections.singleton(schema));
         return result;
     }
 }

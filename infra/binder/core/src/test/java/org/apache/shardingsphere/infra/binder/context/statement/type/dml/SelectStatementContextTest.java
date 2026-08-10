@@ -96,6 +96,28 @@ class SelectStatementContextTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
+    private final DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    
+    @Test
+    void assertGetTableNamesWithSQLServerBracketDelimitedAtSignFromIncludesPhysicalTable() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("Remark"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(sqlServerDatabaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)))).build();
+        SelectStatementContext actual = new SelectStatementContext(selectStatement, createShardingSphereMetaData(mockDatabase()), "foo_db", Collections.emptyList());
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+    }
+    
+    @Test
+    void assertGetTableNamesWithSQLServerQuoteDelimitedAtSignFromIncludesPhysicalTable() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("Remark"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(sqlServerDatabaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)))).build();
+        SelectStatementContext actual = new SelectStatementContext(selectStatement, createShardingSphereMetaData(mockDatabase()), "foo_db", Collections.emptyList());
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+    }
+    
     @Test
     void assertSetIndexForItemsByIndexOrderBy() {
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("table"));

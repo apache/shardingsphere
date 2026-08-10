@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.FunctionTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
@@ -320,6 +321,41 @@ class ColumnSegmentBinderTest {
         SimpleTableSegmentBinderContext dbLinkBinderContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
         dbLinkBinderContext.setContainsDBLink(true);
         tableBinderContexts.put(CaseInsensitiveString.of("remote_table"), dbLinkBinderContext);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("unknown_column"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("unknown_column"));
+    }
+    
+    @Test
+    void assertBindWithDBLinkBeforePhysicalTableSkipsColumnExistenceCheck() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegmentBinderContext dbLinkBinderContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        dbLinkBinderContext.setContainsDBLink(true);
+        tableBinderContexts.put(CaseInsensitiveString.of("remote_table"), dbLinkBinderContext);
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
+                new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.PHYSICAL_TABLE));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("unknown_column"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("unknown_column"));
+    }
+    
+    @Test
+    void assertBindWithFunctionTableAfterPhysicalTableSkipsColumnExistenceCheck() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
+                new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.PHYSICAL_TABLE));
+        tableBinderContexts.put(CaseInsensitiveString.of("exploded_array"), new FunctionTableSegmentBinderContext());
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("unknown_column"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("unknown_column"));
+    }
+    
+    @Test
+    void assertBindWithFunctionTableBeforePhysicalTableSkipsColumnExistenceCheck() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("exploded_array"), new FunctionTableSegmentBinderContext());
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
+                new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("unknown_column"));
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("unknown_column"));
