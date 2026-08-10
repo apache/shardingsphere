@@ -36,9 +36,7 @@ import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
@@ -57,6 +55,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -267,7 +266,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         WorkflowContextSnapshot snapshot = createMaskSnapshot();
         Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
-                new MaskAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
+                WorkflowArtifactMaskUtils.maskPropertyMap(snapshot.getRequest().getPrimaryAlgorithmProperties(), snapshot.getPropertyRequirements())));
         return new MCPMapPayload(payload);
     }
     
@@ -286,7 +285,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         WorkflowContextSnapshot snapshot = createEncryptSnapshot();
         Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
-                new EncryptAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
+                WorkflowArtifactMaskUtils.maskPropertyMap(snapshot.getRequest().getPrimaryAlgorithmProperties(), snapshot.getPropertyRequirements())));
         return new MCPMapPayload(payload);
     }
     

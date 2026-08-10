@@ -32,6 +32,8 @@ import java.util.Map;
 @Getter
 public final class SecretReferenceValue {
     
+    private static final String PLACEHOLDER_PREFIX = "secret_reference:";
+    
     private final boolean malformed;
     
     /**
@@ -60,7 +62,17 @@ public final class SecretReferenceValue {
      * @return SQL placeholder
      */
     public static String createPlaceholder(final String algorithmRole, final String propertyKey) {
-        return String.format("secret_reference:%s.%s", normalize(algorithmRole), normalize(propertyKey));
+        return PLACEHOLDER_PREFIX + normalize(algorithmRole) + "." + normalize(propertyKey);
+    }
+    
+    /**
+     * Judge whether the value is a secret reference placeholder.
+     *
+     * @param value value to be judged
+     * @return whether the value is a secret reference placeholder
+     */
+    public static boolean isPlaceholder(final String value) {
+        return value.startsWith(PLACEHOLDER_PREFIX);
     }
     
     /**

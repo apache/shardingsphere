@@ -20,12 +20,8 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Algorithm property template service.
@@ -48,19 +44,4 @@ public final class EncryptAlgorithmPropertyTemplateService {
         return result;
     }
     
-    /**
-     * Mask properties for review.
-     *
-     * @param requirements requirements
-     * @param actualProperties actual properties
-     * @return masked properties
-     */
-    public Map<String, String> maskProperties(final List<AlgorithmPropertyRequirement> requirements, final Map<String, String> actualProperties) {
-        return actualProperties.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                entry -> isSecret(requirements, entry.getKey()) ? "******" : entry.getValue(), (a, b) -> b, () -> new LinkedHashMap<>(actualProperties.size(), 1F)));
-    }
-    
-    private boolean isSecret(final List<AlgorithmPropertyRequirement> requirements, final String propertyKey) {
-        return requirements.stream().filter(each -> each.getPropertyKey().equals(propertyKey)).findFirst().map(AlgorithmPropertyRequirement::isSecret).orElse(false);
-    }
 }
