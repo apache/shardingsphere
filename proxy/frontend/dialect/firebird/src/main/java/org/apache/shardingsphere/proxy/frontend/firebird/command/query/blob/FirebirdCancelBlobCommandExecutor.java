@@ -50,6 +50,7 @@ public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor 
             FirebirdBlobWriteCache.getInstance().removeWrite(connectionSession.getConnectionId(), blobId.getAsLong());
         }
         FirebirdBlobReadCache.getInstance().removeBlob(connectionSession.getConnectionId(), blobHandle);
+        FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(connectionSession.getConnectionId(), blobHandle);
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }
