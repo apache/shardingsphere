@@ -210,8 +210,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     }
     
     private Optional<EncryptInsertColumnToken> addAssistedQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
-                                                                      final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue,
-                                                                      final int parameterIndexCount) {
+                                                                      final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue, final int parameterIndexCount) {
         Optional<AssistedQueryColumnItem> assistedQueryColumnItem = encryptColumn.getAssistedQuery();
         Preconditions.checkState(assistedQueryColumnItem.isPresent());
         Object derivedValue = assistedQueryColumnItem.get().encrypt(database.getName(), schemaName, tableName, encryptColumn.getName(), originalValue);
@@ -219,8 +218,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     }
     
     private Optional<EncryptInsertColumnToken> addLikeQueryColumn(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
-                                                                  final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue,
-                                                                  final int parameterIndexCount) {
+                                                                  final ExpressionSegment valueExpression, final int columnIndex, final Object originalValue, final int parameterIndexCount) {
         Optional<LikeQueryColumnItem> likeQueryColumnItem = encryptColumn.getLikeQuery();
         Preconditions.checkState(likeQueryColumnItem.isPresent());
         Object derivedValue = likeQueryColumnItem.get().encrypt(database.getName(), schemaName, tableName, encryptColumn.getName(), originalValue);

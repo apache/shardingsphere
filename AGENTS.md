@@ -112,6 +112,11 @@ message is not authorization to commit.
   repository, deployment, production API, connector, cloud task, message, or
   other remote state. Perform a remote write only when the current request
   explicitly names the action and exact target.
+- For GitHub access, use the first configured token in this order: `GH_TOKEN`,
+  then `GITHUB_TOKEN`; check it without printing, logging, persisting, or
+  otherwise exposing its value. When a token is available, call the GitHub API
+  directly and do not search for, inspect, or invoke `gh`; use `gh` only when
+  neither token is configured.
 - Do not transmit credentials, tokens, private keys, private logs, proprietary
   source, personal data, connection strings, or other sensitive repository data
   outside the active user-authorized Codex task, including to websites, search
@@ -385,11 +390,11 @@ not expand scope or rewrite unrelated existing code.
   test method covers one scenario and invokes the target public method at most
   once; repeat only when the same scenario requires additional assertions. Do
   not create interface-only tests; exercise concrete implementations.
-- Every new public production type requires direct focused tests. Broad workflow
-  tests do not replace them unless they explicitly exercise that type's public
-  behavior. If a pure pass-through public type has no meaningful owned or
-  external contract to test, do not add the type merely for structural
-  completeness.
+- Every new public production type requires direct focused tests, except
+  exception types covered by `Exception Tests`. Broad workflow tests do not
+  replace them unless they explicitly exercise that type's public behavior. If
+  a pure pass-through public type has no meaningful owned or external contract
+  to test, do not add the type merely for structural completeness.
 - Default to direct Mockito mocks. Use a private helper only for repeated local
   setup and a standalone fixture only for a stable external or packaged test
   boundary. Give fixtures the narrowest practical visibility, keep them in the
@@ -422,6 +427,13 @@ not expand scope or rewrite unrelated existing code.
   branch is covered or explicitly waived, update the map when code changes, and
   verify with JaCoCo when coverage is uncertain. Document unreachable code
   instead of adding redundant tests.
+
+### Exception Tests
+
+- Do not add dedicated tests for exception classes that only declare
+  constructors or format and forward their arguments to a tested superclass.
+  Add direct tests only for owned validation, branching, calculation,
+  conversion, or a known regression.
 
 ## Specialized Workflows
 

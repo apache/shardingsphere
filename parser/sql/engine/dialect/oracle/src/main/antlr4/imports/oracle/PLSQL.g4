@@ -66,6 +66,36 @@ createProcedure
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? PROCEDURE plsqlProcedureSource
     ;
 
+createPackage
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? PACKAGE (plsqlPackageSource | BODY plsqlPackageBodySource)
+    ;
+
+plsqlPackageSource
+    : packageIfNotExists? (schemaName DOT_)? packageName sharingClause? (defaultCollationClause | invokerRightsClause | accessibleByClause)* (IS | AS)
+    packageSpecificationItem* END packageName? SEMI_?
+    ;
+
+packageSpecificationItem
+    : typeDefinition
+    | cursorDeclaration
+    | itemDeclaration
+    | functionDeclaration SEMI_
+    | procedureDeclaration SEMI_
+    | pragma
+    ;
+
+plsqlPackageBodySource
+    : packageIfNotExists? (schemaName DOT_)? packageName (IS | AS) declareItem*? packageInitialization? END packageName? SEMI_?
+    ;
+
+packageIfNotExists
+    : IF NOT EXISTS
+    ;
+
+packageInitialization
+    : BEGIN plsqlStatements (EXCEPTION exceptionHandler+)?
+    ;
+
 plsqlProcedureSource
     : (schemaName DOT_)? procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? sharingClause?
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)

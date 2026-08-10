@@ -97,6 +97,7 @@
         <limit start-index="22" stop-index="28">
             <row-count value="2" parameter-index="0" start-index="28" stop-index="28" />
         </limit>
+        <outfile start-index="30" stop-index="56" file-path="/tmp/tmp.txt" />
     </select>
 
     <select sql-case-id="select_into_out_file_with_charset" parameters="2">
@@ -109,6 +110,7 @@
         <limit start-index="22" stop-index="28">
             <row-count value="2" parameter-index="0" start-index="28" stop-index="28" />
         </limit>
+        <outfile start-index="30" stop-index="75" file-path="/tmp/tmp.txt" />
     </select>
 
     <select sql-case-id="select_into_out_file_with_fields" parameters="2">
@@ -121,6 +123,7 @@
         <limit start-index="22" stop-index="28">
             <row-count value="2" parameter-index="0" start-index="28" stop-index="28" />
         </limit>
+        <outfile start-index="30" stop-index="109" file-path="/tmp/tmp.txt" />
     </select>
 
     <select sql-case-id="select_into_out_file_with_fields_and_escaped" parameters="2">
@@ -134,6 +137,7 @@
         <limit start-index="36" stop-index="42">
             <row-count value="2" parameter-index="0" start-index="42" stop-index="42" />
         </limit>
+        <outfile start-index="44" stop-index="139" file-path="/tmp/tmp.txt" />
     </select>
 
     <select sql-case-id="select_into_out_file_with_lines" parameters="2">
@@ -146,6 +150,7 @@
         <limit start-index="22" stop-index="28">
             <row-count value="2" parameter-index="0" start-index="28" stop-index="28" />
         </limit>
+        <outfile start-index="30" stop-index="82" file-path="/tmp/tmp.txt" />
     </select>
 
     <select sql-case-id="select_into_with_lock_after_into" parameters="1">

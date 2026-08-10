@@ -21,12 +21,14 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -38,51 +40,61 @@ class YamlRowStatisticsSwapperTest {
     @Test
     void assertSwapToYamlConfigurationWithNullRows() {
         YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(Collections.emptyList());
-        YamlRowStatistics actual = swapper.swapToYamlConfiguration(new RowStatistics("uk", null));
+        YamlRowStatistics actual = swapper.swapToYamlConfiguration(new RowStatistics("foo_unique_key", null));
         assertThat(actual.getRows(), is(empty()));
-        assertThat(actual.getUniqueKey(), is("uk"));
+        assertThat(actual.getUniqueKey(), is("foo_unique_key"));
     }
     
-    @Test
-    void assertConvertSpecialTypesWhenSwappingToYaml() {
-        List<ShardingSphereColumn> columns = Arrays.asList(
-                new ShardingSphereColumn("decimal_col", Types.DECIMAL, false, false, false, true, false, true),
-                new ShardingSphereColumn("bigint_col", Types.BIGINT, false, false, false, true, false, true),
-                new ShardingSphereColumn("decimal_null", Types.DECIMAL, false, false, false, true, false, true),
-                new ShardingSphereColumn("varchar_col", Types.VARCHAR, false, false, false, true, false, true));
-        List<Object> rows = Arrays.asList(null, 5L, new BigDecimal("7.5"), "raw");
-        YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(columns);
-        assertThat(swapper.swapToYamlConfiguration(new RowStatistics("uk", rows)).getRows(), contains(null, is("5"), is("7.5"), is("raw")));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSwapToYamlConfigurationArguments")
+    void assertSwapToYamlConfigurationWithDataType(final String name, final int dataType, final Object input, final Object expected) {
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", dataType, false, false, false, true, false, true);
+        YamlRowStatistics actual = new YamlRowStatisticsSwapper(Collections.singletonList(column))
+                .swapToYamlConfiguration(new RowStatistics("foo_unique_key", Collections.singletonList(input)));
+        assertThat(actual.getRows(), contains(expected));
+    }
+    
+    private static Stream<Arguments> getSwapToYamlConfigurationArguments() {
+        return Stream.of(
+                Arguments.of("decimal", Types.DECIMAL, new BigDecimal("7.5"), "7.5"),
+                Arguments.of("numeric", Types.NUMERIC, new BigDecimal("8.25"), "8.25"),
+                Arguments.of("null decimal", Types.DECIMAL, null, null),
+                Arguments.of("bigint", Types.BIGINT, 5L, 5L),
+                Arguments.of("varchar", Types.VARCHAR, "foo_value", "foo_value"));
     }
     
     @Test
     void assertSwapToObjectWithNullRows() {
-        assertThat(new YamlRowStatisticsSwapper(Collections.emptyList()).swapToObject(new YamlRowStatistics()).getRows(), is(empty()));
+        YamlRowStatistics yamlConfig = new YamlRowStatistics();
+        yamlConfig.setUniqueKey("foo_unique_key");
+        yamlConfig.setRows(null);
+        RowStatistics actual = new YamlRowStatisticsSwapper(Collections.emptyList()).swapToObject(yamlConfig);
+        assertThat(actual.getRows(), is(empty()));
+        assertThat(actual.getUniqueKey(), is("foo_unique_key"));
     }
     
-    @Test
-    void assertSwapToObjectWithEmptyRows() {
-        List<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, true));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSwapToObjectArguments")
+    void assertSwapToObjectWithDataType(final String name, final int dataType, final Object input, final Object expected) {
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", dataType, false, false, false, true, false, true);
         YamlRowStatistics yamlConfig = new YamlRowStatistics();
-        yamlConfig.setRows(Collections.emptyList());
-        assertThat(new YamlRowStatisticsSwapper(columns).swapToObject(yamlConfig).getRows(), is(empty()));
+        yamlConfig.setRows(Collections.singletonList(input));
+        RowStatistics actual = new YamlRowStatisticsSwapper(Collections.singletonList(column)).swapToObject(yamlConfig);
+        assertThat(actual.getRows(), contains(expected));
     }
     
-    @Test
-    void assertConvertDataTypesWhenSwappingToObject() {
-        List<ShardingSphereColumn> columns = Arrays.asList(
-                new ShardingSphereColumn("decimal_col", Types.DECIMAL, false, false, false, true, false, true),
-                new ShardingSphereColumn("bigint_col", Types.BIGINT, false, false, false, true, false, true),
-                new ShardingSphereColumn("real_col", Types.REAL, false, false, false, true, false, true),
-                new ShardingSphereColumn("float_col", Types.FLOAT, false, false, false, true, false, true),
-                new ShardingSphereColumn("varchar_col", Types.VARCHAR, false, false, false, true, false, true),
-                new ShardingSphereColumn("decimal_null", Types.DECIMAL, false, false, false, true, false, true));
-        YamlRowStatistics yamlConfig = new YamlRowStatistics();
-        yamlConfig.setUniqueKey("uk");
-        yamlConfig.setRows(Arrays.asList("1.5", "2", "3.3", "4.4", "text", null));
-        YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(columns);
-        RowStatistics actual = swapper.swapToObject(yamlConfig);
-        assertThat(actual.getUniqueKey(), is("uk"));
-        assertThat(actual.getRows(), contains(new BigDecimal("1.5"), 2L, Float.parseFloat("3.3"), Float.parseFloat("4.4"), "text", null));
+    private static Stream<Arguments> getSwapToObjectArguments() {
+        return Stream.of(
+                Arguments.of("decimal string", Types.DECIMAL, "1.5", new BigDecimal("1.5")),
+                Arguments.of("numeric string", Types.NUMERIC, "2.5", new BigDecimal("2.5")),
+                Arguments.of("numeric BigDecimal", Types.NUMERIC, new BigDecimal("3.5"), new BigDecimal("3.5")),
+                Arguments.of("bigint integer", Types.BIGINT, 3, 3L),
+                Arguments.of("bigint long", Types.BIGINT, 4L, 4L),
+                Arguments.of("real double", Types.REAL, 5.5D, 5.5F),
+                Arguments.of("real float", Types.REAL, 6.5F, 6.5F),
+                Arguments.of("float double", Types.FLOAT, 7.5D, 7.5D),
+                Arguments.of("double string", Types.DOUBLE, "8.5", 8.5D),
+                Arguments.of("varchar", Types.VARCHAR, "foo_text", "foo_text"),
+                Arguments.of("null decimal", Types.DECIMAL, null, null));
     }
 }

@@ -19,10 +19,8 @@ package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
 import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +28,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,28 +60,18 @@ class ShadowInspectionServiceTest {
     void assertQueryAlgorithmPlugins() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "VALUE_MATCH")));
-        WorkflowQueryResult actual = new ShadowInspectionService().queryAlgorithmPlugins(queryFacade);
-        assertThat(actual.getRows().size(), is(1));
-        assertThat(String.valueOf(actual.getRows().getFirst().get("property_guidance")), containsString("operation"));
-        assertTrue(actual.isAvailabilityConfirmed());
+        List<Map<String, Object>> actual = new ShadowInspectionService().queryAlgorithmPlugins(queryFacade);
+        assertThat(actual.size(), is(1));
+        assertThat(String.valueOf(actual.getFirst().get("property_guidance")), containsString("operation"));
     }
     
     @Test
     void assertQueryAlgorithmPluginsWithUnavailableDistSQL() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS"))
-                .thenThrow(new MCPQueryFailedException("syntax error near 'SHADOW ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error")));
-        WorkflowQueryResult actual = new ShadowInspectionService().queryAlgorithmPlugins(queryFacade);
-        assertTrue(actual.getRows().stream().anyMatch(each -> "VALUE_MATCH".equals(each.get("type"))));
-        assertTrue(actual.getRows().stream().anyMatch(each -> "VALUE_MATCH".equals(each.get("type")) && String.valueOf(each.get("property_guidance")).contains("operation")));
-        assertFalse(actual.isAvailabilityConfirmed());
-    }
-    
-    @Test
-    void assertQueryAlgorithmPluginsPropagatesQueryFailure() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS"))
-                .thenThrow(new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused.")));
-        assertThrows(MCPQueryFailedException.class, () -> new ShadowInspectionService().queryAlgorithmPlugins(queryFacade));
+        MCPQueryFailedException expected = new MCPQueryFailedException(
+                "syntax error near 'SHADOW ALGORITHM PLUGINS'", new SQLSyntaxErrorException("syntax error"));
+        when(queryFacade.queryWithAnyDatabase("SHOW SHADOW ALGORITHM PLUGINS")).thenThrow(expected);
+        MCPQueryFailedException actual = assertThrows(MCPQueryFailedException.class, () -> new ShadowInspectionService().queryAlgorithmPlugins(queryFacade));
+        assertThat(actual, is(expected));
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
@@ -56,7 +57,7 @@ class ResponsePacketBuilderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("queryResponsePacketsProvider")
     void assertBuildQueryResponsePackets(final String name, final QueryHeader queryHeader, final int sessionCharacterSet, final int statusFlags,
-                                         final int expectedCharacterSet, final int expectedFlags, final int expectedDecimals) {
+                                         final int expectedCharacterSet, final MySQLBinaryColumnType expectedColumnType, final int expectedFlags, final int expectedDecimals) {
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(Collections.singletonList(queryHeader));
         Collection<DatabasePacket> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, sessionCharacterSet, statusFlags);
         List<DatabasePacket> actualPackets = new ArrayList<>(actual);
@@ -77,9 +78,10 @@ class ResponsePacketBuilderTest {
         payload.readIntLenenc();
         int actualCharacterSet = payload.readInt2();
         payload.readInt4();
-        payload.readInt1();
+        int actualColumnType = payload.readInt1();
         int actualFlags = payload.readInt2();
         assertThat(actualCharacterSet, is(expectedCharacterSet));
+        assertThat(actualColumnType, is(expectedColumnType.getValue()));
         assertThat(actualFlags, is(expectedFlags));
         int actualDecimals = payload.readInt1();
         assertThat(actualDecimals, is(expectedDecimals));
@@ -110,6 +112,7 @@ class ResponsePacketBuilderTest {
                         SESSION_CHARACTER_SET,
                         1,
                         SESSION_CHARACTER_SET,
+                        MySQLBinaryColumnType.LONG,
                         MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() + MySQLColumnDefinitionFlag.UNSIGNED.getValue() + MySQLColumnDefinitionFlag.AUTO_INCREMENT.getValue(),
                         2),
                 Arguments.of(
@@ -118,6 +121,7 @@ class ResponsePacketBuilderTest {
                         SESSION_CHARACTER_SET,
                         2,
                         MySQLCharacterSets.BINARY.getId(),
+                        MySQLBinaryColumnType.LONG_BLOB,
                         MySQLColumnDefinitionFlag.NOT_NULL.getValue() + MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue() + MySQLColumnDefinitionFlag.BLOB.getValue(),
                         1),
                 Arguments.of(
@@ -126,7 +130,26 @@ class ResponsePacketBuilderTest {
                         SESSION_CHARACTER_SET,
                         4,
                         SESSION_CHARACTER_SET,
+                        MySQLBinaryColumnType.VAR_STRING,
                         MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue(),
+                        0),
+                Arguments.of(
+                        "CLOB uses session charset and blob flag without binary or unsigned flags",
+                        new QueryHeader("schema4", "table4", "columnLabel4", "columnName4", Types.CLOB, "BLOB SUB_TYPE TEXT", 15, 0, false, false, false, false),
+                        SESSION_CHARACTER_SET,
+                        5,
+                        SESSION_CHARACTER_SET,
+                        MySQLBinaryColumnType.BLOB,
+                        MySQLColumnDefinitionFlag.BLOB.getValue(),
+                        0),
+                Arguments.of(
+                        "NCLOB uses session charset and blob flag without binary or unsigned flags",
+                        new QueryHeader("schema5", "table5", "columnLabel5", "columnName5", Types.NCLOB, "NCLOB", 18, 0, false, false, false, false),
+                        SESSION_CHARACTER_SET,
+                        6,
+                        SESSION_CHARACTER_SET,
+                        MySQLBinaryColumnType.BLOB,
+                        MySQLColumnDefinitionFlag.BLOB.getValue(),
                         0));
     }
 }

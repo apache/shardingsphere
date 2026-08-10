@@ -223,17 +223,6 @@ class WorkflowPlanningSupportTest {
     }
     
     @Test
-    void assertApplyResolvedIntent() {
-        WorkflowRequest request = new WorkflowRequest();
-        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.setOperationType("alter");
-        clarifiedIntent.setFieldSemantics("phone");
-        planningSupport.applyResolvedIntent(request, clarifiedIntent);
-        assertThat(request.getOperationType(), is("alter"));
-        assertThat(request.getFieldSemantics(), is("phone"));
-    }
-    
-    @Test
     void assertPrepareSnapshot() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
@@ -268,17 +257,17 @@ class WorkflowPlanningSupportTest {
     }
     
     @Test
-    void assertPrepareSnapshotInfersManualOnlyExecutionMode() {
+    void assertPrepareSnapshotDoesNotInferExecutionModeFromNaturalLanguage() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         WorkflowRequest request = new WorkflowRequest();
         request.setExecutionMode("review-then-execute");
-        request.setNaturalLanguageIntent("export reviewable artifacts for manual execution outside MCP");
+        request.setNaturalLanguageIntent("opaque request text");
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         planningSupport.prepareSnapshot(snapshot, WorkflowKind.valueOf("mask.rule"), request, null, clarifiedIntent, "summary", List.of("step-1"), List.of("rules"));
-        assertThat(snapshot.getInteractionPlan().getExecutionMode(), is("manual-only"));
-        assertThat(snapshot.getRequest().getExecutionMode(), is("manual-only"));
-        assertThat(clarifiedIntent.getInferredValues().get("execution_mode"), is("manual-only"));
+        assertThat(snapshot.getInteractionPlan().getExecutionMode(), is("review-then-execute"));
+        assertThat(snapshot.getRequest().getExecutionMode(), is("review-then-execute"));
+        assertTrue(clarifiedIntent.getInferredValues().isEmpty());
     }
     
     @Test
@@ -340,6 +329,17 @@ class WorkflowPlanningSupportTest {
         assertThat(snapshot.getStatus(), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         assertThat(snapshot.getIssues().getFirst().getDetails(), is(Map.of("supported_operation_types", List.of("create", WorkflowLifecycle.OPERATION_DROP))));
+    }
+    
+    @Test
+    void assertEnsureSupportedOperationTypeClarifiesMissingOperation() {
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        boolean actual = planningSupport.ensureSupportedOperationType(clarifiedIntent, List.of("create", WorkflowLifecycle.OPERATION_DROP), snapshot);
+        assertFalse(actual);
+        assertThat(snapshot.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(clarifiedIntent.getUnresolvedFields(), is(List.of(WorkflowFieldNames.OPERATION_TYPE)));
+        assertThat(snapshot.getIssues().getFirst().getCode(), is(WorkflowIssueCode.RULE_INPUT_REQUIRED));
     }
     
     private static Stream<Arguments> getEnsureLifecycleStateCases() {

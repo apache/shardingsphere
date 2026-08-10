@@ -29,9 +29,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Tool handler for shadow rule workflow planning.
@@ -52,8 +50,7 @@ public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPFeatur
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
-        ShadowRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowRuleWorkflowRequest::new, arguments,
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        ShadowRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ShadowRuleWorkflowRequest::new, arguments, this::bindFeatureArguments);
         WorkflowContextSnapshot snapshot = planningService.planRule(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
         return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
@@ -67,27 +64,4 @@ public final class PlanShadowRuleToolHandler implements MCPToolHandler<MCPFeatur
         request.putAlgorithmProperties(workflowPlanningArguments.getMapArgument(ShadowFeatureDefinition.ALGORITHM_PROPERTIES_FIELD));
     }
     
-    private void applyStructuredIntentEvidence(final ShadowRuleWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.RULE_FIELD, request::setRuleName);
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.SOURCE_STORAGE_UNIT_FIELD, request::setSourceStorageUnit);
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.SHADOW_STORAGE_UNIT_FIELD, request::setShadowStorageUnit);
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.TABLE_FIELD, request::setTableName);
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ShadowFeatureDefinition.ALGORITHM_TYPE_FIELD, request::setAlgorithmType);
-        applyMapField(structuredIntentEvidence, request);
-    }
-    
-    private void applyMapField(final Map<String, Object> values, final ShadowRuleWorkflowRequest request) {
-        Object value = values.get(ShadowFeatureDefinition.ALGORITHM_PROPERTIES_FIELD);
-        if (value instanceof Map) {
-            request.putAlgorithmProperties(createStringMap((Map<?, ?>) value));
-        }
-    }
-    
-    private Map<String, String> createStringMap(final Map<?, ?> values) {
-        Map<String, String> result = new LinkedHashMap<>(values.size(), 1F);
-        for (Entry<?, ?> entry : values.entrySet()) {
-            result.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
-        }
-        return result;
-    }
 }

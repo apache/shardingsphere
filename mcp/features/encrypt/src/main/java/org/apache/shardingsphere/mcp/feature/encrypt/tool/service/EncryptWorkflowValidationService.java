@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -73,20 +72,12 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         ValidationReport result = new ValidationReport();
-        EncryptWorkflowRequest request = getWorkflowRequest(snapshot);
+        EncryptWorkflowRequest request = (EncryptWorkflowRequest) snapshot.getRequest();
         List<Map<String, Object>> encryptRules = ruleInspectionService.queryEncryptRules(queryFacade, request.getDatabase(), request.getTable());
         queryFacade.checkDatabaseCapability(request.getDatabase());
         result.setRuleValidation(validateRules(snapshot, request, encryptRules, result, queryFacade));
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
         return result;
-    }
-    
-    private EncryptWorkflowRequest getWorkflowRequest(final WorkflowContextSnapshot snapshot) {
-        if (snapshot.getRequest() instanceof EncryptWorkflowRequest) {
-            return (EncryptWorkflowRequest) snapshot.getRequest();
-        }
-        EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), null);
-        return null == result ? new EncryptWorkflowRequest() : result;
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot,
@@ -139,10 +130,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     }
     
     private Optional<List<Map<String, Object>>> getExpectedRules(final WorkflowContextSnapshot snapshot) {
-        if (snapshot.getFeatureData() instanceof EncryptWorkflowState) {
-            return Optional.of(((EncryptWorkflowState) snapshot.getFeatureData()).getExpectedRules());
-        }
-        return snapshot.getFeatureData() instanceof RuleWorkflowFeatureData ? Optional.of(((RuleWorkflowFeatureData) snapshot.getFeatureData()).getExpectedRules()) : Optional.empty();
+        return Optional.ofNullable(snapshot.getFeatureData()).map(RuleWorkflowFeatureData::getExpectedRules);
     }
     
     private ValidationSection validateExpectedRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> expectedRules, final List<Map<String, Object>> actualRules,

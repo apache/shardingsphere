@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
@@ -214,7 +215,19 @@ public final class DataSetResetScopeCalculator {
             addMergeStatementTableNames(tableNames, virtualTableNames, (MergeStatement) sqlStatement);
         } else if (sqlStatement instanceof SelectStatement) {
             addSelectStatementTableNames(tableNames, virtualTableNames, (SelectStatement) sqlStatement);
+        } else if (sqlStatement instanceof CreateTableStatement) {
+            addCreateTableStatementTableNames(tableNames, virtualTableNames, (CreateTableStatement) sqlStatement);
         }
+    }
+    
+    private void addCreateTableStatementTableNames(final Collection<String> tableNames, final Collection<String> virtualTableNames, final CreateTableStatement createTableStatement) {
+        createTableStatement.getSelectStatement().ifPresent(optional -> {
+            TableExtractor tableExtractor = new TableExtractor();
+            tableExtractor.extractTablesFromSelect(optional);
+            tableExtractor.getTableContext().forEach(each -> addVirtualTableNames(virtualTableNames, each));
+            addSelectStatementTableNames(tableNames, virtualTableNames, optional);
+            addExtractedRewriteTableNames(tableNames, tableExtractor);
+        });
     }
     
     private void addSelectStatementTableNames(final Collection<String> tableNames, final Collection<String> virtualTableNames, final SelectStatement selectStatement) {

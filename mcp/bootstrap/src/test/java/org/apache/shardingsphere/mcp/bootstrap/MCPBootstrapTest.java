@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.junit.jupiter.api.Test;
@@ -90,6 +89,6 @@ class MCPBootstrapTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration() {
-        return new MCPLaunchConfiguration(MCPTransportType.HTTP, new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), Collections.emptyMap());
+        return new MCPLaunchConfiguration(new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), Collections.emptyMap());
     }
 }

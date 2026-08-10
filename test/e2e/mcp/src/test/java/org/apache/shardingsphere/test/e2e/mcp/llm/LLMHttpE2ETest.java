@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRunner;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRunner.Result;
@@ -30,6 +31,8 @@ import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContract
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport.ProxyWorkflowRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.junit.jupiter.api.AfterAll;
@@ -67,7 +70,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
-    private static final int MAX_TURNS = 4;
+    private static final int MAX_TURNS = 6;
     
     private static final String DATABASE_NAME = "logic_db";
     
@@ -85,6 +88,14 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String PLAN_MASK_RULE_TOOL_NAME = "database_gateway_plan_mask_rule";
     
+    private static final String APPLY_WORKFLOW_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
+    
+    private static final String NOT_APPLIED_MARKER = "application_status=not-applied";
+    
+    private static final String PREVIEW_ONLY_MARKER = "execution_status=preview-only";
+    
+    private static final String DATA_UNCHANGED_MARKER = "data_changed=false";
+    
     private static final Set<String> EXPECTED_METADATA_NAMES = Set.of("active_orders", "order_items", "orders");
     
     private static final List<String> ARTIFACT_FILES = List.of(
@@ -101,7 +112,11 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private final LLMConversationArtifactWriter artifactWriter = new LLMConversationArtifactWriter();
     
-    private LLMMySQLRuntimeFixture runtimeFixture;
+    private LLMMySQLRuntimeFixture mySQLRuntimeFixture;
+    
+    private ProxyWorkflowRuntimeFixture proxyRuntimeFixture;
+    
+    private boolean proxyRuntimeFixtureSelected;
     
     @BeforeAll
     static void prepareLLMRuntime() throws InterruptedException {
@@ -118,9 +133,13 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @AfterAll
     void closeRuntimeFixture() {
-        if (null != runtimeFixture) {
-            runtimeFixture.close();
-            runtimeFixture = null;
+        if (null != mySQLRuntimeFixture) {
+            mySQLRuntimeFixture.close();
+            mySQLRuntimeFixture = null;
+        }
+        if (null != proxyRuntimeFixture) {
+            proxyRuntimeFixture.close();
+            proxyRuntimeFixture = null;
         }
     }
     
@@ -144,16 +163,21 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @Test
     void assertMaskPlanning() throws IOException {
-        runScenario(new Scenario(
-                "mask-planning",
-                "The target metadata has already been verified, so do not run separate metadata discovery. Create a reviewable Mask rule plan, without applying it, "
-                        + "for the status column of the orders table in the logic_db database and logic_db schema. "
-                        + "Pass database, schema, table, column, operation_type, algorithm_type, and primary_algorithm_properties directly to the planning tool; "
-                        + "omit natural_language_intent and structured_intent_evidence. "
-                        + "Use the create operation, KEEP_FIRST_N_LAST_M algorithm, and primary properties first-n=1, last-m=1, replace-char=*. "
-                        + "Report the plan ID and explicitly confirm that nothing was applied.",
-                Set.of(PLAN_MASK_RULE_TOOL_NAME),
-                this::evaluateMaskPlanning));
+        proxyRuntimeFixtureSelected = true;
+        try {
+            runScenario(new Scenario(
+                    "mask-planning",
+                    "The target metadata has already been verified, so do not run separate metadata discovery. Create a reviewable Mask rule plan, without applying it, "
+                            + "for the status column of the orders table in the logic_db database and logic_db schema. "
+                            + "Pass database, schema, table, column, operation_type, algorithm_type, and primary_algorithm_properties directly to the planning tool; "
+                            + "omit natural_language_intent. "
+                            + "Use the create operation, KEEP_FIRST_N_LAST_M algorithm, and primary properties first-n=1, last-m=1, replace-char=*. "
+                            + "Report the plan ID and include the exact marker `" + NOT_APPLIED_MARKER + "`.",
+                    Set.of(PLAN_MASK_RULE_TOOL_NAME),
+                    this::evaluateMaskPlanning));
+        } finally {
+            proxyRuntimeFixtureSelected = false;
+        }
     }
     
     @Test
@@ -163,7 +187,8 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         runScenario(new Scenario(
                 "side-effect-preview",
                 "A user wants to change the status of order 1 in the orders table to REVIEW_PENDING. Preview the proposed change without executing it, then report whether it "
-                        + "was only previewed and whether any data changed. Inspect the live MCP server to discover any required runtime scope.",
+                        + "was only previewed and whether any data changed. Include the exact markers `" + PREVIEW_ONLY_MARKER + "` and `" + DATA_UNCHANGED_MARKER
+                        + "`. Inspect the live MCP server to discover any required runtime scope.",
                 Set.of(SEARCH_METADATA_TOOL_NAME, EXECUTE_UPDATE_TOOL_NAME),
                 (answer, trace) -> evaluateSideEffectPreview(answer, trace, statusBefore)));
     }
@@ -199,7 +224,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private LLME2EAssertionReport evaluateReadOnlyQuery(final String answer, final List<MCPInteractionTraceRecord> trace) {
         Optional<Integer> actualCount = findQueryCount(trace, 0);
-        if (actualCount.isEmpty() || getRequiredRuntimeFixture().getTotalOrders() != actualCount.get()) {
+        if (actualCount.isEmpty() || getRequiredMySQLRuntimeFixture().getTotalOrders() != actualCount.get()) {
             return LLME2EAssertionReport.failure("query_evidence_mismatch", "The MCP query response did not contain the fixture row count.");
         }
         return containsStandaloneNumber(answer, actualCount.get())
@@ -252,13 +277,10 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 || !"*".equals(primaryProperties.get("replace-char"))) {
             return LLME2EAssertionReport.failure("mask_plan_evidence_mismatch", "The MCP response did not contain the requested reviewable Mask plan.");
         }
-        String normalizedAnswer = answer.toLowerCase(Locale.ENGLISH);
-        boolean answerReportsNoApplication = normalizedAnswer.contains("not applied") || normalizedAnswer.contains("not been applied")
-                || normalizedAnswer.contains("nothing was applied") || normalizedAnswer.contains("without applying")
-                || normalizedAnswer.contains("not executed") || normalizedAnswer.contains("no changes were applied");
-        return answer.contains(planId) && answerReportsNoApplication
-                ? LLME2EAssertionReport.success("The answer reported the live Mask plan ID and confirmed that it was not applied.")
-                : LLME2EAssertionReport.failure("answer_mismatch", "The answer did not report the Mask plan ID and confirm that it was not applied.");
+        boolean applied = trace.stream().anyMatch(each -> isValidModelAction(each, APPLY_WORKFLOW_TOOL_NAME));
+        return answer.contains(planId) && answer.contains(NOT_APPLIED_MARKER) && !applied
+                ? LLME2EAssertionReport.success("The answer reported the live Mask plan ID and explicit non-application marker, and the trace contained no apply action.")
+                : LLME2EAssertionReport.failure("answer_mismatch", "The answer omitted required Mask plan evidence or the model applied the workflow.");
     }
     
     private boolean hasExpectedMaskPlanArguments(final List<MCPInteractionTraceRecord> trace) {
@@ -273,7 +295,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         return DATABASE_NAME.equals(arguments.get("database")) && DATABASE_NAME.equals(arguments.get("schema"))
                 && TABLE_NAME.equals(arguments.get("table")) && "status".equals(arguments.get("column"))
                 && "create".equals(arguments.get("operation_type")) && "KEEP_FIRST_N_LAST_M".equals(arguments.get("algorithm_type"))
-                && !arguments.containsKey("natural_language_intent") && !arguments.containsKey("structured_intent_evidence")
+                && !arguments.containsKey("natural_language_intent")
                 && "1".equals(Objects.toString(primaryProperties.get("first-n"), ""))
                 && "1".equals(Objects.toString(primaryProperties.get("last-m"), ""))
                 && "*".equals(primaryProperties.get("replace-char"));
@@ -299,13 +321,9 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         } catch (final SQLException ex) {
             return LLME2EAssertionReport.failure("database_evidence_unavailable", ex.getMessage());
         }
-        String normalizedAnswer = answer.toLowerCase(Locale.ENGLISH);
-        boolean answerReportsNoExecution = normalizedAnswer.contains("not execut") || normalizedAnswer.contains("without execut")
-                || normalizedAnswer.contains("not changed") || normalizedAnswer.contains("unchanged") || normalizedAnswer.contains("no change")
-                || normalizedAnswer.contains("didn't execut") || normalizedAnswer.contains("wasn't execut");
-        return normalizedAnswer.contains("preview") && answerReportsNoExecution
-                ? LLME2EAssertionReport.success("The answer matched the preview response and the unchanged database sentinel.")
-                : LLME2EAssertionReport.failure("answer_mismatch", "The answer did not state that the operation was previewed without changing data.");
+        return answer.contains(PREVIEW_ONLY_MARKER) && answer.contains(DATA_UNCHANGED_MARKER)
+                ? LLME2EAssertionReport.success("The answer reported the requested preview markers, and the database sentinel remained unchanged.")
+                : LLME2EAssertionReport.failure("answer_mismatch", "The answer omitted the required preview result markers.");
     }
     
     private boolean isSentinelPreview(final MCPInteractionTraceRecord traceRecord) {
@@ -324,7 +342,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             return LLME2EAssertionReport.failure("missing_resource_recovery", "The model did not follow the stale response recovery action to a live resource containing orders.");
         }
         Optional<Integer> actualCount = findQueryCount(trace, trace.get(recoveryResourceIndex).getModelTurn());
-        if (actualCount.isEmpty() || getRequiredRuntimeFixture().getTotalOrders() != actualCount.get()) {
+        if (actualCount.isEmpty() || getRequiredMySQLRuntimeFixture().getTotalOrders() != actualCount.get()) {
             return LLME2EAssertionReport.failure("query_evidence_mismatch", "The recovered conversation did not obtain the fixture row count from MCP.");
         }
         return containsStandaloneNumber(answer, actualCount.get())
@@ -443,7 +461,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private Collection<String> getArtifactSensitiveValues() {
         Set<String> result = new LinkedHashSet<>();
         addArtifactSensitiveValue(result, getRequiredLLMRuntime().getConfiguration().getApiKey());
-        for (RuntimeDatabaseConfiguration each : getRequiredRuntimeFixture().getRuntimeDatabases().values()) {
+        for (RuntimeDatabaseConfiguration each : getRuntimeDatabases().values()) {
             addArtifactSensitiveValue(result, each.getJdbcUrl());
             addArtifactSensitiveValue(result, each.getPassword());
         }
@@ -484,7 +502,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private String queryOrderStatus() throws SQLException {
-        RuntimeDatabaseConfiguration databaseConfig = getRequiredRuntimeFixture().getRuntimeDatabases().get(DATABASE_NAME);
+        RuntimeDatabaseConfiguration databaseConfig = getRequiredMySQLRuntimeFixture().getRuntimeDatabases().get(DATABASE_NAME);
         try (
                 Connection connection = databaseConfig.openConnection(DATABASE_NAME);
                 PreparedStatement statement = connection.prepareStatement("SELECT status FROM orders WHERE order_id = 1");
@@ -522,29 +540,43 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return getRequiredRuntimeFixture().getRuntimeDatabases();
+        return proxyRuntimeFixtureSelected ? getRequiredProxyRuntimeFixture().getRuntimeDatabases() : getRequiredMySQLRuntimeFixture().getRuntimeDatabases();
     }
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        if (null != runtimeFixture) {
+        if (proxyRuntimeFixtureSelected && null != proxyRuntimeFixture) {
+            return;
+        }
+        if (!proxyRuntimeFixtureSelected && null != mySQLRuntimeFixture) {
             return;
         }
         if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed LLM E2E test."));
+            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the LLM E2E test."));
         }
         try {
-            runtimeFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture(DATABASE_NAME);
+            if (proxyRuntimeFixtureSelected) {
+                proxyRuntimeFixture = ProxyWorkflowRuntimeTestSupport.createFixture();
+            } else {
+                mySQLRuntimeFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture(DATABASE_NAME);
+            }
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
     }
     
-    private LLMMySQLRuntimeFixture getRequiredRuntimeFixture() {
-        if (null == runtimeFixture) {
-            throw new IllegalStateException("LLM E2E runtime fixture was not initialized.");
+    private LLMMySQLRuntimeFixture getRequiredMySQLRuntimeFixture() {
+        if (null == mySQLRuntimeFixture) {
+            throw new IllegalStateException("LLM MySQL runtime fixture was not initialized.");
         }
-        return runtimeFixture;
+        return mySQLRuntimeFixture;
+    }
+    
+    private ProxyWorkflowRuntimeFixture getRequiredProxyRuntimeFixture() {
+        if (null == proxyRuntimeFixture) {
+            throw new IllegalStateException("LLM Proxy runtime fixture was not initialized.");
+        }
+        return proxyRuntimeFixture;
     }
     
     private static LLMRuntimeSupport.ModelRuntime getRequiredLLMRuntime() {

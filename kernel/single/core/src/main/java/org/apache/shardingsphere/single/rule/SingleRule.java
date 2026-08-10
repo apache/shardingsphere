@@ -48,8 +48,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -86,10 +89,53 @@ public final class SingleRule implements DatabaseRule {
         this.protocolType = protocolType;
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, protocolType, aggregatedDataSources, builtRules, configuration.getTables());
         SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
-        mutableDataNodeRuleAttribute = new SingleMutableDataNodeRuleAttribute(configuration, dataSourceNames, singleTableDataNodes, protocolType, tableMapperRuleAttribute);
+        mutableDataNodeRuleAttribute = new SingleMutableDataNodeRuleAttribute(this, configuration, dataSourceNames, singleTableDataNodes, protocolType, tableMapperRuleAttribute);
         attributes = new RuleAttributes(new SingleDataNodeRuleAttribute(singleTableDataNodes), tableMapperRuleAttribute,
                 new SingleExportableRuleAttribute(tableMapperRuleAttribute), mutableDataNodeRuleAttribute, new AggregatedDataSourceRuleAttribute(aggregatedDataSources),
                 new SingleUnregisterStorageUnitRuleAttribute());
+    }
+    
+    private SingleRule(final SingleRule original) {
+        configuration = new SingleRuleConfiguration(new LinkedList<>(original.configuration.getTables()), original.defaultDataSource);
+        defaultDataSource = original.defaultDataSource;
+        dataSourceNames = new CaseInsensitiveSet<>(original.dataSourceNames);
+        singleTableDataNodes = new LinkedHashMap<>(original.singleTableDataNodes.size(), 1F);
+        for (Entry<String, Collection<DataNode>> entry : original.singleTableDataNodes.entrySet()) {
+            singleTableDataNodes.put(entry.getKey(), new LinkedHashSet<>(entry.getValue()));
+        }
+        protocolType = original.protocolType;
+        SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
+        mutableDataNodeRuleAttribute = new SingleMutableDataNodeRuleAttribute(this, configuration, dataSourceNames, singleTableDataNodes, protocolType, tableMapperRuleAttribute);
+        attributes = new RuleAttributes(new SingleDataNodeRuleAttribute(singleTableDataNodes), tableMapperRuleAttribute,
+                new SingleExportableRuleAttribute(tableMapperRuleAttribute), mutableDataNodeRuleAttribute,
+                original.attributes.getAttribute(AggregatedDataSourceRuleAttribute.class), new SingleUnregisterStorageUnitRuleAttribute());
+    }
+    
+    /**
+     * Copy rule and add data node.
+     *
+     * @param dataSourceName data source name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return copied rule with added data node
+     */
+    public SingleRule copyAndPut(final String dataSourceName, final String schemaName, final String tableName) {
+        SingleRule result = new SingleRule(this);
+        result.mutableDataNodeRuleAttribute.put(dataSourceName, schemaName, tableName);
+        return result;
+    }
+    
+    /**
+     * Copy rule and remove data node.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return copied rule with removed data node
+     */
+    public SingleRule copyAndRemove(final String schemaName, final String tableName) {
+        SingleRule result = new SingleRule(this);
+        result.mutableDataNodeRuleAttribute.remove(schemaName, tableName);
+        return result;
     }
     
     /**

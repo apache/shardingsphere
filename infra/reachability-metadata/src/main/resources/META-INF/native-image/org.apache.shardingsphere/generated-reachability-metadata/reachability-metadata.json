@@ -3479,12 +3479,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor"
-      },
-      "type": "org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset.MySQLCharsetVariableProvider"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor"
       },
       "type": "org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.session.MySQLReplayedSessionVariableProvider"

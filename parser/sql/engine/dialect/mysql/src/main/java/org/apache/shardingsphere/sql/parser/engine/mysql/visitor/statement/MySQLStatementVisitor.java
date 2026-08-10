@@ -85,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedT
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JsonFunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JsonTableFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LeadLagInfoContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitOffsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitRowCountContext;
@@ -99,6 +100,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberL
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OnDuplicateKeyClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PositionFunctionContext;
@@ -119,6 +121,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Replace
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RowAliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RowConstructorListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectFieldsIntoContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectIntoExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectLinesIntoContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectWithIntoContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SeparatorNameContext;
@@ -159,6 +164,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNam
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
@@ -219,6 +229,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileLinesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
@@ -402,6 +415,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitFunctionName(final FunctionNameContext ctx) {
+        return createFunctionSegment(ctx);
+    }
+    
+    private FunctionSegment createFunctionSegment(final FunctionNameContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.identifier().IDENTIFIER_().getText(), ctx.getText());
         if (null != ctx.owner()) {
             result.setOwner((OwnerSegment) visit(ctx.owner()));
@@ -781,10 +798,68 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return visit(ctx.selectWithInto());
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
-        if (null != ctx.lockClauseList()) {
-            result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
+        OutfileSegment outfile = null;
+        if (null != ctx.selectIntoExpression()) {
+            ASTNode intoSegment = visit(ctx.selectIntoExpression());
+            if (intoSegment instanceof OutfileSegment) {
+                outfile = (OutfileSegment) intoSegment;
+            }
         }
-        return result;
+        if (null == outfile && null == ctx.lockClauseList()) {
+            return result;
+        }
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result).outfile(outfile);
+        if (null != ctx.lockClauseList()) {
+            selectStatementBuilder.lock((LockSegment) visit(ctx.lockClauseList()));
+        }
+        return selectStatementBuilder.build();
+    }
+    
+    @Override
+    public ASTNode visitSelectIntoExpression(final SelectIntoExpressionContext ctx) {
+        if (null == ctx.OUTFILE() && null == ctx.DUMPFILE()) {
+            return visitChildren(ctx);
+        }
+        String characterSet = null == ctx.charsetName() ? null : ctx.charsetName().getText();
+        OutfileColumnsSegment columns = ctx.selectFieldsInto().isEmpty() ? null : createOutfileColumnsSegment(ctx);
+        OutfileLinesSegment lines = ctx.selectLinesInto().isEmpty() ? null : createOutfileLinesSegment(ctx);
+        return new OutfileSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), SQLUtils.getExactlyValue(ctx.string_().getText()),
+                null, null, characterSet, columns, lines);
+    }
+    
+    private OutfileColumnsSegment createOutfileColumnsSegment(final SelectIntoExpressionContext ctx) {
+        int startIndex = ctx.selectFieldsInto(0).getStart().getStartIndex();
+        int stopIndex = ctx.selectFieldsInto(ctx.selectFieldsInto().size() - 1).getStop().getStopIndex();
+        String terminatedBy = null;
+        String enclosedBy = null;
+        String escapedBy = null;
+        boolean optionallyEnclosed = false;
+        for (SelectFieldsIntoContext each : ctx.selectFieldsInto()) {
+            if (null != each.TERMINATED()) {
+                terminatedBy = SQLUtils.getExactlyValue(each.string_().getText());
+            } else if (null != each.ENCLOSED()) {
+                enclosedBy = SQLUtils.getExactlyValue(each.string_().getText());
+                optionallyEnclosed = null != each.OPTIONALLY();
+            } else {
+                escapedBy = SQLUtils.getExactlyValue(each.string_().getText());
+            }
+        }
+        return new OutfileColumnsSegment(startIndex, stopIndex, terminatedBy, enclosedBy, escapedBy, optionallyEnclosed);
+    }
+    
+    private OutfileLinesSegment createOutfileLinesSegment(final SelectIntoExpressionContext ctx) {
+        int startIndex = ctx.selectLinesInto(0).getStart().getStartIndex();
+        int stopIndex = ctx.selectLinesInto(ctx.selectLinesInto().size() - 1).getStop().getStopIndex();
+        String startingBy = null;
+        String terminatedBy = null;
+        for (SelectLinesIntoContext each : ctx.selectLinesInto()) {
+            if (null != each.STARTING()) {
+                startingBy = SQLUtils.getExactlyValue(each.string_().getText());
+            } else {
+                terminatedBy = SQLUtils.getExactlyValue(each.string_().getText());
+            }
+        }
+        return new OutfileLinesSegment(startIndex, stopIndex, startingBy, terminatedBy);
     }
     
     @Override
@@ -872,7 +947,15 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.lockClauseList()) {
             lock = (LockSegment) visit(ctx.lockClauseList());
         }
-        return SelectStatement.builder().databaseType(databaseType).projections(projections).from(from).where(where).groupBy(groupBy).having(having).window(window).lock(lock).build();
+        OutfileSegment outfile = null;
+        if (null != ctx.selectIntoExpression()) {
+            ASTNode intoSegment = visit(ctx.selectIntoExpression());
+            if (intoSegment instanceof OutfileSegment) {
+                outfile = (OutfileSegment) intoSegment;
+            }
+        }
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).from(from).where(where).groupBy(groupBy).having(having).window(window).lock(lock)
+                .outfile(outfile).build();
     }
     
     @Override
@@ -900,8 +983,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
         ProjectionsSegment projections = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex());
         projections.getProjections().add(new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex()));
-        return SelectStatement.builder().databaseType(databaseType).projections(projections)
-                .from(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText())))).build();
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).from((SimpleTableSegment) visit(ctx.tableName())).build();
     }
     
     @Override
@@ -942,7 +1024,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitUdfFunction(final UdfFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
+        FunctionSegment functionName = createFunctionSegment(ctx.functionName());
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName.getFunctionName(), getOriginalText(ctx));
+        result.setOwner(functionName.getOwner());
         if (null != ctx.expr()) {
             for (ExprContext each : ctx.expr()) {
                 result.getParameters().add((ExpressionSegment) visit(each));
@@ -1051,6 +1135,112 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
         return ctx.aggregationExpression().getText();
+    }
+    
+    @Override
+    public ASTNode visitWindowClause(final WindowClauseContext ctx) {
+        WindowSegment result = new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (WindowItemContext each : ctx.windowItem()) {
+            result.getItemSegments().add((WindowItemSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWindowItem(final WindowItemContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
+        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+        result.setFrameClause(windowItemSegment.getFrameClause());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWindowSpecification(final WindowSpecificationContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.PARTITION()) {
+            result.setPartitionListSegments(getExpressions(ctx.expr()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.frameClause()) {
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
+        }
+        if (null != ctx.identifier()) {
+            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitOverClause(final OverClauseContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.identifier()) {
+            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
+            return result;
+        }
+        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+        result.setFrameClause(windowItemSegment.getFrameClause());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        if (null != ctx.NTILE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
+        }
+        // MARIADB CHANGED BEGIN
+        if (null != ctx.LEAD() || null != ctx.LAG() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE() || null != ctx.MEDIAN()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+            appendLeadLagParameters(result.getParameters(), ctx.leadLagInfo());
+        }
+        // MARIADB CHANGED END
+        if (null != ctx.NTH_VALUE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+            result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
+        }
+        result.setWindow((WindowItemSegment) visit(ctx.windowingClause()));
+        return result;
+    }
+    
+    private void appendLeadLagParameters(final Collection<ExpressionSegment> parameters, final LeadLagInfoContext ctx) {
+        if (null == ctx) {
+            return;
+        }
+        if (null != ctx.NUMBER_()) {
+            parameters.add(
+                    new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(), new NumberLiteralValue(ctx.NUMBER_().getText()).getValue()));
+        } else {
+            int startIndex = ctx.QUESTION_().getSymbol().getStartIndex();
+            int stopIndex = ctx.QUESTION_().getSymbol().getStopIndex();
+            ParameterMarkerExpressionSegment parameterMarker = new ParameterMarkerExpressionSegment(startIndex, stopIndex, getParameterMarkerSegments().size());
+            getParameterMarkerSegments().add(parameterMarker);
+            parameters.add(parameterMarker);
+        }
+        if (null != ctx.expr()) {
+            parameters.add((ExpressionSegment) visit(ctx.expr()));
+        }
+    }
+    
+    @Override
+    public ASTNode visitWindowingClause(final WindowingClauseContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.windowName) {
+            result.setWindowName((IdentifierValue) visit(ctx.windowName));
+        }
+        if (null != ctx.windowSpecification()) {
+            WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+            result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+            result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+            result.setFrameClause(windowItemSegment.getFrameClause());
+        }
+        return result;
     }
     
     @Override

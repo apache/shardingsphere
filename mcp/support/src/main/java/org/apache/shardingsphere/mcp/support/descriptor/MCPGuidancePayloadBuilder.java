@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPModelFacingPayloadContract;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
-import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
+import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -117,7 +117,20 @@ final class MCPGuidancePayloadBuilder {
         result.put("http_transport", "Streamable HTTP is unauthenticated by default; prefer loopback binding or put remote exposure behind a trusted gateway.");
         result.put("origin_header", "Present Origin headers must be valid loopback origins for loopback HTTP bindings; missing Origin is accepted.");
         result.put("stdio_stdout", "STDIO transport must keep MCP protocol frames on stdout and send logs to stderr or files.");
-        result.put("client_safety_policy", MCPClientSafetyPolicy.createModelFacingPayload());
+        result.put("client_safety_policy", createClientSafetyPolicy());
+        return result;
+    }
+    
+    private static Map<String, Object> createClientSafetyPolicy() {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("identity_scope", "mcp_session");
+        result.put("transport_scope",
+                "HTTP transport can bind trusted session attribution when configured; "
+                        + "the MCP runtime does not provide built-in authentication or authorization. "
+                        + "STDIO inherits the local process boundary.");
+        result.put("runtime_protection", MCPRuntimeProtectionPolicy.createRuntimeProtectionPayload());
+        result.put("abuse_guard", "Every tool call is counted before dispatch, including invalid calls, so runaway model loops stop at the session quota.");
+        result.put("external_model_boundary", "The MCP runtime never calls external model providers; live LLM E2E clients call configured endpoints outside the server.");
         return result;
     }
     

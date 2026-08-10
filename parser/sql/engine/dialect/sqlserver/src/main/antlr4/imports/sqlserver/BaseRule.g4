@@ -287,7 +287,8 @@ bitExpr
     ;
 
 simpleExpr
-    : functionCall
+    : nextValueFor
+    | functionCall
     | parameterMarker
     | literals
     | columnName
@@ -304,6 +305,10 @@ simpleExpr
     | caseExpression
     | privateExprOfDb
     | matchExpression
+    ;
+
+nextValueFor
+    : NEXT VALUE FOR (databaseName DOT_)? sequenceName overClause?
     ;
 
 functionCall

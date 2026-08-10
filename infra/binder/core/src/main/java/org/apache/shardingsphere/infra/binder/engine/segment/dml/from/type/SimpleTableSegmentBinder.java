@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
@@ -170,13 +171,37 @@ public final class SimpleTableSegmentBinder {
             ShardingSphereDatabase database = binderContext.getMetaData().getDatabase(databaseName);
             if (binderContext.getSqlStatement() instanceof CreateTableStatement || binderContext.getSqlStatement() instanceof CreateViewStatement
                     || binderContext.getSqlStatement() instanceof CreateIndexStatement) {
-                return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
+                return getCreateSchemaName(database, getDefaultSchemaName(database, binderContext.getCurrentSchema()));
             }
-            Optional<IdentifierValue> result = findUniqueSchemaIdentifierByTableName(database, segment.getTableName().getIdentifier());
+            Optional<IdentifierValue> result = findSchemaIdentifierByTableName(database, segment.getTableName().getIdentifier(), binderContext.getCurrentSchema());
+            if (result.isPresent()) {
+                return result;
+            }
+            result = findUniqueSchemaIdentifierByTableName(database, segment.getTableName().getIdentifier());
             return result.isPresent() ? result : Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
         }
         ShardingSphereDatabase database = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName());
         return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
+    }
+    
+    private static Optional<IdentifierValue> getDefaultSchemaName(final ShardingSphereDatabase database, final Collection<IdentifierValue> currentSchema) {
+        for (IdentifierValue each : currentSchema) {
+            if (database.containsSchema(each)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
+    }
+    
+    private static Optional<IdentifierValue> findSchemaIdentifierByTableName(final ShardingSphereDatabase database, final IdentifierValue tableName,
+                                                                             final Collection<IdentifierValue> schemaSearchPath) {
+        for (IdentifierValue each : schemaSearchPath) {
+            ShardingSphereSchema schema = database.getSchema(each);
+            if (null != schema && schema.containsTable(tableName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     private static Optional<IdentifierValue> findUniqueSchemaIdentifierByTableName(final ShardingSphereDatabase database, final IdentifierValue tableName) {
@@ -191,6 +216,23 @@ public final class SimpleTableSegmentBinder {
             result = new IdentifierValue(each.getName());
         }
         return Optional.ofNullable(result);
+    }
+    
+    private static Optional<IdentifierValue> getCreateSchemaName(final ShardingSphereDatabase database, final Optional<IdentifierValue> defaultSchemaName) {
+        if (defaultSchemaName.filter(database::containsSchema).isPresent()) {
+            return defaultSchemaName;
+        }
+        Collection<ShardingSphereSchema> schemas = database.getAllSchemas().stream().filter(each -> !isSystemSchema(database, each)).collect(Collectors.toList());
+        return 1 == schemas.size() ? Optional.of(new IdentifierValue(schemas.iterator().next().getName())) : defaultSchemaName;
+    }
+    
+    private static boolean isSystemSchema(final ShardingSphereDatabase database, final ShardingSphereSchema schema) {
+        for (String each : new SystemDatabase(database.getProtocolType()).getSystemSchemas()) {
+            if (each.equalsIgnoreCase(schema.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private static boolean isOwnerDatabaseName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext, final DialectDatabaseMetaData dialectDatabaseMetaData) {
@@ -267,8 +309,7 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final Optional<IdentifierValue> schemaName,
-                                         final IdentifierValue tableName, final SimpleTableSegment segment,
-                                         final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
+                                         final IdentifierValue tableName, final SimpleTableSegment segment, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         String tableNameValue = tableName.getValue();
         if (isUpdateTargetTableAlias(binderContext, tableBinderContexts, schemaName, tableNameValue, segment)) {
             return;

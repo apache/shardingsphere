@@ -311,6 +311,8 @@ jobs:
           restore-maven-repository: 'false'
           docker-image-archives: mcp-llm-runtime-image.tar
       - name: Run MCP LLM E2E
+        env:
+          TESTCONTAINERS_RYUK_DISABLED: 'true'
         run: ./mvnw -pl test/e2e/mcp test -Pe2e.mcp.llm -DskipITs -Dspotless.skip=true -Dtest='${{ matrix.test }}' -Dmcp.llm.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/llm-e2e" -Dmcp.llm.run-id=gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.id }} -B -ntp
       - name: Upload MCP LLM E2E Artifacts
         if: always()

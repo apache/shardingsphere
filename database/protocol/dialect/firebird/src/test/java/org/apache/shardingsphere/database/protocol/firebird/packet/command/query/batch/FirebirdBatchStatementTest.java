@@ -35,15 +35,24 @@ class FirebirdBatchStatementTest {
         batchStatement.addParameterValues(Arrays.asList("foo", 1L));
         assertThat(batchStatement.getStatementHandle(), is(32));
         assertFalse(batchStatement.isRecordCounts());
+        assertFalse(batchStatement.isMultiError());
         assertThat(batchStatement.getParameterValues().size(), is(1));
         assertThat(batchStatement.getParameterValues().get(0), is(Arrays.asList("foo", 1L)));
     }
     
     @Test
     void assertCreateWithRecordCounts() {
-        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L, true);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L, true, false);
         assertTrue(batchStatement.isRecordCounts());
+        assertFalse(batchStatement.isMultiError());
         assertThat(batchStatement.getBufferSize(), is(1024L));
+    }
+    
+    @Test
+    void assertCreateWithMultiError() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L, false, true);
+        assertTrue(batchStatement.isMultiError());
+        assertFalse(batchStatement.isRecordCounts());
     }
     
     @Test

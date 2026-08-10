@@ -140,6 +140,18 @@ public final class WorkflowValidationSupport {
         return result;
     }
     
+    /**
+     * Create one SQL executability issue.
+     *
+     * @param message issue message
+     * @param sql SQL artifact
+     * @return issue payload
+     */
+    public Map<String, Object> createSQLExecutabilityIssue(final String message, final String sql) {
+        return new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", WorkflowLifecycle.STEP_REVIEW,
+                message, "Regenerate the workflow artifact through the feature planner before approval.", true, Map.of("sql", sql)).toMap();
+    }
+    
     private List<Map<String, Object>> createValidationIssues(final ValidationReport validationReport) {
         if (!WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus())) {
             return List.of();

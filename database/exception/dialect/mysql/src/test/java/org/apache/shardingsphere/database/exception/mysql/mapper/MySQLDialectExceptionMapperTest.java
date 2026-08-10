@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.connection.TooManyConnectionsException;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.table.
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.mysql.exception.CollationCharsetMismatchException;
 import org.apache.shardingsphere.database.exception.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorLocalVariableException;
@@ -82,6 +84,23 @@ class MySQLDialectExceptionMapperTest {
     }
     
     @Test
+    void assertConvertWithUnknownCollation() {
+        assertSQLExceptionWithMessage(mapper.convert(new UnknownCollationException("foo_collation")), MySQLVendorError.ER_UNKNOWN_COLLATION, "foo_collation");
+    }
+    
+    @Test
+    void assertConvertWithInvalidParameterValue() {
+        assertSQLExceptionWithMessage(
+                mapper.convert(new InvalidParameterValueException("character_set_client", "ucs2")), MySQLVendorError.ER_WRONG_VALUE_FOR_VAR, "character_set_client", "ucs2");
+    }
+    
+    @Test
+    void assertConvertWithCollationCharsetMismatch() {
+        assertSQLExceptionWithMessage(mapper.convert(new CollationCharsetMismatchException("utf8mb4_bin", "latin1")),
+                MySQLVendorError.ER_COLLATION_CHARSET_MISMATCH, "utf8mb4_bin", "latin1");
+    }
+    
+    @Test
     void assertConvertWithUsingPassword() {
         assertSQLExceptionWithMessage(mapper.convert(new AccessDeniedException("root", "127.0.0.1", true)), MySQLVendorError.ER_ACCESS_DENIED_ERROR, "root", "127.0.0.1", "YES");
     }
@@ -122,7 +141,6 @@ class MySQLDialectExceptionMapperTest {
                 Arguments.of("unsupported_prepared_statement", UnsupportedPreparedStatementException.class, MySQLVendorError.ER_UNSUPPORTED_PS),
                 Arguments.of("too_many_placeholders", TooManyPlaceholdersException.class, MySQLVendorError.ER_PS_MANY_PARAM),
                 Arguments.of("unknown_charset", UnknownCharsetException.class, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET),
-                Arguments.of("unknown_collation", UnknownCollationException.class, MySQLVendorError.ER_UNKNOWN_COLLATION),
                 Arguments.of("handshake", HandshakeException.class, MySQLVendorError.ER_HANDSHAKE_ERROR),
                 Arguments.of("access_denied_without_password", AccessDeniedException.class, MySQLVendorError.ER_ACCESS_DENIED_ERROR),
                 Arguments.of("database_access_denied", DatabaseAccessDeniedException.class, MySQLVendorError.ER_DBACCESS_DENIED_ERROR),

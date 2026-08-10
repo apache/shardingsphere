@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
-import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -38,17 +35,16 @@ public final class MaskAlgorithmRecommendationService {
     /**
      * Recommend mask algorithm.
      *
-     * @param intent clarified intent
      * @param request workflow request
-     * @param algorithmResult mask algorithm query result
+     * @param algorithms mask algorithms reported by the current Proxy
      * @param issues workflow issues
      * @return selected candidates
      */
-    public List<AlgorithmCandidate> recommendMaskAlgorithms(final ClarifiedIntent intent, final WorkflowRequest request,
-                                                            final WorkflowQueryResult algorithmResult, final List<WorkflowIssue> issues) {
+    public List<AlgorithmCandidate> recommendMaskAlgorithms(final WorkflowRequest request, final List<Map<String, Object>> algorithms,
+                                                            final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getAlgorithmType());
         if (!actualAlgorithmType.isEmpty()) {
-            if (!algorithmResult.isAvailabilityConfirmed() || WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), actualAlgorithmType)) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithms, actualAlgorithmType)) {
                 return List.of(AlgorithmCandidate.builder().algorithmRole("primary").algorithmType(actualAlgorithmType).recommendationScore(100)
                         .recommendationReason("User specified algorithm.").riskNotes("").build());
             }
@@ -56,36 +52,20 @@ public final class MaskAlgorithmRecommendationService {
                     String.format("Mask algorithm `%s` is not visible from the current Proxy.", actualAlgorithmType), "Choose an available mask algorithm.", false, Map.of()));
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(intent, request, algorithmResult.getRows());
+        String recommendedType = resolveRecommendedAlgorithm(algorithms);
         if (recommendedType.isEmpty()) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     "No mask algorithm is available from the current Proxy.", "Install or register at least one visible mask algorithm.", false, Map.of()));
             return List.of();
         }
         return List.of(AlgorithmCandidate.builder().algorithmRole("primary").algorithmType(recommendedType).recommendationScore(100)
-                .recommendationReason("Recommended by field semantics and current algorithm availability.").riskNotes("").build());
+                .recommendationReason("Selected from algorithms reported by the current Proxy using the built-in mask default.").riskNotes("").build());
     }
     
-    private String resolveRecommendedAlgorithm(final ClarifiedIntent intent, final WorkflowRequest request, final List<Map<String, Object>> maskAlgorithms) {
-        String fieldSemantics = intent.getFieldSemantics().toLowerCase(Locale.ENGLISH);
-        String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
-        if ((fieldSemantics.contains("phone") || containsAny(naturalLanguageIntent, "first", "last", "前", "后", "保留"))
-                && WorkflowAlgorithmUtils.containsAlgorithm(maskAlgorithms, "MASK_FROM_X_TO_Y")) {
-            return "MASK_FROM_X_TO_Y";
-        }
+    private String resolveRecommendedAlgorithm(final List<Map<String, Object>> maskAlgorithms) {
         if (WorkflowAlgorithmUtils.containsAlgorithm(maskAlgorithms, "KEEP_FIRST_N_LAST_M")) {
             return "KEEP_FIRST_N_LAST_M";
         }
         return maskAlgorithms.isEmpty() ? "" : WorkflowAlgorithmUtils.getAlgorithmType(maskAlgorithms.get(0));
     }
-    
-    private boolean containsAny(final String value, final String... candidates) {
-        for (String each : candidates) {
-            if (value.contains(each)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
 }

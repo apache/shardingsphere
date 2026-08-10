@@ -25,8 +25,7 @@ import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegi
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -57,18 +56,18 @@ class WorkflowExecutionToolHandlerTest {
     void assertHandleExecution() {
         WorkflowContextSnapshot snapshot = WorkflowHandlerTestFixture.createSnapshot();
         WorkflowHandlerTestFixture.Context fixture = WorkflowHandlerTestFixture.createContext(snapshot);
-        MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
+        MCPWorkflowRuntimeHandler workflowRuntimeHandler = mock(MCPWorkflowRuntimeHandler.class);
         MCPWorkflowApplyArtifactValidator workflowApplyArtifactValidator = mock(MCPWorkflowApplyArtifactValidator.class);
         try (
                 MockedConstruction<WorkflowExecutionService> mockedExecutionServices = mockConstruction(WorkflowExecutionService.class,
                         (mock, context) -> when(mock.apply(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed")))) {
             WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
-                    WorkflowHandlerTestFixture.createDefinition("encrypt.rule", mock(MCPWorkflowValidationHandler.class), workflowApplySynchronizationHandler, workflowApplyArtifactValidator))));
+                    WorkflowHandlerTestFixture.createDefinition("encrypt.rule", workflowRuntimeHandler, workflowApplyArtifactValidator))));
             MCPSuccessPayload actual = handler.handle(fixture.requestContext(), Map.of(WorkflowFieldNames.PLAN_ID, "plan-1",
                     WorkflowFieldNames.APPROVED_STEPS, List.of("rule_distsql"), WorkflowFieldNames.EXECUTION_MODE, "manual-only"));
             WorkflowExecutionService executionService = mockedExecutionServices.constructed().getFirst();
             verify(executionService).apply(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()), eq(fixture.queryFacade()), eq(fixture.executionFacade()),
-                    eq(workflowApplySynchronizationHandler), eq(workflowApplyArtifactValidator), eq("session-1"), eq(snapshot), eq(List.of("rule_distsql")), eq("manual-only"));
+                    eq(workflowRuntimeHandler), eq(workflowApplyArtifactValidator), eq("session-1"), eq(snapshot), eq(List.of("rule_distsql")), eq("manual-only"));
             assertThat(actual.toPayload().get("status"), is("completed"));
         }
     }

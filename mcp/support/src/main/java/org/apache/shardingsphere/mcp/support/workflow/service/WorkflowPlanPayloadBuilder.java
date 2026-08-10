@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
@@ -89,12 +88,12 @@ public final class WorkflowPlanPayloadBuilder {
      * Build one workflow-plan payload map with generated artifacts.
      *
      * @param snapshot workflow snapshot
-     * @param propertySource workflow property source
+     * @param request workflow request
      * @return workflow-plan payload with generated artifacts
      */
-    public static Map<String, Object> buildWithArtifacts(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
+    public static Map<String, Object> buildWithArtifacts(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         Map<String, Object> result = build(snapshot);
-        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));
+        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, request));
         return result;
     }
     
@@ -103,23 +102,20 @@ public final class WorkflowPlanPayloadBuilder {
     }
     
     private static void appendSecretReferenceSummary(final Map<String, Object> result, final WorkflowContextSnapshot snapshot) {
-        WorkflowPropertySource propertySource = null == snapshot.getRequest() ? snapshot.getFeatureData() : snapshot.getRequest();
-        if (null == propertySource) {
+        if (null == snapshot.getRequest()) {
             return;
         }
-        Map<String, Object> summary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(propertySource);
+        Map<String, Object> summary = WorkflowArtifactMaskUtils.createSecretReferenceSummary(snapshot.getRequest());
         if ((Boolean) summary.get("required")) {
             result.put("secret_reference_summary", summary);
         }
     }
     
     private static Map<String, Object> createIntentInference(final ClarifiedIntent clarifiedIntent) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put(WorkflowFieldNames.OPERATION_TYPE, clarifiedIntent.getOperationType());
-        result.put(WorkflowFieldNames.FIELD_SEMANTICS, clarifiedIntent.getFieldSemantics());
         result.put("inferred_values", clarifiedIntent.getInferredValues());
         result.put("unresolved_fields", clarifiedIntent.getUnresolvedFields());
-        result.put("reasoning_notes", clarifiedIntent.getReasoningNotes());
         return result;
     }
     
@@ -142,24 +138,19 @@ public final class WorkflowPlanPayloadBuilder {
         result.put(WorkflowFieldNames.PLAN_ID, "server_generated");
         putUserProvided(result, WorkflowFieldNames.DATABASE, request.getDatabase());
         Map<String, Object> inferredValues = getInferredValues(snapshot);
-        putArgumentProvenance(result, WorkflowFieldNames.SCHEMA, request.getSchema(), inferredValues.containsKey(WorkflowFieldNames.SCHEMA) ? "inferred_from_intent" : "user_provided");
+        putArgumentProvenance(result, WorkflowFieldNames.SCHEMA, request.getSchema(), inferredValues.containsKey(WorkflowFieldNames.SCHEMA) ? "server_derived" : "user_provided");
         putUserProvided(result, WorkflowFieldNames.TABLE, request.getTable());
         putUserProvided(result, WorkflowFieldNames.COLUMN, request.getColumn());
         putArgumentProvenance(result, WorkflowFieldNames.OPERATION_TYPE, request.getOperationType(),
-                inferredValues.containsKey(WorkflowFieldNames.OPERATION_TYPE) ? "inferred_from_intent" : "user_provided");
+                inferredValues.containsKey(WorkflowFieldNames.OPERATION_TYPE) ? "server_defaulted" : "user_provided");
         putUserProvided(result, WorkflowFieldNames.NATURAL_LANGUAGE_INTENT, request.getNaturalLanguageIntent());
-        putArgumentProvenance(result, WorkflowFieldNames.FIELD_SEMANTICS, request.getFieldSemantics(),
-                inferredValues.containsKey(WorkflowFieldNames.FIELD_SEMANTICS) ? "inferred_from_intent" : "user_provided");
-        result.put(WorkflowFieldNames.DELIVERY_MODE, resolveModeProvenance(WorkflowFieldNames.DELIVERY_MODE, request.getDeliveryMode(), inferredValues));
-        result.put(WorkflowFieldNames.EXECUTION_MODE, resolveModeProvenance(WorkflowFieldNames.EXECUTION_MODE, request.getExecutionMode(), inferredValues));
+        result.put(WorkflowFieldNames.DELIVERY_MODE, resolveModeProvenance(WorkflowFieldNames.DELIVERY_MODE, request.getDeliveryMode()));
+        result.put(WorkflowFieldNames.EXECUTION_MODE, resolveModeProvenance(WorkflowFieldNames.EXECUTION_MODE, request.getExecutionMode()));
         putUserProvided(result, WorkflowFieldNames.ALGORITHM_TYPE, request.getAlgorithmType());
         return result;
     }
     
-    private static String resolveModeProvenance(final String fieldName, final String value, final Map<String, Object> inferredValues) {
-        if (inferredValues.containsKey(fieldName)) {
-            return "inferred_from_intent";
-        }
+    private static String resolveModeProvenance(final String fieldName, final String value) {
         if (value.isEmpty() || isDefaultMode(fieldName, value)) {
             return "server_defaulted";
         }

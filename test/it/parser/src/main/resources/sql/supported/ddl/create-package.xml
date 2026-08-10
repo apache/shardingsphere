@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_or_replace_editionable_package" value="CREATE OR REPLACE EDITIONABLE PACKAGE foo_schema.foo_pkg AUTHID CURRENT_USER AS g_public NUMBER := 1; PROCEDURE set_value(p_value IN NUMBER); FUNCTION get_value RETURN NUMBER; END foo_pkg;" db-types="Oracle" />
+    <sql-case id="create_or_replace_noneditionable_package_body" value="CREATE OR REPLACE NONEDITIONABLE PACKAGE BODY foo_schema.foo_pkg AS g_private NUMBER := 0; PROCEDURE set_value(p_value IN NUMBER) AS BEGIN g_private := p_value; END; FUNCTION get_value RETURN NUMBER AS BEGIN RETURN g_private; END; BEGIN g_private := 5; END foo_pkg;" db-types="Oracle" />
+    <sql-case id="create_package_body_if_not_exists" value="CREATE PACKAGE BODY IF NOT EXISTS foo_pkg AS PROCEDURE p AS BEGIN NULL; END; END foo_pkg;" db-types="Oracle" />
+</sql-cases>

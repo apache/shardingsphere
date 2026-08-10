@@ -192,16 +192,7 @@ tools:
             - drop
         natural_language_intent:
           type: string
-          description: "User request in natural language, used to infer create or drop when operation_type is absent."
-        structured_intent_evidence:
-          type: object
-          description: "Broadcast-specific structured intent extracted from the user request."
-          properties:
-            tables:
-              type: string
-              description: "Comma-separated logical table names inferred from the request."
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
         delivery_mode:
           type: string
           description: "Whether the plan should return all artifacts at once or guide the user step by step."
@@ -275,10 +266,10 @@ tools:
           description: "Preferred later apply mode captured by the plan."
         intent_inference:
           type: object
-          description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+          description: "Resolved operation type, server-derived or defaulted values, and unresolved fields."
         argument_provenance:
           type: object
-          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
+          description: "Source of important workflow arguments, such as user-provided, server-derived, or server-defaulted values."
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."

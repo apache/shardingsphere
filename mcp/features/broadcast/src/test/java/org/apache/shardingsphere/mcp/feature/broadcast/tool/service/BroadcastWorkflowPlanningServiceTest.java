@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.feature.broadcast.TestWorkflowSessionContex
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,16 @@ class BroadcastWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_PLANNED));
         assertThat(actual.getWorkflowKind().getValue(), is("broadcast.rule"));
         assertThat(actual.getRuleArtifacts().getFirst().getSql(), is("CREATE BROADCAST TABLE RULE `t_order`, `t_order_item`"));
+    }
+    
+    @Test
+    void assertPlanClarifiesNaturalLanguageWithoutOperation() {
+        BroadcastWorkflowRequest request = createRequest("", "t_order");
+        request.setNaturalLanguageIntent("opaque request text");
+        WorkflowContextSnapshot actual = createService().plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getClarifiedIntent().getUnresolvedFields(), is(List.of(WorkflowFieldNames.OPERATION_TYPE)));
+        assertThat(actual.getRuleArtifacts(), is(List.of()));
     }
     
     @Test

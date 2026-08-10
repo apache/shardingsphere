@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
-import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
@@ -39,9 +36,8 @@ public final class ShardingInspectionService {
      * @param queryFacade feature query facade
      * @return sharding algorithm plugin query result
      */
-    public WorkflowQueryResult queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        WorkflowQueryResult result = queryPluginRows(queryFacade, "SHOW SHARDING ALGORITHM PLUGINS", getShardingAlgorithmPluginRows());
-        return new WorkflowQueryResult(result.getRows().stream().map(this::appendShardingAlgorithmGuidance).toList(), result.isAvailabilityConfirmed());
+    public List<Map<String, Object>> queryAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
+        return queryFacade.queryWithAnyDatabase("SHOW SHARDING ALGORITHM PLUGINS").stream().map(this::appendShardingAlgorithmGuidance).toList();
     }
     
     /**
@@ -50,38 +46,8 @@ public final class ShardingInspectionService {
      * @param queryFacade feature query facade
      * @return key generate algorithm plugin query result
      */
-    public WorkflowQueryResult queryKeyGenerateAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        WorkflowQueryResult result = queryPluginRows(queryFacade, "SHOW KEY GENERATE ALGORITHM PLUGINS", getKeyGenerateAlgorithmPluginRows());
-        return new WorkflowQueryResult(result.getRows().stream().map(this::appendKeyGeneratorGuidance).toList(), result.isAvailabilityConfirmed());
-    }
-    
-    private WorkflowQueryResult queryPluginRows(final MCPFeatureQueryFacade queryFacade, final String sql, final List<Map<String, Object>> fallbackRows) {
-        try {
-            return WorkflowQueryResult.confirmed(queryFacade.queryWithAnyDatabase(sql));
-        } catch (final MCPQueryFailedException ex) {
-            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return WorkflowQueryResult.fallback(fallbackRows);
-            }
-            throw ex;
-        }
-    }
-    
-    private List<Map<String, Object>> getShardingAlgorithmPluginRows() {
-        return List.of(
-                Map.of("type", "MOD"),
-                Map.of("type", "HASH_MOD"),
-                Map.of("type", "VOLUME_RANGE"),
-                Map.of("type", "BOUNDARY_RANGE"),
-                Map.of("type", "AUTO_INTERVAL"),
-                Map.of("type", "INTERVAL"),
-                Map.of("type", "CLASS_BASED"),
-                Map.of("type", "INLINE"),
-                Map.of("type", "COMPLEX_INLINE"),
-                Map.of("type", "HINT_INLINE"));
-    }
-    
-    private List<Map<String, Object>> getKeyGenerateAlgorithmPluginRows() {
-        return List.of(Map.of("type", "SNOWFLAKE"), Map.of("type", "UUID"));
+    public List<Map<String, Object>> queryKeyGenerateAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
+        return queryFacade.queryWithAnyDatabase("SHOW KEY GENERATE ALGORITHM PLUGINS").stream().map(this::appendKeyGeneratorGuidance).toList();
     }
     
     /**

@@ -163,7 +163,7 @@ class EncryptWorkflowValidationServiceTest {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""));
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES",
@@ -188,7 +188,7 @@ class EncryptWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().getPrimaryAlgorithmProperties().put("aes-key-value", "secret_reference:primary.aes-key-value");
         snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES",
@@ -215,7 +215,7 @@ class EncryptWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().getPrimaryAlgorithmProperties().put("aes-key-value", "secret_reference:primary.aes-key-value");
         snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("aes-key-value", SecretReferenceValue.create());
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES",
@@ -240,7 +240,7 @@ class EncryptWorkflowValidationServiceTest {
     void assertValidateExpectedStateDetectsMissingNonTargetRule() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(
                 createRuleRow(),
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES"))));
         workflowSessionContext.save(snapshot);
@@ -256,7 +256,7 @@ class EncryptWorkflowValidationServiceTest {
     void assertValidateExpectedStateDetectsUnexpectedExtraRule() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(createRuleRow())));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(createRuleRow())));
         workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(

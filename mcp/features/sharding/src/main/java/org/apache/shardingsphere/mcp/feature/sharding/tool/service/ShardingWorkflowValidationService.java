@@ -110,12 +110,14 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     private ValidationSection validateNamedState(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport,
                                                  final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final String databaseName,
                                                  final String fieldName, final String expected, final boolean shapeMatches) {
-        boolean exists = containsNamedRow(rows, queryFacade, databaseName, fieldName, expected);
-        if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && exists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !exists) {
+        boolean ruleExists = containsNamedRow(rows, queryFacade, databaseName, fieldName, expected);
+        boolean dropWorkflow = WorkflowLifecycleUtils.isDropWorkflow(snapshot);
+        boolean expectedRuleExists = !dropWorkflow;
+        if (expectedRuleExists != ruleExists) {
             addMismatch(validationReport, fieldName, expected);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rows, "Sharding rule state does not match the planned DistSQL artifact.");
         }
-        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !shapeMatches) {
+        if (!dropWorkflow && !shapeMatches) {
             addMismatch(validationReport, fieldName, expected);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rows, "Sharding rule fields do not match the planned DistSQL artifact.");
         }
@@ -216,13 +218,15 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     
     private ValidationSection validateDefaultStrategy(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport,
                                                       final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final ShardingWorkflowRequest request) {
-        boolean exists = rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getDefaultStrategyType(),
+        boolean strategyExists = rows.stream().anyMatch(each -> queryFacade.isSameIdentifier(request.getDatabase(), IdentifierScope.TABLE, request.getDefaultStrategyType(),
                 WorkflowRuleValueUtils.getRuleValue(each, "name")) && !WorkflowRuleValueUtils.getRuleValue(each, "type").isEmpty());
-        if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && exists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !exists) {
+        boolean dropWorkflow = WorkflowLifecycleUtils.isDropWorkflow(snapshot);
+        boolean expectedStrategyExists = !dropWorkflow;
+        if (expectedStrategyExists != strategyExists) {
             addMismatch(validationReport, "name", request.getDefaultStrategyType());
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rows, "Default sharding strategy state does not match the planned DistSQL artifact.");
         }
-        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !matchesDefaultStrategy(rows, queryFacade, request)) {
+        if (!dropWorkflow && !matchesDefaultStrategy(rows, queryFacade, request)) {
             addMismatch(validationReport, "name", request.getDefaultStrategyType());
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rows, "Default sharding strategy fields do not match the planned DistSQL artifact.");
         }

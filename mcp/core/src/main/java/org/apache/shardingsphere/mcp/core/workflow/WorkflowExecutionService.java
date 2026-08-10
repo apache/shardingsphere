@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionR
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
@@ -44,7 +44,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleU
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 
 import java.util.List;
 import java.util.Locale;
@@ -67,7 +67,7 @@ public final class WorkflowExecutionService {
      * @param metadataQueryFacade metadata query facade
      * @param queryFacade query facade
      * @param executionFacade execution facade
-     * @param workflowApplySynchronizationHandler workflow apply synchronization handler
+     * @param workflowRuntimeHandler workflow runtime handler
      * @param workflowApplyArtifactValidator workflow apply artifact validator
      * @param sessionId session id
      * @param snapshot workflow snapshot
@@ -76,7 +76,7 @@ public final class WorkflowExecutionService {
      * @return apply payload
      */
     public Map<String, Object> apply(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
-                                     final MCPFeatureExecutionFacade executionFacade, final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler,
+                                     final MCPFeatureExecutionFacade executionFacade, final MCPWorkflowRuntimeHandler workflowRuntimeHandler,
                                      final MCPWorkflowApplyArtifactValidator workflowApplyArtifactValidator, final String sessionId, final WorkflowContextSnapshot snapshot,
                                      final List<String> approvedSteps, final String executionMode) {
         String actualExecutionMode = requireExecutionMode(snapshot, executionMode);
@@ -96,7 +96,7 @@ public final class WorkflowExecutionService {
         if (isManualOnly(actualExecutionMode)) {
             return applyManualOnly(workflowSessionContext, snapshot, applyOutcome);
         }
-        return applyAutomatically(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, workflowApplySynchronizationHandler, sessionId, snapshot,
+        return applyAutomatically(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, workflowRuntimeHandler, sessionId, snapshot,
                 actualExecutionMode, applyOutcome);
     }
     
@@ -225,10 +225,10 @@ public final class WorkflowExecutionService {
     
     private Map<String, Object> applyAutomatically(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                                                    final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade,
-                                                   final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler,
+                                                   final MCPWorkflowRuntimeHandler workflowRuntimeHandler,
                                                    final String sessionId, final WorkflowContextSnapshot snapshot, final String executionMode,
                                                    final WorkflowApplyOutcome applyOutcome) {
-        if (WorkflowSecretReferenceUtils.hasSecretReferences(getPropertySource(snapshot))) {
+        if (WorkflowSecretReferenceUtils.hasSecretReferences(getRequest(snapshot))) {
             return failSecretReferenceManualExecutionRequired(workflowSessionContext, snapshot, executionMode, applyOutcome);
         }
         String currentArtifactDisplaySql = "";
@@ -238,7 +238,7 @@ public final class WorkflowExecutionService {
                 executeArtifact(executionFacade, sessionId, snapshot, each);
                 applyOutcome.addExecutedArtifact(each);
             }
-            workflowApplySynchronizationHandler.synchronize(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId);
+            workflowRuntimeHandler.synchronize(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId);
             return completeApply(workflowSessionContext, snapshot, executionMode, applyOutcome);
         } catch (final WorkflowSynchronizationException ex) {
             return failApplySynchronization(workflowSessionContext, snapshot, executionMode, applyOutcome, ex);
@@ -259,15 +259,15 @@ public final class WorkflowExecutionService {
                                           final WorkflowApplyOutcome applyOutcome, final String artifactSql, final RuntimeException ex) {
         persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         applyOutcome.addFailedArtifact(artifactSql, WorkflowArtifactMaskUtils.maskSensitiveSql(
-                null == ex.getMessage() ? "" : ex.getMessage(), getPropertySource(snapshot), snapshot.getPropertyRequirements()));
+                null == ex.getMessage() ? "" : ex.getMessage(), getRequest(snapshot), snapshot.getPropertyRequirements()));
         return applyOutcome.createResponse(WorkflowLifecycle.STATUS_FAILED, snapshot, executionMode, Map.of());
     }
     
     private Map<String, Object> failSecretReferenceManualExecutionRequired(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot,
                                                                            final String executionMode, final WorkflowApplyOutcome applyOutcome) {
         persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
-        WorkflowPropertySource propertySource = getPropertySource(snapshot);
-        String category = WorkflowSecretReferenceUtils.hasMalformedSecretReferences(propertySource)
+        WorkflowRequest request = getRequest(snapshot);
+        String category = WorkflowSecretReferenceUtils.hasMalformedSecretReferences(request)
                 ? MCPDiagnosticCategory.SECRET_REFERENCE_MALFORMED
                 : MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED;
         applyOutcome.addSecretReferenceManualExecutionRequired();
@@ -275,7 +275,7 @@ public final class WorkflowExecutionService {
         result.put("response_mode", MCPResponseMode.RECOVERY);
         result.put("category", category);
         result.put(MCPPayloadFieldNames.SUMMARY, "This workflow contains sensitive placeholders that must be filled outside MCP before execution.");
-        result.put("secret_reference_summary", WorkflowArtifactMaskUtils.createSecretReferenceSummary(propertySource));
+        result.put("secret_reference_summary", WorkflowArtifactMaskUtils.createSecretReferenceSummary(request));
         WorkflowGuidancePayloadBuilder.appendApplyGuidance(result, WorkflowLifecycle.STATUS_FAILED);
         return result;
     }
@@ -295,18 +295,17 @@ public final class WorkflowExecutionService {
         workflowSessionContext.save(snapshot);
     }
     
-    private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getRequest() ? algorithmRole -> Map.of() : snapshot.getRequest();
+    private WorkflowRequest getRequest(final WorkflowContextSnapshot snapshot) {
+        return null == snapshot.getRequest() ? new WorkflowRequest() : snapshot.getRequest();
     }
     
     private Map<String, Object> createArtifactPayload(final WorkflowContextSnapshot snapshot) {
-        return WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, getPropertySource(snapshot));
+        return WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, getRequest(snapshot));
     }
     
     private List<WorkflowArtifactBundle.ExecutableWorkflowArtifact> createExecutableArtifacts(final WorkflowContextSnapshot snapshot) {
         WorkflowArtifactBundle result = WorkflowArtifactBundle.from(snapshot);
-        WorkflowPropertySource propertySource = getPropertySource(snapshot);
-        return result.toExecutableArtifacts(propertySource, snapshot.getPropertyRequirements());
+        return result.toExecutableArtifacts(getRequest(snapshot), snapshot.getPropertyRequirements());
     }
     
     private void executeArtifact(final MCPFeatureExecutionFacade executionFacade, final String sessionId, final WorkflowContextSnapshot snapshot,

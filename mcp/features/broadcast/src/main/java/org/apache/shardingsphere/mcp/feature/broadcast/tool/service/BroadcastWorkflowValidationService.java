@@ -75,10 +75,11 @@ public final class BroadcastWorkflowValidationService implements MCPWorkflowRunt
                                             final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
         BroadcastWorkflowRequest request = (BroadcastWorkflowRequest) snapshot.getRequest();
         boolean dropWorkflow = WorkflowLifecycleUtils.isDropWorkflow(snapshot);
+        boolean expectedRuleExists = !dropWorkflow;
         for (String each : request.getTargetTables()) {
             boolean ruleExists = broadcastRules.stream().anyMatch(rule -> queryFacade.isSameIdentifier(
                     request.getDatabase(), IdentifierScope.TABLE, each, WorkflowRuleValueUtils.getRuleValue(rule, "broadcast_table")));
-            if (dropWorkflow && ruleExists || !dropWorkflow && !ruleExists) {
+            if (expectedRuleExists != ruleExists) {
                 addRuleMismatch(validationReport, dropWorkflow, each);
                 return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, broadcastRules, "Broadcast rule state does not match the planned DistSQL artifact.");
             }

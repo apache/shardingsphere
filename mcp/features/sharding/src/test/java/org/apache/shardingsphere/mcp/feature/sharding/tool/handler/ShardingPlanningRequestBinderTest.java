@@ -32,7 +32,9 @@ class ShardingPlanningRequestBinderTest {
     void assertBindTableRule() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindTableRule(Map.of(
                 "database", "logic_db",
-                "structured_intent_evidence", Map.of("table", "t_order", "column", "order_id", "algorithm_type", "INLINE", "auditors", "evidence_auditor"),
+                "table", "t_order",
+                "column", "order_id",
+                "algorithm_type", "INLINE",
                 "algorithm_properties", Map.of("algorithm-expression", "t_order_${order_id % 2}"),
                 "auditors", "dml_auditor"));
         assertThat(actual.getDatabase(), is("logic_db"));
@@ -45,8 +47,7 @@ class ShardingPlanningRequestBinderTest {
     @Test
     void assertBindTableReferenceRule() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindTableReferenceRule(Map.of(
-                "database", "logic_db", "rule", "ref_rule", "reference_tables", "t_order,t_order_item",
-                "structured_intent_evidence", Map.of("reference_tables", "evidence_table")));
+                "database", "logic_db", "rule", "ref_rule", "reference_tables", "t_order,t_order_item"));
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getRuleName(), is("ref_rule"));
         assertThat(actual.getReferenceTables(), is(List.of("t_order", "t_order_item")));
@@ -55,7 +56,7 @@ class ShardingPlanningRequestBinderTest {
     @Test
     void assertBindDefaultStrategy() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindDefaultStrategy(Map.of(
-                "database", "logic_db", "default_strategy_type", "DATABASE", "structured_intent_evidence", Map.of("column", "order_id"),
+                "database", "logic_db", "default_strategy_type", "DATABASE", "column", "order_id",
                 "algorithm_properties", Map.of("algorithm-expression", "ds_${order_id % 2}")));
         assertThat(actual.getDefaultStrategyType(), is("DATABASE"));
         assertThat(actual.getColumn(), is("order_id"));
@@ -76,8 +77,8 @@ class ShardingPlanningRequestBinderTest {
     @Test
     void assertBindKeyGenerateStrategy() {
         ShardingWorkflowRequest actual = new ShardingPlanningRequestBinder().bindKeyGenerateStrategy(Map.of(
-                "database", "logic_db", "key_generate_strategy", "order_key_strategy", "structured_intent_evidence",
-                Map.of("table", "t_order", "column", "id", "key_generator", "snowflake_generator")));
+                "database", "logic_db", "key_generate_strategy", "order_key_strategy", "table", "t_order", "column", "id",
+                "key_generator", "snowflake_generator"));
         assertThat(actual.getKeyGenerateStrategyName(), is("order_key_strategy"));
         assertThat(actual.getTable(), is("t_order"));
         assertThat(actual.getKeyGeneratorName(), is("snowflake_generator"));

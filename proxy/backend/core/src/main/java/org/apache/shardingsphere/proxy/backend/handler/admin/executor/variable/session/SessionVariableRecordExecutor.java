@@ -47,6 +47,7 @@ public final class SessionVariableRecordExecutor {
     public void recordVariable(final String variableName, final String assignValue) {
         if (DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType).map(optional -> optional.isNeedToReplay(variableName)).orElse(false)) {
             connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
+            connectionSession.getDatabaseConnectionManager().markSessionVariablesDirty();
         } else {
             log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
         }
@@ -63,12 +64,17 @@ public final class SessionVariableRecordExecutor {
             log.debug("Set statement {} was discarded.", variables);
             return;
         }
+        boolean recorded = false;
         for (Entry<String, String> entry : variables.entrySet()) {
             if (replayedSessionVariableProvider.get().isNeedToReplay(entry.getKey())) {
                 connectionSession.getRequiredSessionVariableRecorder().setVariable(entry.getKey(), entry.getValue());
+                recorded = true;
             } else {
                 log.debug("Set statement {} = {} was discarded.", entry.getKey(), entry.getValue());
             }
+        }
+        if (recorded) {
+            connectionSession.getDatabaseConnectionManager().markSessionVariablesDirty();
         }
     }
 }

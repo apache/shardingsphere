@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -51,8 +52,11 @@ class SessionVariableRecordExecutorTest {
         RequiredSessionVariableRecorder recorder = mock(RequiredSessionVariableRecorder.class);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable("autocommit", "1");
         verify(recorder).setVariable("autocommit", "1");
+        verify(databaseConnectionManager).markSessionVariablesDirty();
     }
     
     @Test
@@ -79,11 +83,14 @@ class SessionVariableRecordExecutorTest {
         RequiredSessionVariableRecorder recorder = mock(RequiredSessionVariableRecorder.class);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         Map<String, String> variables = new HashMap<>(2, 1F);
         variables.put("var_a", "1");
         variables.put("var_b", "2");
         new SessionVariableRecordExecutor(databaseType, connectionSession).recordVariable(variables);
         verify(recorder).setVariable("var_a", "1");
         verify(recorder, never()).setVariable("var_b", "2");
+        verify(databaseConnectionManager).markSessionVariablesDirty();
     }
 }

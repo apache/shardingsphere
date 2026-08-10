@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Workflow request.
  */
 @Getter
-public class WorkflowRequest implements WorkflowPropertySource {
+public class WorkflowRequest {
     
     private String planId = "";
     
@@ -45,19 +43,15 @@ public class WorkflowRequest implements WorkflowPropertySource {
     
     private String naturalLanguageIntent = "";
     
-    private String fieldSemantics = "";
-    
     private String deliveryMode = WorkflowLifecycle.DELIVERY_MODE_ALL_AT_ONCE;
     
     private String executionMode = WorkflowLifecycle.EXECUTION_MODE_REVIEW_THEN_EXECUTE;
     
     private String algorithmType = "";
     
-    private final Map<String, String> primaryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
+    private final Map<String, String> primaryAlgorithmProperties = new LinkedHashMap<>();
     
-    private final Map<String, SecretReferenceValue> primaryAlgorithmSecretReferences = new LinkedHashMap<>(8, 1F);
-    
-    private final List<String> approvedSteps = new LinkedList<>();
+    private final Map<String, SecretReferenceValue> primaryAlgorithmSecretReferences = new LinkedHashMap<>();
     
     /**
      * Create a defensive copy of the workflow request.
@@ -68,46 +62,92 @@ public class WorkflowRequest implements WorkflowPropertySource {
         return copyTo(new WorkflowRequest());
     }
     
+    /**
+     * Set plan id.
+     *
+     * @param planId plan id
+     */
     public void setPlanId(final String planId) {
         this.planId = normalize(planId);
     }
     
+    /**
+     * Set database.
+     *
+     * @param database database
+     */
     public void setDatabase(final String database) {
         this.database = normalize(database);
     }
     
+    /**
+     * Set schema.
+     *
+     * @param schema schema
+     */
     public void setSchema(final String schema) {
         this.schema = normalize(schema);
     }
     
+    /**
+     * Set table.
+     *
+     * @param table table
+     */
     public void setTable(final String table) {
         this.table = normalize(table);
     }
     
+    /**
+     * Set column.
+     *
+     * @param column column
+     */
     public void setColumn(final String column) {
         this.column = normalize(column);
     }
     
+    /**
+     * Set operation type.
+     *
+     * @param operationType operation type
+     */
     public void setOperationType(final String operationType) {
         this.operationType = normalize(operationType);
     }
     
+    /**
+     * Set natural language intent.
+     *
+     * @param naturalLanguageIntent natural language intent
+     */
     public void setNaturalLanguageIntent(final String naturalLanguageIntent) {
         this.naturalLanguageIntent = normalize(naturalLanguageIntent);
     }
     
-    public void setFieldSemantics(final String fieldSemantics) {
-        this.fieldSemantics = normalize(fieldSemantics);
-    }
-    
+    /**
+     * Set delivery mode.
+     *
+     * @param deliveryMode delivery mode
+     */
     public void setDeliveryMode(final String deliveryMode) {
         this.deliveryMode = normalize(deliveryMode);
     }
     
+    /**
+     * Set execution mode.
+     *
+     * @param executionMode execution mode
+     */
     public void setExecutionMode(final String executionMode) {
         this.executionMode = normalize(executionMode);
     }
     
+    /**
+     * Set algorithm type.
+     *
+     * @param algorithmType algorithm type
+     */
     public void setAlgorithmType(final String algorithmType) {
         this.algorithmType = normalize(algorithmType);
     }
@@ -140,12 +180,21 @@ public class WorkflowRequest implements WorkflowPropertySource {
         return null == source ? target : source.copyTo(target);
     }
     
-    @Override
+    /**
+     * Get algorithm properties.
+     *
+     * @param algorithmRole algorithm role
+     * @return algorithm properties
+     */
     public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
         return "primary".equals(algorithmRole) ? primaryAlgorithmProperties : Map.of();
     }
     
-    @Override
+    /**
+     * Get secret references by algorithm role.
+     *
+     * @return secret references by algorithm role
+     */
     public Map<String, Map<String, SecretReferenceValue>> getSecretReferences() {
         if (primaryAlgorithmSecretReferences.isEmpty()) {
             return Map.of();
@@ -155,7 +204,12 @@ public class WorkflowRequest implements WorkflowPropertySource {
         return result;
     }
     
-    @Override
+    /**
+     * Get secret references.
+     *
+     * @param algorithmRole algorithm role
+     * @return secret references
+     */
     public Map<String, SecretReferenceValue> getSecretReferences(final String algorithmRole) {
         return "primary".equals(algorithmRole) ? primaryAlgorithmSecretReferences : Map.of();
     }
@@ -175,13 +229,11 @@ public class WorkflowRequest implements WorkflowPropertySource {
         target.setColumn(column);
         target.setOperationType(operationType);
         target.setNaturalLanguageIntent(naturalLanguageIntent);
-        target.setFieldSemantics(fieldSemantics);
         target.setDeliveryMode(deliveryMode);
         target.setExecutionMode(executionMode);
         target.setAlgorithmType(algorithmType);
         target.getPrimaryAlgorithmProperties().putAll(primaryAlgorithmProperties);
         target.getPrimaryAlgorithmSecretReferences().putAll(primaryAlgorithmSecretReferences);
-        target.getApprovedSteps().addAll(approvedSteps);
         return target;
     }
     
@@ -191,7 +243,7 @@ public class WorkflowRequest implements WorkflowPropertySource {
      * @param target target request
      */
     protected final void overlayTo(final WorkflowRequest target) {
-        if (hasText(planId)) {
+        if (!planId.isEmpty()) {
             target.setPlanId(planId);
         }
         target.setDatabase(resolveValue(target.getDatabase(), database));
@@ -200,27 +252,18 @@ public class WorkflowRequest implements WorkflowPropertySource {
         target.setColumn(resolveValue(target.getColumn(), column));
         target.setOperationType(resolveValue(target.getOperationType(), operationType));
         target.setNaturalLanguageIntent(resolveValue(target.getNaturalLanguageIntent(), naturalLanguageIntent));
-        target.setFieldSemantics(resolveValue(target.getFieldSemantics(), fieldSemantics));
         target.setDeliveryMode(resolveValue(target.getDeliveryMode(), deliveryMode));
         target.setExecutionMode(resolveValue(target.getExecutionMode(), executionMode));
         target.setAlgorithmType(resolveValue(target.getAlgorithmType(), algorithmType));
         target.getPrimaryAlgorithmProperties().putAll(primaryAlgorithmProperties);
         target.getPrimaryAlgorithmSecretReferences().putAll(primaryAlgorithmSecretReferences);
-        if (!approvedSteps.isEmpty()) {
-            target.getApprovedSteps().clear();
-            target.getApprovedSteps().addAll(approvedSteps);
-        }
     }
     
     private String resolveValue(final String previousValue, final String currentValue) {
-        return hasText(currentValue) ? currentValue : previousValue;
+        return !currentValue.isEmpty() ? currentValue : previousValue;
     }
     
-    private static boolean hasText(final String value) {
-        return !value.isEmpty();
-    }
-    
-    private static String normalize(final String value) {
-        return null == value ? "" : value.trim();
+    private String normalize(final String value) {
+        return Objects.toString(value, "").trim();
     }
 }

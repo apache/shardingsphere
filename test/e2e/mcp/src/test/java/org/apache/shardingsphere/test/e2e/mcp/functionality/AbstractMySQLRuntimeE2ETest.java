@@ -17,18 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
-import io.modelcontextprotocol.client.McpSyncClient;
-import io.modelcontextprotocol.spec.McpClientTransport;
-import io.modelcontextprotocol.spec.McpSchema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.TestInstance;
@@ -43,10 +37,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
@@ -55,8 +47,6 @@ abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterize
     protected static final String LOGICAL_DATABASE_NAME = "logic_db";
     
     protected static final String PHYSICAL_DATABASE_NAME = "orders";
-    
-    protected static final String MASK_PLAN_TOOL_NAME = "database_gateway_plan_mask_rule";
     
     @Getter(AccessLevel.PROTECTED)
     private GenericContainer<?> container;
@@ -140,38 +130,29 @@ abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterize
         return MySQLRuntimeTestSupport.createRuntimeDatabases(container, LOGICAL_DATABASE_NAME);
     }
     
-    protected static Map<String, Object> createExecuteUpdateArguments(final String sql) {
-        return Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", sql, "execution_mode", "execute");
-    }
-    
-    protected static Map<String, Object> createExecuteUpdateArguments(final String databaseName, final String sql) {
-        return Map.of("database", databaseName, "schema", databaseName, "sql", sql, "execution_mode", "execute");
-    }
-    
-    protected static Stream<Arguments> allTransportCases() {
-        return FunctionalityTransportCases.allTransportCases();
-    }
-    
     protected static Stream<Arguments> singleMetadataResourceCases() {
-        return FunctionalityTransportCases.singleMetadataResourceCases(LOGICAL_DATABASE_NAME);
+        return Stream.of(
+                Arguments.of("database detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME, "database", LOGICAL_DATABASE_NAME),
+                Arguments.of("schema detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME),
+                Arguments.of("table column detail",
+                        "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME + "/tables/orders/columns/status", "column", "status"),
+                Arguments.of("view detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/views/active_orders", "view", "active_orders"),
+                Arguments.of("view column detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/views/active_orders/columns/status", "column", "status"),
+                Arguments.of("index detail", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/tables/orders/indexes/idx_orders_status", "index", "idx_orders_status"));
     }
     
     protected static Stream<Arguments> collectionMetadataResourceCases() {
-        return FunctionalityTransportCases.collectionMetadataResourceCases(LOGICAL_DATABASE_NAME);
-    }
-    
-    protected Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases() throws IOException {
-        prepareRuntime();
-        try {
-            return MySQLRuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(container);
-        } catch (final SQLException ex) {
-            throw new IOException("Failed to initialize MySQL programmatic runtime databases.", ex);
-        }
-    }
-    
-    protected List<String> readTableNames(final MCPInteractionClient interactionClient, final String databaseName) throws IOException, InterruptedException {
-        return getPayloadItems(interactionClient.readResource(String.format("shardingsphere://databases/%s/schemas/%s/tables", databaseName, databaseName)))
-                .stream().map(each -> String.valueOf(each.get("table"))).toList();
+        return Stream.of(
+                Arguments.of("schemas list", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas", "schema", List.of(LOGICAL_DATABASE_NAME)),
+                Arguments.of("tables list", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME + "/tables", "table",
+                        List.of("order_items", "orders")),
+                Arguments.of("table columns list", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/tables/orders/columns", "column", List.of("amount", "order_id", "status")),
+                Arguments.of("view columns list", "shardingsphere://databases/" + LOGICAL_DATABASE_NAME + "/schemas/" + LOGICAL_DATABASE_NAME
+                        + "/views/active_orders/columns", "column", List.of("order_id", "status")));
     }
     
     protected void assertRecoveryResponse(final Map<String, Object> actual) {
@@ -184,117 +165,12 @@ abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterize
         assertThat(String.valueOf(actual.get("summary")), is(expectedMessage));
     }
     
-    protected void assertAiNativeGuidance(final Map<String, Object> guidance) {
-        assertTrue(guidance.containsKey("discovery"));
-        assertTrue(guidance.containsKey("model_contract"));
-        assertTrue(guidance.containsKey("next_action_contract"));
-        assertTrue(guidance.containsKey("common_flows"));
-        assertTrue(guidance.containsKey("security_hints"));
-        assertFalse(guidance.containsKey("model_first_summary"));
-        assertFalse(guidance.containsKey("surface_summary"));
-        assertFalse(guidance.containsKey("fingerprints"));
-        assertFalse(((List<?>) guidance.get("common_flows")).isEmpty());
-        Map<String, Object> discovery = getObjectOrEmpty(guidance.get("discovery"));
-        assertThat(getObjectOrEmpty(discovery.get("official_discovery_methods")).get("tools"), is("tools/list"));
-        assertThat(discovery.get("argument_completion_method"), is("completion/complete"));
-        Map<String, Object> modelContract = getObjectOrEmpty(guidance.get("model_contract"));
-        assertTrue(String.valueOf(modelContract.get("preflight_rule")).contains("database_gateway_validate_runtime_database"));
-        assertTrue(String.valueOf(getObjectOrEmpty(modelContract.get("sql_tool_selection")).get("read_only")).contains("database_gateway_execute_query"));
-        assertThat(modelContract.get("recovery_rule"), is("When a call fails, follow top-level next_actions before inventing a new call."));
-    }
-    
-    protected void assertAiNativeDiscovery(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
-        Map<String, Object> runtimeStatus = interactionClient.readResource("shardingsphere://runtime");
-        assertThat(String.valueOf(runtimeStatus.get("status")), is("available"));
-        assertThat(String.valueOf(runtimeStatus.get("configured_database_count")), is("1"));
-        assertTrue(getResources(interactionClient.listResources()).stream().anyMatch(each -> "shardingsphere://runtime".equals(each.get("uri"))));
-        assertTrue(getResourceTemplates(interactionClient.listResourceTemplates()).stream()
-                .anyMatch(each -> "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}".equals(each.get("uriTemplate"))));
-        assertTrue(interactionClient.listTools().stream()
-                .anyMatch(each -> "database_gateway_execute_update".equals(each.get("name")) && getObjectOrEmpty(each.get("outputSchema")).containsKey("properties")));
-        Map<String, Object> promptPayload = interactionClient.getPrompt("inspect_metadata",
-                Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "orders"));
-        assertTrue(String.valueOf(promptPayload).contains("Stop conditions"));
-        Map<String, Object> completionPayload = interactionClient.complete(Map.of("type", "ref/prompt", "name", "inspect_metadata"),
-                "schema", "log", Map.of("database", LOGICAL_DATABASE_NAME));
-        assertTrue(((List<?>) getObjectOrEmpty(completionPayload.get("completion")).get("values")).contains(LOGICAL_DATABASE_NAME));
-    }
-    
-    protected void assertAiNativeSqlPreview(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
-        Map<String, Object> actual = interactionClient.call("database_gateway_execute_update",
-                Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "preview"));
-        assertThat(String.valueOf(actual.get("response_mode")), is("preview"));
-        assertThat(String.valueOf(actual.get("result_kind")), is("preview"));
-        assertThat(String.valueOf(actual.get("preview_semantics")), is("classification_only"));
-        assertFalse((Boolean) actual.get("would_execute"));
-        List<Map<String, Object>> nextActions = getRequiredObjectList(actual.get("next_actions"));
-        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("ask_user", "tool_call")));
-        Map<String, Object> askUserAction = nextActions.getFirst();
-        assertThat(askUserAction.get("order"), is(1));
-        assertThat(askUserAction.get("required_inputs"), is(List.of("execution_approved")));
-        Map<String, Object> toolCallAction = nextActions.get(1);
-        assertThat(toolCallAction.get("order"), is(2));
-        assertThat(toolCallAction.get("tool_name"), is("database_gateway_execute_update"));
-        assertThat(toolCallAction.get("depends_on"), is(List.of(1)));
-        assertThat(getObjectOrEmpty(toolCallAction.get("arguments")).get("execution_mode"), is("execute"));
-    }
-    
-    protected void assertAiNativeSqlResult(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
-        Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
-                Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT order_id, status FROM orders ORDER BY order_id", "max_rows", 1));
-        assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
-        assertThat(String.valueOf(actual.get("row_object_status")), is("available"));
-        assertThat(((List<?>) actual.get("row_objects")).size(), is(1));
-        assertThat(String.valueOf(actual.get("truncated")), is("true"));
-        assertThat(String.valueOf(getRequiredObjectList(actual.get("next_actions")).getFirst().get("type")), is("ask_user"));
-    }
-    
-    protected McpSyncClient createElicitationClient(final RuntimeTransport transport, final List<McpSchema.ElicitRequest> elicitationRequests) throws IOException {
-        return MCPClientTransportFactory.createElicitationClient(createClientTransport(transport), elicitationRequests, this::createElicitationResult);
-    }
-    
-    private McpClientTransport createClientTransport(final RuntimeTransport transport) throws IOException {
-        return RuntimeTransport.HTTP == transport
-                ? MCPClientTransportFactory.createHttpClientTransport(getHttpEndpointUri())
-                : MCPClientTransportFactory.createStdioClientTransport(getConfigFile());
-    }
-    
-    private McpSchema.ElicitResult createElicitationResult(final List<McpSchema.ElicitRequest> elicitationRequests,
-                                                           final McpSchema.ElicitRequest request) {
-        elicitationRequests.add(request);
-        List<String> requiredFields = getRequiredStringList(request.requestedSchema().get("required"));
-        return new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of(
-                requiredFields.getFirst(), "1",
-                requiredFields.get(1), "3"));
-    }
-    
-    protected void assertElicitationRequest(final List<McpSchema.ElicitRequest> actualRequests) {
-        assertThat(actualRequests.size(), is(1));
-        McpSchema.ElicitRequest actual = actualRequests.getFirst();
-        assertThat(actual.meta().get(MCPShardingSphereMetadataKeys.TOOL), is(MASK_PLAN_TOOL_NAME));
-        assertFalse(String.valueOf(actual.meta().get(MCPShardingSphereMetadataKeys.PLAN_ID)).isBlank());
-        Map<String, Object> actualRequestedSchema = actual.requestedSchema();
-        assertThat(actualRequestedSchema.get("type"), is("object"));
-        assertFalse((Boolean) actualRequestedSchema.get("additionalProperties"));
-        Map<String, Object> actualProperties = MCPInteractionPayloads.getRequiredObject(actualRequestedSchema, "properties");
-        assertTrue(actualProperties.containsKey("field_1"));
-        assertTrue(actualProperties.containsKey("field_2"));
-        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_1").get("description")), is("Please provide property `from-x`."));
-        assertThat(String.valueOf(MCPInteractionPayloads.getRequiredObject(actualProperties, "field_2").get("description")), is("Please provide property `to-y`."));
-        assertFalse(actualProperties.keySet().stream().map(String::valueOf).anyMatch(each -> each.contains("secret") || each.contains("password") || each.contains("token")));
-        assertThat(getRequiredStringList(actualRequestedSchema.get("required")), hasItems("field_1", "field_2"));
-    }
-    
     protected Map<String, Object> getObjectOrEmpty(final Object value) {
         return value instanceof Map ? MCPInteractionPayloads.getRequiredObjectValue(value, "payload") : Map.of();
     }
     
     protected List<Map<String, Object>> getRequiredObjectList(final Object value) {
         return MCPInteractionPayloads.getRequiredObjectList(value, "payload");
-    }
-    
-    protected List<String> getRequiredStringList(final Object value) {
-        return ((List<?>) value).stream().map(String::valueOf).toList();
     }
     
     @AllArgsConstructor(access = AccessLevel.PRIVATE)

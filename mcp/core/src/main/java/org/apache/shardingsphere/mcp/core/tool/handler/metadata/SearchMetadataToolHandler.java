@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
 
@@ -34,8 +35,6 @@ import java.util.Set;
  * Handler for search-metadata tool.
  */
 public final class SearchMetadataToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
-    
-    private static final String TOOL_NAME = "database_gateway_search_metadata";
     
     private static final int DEFAULT_LIMIT = 100;
     
@@ -51,7 +50,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPFeatur
     
     @Override
     public String getToolName() {
-        return TOOL_NAME;
+        return CoreToolNames.SEARCH_METADATA;
     }
     
     @Override
@@ -63,6 +62,6 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPFeatur
                 toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES), toolArguments.getIntegerArgument("limit", DEFAULT_LIMIT, 1, DEFAULT_LIMIT),
                 toolArguments.getIntegerArgument("offset", 0, 0, Integer.MAX_VALUE));
         MetadataSearchResult searchResult = new SearchMetadataToolService(requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade()).execute(request);
-        return new MCPItemsPayload(searchResult.getItems(), "", SearchMetadataPayloadBuilder.build(requestContext, request, searchResult, TOOL_NAME), MCPResponseMode.SEARCH);
+        return new MCPItemsPayload(searchResult.getItems(), "", SearchMetadataPayloadBuilder.build(requestContext, request, searchResult, CoreToolNames.SEARCH_METADATA), MCPResponseMode.SEARCH);
     }
 }

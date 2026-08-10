@@ -74,8 +74,4 @@ class EncryptAlgorithmCatalogTest {
         assertTrue(actual.isEmpty());
     }
     
-    @Test
-    void assertGetSupportedAlgorithmTypes() {
-        assertThat(EncryptAlgorithmCatalog.getSupportedAlgorithmTypes(), is(List.of("AES", "MD5")));
-    }
 }

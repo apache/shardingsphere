@@ -51,10 +51,8 @@ public final class WorkflowRuntimeDefinitionRegistry {
             Objects.requireNonNull(each, "Workflow definition is required.");
             WorkflowKind workflowKind = Objects.requireNonNull(each.getWorkflowKind(),
                     () -> String.format("Workflow kind is required for `%s`.", each.getClass().getName()));
-            ShardingSpherePreconditions.checkNotNull(each.getValidationHandler(),
-                    () -> new IllegalArgumentException(String.format("Workflow validation handler is required for `%s`.", workflowKind.getValue())));
-            ShardingSpherePreconditions.checkNotNull(each.getApplySynchronizationHandler(),
-                    () -> new IllegalArgumentException(String.format("Workflow apply synchronization handler is required for `%s`.", workflowKind.getValue())));
+            ShardingSpherePreconditions.checkNotNull(each.getRuntimeHandler(),
+                    () -> new IllegalArgumentException(String.format("Workflow runtime handler is required for `%s`.", workflowKind.getValue())));
             ShardingSpherePreconditions.checkNotNull(each.getApplyArtifactValidator(),
                     () -> new IllegalArgumentException(String.format("Workflow apply artifact validator is required for `%s`.", workflowKind.getValue())));
             WorkflowRuntimeDefinition previousDefinition = result.putIfAbsent(workflowKind, each);

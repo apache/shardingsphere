@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeObjectSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
@@ -59,21 +58,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class SQLStatementObjectExtractor {
     
-    private static final Set<String> DCL_OBJECT_TYPE_KEYWORDS = Set.of("TABLE", "VIEW", "INDEX", "SEQUENCE", "DATABASE", "SCHEMA", "FUNCTION", "PROCEDURE");
+    private static final Set<String> NAMESPACE_PRIVILEGE_OBJECT_TYPES = Set.of("DATABASE", "SCHEMA");
     
-    private final SQLStatementScanner scanner;
-    
-    Collection<SQLStatementObjectName> extract(final SQLStatement sqlStatement, final String sql) {
+    Collection<SQLStatementObjectName> extract(final SQLStatement sqlStatement) {
         Collection<SQLStatementObjectName> result = new LinkedHashSet<>();
         extractDirectTargets(sqlStatement, result);
         TableExtractor tableExtractor = new TableExtractor();
@@ -83,72 +77,39 @@ final class SQLStatementObjectExtractor {
         extractMergeTables(sqlStatement, result);
         extractCommonTableExpressionTables(sqlStatement, result);
         removeCommonTableExpressionAliases(sqlStatement, result);
-        List<SQLStatementToken> tokens = scanner.tokenize(sql);
-        extractDCLTarget(sqlStatement, tokens, result);
-        extractQualifiedFunctions(tokens, result);
+        extractDCLTargets(sqlStatement, result);
+        extractQualifiedFunctions(sqlStatement, result);
         return result;
     }
     
-    private void extractDCLTarget(final SQLStatement sqlStatement, final List<SQLStatementToken> tokens, final Collection<SQLStatementObjectName> result) {
-        if (!(sqlStatement instanceof GrantStatement) && !(sqlStatement instanceof RevokeStatement)) {
+    private void extractDCLTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
+        Collection<PrivilegeObjectSegment> privilegeObjects;
+        if (sqlStatement instanceof GrantStatement) {
+            privilegeObjects = ((GrantStatement) sqlStatement).getPrivilegeObjects();
+        } else if (sqlStatement instanceof RevokeStatement) {
+            privilegeObjects = ((RevokeStatement) sqlStatement).getPrivilegeObjects();
+        } else {
             return;
         }
-        for (int index = 0; index < tokens.size(); index++) {
-            if (scanner.isKeyword(tokens.get(index), "ON")) {
-                int objectTypeIndex = index + 1;
-                int objectStartIndex = skipDCLObjectType(tokens, index + 1);
-                addObjectName(tokens, objectStartIndex, findObjectNameEnd(tokens, objectStartIndex), isNamespaceObjectType(tokens, objectTypeIndex), result);
-                return;
+        for (PrivilegeObjectSegment each : privilegeObjects) {
+            if (!each.getIdentifiers().isEmpty()) {
+                result.add(NAMESPACE_PRIVILEGE_OBJECT_TYPES.contains(each.getObjectType())
+                        ? SQLStatementObjectName.fromNamespace(each.getIdentifiers())
+                        : SQLStatementObjectName.from(each.getIdentifiers()));
             }
         }
     }
     
-    private boolean isNamespaceObjectType(final List<SQLStatementToken> tokens, final int index) {
-        return index < tokens.size() && (scanner.isKeyword(tokens.get(index), "DATABASE") || scanner.isKeyword(tokens.get(index), "SCHEMA"));
-    }
-    
-    private int skipDCLObjectType(final List<SQLStatementToken> tokens, final int startIndex) {
-        return startIndex < tokens.size() && DCL_OBJECT_TYPE_KEYWORDS.contains(tokens.get(startIndex).upperText()) ? startIndex + 1 : startIndex;
-    }
-    
-    private void extractQualifiedFunctions(final List<SQLStatementToken> tokens, final Collection<SQLStatementObjectName> result) {
-        int index = 0;
-        while (index < tokens.size()) {
-            int objectNameEnd = findObjectNameEnd(tokens, index);
-            if (objectNameEnd - index > 1 && objectNameEnd < tokens.size() && "(".equals(tokens.get(objectNameEnd).text())) {
-                addObjectName(tokens, index, objectNameEnd, false, result);
-                index = objectNameEnd + 1;
-            } else {
-                index++;
+    private void extractQualifiedFunctions(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
+        new SQLStatementTreeWalker(each -> {
+        }, expression -> {
+            if (expression instanceof FunctionSegment) {
+                FunctionSegment function = (FunctionSegment) expression;
+                if (null != function.getOwner()) {
+                    result.add(SQLStatementObjectName.from(Optional.of(function.getOwner()), new IdentifierValue(function.getFunctionName())));
+                }
             }
-        }
-    }
-    
-    private int findObjectNameEnd(final List<SQLStatementToken> tokens, final int startIndex) {
-        if (startIndex >= tokens.size() || !isObjectNameToken(tokens.get(startIndex))) {
-            return startIndex;
-        }
-        int result = startIndex + 1;
-        while (result + 1 < tokens.size() && ".".equals(tokens.get(result).text()) && isObjectNameToken(tokens.get(result + 1))) {
-            result += 2;
-        }
-        return result;
-    }
-    
-    private boolean isObjectNameToken(final SQLStatementToken token) {
-        return token.identifier() || "*".equals(token.text());
-    }
-    
-    private void addObjectName(final List<SQLStatementToken> tokens, final int startIndex, final int stopIndex, final boolean namespaceTarget,
-                               final Collection<SQLStatementObjectName> result) {
-        if (startIndex >= stopIndex) {
-            return;
-        }
-        List<IdentifierValue> identifiers = new LinkedList<>();
-        for (int index = startIndex; index < stopIndex; index += 2) {
-            identifiers.add(new IdentifierValue(tokens.get(index).text()));
-        }
-        result.add(namespaceTarget ? SQLStatementObjectName.fromNamespace(identifiers) : SQLStatementObjectName.from(identifiers));
+        }).walk(sqlStatement);
     }
     
     private void extractDirectTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
@@ -271,6 +232,13 @@ final class SQLStatementObjectExtractor {
                 collectCommonTableExpressionAliases(each.getSubquery().getSelect(), result);
             }
         });
+        if (sqlStatement instanceof CreateTableStatement) {
+            ((CreateTableStatement) sqlStatement).getSelectStatement().ifPresent(each -> collectCommonTableExpressionAliases(each, result));
+        } else if (sqlStatement instanceof CreateViewStatement) {
+            collectCommonTableExpressionAliases(((CreateViewStatement) sqlStatement).getSelect(), result);
+        } else if (sqlStatement instanceof AlterViewStatement) {
+            ((AlterViewStatement) sqlStatement).getSelect().ifPresent(each -> collectCommonTableExpressionAliases(each, result));
+        }
     }
     
     private Optional<WithSegment> findWithSegment(final SQLStatement sqlStatement) {
@@ -321,28 +289,7 @@ final class SQLStatementObjectExtractor {
         if (null == table) {
             return;
         }
-        IdentifierValue identifier = table.getTableName().getIdentifier();
-        if (table.getOwner().isEmpty() && addFlattenedQualifiedTable(identifier, result)) {
-            return;
-        }
-        result.add(SQLStatementObjectName.from(table.getOwner(), identifier));
-    }
-    
-    private boolean addFlattenedQualifiedTable(final IdentifierValue identifier, final Collection<SQLStatementObjectName> result) {
-        if (!identifier.getValue().contains(".")) {
-            return false;
-        }
-        QuoteCharacter quoteCharacter = identifier.getQuoteCharacter();
-        String identifierText = QuoteCharacter.NONE == quoteCharacter || quoteCharacter.isWrapped(identifier.getValue())
-                ? identifier.getValue()
-                : identifier.getValueWithQuoteCharacters();
-        List<SQLStatementToken> tokens = scanner.tokenize(identifierText);
-        int objectNameEnd = findObjectNameEnd(tokens, 0);
-        if (3 > objectNameEnd || objectNameEnd != tokens.size()) {
-            return false;
-        }
-        addObjectName(tokens, 0, objectNameEnd, false, result);
-        return true;
+        result.add(SQLStatementObjectName.from(table.getOwner(), table.getTableName().getIdentifier()));
     }
     
     private void addIndex(final IndexSegment index, final Collection<SQLStatementObjectName> result) {

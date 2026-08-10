@@ -36,6 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -57,7 +58,7 @@ class YamlEngineTest {
         assertNotNull(url);
         YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(new File(url.getFile()), YamlShortcutsConfigurationFixture.class);
         assertNotNull(actual);
-        assertTrue(actual.isEmpty());
+        assertNull(actual.getName());
     }
     
     @Test
@@ -72,7 +73,7 @@ class YamlEngineTest {
         String yamlContent = SystemResourceFileUtils.readFile("yaml/empty-config.yaml");
         YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.getBytes(), YamlShortcutsConfigurationFixture.class);
         assertNotNull(actual);
-        assertTrue(actual.isEmpty());
+        assertNull(actual.getName());
     }
     
     @Test

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -69,7 +70,7 @@ class HttpProxyEncryptWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     void assertPlanApplyAndValidateEncryptWorkflow() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> clarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
+                    createEncryptPlanArguments(Map.of("table", "orders", "column", "status"), false));
             assertThat(String.valueOf(clarifyingResponse.get("status")), is("clarifying"));
             assertModelFacingPayloadContract(clarifyingResponse);
             assertThat(getClarificationMessages(clarifyingResponse), is(List.of("Please provide logical database first.")));
@@ -110,8 +111,7 @@ class HttpProxyEncryptWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     void assertPlanRecommendsAssistedQueryEncryptWorkflow() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualClarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, requires equality, no like"));
+                    createEncryptPlanArguments(Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status"), true));
             assertThat(String.valueOf(actualClarifyingResponse.get("status")), is("clarifying"));
             assertThat(getIssueCodes(actualClarifyingResponse), hasItem(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
             Map<String, Object> actualClarificationQuestion = getObjectListOrEmpty(actualClarifyingResponse.get("clarification_questions")).getFirst();
@@ -148,17 +148,15 @@ class HttpProxyEncryptWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     void assertPlanRejectsUnsupportedSecondEncryptColumn() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualFirstPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
-                            "cipher_column_name", "status_cipher", "primary_algorithm_properties", Map.of("aes-key-value", "first-secret")));
+                    createEncryptPlanArguments(Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "algorithm_type", "AES",
+                            "cipher_column_name", "status_cipher", "primary_algorithm_properties", Map.of("aes-key-value", "first-secret")), false));
             assertThat(String.valueOf(actualFirstPlanResponse.get("status")), is("planned"));
             String firstPlanId = String.valueOf(actualFirstPlanResponse.get("plan_id"));
             assertApplyCompleted(applyReviewedWorkflow(interactionClient, firstPlanId));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", firstPlanId)));
             Map<String, Object> actualSecondPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "amount",
-                            "natural_language_intent", "encrypt amount with reversible encryption, no equality, no like", "algorithm_type", "AES",
-                            "primary_algorithm_properties", Map.of("aes-key-value", "second-secret")));
+                    createEncryptPlanArguments(Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "amount", "algorithm_type", "AES",
+                            "primary_algorithm_properties", Map.of("aes-key-value", "second-secret")), false));
             assertThat(String.valueOf(actualSecondPlanResponse.get("status")), is("clarifying"));
             assertThat(getIssueCodes(actualSecondPlanResponse), hasItem(WorkflowIssueCode.ENCRYPT_RULE_REWRITE_LIMITED));
             assertFalse(getClarificationMessages(actualSecondPlanResponse).isEmpty());
@@ -174,9 +172,8 @@ class HttpProxyEncryptWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     void assertApplySupportsManualOnlyExecutionMode() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
-                            "cipher_column_name", "status_cipher", "primary_algorithm_properties", Map.of("aes-key-value", "manual-secret")));
+                    createEncryptPlanArguments(Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "algorithm_type", "AES",
+                            "cipher_column_name", "status_cipher", "primary_algorithm_properties", Map.of("aes-key-value", "manual-secret")), false));
             assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlannedResponse.get("plan_id"));
             Map<String, Object> actualApplyResponse = interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId, "execution_mode", "manual-only"));
@@ -214,9 +211,8 @@ class HttpProxyEncryptWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     void assertPlanApplyValidateAndReadEncryptResourcesWithCustomAlgorithm() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "MCP_CUSTOM_REVERSIBLE",
-                            "cipher_column_name", "status_cipher"));
+                    createEncryptPlanArguments(Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
+                            "algorithm_type", "MCP_CUSTOM_REVERSIBLE", "cipher_column_name", "status_cipher"), false));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
             assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
@@ -242,13 +238,21 @@ class HttpProxyEncryptWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     
     private void createEncryptRuleWithoutEquality(final MCPInteractionClient interactionClient, final String columnName, final String secret) throws IOException, InterruptedException {
         Map<String, Object> actualCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
-                Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", columnName,
-                        "natural_language_intent", String.format("encrypt %s with reversible encryption, no equality, no like", columnName), "algorithm_type", "AES",
-                        "cipher_column_name", columnName + "_cipher", "primary_algorithm_properties", Map.of("aes-key-value", secret)));
+                createEncryptPlanArguments(Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", columnName, "algorithm_type", "AES",
+                        "cipher_column_name", columnName + "_cipher", "primary_algorithm_properties", Map.of("aes-key-value", secret)), false));
         assertThat(String.valueOf(actualCreatePlanResponse.get("status")), is("planned"));
         String planId = String.valueOf(actualCreatePlanResponse.get("plan_id"));
         assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
+    }
+    
+    private Map<String, Object> createEncryptPlanArguments(final Map<String, Object> arguments, final boolean requiresEqualityFilter) {
+        Map<String, Object> result = new LinkedHashMap<>(arguments);
+        result.put("operation_type", "create");
+        result.put("requires_decrypt", true);
+        result.put("requires_equality_filter", requiresEqualityFilter);
+        result.put("requires_like_query", false);
+        return result;
     }
     
     private Map<String, Object> applyReviewedWorkflow(final MCPInteractionClient interactionClient, final String planId, final String secretValue) throws IOException, InterruptedException {

@@ -33,7 +33,7 @@ public final class RoundRobinLoadBalanceAlgorithm implements LoadBalanceAlgorith
     @HighFrequencyInvocation
     @Override
     public String getTargetName(final String groupName, final List<String> availableTargetNames) {
-        return availableTargetNames.get(Math.abs(count.getAndIncrement()) % availableTargetNames.size());
+        return availableTargetNames.get(Math.floorMod(count.getAndIncrement(), availableTargetNames.size()));
     }
     
     @Override

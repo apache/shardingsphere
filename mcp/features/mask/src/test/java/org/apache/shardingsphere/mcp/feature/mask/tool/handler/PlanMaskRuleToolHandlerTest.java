@@ -64,14 +64,12 @@ class PlanMaskRuleToolHandlerTest {
                     "database", "logic_db",
                     "table", "orders",
                     "column", "phone",
-                    "algorithm_type", "KEEP_FIRST_N_LAST_M",
-                    "structured_intent_evidence", Map.of("field_semantics", "phone")));
+                    "algorithm_type", "KEEP_FIRST_N_LAST_M"));
             assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
             ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
             verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), requestCaptor.capture());
             WorkflowRequest actualRequest = requestCaptor.getValue();
             assertThat(actualRequest.getAlgorithmType(), is("KEEP_FIRST_N_LAST_M"));
-            assertThat(actualRequest.getFieldSemantics(), is("phone"));
         }
     }
     

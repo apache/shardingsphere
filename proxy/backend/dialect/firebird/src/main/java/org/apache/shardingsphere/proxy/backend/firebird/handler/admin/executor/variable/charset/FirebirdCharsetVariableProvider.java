@@ -40,7 +40,7 @@ public final class FirebirdCharsetVariableProvider implements CharsetVariablePro
         String formattedValue = variableValue.trim().toLowerCase(Locale.ROOT);
         try {
             return "default".equals(formattedValue) ? Charset.defaultCharset() : FirebirdCharacterSets.findCharacterSet(formattedValue);
-        } catch (final IllegalArgumentException ignored) {
+        } catch (final IllegalArgumentException ex) {
             throw new InvalidParameterValueException("names", formattedValue);
         }
     }

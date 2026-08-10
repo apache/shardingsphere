@@ -40,11 +40,6 @@ import static org.mockito.Mockito.when;
 class MaskAlgorithmCompletionHandlerTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new MaskAlgorithmCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
-    }
-    
-    @Test
     void assertSupports() {
         assertTrue(new MaskAlgorithmCompletionHandler().supports(createRequestContext(MaskFeatureDefinition.PLAN_PROMPT_NAME)));
     }

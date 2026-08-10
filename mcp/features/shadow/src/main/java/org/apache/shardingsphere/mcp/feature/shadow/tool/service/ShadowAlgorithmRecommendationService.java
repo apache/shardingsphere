@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 
@@ -37,15 +36,15 @@ public final class ShadowAlgorithmRecommendationService {
      * Recommend shadow algorithm.
      *
      * @param request workflow request
-     * @param algorithmResult algorithm query result
+     * @param algorithms algorithms reported by the current Proxy
      * @param issues workflow issues
      * @return selected candidates
      */
-    public List<AlgorithmCandidate> recommendShadowAlgorithms(final WorkflowRequest request, final WorkflowQueryResult algorithmResult,
+    public List<AlgorithmCandidate> recommendShadowAlgorithms(final WorkflowRequest request, final List<Map<String, Object>> algorithms,
                                                               final List<WorkflowIssue> issues) {
         String actualAlgorithmType = WorkflowAlgorithmUtils.normalizeAlgorithmType(request.getAlgorithmType());
         if (!actualAlgorithmType.isEmpty()) {
-            if (!algorithmResult.isAvailabilityConfirmed() || WorkflowAlgorithmUtils.containsAlgorithm(algorithmResult.getRows(), actualAlgorithmType, "type", "name")) {
+            if (WorkflowAlgorithmUtils.containsAlgorithm(algorithms, actualAlgorithmType, "type", "name")) {
                 return List.of(createCandidate(actualAlgorithmType, 100, "User specified shadow algorithm."));
             }
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
@@ -53,13 +52,14 @@ public final class ShadowAlgorithmRecommendationService {
                     "Choose an available shadow algorithm.", false, Map.of()));
             return List.of();
         }
-        String recommendedType = resolveRecommendedAlgorithm(algorithmResult.getRows());
+        String recommendedType = resolveRecommendedAlgorithm(algorithms);
         if (recommendedType.isEmpty()) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", WorkflowLifecycle.STEP_SELECTING_ALGORITHM,
                     "No shadow algorithm is available from the current Proxy.", "Install or expose at least one shadow algorithm.", false, Map.of()));
             return List.of();
         }
-        return List.of(createCandidate(recommendedType, 90, "Recommended from current shadow algorithm availability."));
+        return List.of(createCandidate(recommendedType, 90,
+                "Selected from algorithms reported by the current Proxy using MCP's built-in shadow preference order."));
     }
     
     private AlgorithmCandidate createCandidate(final String algorithmType, final int score, final String reason) {

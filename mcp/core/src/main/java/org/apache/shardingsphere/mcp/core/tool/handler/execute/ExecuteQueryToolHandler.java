@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 
 import java.util.LinkedHashMap;
@@ -32,8 +33,6 @@ import java.util.Map;
  */
 public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
-    private static final String TOOL_NAME = "database_gateway_execute_query";
-    
     @Override
     public Class<MCPFeatureRequestContext> getContextType() {
         return MCPFeatureRequestContext.class;
@@ -41,7 +40,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPFeatureR
     
     @Override
     public String getToolName() {
-        return TOOL_NAME;
+        return CoreToolNames.EXECUTE_QUERY;
     }
     
     @Override
@@ -49,10 +48,10 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPFeatureR
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(requestContext, toolArguments, sql);
-        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
+        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, CoreToolNames.EXECUTE_QUERY);
         return SQLExecutionPayload.query(requestContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(
                 requestContext.getSessionIdentity().getSessionId(), toolArguments,
-                SQLExecutionToolHandlerSupport.resolveSchema(requestContext, toolArguments), sql, TOOL_NAME)));
+                SQLExecutionToolHandlerSupport.resolveSchema(requestContext, toolArguments), sql, CoreToolNames.EXECUTE_QUERY)));
     }
     
     private void checkReadOnlyQuery(final MCPFeatureRequestContext requestContext, final MCPToolArguments toolArguments, final String sql) {
@@ -61,7 +60,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPFeatureR
             throw new SQLToolMismatchException(
                     "database_gateway_execute_query only supports parser-approved QUERY statements. "
                             + "Use database_gateway_execute_explain_query for EXPLAIN diagnostics or database_gateway_execute_update for side-effecting SQL.",
-                    TOOL_NAME, "database_gateway_execute_update", classificationResult,
+                    CoreToolNames.EXECUTE_QUERY, CoreToolNames.EXECUTE_UPDATE, classificationResult,
                     createSuggestedArguments(toolArguments, classificationResult));
         }
     }

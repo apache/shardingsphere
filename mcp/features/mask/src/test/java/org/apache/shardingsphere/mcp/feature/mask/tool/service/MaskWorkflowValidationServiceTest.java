@@ -234,7 +234,7 @@ class MaskWorkflowValidationServiceTest {
     void assertValidateExpectedState() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of("column", "phone", "algorithm_type", "MD5"))));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of("column", "phone", "algorithm_type", "MD5"))));
         workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
@@ -248,7 +248,7 @@ class MaskWorkflowValidationServiceTest {
     void assertValidateExpectedStateDetectsUnexpectedRule() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of("column", "phone", "algorithm_type", "MD5"))));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of("column", "phone", "algorithm_type", "MD5"))));
         workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(
@@ -263,7 +263,7 @@ class MaskWorkflowValidationServiceTest {
     void assertValidateExpectedStateDetectsAlgorithmMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of("column", "phone", "algorithm_type", "MD5"))));
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of("column", "phone", "algorithm_type", "MD5"))));
         workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
@@ -277,7 +277,7 @@ class MaskWorkflowValidationServiceTest {
     void assertValidateExpectedStateDetectsPropertyMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of(
                 "column", "phone",
                 "algorithm_type", "MASK_FROM_X_TO_Y",
                 "algorithm_props", Map.of("from-x", "1")))));
@@ -298,7 +298,7 @@ class MaskWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().getPrimaryAlgorithmProperties().put("replace-char", "secret_reference:primary.replace-char");
         snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("replace-char", SecretReferenceValue.create());
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of(
                 "column", "phone",
                 "algorithm_type", "MASK_FROM_X_TO_Y",
                 "algorithm_props", Map.of("replace-char", "secret_reference:primary.replace-char")))));
@@ -323,7 +323,7 @@ class MaskWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().getPrimaryAlgorithmProperties().put("replace-char", "secret_reference:primary.replace-char");
         snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("replace-char", SecretReferenceValue.create());
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(Map.of(
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of(
                 "column", "phone",
                 "algorithm_type", "MASK_FROM_X_TO_Y",
                 "algorithm_props", Map.of("replace-char", "secret_reference:primary.replace-char")))));
@@ -346,7 +346,7 @@ class MaskWorkflowValidationServiceTest {
     void assertValidateExpectedStateDetectsMissingNonTargetRule() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(), List.of(
+        snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(
                 Map.of("column", "phone", "algorithm_type", "MD5"),
                 Map.of("column", "email", "algorithm_type", "MD5"))));
         workflowSessionContext.save(snapshot);
