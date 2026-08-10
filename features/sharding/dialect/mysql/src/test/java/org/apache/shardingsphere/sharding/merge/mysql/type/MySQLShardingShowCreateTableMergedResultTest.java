@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.merge.mysql.type;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
@@ -29,7 +30,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -114,6 +118,45 @@ class MySQLShardingShowCreateTableMergedResultTest {
                 + "  PRIMARY KEY (`id`),\n"
                 + "  CONSTRAINT `foo_tbl_foreign_key_foo_tbl_0` FOREIGN KEY (`bar_id`) REFERENCES `bar_tbl_0` (`bar_id`) \n"
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
+        return result;
+    }
+    
+    @Test
+    void assertGetValueWithDollarSignInTableNames() throws SQLException {
+        MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
+                buildShardingRuleWithDollarSign(), mock(SQLStatementContext.class), createSchemaWithDollarSign(), Collections.singletonList(mockQueryResultWithDollarSign()));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo$tbl` (FOREIGN KEY (`bar_id`) REFERENCES `bar$tbl` (`bar_id`))"));
+    }
+    
+    private ShardingRule buildShardingRuleWithDollarSign() {
+        ShardingRule result = mock(ShardingRule.class);
+        ShardingTable shardingTable = mock(ShardingTable.class);
+        when(shardingTable.getLogicTable()).thenReturn("foo$tbl");
+        when(shardingTable.getActualDataNodes()).thenReturn(Collections.singletonList(new DataNode("ds.foo$tbl_0")));
+        when(result.findShardingTableByActualTable("foo$tbl_0")).thenReturn(Optional.of(shardingTable));
+        when(result.findShardingTable("foo$tbl")).thenReturn(Optional.of(shardingTable));
+        BindingTableRule bindingTableRule = mock(BindingTableRule.class);
+        when(bindingTableRule.getAllLogicTables()).thenReturn(Collections.singleton("bar$tbl"));
+        when(result.findBindingTableRule("foo$tbl")).thenReturn(Optional.of(bindingTableRule));
+        when(result.getLogicAndActualTablesFromBindingTable("ds", "foo$tbl", "foo$tbl_0", Collections.singleton("bar$tbl")))
+                .thenReturn(Collections.singletonMap("bar$tbl", "bar$tbl_0"));
+        return result;
+    }
+    
+    private ShardingSphereSchema createSchemaWithDollarSign() {
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(new ShardingSphereTable("foo$tbl", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("foo_foreign_key", "bar$tbl"))));
+        tables.add(new ShardingSphereTable("bar$tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return new ShardingSphereSchema("foo_db", mock(DatabaseType.class), tables, Collections.emptyList());
+    }
+    
+    private QueryResult mockQueryResultWithDollarSign() throws SQLException {
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(2);
+        when(result.next()).thenReturn(true, false);
+        when(result.getValue(1, Object.class)).thenReturn("foo$tbl_0");
+        when(result.getValue(2, Object.class)).thenReturn("CREATE TABLE `foo$tbl_0` (FOREIGN KEY (`bar_id`) REFERENCES `bar$tbl_0` (`bar_id`))");
         return result;
     }
     
