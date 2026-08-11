@@ -17,13 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
+import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.mysql.exception.IncorrectGlobalLocalVariableException;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset.MySQLSessionCharsetContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -40,9 +44,11 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MySQLSystemVariableQueryExecutorTest {
     
@@ -99,5 +105,22 @@ class MySQLSystemVariableQueryExecutorTest {
         Optional<DatabaseAdminExecutor> executor = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement);
         assertTrue(executor.isPresent());
         assertThrows(IncorrectGlobalLocalVariableException.class, () -> executor.get().execute(null, mock()));
+    }
+    
+    @Test
+    void assertExecuteWithNullCharacterSetResults() throws SQLException {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
+        selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(
+                0, 0, "@@character_set_results", new VariableSegment(0, 0, "character_set_results")));
+        Optional<DatabaseAdminExecutor> optionalExecutor = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement);
+        assertTrue(optionalExecutor.isPresent());
+        MySQLSystemVariableQueryExecutor executor = (MySQLSystemVariableQueryExecutor) optionalExecutor.get();
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getAttributeMap()).thenReturn(new DefaultAttributeMap());
+        MySQLSessionCharsetContext.create(MySQLConstants.DEFAULT_CHARSET).withoutResultConversion().apply(connectionSession.getAttributeMap());
+        executor.execute(connectionSession, mock());
+        MergedResult actual = executor.getMergedResult();
+        assertTrue(actual.next());
+        assertNull(actual.getValue(1, Object.class));
     }
 }

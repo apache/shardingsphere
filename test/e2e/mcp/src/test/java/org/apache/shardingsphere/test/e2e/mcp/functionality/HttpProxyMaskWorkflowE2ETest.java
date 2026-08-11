@@ -119,6 +119,10 @@ class HttpProxyMaskWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
                 requiredFields.get(1), "3"));
     }
     
+    private List<String> getRequiredStringList(final Object value) {
+        return ((List<?>) value).stream().map(String::valueOf).toList();
+    }
+    
     private void assertElicitationRequest(final List<McpSchema.ElicitRequest> actualRequests) {
         assertThat(actualRequests.size(), is(1));
         McpSchema.ElicitRequest actual = actualRequests.getFirst();
@@ -187,20 +191,19 @@ class HttpProxyMaskWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
     }
     
     @Test
-    void assertPlanRecommendsApplyAndValidateMaskWorkflowFromNaturalLanguage() throws IOException, InterruptedException {
+    void assertPlanClarifiesNaturalLanguageBeforeApplyingStructuredInputs() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualClarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
                             "natural_language_intent", "mask status as phone number, keep first 3 and last 4"));
             assertThat(String.valueOf(actualClarifyingResponse.get("status")), is("clarifying"));
-            assertThat(getIssueCodes(actualClarifyingResponse), hasItem(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
-            List<Map<String, Object>> actualRecommendations = getObjectListOrEmpty(actualClarifyingResponse.get("algorithm_recommendations"));
-            assertThat(actualRecommendations.size(), is(1));
-            assertThat(String.valueOf(actualRecommendations.getFirst().get("algorithm_type")).toUpperCase(Locale.ENGLISH), is("MASK_FROM_X_TO_Y"));
-            assertThat(getClarificationMessages(actualClarifyingResponse), is(List.of("Please provide property `from-x`.", "Please provide property `to-y`.")));
+            assertThat(getIssueCodes(actualClarifyingResponse), hasItem(WorkflowIssueCode.RULE_INPUT_REQUIRED));
+            assertThat(getClarificationMessages(actualClarifyingResponse), is(List.of("Please provide operation_type.")));
+            assertThat(getObjectListOrEmpty(actualClarifyingResponse.get("distsql_artifacts")).size(), is(0));
             String planId = String.valueOf(actualClarifyingResponse.get("plan_id"));
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("plan_id", planId, "primary_algorithm_properties", Map.of("from-x", "4", "to-y", "7")));
+                    Map.of("plan_id", planId, "operation_type", "create", "algorithm_type", "KEEP_FIRST_N_LAST_M",
+                            "primary_algorithm_properties", Map.of("first-n", "3", "last-m", "4", "replace-char", "*")));
             assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
             assertApplyCompleted(applyReviewedWorkflow(interactionClient, planId));
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
@@ -208,7 +211,7 @@ class HttpProxyMaskWorkflowE2ETest extends AbstractHttpProxyWorkflowE2ETest {
             assertThat(
                     String.valueOf(getObjectListOrEmpty(getValidationSection(actualValidationResponse, "rule").get("evidence")).getFirst().get("algorithm_type"))
                             .toUpperCase(Locale.ENGLISH),
-                    is("MASK_FROM_X_TO_Y"));
+                    is("KEEP_FIRST_N_LAST_M"));
         }
     }
     

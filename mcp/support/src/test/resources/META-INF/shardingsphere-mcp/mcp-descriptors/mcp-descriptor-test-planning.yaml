@@ -75,16 +75,7 @@ tools:
             - drop
         natural_language_intent:
           type: string
-          description: "Natural language user request."
-        structured_intent_evidence:
-          type: object
-          description: "Structured intent evidence."
-          properties:
-            field_semantics:
-              type: string
-              description: "Field semantics."
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
         delivery_mode:
           type: string
           description: "Delivery mode."
@@ -158,7 +149,7 @@ tools:
           description: "Preferred later apply mode captured by the plan."
         intent_inference:
           type: object
-          description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+          description: "Resolved operation type, server-derived or defaulted values, and unresolved fields."
         argument_provenance:
           type: object
           description: "Source of important workflow arguments."

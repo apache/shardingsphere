@@ -21,12 +21,10 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
-import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -40,14 +38,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MetadataResourceHandlerTest {
-    
-    @Test
-    void assertGetResourceDescriptor() {
-        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
-        MCPResourceDescriptor actual = MCPDescriptorCatalogIndex.getRequiredResourceDescriptor(handler.getResourceUriTemplate());
-        assertThat(actual.getUriTemplate(), is("shardingsphere://databases"));
-        assertThat(actual.getTitle(), is("Logical Databases"));
-    }
     
     @Test
     void assertHandleListResource() {

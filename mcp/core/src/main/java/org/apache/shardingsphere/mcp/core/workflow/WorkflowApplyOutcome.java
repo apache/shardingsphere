@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * Mutable outcome collected while applying workflow artifacts.
  */
-public final class WorkflowApplyOutcome {
+final class WorkflowApplyOutcome {
     
     private final List<Map<String, Object>> stepResults = new LinkedList<>();
     

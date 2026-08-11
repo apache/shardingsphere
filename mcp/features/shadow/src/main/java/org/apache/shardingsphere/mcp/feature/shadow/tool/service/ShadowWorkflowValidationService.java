@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
@@ -106,14 +105,9 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
             return;
         }
         if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(ShadowAlgorithm.class, algorithmType, properties)) {
-            issues.add(createValidationIssue(String.format("Generated shadow DistSQL references algorithm `%s`, but it cannot be loaded or initialized by ShadowAlgorithm SPI.",
+            issues.add(validationSupport.createSQLExecutabilityIssue(String.format("Generated shadow DistSQL references algorithm `%s`, but it cannot be loaded or initialized by ShadowAlgorithm SPI.",
                     algorithmType), displaySql));
         }
-    }
-    
-    private Map<String, Object> createValidationIssue(final String message, final String sql) {
-        return new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", WorkflowLifecycle.STEP_REVIEW,
-                message, "Regenerate the workflow artifact through the feature planner before approval.", true, Map.of("sql", sql)).toMap();
     }
     
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {

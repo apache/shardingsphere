@@ -43,6 +43,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class SingleMutableDataNodeRuleAttribute implements MutableDataNodeRuleAttribute {
     
+    private final SingleRule singleRule;
+    
     private final SingleRuleConfiguration configuration;
     
     private final Collection<String> dataSourceNames;
@@ -52,6 +54,16 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     private final DatabaseType protocolType;
     
     private final SingleTableMapperRuleAttribute tableMapperRuleAttribute;
+    
+    @Override
+    public ShardingSphereRule copyRuleAndPut(final String dataSourceName, final String schemaName, final String tableName) {
+        return singleRule.copyAndPut(dataSourceName, schemaName, tableName);
+    }
+    
+    @Override
+    public ShardingSphereRule copyRuleAndRemove(final String schemaName, final String tableName) {
+        return singleRule.copyAndRemove(schemaName, tableName);
+    }
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     @Override

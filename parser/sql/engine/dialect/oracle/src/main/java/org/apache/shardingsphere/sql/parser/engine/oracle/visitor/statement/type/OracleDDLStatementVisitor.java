@@ -19,9 +19,11 @@ package org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.typ
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
@@ -98,6 +100,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePackageContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRelationalTableClauseContext;
@@ -112,8 +115,9 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorDefinitionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorParameterDecContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorForLoopStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorParameterDecContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DisassociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlStatementContext;
@@ -158,16 +162,16 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Dynami
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExceptionHandlerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForallStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForLoopStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForallStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexExpressionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexTypeNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IterandDeclContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ItemDeclarationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IterandDeclContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyCollectionRetrievalContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColumnSpecificationContext;
@@ -175,6 +179,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Modify
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NestedTableTypeSpecContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NoAuditContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectBaseTypeDefContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectSubTypeDefContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectTypeDefContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OpenForStatementContext;
@@ -186,6 +191,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Packag
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterDeclarationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlFunctionSourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlPackageSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlProcedureSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlStatementsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlTriggerSourceContext;
@@ -197,6 +203,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Rename
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectIntoStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SqlStatementInPlsqlContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.StatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SwitchContext;
@@ -226,6 +233,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
@@ -235,6 +243,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
@@ -347,6 +356,9 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.Oracle
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleAlterOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleCreateOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleDropOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement.Authorization;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement.Edition;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.procedure.OracleCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.profile.OracleAlterProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.profile.OracleCreateProfileStatement;
@@ -370,6 +382,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -400,24 +413,79 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
+        SelectStatement selectStatement = null == ctx.createDefinitionClause() ? null : getCreateTableSelectStatement(ctx.createDefinitionClause());
+        Collection<CreateDefinitionSegment> createDefinitions = new LinkedList<>();
         Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
         Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
-            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
-            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
-                if (each instanceof ColumnDefinitionSegment) {
+            createDefinitions.addAll(((CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause())).getValue());
+        }
+        boolean createTableAsSelectWithColumnNames = null != selectStatement && isCreateTableAsSelectWithColumnNames(createDefinitions);
+        List<ColumnSegment> columns = new LinkedList<>();
+        for (CreateDefinitionSegment each : createDefinitions) {
+            if (each instanceof ColumnDefinitionSegment) {
+                if (createTableAsSelectWithColumnNames) {
+                    columns.add(((ColumnDefinitionSegment) each).getColumnName());
+                } else {
                     columnDefinitions.add((ColumnDefinitionSegment) each);
-                } else if (each instanceof ConstraintDefinitionSegment) {
-                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
+            } else if (each instanceof ConstraintDefinitionSegment) {
+                constraintDefinitions.add((ConstraintDefinitionSegment) each);
             }
         }
-        return CreateTableStatement.builder()
+        CreateTableStatement result = CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
+                .selectStatement(selectStatement)
+                .columns(columns)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
+        if (null != selectStatement) {
+            result.addParameterMarkers(getGlobalParameterMarkerSegments());
+        }
+        return result;
+    }
+    
+    private SelectStatement getCreateTableSelectStatement(final CreateDefinitionClauseContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        SelectSubqueryContext selectSubquery = findCreateTableSelectSubquery(ctx);
+        if (null == selectSubquery) {
+            return null;
+        }
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor(getDatabaseType());
+        SelectStatement result = (SelectStatement) visitor.visit(selectSubquery);
+        getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
+        getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
+        return result;
+    }
+    
+    private SelectSubqueryContext findCreateTableSelectSubquery(final ParserRuleContext ctx) {
+        if (ctx instanceof SelectSubqueryContext) {
+            return (SelectSubqueryContext) ctx;
+        }
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            ParseTree each = ctx.getChild(i);
+            if (each instanceof ParserRuleContext) {
+                SelectSubqueryContext result = findCreateTableSelectSubquery((ParserRuleContext) each);
+                if (null != result) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private boolean isCreateTableAsSelectWithColumnNames(final Collection<CreateDefinitionSegment> createDefinitions) {
+        return !createDefinitions.isEmpty()
+                && createDefinitions.stream().allMatch(each -> each instanceof ColumnDefinitionSegment && isColumnName((ColumnDefinitionSegment) each));
+    }
+    
+    private boolean isColumnName(final ColumnDefinitionSegment columnDefinition) {
+        return null == columnDefinition.getDataType() && !columnDefinition.isPrimaryKey() && !columnDefinition.isNotNull()
+                && columnDefinition.getReferencedTables().isEmpty() && !columnDefinition.isRef();
     }
     
     @Override
@@ -785,6 +853,60 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitDropPackage(final DropPackageContext ctx) {
         return new DropPackageStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreatePackage(final CreatePackageContext ctx) {
+        OracleStatementParser.PlsqlPackageBodySourceContext body = ctx.plsqlPackageBodySource();
+        if (null != body) {
+            body.declareItem().forEach(this::visit);
+        }
+        RoutineBodySegment initialization = null;
+        if (null != body && null != body.packageInitialization()) {
+            OracleStatementParser.PackageInitializationContext packageInitialization = body.packageInitialization();
+            visitPlsqlStatementList(packageInitialization.plsqlStatements());
+            for (ExceptionHandlerContext each : packageInitialization.exceptionHandler()) {
+                visitPlsqlStatementList(each.plsqlStatements());
+            }
+            initialization = new RoutineBodySegment(packageInitialization.start.getStartIndex(), packageInitialization.stop.getStopIndex());
+        }
+        getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
+        getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
+        getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
+        PlsqlPackageSourceContext specification = ctx.plsqlPackageSource();
+        PackageSegment packageName = null == specification
+                ? createPackageNameSegment(body.schemaName(), body.packageName(0))
+                : createPackageNameSegment(specification.schemaName(), specification.packageName(0));
+        OracleCreatePackageStatement result = new OracleCreatePackageStatement(
+                getDatabaseType(), packageName, null != body, null != ctx.REPLACE(),
+                null == specification ? null != body.packageIfNotExists() : null != specification.packageIfNotExists(),
+                getEdition(ctx), getAuthorization(specification), initialization);
+        result.getSqlStatements().addAll(getSqlStatementsInPlsql());
+        result.getProcedureCallNames().addAll(getProcedureCallNames());
+        result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
+        return result;
+    }
+    
+    private PackageSegment createPackageNameSegment(final SchemaNameContext schemaName, final PackageNameContext packageName) {
+        PackageSegment result = (PackageSegment) visit(packageName);
+        if (null != schemaName) {
+            result.setOwner(new OwnerSegment(schemaName.start.getStartIndex(), schemaName.stop.getStopIndex(), (IdentifierValue) visit(schemaName.identifier())));
+        }
+        return result;
+    }
+    
+    private Edition getEdition(final CreatePackageContext ctx) {
+        if (null != ctx.EDITIONABLE()) {
+            return Edition.EDITIONABLE;
+        }
+        return null == ctx.NONEDITIONABLE() ? null : Edition.NONEDITIONABLE;
+    }
+    
+    private Authorization getAuthorization(final PlsqlPackageSourceContext ctx) {
+        if (null == ctx || ctx.invokerRightsClause().isEmpty()) {
+            return null;
+        }
+        return null == ctx.invokerRightsClause(0).CURRENT_USER() ? Authorization.DEFINER : Authorization.CURRENT_USER;
     }
     
     @Override
@@ -1166,7 +1288,32 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().forEach(each -> each.getSqlStatement().getVariableNames().addAll(getVariableNames()));
         return new OracleCreateFunctionStatement(
                 getDatabaseType(), getSqlStatementsInPlsql(), getProcedureCallNames(), getProcedureBodyEndNameSegments(), visitFunctionName(ctx.plsqlFunctionSource()),
-                getDynamicSqlStatementExpressions());
+                extractTypeAttributeTables(ctx.plsqlFunctionSource()), getDynamicSqlStatementExpressions());
+    }
+    
+    private Collection<SimpleTableSegment> extractTypeAttributeTables(final PlsqlFunctionSourceContext ctx) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (ParameterDeclarationContext each : ctx.parameterDeclaration()) {
+            result.addAll(extractTypeAttributeTables(each.dataType()));
+        }
+        if (null != ctx.returnDateType()) {
+            result.addAll(extractTypeAttributeTables(ctx.returnDateType().dataType()));
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> extractTypeAttributeTables(final DataTypeContext ctx) {
+        ObjectNameContext objectName = null == ctx || null == ctx.typeAttribute() ? null : ctx.typeAttribute().objectName();
+        if (null == objectName || null == objectName.owner()) {
+            return Collections.emptyList();
+        }
+        return Collections.singleton(createTypeAttributeTable(objectName));
+    }
+    
+    private SimpleTableSegment createTypeAttributeTable(final ObjectNameContext ctx) {
+        OwnerContext tableName = ctx.owner();
+        return new SimpleTableSegment(new TableNameSegment(tableName.getStart().getStartIndex(), tableName.getStop().getStopIndex(),
+                (IdentifierValue) visit(tableName.identifier())));
     }
     
     private FunctionNameSegment visitFunctionName(final PlsqlFunctionSourceContext ctx) {

@@ -46,7 +46,7 @@ class ExplainSQLCandidateValidatorTest {
         assertThat(actual.getStatementClass(), is(SupportedMCPStatement.EXPLAIN));
         assertThat(actual.getStatementType(), is("EXPLAIN"));
         assertThat(actual.getNormalizedSql(), is("EXPLAIN FORMAT=JSON SELECT * FROM logic_db.foo_orders"));
-        assertThat(actual.getReferencedObjectNames(), contains("logic_db.foo_orders"));
+        assertThat(actual.getReferencedObjects().stream().map(SQLStatementObjectName::getObjectName).toList(), contains("logic_db.foo_orders"));
     }
     
     @Test

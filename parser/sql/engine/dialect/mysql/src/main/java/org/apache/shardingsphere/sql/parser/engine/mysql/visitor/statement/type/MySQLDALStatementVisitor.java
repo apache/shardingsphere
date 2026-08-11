@@ -810,11 +810,14 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         }
         int startIndex = ctx.start.getStartIndex();
         int stopIndex = ctx.stop.getStopIndex();
-        String assignValue = ctx.charsetName().getText();
+        String assignValue = null == ctx.DEFAULT() ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
         List<VariableAssignSegment> result = new LinkedList<>();
         result.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "character_set_client"), assignValue));
         result.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "character_set_results"), assignValue));
         result.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "character_set_connection"), assignValue));
+        if (null != ctx.collateClause()) {
+            result.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "collation_connection"), ctx.collateClause().collationName().getText()));
+        }
         return result;
     }
     
@@ -874,11 +877,12 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     public ASTNode visitSetCharacter(final SetCharacterContext ctx) {
         int startIndex = null == ctx.CHARSET() ? ctx.CHARACTER().getSymbol().getStartIndex() : ctx.CHARSET().getSymbol().getStartIndex();
         int stopIndex = null == ctx.CHARSET() ? ctx.SET(1).getSymbol().getStopIndex() : ctx.CHARSET().getSymbol().getStopIndex();
-        // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
-        String variableName = (null == ctx.CHARSET()) ? "character_set_client" : ctx.CHARSET().getText();
-        VariableSegment variable = new VariableSegment(startIndex, stopIndex, variableName);
         String assignValue = (null == ctx.DEFAULT()) ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
-        return new SetStatement(getDatabaseType(), Collections.singletonList(new VariableAssignSegment(startIndex, stopIndex, variable, assignValue)));
+        List<VariableAssignSegment> variableAssigns = new LinkedList<>();
+        variableAssigns.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "character_set_client"), assignValue));
+        variableAssigns.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "character_set_results"), assignValue));
+        variableAssigns.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "collation_connection"), "@@collation_database"));
+        return new SetStatement(getDatabaseType(), variableAssigns);
     }
     
     @Override

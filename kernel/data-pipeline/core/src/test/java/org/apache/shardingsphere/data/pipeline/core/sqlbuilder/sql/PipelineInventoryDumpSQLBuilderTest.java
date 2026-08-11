@@ -38,4 +38,11 @@ class PipelineInventoryDumpSQLBuilderTest {
         actual = sqlBuilder.buildFetchAllSQL(null, "t_order", Collections.singletonList("*"));
         assertThat(actual, is("SELECT * FROM t_order"));
     }
+    
+    @Test
+    void assertBuildFetchAllSQLWithActualIdentifiers() {
+        PipelineInventoryDumpSQLBuilder postgresqlSQLBuilder = new PipelineInventoryDumpSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        assertThat(postgresqlSQLBuilder.buildFetchAllSQL("TEST", "T_ORDER", Arrays.asList("ID", "STATUS", "*")),
+                is("SELECT \"ID\",\"STATUS\",* FROM \"TEST\".\"T_ORDER\""));
+    }
 }

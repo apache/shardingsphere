@@ -56,10 +56,12 @@ public final class SchemaMetaDataUtils {
      * Get meta data loader materials.
      *
      * @param tableNames table name collection
+     * @param protocolType protocol type
      * @param material material
      * @return meta data loader materials
      */
-    public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {
+    public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames, final DatabaseType protocolType,
+                                                                                final GenericSchemaBuilderMaterial material) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         Collection<DatabaseType> unsupportedThreeTierStorageStructureDatabaseTypes = getUnsupportedThreeTierStorageStructureDatabaseTypes(material.getStorageUnits().values());
         DataNodes dataNodes = new DataNodes(material.getRules());
@@ -77,17 +79,19 @@ public final class SchemaMetaDataUtils {
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageUnits().get(entry.getKey()).getStorageType();
             String defaultSchemaName = new DatabaseTypeRegistry(storageType).getDefaultSchemaName(material.getDefaultSchemaName());
-            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize));
+            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), protocolType, storageType, defaultSchemaName, loadTableMetadataBatchSize));
         }
         return result;
     }
     
     private static Collection<MetaDataLoaderMaterial> buildMaterials(final GenericSchemaBuilderMaterial material, final String dataSourceName, final Collection<String> actualTableNames,
-                                                                     final DatabaseType storageType, final String defaultSchemaName, final int loadTableMetadataBatchSize) {
+                                                                     final DatabaseType protocolType, final DatabaseType storageType, final String defaultSchemaName,
+                                                                     final int loadTableMetadataBatchSize) {
         Collection<MetaDataLoaderMaterial> result = new LinkedList<>();
         DataSource dataSource = getDataSource(material, dataSourceName);
         for (List<String> each : Lists.partition(new ArrayList<>(actualTableNames), loadTableMetadataBatchSize)) {
-            result.add(new MetaDataLoaderMaterial(normalize(each, material.getIdentifierContext()), dataSourceName, dataSource, storageType, defaultSchemaName));
+            Collection<String> tableNames = protocolType.equals(storageType) ? each : normalize(each, material.getIdentifierContext());
+            result.add(new MetaDataLoaderMaterial(tableNames, dataSourceName, dataSource, storageType, defaultSchemaName));
         }
         return result;
     }

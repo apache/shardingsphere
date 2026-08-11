@@ -179,7 +179,7 @@ public final class LLMRuntimeSupport {
                 .withExposedPorts(SERVER_PORT)
                 .withCommand("--host", "0.0.0.0", "--port", String.valueOf(SERVER_PORT), "-m", config.getModelMetadata().getContainerPath(), "--alias", config.getModelName(),
                         "--jinja", "--reasoning", "auto", "--reasoning-format", "deepseek", "--reasoning-budget", "0", "--chat-template-kwargs", "{\"enable_thinking\":false}",
-                        "--api-key", config.getApiKey(), "--no-ui", "-n", "512", "--parallel", "1", "-c", String.valueOf(CONTEXT_WINDOW_TOKENS),
+                        "--api-key", config.getApiKey(), "--no-ui", "--parallel", "1", "-c", String.valueOf(CONTEXT_WINDOW_TOKENS),
                         "-b", "256", "-ub", "128", "--cache-ram", "0", "--no-cache-prompt")
                 .waitingFor(Wait.forListeningPort())
                 .withStartupTimeout(Duration.ofMinutes(5));

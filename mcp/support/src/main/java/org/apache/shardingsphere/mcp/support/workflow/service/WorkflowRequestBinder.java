@@ -19,13 +19,11 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -40,17 +38,14 @@ public final class WorkflowRequestBinder {
      * @param requestSupplier request supplier
      * @param arguments raw MCP arguments
      * @param featureArgumentBinder feature-specific argument binder
-     * @param structuredIntentBinder structured intent binder
      * @param <T> request type
      * @return bound workflow request
      */
     public static <T extends WorkflowRequest> T bindPlanningRequest(final Supplier<T> requestSupplier, final Map<String, Object> arguments,
-                                                                    final BiConsumer<T, WorkflowPlanningArguments> featureArgumentBinder,
-                                                                    final BiConsumer<T, Map<String, Object>> structuredIntentBinder) {
+                                                                    final BiConsumer<T, WorkflowPlanningArguments> featureArgumentBinder) {
         WorkflowPlanningArguments workflowPlanningArguments = new WorkflowPlanningArguments(arguments);
         T result = requestSupplier.get();
         bindCommonPlanningFields(result, workflowPlanningArguments);
-        applyObjectMap(arguments.get(WorkflowFieldNames.STRUCTURED_INTENT_EVIDENCE), WorkflowFieldNames.STRUCTURED_INTENT_EVIDENCE, actualValue -> structuredIntentBinder.accept(result, actualValue));
         featureArgumentBinder.accept(result, workflowPlanningArguments);
         return result;
     }
@@ -60,27 +55,11 @@ public final class WorkflowRequestBinder {
      *
      * @param arguments raw MCP arguments
      * @param featureArgumentBinder feature-specific argument binder
-     * @param structuredIntentBinder structured intent binder
      * @return bound workflow request
      */
     public static WorkflowRequest bindPlanningRequest(final Map<String, Object> arguments,
-                                                      final BiConsumer<WorkflowRequest, WorkflowPlanningArguments> featureArgumentBinder,
-                                                      final BiConsumer<WorkflowRequest, Map<String, Object>> structuredIntentBinder) {
-        return bindPlanningRequest(WorkflowRequest::new, arguments, featureArgumentBinder, structuredIntentBinder);
-    }
-    
-    /**
-     * Apply a present structured intent string field without changing its representation.
-     *
-     * @param values structured intent values
-     * @param fieldName field name
-     * @param consumer field consumer
-     */
-    public static void applyStringField(final Map<String, Object> values, final String fieldName, final Consumer<String> consumer) {
-        Object value = values.get(fieldName);
-        if (null != value) {
-            consumer.accept(String.valueOf(value));
-        }
+                                                      final BiConsumer<WorkflowRequest, WorkflowPlanningArguments> featureArgumentBinder) {
+        return bindPlanningRequest(WorkflowRequest::new, arguments, featureArgumentBinder);
     }
     
     private static void bindCommonPlanningFields(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
@@ -93,24 +72,6 @@ public final class WorkflowRequestBinder {
         request.setNaturalLanguageIntent(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.NATURAL_LANGUAGE_INTENT));
         request.setDeliveryMode(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.DELIVERY_MODE));
         request.setExecutionMode(workflowPlanningArguments.getStringArgument(WorkflowFieldNames.EXECUTION_MODE));
-    }
-    
-    private static void applyObjectMap(final Object rawValue, final String name, final Consumer<Map<String, Object>> consumer) {
-        Map<String, Object> actualValue = getObjectMap(rawValue, name);
-        if (!actualValue.isEmpty()) {
-            consumer.accept(actualValue);
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static Map<String, Object> getObjectMap(final Object rawValue, final String name) {
-        if (null == rawValue) {
-            return Map.of();
-        }
-        if (rawValue instanceof Map) {
-            return (Map<String, Object>) rawValue;
-        }
-        throw new MCPInvalidRequestException(String.format("%s must be an object.", name));
     }
     
 }

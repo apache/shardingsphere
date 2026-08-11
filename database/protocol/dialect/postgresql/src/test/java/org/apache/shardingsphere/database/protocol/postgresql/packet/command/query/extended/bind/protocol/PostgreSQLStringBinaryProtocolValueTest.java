@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,6 +64,14 @@ class PostgreSQLStringBinaryProtocolValueTest {
         }).when(byteBuf).readBytes(any(byte[].class));
         PostgreSQLStringBinaryProtocolValue actual = new PostgreSQLStringBinaryProtocolValue();
         assertThat(actual.read(payload, "a".length()), is("a"));
+    }
+    
+    @Test
+    void assertReadWithMultiByteCharset() {
+        String expected = "中文";
+        byte[] bytes = expected.getBytes(StandardCharsets.UTF_16BE);
+        PostgreSQLPacketPayload readPayload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(bytes), StandardCharsets.UTF_16BE);
+        assertThat(new PostgreSQLStringBinaryProtocolValue().read(readPayload, bytes.length), is(expected));
     }
     
     @Test

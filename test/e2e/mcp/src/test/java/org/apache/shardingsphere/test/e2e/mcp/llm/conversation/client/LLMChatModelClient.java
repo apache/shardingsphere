@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class LLMChatModelClient {
     
-    private static final int COMPLETION_MAX_TOKENS = 224;
+    private static final int COMPLETION_MAX_TOKENS = 512;
     
     private static final int READINESS_MAX_TOKENS = 64;
     
@@ -88,7 +88,8 @@ public final class LLMChatModelClient {
      */
     public LLMChatCompletion complete(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                       final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
-        HttpResponse<String> response = sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, COMPLETION_MAX_TOKENS), config.getRequestTimeoutSeconds());
+        HttpResponse<String> response = sendCompletionRequest(
+                createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, COMPLETION_MAX_TOKENS), config.getRequestTimeoutSeconds());
         if (200 != response.statusCode()) {
             throw new IllegalStateException(String.format("Model completion request failed with status %d%s.", response.statusCode(), createErrorCodeSuffix(response.body())));
         }
@@ -213,16 +214,21 @@ public final class LLMChatModelClient {
         if (null == value) {
             return List.of();
         }
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
+        Preconditions.checkState(value instanceof List, "Expected a JSON array, but got `%s`.", value.getClass().getSimpleName());
+        List<?> values = (List<?>) value;
+        Preconditions.checkState(values.stream().allMatch(Map.class::isInstance), "Expected a JSON array of objects.");
+        return values.stream().map(this::castToMap).toList();
     }
     
+    @SuppressWarnings("unchecked")
     private Map<String, Object> castToMap(final Object value) {
         if (null == value) {
             return Map.of();
         }
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
+        Preconditions.checkState(value instanceof Map, "Expected a JSON object, but got `%s`.", value.getClass().getSimpleName());
+        Map<?, ?> result = (Map<?, ?>) value;
+        Preconditions.checkState(result.keySet().stream().allMatch(String.class::isInstance), "Expected a JSON object with string keys.");
+        return (Map<String, Object>) result;
     }
     
     private Map<String, Object> parseJsonObject(final String responseBody, final String errorMessage) {

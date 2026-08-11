@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -43,6 +44,9 @@ import java.util.Map;
  */
 public final class ReadwriteSplittingRuleWorkflowPlanningService {
     
+    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of(
+            WorkflowLifecycle.OPERATION_CREATE, WorkflowLifecycle.OPERATION_ALTER, WorkflowLifecycle.OPERATION_DROP);
+    
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, rule name, storage units, strategy and lifecycle",
             "Inspect DistSQL-visible readwrite-splitting rules",
@@ -54,8 +58,6 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
     private static final List<String> VALIDATION_LAYERS = List.of("rules");
     
     private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
-    
-    private final ReadwriteSplittingWorkflowIntentResolver intentResolver = new ReadwriteSplittingWorkflowIntentResolver();
     
     private final ReadwriteSplittingInspectionService inspectionService = new ReadwriteSplittingInspectionService();
     
@@ -79,8 +81,13 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
         ReadwriteSplittingRuleWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
+        if (!planningSupport.ensureSupportedOperationType(clarifiedIntent, SUPPORTED_OPERATION_TYPES, result)) {
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
+        }
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
         queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
         List<Map<String, Object>> existingRules = inspectionService.queryRules(queryFacade, mergedRequest.getDatabase());
@@ -101,8 +108,19 @@ public final class ReadwriteSplittingRuleWorkflowPlanningService {
     private ReadwriteSplittingRuleWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final ReadwriteSplittingRuleWorkflowRequest request) {
         ReadwriteSplittingRuleWorkflowRequest result = ReadwriteSplittingRuleWorkflowRequest.merge(snapshot.getRequest(), request);
         planningSupport.prepareSnapshot(snapshot, ReadwriteSplittingFeatureDefinition.RULE_WORKFLOW_KIND, result, null,
-                intentResolver.resolveRuleIntent(result), "Readwrite-splitting rule workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+                resolveIntent(result), "Readwrite-splitting rule workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
         snapshot.getResourceUriTemplates().add(ReadwriteSplittingFeatureDefinition.STORAGE_UNITS_RESOURCE_URI);
+        return result;
+    }
+    
+    private ClarifiedIntent resolveIntent(final ReadwriteSplittingRuleWorkflowRequest request) {
+        ClarifiedIntent result = new ClarifiedIntent();
+        if (!request.getOperationType().isEmpty()) {
+            result.setOperationType(request.getOperationType());
+        } else if (request.getNaturalLanguageIntent().isEmpty()) {
+            result.setOperationType(WorkflowLifecycle.OPERATION_CREATE);
+            result.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, WorkflowLifecycle.OPERATION_CREATE);
+        }
         return result;
     }
     

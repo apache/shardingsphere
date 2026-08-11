@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Session attribution resolver.
@@ -98,7 +99,7 @@ public final class SessionAttributionResolver {
         return !isEnabled() ? "disabled" : String.format("trusted-header:%s", config.getSubjectHeader());
     }
     
-    private Map<String, String> resolveAttributes(final Iterable<String> headerNames, final HeaderValueReader headerValueReader) {
+    private Map<String, String> resolveAttributes(final Iterable<String> headerNames, final Function<String, String> headerValueReader) {
         Map<String, String> result = new LinkedHashMap<>();
         String attributeHeaderPrefix = config.getAttributeHeaderPrefix();
         if (attributeHeaderPrefix.isEmpty()) {
@@ -108,7 +109,7 @@ public final class SessionAttributionResolver {
         for (String each : headerNames) {
             String actualHeaderName = Objects.toString(each, "").trim();
             if (actualHeaderName.toLowerCase(Locale.ENGLISH).startsWith(normalizedPrefix)) {
-                result.put(actualHeaderName.substring(attributeHeaderPrefix.length()).toLowerCase(Locale.ENGLISH), headerValueReader.read(actualHeaderName));
+                result.put(actualHeaderName.substring(attributeHeaderPrefix.length()).toLowerCase(Locale.ENGLISH), headerValueReader.apply(actualHeaderName));
             }
         }
         return result;
@@ -127,9 +128,4 @@ public final class SessionAttributionResolver {
         return "";
     }
     
-    @FunctionalInterface
-    private interface HeaderValueReader {
-        
-        String read(String headerName);
-    }
 }

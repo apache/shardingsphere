@@ -59,8 +59,7 @@ class PlanBroadcastRuleToolHandlerTest {
             WorkflowContextFixture fixture = createWorkflowContextFixture();
             MCPSuccessPayload actual = new PlanBroadcastRuleToolHandler().handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
-                    "tables", "t_order",
-                    "structured_intent_evidence", Map.of("tables", "t_order_item")));
+                    "tables", "t_order"));
             assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
             ArgumentCaptor<BroadcastWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(BroadcastWorkflowRequest.class);
             verify(mocked.constructed().getFirst()).plan(eq(fixture.workflowSessionContext), eq(fixture.queryFacade), requestCaptor.capture());

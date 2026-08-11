@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLS
 /**
  * Algorithm execute exception.
  */
-// TODO It is runnable exception, consider about move out from AlgorithmDefinitionException
-public final class AlgorithmExecuteException extends AlgorithmDefinitionException {
+public final class AlgorithmExecuteException extends AlgorithmSQLException {
     
     private static final long serialVersionUID = -9099514178650043282L;
     

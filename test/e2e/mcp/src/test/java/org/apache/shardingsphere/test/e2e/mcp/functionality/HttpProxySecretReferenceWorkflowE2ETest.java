@@ -68,8 +68,8 @@ class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE
     private Map<String, Object> planSecretReferencedEncryptRule(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         return interactionClient.call(PLAN_TOOL_NAME,
                 Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                        "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
-                        "cipher_column_name", "status_cipher",
+                        "operation_type", "create", "requires_decrypt", true, "requires_equality_filter", false, "requires_like_query", false,
+                        "algorithm_type", "AES", "cipher_column_name", "status_cipher",
                         "primary_algorithm_properties", Map.of("aes-key-value", Map.of("secret_ref", SECRET_REF, "label", INPUT_LABEL))));
     }
     
@@ -84,6 +84,8 @@ class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE
         assertThat(String.valueOf(secretReference.get("property_key")), is("aes-key-value"));
         assertThat(String.valueOf(secretReference.get("label")), is("secret_placeholder:primary.aes-key-value"));
         assertThat(String.valueOf(secretReference.get("manual_placeholder")), is("<SECRET_VALUE_PRIMARY_AES_KEY_VALUE>"));
+        Map<String, Object> maskedPropertyPreview = getObjectOrEmpty(planResponse.get("masked_property_preview"));
+        assertThat(String.valueOf(getObjectOrEmpty(maskedPropertyPreview.get("primary")).get("aes-key-value")), is("******"));
         assertSecretReferenceRedacted(planResponse);
     }
     
@@ -101,5 +103,6 @@ class HttpProxySecretReferenceWorkflowE2ETest extends AbstractHttpProxyWorkflowE
         String actual = String.valueOf(payload);
         assertFalse(actual.contains(SECRET_REF));
         assertFalse(actual.contains(INPUT_LABEL));
+        assertFalse(actual.contains("secret_reference:"));
     }
 }

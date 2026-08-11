@@ -73,7 +73,7 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPFea
         WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         WorkflowRuntimeDefinition workflowRuntimeDefinition = workflowRuntimeDefinitionRegistry.getRequired(snapshot);
         return new MCPMapPayload(executionService.apply(workflowSessionContext, requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade(),
-                requestContext.getExecutionFacade(), workflowRuntimeDefinition.getApplySynchronizationHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(),
+                requestContext.getExecutionFacade(), workflowRuntimeDefinition.getRuntimeHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(),
                 requestContext.getSessionIdentity().getSessionId(),
                 snapshot, toolArguments.getStringCollectionArgument(WorkflowFieldNames.APPROVED_STEPS), executionMode));
     }

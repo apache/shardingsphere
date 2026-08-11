@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgo
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -72,6 +73,17 @@ class ShadowWorkflowPlanningServiceTest {
         assertThat(actual.getResourceUriTemplates(), is(List.of(ShadowFeatureDefinition.STORAGE_UNITS_RESOURCE_URI,
                 ShadowFeatureDefinition.SINGLE_TABLES_RESOURCE_URI, ShadowFeatureDefinition.SINGLE_TABLE_RESOURCE_URI)));
         assertTrue(actual.getRuleArtifacts().getFirst().getSql().startsWith("CREATE SHADOW RULE `shadow_rule`"));
+    }
+    
+    @Test
+    void assertPlanRuleClarifiesNaturalLanguageWithoutOperation() {
+        ShadowRuleWorkflowRequest request = createRuleRequest();
+        request.setNaturalLanguageIntent("opaque request text");
+        WorkflowContextSnapshot actual = new ShadowWorkflowPlanningService().planRule(
+                new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getClarifiedIntent().getUnresolvedFields(), is(List.of(WorkflowFieldNames.OPERATION_TYPE)));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
     }
     
     @Test

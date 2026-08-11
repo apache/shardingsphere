@@ -981,8 +981,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
         ProjectionsSegment projections = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex());
         projections.getProjections().add(new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex()));
-        return SelectStatement.builder().databaseType(databaseType).projections(projections)
-                .from(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText())))).build();
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).from((SimpleTableSegment) visit(ctx.tableName())).build();
     }
     
     @Override

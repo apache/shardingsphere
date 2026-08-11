@@ -20,17 +20,13 @@ package org.apache.shardingsphere.infra.metadata.statistics.builder;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -55,7 +51,8 @@ public final class ShardingSphereStatisticsFactory {
         if (metaData.getAllDatabases().isEmpty()) {
             return result;
         }
-        Optional<DialectStatisticsAppender> dialectStatisticsAppender = DatabaseTypedSPILoader.findService(DialectStatisticsAppender.class, getDatabaseType(metaData));
+        Optional<DialectStatisticsAppender> dialectStatisticsAppender = DatabaseTypedSPILoader.findService(
+                DialectStatisticsAppender.class, metaData.getAllDatabases().iterator().next().getProtocolType());
         Collection<ShardingSphereDatabase> unloadedDatabases = metaData.getAllDatabases().stream()
                 .filter(each -> !loadedStatistics.containsDatabaseStatistics(each.getName())).collect(Collectors.toList());
         for (ShardingSphereDatabase each : unloadedDatabases) {
@@ -68,13 +65,6 @@ public final class ShardingSphereStatisticsFactory {
         loadedStatistics.getDatabaseStatisticsMap().forEach(result::putDatabaseStatistics);
         fillDefaultStatistics(metaData, result);
         return result;
-    }
-    
-    private static DatabaseType getDatabaseType(final ShardingSphereMetaData metaData) {
-        DatabaseType protocolType = metaData.getAllDatabases().iterator().next().getProtocolType();
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
-        // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
     }
     
     private static void fillDefaultStatistics(final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics) {

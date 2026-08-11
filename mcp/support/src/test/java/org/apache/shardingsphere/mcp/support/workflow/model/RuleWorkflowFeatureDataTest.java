@@ -25,14 +25,12 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RuleWorkflowFeatureDataTest {
     
     @Test
-    void assertCopyPreservesRuleStates() {
-        RuleWorkflowFeatureData actual = new RuleWorkflowFeatureData(List.of(createRule("old")), List.of(createRule("new"))).copy();
-        assertThat(actual.getBeforeRules().get(0).get("algorithm_props"), is(Map.of("aes-key-value", "old")));
+    void assertCopyPreservesExpectedRuleState() {
+        RuleWorkflowFeatureData actual = new RuleWorkflowFeatureData(List.of(createRule("new"))).copy();
         assertThat(actual.getExpectedRules().get(0).get("algorithm_props"), is(Map.of("aes-key-value", "new")));
     }
     
@@ -40,15 +38,10 @@ class RuleWorkflowFeatureDataTest {
     @SuppressWarnings("unchecked")
     void assertCopyIsIndependent() {
         Map<String, Object> expectedRule = createRule("new");
-        RuleWorkflowFeatureData original = new RuleWorkflowFeatureData(List.of(), List.of(expectedRule));
+        RuleWorkflowFeatureData original = new RuleWorkflowFeatureData(List.of(expectedRule));
         RuleWorkflowFeatureData actual = original.copy();
         ((Map<String, Object>) original.getExpectedRules().get(0).get("algorithm_props")).put("aes-key-value", "changed");
         assertThat(((Map<?, ?>) actual.getExpectedRules().get(0).get("algorithm_props")).get("aes-key-value"), is("new"));
-    }
-    
-    @Test
-    void assertAlgorithmPropertiesAreEmpty() {
-        assertTrue(new RuleWorkflowFeatureData().getAlgorithmProperties("primary").isEmpty());
     }
     
     private Map<String, Object> createRule(final String keyValue) {

@@ -47,6 +47,17 @@ public final class WorkflowPlanningArguments {
     }
     
     /**
+     * Get boolean argument.
+     *
+     * @param name argument name
+     * @return argument value, or {@code null} when absent
+     */
+    public Boolean getBooleanArgument(final String name) {
+        Object result = arguments.get(name);
+        return result instanceof Boolean ? (Boolean) result : null;
+    }
+    
+    /**
      * Apply a non-empty string argument.
      *
      * @param name argument name

@@ -33,15 +33,6 @@ public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, Da
      */
     TableInventoryChecker buildTableInventoryChecker(TableInventoryCheckParameter param);
     
-    /**
-     * Is break on inventory check not matched.
-     *
-     * @return break or not
-     */
-    default boolean isBreakOnInventoryCheckNotMatched() {
-        return true;
-    }
-    
     @Override
     void close();
 }

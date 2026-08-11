@@ -92,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.ACLAttributeTyp
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SSLType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.UserResourceSpecifiedLimitType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PasswordOrLockOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeObjectSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.TLSOptionSegment;
@@ -114,6 +115,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLRename
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLSetPasswordStatement;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -144,11 +146,13 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         }
         result.setLevel(generateGrantLevel(ctx.grantIdentifier()));
+        String objectType = null == ctx.aclType() ? "TABLE" : ctx.aclType().getText().toUpperCase(Locale.ENGLISH);
+        result.getPrivilegeObjects().add(generatePrivilegeObject(ctx.grantIdentifier(), objectType));
         for (UsernameContext each : ctx.userList().username()) {
             result.getUsers().add((UserSegment) visit(each));
         }
         if (null != ctx.aclType()) {
-            result.setAclObject(ctx.aclType().getText().toUpperCase());
+            result.setAclObject(objectType);
         }
         return result;
     }
@@ -191,6 +195,24 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
         }
         tableName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().name().getText()).getValue();
         return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), databaseName, tableName);
+    }
+    
+    private PrivilegeObjectSegment generatePrivilegeObject(final GrantIdentifierContext ctx, final String objectType) {
+        PrivilegeObjectSegment result = new PrivilegeObjectSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), objectType);
+        if (ctx instanceof GrantLevelGlobalContext) {
+            result.getIdentifiers().add(new IdentifierValue("*"));
+            result.getIdentifiers().add(new IdentifierValue("*"));
+        } else if (ctx instanceof GrantLevelDatabaseGlobalContext) {
+            result.getIdentifiers().add(new IdentifierValue(((GrantLevelDatabaseGlobalContext) ctx).databaseName().getText()));
+            result.getIdentifiers().add(new IdentifierValue("*"));
+        } else {
+            GrantLevelTableContext tableContext = (GrantLevelTableContext) ctx;
+            if (null != tableContext.tableName().owner()) {
+                result.getIdentifiers().add(new IdentifierValue(tableContext.tableName().owner().getText()));
+            }
+            result.getIdentifiers().add(new IdentifierValue(tableContext.tableName().name().getText()));
+        }
+        return result;
     }
     
     @Override
@@ -446,6 +468,11 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
         }
         if (null != ctx.grantIdentifier()) {
             result.setLevel(generateGrantLevel(ctx.grantIdentifier()));
+            String objectType = null == ctx.aclType() ? "TABLE" : ctx.aclType().getText().toUpperCase(Locale.ENGLISH);
+            result.getPrivilegeObjects().add(generatePrivilegeObject(ctx.grantIdentifier(), objectType));
+            if (null != ctx.aclType()) {
+                result.setAclObject(objectType);
+            }
         }
         for (UsernameContext each : ctx.userList().username()) {
             result.getFromUsers().add((UserSegment) visit(each));

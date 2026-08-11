@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
+import java.util.Optional;
+
 /**
  * System variable value provider for MySQL.
  */
@@ -37,5 +39,17 @@ public interface MySQLSystemVariableValueProvider {
      */
     default String get(final MySQLSystemVariableScope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
         return variable.getDefaultValue();
+    }
+    
+    /**
+     * Get optional variable value.
+     *
+     * @param scope variable scope
+     * @param connectionSession connection session
+     * @param variable system variable
+     * @return optional variable value
+     */
+    default Optional<String> getOptional(final MySQLSystemVariableScope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
+        return Optional.of(get(scope, connectionSession, variable));
     }
 }

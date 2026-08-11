@@ -31,9 +31,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -45,9 +49,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,48 +115,98 @@ class MySQLTextResultSetRowPacketTest {
     }
     
     @Test
-    void assertWriteClob() throws SQLException {
-        byte[] expectedBytes = new byte[]{10, 20};
-        Clob clob = mock(Clob.class);
-        when(clob.getAsciiStream()).thenReturn(new ByteArrayInputStream(expectedBytes));
-        new MySQLTextResultSetRowPacket(Collections.singletonList(clob)).write((PacketPayload) payload);
-        verify(payload).writeBytesLenenc(argThat(actual -> Arrays.equals(actual, expectedBytes)));
+    void assertWriteBlob() throws SQLException, IOException {
+        byte[] expected = {0x00, (byte) 0x80, (byte) 0xff, 0x41};
+        InputStream inputStream = spy(new ByteArrayInputStream(expected));
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenReturn(inputStream);
+        new MySQLTextResultSetRowPacket(Collections.singletonList(blob)).write((PacketPayload) payload);
+        verify(payload).writeBytesLenenc(argThat(actual -> Arrays.equals(actual, expected)));
+        verify(inputStream).close();
     }
     
     @Test
-    void assertWriteClobWithIOException() throws SQLException {
+    void assertWriteBlobWithIOException() throws SQLException, IOException {
         IOException expectedCause = new IOException("read error");
-        InputStream inputStream = new InputStream() {
+        InputStream inputStream = spy(new InputStream() {
             
             @Override
             public int read() throws IOException {
                 throw expectedCause;
             }
-        };
+        });
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenReturn(inputStream);
+        MySQLTextResultSetRowPacket packet = new MySQLTextResultSetRowPacket(Collections.singletonList(blob));
+        UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> packet.write((PacketPayload) payload));
+        assertThat(actual.getCause(), is(expectedCause));
+        verify(inputStream).close();
+        verify(payload, never()).writeBytesLenenc(any());
+    }
+    
+    @Test
+    void assertWriteBlobWithSQLException() throws SQLException {
+        SQLException expectedCause = new SQLException("sql error");
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenThrow(expectedCause);
+        UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> new MySQLTextResultSetRowPacket(Collections.singletonList(blob)).write((PacketPayload) payload));
+        assertThat(actual.getCause(), is(expectedCause));
+    }
+    
+    @Test
+    void assertWriteClob() throws SQLException, IOException {
+        String expected = "ASCII|中文|🙂|é|𝄞";
+        Reader reader = spy(new StringReader(expected));
         Clob clob = mock(Clob.class);
-        when(clob.getAsciiStream()).thenReturn(inputStream);
+        when(clob.getCharacterStream()).thenReturn(reader);
+        new MySQLTextResultSetRowPacket(Collections.singletonList(clob)).write((PacketPayload) payload);
+        verify(payload).writeStringLenenc(expected);
+        verify(reader).close();
+    }
+    
+    @Test
+    void assertWriteClobWithIOException() throws SQLException, IOException {
+        IOException expectedCause = new IOException("read error");
+        Reader reader = spy(new StringReader("") {
+            
+            @Override
+            public int read(final char[] chars, final int offset, final int length) throws IOException {
+                throw expectedCause;
+            }
+        });
+        Clob clob = mock(Clob.class);
+        when(clob.getCharacterStream()).thenReturn(reader);
         MySQLTextResultSetRowPacket packet = new MySQLTextResultSetRowPacket(Collections.singletonList(clob));
         UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> packet.write((PacketPayload) payload));
         assertThat(actual.getCause(), is(expectedCause));
+        verify(reader).close();
+        verify(payload, never()).writeStringLenenc(anyString());
     }
     
     @Test
     void assertWriteClobWithSQLException() throws SQLException {
         SQLException expectedCause = new SQLException("sql error");
         Clob clob = mock(Clob.class);
-        when(clob.getAsciiStream()).thenThrow(expectedCause);
+        when(clob.getCharacterStream()).thenThrow(expectedCause);
         UnknownSQLException actual = assertThrows(UnknownSQLException.class, () -> new MySQLTextResultSetRowPacket(Collections.singletonList(clob)).write((PacketPayload) payload));
         assertThat(actual.getCause(), is(expectedCause));
     }
     
     private static Stream<Arguments> writeBasicValueArguments() {
         byte[] binary = new byte[]{1, 2, 3};
+        Time withMilliseconds = Time.valueOf("11:22:33");
+        withMilliseconds.setTime(withMilliseconds.getTime() + 123L);
+        Time withTrailingMillisecondZero = Time.valueOf("11:22:33");
+        withTrailingMillisecondZero.setTime(withTrailingMillisecondZero.getTime() + 120L);
         return Stream.of(
                 Arguments.of("Null", null, true, null, null),
                 Arguments.of("ByteArray", binary, false, null, binary),
                 Arguments.of("BigDecimal", new BigDecimal("123.4500"), false, "123.4500", null),
                 Arguments.of("BooleanTrue", Boolean.TRUE, false, null, new byte[]{1}),
                 Arguments.of("BooleanFalse", Boolean.FALSE, false, null, new byte[]{0}),
+                Arguments.of("TimeWithoutMilliseconds", Time.valueOf("11:22:33"), false, "11:22:33", null),
+                Arguments.of("TimeWithoutTrailingMillisecondZero", withMilliseconds, false, "11:22:33.123", null),
+                Arguments.of("TimeWithTrailingMillisecondZero", withTrailingMillisecondZero, false, "11:22:33.12", null),
                 Arguments.of("DefaultToString", "value_a", false, "value_a", null));
     }
     

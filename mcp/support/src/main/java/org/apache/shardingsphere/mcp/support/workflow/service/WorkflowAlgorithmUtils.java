@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternal
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -38,8 +39,6 @@ import java.util.Properties;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowAlgorithmUtils {
-    
-    private static final String SECRET_REFERENCE_PREFIX = "secret_reference:";
     
     private static final String ALGORITHM_TYPE_KEY = "type";
     
@@ -160,7 +159,7 @@ public final class WorkflowAlgorithmUtils {
     }
     
     private static boolean hasSecretReference(final Map<String, String> properties) {
-        return properties.values().stream().anyMatch(each -> Objects.toString(each, "").startsWith(SECRET_REFERENCE_PREFIX));
+        return properties.values().stream().anyMatch(each -> SecretReferenceValue.isPlaceholder(Objects.toString(each, "")));
     }
     
     private static Map<String, String> parsePropertyString(final String value) {

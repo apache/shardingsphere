@@ -62,7 +62,6 @@ class MaskMCPHandlerProviderTest {
     void assertGetWorkflowDefinitions() {
         WorkflowRuntimeDefinition actual = new MaskMCPHandlerProvider().getWorkflowDefinitions().iterator().next();
         assertThat(actual.getWorkflowKind(), is(MaskFeatureDefinition.WORKFLOW_KIND));
-        assertThat(actual.getApplySynchronizationHandler(), isA(MaskWorkflowValidationService.class));
-        assertThat(actual.getValidationHandler(), isA(MaskWorkflowValidationService.class));
+        assertThat(actual.getRuntimeHandler(), isA(MaskWorkflowValidationService.class));
     }
 }

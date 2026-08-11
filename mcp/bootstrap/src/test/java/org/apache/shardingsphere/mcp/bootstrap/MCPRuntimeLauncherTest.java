@@ -171,6 +171,8 @@ class MCPRuntimeLauncherTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled, final Map<String, RuntimeDatabaseConfiguration> databases) {
-        return new MCPLaunchConfiguration(httpEnabled ? MCPTransportType.HTTP : MCPTransportType.STDIO, new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), databases);
+        return httpEnabled
+                ? new MCPLaunchConfiguration(new HttpTransportConfiguration("127.0.0.1", 18080, "/mcp"), databases)
+                : new MCPLaunchConfiguration(databases);
     }
 }

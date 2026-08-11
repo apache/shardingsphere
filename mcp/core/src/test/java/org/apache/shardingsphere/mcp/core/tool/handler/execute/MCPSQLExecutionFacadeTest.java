@@ -388,7 +388,7 @@ class MCPSQLExecutionFacadeTest {
         ArgumentCaptor<ClassificationResult> classificationCaptor = ArgumentCaptor.forClass(ClassificationResult.class);
         verify(statementExecutor).execute(eq(request), classificationCaptor.capture(), eq(capability));
         assertThat(classificationCaptor.getValue().getStatementClass(), is(SupportedMCPStatement.EXPLAIN));
-        assertThat(classificationCaptor.getValue().getReferencedObjectNames(), contains("orders"));
+        assertThat(classificationCaptor.getValue().getReferencedObjects().stream().map(SQLStatementObjectName::getObjectName).toList(), contains("orders"));
         verifyNoInteractions(transactionExecutor);
     }
     
@@ -398,7 +398,7 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapabilityProvider capabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         MCPSessionExecutionCoordinator coordinator = mock(MCPSessionExecutionCoordinator.class);
         MCPDatabaseCapability capability = createCapability(Set.of(SupportedMCPStatement.EXPLAIN));
-        SQLExecutionRequest request = createExecutionRequest("EXPLAIN BROKEN SELECT * FROM orders");
+        SQLExecutionRequest request = createExecutionRequest("EXPLAIN SELECT * FROM orders");
         mockSessionLock(coordinator);
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
@@ -408,7 +408,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getDatabase(), is("logic_db"));
         assertThat(actual.getSchema(), is("public"));
         assertThat(actual.getSql(), is("SELECT * FROM orders"));
-        assertThat(actual.getExplainSql(), is("EXPLAIN BROKEN SELECT * FROM orders"));
+        assertThat(actual.getExplainSql(), is("EXPLAIN SELECT * FROM orders"));
     }
     
     @Test

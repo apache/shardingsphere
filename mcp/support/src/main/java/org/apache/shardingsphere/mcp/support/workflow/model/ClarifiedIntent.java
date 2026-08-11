@@ -32,10 +32,6 @@ public final class ClarifiedIntent {
     
     private String operationType = "";
     
-    private String fieldSemantics = "";
-    
-    private String reasoningNotes = "";
-    
     private final Map<String, Object> inferredValues = new LinkedHashMap<>(4, 1F);
     
     private final List<String> unresolvedFields = new LinkedList<>();
@@ -44,14 +40,6 @@ public final class ClarifiedIntent {
     
     public void setOperationType(final String operationType) {
         this.operationType = normalize(operationType);
-    }
-    
-    public void setFieldSemantics(final String fieldSemantics) {
-        this.fieldSemantics = normalize(fieldSemantics);
-    }
-    
-    public void setReasoningNotes(final String reasoningNotes) {
-        this.reasoningNotes = normalize(reasoningNotes);
     }
     
     private static String normalize(final String value) {

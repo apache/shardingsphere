@@ -61,7 +61,7 @@ public final class ShardingSphereDatabase {
     
     private final ResourceMetaData resourceMetaData;
     
-    private final RuleMetaData ruleMetaData;
+    private volatile RuleMetaData ruleMetaData;
     
     private final DatabaseIdentifierContext identifierContext;
     
@@ -84,8 +84,7 @@ public final class ShardingSphereDatabase {
     }
     
     private ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                   final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas,
-                                   final DatabaseIdentifierContext identifierContext) {
+                                   final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas, final DatabaseIdentifierContext identifierContext) {
         this.name = name;
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
@@ -198,6 +197,39 @@ public final class ShardingSphereDatabase {
     }
     
     /**
+     * Add data node and publish new rule meta data snapshot.
+     *
+     * @param dataSourceName data source name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return whether rule meta data changed
+     */
+    public synchronized boolean putDataNode(final String dataSourceName, final String schemaName, final String tableName) {
+        RuleMetaData newRuleMetaData = ruleMetaData.copyAndPutDataNode(dataSourceName, schemaName, tableName);
+        if (newRuleMetaData == ruleMetaData) {
+            return false;
+        }
+        ruleMetaData = newRuleMetaData;
+        return true;
+    }
+    
+    /**
+     * Remove data node and publish new rule meta data snapshot.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return whether rule meta data changed
+     */
+    public synchronized boolean removeDataNode(final String schemaName, final String tableName) {
+        RuleMetaData newRuleMetaData = ruleMetaData.copyAndRemoveDataNode(schemaName, tableName);
+        if (newRuleMetaData == ruleMetaData) {
+            return false;
+        }
+        ruleMetaData = newRuleMetaData;
+        return true;
+    }
+    
+    /**
      * Reload rules.
      */
     public synchronized void reloadRules() {
@@ -211,8 +243,7 @@ public final class ShardingSphereDatabase {
                     .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
             rules.add(optional.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).reloadRule(ruleConfig, name, dataSources, rules));
         });
-        ruleMetaData.getRules().clear();
-        ruleMetaData.getRules().addAll(rules);
+        ruleMetaData = new RuleMetaData(rules);
     }
     
     /**
@@ -275,6 +306,21 @@ public final class ShardingSphereDatabase {
      * @return default schema name
      */
     public String getDefaultSchemaName() {
-        return new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name);
+        String defaultSchemaIdentifier = getDefaultSchemaIdentifier();
+        return findSchema(new IdentifierValue(defaultSchemaIdentifier)).map(ShardingSphereSchema::getName).orElse(defaultSchemaIdentifier);
+    }
+    
+    private String getDefaultSchemaIdentifier() {
+        return new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema()
+                .orElseGet(() -> identifierContext.normalizeProtocol(IdentifierScope.SCHEMA, new IdentifierValue(name)));
+    }
+    
+    /**
+     * Find default schema.
+     *
+     * @return default schema
+     */
+    public Optional<ShardingSphereSchema> findDefaultSchema() {
+        return findSchema(new IdentifierValue(getDefaultSchemaIdentifier()));
     }
 }

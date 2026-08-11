@@ -78,7 +78,7 @@ public final class AssignmentSegmentBinder {
                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         List<ColumnSegment> boundColumns = columnAssignmentSegment.getColumns().stream()
-                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
+                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
         ExpressionSegment boundValue = ExpressionSegmentBinder.bind(columnAssignmentSegment.getValue(), SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts);
         if (boundValue instanceof ParameterMarkerExpressionSegment && !boundColumns.isEmpty() && null != boundColumns.get(0).getColumnBoundInfo()) {
             ((ParameterMarkerExpressionSegment) boundValue).setBoundInfo(boundColumns.get(0).getColumnBoundInfo());

@@ -104,7 +104,7 @@ class EncryptTableChangedProcessorTest {
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
-        EncryptTableRuleConfiguration toBeChangedItemConfig = new EncryptTableRuleConfiguration("foo_tbl",
+        EncryptTableRuleConfiguration toBeChangedItemConfig = new EncryptTableRuleConfiguration("FOO_TBL",
                 Collections.singleton(new EncryptColumnRuleConfiguration("foo_col", new EncryptColumnItemRuleConfiguration("foo_col_cipher", "foo_algo"))));
         return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(toBeChangedItemConfig)), Collections.emptyMap());
     }

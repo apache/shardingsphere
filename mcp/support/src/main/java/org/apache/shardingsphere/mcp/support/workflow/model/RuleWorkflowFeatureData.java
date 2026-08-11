@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.workflow.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,51 +29,15 @@ import java.util.Map;
  */
 @Getter
 @NoArgsConstructor
-public final class RuleWorkflowFeatureData implements WorkflowFeatureData {
-    
-    private final List<Map<String, Object>> beforeRules = new LinkedList<>();
+public final class RuleWorkflowFeatureData {
     
     private final List<Map<String, Object>> expectedRules = new LinkedList<>();
     
-    public RuleWorkflowFeatureData(final List<Map<String, Object>> beforeRules, final List<Map<String, Object>> expectedRules) {
-        this.beforeRules.addAll(copyRules(beforeRules));
-        this.expectedRules.addAll(copyRules(expectedRules));
+    public RuleWorkflowFeatureData(final List<Map<String, Object>> expectedRules) {
+        expectedRules.forEach(each -> this.expectedRules.add(WorkflowContextSnapshot.copyMap(each)));
     }
     
-    @Override
-    public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
-        return Map.of();
-    }
-    
-    @Override
-    public RuleWorkflowFeatureData copy() {
-        return new RuleWorkflowFeatureData(beforeRules, expectedRules);
-    }
-    
-    private List<Map<String, Object>> copyRules(final List<Map<String, Object>> rules) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : rules) {
-            result.add(copyMap(each));
-        }
-        return result;
-    }
-    
-    private Map<String, Object> copyMap(final Map<String, Object> original) {
-        Map<String, Object> result = new LinkedHashMap<>(original.size(), 1F);
-        original.forEach((key, value) -> result.put(key, copyValue(value)));
-        return result;
-    }
-    
-    private Object copyValue(final Object original) {
-        if (original instanceof Map) {
-            Map<?, ?> originalMap = (Map<?, ?>) original;
-            Map<String, Object> result = new LinkedHashMap<>(originalMap.size(), 1F);
-            originalMap.forEach((key, value) -> result.put(String.valueOf(key), copyValue(value)));
-            return result;
-        }
-        if (original instanceof List) {
-            return ((List<?>) original).stream().map(this::copyValue).toList();
-        }
-        return original;
+    RuleWorkflowFeatureData copy() {
+        return new RuleWorkflowFeatureData(expectedRules);
     }
 }

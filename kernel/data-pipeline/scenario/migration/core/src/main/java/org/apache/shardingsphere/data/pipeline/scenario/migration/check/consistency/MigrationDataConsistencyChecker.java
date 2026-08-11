@@ -120,7 +120,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                     log.info("Table '{}' is ignored, ignore type: {}", each.getSourceDataNode(), checkResult.getIgnoredType());
                     continue;
                 }
-                if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
+                if (!checkResult.isMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", each.getSourceDataNode());
                     cancel();
                     return checkResultMap.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue));

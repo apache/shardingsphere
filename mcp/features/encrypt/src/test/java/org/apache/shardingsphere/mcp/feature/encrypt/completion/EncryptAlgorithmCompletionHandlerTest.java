@@ -42,11 +42,6 @@ import static org.mockito.Mockito.when;
 
 class EncryptAlgorithmCompletionHandlerTest {
     
-    @Test
-    void assertGetContextType() {
-        assertThat(new EncryptAlgorithmCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
-    }
-    
     @ParameterizedTest(name = "{0}")
     @MethodSource("supportedReferences")
     void assertSupports(final String name, final String referenceType, final String reference, final String argumentName) {

@@ -21,11 +21,9 @@ import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
@@ -40,6 +38,8 @@ import java.util.Map;
  * Sharding workflow apply artifact validator.
  */
 public final class ShardingWorkflowApplyArtifactValidator implements MCPWorkflowApplyArtifactValidator {
+    
+    private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
     @Override
     public List<Map<String, Object>> validate(final WorkflowContextSnapshot snapshot, final Collection<ExecutableWorkflowArtifact> artifacts) {
@@ -92,7 +92,7 @@ public final class ShardingWorkflowApplyArtifactValidator implements MCPWorkflow
             return;
         }
         if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(ShardingAlgorithm.class, algorithmType, properties)) {
-            issues.add(createValidationIssue(String.format("Generated sharding DistSQL references sharding algorithm `%s`, "
+            issues.add(validationSupport.createSQLExecutabilityIssue(String.format("Generated sharding DistSQL references sharding algorithm `%s`, "
                     + "but it cannot be loaded or initialized by ShardingAlgorithm SPI.", algorithmType), displaySql));
         }
     }
@@ -109,7 +109,7 @@ public final class ShardingWorkflowApplyArtifactValidator implements MCPWorkflow
             return;
         }
         if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(KeyGenerateAlgorithm.class, request.getKeyGeneratorType(), request.getKeyGeneratorProperties())) {
-            issues.add(createValidationIssue(String.format("Generated sharding DistSQL references key generator algorithm `%s`, "
+            issues.add(validationSupport.createSQLExecutabilityIssue(String.format("Generated sharding DistSQL references key generator algorithm `%s`, "
                     + "but it cannot be loaded or initialized by KeyGenerateAlgorithm SPI.", request.getKeyGeneratorType()), displaySql));
         }
     }
@@ -119,7 +119,7 @@ public final class ShardingWorkflowApplyArtifactValidator implements MCPWorkflow
             return;
         }
         if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(ShardingAuditAlgorithm.class, algorithmType, Map.of())) {
-            issues.add(createValidationIssue(String.format("Generated sharding DistSQL references auditor algorithm `%s`, "
+            issues.add(validationSupport.createSQLExecutabilityIssue(String.format("Generated sharding DistSQL references auditor algorithm `%s`, "
                     + "but it cannot be loaded or initialized by ShardingAuditAlgorithm SPI.", algorithmType), displaySql));
         }
     }
@@ -128,8 +128,4 @@ public final class ShardingWorkflowApplyArtifactValidator implements MCPWorkflow
         return request.getStrategyType().isEmpty() ? "standard" : request.getStrategyType().toLowerCase(Locale.ENGLISH);
     }
     
-    private Map<String, Object> createValidationIssue(final String message, final String sql) {
-        return new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", WorkflowLifecycle.STEP_REVIEW,
-                message, "Regenerate the workflow artifact through the feature planner before approval.", true, Map.of("sql", sql)).toMap();
-    }
 }

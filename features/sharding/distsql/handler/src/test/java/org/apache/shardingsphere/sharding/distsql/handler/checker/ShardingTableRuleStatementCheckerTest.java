@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.checker;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
@@ -214,7 +214,7 @@ class ShardingTableRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), keyGenerateStrategy, null);
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("complex", "product_id", null));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+        assertThrows(InvalidAlgorithmDefinitionException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -223,7 +223,7 @@ class ShardingTableRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), keyGenerateStrategy, null);
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id,user_id", null));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+        assertThrows(InvalidAlgorithmDefinitionException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -242,7 +242,7 @@ class ShardingTableRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), keyGenerateStrategy, null);
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", null));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+        assertThrows(InvalidAlgorithmDefinitionException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -251,7 +251,7 @@ class ShardingTableRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), keyGenerateStrategy, null);
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", null));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, null));
+        assertThrows(InvalidAlgorithmDefinitionException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, null));
     }
     
     @Test
@@ -270,7 +270,7 @@ class ShardingTableRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), keyGenerateStrategy, null);
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", null));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+        assertThrows(InvalidAlgorithmDefinitionException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test

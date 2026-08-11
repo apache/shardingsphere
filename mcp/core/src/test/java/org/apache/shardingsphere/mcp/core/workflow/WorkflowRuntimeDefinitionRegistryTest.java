@@ -24,16 +24,14 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateExc
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -95,7 +93,7 @@ class WorkflowRuntimeDefinitionRegistryTest {
     @Test
     void assertCreateRegistryWithNullWorkflowKind() {
         WorkflowRuntimeDefinition definition = new WorkflowRuntimeDefinition(
-                null, mock(MCPWorkflowValidationHandler.class), mock(MCPWorkflowApplySynchronizationHandler.class), MCPWorkflowApplyArtifactValidator.NO_OP);
+                null, mock(MCPWorkflowRuntimeHandler.class), MCPWorkflowApplyArtifactValidator.NO_OP);
         NullPointerException actual = assertThrows(NullPointerException.class, () -> new WorkflowRuntimeDefinitionRegistry(List.of(definition)));
         assertThat(actual.getMessage(), is(String.format("Workflow kind is required for `%s`.", definition.getClass().getName())));
     }
@@ -110,25 +108,16 @@ class WorkflowRuntimeDefinitionRegistryTest {
     }
     
     @Test
-    void assertCreateRegistryWithNullValidationHandler() {
+    void assertCreateRegistryWithNullRuntimeHandler() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new WorkflowRuntimeDefinitionRegistry(
-                List.of(new WorkflowRuntimeDefinition(
-                        WorkflowKind.valueOf("encrypt.rule"), null, mock(MCPWorkflowApplySynchronizationHandler.class), MCPWorkflowApplyArtifactValidator.NO_OP))));
-        assertThat(actual.getMessage(), is("Workflow validation handler is required for `encrypt.rule`."));
-    }
-    
-    @Test
-    void assertCreateRegistryWithNullApplySynchronizationHandler() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new WorkflowRuntimeDefinitionRegistry(
-                List.of(new WorkflowRuntimeDefinition(
-                        WorkflowKind.valueOf("encrypt.rule"), mock(MCPWorkflowValidationHandler.class), null, MCPWorkflowApplyArtifactValidator.NO_OP))));
-        assertThat(actual.getMessage(), is("Workflow apply synchronization handler is required for `encrypt.rule`."));
+                List.of(new WorkflowRuntimeDefinition(WorkflowKind.valueOf("encrypt.rule"), null, MCPWorkflowApplyArtifactValidator.NO_OP))));
+        assertThat(actual.getMessage(), is("Workflow runtime handler is required for `encrypt.rule`."));
     }
     
     @Test
     void assertCreateRegistryWithNullApplyArtifactValidator() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new WorkflowRuntimeDefinitionRegistry(
-                List.of(new WorkflowRuntimeDefinition(WorkflowKind.valueOf("encrypt.rule"), mock(MCPWorkflowValidationHandler.class), mock(MCPWorkflowApplySynchronizationHandler.class), null))));
+                List.of(new WorkflowRuntimeDefinition(WorkflowKind.valueOf("encrypt.rule"), mock(MCPWorkflowRuntimeHandler.class), null))));
         assertThat(actual.getMessage(), is("Workflow apply artifact validator is required for `encrypt.rule`."));
     }
     
@@ -191,8 +180,6 @@ class WorkflowRuntimeDefinitionRegistryTest {
     }
     
     private static WorkflowRuntimeDefinition createDefinition(final String workflowKind) {
-        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), (workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, sessionId, snapshot) -> Map.of(),
-                (snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId) -> {
-                }, MCPWorkflowApplyArtifactValidator.NO_OP);
+        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), mock(MCPWorkflowRuntimeHandler.class));
     }
 }

@@ -35,16 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MaskFeatureDefinitionTest {
     
     @Test
-    void assertConstants() {
-        assertThat(MaskFeatureDefinition.WORKFLOW_KIND.getValue(), is("mask.rule"));
-        assertThat(MaskFeatureDefinition.PLAN_TOOL_NAME, is("database_gateway_plan_mask_rule"));
-        assertThat(MaskFeatureDefinition.PLAN_PROMPT_NAME, is("plan_mask_rule"));
-        assertThat(MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI, is("shardingsphere://features/mask/algorithms"));
-        assertThat(MaskFeatureDefinition.RULES_RESOURCE_URI, is("shardingsphere://features/mask/databases/{database}/rules"));
-        assertThat(MaskFeatureDefinition.RULE_RESOURCE_URI, is("shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
-    }
-    
-    @Test
     void assertPromptCompletionArguments() {
         MCPCompletionTargetDescriptor actual = MCPDescriptorCatalogLoader.load().getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
                 .filter(each -> "prompt".equals(each.getReferenceType()) && MaskFeatureDefinition.PLAN_PROMPT_NAME.equals(each.getReference())).findFirst().orElseThrow();

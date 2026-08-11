@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -238,6 +239,45 @@ class ColumnSegmentBinderTest {
         assertTrue(actual.getOwner().isPresent());
         assertThat(actual.getExpression(), is("v_record.sensitive_a"));
         assertThat(actual.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+    }
+    
+    @Test
+    void assertBindUnparenthesizedFunction() {
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("CURRENT_DATE"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(
+                columnSegment, SegmentType.PROJECTION, createBinderContext(), LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertThat(actual, is(columnSegment));
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is(""));
+    }
+    
+    @Test
+    void assertBindUnparenthesizedFunctionAsColumn() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        ColumnSegment boundColumn = new ColumnSegment(0, 0, new IdentifierValue("CURRENT_DATE"));
+        boundColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
+                new IdentifierValue("t_order"), new IdentifierValue("CURRENT_DATE"), TableSourceType.PHYSICAL_TABLE));
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundColumn)), TableSourceType.PHYSICAL_TABLE));
+        ColumnSegment actual = ColumnSegmentBinder.bind(
+                new ColumnSegment(0, 0, new IdentifierValue("CURRENT_DATE")), SegmentType.PROJECTION, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("CURRENT_DATE"));
+    }
+    
+    @Test
+    void assertBindQuotedUnparenthesizedFunctionWithoutColumn() {
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("`CURRENT_DATE`"));
+        SQLStatementBinderContext binderContext = createBinderContext();
+        assertThrows(ColumnNotFoundException.class,
+                () -> ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create()));
+    }
+    
+    @Test
+    void assertBindUnparenthesizedFunctionAsAssignmentColumnWithoutColumn() {
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("CURRENT_DATE"));
+        SQLStatementBinderContext binderContext = createBinderContext();
+        assertThrows(ColumnNotFoundException.class,
+                () -> ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create()));
     }
     
     @Test

@@ -63,7 +63,7 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
         Collection<String> keyGenerators = ruleConfig.getKeyGenerators().keySet();
         Collection<String> auditors = ruleConfig.getAuditors().keySet();
         Collection<String> shardingAlgorithms = ruleConfig.getShardingAlgorithms().keySet();
-        checkTables(databaseName, ruleConfig.getTables(), ruleConfig.getAutoTables(), keyGenerators, auditors, shardingAlgorithms);
+        checkTables(databaseName, ruleConfig.getTables(), ruleConfig.getAutoTables(), auditors, shardingAlgorithms);
         checkKeyGenerateStrategy(databaseName, ruleConfig.getDefaultKeyGenerateStrategy(), keyGenerators);
         checkKeyGenerateStrategies(databaseName, ruleConfig.getKeyGenerateStrategies().values(), keyGenerators);
         checkAuditStrategy(databaseName, ruleConfig.getDefaultAuditStrategy(), auditors);
@@ -79,8 +79,8 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
         algorithmConfigs.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getType(), each.getProps()));
     }
     
-    private void checkTables(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
-                             final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
+    private void checkTables(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables,
+                             final Collection<ShardingAutoTableRuleConfiguration> autoTables, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
         for (ShardingTableRuleConfiguration each : tables) {
             checkLogicTable(databaseName, each.getLogicTable());
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);

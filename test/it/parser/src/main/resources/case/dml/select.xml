@@ -3882,7 +3882,7 @@
             <shorthand-projection start-index="0" stop-index="0" />
         </projections>
         <from>
-            <simple-table name="t_order" start-index="0" stop-index="12" />
+            <simple-table name="t_order" start-index="6" stop-index="12" />
         </from>
     </select>
 
@@ -9961,7 +9961,30 @@
                                                                 <left>
                                                                     <binary-operation-expression text="CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]" start-index="234" stop-index="374">
                                                                         <left>
-                                                                            <common-expression text="CASE[req].[statement_end_offset]WHEN-1THENDATALENGTH([ST].[text])ELSE[req].[statement_end_offset]END" start-index="234" stop-index="341" />
+                                                                            <case-when-expression start-index="234" stop-index="341">
+                                                                                <case-expr>
+                                                                                    <column name="statement_end_offset" start-index="239" stop-index="266" start-delimiter="[" end-delimiter="]">
+                                                                                        <owner name="req" start-index="239" stop-index="243" start-delimiter="[" end-delimiter="]" />
+                                                                                    </column>
+                                                                                </case-expr>
+                                                                                <when-exprs>
+                                                                                    <literal-expression value="-1" start-index="273" stop-index="274" />
+                                                                                </when-exprs>
+                                                                                <then-exprs>
+                                                                                    <function function-name="DATALENGTH" text="DATALENGTH([ST].[text])" start-index="281" stop-index="303">
+                                                                                        <parameter>
+                                                                                            <column name="text" start-index="292" stop-index="302" start-delimiter="[" end-delimiter="]">
+                                                                                                <owner name="ST" start-index="292" stop-index="295" start-delimiter="[" end-delimiter="]" />
+                                                                                            </column>
+                                                                                        </parameter>
+                                                                                    </function>
+                                                                                </then-exprs>
+                                                                                <else-expr>
+                                                                                    <column name="statement_end_offset" start-index="310" stop-index="337" start-delimiter="[" end-delimiter="]">
+                                                                                        <owner name="req" start-index="310" stop-index="314" start-delimiter="[" end-delimiter="]" />
+                                                                                    </column>
+                                                                                </else-expr>
+                                                                            </case-when-expression>
                                                                         </left>
                                                                         <right>
                                                                             <column name="statement_start_offset" start-index="345" stop-index="374" start-delimiter="[" end-delimiter="]">
@@ -10065,9 +10088,47 @@
                 </function>
             </expression-projection>
             <column-projection name="max_length" start-index="75" stop-index="84"/>
-            <expression-projection text="CASEWHENmax_length=-1ANDTYPE_NAME(user_type_id)&lt;&gt;'xml'THEN1ELSE0END" start-index="86" stop-index="176" alias="(max)" start-delimiter="[" end-delimiter="]">
+            <expression-projection text="CASE WHEN max_length = -1 AND TYPE_NAME(user_type_id) &lt;&gt; 'xml' THEN 1 ELSE 0 END" start-index="86" stop-index="176" alias="(max)" start-delimiter="[" end-delimiter="]">
                 <expr>
-                    <common-expression text="CASEWHENmax_length=-1ANDTYPE_NAME(user_type_id)&lt;&gt;'xml'THEN1ELSE0END" start-index="86" stop-index="165"/>
+                    <case-when-expression start-index="86" stop-index="165">
+                        <when-exprs>
+                            <binary-operation-expression start-index="96" stop-index="147">
+                                <left>
+                                    <binary-operation-expression start-index="96" stop-index="110">
+                                        <left>
+                                            <column name="max_length" start-index="96" stop-index="105" />
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <literal-expression value="-1" start-index="109" stop-index="110" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>AND</operator>
+                                <right>
+                                    <binary-operation-expression start-index="116" stop-index="147">
+                                        <left>
+                                            <function function-name="TYPE_NAME" text="TYPE_NAME(user_type_id)" start-index="116" stop-index="138">
+                                                <parameter>
+                                                    <column name="user_type_id" start-index="126" stop-index="137" />
+                                                </parameter>
+                                            </function>
+                                        </left>
+                                        <operator>&lt;&gt;</operator>
+                                        <right>
+                                            <literal-expression value="xml" start-index="143" stop-index="147" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="1" start-index="154" stop-index="154" />
+                        </then-exprs>
+                        <else-expr>
+                            <literal-expression value="0" start-index="161" stop-index="161" />
+                        </else-expr>
+                    </case-when-expression>
                 </expr>
             </expression-projection>
         </projections>
@@ -13431,16 +13492,6 @@
         </from>
     </select>
 
-    <select sql-case-id="select_union_firebird">
-        <projections start-index="7" stop-index="7">
-            <expression-projection text="1" start-index="7" stop-index="7">
-                <expr>
-                    <literal-expression value="1" start-index="7" stop-index="7" />
-                </expr>
-            </expression-projection>
-        </projections>
-    </select>
-
     <select sql-case-id="select_subquery_table_firebird">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -15039,6 +15090,15 @@
         <from>
             <simple-table name="t_product" start-index="73" stop-index="81" />
         </from>
+    </select>
+
+    <select sql-case-id="select_with_log_table_alias_oracle">
+        <from>
+            <simple-table name="t_order" alias="LOG" start-index="14" stop-index="24" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
     </select>
 
 </sql-parser-test-cases>

@@ -30,22 +30,20 @@ import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
-import org.apache.shardingsphere.mcp.core.tool.handler.metadata.ValidateRuntimeDatabaseToolHandler;
 import org.apache.shardingsphere.mcp.core.tool.payload.RuntimeDatabaseValidationPayload;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
 import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationResult;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
@@ -57,6 +55,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -111,7 +110,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
                 List.of(RuntimeDatabaseValidationCheckResult.failed("configuration", RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION,
                         "The requested database is not configured for this MCP runtime.")),
                 RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
-        CallToolResult actual = createRealDescriptorCallToolResult(ValidateRuntimeDatabaseToolHandler.TOOL_NAME, response);
+        CallToolResult actual = createRealDescriptorCallToolResult(CoreToolNames.VALIDATE_RUNTIME_DATABASE, response);
         Map<String, Object> actualPayload = getStructuredContent(actual);
         assertFalse(actual.isError());
         assertThat(actualPayload.get("status"), is("failed"));
@@ -267,7 +266,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         WorkflowContextSnapshot snapshot = createMaskSnapshot();
         Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
-                new MaskAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
+                WorkflowArtifactMaskUtils.maskPropertyMap(snapshot.getRequest().getPrimaryAlgorithmProperties(), snapshot.getPropertyRequirements())));
         return new MCPMapPayload(payload);
     }
     
@@ -286,7 +285,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         WorkflowContextSnapshot snapshot = createEncryptSnapshot();
         Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
-                new EncryptAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
+                WorkflowArtifactMaskUtils.maskPropertyMap(snapshot.getRequest().getPrimaryAlgorithmProperties(), snapshot.getPropertyRequirements())));
         return new MCPMapPayload(payload);
     }
     

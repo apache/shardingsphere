@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -38,6 +39,8 @@ import java.util.Map;
  */
 public final class BroadcastWorkflowPlanningService {
     
+    private static final List<String> SUPPORTED_OPERATION_TYPES = List.of(WorkflowLifecycle.OPERATION_CREATE, WorkflowLifecycle.OPERATION_DROP);
+    
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, broadcast tables and target lifecycle",
             "Inspect DistSQL-visible broadcast rules",
@@ -49,8 +52,6 @@ public final class BroadcastWorkflowPlanningService {
     private static final List<String> VALIDATION_LAYERS = List.of("rules");
     
     private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
-    
-    private final BroadcastWorkflowIntentResolver intentResolver = new BroadcastWorkflowIntentResolver();
     
     private final BroadcastRuleInspectionService ruleInspectionService = new BroadcastRuleInspectionService();
     
@@ -69,6 +70,10 @@ public final class BroadcastWorkflowPlanningService {
         BroadcastWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
+        if (!planningSupport.ensureSupportedOperationType(clarifiedIntent, SUPPORTED_OPERATION_TYPES, result)) {
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
+        }
         if (!request.getTable().isEmpty() && !request.getTables().isEmpty()) {
             result.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_CONFLICT, "error", WorkflowLifecycle.STEP_INTAKING,
                     "Broadcast workflow accepts table or tables, but not both in the same request.",
@@ -76,7 +81,8 @@ public final class BroadcastWorkflowPlanningService {
             return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         if (!ensurePlanningContext(mergedRequest, clarifiedIntent, result)) {
-            return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return workflowSessionContext.persist(result, currentStep, result.getStatus());
         }
         queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
         List<Map<String, Object>> existingRules = ruleInspectionService.queryBroadcastRules(queryFacade, mergedRequest.getDatabase());
@@ -94,8 +100,19 @@ public final class BroadcastWorkflowPlanningService {
         if (result.getTable().isEmpty() && !result.getTables().isEmpty()) {
             result.setTable(result.getTables().iterator().next());
         }
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        resolveOperationType(result, clarifiedIntent, WorkflowLifecycle.OPERATION_CREATE);
         return planningSupport.prepareSnapshot(snapshot, BroadcastFeatureDefinition.WORKFLOW_KIND, result, null,
-                intentResolver.resolve(result), "Broadcast workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+                clarifiedIntent, "Broadcast workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+    }
+    
+    private void resolveOperationType(final BroadcastWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final String defaultOperationType) {
+        if (!request.getOperationType().isEmpty()) {
+            clarifiedIntent.setOperationType(request.getOperationType());
+        } else if (request.getNaturalLanguageIntent().isEmpty()) {
+            clarifiedIntent.setOperationType(defaultOperationType);
+            clarifiedIntent.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, defaultOperationType);
+        }
     }
     
     private boolean ensurePlanningContext(final BroadcastWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {

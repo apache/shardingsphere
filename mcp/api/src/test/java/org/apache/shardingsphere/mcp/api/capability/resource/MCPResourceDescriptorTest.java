@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.api.capability.resource;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,10 +44,4 @@ class MCPResourceDescriptorTest {
         assertTrue(actual.isTemplated());
     }
     
-    @Test
-    void assertMetaIsKeptAsMetadataOnly() {
-        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://features/encrypt/algorithms", "encrypt-algorithms", "Encrypt Algorithms",
-                "List encrypt algorithms.", "application/json", MCPResourceAnnotations.EMPTY, Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy"));
-        assertThat(actual.getMeta(), is(Map.of("org.apache.shardingsphere/runtime-visibility", "ShardingSphere-Proxy")));
-    }
 }

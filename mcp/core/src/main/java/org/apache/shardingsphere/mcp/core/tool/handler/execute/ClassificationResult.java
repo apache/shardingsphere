@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -39,8 +38,6 @@ public final class ClassificationResult {
     
     private final String targetObjectName;
     
-    private final Collection<String> referencedObjectNames;
-    
     @Getter(AccessLevel.NONE)
     private final Collection<SQLStatementObjectName> referencedObjects;
     
@@ -54,18 +51,9 @@ public final class ClassificationResult {
         this.statementType = statementType;
         this.normalizedSql = normalizedSql;
         targetObjectName = referencedObjects.isEmpty() ? "" : referencedObjects.iterator().next().getObjectName();
-        referencedObjectNames = createReferencedObjectNames(referencedObjects);
         this.referencedObjects = referencedObjects;
         this.savepointName = savepointName;
         this.ruleDistSQL = ruleDistSQL;
-    }
-    
-    private Collection<String> createReferencedObjectNames(final Collection<SQLStatementObjectName> referencedObjects) {
-        Collection<String> result = new LinkedHashSet<>(referencedObjects.size(), 1F);
-        for (SQLStatementObjectName each : referencedObjects) {
-            result.add(each.getObjectName());
-        }
-        return result;
     }
     
     Collection<SQLStatementObjectName> getReferencedObjects() {

@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,7 +47,11 @@ class ShardingSphereStatisticsFactoryTest {
     
     private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
+    private final DatabaseType openGaussDatabaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     private final DatabaseType h2DatabaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
+    
+    private final DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
     @Mock
     private ShardingSphereMetaData metaData;
@@ -62,7 +67,16 @@ class ShardingSphereStatisticsFactoryTest {
     
     @Test
     void assertCreateWithPostgreSQLDatabaseAndDialectAppender() {
-        ShardingSphereDatabase database = mockPostgreSQLDatabaseWithPgCatalogSchema();
+        ShardingSphereDatabase database = mockDatabaseWithPgCatalogSchema(postgreSQLDatabaseType);
+        when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
+        ShardingSphereStatistics actual = ShardingSphereStatisticsFactory.create(metaData, statistics);
+        assertThat(actual.getDatabaseStatisticsMap().size(), is(1));
+        assertTrue(actual.getDatabaseStatisticsMap().containsKey("foo_db"));
+    }
+    
+    @Test
+    void assertCreateWithOpenGaussDatabaseAndDialectAppender() {
+        ShardingSphereDatabase database = mockDatabaseWithPgCatalogSchema(openGaussDatabaseType);
         when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
         ShardingSphereStatistics actual = ShardingSphereStatisticsFactory.create(metaData, statistics);
         assertThat(actual.getDatabaseStatisticsMap().size(), is(1));
@@ -79,8 +93,15 @@ class ShardingSphereStatisticsFactoryTest {
     }
     
     @Test
-    void assertCreateWithH2DatabaseNoDefaultSchema() {
+    void assertCreateWithH2DatabaseNoDialectAppender() {
         ShardingSphereDatabase database = mockH2Database();
+        when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
+        assertTrue(ShardingSphereStatisticsFactory.create(metaData, statistics).getDatabaseStatisticsMap().isEmpty());
+    }
+    
+    @Test
+    void assertCreateWithSQLServerDatabaseNoDialectAppender() {
+        ShardingSphereDatabase database = mockDatabaseWithPgCatalogSchema(sqlServerDatabaseType);
         when(metaData.getAllDatabases()).thenReturn(Collections.singleton(database));
         assertTrue(ShardingSphereStatisticsFactory.create(metaData, statistics).getDatabaseStatisticsMap().isEmpty());
     }
@@ -137,14 +158,13 @@ class ShardingSphereStatisticsFactoryTest {
         assertThat(actualSchemaStatistics.getTableStatisticsMap().size(), is(1));
     }
     
-    private ShardingSphereDatabase mockPostgreSQLDatabaseWithPgCatalogSchema() {
+    private ShardingSphereDatabase mockDatabaseWithPgCatalogSchema(final DatabaseType protocolType) {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
-        when(result.getProtocolType()).thenReturn(postgreSQLDatabaseType);
+        when(result.getProtocolType()).thenReturn(protocolType);
         ShardingSphereSchema schema = new ShardingSphereSchema("pg_catalog", mock(DatabaseType.class));
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
-        when(result.containsSchema("pg_catalog")).thenReturn(true);
-        when(result.getSchema("pg_catalog")).thenReturn(schema);
+        when(result.containsSchema(anyString())).thenAnswer(invocation -> "pg_catalog".equals(invocation.getArgument(0)));
         return result;
     }
     

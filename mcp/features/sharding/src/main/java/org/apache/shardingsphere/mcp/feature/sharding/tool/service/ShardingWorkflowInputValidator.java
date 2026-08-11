@@ -174,22 +174,21 @@ final class ShardingWorkflowInputValidator {
     
     boolean ensureRequiredTableRuleInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
-            return require(request, snapshot, request.getTable(), "table", "Please provide target logical table.");
+            return require(snapshot, request.getTable(), "table", "Please provide target logical table.");
         }
-        if (!require(request, snapshot, request.getTable(), "table", "Please provide target logical table.")) {
+        if (!require(snapshot, request.getTable(), "table", "Please provide target logical table.")) {
             return false;
         }
         if (request.getDataNodes().isEmpty() && request.getStorageUnits().isEmpty()) {
-            request.setFieldSemantics("Please provide data nodes or storage units.");
-            return false;
+            return clarify(snapshot, "Please provide data nodes or storage units.");
         }
         return (request.getStorageUnits().isEmpty() ? ensureRequiredStrategyInputs(request, snapshot) : ensureRequiredAutoTableRuleInputs(request, snapshot))
                 && ensureRequiredTableRuleKeyGenerateInputs(request, snapshot) && ensureRequiredAuditInputs(request, snapshot);
     }
     
     private boolean ensureRequiredAutoTableRuleInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
-        return require(request, snapshot, request.getColumn(), "column", "Please provide auto table sharding column.")
-                && require(request, snapshot, request.getAlgorithmType(), "algorithm_type", "Please provide auto table sharding algorithm type.");
+        return require(snapshot, request.getColumn(), "column", "Please provide auto table sharding column.")
+                && require(snapshot, request.getAlgorithmType(), "algorithm_type", "Please provide auto table sharding algorithm type.");
     }
     
     private boolean ensureRequiredTableRuleKeyGenerateInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
@@ -198,12 +197,18 @@ final class ShardingWorkflowInputValidator {
             if (!hasGeneratorInputs) {
                 return true;
             }
-            return require(request, snapshot, "", "key_generate_column", "Please provide key generate column when configuring a key generator.");
+            return require(snapshot, "", "key_generate_column", "Please provide key generate column when configuring a key generator.");
         }
-        if (!request.getKeyGeneratorName().isEmpty()) {
+        return ensureRequiredKeyGeneratorSelection(request, snapshot);
+    }
+    
+    private boolean ensureRequiredKeyGeneratorSelection(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        if (!request.getKeyGeneratorName().isEmpty() || !request.getKeyGeneratorType().isEmpty()) {
             return true;
         }
-        return require(request, snapshot, request.getKeyGeneratorType(), "key_generator_type", "Please provide key generator type or key generator name for key generate strategy.");
+        return request.getKeyGeneratorProperties().isEmpty()
+                ? clarify(snapshot, "Please provide key_generator or key_generator_type.")
+                : require(snapshot, "", "key_generator_type", "Please provide key generator type.");
     }
     
     private boolean ensureRequiredAuditInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
@@ -211,33 +216,33 @@ final class ShardingWorkflowInputValidator {
             return true;
         }
         if (request.getAuditorNames().isEmpty()) {
-            return require(request, snapshot, "", "auditors", "Please provide auditors when allow_hint_disable is configured.");
+            return require(snapshot, "", "auditors", "Please provide auditors when allow_hint_disable is configured.");
         }
         if ("true".equalsIgnoreCase(request.getAllowHintDisable()) || "false".equalsIgnoreCase(request.getAllowHintDisable())) {
             return true;
         }
-        return clarify(request, snapshot, "allow_hint_disable", "Please provide allow_hint_disable as true or false.");
+        return clarify(snapshot, "allow_hint_disable", "Please provide allow_hint_disable as true or false.");
     }
     
     boolean ensureRequiredReferenceRuleInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
-            return require(request, snapshot, request.getRuleName(), "rule", "Please provide table reference rule name.");
+            return require(snapshot, request.getRuleName(), "rule", "Please provide table reference rule name.");
         }
-        if (!require(request, snapshot, request.getRuleName(), "rule", "Please provide table reference rule name.")) {
+        if (!require(snapshot, request.getRuleName(), "rule", "Please provide table reference rule name.")) {
             return false;
         }
         if (!request.getReferenceTables().isEmpty()) {
             return true;
         }
-        return clarify(request, snapshot, "reference_tables", "Please provide reference tables.");
+        return clarify(snapshot, "reference_tables", "Please provide reference tables.");
     }
     
     boolean ensureRequiredDefaultStrategyInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
-        if (!require(request, snapshot, request.getDefaultStrategyType(), "default_strategy_type", "Please provide DATABASE or TABLE default strategy type.")) {
+        if (!require(snapshot, request.getDefaultStrategyType(), "default_strategy_type", "Please provide DATABASE or TABLE default strategy type.")) {
             return false;
         }
         if (!isDefaultStrategyType(request.getDefaultStrategyType())) {
-            return clarify(request, snapshot, "default_strategy_type", "Please provide default_strategy_type as DATABASE or TABLE.");
+            return clarify(snapshot, "default_strategy_type", "Please provide default_strategy_type as DATABASE or TABLE.");
         }
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType()) || "none".equalsIgnoreCase(request.getStrategyType())) {
             return true;
@@ -252,91 +257,94 @@ final class ShardingWorkflowInputValidator {
     boolean ensureRequiredStrategyInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         switch (normalizeStrategyType(request)) {
             case "standard":
-                return require(request, snapshot, request.getColumn(), "column", "Please provide sharding column.")
-                        && require(request, snapshot, request.getAlgorithmType(), "algorithm_type", "Please provide sharding algorithm type.");
+                return require(snapshot, request.getColumn(), "column", "Please provide sharding column.")
+                        && require(snapshot, request.getAlgorithmType(), "algorithm_type", "Please provide sharding algorithm type.");
             case "complex":
                 return ensureRequiredComplexStrategyInputs(request, snapshot);
             case "hint":
-                return require(request, snapshot, request.getAlgorithmType(), "algorithm_type", "Please provide sharding algorithm type.");
+                return require(snapshot, request.getAlgorithmType(), "algorithm_type", "Please provide sharding algorithm type.");
             case "none":
                 return true;
             default:
-                return clarify(request, snapshot, "strategy_type", "Please provide strategy_type as standard, complex, hint, or none.");
+                return clarify(snapshot, "strategy_type", "Please provide strategy_type as standard, complex, hint, or none.");
         }
     }
     
     private boolean ensureRequiredComplexStrategyInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
-        if (!require(request, snapshot, request.getShardingColumns(), "sharding_columns", "Please provide at least two sharding columns for complex strategy.")) {
+        if (!require(snapshot, request.getShardingColumns(), "sharding_columns", "Please provide at least two sharding columns for complex strategy.")) {
             return false;
         }
         if (splitCsv(request.getShardingColumns()).size() < 2) {
-            return clarify(request, snapshot, "sharding_columns", "Please provide at least two sharding columns for complex strategy.");
+            return clarify(snapshot, "sharding_columns", "Please provide at least two sharding columns for complex strategy.");
         }
-        return require(request, snapshot, request.getAlgorithmType(), "algorithm_type", "Please provide sharding algorithm type.");
+        return require(snapshot, request.getAlgorithmType(), "algorithm_type", "Please provide sharding algorithm type.");
     }
     
     boolean ensureRequiredKeyGeneratorInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
-            return require(request, snapshot, request.getKeyGeneratorName(), "key_generator", "Please provide key generator name.");
+            return require(snapshot, request.getKeyGeneratorName(), "key_generator", "Please provide key generator name.");
         }
-        return require(request, snapshot, request.getKeyGeneratorName(), "key_generator", "Please provide key generator name.")
-                && require(request, snapshot, request.getKeyGeneratorType(), "key_generator_type", "Please provide key generator type.");
+        return require(snapshot, request.getKeyGeneratorName(), "key_generator", "Please provide key generator name.")
+                && require(snapshot, request.getKeyGeneratorType(), "key_generator_type", "Please provide key generator type.");
     }
     
     boolean ensureRequiredKeyGenerateStrategyInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         if (WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(request.getOperationType())) {
-            return require(request, snapshot, request.getKeyGenerateStrategyName(), "key_generate_strategy", "Please provide key generate strategy name.");
+            return require(snapshot, request.getKeyGenerateStrategyName(), "key_generate_strategy", "Please provide key generate strategy name.");
         }
-        if (!require(request, snapshot, request.getKeyGenerateStrategyName(), "key_generate_strategy", "Please provide key generate strategy name.")) {
+        if (!require(snapshot, request.getKeyGenerateStrategyName(), "key_generate_strategy", "Please provide key generate strategy name.")) {
             return false;
         }
         if (request.getSequenceName().isEmpty() && request.getTable().isEmpty() && request.getColumn().isEmpty()) {
-            request.setFieldSemantics("Please provide table and column, or sequence.");
+            return clarify(snapshot, "Please provide table and column, or sequence.");
+        }
+        if (request.getSequenceName().isEmpty() && (!require(snapshot, request.getTable(), "table", "Please provide target logical table.")
+                || !require(snapshot, request.getColumn(), "column", "Please provide key generate column."))) {
             return false;
         }
-        if (request.getSequenceName().isEmpty() && (!require(request, snapshot, request.getTable(), "table", "Please provide target logical table.")
-                || !require(request, snapshot, request.getColumn(), "column", "Please provide key generate column."))) {
-            return false;
-        }
-        if (request.getKeyGeneratorName().isEmpty() && request.getKeyGeneratorType().isEmpty()) {
-            request.setFieldSemantics("Please provide key_generator or key_generator_type.");
-            return false;
-        }
-        return true;
+        return ensureRequiredKeyGeneratorSelection(request, snapshot);
     }
     
     boolean ensureRequiredCleanupInputs(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         if (request.getComponentType().isEmpty()) {
-            return require(request, snapshot, "", "component_type", "Please provide component type.");
+            return require(snapshot, "", "component_type", "Please provide component type.");
         }
         if (request.getComponentName().isEmpty()) {
-            return require(request, snapshot, "", "component_name", "Please provide component name.");
+            return require(snapshot, "", "component_name", "Please provide component name.");
         }
         return isComponentType(request.getComponentType())
-                || clarify(request, snapshot, "component_type", "Please provide component_type as algorithm, key-generator, or auditor.");
+                || clarify(snapshot, "component_type", "Please provide component_type as algorithm, key-generator, or auditor.");
     }
     
-    void addRequiredInputIssue(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+    void addRequiredInputIssue(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> details = snapshot.getClarifiedIntent().getUnresolvedFields().isEmpty()
                 ? Map.of()
                 : Map.of("missing_inputs", snapshot.getClarifiedIntent().getUnresolvedFields());
+        String message = snapshot.getClarifiedIntent().getClarificationMessages().isEmpty()
+                ? "Sharding workflow requires additional input."
+                : snapshot.getClarifiedIntent().getClarificationMessages().getLast();
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_INPUT_REQUIRED, "error", WorkflowLifecycle.STEP_INTAKING,
-                request.getFieldSemantics().isEmpty() ? "Sharding workflow requires additional input." : request.getFieldSemantics(),
-                "Provide the missing inputs and continue with the existing plan_id.", true, details));
+                message, "Provide the missing inputs and continue with the existing plan_id.", true, details));
         snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
     }
     
-    private boolean require(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot, final String value, final String fieldName, final String message) {
+    private boolean require(final WorkflowContextSnapshot snapshot, final String value, final String fieldName, final String message) {
         if (!value.isEmpty()) {
             return true;
         }
-        return clarify(request, snapshot, fieldName, message);
+        return clarify(snapshot, fieldName, message);
     }
     
-    private boolean clarify(final ShardingWorkflowRequest request, final WorkflowContextSnapshot snapshot, final String fieldName, final String message) {
-        request.setFieldSemantics(message);
+    private boolean clarify(final WorkflowContextSnapshot snapshot, final String fieldName, final String message) {
         if (!snapshot.getClarifiedIntent().getUnresolvedFields().contains(fieldName)) {
             snapshot.getClarifiedIntent().getUnresolvedFields().add(fieldName);
+        }
+        return clarify(snapshot, message);
+    }
+    
+    private boolean clarify(final WorkflowContextSnapshot snapshot, final String message) {
+        if (!snapshot.getClarifiedIntent().getClarificationMessages().contains(message)) {
+            snapshot.getClarifiedIntent().getClarificationMessages().add(message);
         }
         return false;
     }

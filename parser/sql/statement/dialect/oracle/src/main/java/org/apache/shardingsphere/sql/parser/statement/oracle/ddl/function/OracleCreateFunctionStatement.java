@@ -20,12 +20,13 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.function;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,13 +35,8 @@ import java.util.List;
 public final class OracleCreateFunctionStatement extends CreateFunctionStatement {
     
     public OracleCreateFunctionStatement(final DatabaseType databaseType, final List<SQLStatementSegment> sqlStatements, final List<ProcedureCallNameSegment> procedureCallNames,
-                                         final FunctionNameSegment functionName, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
-        this(databaseType, sqlStatements, procedureCallNames, Collections.emptyList(), functionName, dynamicSqlStatementExpressions);
-    }
-    
-    public OracleCreateFunctionStatement(final DatabaseType databaseType, final List<SQLStatementSegment> sqlStatements, final List<ProcedureCallNameSegment> procedureCallNames,
                                          final List<ProcedureBodyEndNameSegment> functionBodyEndNameSegments, final FunctionNameSegment functionName,
-                                         final List<ExpressionSegment> dynamicSqlStatementExpressions) {
-        super(databaseType, functionName, null, sqlStatements, procedureCallNames, functionBodyEndNameSegments, dynamicSqlStatementExpressions);
+                                         final Collection<SimpleTableSegment> tables, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
+        super(databaseType, functionName, null, sqlStatements, procedureCallNames, functionBodyEndNameSegments, tables, dynamicSqlStatementExpressions);
     }
 }
