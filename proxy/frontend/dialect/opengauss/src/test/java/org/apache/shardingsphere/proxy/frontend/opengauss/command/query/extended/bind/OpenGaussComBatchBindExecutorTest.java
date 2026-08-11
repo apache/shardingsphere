@@ -202,6 +202,7 @@ class OpenGaussComBatchBindExecutorTest {
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         lenient().when(result.getDefaultSchemaName()).thenReturn("public");
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
+        lenient().when(result.containsSchema("public")).thenReturn(true);
         when(result.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(result.getSchema("public")).thenReturn(schema);
         when(result.getSchema(new IdentifierValue("public"))).thenReturn(schema);
