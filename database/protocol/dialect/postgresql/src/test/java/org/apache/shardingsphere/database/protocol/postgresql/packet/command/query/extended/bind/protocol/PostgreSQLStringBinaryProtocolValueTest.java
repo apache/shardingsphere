@@ -25,10 +25,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
+
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +58,16 @@ class PostgreSQLStringBinaryProtocolValueTest {
     
     @Test
     void assertRead() {
+        doAnswer((Answer<ByteBuf>) invocation -> {
+            ((byte[]) invocation.getArguments()[0])[0] = 'a';
+            return byteBuf;
+        }).when(byteBuf).readBytes(any(byte[].class));
+        PostgreSQLStringBinaryProtocolValue actual = new PostgreSQLStringBinaryProtocolValue();
+        assertThat(actual.read(payload, "a".length()), is("a"));
+    }
+    
+    @Test
+    void assertReadWithMultiByteCharset() {
         String expected = "中文";
         byte[] bytes = expected.getBytes(StandardCharsets.UTF_16BE);
         PostgreSQLPacketPayload readPayload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(bytes), StandardCharsets.UTF_16BE);
