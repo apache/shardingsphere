@@ -280,7 +280,6 @@ class UpdateStatementContextTest {
     
     @Test
     void assertGetTableNamesWithDirectVariableTargetAndExtraVariableSourceExcludesAllVariables() {
-        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
         sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
         SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
@@ -292,6 +291,7 @@ class UpdateStatementContextTest {
         JoinTableSegment fromJoin = new JoinTableSegment();
         fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
         fromJoin.setRight(rightJoin);
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(targetVar)
@@ -421,7 +421,6 @@ class UpdateStatementContextTest {
     
     @Test
     void assertGetTableNamesWithDirectVariableTargetAndThreeVariableSourcesExcludesAllVariables() {
-        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
         sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
         SimpleTableSegment otherVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@OtherVar")));
@@ -438,6 +437,7 @@ class UpdateStatementContextTest {
         JoinTableSegment fromJoin = new JoinTableSegment();
         fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
         fromJoin.setRight(variablesAndEmployee);
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(targetVar)
@@ -488,12 +488,12 @@ class UpdateStatementContextTest {
     
     @Test
     void assertGetTableNamesWithVariableJoiningBracketQuotedAtTableKeepsQuotedPhysicalTable() {
-        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         SimpleTableSegment bracketQuotedTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
         bracketQuotedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
         JoinTableSegment fromJoin = new JoinTableSegment();
         fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
         fromJoin.setRight(bracketQuotedTable);
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(targetVar)
@@ -508,12 +508,12 @@ class UpdateStatementContextTest {
     
     @Test
     void assertGetTableNamesWithVariableJoiningDoubleQuotedAtTableKeepsQuotedPhysicalTable() {
-        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         SimpleTableSegment doubleQuotedTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
         doubleQuotedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
         JoinTableSegment fromJoin = new JoinTableSegment();
         fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
         fromJoin.setRight(doubleQuotedTable);
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(targetVar)

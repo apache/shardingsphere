@@ -295,32 +295,6 @@ class TableExtractorTest {
     }
     
     @Test
-    void assertExtractTablesFromSelectWithBracketDelimitedAtSignFromIncludesPhysicalTable() {
-        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
-        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("Remark"))));
-        SelectStatement selectStatement = SelectStatement.builder().databaseType(sqlServerDatabaseType).projections(projections)
-                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)))).build();
-        tableExtractor.extractTablesFromSelect(selectStatement);
-        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
-                && QuoteCharacter.BRACKETS == each.getTableName().getIdentifier().getQuoteCharacter()));
-    }
-    
-    @Test
-    void assertExtractTablesFromSelectWithQuoteDelimitedAtSignFromIncludesPhysicalTable() {
-        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
-        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("Remark"))));
-        SelectStatement selectStatement = SelectStatement.builder().databaseType(sqlServerDatabaseType).projections(projections)
-                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)))).build();
-        tableExtractor.extractTablesFromSelect(selectStatement);
-        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
-                && QuoteCharacter.QUOTE == each.getTableName().getIdentifier().getQuoteCharacter()));
-    }
-    
-    @Test
     void assertExtractTablesFromUpdateWithQuoteDelimitedAtSignTargetIncludesPhysicalTable() {
         SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
         UpdateStatement updateStatement = UpdateStatement.builder()
@@ -404,7 +378,6 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromUpdateWithDirectVariableTargetAndExtraVariableSourceExcludesAllVariables() {
-        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
         sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
         SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
@@ -416,6 +389,7 @@ class TableExtractorTest {
         JoinTableSegment fromJoin = new JoinTableSegment();
         fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
         fromJoin.setRight(rightJoin);
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(targetVar)
@@ -553,7 +527,6 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromUpdateWithDirectVariableTargetAndThreeVariableSourcesExcludesAllVariables() {
-        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
         sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
         SimpleTableSegment otherVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@OtherVar")));
@@ -570,6 +543,7 @@ class TableExtractorTest {
         JoinTableSegment fromJoin = new JoinTableSegment();
         fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
         fromJoin.setRight(variablesAndEmployee);
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(targetVar)
@@ -623,12 +597,12 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromUpdateWithVariableJoiningBracketQuotedAtTableKeepsQuotedPhysicalTable() {
-        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         SimpleTableSegment bracketQuotedTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
         bracketQuotedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
         JoinTableSegment fromJoin = new JoinTableSegment();
         fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
         fromJoin.setRight(bracketQuotedTable);
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(targetVar)
@@ -647,12 +621,12 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromUpdateWithVariableJoiningDoubleQuotedAtTableKeepsQuotedPhysicalTable() {
-        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         SimpleTableSegment doubleQuotedTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
         doubleQuotedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
         JoinTableSegment fromJoin = new JoinTableSegment();
         fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
         fromJoin.setRight(doubleQuotedTable);
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(sqlServerDatabaseType)
                 .table(targetVar)

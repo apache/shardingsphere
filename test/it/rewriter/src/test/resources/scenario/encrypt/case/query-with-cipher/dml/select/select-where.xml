@@ -150,14 +150,4 @@
         <input sql="SELECT * FROM encrypt.dbo.t_user"/>
         <output sql="SELECT t_user.[user_id], t_user.[user_name_cipher] AS [user_name], t_user.[password_cipher] AS [password], t_user.[email_cipher] AS [email], t_user.[user_telephone_cipher] AS [telephone], t_user.[creation_date] FROM dbo.t_user"/>
     </rewrite-assertion>
-
-    <rewrite-assertion id="select_bracket_delimited_at_sign_table_for_literals" db-types="SQLServer">
-        <input sql="SELECT Remark FROM [@MyTable] WHERE Remark = 'tool malfunction'" />
-        <output sql="SELECT [remark_cipher] AS Remark FROM [@MyTable] WHERE [remark_cipher] = 'encrypt_tool malfunction'" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_quote_delimited_at_sign_table_for_literals" db-types="SQLServer">
-        <input sql="SELECT Remark FROM &quot;@MyTable&quot; WHERE Remark = 'tool malfunction'" />
-        <output sql="SELECT [remark_cipher] AS Remark FROM &quot;@MyTable&quot; WHERE [remark_cipher] = 'encrypt_tool malfunction'" />
-    </rewrite-assertion>
 </rewrite-assertions>

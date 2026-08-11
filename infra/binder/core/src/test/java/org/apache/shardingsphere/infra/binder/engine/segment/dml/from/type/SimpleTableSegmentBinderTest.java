@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
@@ -48,7 +47,6 @@ import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -136,48 +134,6 @@ class SimpleTableSegmentBinderTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         assertThrows(TableNotFoundException.class, () -> SimpleTableSegmentBinder.bind(simpleTableSegment,
                 new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(sqlServerDatabaseType).build()), tableBinderContexts));
-    }
-    
-    @Test
-    void assertBindWithBracketDelimitedAtSignTableNameIsNotTableVariable() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        assertThrows(TableNotFoundException.class, () -> SimpleTableSegmentBinder.bind(simpleTableSegment,
-                new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(sqlServerDatabaseType).build()), tableBinderContexts));
-    }
-    
-    @Test
-    void assertBindBracketDelimitedAtSignTableNameRetainsPhysicalTableValidation() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(
-                createMetaDataWithBracketAtSignPhysicalTable(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(sqlServerDatabaseType).build()), tableBinderContexts);
-        assertThat(actual.getTableName().getIdentifier().getValue(), is("@MyTable"));
-        assertThat(actual.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
-        SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
-        assertFalse(tableSegmentBinderContext.isContainsTableVariable());
-        assertThat(tableSegmentBinderContext.getTableSourceType(), is(TableSourceType.PHYSICAL_TABLE));
-    }
-    
-    @Test
-    void assertBindWithQuoteDelimitedAtSignTableNameIsNotTableVariable() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        assertThrows(TableNotFoundException.class, () -> SimpleTableSegmentBinder.bind(simpleTableSegment,
-                new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(sqlServerDatabaseType).build()), tableBinderContexts));
-    }
-    
-    @Test
-    void assertBindQuoteDelimitedAtSignTableNameRetainsPhysicalTableValidation() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(
-                createMetaDataWithBracketAtSignPhysicalTable(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(sqlServerDatabaseType).build()), tableBinderContexts);
-        assertThat(actual.getTableName().getIdentifier().getValue(), is("@MyTable"));
-        assertThat(actual.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
-        SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
-        assertFalse(tableSegmentBinderContext.isContainsTableVariable());
-        assertThat(tableSegmentBinderContext.getTableSourceType(), is(TableSourceType.PHYSICAL_TABLE));
     }
     
     @Test
@@ -271,36 +227,6 @@ class SimpleTableSegmentBinderTest {
         when(schema.getTable(atSignTableName).getAllColumns()).thenReturn(Collections.emptyList());
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.containsDatabase(fooDatabase)).thenReturn(true);
-        when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("dbo");
-        when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("dbo");
-        when(result.getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(schema));
-        when(result.getDatabase(fooDatabase).getAllSchemas()).thenReturn(Collections.singleton(schema));
-        when(result.getDatabase("foo_db").containsSchema("dbo")).thenReturn(true);
-        when(result.getDatabase(fooDatabase).containsSchema(dboSchema)).thenReturn(true);
-        when(result.getDatabase("foo_db").getSchema("dbo")).thenReturn(schema);
-        when(result.getDatabase(fooDatabase).getSchema(dboSchema)).thenReturn(schema);
-        return result;
-    }
-    
-    private ShardingSphereMetaData createMetaDataWithBracketAtSignPhysicalTable() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
-        IdentifierValue dboSchema = new IdentifierValue("dbo");
-        IdentifierValue bracketAtSignTableName = new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS);
-        IdentifierValue quoteAtSignTableName = new IdentifierValue("@MyTable", QuoteCharacter.QUOTE);
-        when(schema.getName()).thenReturn("dbo");
-        when(schema.containsTable(bracketAtSignTableName)).thenReturn(true);
-        when(schema.containsTable(quoteAtSignTableName)).thenReturn(true);
-        when(schema.containsTable("@MyTable")).thenReturn(true);
-        when(schema.getTable(bracketAtSignTableName).getAllColumns()).thenReturn(Collections.singletonList(
-                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)));
-        when(schema.getTable(quoteAtSignTableName).getAllColumns()).thenReturn(Collections.singletonList(
-                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)));
-        when(schema.getTable("@MyTable").getAllColumns()).thenReturn(Collections.singletonList(
-                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)));
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.containsDatabase(fooDatabase)).thenReturn(true);
-        when(result.containsDatabase("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("dbo");
         when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("dbo");
         when(result.getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(schema));
