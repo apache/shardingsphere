@@ -277,6 +277,168 @@ class UpdateStatementContextTest {
     }
     
     @Test
+    void assertGetTableNamesWithDirectVariableTargetAndExtraVariableSourceExcludesAllVariables() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
+        sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment rightJoin = new JoinTableSegment();
+        rightJoin.setLeft(sourceVar);
+        rightJoin.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
+        fromJoin.setRight(rightJoin);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetVar)
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@SourceVar"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithAliasedVariableTargetAndExtraVariableSourceExcludesAllVariables() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        targetVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
+        sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment rightJoin = new JoinTableSegment();
+        rightJoin.setLeft(sourceVar);
+        rightJoin.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(targetVar);
+        fromJoin.setRight(rightJoin);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@SourceVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("target"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithDirectVariableTargetAndThreeVariableSourcesExcludesAllVariables() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
+        sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment otherVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@OtherVar")));
+        otherVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("oth")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment sourceAndOther = new JoinTableSegment();
+        sourceAndOther.setLeft(sourceVar);
+        sourceAndOther.setRight(otherVar);
+        JoinTableSegment variablesAndEmployee = new JoinTableSegment();
+        variablesAndEmployee.setLeft(sourceAndOther);
+        variablesAndEmployee.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
+        fromJoin.setRight(variablesAndEmployee);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetVar)
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@SourceVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@OtherVar"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithAliasedVariableTargetAndThreeVariableSourcesExcludesAllVariables() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        targetVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
+        sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment otherVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@OtherVar")));
+        otherVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("oth")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment sourceAndOther = new JoinTableSegment();
+        sourceAndOther.setLeft(sourceVar);
+        sourceAndOther.setRight(otherVar);
+        JoinTableSegment variablesAndEmployee = new JoinTableSegment();
+        variablesAndEmployee.setLeft(sourceAndOther);
+        variablesAndEmployee.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(targetVar);
+        fromJoin.setRight(variablesAndEmployee);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@SourceVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@OtherVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("target"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithVariableJoiningBracketQuotedAtTableKeepsQuotedPhysicalTable() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        SimpleTableSegment bracketQuotedTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
+        bracketQuotedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
+        fromJoin.setRight(bracketQuotedTable);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetVar)
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
+        assertThat(actual.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+    }
+    
+    @Test
+    void assertGetTableNamesWithVariableJoiningDoubleQuotedAtTableKeepsQuotedPhysicalTable() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        SimpleTableSegment doubleQuotedTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
+        doubleQuotedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
+        fromJoin.setRight(doubleQuotedTable);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetVar)
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
+        assertThat(actual.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+    }
+    
+    @Test
     void assertGetTableNamesWithPostgreSQLUpdateFromClauseIncludesTargetTable() {
         SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(7, 18, new IdentifierValue("ScrapReason")));
         targetTable.setAlias(new AliasSegment(20, 21, new IdentifierValue("sr")));

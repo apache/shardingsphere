@@ -334,6 +334,11 @@ public final class TableExtractor {
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }
+        excludeUnquotedTableVariables(updateStatement);
+    }
+    
+    private void excludeUnquotedTableVariables(final UpdateStatement updateStatement) {
+        rewriteTables.removeIf(each -> isVariableTable(updateStatement, each));
     }
     
     private Optional<SimpleTableSegment> findVariableTableSourceToSkip(final UpdateStatement updateStatement, final TableSegment fromSegment) {

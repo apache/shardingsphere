@@ -402,6 +402,182 @@ class TableExtractorTest {
         assertFalse(actual.stream().anyMatch(each -> "@MyTableVar".equals(each.getTableName().getIdentifier().getValue())));
     }
     
+    @Test
+    void assertExtractTablesFromUpdateWithDirectVariableTargetAndExtraVariableSourceExcludesAllVariables() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
+        sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment rightJoin = new JoinTableSegment();
+        rightJoin.setLeft(sourceVar);
+        rightJoin.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
+        fromJoin.setRight(rightJoin);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetVar)
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        assertTableSegment(actual.iterator().next(), 0, 0, "Employee");
+        assertFalse(actual.stream().anyMatch(each -> "@TargetVar".equals(each.getTableName().getIdentifier().getValue())));
+        assertFalse(actual.stream().anyMatch(each -> "@SourceVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithAliasedVariableTargetAndExtraVariableSourceExcludesAllVariables() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        targetVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
+        sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment rightJoin = new JoinTableSegment();
+        rightJoin.setLeft(sourceVar);
+        rightJoin.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(targetVar);
+        fromJoin.setRight(rightJoin);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        assertTableSegment(actual.iterator().next(), 0, 0, "Employee");
+        assertFalse(actual.stream().anyMatch(each -> "@TargetVar".equals(each.getTableName().getIdentifier().getValue())));
+        assertFalse(actual.stream().anyMatch(each -> "@SourceVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithDirectVariableTargetAndThreeVariableSourcesExcludesAllVariables() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
+        sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment otherVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@OtherVar")));
+        otherVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("oth")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment sourceAndOther = new JoinTableSegment();
+        sourceAndOther.setLeft(sourceVar);
+        sourceAndOther.setRight(otherVar);
+        JoinTableSegment variablesAndEmployee = new JoinTableSegment();
+        variablesAndEmployee.setLeft(sourceAndOther);
+        variablesAndEmployee.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
+        fromJoin.setRight(variablesAndEmployee);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetVar)
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        assertTableSegment(actual.iterator().next(), 0, 0, "Employee");
+        assertFalse(actual.stream().anyMatch(each -> "@TargetVar".equals(each.getTableName().getIdentifier().getValue())));
+        assertFalse(actual.stream().anyMatch(each -> "@SourceVar".equals(each.getTableName().getIdentifier().getValue())));
+        assertFalse(actual.stream().anyMatch(each -> "@OtherVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithAliasedVariableTargetAndThreeVariableSourcesExcludesAllVariables() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        targetVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
+        sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment otherVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@OtherVar")));
+        otherVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("oth")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment sourceAndOther = new JoinTableSegment();
+        sourceAndOther.setLeft(sourceVar);
+        sourceAndOther.setRight(otherVar);
+        JoinTableSegment variablesAndEmployee = new JoinTableSegment();
+        variablesAndEmployee.setLeft(sourceAndOther);
+        variablesAndEmployee.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(targetVar);
+        fromJoin.setRight(variablesAndEmployee);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        assertTableSegment(actual.iterator().next(), 0, 0, "Employee");
+        assertFalse(actual.stream().anyMatch(each -> "@TargetVar".equals(each.getTableName().getIdentifier().getValue())));
+        assertFalse(actual.stream().anyMatch(each -> "@SourceVar".equals(each.getTableName().getIdentifier().getValue())));
+        assertFalse(actual.stream().anyMatch(each -> "@OtherVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithVariableJoiningBracketQuotedAtTableKeepsQuotedPhysicalTable() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        SimpleTableSegment bracketQuotedTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
+        bracketQuotedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
+        fromJoin.setRight(bracketQuotedTable);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetVar)
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        SimpleTableSegment actualTable = actual.iterator().next();
+        assertThat(actualTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(actualTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        assertFalse(actual.stream().anyMatch(each -> QuoteCharacter.NONE == each.getTableName().getIdentifier().getQuoteCharacter()
+                && "@TargetVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithVariableJoiningDoubleQuotedAtTableKeepsQuotedPhysicalTable() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        SimpleTableSegment doubleQuotedTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE)));
+        doubleQuotedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))));
+        fromJoin.setRight(doubleQuotedTable);
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetVar)
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        SimpleTableSegment actualTable = actual.iterator().next();
+        assertThat(actualTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(actualTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        assertFalse(actual.stream().anyMatch(each -> QuoteCharacter.NONE == each.getTableName().getIdentifier().getQuoteCharacter()
+                && "@TargetVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
     private void assertTableSegment(final SimpleTableSegment actual, final int expectedStartIndex, final int expectedStopIndex, final String expectedTableName) {
         assertThat(actual.getStartIndex(), is(expectedStartIndex));
         assertThat(actual.getStopIndex(), is(expectedStopIndex));
