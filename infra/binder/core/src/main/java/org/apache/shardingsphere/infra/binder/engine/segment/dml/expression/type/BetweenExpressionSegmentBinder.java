@@ -25,8 +25,10 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 /**
  * Between expression binder.
@@ -49,6 +51,14 @@ public final class BetweenExpressionSegmentBinder {
         ExpressionSegment boundLeft = ExpressionSegmentBinder.bind(segment.getLeft(), SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
         ExpressionSegment boundBetweenExpr = ExpressionSegmentBinder.bind(segment.getBetweenExpr(), SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
         ExpressionSegment boundAndExpr = ExpressionSegmentBinder.bind(segment.getAndExpr(), SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
+        if (boundLeft instanceof ColumnSegment && null != ((ColumnSegment) boundLeft).getColumnBoundInfo()) {
+            if (boundBetweenExpr instanceof ParameterMarkerExpressionSegment) {
+                ((ParameterMarkerExpressionSegment) boundBetweenExpr).setBoundInfo(((ColumnSegment) boundLeft).getColumnBoundInfo());
+            }
+            if (boundAndExpr instanceof ParameterMarkerExpressionSegment) {
+                ((ParameterMarkerExpressionSegment) boundAndExpr).setBoundInfo(((ColumnSegment) boundLeft).getColumnBoundInfo());
+            }
+        }
         return new BetweenExpression(segment.getStartIndex(), segment.getStopIndex(), boundLeft, boundBetweenExpr, boundAndExpr, segment.isNot());
     }
 }

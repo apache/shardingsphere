@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -39,17 +39,20 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.postgresql.util.PGobject;
 
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
@@ -60,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,6 +75,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -80,8 +85,6 @@ import static org.mockito.Mockito.when;
 class PostgreSQLPreparedStatementParameterTypeResolverTest {
     
     private static final String SQL = "SELECT id FROM foo_tbl WHERE id=?";
-    
-    private static final List<Object> PARAMETERS = Collections.singletonList(1);
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
@@ -102,8 +105,9 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         prepareJDBCBackendConnectionWithParamTypes();
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
-                SQL, sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
-        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement, PARAMETERS);
+                SQL, sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)),
+                Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
         assertThat(preparedStatement.getParameterTypes(), is(Collections.singletonList(PostgreSQLBinaryColumnType.INT4)));
     }
     
@@ -113,12 +117,12 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
-        when(parameterMetaData.getParameterType(1)).thenReturn(Types.SMALLINT);
-        when(parameterMetaData.getParameterTypeName(1)).thenReturn("int2");
-        when(parameterMetaData.getParameterType(2)).thenReturn(Types.INTEGER);
-        when(parameterMetaData.getParameterTypeName(2)).thenReturn("int4");
+        lenient().when(parameterMetaData.getParameterType(1)).thenReturn(Types.SMALLINT);
+        lenient().when(parameterMetaData.getParameterTypeName(1)).thenReturn("int2");
+        lenient().when(parameterMetaData.getParameterType(2)).thenReturn(Types.INTEGER);
+        lenient().when(parameterMetaData.getParameterTypeName(2)).thenReturn("int4");
         PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
-        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        lenient().when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=? AND k=?",
                 sqlStatementContext, new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.INT4), Arrays.asList(0, 1));
         PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
@@ -126,13 +130,13 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     }
     
     @Test
-    void assertResolveParameterTypesWithConnectionSessionWithoutUnspecified() throws SQLException {
+    void assertResolveParameterTypesWithConnectionSessionWithoutUnspecified() {
         SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLBinaryColumnType.INT4), Collections.singletonList(0));
-        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement, PARAMETERS);
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
         verifyNoInteractions(connectionSession);
     }
     
@@ -144,9 +148,9 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         
         PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
-        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
-        when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
-        when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
+        lenient().when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        lenient().when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
+        lenient().when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
         
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLBinaryColumnType.INT4), Collections.singletonList(0));
@@ -155,83 +159,206 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     }
     
     @Test
-    void assertResolveParameterTypesWithUntypedPGobject() throws SQLException {
+    void assertResolveCustomEnumTypeFromSchema() {
         SQLStatement sqlStatement = sqlParserEngine.parse("INSERT INTO foo_tbl (status) VALUES (?)", false);
-        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
-        when(parameterMetaData.getParameterType(1)).thenReturn(Types.OTHER);
-        when(parameterMetaData.getParameterTypeName(1)).thenReturn("my_enum");
-        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
-        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
-        
-        PGobject pgObject = mock(PGobject.class);
-        when(pgObject.getType()).thenReturn(null);
-        
-        List<Object> parameters = new ArrayList<>(Collections.singletonList(pgObject));
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO foo_tbl (status) VALUES (?)",
-                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
-        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement, parameters);
-        
-        verify(pgObject).setType("my_enum");
-    }
-    
-    @Test
-    void assertResolveParameterTypesWithStringForOtherType() throws SQLException {
-        SQLStatement sqlStatement = sqlParserEngine.parse("INSERT INTO foo_tbl (val) VALUES (?)", false);
-        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
-        when(parameterMetaData.getParameterType(1)).thenReturn(Types.OTHER);
-        when(parameterMetaData.getParameterTypeName(1)).thenReturn("jsonb");
-        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
-        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
-        
-        List<Object> parameters = new ArrayList<>(Collections.singletonList("{\"key\": \"value\"}"));
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO foo_tbl (val) VALUES (?)",
-                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
-        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement, parameters);
-        assertThat(parameters.get(0), CoreMatchers.instanceOf(PGobject.class));
-        PGobject actual = (PGobject) parameters.get(0);
-        assertThat(actual.getType(), is("jsonb"));
-        assertThat(actual.getValue(), is("{\"key\": \"value\"}"));
-    }
-    
-    @Test
-    void assertResolveParameterTypesUsingSchemaMetadataFallback() throws SQLException {
-        InsertStatement sqlStatement = mock(InsertStatement.class, RETURNS_DEEP_STUBS);
-        when(sqlStatement.getParameterCount()).thenReturn(1);
-        
-        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_tbl"));
-        when(sqlStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("status"));
-        when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(java.util.Optional.empty());
-        
+        lenient().when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        setBoundInfo(sqlStatement, 0, "status");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(connectionSession.getCurrentDatabaseName()).thenReturn("postgres");
-        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
-        
-        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
-        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
-        when(parameterMetaData.getParameterType(1)).thenThrow(new SQLException("Driver cannot determine type"));
-        when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
-        
-        PGobject pgObject = mock(PGobject.class);
-        when(pgObject.getType()).thenReturn(null);
-        List<Object> parameters = new ArrayList<>(Collections.singletonList(pgObject));
-        
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 "INSERT INTO foo_tbl (status) VALUES (?)",
-                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
-        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(
-                connectionSession, preparedStatement, actualPreparedStatement, parameters);
+                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)),
+                Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        assertThat(preparedStatement.getParameterTypes().get(0), is(PostgreSQLBinaryColumnType.VARCHAR));
+        verify(connectionSession, never()).getDatabaseConnectionManager();
+    }
+    
+    @Test
+    void assertResolveJsonbTypeFromSchema() {
+        SQLStatement sqlStatement = sqlParserEngine.parse("INSERT INTO foo_tbl (val) VALUES (?)", false);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        lenient().when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        setBoundInfo(sqlStatement, 0, "val");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "INSERT INTO foo_tbl (val) VALUES (?)",
+                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)),
+                Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        assertThat(preparedStatement.getParameterTypes().get(0), is(PostgreSQLBinaryColumnType.JSONB));
+    }
+    
+    @Test
+    void assertResolveVarcharTypeFromSchema() {
+        SelectStatement selectStatement = (SelectStatement) sqlParserEngine.parse("SELECT id FROM foo_tbl WHERE id=?", false);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        setBoundInfo(selectStatement, 0, "id");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                SQL, sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)),
+                Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        assertThat(preparedStatement.getParameterTypes().get(0), is(PostgreSQLBinaryColumnType.INT4));
+    }
+    
+    @Test
+    void assertResolveUpdateStatementParameterTypesFromSchema() {
+        SQLStatement sqlStatement = sqlParserEngine.parse("UPDATE foo_tbl SET status = ? WHERE id = ?", false);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        lenient().when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         
-        verify(pgObject).setType("my_enum");
+        setBoundInfo(sqlStatement, 0, "status");
+        setBoundInfo(sqlStatement, 1, "id");
         
-        ShardingSphereSchema schema = contextManager.getMetaDataContexts().getMetaData().getDatabase("postgres").getSchema("public");
-        verify(schema).getTable("foo_tbl");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "UPDATE foo_tbl SET status = ? WHERE id = ?",
+                sqlStatementContext, new HintValueContext(),
+                Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.UNSPECIFIED),
+                Arrays.asList(0, 1));
+        
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        
+        assertThat(preparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.VARCHAR, PostgreSQLBinaryColumnType.INT4)));
+        verify(connectionSession, never()).getDatabaseConnectionManager();
+    }
+    
+    @Test
+    void assertResolveMultiTableStatementParameterTypesFromSchema() {
+        SQLStatement sqlStatement = sqlParserEngine.parse("SELECT t1.id, t2.status FROM foo_tbl t1 JOIN foo_tbl t2 ON t1.id = t2.id WHERE t1.k = ? AND t2.status = ?", false);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        lenient().when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        
+        setBoundInfo(sqlStatement, 0, "k");
+        setBoundInfo(sqlStatement, 1, "status");
+        
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "SELECT t1.id, t2.status FROM foo_tbl t1 JOIN foo_tbl t2 ON t1.id = t2.id WHERE t1.k = ? AND t2.status = ?",
+                sqlStatementContext, new HintValueContext(),
+                Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.UNSPECIFIED),
+                Arrays.asList(0, 1));
+        
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        
+        assertThat(preparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR)));
+        verify(connectionSession, never()).getDatabaseConnectionManager();
+    }
+    
+    @Test
+    void assertResolvedParameterSkipsBackendMetadataLookup() {
+        SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLBinaryColumnType.VARCHAR), Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        verifyNoInteractions(connectionSession);
+    }
+    
+    @Test
+    void assertJDBCMetadataUsedAsLastResort() throws SQLException {
+        SQLStatement sqlStatement = sqlParserEngine.parse("SELECT col FROM foo_tbl WHERE col=?", false);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        lenient().when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
+        lenient().when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        lenient().when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "SELECT col FROM foo_tbl WHERE col=?",
+                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)),
+                Collections.singletonList(0));
+        
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
+        
+        assertThat(preparedStatement.getParameterTypes().get(0), is(PostgreSQLBinaryColumnType.INT4));
+    }
+    
+    @Test
+    void assertJDBCMetadataPreservesTypeName() throws SQLException {
+        SQLStatement sqlStatement = sqlParserEngine.parse("SELECT col FROM unknown_table WHERE col=?", false);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        lenient().when(parameterMetaData.getParameterType(1)).thenReturn(Types.OTHER);
+        lenient().when(parameterMetaData.getParameterTypeName(1)).thenReturn("my_custom_type");
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        lenient().when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "SELECT col FROM unknown_table WHERE col=?",
+                sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)),
+                Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
+        
+        assertThat(preparedStatement.getParameterTypes().get(0), is(PostgreSQLBinaryColumnType.VARCHAR));
+    }
+    
+    @Test
+    void assertMultipleParametersResolveIndependently() throws SQLException {
+        SQLStatement sqlStatement = sqlParserEngine.parse("SELECT id FROM foo_tbl WHERE id=? AND status=?", false);
+        
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        lenient().when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
+        lenient().when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
+        
+        lenient().when(parameterMetaData.getParameterType(2)).thenReturn(Types.OTHER);
+        lenient().when(parameterMetaData.getParameterTypeName(2)).thenReturn("my_enum");
+        
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        lenient().when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "SELECT id FROM foo_tbl WHERE id=? AND status=?",
+                sqlStatementContext, new HintValueContext(),
+                Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.UNSPECIFIED), Arrays.asList(0, 1));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
+        assertThat(preparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR)));
+    }
+    
+    @Test
+    void assertRepeatedResolveSkipsAlreadyResolved() throws SQLException {
+        SQLStatement sqlStatement = sqlParserEngine.parse("SELECT id FROM foo_tbl WHERE id=?", false);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        lenient().when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
+        lenient().when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
+        
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        lenient().when(actualPreparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                SQL, sqlStatementContext, new HintValueContext(),
+                new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
+        assertThat(preparedStatement.getParameterTypes().get(0), is(PostgreSQLBinaryColumnType.INT4));
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(preparedStatement, actualPreparedStatement);
+        
+        assertThat(preparedStatement.getParameterTypes().get(0), is(PostgreSQLBinaryColumnType.INT4));
     }
     
     private ContextManager mockContextManager() {
@@ -255,6 +382,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         lenient().when(schema.getName()).thenReturn("public");
         lenient().when(database.getDefaultSchemaName()).thenReturn("public");
         lenient().when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
+        lenient().when(database.containsSchema("public")).thenReturn(true);
         lenient().when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         lenient().when(database.getSchema("public")).thenReturn(schema);
         lenient().when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
@@ -267,8 +395,10 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         
         lenient().when(schema.containsTable("foo_tbl")).thenReturn(true);
         lenient().when(schema.getTable("foo_tbl")).thenReturn(table);
-        lenient().when(schema.containsTable(any(IdentifierValue.class))).thenReturn(true);
-        lenient().when(schema.getTable(any(IdentifierValue.class))).thenReturn(table);
+        lenient().when(schema.containsTable(new IdentifierValue("foo_tbl"))).thenReturn(true);
+        lenient().when(schema.getTable(new IdentifierValue("foo_tbl"))).thenReturn(table);
+        lenient().when(schema.containsTable("unknown_table")).thenReturn(false);
+        lenient().when(schema.containsTable(new IdentifierValue("unknown_table"))).thenReturn(false);
         
         lenient().when(result.getMetaDataContexts().getMetaData().getDatabase("postgres")).thenReturn(database);
         lenient().when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("postgres"))).thenReturn(database);
@@ -291,5 +421,18 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         lenient().when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any())).thenReturn(Collections.singletonList(connection));
         lenient().when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+    }
+    
+    private void setBoundInfo(final SQLStatement sqlStatement, final int parameterIndex, final String columnName) {
+        List<ParameterMarkerSegment> parameters = new ArrayList<>(sqlStatement.getParameterMarkers());
+        if (parameterIndex >= parameters.size()) {
+            return;
+        }
+        ParameterMarkerSegment markerSegment = parameters.get(parameterIndex);
+        if (markerSegment instanceof ParameterMarkerExpressionSegment) {
+            TableSegmentBoundInfo tableBoundInfo = new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""));
+            ((ParameterMarkerExpressionSegment) markerSegment).setBoundInfo(
+                    new ColumnSegmentBoundInfo(tableBoundInfo, new IdentifierValue("foo_tbl"), new IdentifierValue(columnName), TableSourceType.PHYSICAL_TABLE));
+        }
     }
 }

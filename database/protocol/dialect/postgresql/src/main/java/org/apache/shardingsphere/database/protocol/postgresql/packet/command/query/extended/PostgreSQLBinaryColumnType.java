@@ -159,6 +159,7 @@ public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
     POINT_ARRAY(1017, new PostgreSQLVarcharValueParser()),
     
     BOX(603, new PostgreSQLVarcharValueParser()),
+    JSONB(3802, new PostgreSQLJsonValueParser()),
     
     JSONB_ARRAY(3807, new PostgreSQLVarcharValueParser()),
     
@@ -192,7 +193,7 @@ public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DATE, DATE);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME, TIME);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIMESTAMP, TIMESTAMP);
-        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.OTHER, JSON);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.OTHER, VARCHAR);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.SQLXML, XML);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BOOLEAN, BOOL);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.STRUCT, VARCHAR);
@@ -218,6 +219,10 @@ public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
      * @return PostgreSQL column type enum
      */
     public static PostgreSQLBinaryColumnType valueOfJDBCType(final int jdbcType, final String columnTypeName) {
+        if (null == columnTypeName) {
+            return valueOfJDBCType(jdbcType);
+        }
+        
         if (isBit(jdbcType, columnTypeName)) {
             return BIT;
         }
@@ -227,7 +232,36 @@ public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
         if (isUUID(jdbcType, columnTypeName)) {
             return UUID;
         }
+        if (isJSON(columnTypeName)) {
+            return JSON;
+        }
+        if (isJSONB(columnTypeName)) {
+            return JSONB;
+        }
+        if (Types.OTHER == jdbcType) {
+            return VARCHAR;
+        }
         return valueOfJDBCType(jdbcType);
+    }
+    
+    /**
+     * Check if column type is JSON.
+     *
+     * @param columnTypeName column type name
+     * @return whether is JSON type
+     */
+    private static boolean isJSON(final String columnTypeName) {
+        return "json".equalsIgnoreCase(columnTypeName);
+    }
+    
+    /**
+     * Check if column type is JSONB.
+     *
+     * @param columnTypeName column type name
+     * @return whether is JSONB type
+     */
+    private static boolean isJSONB(final String columnTypeName) {
+        return "jsonb".equalsIgnoreCase(columnTypeName);
     }
     
     /**

@@ -25,8 +25,11 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 /**
  * In expression binder.
@@ -49,6 +52,21 @@ public final class InExpressionBinder {
                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         ExpressionSegment boundLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         ExpressionSegment boundRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        if (boundLeft instanceof ColumnSegment && null != ((ColumnSegment) boundLeft).getColumnBoundInfo()) {
+            annotateInRightOperand(boundRight, (ColumnSegment) boundLeft);
+        }
         return new InExpression(segment.getStartIndex(), segment.getStopIndex(), boundLeft, boundRight, segment.isNot());
+    }
+    
+    private static void annotateInRightOperand(final ExpressionSegment boundRight, final ColumnSegment boundLeftColumn) {
+        if (boundRight instanceof ListExpression) {
+            for (ExpressionSegment each : ((ListExpression) boundRight).getItems()) {
+                if (each instanceof ParameterMarkerExpressionSegment) {
+                    ((ParameterMarkerExpressionSegment) each).setBoundInfo(boundLeftColumn.getColumnBoundInfo());
+                }
+            }
+        } else if (boundRight instanceof ParameterMarkerExpressionSegment) {
+            ((ParameterMarkerExpressionSegment) boundRight).setBoundInfo(boundLeftColumn.getColumnBoundInfo());
+        }
     }
 }

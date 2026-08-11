@@ -41,6 +41,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,18 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLPreparedStatementMetadataFactory {
+    
+    /**
+     * Load actual prepared statement for metadata access.
+     *
+     * @param connectionSession connection session
+     * @param preparedStatement prepared statement
+     * @return actual prepared statement
+     * @throws SQLException SQL exception
+     */
+    public static PreparedStatement load(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
+        return load(connectionSession, preparedStatement, Collections.emptyList());
+    }
     
     /**
      * Load actual prepared statement for metadata access.

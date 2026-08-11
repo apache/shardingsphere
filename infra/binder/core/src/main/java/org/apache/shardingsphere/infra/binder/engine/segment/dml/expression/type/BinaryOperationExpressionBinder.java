@@ -25,8 +25,10 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 /**
  * Binary operation expression binder.
@@ -49,6 +51,13 @@ public final class BinaryOperationExpressionBinder {
                                                  final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         ExpressionSegment boundLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         ExpressionSegment boundRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        if (boundLeft instanceof ColumnSegment && boundRight instanceof ParameterMarkerExpressionSegment
+                && null != ((ColumnSegment) boundLeft).getColumnBoundInfo()) {
+            ((ParameterMarkerExpressionSegment) boundRight).setBoundInfo(((ColumnSegment) boundLeft).getColumnBoundInfo());
+        } else if (boundRight instanceof ColumnSegment && boundLeft instanceof ParameterMarkerExpressionSegment
+                && null != ((ColumnSegment) boundRight).getColumnBoundInfo()) {
+            ((ParameterMarkerExpressionSegment) boundLeft).setBoundInfo(((ColumnSegment) boundRight).getColumnBoundInfo());
+        }
         return new BinaryOperationExpression(segment.getStartIndex(), segment.getStopIndex(), boundLeft, boundRight, segment.getOperator(), segment.getText());
     }
 }

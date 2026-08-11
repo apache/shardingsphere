@@ -19,9 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
@@ -29,8 +27,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDLoader;
-import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -58,12 +55,16 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -85,7 +86,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -111,8 +111,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxyContext.class, ColumnTypeOIDLoader.class})
+@StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+
 class PostgreSQLComDescribeExecutorTest {
     
     private static final String DATABASE_NAME = "postgres";
@@ -132,20 +133,8 @@ class PostgreSQLComDescribeExecutorTest {
     @Mock
     private ConnectionSession connectionSession;
     
-    @Mock
-    private ColumnTypeOIDResolver columnTypeOIDResolver;
-    
-    private Map<Integer, Integer> columnTypeOIDs;
-    
     @InjectMocks
     private PostgreSQLComDescribeExecutor executor;
-    
-    @BeforeEach
-    void setUp() throws SQLException {
-        when(connectionSession.getProtocolType()).thenReturn(DATABASE_TYPE);
-        columnTypeOIDs = Collections.emptyMap();
-        when(ColumnTypeOIDLoader.load(any(Connection.class), any(ResultSetMetaData.class), any(ColumnTypeOIDResolver.class))).thenAnswer(ignored -> columnTypeOIDs);
-    }
     
     @Test
     void assertDescribePortal() throws SQLException {
@@ -226,6 +215,22 @@ class PostgreSQLComDescribeExecutorTest {
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        TablesContext insertTablesContext = mock(TablesContext.class);
+        when(insertTablesContext.getTableNames()).thenReturn(Collections.singletonList(TABLE_NAME));
+        when(insertTablesContext.getSchemaName()).thenReturn(Optional.empty());
+        when(sqlStatementContext.getTablesContext()).thenReturn(insertTablesContext);
+        if (sql.contains("VALUES (?, 0, 'char', ?), (2, ?, ?, '')")) {
+            setBoundInfo(sqlStatement, 0, "t_order", "id");
+            setBoundInfo(sqlStatement, 1, "t_order", "pad");
+            setBoundInfo(sqlStatement, 2, "t_order", "k");
+            setBoundInfo(sqlStatement, 3, "t_order", "c");
+        } else {
+            setBoundInfo(sqlStatement, 0, "t_order", "k");
+            setBoundInfo(sqlStatement, 1, "t_order", "c");
+            setBoundInfo(sqlStatement, 2, "t_order", "pad");
+            setBoundInfo(sqlStatement, 3, "t_order", "id");
+            setBoundInfo(sqlStatement, 4, "t_order", "c");
+        }
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
@@ -261,6 +266,7 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         parameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(0);
+        assertThat(actualIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
         assertFalse(actualIterator.hasNext());
     }
     
@@ -273,16 +279,21 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getTableNames()).thenReturn(Collections.singletonList("t_small"));
+        when(tablesContext.getSchemaName()).thenReturn(Optional.of("public"));
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         ShardingSphereTable table = new ShardingSphereTable("t_small",
                 Arrays.asList(
                         new ShardingSphereColumn("col1", Types.INTEGER, true, false, false, true, false, false),
                         new ShardingSphereColumn("col2", Types.SMALLINT, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList());
+        setBoundInfo(sqlStatement, 0, "t_small", "col1");
+        setBoundInfo(sqlStatement, 1, "t_small", "col2");
         ContextManager contextManager = mockContextManager(table);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        prepareJDBCBackendConnectionForResultMetaData(sql, 3);
-        List<PostgreSQLBinaryColumnType> parameterTypes = Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
+        List<PostgreSQLBinaryColumnType> parameterTypes = Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(
                 statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
         Collection<DatabasePacket> actualPackets = executor.execute();
@@ -318,6 +329,15 @@ class PostgreSQLComDescribeExecutorTest {
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        TablesContext caseInsensitiveTablesContext = mock(TablesContext.class);
+        when(caseInsensitiveTablesContext.getTableNames()).thenReturn(Collections.singletonList(TABLE_NAME));
+        when(caseInsensitiveTablesContext.getSchemaName()).thenReturn(Optional.empty());
+        when(sqlStatementContext.getTablesContext()).thenReturn(caseInsensitiveTablesContext);
+        setBoundInfo(sqlStatement, 0, "t_order", "k");
+        setBoundInfo(sqlStatement, 1, "t_order", "c");
+        setBoundInfo(sqlStatement, 2, "t_order", "pad");
+        setBoundInfo(sqlStatement, 3, "t_order", "id");
+        setBoundInfo(sqlStatement, 4, "t_order", "c");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
@@ -336,7 +356,7 @@ class PostgreSQLComDescribeExecutorTest {
     }
     
     @Test
-    void assertDescribePreparedStatementInsertWithUndefinedColumns() {
+    void assertDescribePreparedStatementInsertWithUndefinedColumns() throws SQLException {
         when(packet.getType()).thenReturn('S');
         String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
@@ -353,7 +373,14 @@ class PostgreSQLComDescribeExecutorTest {
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
                 new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
-        assertThrows(ColumnNotFoundException.class, () -> executor.execute());
+        Collection<DatabasePacket> actualPackets = executor.execute();
+        Iterator<DatabasePacket> actualIterator = actualPackets.iterator();
+        PostgreSQLParameterDescriptionPacket parameterDescription = (PostgreSQLParameterDescriptionPacket) actualIterator.next();
+        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+        parameterDescription.write(mockPayload);
+        verify(mockPayload).writeInt2(5);
+        verify(mockPayload, times(5)).writeInt4(0);
+        assertThat(actualIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
     @Test
@@ -393,14 +420,19 @@ class PostgreSQLComDescribeExecutorTest {
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getTableNames()).thenReturn(Collections.singletonList(TABLE_NAME));
+        when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        if (sql.contains("(k, c, pad)")) {
+            setBoundInfo(sqlStatement, 0, "t_order", "k");
+            setBoundInfo(sqlStatement, 1, "t_order", "c");
+            setBoundInfo(sqlStatement, 2, "t_order", "pad");
+        } else if (sql.contains("(k)")) {
+            setBoundInfo(sqlStatement, 0, "t_order", "k");
+        }
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        prepareJDBCBackendConnectionForResultMetaData(sql, expectedColumns.size());
-        if ("returning complex columns".equals(testName)) {
-            columnTypeOIDs = new HashMap<>(2, 1F);
-            columnTypeOIDs.put(12, 2249);
-            columnTypeOIDs.put(13, 2249);
-        }
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(
                 statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
@@ -437,14 +469,13 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnection(sql);
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLBinaryColumnType.UNSPECIFIED));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        columnTypeOIDs = Collections.singletonMap(1, 2249);
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLBinaryColumnType.UNSPECIFIED));
-        List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(
                 statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
         Collection<DatabasePacket> actual = executor.execute();
@@ -459,7 +490,7 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLRowDescriptionPacket actualRowDescription = (PostgreSQLRowDescriptionPacket) actualPacketsIterator.next();
         List<PostgreSQLColumnDescription> actualColumnDescriptions = getColumnDescriptions(actualRowDescription);
         List<PostgreSQLColumnDescription> expectedColumnDescriptions = Arrays.asList(
-                new PostgreSQLColumnDescription("id", 1, 2249, 11, PostgreSQLValueFormat.TEXT.getCode()),
+                new PostgreSQLColumnDescription("id", 1, Types.INTEGER, 11, "int4"),
                 new PostgreSQLColumnDescription("k", 2, Types.INTEGER, 11, "int4"),
                 new PostgreSQLColumnDescription("c", 3, Types.CHAR, 60, "int4"),
                 new PostgreSQLColumnDescription("pad", 4, Types.CHAR, 120, "int4"));
@@ -567,6 +598,15 @@ class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.INT2.getValue());
     }
     
+    private void setBoundInfo(final SQLStatement sqlStatement, final int paramIndex, final String tableName, final String columnName) {
+        ParameterMarkerSegment markerSegment = new ArrayList<>(sqlStatement.getParameterMarkers()).get(paramIndex);
+        if (markerSegment instanceof ParameterMarkerExpressionSegment) {
+            TableSegmentBoundInfo tableBoundInfo = new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue(""));
+            ((ParameterMarkerExpressionSegment) markerSegment).setBoundInfo(
+                    new ColumnSegmentBoundInfo(tableBoundInfo, new IdentifierValue(tableName), new IdentifierValue(columnName), TableSourceType.PHYSICAL_TABLE));
+        }
+    }
+    
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -600,7 +640,12 @@ class PostgreSQLComDescribeExecutorTest {
         when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         when(schema.containsTable(TABLE_NAME)).thenReturn(true);
         when(schema.containsTable(new IdentifierValue(TABLE_NAME))).thenReturn(true);
+        when(schema.containsTable("")).thenReturn(true);
+        when(schema.containsTable((String) null)).thenReturn(true);
+        when(schema.getTable(TABLE_NAME)).thenReturn(new ShardingSphereTable(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList()));
         when(schema.getTable(new IdentifierValue(TABLE_NAME))).thenReturn(new ShardingSphereTable(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList()));
+        when(schema.getTable("")).thenReturn(new ShardingSphereTable(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList()));
+        when(schema.getTable((String) null)).thenReturn(new ShardingSphereTable(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList()));
         when(result.getDatabase(DATABASE_NAME)).thenReturn(database);
         return result;
     }
@@ -631,8 +676,12 @@ class PostgreSQLComDescribeExecutorTest {
         when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         when(schema.containsTable(table.getName())).thenReturn(true);
         when(schema.containsTable(new IdentifierValue(table.getName()))).thenReturn(true);
+        when(schema.containsTable("")).thenReturn(true);
+        when(schema.containsTable((String) null)).thenReturn(true);
         when(schema.getTable(table.getName())).thenReturn(table);
         when(schema.getTable(new IdentifierValue(table.getName()))).thenReturn(table);
+        when(schema.getTable("")).thenReturn(table);
+        when(schema.getTable((String) null)).thenReturn(table);
         when(result.getDatabase(DATABASE_NAME)).thenReturn(database);
         return result;
     }
@@ -671,19 +720,6 @@ class PostgreSQLComDescribeExecutorTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         PreparedStatement preparedStatement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
-        when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
-        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
-        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-    }
-    
-    private void prepareJDBCBackendConnectionForResultMetaData(final String sql, final int columnCount) throws SQLException {
-        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
-        Connection connection = mock(Connection.class);
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
-        when(metaData.getColumnCount()).thenReturn(columnCount);
-        when(preparedStatement.getMetaData()).thenReturn(metaData);
-        when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
         when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
@@ -752,7 +788,7 @@ class PostgreSQLComDescribeExecutorTest {
     
     @Test
     void assertDescribeUnknownType() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLComDescribeExecutor(portalContext, packet, connectionSession, columnTypeOIDResolver).execute());
+        assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLComDescribeExecutor(portalContext, packet, connectionSession).execute());
     }
     
     private static Stream<Arguments> provideInsertMetaDataCases() {
@@ -800,7 +836,7 @@ class PostgreSQLComDescribeExecutorTest {
                 expectedColumn("k", Types.INTEGER, 4, "int4"),
                 expectedColumn("c", Types.CHAR, -1, "char"),
                 expectedColumn("pad", Types.CHAR, -1, "char"),
-                new PostgreSQLColumnDescription("t_order", 0, 2249, -1, PostgreSQLValueFormat.TEXT.getCode()),
-                new PostgreSQLColumnDescription("alias_t_order", 0, 2249, -1, PostgreSQLValueFormat.TEXT.getCode()));
+                expectedColumn("t_order", Types.VARCHAR, -1, "varchar"),
+                expectedColumn("alias_t_order", Types.VARCHAR, -1, "varchar"));
     }
 }

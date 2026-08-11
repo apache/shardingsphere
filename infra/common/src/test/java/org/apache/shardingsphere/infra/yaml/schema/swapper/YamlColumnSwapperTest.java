@@ -65,4 +65,24 @@ class YamlColumnSwapperTest {
         assertTrue(actual.isUnsigned());
         assertTrue(actual.isNullable());
     }
+    
+    @Test
+    void assertTypeNameRoundTrip() {
+        ShardingSphereColumn column = new ShardingSphereColumn("status", 1917, false, false, false, true, false, false, "my_enum");
+        YamlShardingSphereColumn yamlColumn = swapper.swapToYamlConfiguration(column);
+        assertThat(yamlColumn.getTypeName(), is("my_enum"));
+        
+        ShardingSphereColumn restored = swapper.swapToObject(yamlColumn);
+        assertThat(restored.getTypeName(), is("my_enum"));
+    }
+    
+    @Test
+    void assertTypeNameWithJsonb() {
+        ShardingSphereColumn column = new ShardingSphereColumn("data", 1917, false, false, false, true, false, false, "jsonb");
+        YamlShardingSphereColumn yamlColumn = swapper.swapToYamlConfiguration(column);
+        assertThat(yamlColumn.getTypeName(), is("jsonb"));
+        
+        ShardingSphereColumn restored = swapper.swapToObject(yamlColumn);
+        assertThat(restored.getTypeName(), is("jsonb"));
+    }
 }

@@ -143,6 +143,36 @@ class PostgreSQLComBindExecutorTest {
     }
     
     @Test
+    void assertExecuteBindWithOpenGauss() throws SQLException {
+        DatabaseType openGaussDatabaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn(DATABASE_NAME);
+        ConnectionContext connectionContext = mockConnectionContext();
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        String statementId = "S_OG_1";
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(
+                "", new CommonSQLStatementContext(new EmptyStatement(openGaussDatabaseType)), new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
+        when(bindPacket.getStatementId()).thenReturn(statementId);
+        when(bindPacket.getPortal()).thenReturn("C_OG_1");
+        when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
+        when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
+        ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        
+        when(database.getProtocolType()).thenReturn(openGaussDatabaseType);
+        when(contextManager.getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
+        verify(portalContext).add(any(Portal.class));
+    }
+    
+    @Test
     void assertExecuteBindWithResolvedParameterTypes() throws SQLException {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
@@ -162,7 +192,7 @@ class PostgreSQLComBindExecutorTest {
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         when(bindPacket.getStatementId()).thenReturn(statementId);
         when(bindPacket.getPortal()).thenReturn("C_1");
-        when(bindPacket.readParameters(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED))).thenReturn(Collections.singletonList(1));
+        when(bindPacket.readParameters(anyList())).thenReturn(Collections.singletonList(1));
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

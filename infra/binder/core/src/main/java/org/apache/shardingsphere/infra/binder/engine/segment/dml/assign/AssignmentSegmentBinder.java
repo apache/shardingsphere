@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,6 +80,9 @@ public final class AssignmentSegmentBinder {
         List<ColumnSegment> boundColumns = columnAssignmentSegment.getColumns().stream()
                 .map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
         ExpressionSegment boundValue = ExpressionSegmentBinder.bind(columnAssignmentSegment.getValue(), SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts);
+        if (boundValue instanceof ParameterMarkerExpressionSegment && !boundColumns.isEmpty() && null != boundColumns.get(0).getColumnBoundInfo()) {
+            ((ParameterMarkerExpressionSegment) boundValue).setBoundInfo(boundColumns.get(0).getColumnBoundInfo());
+        }
         return new ColumnAssignmentSegment(columnAssignmentSegment.getStartIndex(), columnAssignmentSegment.getStopIndex(), boundColumns, boundValue);
     }
 }

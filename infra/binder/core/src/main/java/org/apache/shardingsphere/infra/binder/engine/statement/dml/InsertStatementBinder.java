@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,6 +75,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         if (!sqlStatement.getInsertColumns().isPresent() || sqlStatement.getInsertColumns().get().getColumns().isEmpty()) {
             tableBinderContexts.values().forEach(each -> result.getDerivedInsertColumns().addAll(getVisibleColumns(each.getProjectionSegments())));
         }
+        annotateInsertParameterMarkers(result, boundInsertColumns);
         return result;
     }
     
@@ -104,6 +107,24 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
                 .overwrite(sqlStatement.isOverwrite()).values(new LinkedList<>(boundValues)).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
+    }
+    
+    private void annotateInsertParameterMarkers(final InsertStatement result, final InsertColumnsSegment boundInsertColumns) {
+        List<ColumnSegment> columns = null != boundInsertColumns && !boundInsertColumns.getColumns().isEmpty()
+                ? new ArrayList<>(boundInsertColumns.getColumns())
+                : new ArrayList<>(result.getDerivedInsertColumns());
+        if (columns.isEmpty()) {
+            return;
+        }
+        for (InsertValuesSegment valueRow : result.getValues()) {
+            List<ExpressionSegment> values = valueRow.getValues();
+            for (int i = 0; i < values.size() && i < columns.size(); i++) {
+                ExpressionSegment value = values.get(i);
+                if (value instanceof ParameterMarkerExpressionSegment && null != columns.get(i).getColumnBoundInfo()) {
+                    ((ParameterMarkerExpressionSegment) value).setBoundInfo(columns.get(i).getColumnBoundInfo());
+                }
+            }
+        }
     }
     
     private Collection<ColumnSegment> getVisibleColumns(final Collection<ProjectionSegment> projectionSegments) {
