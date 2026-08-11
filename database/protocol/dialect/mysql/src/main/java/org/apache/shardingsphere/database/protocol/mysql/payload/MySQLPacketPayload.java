@@ -129,7 +129,8 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @param value 6 byte fixed length integer
      */
     public void writeInt6(final long value) {
-        // TODO
+        byteBuf.writeIntLE((int) value);
+        byteBuf.writeShortLE((int) (value >>> 32));
     }
     
     /**
