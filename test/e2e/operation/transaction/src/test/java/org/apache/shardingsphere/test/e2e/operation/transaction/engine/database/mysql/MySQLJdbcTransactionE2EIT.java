@@ -20,6 +20,6 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.engine.database
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.TransactionE2ESettings;
 
-@TransactionE2ESettings(MySQLJdbcTransactionE2ETT.class)
-public final class MySQLJdbcTransactionE2ETT extends TransactionBaseE2EIT {
+@TransactionE2ESettings(MySQLJdbcTransactionE2EIT.class)
+public final class MySQLJdbcTransactionE2EIT extends TransactionBaseE2EIT {
 }
