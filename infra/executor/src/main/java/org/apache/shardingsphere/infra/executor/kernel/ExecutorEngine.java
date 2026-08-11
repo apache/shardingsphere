@@ -118,6 +118,7 @@ public final class ExecutorEngine implements AutoCloseable {
                 result.addAll(each.get());
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
+                return throwException(ex);
             } catch (final ExecutionException ex) {
                 return throwException(ex);
             }
