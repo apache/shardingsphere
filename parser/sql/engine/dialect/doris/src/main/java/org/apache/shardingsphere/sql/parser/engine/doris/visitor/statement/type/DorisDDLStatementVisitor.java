@@ -88,6 +88,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateT
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DataQuotaValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DistributedbyClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisDropFunctionContext;
@@ -108,7 +109,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropVie
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExecuteStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FileNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FileSizeLiteralContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FlowControlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IdentifierContext;
@@ -366,15 +366,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.RENAME() && null != ctx.identifier()) {
             result.setRenameDatabaseName(new IdentifierValue(ctx.identifier().getText()).getValue());
         }
-        if (null != ctx.QUOTA() && null != ctx.fileSizeLiteral()) {
-            if (null != ctx.DATA()) {
-                result.setQuotaType("DATA");
-            } else if (null != ctx.REPLICA()) {
+        if (null != ctx.QUOTA() && null != ctx.DATA() && null != ctx.dataQuotaValue()) {
+            result.setQuotaType("DATA");
+            result.setQuotaValue(getDataQuotaValue(ctx.dataQuotaValue()));
+        } else if (null != ctx.QUOTA() && null != ctx.NUMBER_()) {
+            if (null != ctx.REPLICA()) {
                 result.setQuotaType("REPLICA");
             } else if (null != ctx.TRANSACTION()) {
                 result.setQuotaType("TRANSACTION");
             }
-            result.setQuotaValue(getCapacityValue(ctx.fileSizeLiteral()));
+            result.setQuotaValue(Long.parseLong(ctx.NUMBER_().getText()));
         }
         if (null != ctx.PROPERTIES() && null != ctx.properties()) {
             PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().getStart().getStartIndex(), ctx.properties().getStop().getStopIndex());
@@ -389,23 +390,37 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         return result;
     }
     
-    private long getCapacityValue(final FileSizeLiteralContext ctx) {
-        if (null == ctx.FILESIZE_LITERAL()) {
-            return Long.parseLong(ctx.numberLiterals().getText());
+    private long getDataQuotaValue(final DataQuotaValueContext ctx) {
+        if (null != ctx.NUMBER_()) {
+            return Long.parseLong(ctx.NUMBER_().getText());
         }
-        String text = ctx.FILESIZE_LITERAL().getText();
-        long result = Long.parseLong(text.substring(0, text.length() - 1));
-        switch (text.charAt(text.length() - 1)) {
-            case 'K':
-                return result * 1024L;
-            case 'M':
-                return result * 1024L * 1024L;
-            case 'G':
-                return result * 1024L * 1024L * 1024L;
-            case 'T':
-                return result * 1024L * 1024L * 1024L * 1024L;
+        String text = null != ctx.FILESIZE_LITERAL() ? ctx.FILESIZE_LITERAL().getText() : ctx.DATA_QUOTA_LITERAL().getText();
+        int unitIndex = text.length();
+        while (unitIndex > 0 && Character.isLetter(text.charAt(unitIndex - 1))) {
+            unitIndex--;
+        }
+        long value = Long.parseLong(text.substring(0, unitIndex));
+        switch (text.substring(unitIndex).toUpperCase()) {
+            case "":
+            case "B":
+                return value;
+            case "K":
+            case "KB":
+                return value * 1024L;
+            case "M":
+            case "MB":
+                return value * 1024L * 1024L;
+            case "G":
+            case "GB":
+                return value * 1024L * 1024L * 1024L;
+            case "T":
+            case "TB":
+                return value * 1024L * 1024L * 1024L * 1024L;
+            case "P":
+            case "PB":
+                return value * 1024L * 1024L * 1024L * 1024L * 1024L;
             default:
-                return result;
+                return value;
         }
     }
     

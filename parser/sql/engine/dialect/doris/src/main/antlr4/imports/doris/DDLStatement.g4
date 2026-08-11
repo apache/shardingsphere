@@ -327,10 +327,17 @@ alterDatabase
     : ALTER (DATABASE | SCHEMA) databaseName? alterDatabaseSpecification_*
     | ALTER (DATABASE | SCHEMA) databaseName RENAME identifier
     // DORIS CHANGED BEGIN
-    | ALTER (DATABASE | SCHEMA) databaseName SET (DATA | REPLICA | TRANSACTION) QUOTA fileSizeLiteral
+    | ALTER (DATABASE | SCHEMA) databaseName SET DATA QUOTA dataQuotaValue
+    | ALTER (DATABASE | SCHEMA) databaseName SET (REPLICA | TRANSACTION) QUOTA NUMBER_
     // DORIS CHANGED END
     | ALTER (DATABASE | SCHEMA) databaseName SET PROPERTIES LP_ properties RP_
     ;
+
+// DORIS ADDED BEGIN
+dataQuotaValue
+    : FILESIZE_LITERAL | DATA_QUOTA_LITERAL | NUMBER_
+    ;
+// DORIS ADDED END
 
 createDatabaseSpecification_
     : defaultCharset

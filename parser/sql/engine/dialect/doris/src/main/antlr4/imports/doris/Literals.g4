@@ -23,6 +23,12 @@ FILESIZE_LITERAL
     : INT_NUM_ ('K'|'M'|'G'|'T')
     ;
 
+// DORIS ADDED BEGIN
+DATA_QUOTA_LITERAL
+    : INT_NUM_ (B | K B? | M B? | G B? | T B? | P B?)
+    ;
+// DORIS ADDED END
+
 SINGLE_QUOTED_TEXT
     : SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_
     ;
