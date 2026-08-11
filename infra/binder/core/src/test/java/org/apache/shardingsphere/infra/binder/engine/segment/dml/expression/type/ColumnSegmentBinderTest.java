@@ -302,4 +302,20 @@ class ColumnSegmentBinderTest {
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, bindContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
         assertThat(actual, is(columnSegment));
     }
+    
+    @Test
+    void assertBindUnparenthesizedSystemUserWithTableContextForPostgreSQL() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
+        boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
+                new IdentifierValue("t_order"), new IdentifierValue("order_id"), TableSourceType.PHYSICAL_TABLE));
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn)), TableSourceType.PHYSICAL_TABLE));
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        SQLStatementBinderContext bindContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("SYSTEM_USER"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, bindContext, tableBinderContexts, LinkedHashMultimap.create());
+        assertThat(actual, is(columnSegment));
+    }
 }
