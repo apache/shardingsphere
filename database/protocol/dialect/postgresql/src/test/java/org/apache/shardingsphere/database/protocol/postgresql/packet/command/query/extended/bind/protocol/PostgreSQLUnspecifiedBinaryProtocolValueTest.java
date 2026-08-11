@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.ByteBufTestUtils;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,17 +62,14 @@ class PostgreSQLUnspecifiedBinaryProtocolValueTest {
     
     @Test
     void assertRead() {
-        String timestampStr = "2020-08-23 15:57:03+08";
-        int expectedLength = 4 + timestampStr.length();
-        ByteBuf readBuf = ByteBufTestUtils.createByteBuf(expectedLength);
-        readBuf.writeInt(timestampStr.length());
-        readBuf.writeCharSequence(timestampStr, StandardCharsets.ISO_8859_1);
-        readBuf.readInt();
-        PostgreSQLPacketPayload readPayload = new PostgreSQLPacketPayload(readBuf, StandardCharsets.UTF_8);
-        Object actual = new PostgreSQLUnspecifiedBinaryProtocolValue().read(readPayload, timestampStr.length());
+        String expected = "中文";
+        byte[] bytes = expected.getBytes(StandardCharsets.UTF_16BE);
+        ByteBuf readBuf = Unpooled.wrappedBuffer(bytes);
+        PostgreSQLPacketPayload readPayload = new PostgreSQLPacketPayload(readBuf, StandardCharsets.UTF_16BE);
+        Object actual = new PostgreSQLUnspecifiedBinaryProtocolValue().read(readPayload, bytes.length);
         assertThat(actual, isA(PostgreSQLTypeUnspecifiedSQLParameter.class));
-        assertThat(actual.toString(), is(timestampStr));
-        assertThat(readBuf.readerIndex(), is(expectedLength));
+        assertThat(actual.toString(), is(expected));
+        assertThat(readBuf.readerIndex(), is(bytes.length));
     }
     
     @Test
