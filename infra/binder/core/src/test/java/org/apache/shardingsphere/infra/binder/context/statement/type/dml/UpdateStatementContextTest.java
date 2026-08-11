@@ -20,9 +20,11 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
@@ -329,6 +331,92 @@ class UpdateStatementContextTest {
         assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
         assertFalse(actual.getTablesContext().getTableNames().contains("@SourceVar"));
         assertFalse(actual.getTablesContext().getTableNames().contains("target"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithAliasedVariableTargetAndOwnerQualifiedSetColumnExcludesVariableAlias() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        targetVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(targetVar);
+        fromJoin.setRight(employee);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Value"));
+        setColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("target")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("target"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithAliasedVariableTargetAndExtraVariableSourceAndOwnerQualifiedSetColumnExcludesAllVariables() {
+        SimpleTableSegment targetVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        targetVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment sourceVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@SourceVar")));
+        sourceVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("src")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment rightJoin = new JoinTableSegment();
+        rightJoin.setLeft(sourceVar);
+        rightJoin.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(targetVar);
+        fromJoin.setRight(rightJoin);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Value"));
+        setColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("target")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertThat(actual.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("@SourceVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("target"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("src"));
+    }
+    
+    @Test
+    void assertGetTableNamesWithSameVariableSelfJoinExcludesAllVariableOccurrences() {
+        SimpleTableSegment leftVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        leftVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
+        SimpleTableSegment rightVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar")));
+        rightVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("b")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(leftVar);
+        fromJoin.setRight(rightVar);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Col"));
+        setColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
+        ColumnSegment valueColumn = new ColumnSegment(0, 0, new IdentifierValue("Col"));
+        valueColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("b")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@TargetVar"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), valueColumn))))
+                .build();
+        UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
+        assertTrue(actual.getTablesContext().getTableNames().isEmpty());
+        assertFalse(actual.getTablesContext().getTableNames().contains("@TargetVar"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("a"));
+        assertFalse(actual.getTablesContext().getTableNames().contains("b"));
     }
     
     @Test
