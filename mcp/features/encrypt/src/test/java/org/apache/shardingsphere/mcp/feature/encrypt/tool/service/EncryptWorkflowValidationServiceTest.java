@@ -19,12 +19,8 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
@@ -46,50 +42,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
 
 class EncryptWorkflowValidationServiceTest {
     
     @Test
-    void assertValidateRejectsDifferentSession() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
-        workflowSessionContext.save(createSnapshot("plan-1", "session-1", "executed", "create"));
-        Map<String, Object> actual = createService(mock(EncryptRuleInspectionService.class))
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-2",
-                        workflowSessionContext.getRequired("plan-1"));
-        assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
-    }
-    
-    @Test
     void assertValidateHappyPath() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(createRuleRow()));
         MCPFeatureQueryFacade queryFacade = createQueryFacade();
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = createService(ruleInspectionService).validate(snapshot, queryFacade).toMap();
         assertThat(actual.get("overall_status"), is("passed"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
         assertFalse(actual.containsKey("ddl_validation"));
         assertTrue(getValidationSection(actual, "logical_metadata").isEmpty());
         assertTrue(getValidationSection(actual, "sql_executability").isEmpty());
-        verifyNoInteractions(metadataQueryFacade);
-        verifyNoInteractions(executionFacade);
     }
     
     @Test
     void assertValidateUsesColumnIdentifierPolicy() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "logic_column", "phone",
@@ -97,70 +71,46 @@ class EncryptWorkflowValidationServiceTest {
                 "encryptor_type", "AES")));
         MCPFeatureQueryFacade queryFacade = createQueryFacade();
         when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone_cipher", "PHONE_CIPHER")).thenReturn(true);
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
-    }
-    
-    @Test
-    void assertSynchronize() {
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(createRuleRow()));
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        createService(ruleInspectionService).synchronize(snapshot, metadataQueryFacade, createQueryFacade(), executionFacade, "session-1");
-        verifyNoInteractions(metadataQueryFacade);
-        verifyNoInteractions(executionFacade);
+        Map<String, Object> actual = createService(ruleInspectionService).validate(snapshot, queryFacade).toMap();
+        assertThat(actual.get("overall_status"), is("passed"));
     }
     
     @Test
     void assertValidateDropWorkflowAfterRuleRemoval() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("passed"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
     }
     
     @Test
     void assertValidateWhenRuleMissing() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
         assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("code"), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
     
     @Test
     void assertValidateWhenRuleMappingMismatch() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher_old",
                 "encryptor_type", "AES")));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("cipher_column=phone_cipher"));
     }
     
     @Test
     void assertValidateExpectedStateMasksSecretPropertyMismatch() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""));
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of(
@@ -168,16 +118,14 @@ class EncryptWorkflowValidationServiceTest {
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES",
                 "encryptor_props", Map.of("aes-key-value", "123456")))));
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES",
                 "encryptor_props", Map.of("aes-key-value", "old-key"))));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertFalse(String.valueOf(actual.get("mismatches")).contains("123456"));
         assertFalse(String.valueOf(actual.get("mismatches")).contains("old-key"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("encryptor_props={aes-key-value=******}"));
@@ -193,17 +141,13 @@ class EncryptWorkflowValidationServiceTest {
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES",
                 "encryptor_props", Map.of("aes-key-value", "secret_reference:primary.aes-key-value")))));
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES",
                 "encryptor_props", Map.of("aes-key-value", "raw-actual-secret"))));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
         assertThat(actual.get("overall_status"), is("passed"));
         assertThat(((List<?>) actual.get("mismatches")).size(), is(0));
         assertFalse(String.valueOf(actual).contains("raw-actual-secret"));
@@ -220,17 +164,14 @@ class EncryptWorkflowValidationServiceTest {
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES",
                 "encryptor_props", Map.of("aes-key-value", "secret_reference:primary.aes-key-value")))));
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES",
                 "encryptor_props", Map.of("aes-key-value", "secret_reference:primary.aes-key-value"))));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("encryptor_props={aes-key-value=******}"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("encryptor_props={aes-key-value=******}"));
         assertFalse(String.valueOf(actual).contains("placeholder://secret-value-1"));
@@ -238,33 +179,27 @@ class EncryptWorkflowValidationServiceTest {
     
     @Test
     void assertValidateExpectedStateDetectsMissingNonTargetRule() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(
                 createRuleRow(),
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES"))));
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(createRuleRow()));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("logic_column=email"));
     }
     
     @Test
     void assertValidateExpectedStateDetectsUnexpectedExtraRule() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(createRuleRow())));
-        workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(
                 createRuleRow(),
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES")));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("logic_column=email"));
     }
     
@@ -276,6 +211,10 @@ class EncryptWorkflowValidationServiceTest {
         when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "email_cipher", "email_cipher")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "", "")).thenReturn(true);
         return result;
+    }
+    
+    private Map<String, Object> validate(final EncryptWorkflowValidationService service, final WorkflowContextSnapshot snapshot) {
+        return service.validate(snapshot, createQueryFacade()).toMap();
     }
     
     private EncryptWorkflowValidationService createService(final EncryptRuleInspectionService ruleInspectionService) {

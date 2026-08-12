@@ -20,10 +20,8 @@ package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
-import org.testcontainers.DockerClientFactory;
 
 import java.time.Duration;
-import java.util.Optional;
 import java.util.Properties;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -39,28 +37,6 @@ final class MySQLRuntimeDockerSupport {
             throw new IllegalStateException("MCP E2E MySQL image property `mcp.e2e.mysql.image` is required.");
         }
         return result;
-    }
-    
-    static boolean isDockerAvailable() {
-        return getDockerUnavailableReason().isEmpty();
-    }
-    
-    static Optional<String> getDockerUnavailableReason() {
-        try {
-            return DockerClientFactory.instance().isDockerAvailable()
-                    ? Optional.empty()
-                    : Optional.of("Testcontainers Docker client reported Docker unavailable.");
-        } catch (final IllegalStateException ex) {
-            return Optional.of(createDockerUnavailableReason(ex));
-        }
-    }
-    
-    static String createDockerRequiredMessage(final String scenarioMessage) {
-        return createDockerRequiredMessage(scenarioMessage, getDockerUnavailableReason().orElse(""));
-    }
-    
-    static String createDockerRequiredMessage(final String scenarioMessage, final String unavailableReason) {
-        return unavailableReason.isEmpty() ? scenarioMessage : scenarioMessage + " Docker readiness diagnostic: " + unavailableReason;
     }
     
     static long getJdbcReadyTimeoutMillis(final Duration defaultReadyTimeout) {
@@ -79,9 +55,4 @@ final class MySQLRuntimeDockerSupport {
         }
     }
     
-    private static String createDockerUnavailableReason(final IllegalStateException ex) {
-        return null == ex.getMessage() || ex.getMessage().isBlank()
-                ? "Testcontainers Docker availability check failed without a message."
-                : ex.getMessage();
-    }
 }

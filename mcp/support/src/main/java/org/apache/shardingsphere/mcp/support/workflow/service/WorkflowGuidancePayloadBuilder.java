@@ -81,17 +81,17 @@ public final class WorkflowGuidancePayloadBuilder {
     public static void appendApplyGuidance(final Map<String, Object> payload, final String status) {
         List<Map<String, Object>> nextActions = new LinkedList<>();
         if (WorkflowLifecycle.STATUS_COMPLETED.equals(status)) {
-            nextActions.add(createToolAction(WorkflowToolDescriptors.VALIDATE_TOOL_NAME, "Validate the runtime state after workflow artifacts are applied or exported.",
+            nextActions.add(MCPNextActionUtils.callTool(WorkflowToolDescriptors.VALIDATE_TOOL_NAME, "Validate the runtime state after workflow artifacts are applied or exported.",
                     Map.of(WorkflowFieldNames.PLAN_ID, Objects.toString(payload.get(WorkflowFieldNames.PLAN_ID), ""))));
         }
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
-            nextActions.add(createUserAction("Confirm the manual artifacts were executed outside MCP before validation.", List.of("manual_artifacts_executed")));
+            nextActions.add(MCPNextActionUtils.askUser("Confirm the manual artifacts were executed outside MCP before validation.", List.of("manual_artifacts_executed")));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(status) && isSecretReferenceRecovery(payload)) {
-            nextActions.add(createUserAction("Review the manual artifacts, replace neutral secret placeholders outside MCP, and execute them through the normal operational channel.",
+            nextActions.add(MCPNextActionUtils.askUser("Review the manual artifacts, replace neutral secret placeholders outside MCP, and execute them through the normal operational channel.",
                     List.of("manual_artifacts_executed")));
         } else if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
-            nextActions.add(createUserAction("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", List.of("issues")));
+            nextActions.add(MCPNextActionUtils.askUser("Inspect issues and retry database_gateway_apply_workflow only after the failed artifact is corrected.", List.of("issues")));
         }
         payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, nextActions);
     }
@@ -124,12 +124,14 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static List<Map<String, Object>> createValidationFailureActions(final WorkflowContextSnapshot snapshot) {
         if (isManualOnlyWorkflow(snapshot)) {
-            return List.of(createUserAction("Confirm the manual artifacts were executed outside MCP, then run database_gateway_validate_workflow again.", List.of("manual_artifacts_executed")));
+            return List.of(MCPNextActionUtils.askUser(
+                    "Confirm the manual artifacts were executed outside MCP, then run database_gateway_validate_workflow again.", List.of("manual_artifacts_executed")));
         }
         String planningTool = resolvePlanningTool(snapshot);
         return planningTool.isEmpty()
-                ? List.of(createUserAction("Confirm the workflow kind before re-planning with the existing plan_id.", List.of("workflow_kind", "mismatches")))
-                : List.of(createToolAction(planningTool, "Re-plan with corrected metadata or algorithm choices.", Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId())));
+                ? List.of(MCPNextActionUtils.askUser("Confirm the workflow kind before re-planning with the existing plan_id.", List.of("workflow_kind", "mismatches")))
+                : List.of(MCPNextActionUtils.callTool(
+                        planningTool, "Re-plan with corrected metadata or algorithm choices.", Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId())));
     }
     
     private static boolean isManualOnlyWorkflow(final WorkflowContextSnapshot snapshot) {
@@ -269,10 +271,10 @@ public final class WorkflowGuidancePayloadBuilder {
     
     private static List<Map<String, Object>> createPlanningNextActions(final WorkflowContextSnapshot snapshot, final List<String> missingRequiredInputs) {
         if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus())) {
-            return List.of(createUserAction("Ask for the missing inputs, then call the same planning tool with the existing plan_id.", missingRequiredInputs));
+            return List.of(MCPNextActionUtils.askUser("Ask for the missing inputs, then call the same planning tool with the existing plan_id.", missingRequiredInputs));
         }
         if (WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus())) {
-            return List.of(createToolAction(WorkflowToolDescriptors.APPLY_TOOL_NAME, "Preview workflow artifacts before execution.",
+            return List.of(MCPNextActionUtils.callTool(WorkflowToolDescriptors.APPLY_TOOL_NAME, "Preview workflow artifacts before execution.",
                     Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId(), WorkflowFieldNames.EXECUTION_MODE, WorkflowLifecycle.EXECUTION_MODE_PREVIEW)));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus())) {
@@ -288,24 +290,19 @@ public final class WorkflowGuidancePayloadBuilder {
         String planningTool = resolvePlanningTool(snapshot);
         if (hasIssue(snapshot, WorkflowIssueCode.RULE_INPUT_CONFLICT)) {
             return planningTool.isEmpty()
-                    ? List.of(createUserAction("Choose one input mode, remove conflicting inputs, and start a new plan without plan_id.", List.of("workflow_kind", "conflicting_inputs")))
-                    : List.of(createToolAction(planningTool, "Choose one input mode, remove conflicting inputs, and start a new plan without plan_id.", Map.of()));
+                    ? List.of(MCPNextActionUtils.askUser(
+                            "Choose one input mode, remove conflicting inputs, and start a new plan without plan_id.", List.of("workflow_kind", "conflicting_inputs")))
+                    : List.of(MCPNextActionUtils.callTool(planningTool, "Choose one input mode, remove conflicting inputs, and start a new plan without plan_id.", Map.of()));
         }
         return planningTool.isEmpty()
-                ? List.of(createUserAction("Confirm the workflow kind, then call the matching planning tool with the existing plan_id.", List.of("workflow_kind", "issues")))
-                : List.of(createToolAction(planningTool, "Re-plan after resolving the reported issues.", Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId())));
+                ? List.of(MCPNextActionUtils.askUser(
+                        "Confirm the workflow kind, then call the matching planning tool with the existing plan_id.", List.of("workflow_kind", "issues")))
+                : List.of(MCPNextActionUtils.callTool(
+                        planningTool, "Re-plan after resolving the reported issues.", Map.of(WorkflowFieldNames.PLAN_ID, snapshot.getPlanId())));
     }
     
     private static boolean hasIssue(final WorkflowContextSnapshot snapshot, final String issueCode) {
         return snapshot.getIssues().stream().anyMatch(each -> issueCode.equals(each.getCode()));
-    }
-    
-    private static Map<String, Object> createToolAction(final String targetTool, final String reason, final Map<String, Object> requiredArguments) {
-        return MCPNextActionUtils.callTool(targetTool, reason, requiredArguments);
-    }
-    
-    private static Map<String, Object> createUserAction(final String reason, final List<String> requiredInputs) {
-        return MCPNextActionUtils.askUser(reason, requiredInputs);
     }
     
     private static Map<String, Object> createStopAction() {

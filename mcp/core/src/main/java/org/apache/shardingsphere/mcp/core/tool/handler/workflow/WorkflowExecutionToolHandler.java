@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
@@ -39,16 +40,12 @@ import java.util.Map;
 /**
  * Generic workflow execution tool handler.
  */
+@RequiredArgsConstructor
 public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
-    private final WorkflowExecutionService executionService;
+    private final WorkflowExecutionService executionService = new WorkflowExecutionService();
     
     private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
-    
-    public WorkflowExecutionToolHandler(final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
-        executionService = new WorkflowExecutionService();
-        this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
-    }
     
     @Override
     public Class<MCPFeatureRequestContext> getContextType() {
@@ -72,8 +69,8 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPFea
         WorkflowSessionContext workflowSessionContext = requestContext.getWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
         WorkflowRuntimeDefinition workflowRuntimeDefinition = workflowRuntimeDefinitionRegistry.getRequired(snapshot);
-        return new MCPMapPayload(executionService.apply(workflowSessionContext, requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade(),
-                requestContext.getExecutionFacade(), workflowRuntimeDefinition.getRuntimeHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(),
+        return new MCPMapPayload(executionService.apply(workflowSessionContext, requestContext.getQueryFacade(), requestContext.getExecutionFacade(),
+                workflowRuntimeDefinition.getRuntimeHandler(), workflowRuntimeDefinition.getApplyArtifactValidator(),
                 requestContext.getSessionIdentity().getSessionId(),
                 snapshot, toolArguments.getStringCollectionArgument(WorkflowFieldNames.APPROVED_STEPS), executionMode));
     }

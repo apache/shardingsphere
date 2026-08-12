@@ -21,11 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleWorkflowFeatureData;
@@ -54,7 +50,6 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
 
@@ -73,37 +68,18 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateRejectsDifferentSession() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
-        workflowSessionContext.save(createSnapshot("plan-1", "session-1", "executed", "create"));
-        Map<String, Object> actual = createService(mock(MaskRuleInspectionService.class))
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-2",
-                        workflowSessionContext.getRequired("plan-1"));
-        assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
-    }
-    
-    @Test
     void assertValidateHappyPath() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
         MCPFeatureQueryFacade queryFacade = createQueryFacade();
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = createService(ruleInspectionService).validate(snapshot, queryFacade).toMap();
         assertThat(actual.get("overall_status"), is("passed"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
         assertFalse(actual.containsKey("ddl_validation"));
         assertTrue(getValidationSection(actual, "logical_metadata").isEmpty());
         assertTrue(getValidationSection(actual, "sql_executability").isEmpty());
-        verifyNoInteractions(metadataQueryFacade);
-        verifyNoInteractions(executionFacade);
     }
     
     @Test
@@ -150,146 +126,106 @@ class MaskWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertSynchronize() {
-        WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
-        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        createService(ruleInspectionService).synchronize(snapshot, metadataQueryFacade, createQueryFacade(), executionFacade, "session-1");
-        verifyNoInteractions(metadataQueryFacade);
-        verifyNoInteractions(executionFacade);
-    }
-    
-    @Test
     void assertValidateDropWorkflowAfterRuleRemoval() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("passed"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
     }
     
     @Test
     void assertValidateDropWorkflowWhenRuleRemains() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(getValidationSection(actual, "rule").get("details"), is("Mask rule still exists."));
     }
     
     @Test
     void assertValidateWhenAlgorithmMismatch() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
     }
     
     @Test
     void assertValidateWhenRuleMissing() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("code"), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
     
     @Test
     void assertValidateRuleWithSecretReference() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         snapshot.getRequest().getPrimaryAlgorithmSecretReferences().put("replace-char", SecretReferenceValue.create());
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("passed"));
         assertTrue(String.valueOf(getValidationSection(actual, "rule").get("details")).contains("sensitive properties"));
     }
     
     @Test
     void assertValidateExpectedState() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of("column", "phone", "algorithm_type", "MD5"))));
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("passed"));
         assertThat(getValidationSection(actual, "rule").get("details"), is("Mask table rule state matches the planned state."));
     }
     
     @Test
     void assertValidateExpectedStateDetectsUnexpectedRule() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of("column", "phone", "algorithm_type", "MD5"))));
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(
                 Map.of("column", "phone", "algorithm_type", "MD5"), Map.of("column", "email", "algorithm_type", "MD5")));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("column=email"));
     }
     
     @Test
     void assertValidateExpectedStateDetectsAlgorithmMismatch() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of("column", "phone", "algorithm_type", "MD5"))));
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("algorithm_type=MD5"));
     }
     
     @Test
     void assertValidateExpectedStateDetectsPropertyMismatch() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(Map.of(
                 "column", "phone",
                 "algorithm_type", "MASK_FROM_X_TO_Y",
                 "algorithm_props", Map.of("from-x", "1")))));
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "column", "phone",
                 "algorithm_type", "MASK_FROM_X_TO_Y",
                 "algorithm_props", Map.of("from-x", "2"))));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("algorithm_props={from-x=1}"));
     }
     
@@ -302,16 +238,12 @@ class MaskWorkflowValidationServiceTest {
                 "column", "phone",
                 "algorithm_type", "MASK_FROM_X_TO_Y",
                 "algorithm_props", Map.of("replace-char", "secret_reference:primary.replace-char")))));
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "column", "phone",
                 "algorithm_type", "MASK_FROM_X_TO_Y",
                 "algorithm_props", Map.of("replace-char", "raw-actual-secret"))));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
         assertThat(actual.get("overall_status"), is("passed"));
         assertThat(((List<?>) actual.get("mismatches")).size(), is(0));
         assertFalse(String.valueOf(actual).contains("raw-actual-secret"));
@@ -327,16 +259,13 @@ class MaskWorkflowValidationServiceTest {
                 "column", "phone",
                 "algorithm_type", "MASK_FROM_X_TO_Y",
                 "algorithm_props", Map.of("replace-char", "secret_reference:primary.replace-char")))));
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "column", "phone",
                 "algorithm_type", "MASK_FROM_X_TO_Y",
                 "algorithm_props", Map.of("replace-char", "secret_reference:primary.replace-char"))));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("algorithm_props={replace-char=******}"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("actual"), is("algorithm_props={replace-char=******}"));
         assertFalse(String.valueOf(actual).contains("placeholder://secret-value-1"));
@@ -344,17 +273,14 @@ class MaskWorkflowValidationServiceTest {
     
     @Test
     void assertValidateExpectedStateDetectsMissingNonTargetRule() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.setFeatureData(new RuleWorkflowFeatureData(List.of(
                 Map.of("column", "phone", "algorithm_type", "MD5"),
                 Map.of("column", "email", "algorithm_type", "MD5"))));
-        workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        Map<String, Object> actual = createService(ruleInspectionService)
-                .validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = validate(createService(ruleInspectionService), snapshot);
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("expected"), is("column=email"));
     }
     
@@ -363,6 +289,10 @@ class MaskWorkflowValidationServiceTest {
         when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "phone", "phone")).thenReturn(true);
         when(result.isSameIdentifier("logic_db", IdentifierScope.COLUMN, "email", "email")).thenReturn(true);
         return result;
+    }
+    
+    private Map<String, Object> validate(final MaskWorkflowValidationService service, final WorkflowContextSnapshot snapshot) {
+        return service.validate(snapshot, createQueryFacade()).toMap();
     }
     
     private MaskWorkflowValidationService createService(final MaskRuleInspectionService ruleInspectionService) {
