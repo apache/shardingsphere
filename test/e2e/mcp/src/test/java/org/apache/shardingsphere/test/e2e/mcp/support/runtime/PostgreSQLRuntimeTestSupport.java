@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
-import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
@@ -65,19 +64,6 @@ public final class PostgreSQLRuntimeTestSupport {
                 .withExposedPorts(5432)
                 .waitingFor(Wait.forListeningPort())
                 .withStartupTimeout(Duration.ofMinutes(2L));
-    }
-    
-    /**
-     * Check whether Docker is available for Testcontainers-backed tests.
-     *
-     * @return whether Docker is available
-     */
-    public static boolean isDockerAvailable() {
-        try {
-            return DockerClientFactory.instance().isDockerAvailable();
-        } catch (final IllegalStateException ignored) {
-            return false;
-        }
     }
     
     /**

@@ -299,31 +299,8 @@ public final class MetadataResourceResponseFactory {
     }
     
     private String resolveResourceKind(final String uri) {
-        if (uri.contains("/columns")) {
-            return "column";
-        }
-        if (uri.contains("/indexes")) {
-            return "index";
-        }
-        if (uri.contains("/storage-units")) {
-            return "storage-unit";
-        }
-        if (uri.contains("/single-tables") || uri.contains("/single-table/default-storage-unit")) {
-            return "single-table";
-        }
-        if (uri.contains("/tables")) {
-            return "logical-table";
-        }
-        if (uri.contains("/views")) {
-            return "view";
-        }
-        if (uri.contains("/sequences")) {
-            return "sequence";
-        }
-        if (uri.contains("/schemas")) {
-            return "schema";
-        }
-        return "logical-database";
+        String result = MCPDescriptorCatalogIndex.resolveResourceKind(uri).replace('_', '-');
+        return "resource".equals(result) ? "logical-database" : result;
     }
     
     private String createParentUri(final String selfUri) {

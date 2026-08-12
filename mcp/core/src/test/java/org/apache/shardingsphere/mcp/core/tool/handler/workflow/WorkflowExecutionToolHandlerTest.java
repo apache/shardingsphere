@@ -60,13 +60,13 @@ class WorkflowExecutionToolHandlerTest {
         MCPWorkflowApplyArtifactValidator workflowApplyArtifactValidator = mock(MCPWorkflowApplyArtifactValidator.class);
         try (
                 MockedConstruction<WorkflowExecutionService> mockedExecutionServices = mockConstruction(WorkflowExecutionService.class,
-                        (mock, context) -> when(mock.apply(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed")))) {
+                        (mock, context) -> when(mock.apply(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed")))) {
             WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
                     WorkflowHandlerTestFixture.createDefinition("encrypt.rule", workflowRuntimeHandler, workflowApplyArtifactValidator))));
             MCPSuccessPayload actual = handler.handle(fixture.requestContext(), Map.of(WorkflowFieldNames.PLAN_ID, "plan-1",
                     WorkflowFieldNames.APPROVED_STEPS, List.of("rule_distsql"), WorkflowFieldNames.EXECUTION_MODE, "manual-only"));
             WorkflowExecutionService executionService = mockedExecutionServices.constructed().getFirst();
-            verify(executionService).apply(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()), eq(fixture.queryFacade()), eq(fixture.executionFacade()),
+            verify(executionService).apply(eq(fixture.workflowSessionContext()), eq(fixture.queryFacade()), eq(fixture.executionFacade()),
                     eq(workflowRuntimeHandler), eq(workflowApplyArtifactValidator), eq("session-1"), eq(snapshot), eq(List.of("rule_distsql")), eq("manual-only"));
             assertThat(actual.toPayload().get("status"), is("completed"));
         }
