@@ -86,8 +86,19 @@ class WorkflowAlgorithmUtilsTest {
     }
     
     @Test
-    void assertCreatePropertyMapHandlesString() {
+    void assertCreatePropertyMapHandlesLegacyObjectString() {
         assertThat(WorkflowAlgorithmUtils.createPropertyMap("{'aes-key-value':'123456','iv':'abc'}"), is(Map.of("aes-key-value", "123456", "iv", "abc")));
+    }
+    
+    @Test
+    void assertCreatePropertyMapHandlesLegacyAssignmentString() {
+        assertThat(WorkflowAlgorithmUtils.createPropertyMap("expression=left=right"), is(Map.of("expression", "left=right")));
+    }
+    
+    @Test
+    void assertCreatePropertyMapHandlesJSONString() {
+        String value = "{\"expression\":\"left,right=middle:right\",\"escaped\":\"quote=\\\" and slash=\\\\\"}";
+        assertThat(WorkflowAlgorithmUtils.createPropertyMap(value), is(Map.of("expression", "left,right=middle:right", "escaped", "quote=\" and slash=\\")));
     }
     
     @Test

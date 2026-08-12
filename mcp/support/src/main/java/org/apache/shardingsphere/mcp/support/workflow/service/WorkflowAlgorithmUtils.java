@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternal
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
 import java.util.Collection;
@@ -167,7 +168,18 @@ public final class WorkflowAlgorithmUtils {
         if (actualValue.isEmpty() || "{}".equals(actualValue)) {
             return Map.of();
         }
-        String normalizedValue = actualValue;
+        if (isJSONPropertyMap(actualValue)) {
+            return createPropertyMap(YamlEngine.unmarshal(actualValue, Map.class));
+        }
+        return parseLegacyPropertyString(actualValue);
+    }
+    
+    private static boolean isJSONPropertyMap(final String value) {
+        return value.startsWith("{") && value.endsWith("}") && value.substring(1, value.length() - 1).trim().startsWith("\"");
+    }
+    
+    private static Map<String, String> parseLegacyPropertyString(final String value) {
+        String normalizedValue = value;
         if (normalizedValue.startsWith("{") && normalizedValue.endsWith("}")) {
             normalizedValue = normalizedValue.substring(1, normalizedValue.length() - 1);
         }
