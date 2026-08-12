@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
 import java.util.Collection;
@@ -42,6 +44,9 @@ import java.util.Properties;
 public final class WorkflowAlgorithmUtils {
     
     private static final String ALGORITHM_TYPE_KEY = "type";
+    
+    private static final TypeReference<Map<?, ?>> JSON_PROPERTY_MAP_TYPE = new TypeReference<>() {
+    };
     
     /**
      * Normalize algorithm type.
@@ -169,13 +174,49 @@ public final class WorkflowAlgorithmUtils {
             return Map.of();
         }
         if (isJSONPropertyMap(actualValue)) {
-            return createPropertyMap(YamlEngine.unmarshal(actualValue, Map.class));
+            if (!hasSingleJSONObject(actualValue)) {
+                return Map.of();
+            }
+            try {
+                return parseJSONPropertyString(actualValue);
+            } catch (final JsonProcessingException ignored) {
+                return Map.of();
+            }
         }
         return parseLegacyPropertyString(actualValue);
     }
     
+    private static Map<String, String> parseJSONPropertyString(final String value) throws JsonProcessingException {
+        return createPropertyMap(JsonUtils.fromJsonString(value, JSON_PROPERTY_MAP_TYPE));
+    }
+    
     private static boolean isJSONPropertyMap(final String value) {
-        return value.startsWith("{") && value.endsWith("}") && value.substring(1, value.length() - 1).trim().startsWith("\"");
+        return value.startsWith("{") && value.substring(1).trim().startsWith("\"");
+    }
+    
+    private static boolean hasSingleJSONObject(final String value) {
+        int objectDepth = 0;
+        boolean inString = false;
+        boolean escaped = false;
+        for (int i = 0; i < value.length(); i++) {
+            char each = value.charAt(i);
+            if (inString) {
+                if (escaped) {
+                    escaped = false;
+                } else if ('\\' == each) {
+                    escaped = true;
+                } else if ('"' == each) {
+                    inString = false;
+                }
+            } else if ('"' == each) {
+                inString = true;
+            } else if ('{' == each) {
+                objectDepth++;
+            } else if ('}' == each && 0 == --objectDepth) {
+                return value.substring(i + 1).isBlank();
+            }
+        }
+        return false;
     }
     
     private static Map<String, String> parseLegacyPropertyString(final String value) {

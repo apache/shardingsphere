@@ -22,12 +22,16 @@ import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundExce
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -97,8 +101,29 @@ class WorkflowAlgorithmUtilsTest {
     
     @Test
     void assertCreatePropertyMapHandlesJSONString() {
-        String value = "{\"expression\":\"left,right=middle:right\",\"escaped\":\"quote=\\\" and slash=\\\\\"}";
-        assertThat(WorkflowAlgorithmUtils.createPropertyMap(value), is(Map.of("expression", "left,right=middle:right", "escaped", "quote=\" and slash=\\")));
+        String value = "{\"expression\":\"left,{right}=middle:right\",\"escaped\":\"quote=\\\" and slash=\\\\\"}";
+        assertThat(WorkflowAlgorithmUtils.createPropertyMap(value), is(Map.of("expression", "left,{right}=middle:right", "escaped", "quote=\" and slash=\\")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getMalformedJSONPropertyStrings")
+    void assertCreatePropertyMapHandlesMalformedJSONString(final String name, final String value) {
+        assertThat(WorkflowAlgorithmUtils.createPropertyMap(value), is(Map.of()));
+    }
+    
+    @Test
+    void assertCreatePropertyMapIgnoresBlankJSONKey() {
+        assertThat(WorkflowAlgorithmUtils.createPropertyMap("{\" \":\"foo_secret\"}"), is(Map.of()));
+    }
+    
+    private static Stream<Arguments> getMalformedJSONPropertyStrings() {
+        return Stream.of(
+                Arguments.of("corrupted key", "{\"aes-key-value:\"foo_secret\",\"broken\":[}"),
+                Arguments.of("truncated object", "{\"aes-key-value\":\"foo_secret\""),
+                Arguments.of("trailing comma", "{\"aes-key-value\":\"foo_secret\",}"),
+                Arguments.of("single-quoted value", "{\"aes-key-value\":'foo_secret'}"),
+                Arguments.of("bare value", "{\"aes-key-value\":foo_secret}"),
+                Arguments.of("additional root object", "{\"aes-key-value:\":\"foo_secret\"}{\"other\":\"value\"}"));
     }
     
     @Test
