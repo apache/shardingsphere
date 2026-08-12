@@ -86,6 +86,7 @@
 1. SQL Parser: Support Oracle procedure parser and binder - [#39231](https://github.com/apache/shardingsphere/pull/39231)
 1. SQL Parser: Support Oracle database object DDL parsing - [#39286](https://github.com/apache/shardingsphere/pull/39286)
 1. SQL Parser: Support parsing Oracle CREATE INDEX sql - [#39292](https://github.com/apache/shardingsphere/pull/39292)
+1. SQL Parser: Support parsing Oracle CREATE INDEXTYPE sql and Add CREATE INDEX/OPERATOR sql it test - [#39302](https://github.com/apache/shardingsphere/pull/39302) 
 1. SQL Parser: Support function table alias column parsing for PostgreSQL and openGauss - [#39268](https://github.com/apache/shardingsphere/pull/39268)
 1. SQL Parser: Support MySQL and Oracle CTAS parsing and binding enhancements, and Doris TABLE statement segment extraction - [#39332](https://github.com/apache/shardingsphere/pull/39332)
 1. SQL Parser: Support Oracle full width SQL symbols parsing - [#39349](https://github.com/apache/shardingsphere/pull/39349)

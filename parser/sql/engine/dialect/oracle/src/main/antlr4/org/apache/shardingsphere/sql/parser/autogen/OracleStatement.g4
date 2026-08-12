@@ -164,6 +164,7 @@ execute
     | show
     | spool
     | createOperator
+    | createIndexType
     | createOutline
     ) SEMI_? SLASH_? EOF
     ;
