@@ -412,7 +412,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             throw new SQLParsingException(String.format("Data quota value out of range: %s", text), text, token.getSymbol().getLine());
         }
     }
-
+    
     private long getDataQuotaUnitBytes(final String unit) {
         switch (unit.toUpperCase()) {
             case "":
@@ -437,7 +437,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
                 return 0L;
         }
     }
-
+    
     private long parseQuotaNumber(final TerminalNode token) {
         String text = token.getText();
         if (!text.chars().allMatch(Character::isDigit)) {
