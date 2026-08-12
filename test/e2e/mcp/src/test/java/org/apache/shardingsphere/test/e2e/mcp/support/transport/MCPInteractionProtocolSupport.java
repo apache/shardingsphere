@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import io.modelcontextprotocol.spec.ProtocolVersions;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.util.LinkedHashMap;
@@ -30,7 +31,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPInteractionProtocolSupport {
     
-    public static final String PROTOCOL_VERSION = "2025-11-25";
+    public static final String PROTOCOL_VERSION = ProtocolVersions.MCP_2025_11_25;
     
     /**
      * Create initialize request parameters for the given client name.
