@@ -23,6 +23,7 @@
 1. SQL Parser: Preserve MySQL `ALTER TABLE MODIFY COLUMN` nullability metadata - [#39421](https://github.com/apache/shardingsphere/pull/39421)
 1. SQL Parser: Preserve Firebird `CREATE TABLE` column nullability metadata - [#39423](https://github.com/apache/shardingsphere/pull/39423)
 1. SQL Parser: Preserve openGauss `CREATE TABLE` column nullability metadata - [#39425](https://github.com/apache/shardingsphere/pull/39425)
+1. SQL Parser: Preserve Hive `CREATE TABLE` column nullability metadata - [#39428](https://github.com/apache/shardingsphere/pull/39428)
 1. SQL Parser: Fix No value specified for parameter exception when sql is 'INSERT INTO tableName ON CONFLICT  DO UPDATE set  WHERE ' - [#38668](https://github.com/apache/shardingsphere/pull/38668)
 1. SQL Binder: Add DialectFunctionOption to handle wrong skip column bind in ColumnSegmentBinder - [#38350](https://github.com/apache/shardingsphere/pull/38350)
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
