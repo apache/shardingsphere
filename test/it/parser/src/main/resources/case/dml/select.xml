@@ -15101,4 +15101,63 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_unquoted_text_with_chinese_comma_from_dual">
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅" start-index="7" stop-index="47" alias="RESULT">
+                <expr>
+                    <literal-expression value="图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅" start-index="7" stop-index="37" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="54" stop-index="57" />
+        </from>
+    </select>
+    <select sql-case-id="select_unquoted_text_without_comma_from_dual">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="欢迎使用测试系统" start-index="7" stop-index="24" alias="RESULT">
+                <expr>
+                    <literal-expression value="欢迎使用测试系统" start-index="7" stop-index="14" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="31" stop-index="34" />
+        </from>
+    </select>
+    <select sql-case-id="select_dummy_with_alias_from_dual">
+        <projections start-index="7" stop-index="21">
+            <column-projection name="DUMMY" alias="RESULT" start-index="7" stop-index="21" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="28" stop-index="31" />
+        </from>
+    </select>
+    <select sql-case-id="select_quoted_chinese_column_from_dual">
+        <projections start-index="7" stop-index="22">
+            <column-projection name="中文列名" alias="RESULT" start-delimiter="&quot;" end-delimiter="&quot;" start-index="7" stop-index="22" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="29" stop-index="32" />
+        </from>
+    </select>
+    <select sql-case-id="select_chinese_columns_with_ascii_comma_from_dual">
+        <projections start-index="7" stop-index="26">
+            <column-projection name="中文列一" start-index="7" stop-index="10" />
+            <column-projection name="中文列二" alias="RESULT" start-index="13" stop-index="26" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="33" stop-index="36" />
+        </from>
+    </select>
+    <select sql-case-id="select_chinese_columns_from_table">
+        <projections start-index="7" stop-index="25">
+            <column-projection name="中文列一" start-index="7" stop-index="10" />
+            <column-projection name="中文列二" alias="RESULT" start-index="12" stop-index="25" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="32" stop-index="38" />
+        </from>
+    </select>
+
 </sql-parser-test-cases>

@@ -172,7 +172,16 @@ parenthesisSelectSubquery
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    : unquotedTextQueryBlock
+    | withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    ;
+
+unquotedTextQueryBlock
+    : {isUnquotedHanTextQueryBlock()}? SELECT unquotedTextProjection FROM tableName
+    ;
+
+unquotedTextProjection
+    : IDENTIFIER_ (COMMA_ IDENTIFIER_)* AS alias
     ;
 
 selectIntoClause
