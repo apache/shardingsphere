@@ -154,6 +154,7 @@
         <input sql="UPDATE HumanResources.Employee SET VacationNote = 'x' FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" />
         <output sql="UPDATE HumanResources.Employee SET [vacation_note_cipher] = 'encrypt_x' FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" />
     </rewrite-assertion>
+
     <rewrite-assertion id="update_physical_target_with_table_variable_source_colliding_set_column_for_parameters" db-types="SQLServer">
         <input sql="UPDATE HumanResources.Employee SET VacationNote = ? FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" parameters="x" />
         <output sql="UPDATE HumanResources.Employee SET [vacation_note_cipher] = ? FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" parameters="encrypt_x" />
