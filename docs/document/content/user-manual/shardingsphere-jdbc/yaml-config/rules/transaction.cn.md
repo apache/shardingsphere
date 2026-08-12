@@ -19,7 +19,7 @@ transaction:
 
 ### 使用 LOCAL 模式
 
-global.yaml 配置文件内容如下：
+JDBC YAML 配置如下：
 
 ```yaml
 transaction:
@@ -28,14 +28,25 @@ transaction:
 
 ### 使用 XA 模式
 
-global.yaml 配置文件内容如下：
+JDBC YAML 配置如下。`providerType` 必须设置为一个 XA provider 的 SPI 类型。
+
+使用 Narayana：
 
 ```yaml
 transaction:
   defaultType: XA
-  providerType: Narayana/Atomikos 
+  providerType: Narayana
 ```
-手动添加 Narayana 相关依赖：
+
+使用 Atomikos：
+
+```yaml
+transaction:
+  defaultType: XA
+  providerType: Atomikos
+```
+
+使用 Narayana 时，需要添加 `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana` 及其依赖。手动添加 JAR 时包括：
 
 ```
 jta-5.12.7.Final.jar
@@ -51,12 +62,12 @@ shardingsphere-transaction-xa-narayana-x.x.x-SNAPSHOT.jar
 
 ### 使用 BASE 模式
 
-global.yaml 配置文件内容如下：
+JDBC YAML 配置如下：
 
 ```yaml
 transaction:
   defaultType: BASE
-  providerType: Seata 
+  providerType: Seata
 ```
 
 搭建 Seata Server，添加相关配置文件，和 Seata 依赖，具体步骤参考 [ShardingSphere 集成 Seata 柔性事务](https://community.sphere-ex.com/t/topic/404)
