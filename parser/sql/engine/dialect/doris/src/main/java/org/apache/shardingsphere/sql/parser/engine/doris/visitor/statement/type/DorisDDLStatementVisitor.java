@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
@@ -156,6 +157,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Truncat
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhileStatementContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
@@ -394,10 +396,14 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.NUMBER_()) {
             return Long.parseLong(ctx.NUMBER_().getText());
         }
-        String text = null != ctx.FILESIZE_LITERAL() ? ctx.FILESIZE_LITERAL().getText() : ctx.DATA_QUOTA_LITERAL().getText();
-        int unitIndex = text.length();
-        while (unitIndex > 0 && Character.isLetter(text.charAt(unitIndex - 1))) {
-            unitIndex--;
+        TerminalNode token = null != ctx.FILESIZE_LITERAL() ? ctx.FILESIZE_LITERAL() : ctx.IDENTIFIER_();
+        String text = token.getText();
+        int unitIndex = 0;
+        while (unitIndex < text.length() && Character.isDigit(text.charAt(unitIndex))) {
+            unitIndex++;
+        }
+        if (0 == unitIndex) {
+            throw new SQLParsingException(String.format("Expected data quota value, got: %s", text), text, token.getSymbol().getLine());
         }
         long value = Long.parseLong(text.substring(0, unitIndex));
         switch (text.substring(unitIndex).toUpperCase()) {
@@ -420,7 +426,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             case "PB":
                 return value * 1024L * 1024L * 1024L * 1024L * 1024L;
             default:
-                return value;
+                throw new SQLParsingException(String.format("Expected data quota value, got: %s", text), text, token.getSymbol().getLine());
         }
     }
     

@@ -190,6 +190,15 @@
         </from>
     </select>
 
+    <select sql-case-id="select_digit_leading_column_doris">
+        <projections start-index="7" stop-index="9">
+            <column-projection name="1GB" start-index="7" stop-index="9" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="16" stop-index="16" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_default_str">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
