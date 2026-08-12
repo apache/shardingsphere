@@ -20,6 +20,7 @@
 1. SQL Parser: Fix reversed parameter marker order for openGauss `LIMIT offset, row-count` - [#39242](https://github.com/apache/shardingsphere/pull/39242)
 1. SQL Parser: Preserve PostgreSQL `CREATE TABLE` column nullability metadata - [#39412](https://github.com/apache/shardingsphere/pull/39412)
 1. SQL Parser: Preserve SQLServer `CREATE TABLE` column nullability metadata - [#39414](https://github.com/apache/shardingsphere/pull/39414)
+1. SQL Parser: Preserve MySQL `ALTER TABLE MODIFY COLUMN` nullability metadata - [#39421](https://github.com/apache/shardingsphere/pull/39421)
 1. SQL Parser: Fix No value specified for parameter exception when sql is 'INSERT INTO tableName ON CONFLICT  DO UPDATE set  WHERE ' - [#38668](https://github.com/apache/shardingsphere/pull/38668)
 1. SQL Binder: Add DialectFunctionOption to handle wrong skip column bind in ColumnSegmentBinder - [#38350](https://github.com/apache/shardingsphere/pull/38350)
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)

@@ -54,6 +54,7 @@
     <sql-case id="alter_table_change_unsigned_not_null" value="alter table t1 change c1 c2 real unsigned not null" db-types="MySQL" />
     <sql-case id="alter_table_modify_unsigned_not_null" value="alter table t1 modify c1 real unsigned not null" db-types="MySQL" />
     <sql-case id="alter_table_modify_unsigned_zerofill_not_null" value="alter table t1 modify c1 real unsigned zerofill not null" db-types="MySQL" />
+    <sql-case id="alter_table_modify_explicit_null" value="alter table t1 modify c1 real null" db-types="MySQL" />
     <sql-case id="alter_table_change_unsigned_zerofill_not_null" value="alter table t1 change c1 c2 real unsigned zerofill not null" db-types="MySQL" />
     <sql-case id="alter_table_add_partition" value="alter table t1 add partition partitions 10" db-types="MySQL" />
     <sql-case id="alter_table_add_partition_nested_table_col_properties" value="ALTER TABLE print_media_part ADD PARTITION p4 VALUES LESS THAN (400) LOB(ad_photo, ad_composite) STORE AS (TABLESPACE omf_ts1) LOB(ad_sourcetext, ad_finaltext) STORE AS (TABLESPACE omf_ts1) NESTED TABLE ad_textdocs_ntab STORE AS nt_p3" db-types="Oracle" />
