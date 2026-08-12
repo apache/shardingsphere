@@ -20,11 +20,16 @@ package org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.type
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DorisStatementVisitorTest {
@@ -53,6 +58,57 @@ class DorisStatementVisitorTest {
     void assertVisitDropTableWithoutTemporary() {
         DropTableStatement statement = (DropTableStatement) parse("DROP TABLE t_order");
         assertFalse(statement.isTemporary());
+    }
+    
+    @Test
+    void assertVisitAlterDatabaseSetDataQuotaWithUnit() {
+        assertThat(getDataQuotaValue("ALTER DATABASE db SET DATA QUOTA 1GB"), is(1073741824L));
+        assertThat(getDataQuotaValue("ALTER DATABASE db SET DATA QUOTA 1gb"), is(1073741824L));
+        assertThat(getDataQuotaValue("ALTER DATABASE db SET DATA QUOTA 100G"), is(107374182400L));
+        assertThat(getDataQuotaValue("ALTER DATABASE db SET DATA QUOTA 1P"), is(1125899906842624L));
+        assertThat(getDataQuotaValue("ALTER DATABASE db SET DATA QUOTA 4k"), is(4096L));
+        assertThat(getDataQuotaValue("ALTER DATABASE db SET DATA QUOTA 500B"), is(500L));
+    }
+    
+    @Test
+    void assertVisitAlterDatabaseSetDataQuotaWithoutUnit() {
+        assertThat(getDataQuotaValue("ALTER DATABASE db SET DATA QUOTA 10995116277760"), is(10995116277760L));
+    }
+    
+    @Test
+    void assertVisitAlterDatabaseSetDataQuotaWithValueOutOfRange() {
+        assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET DATA QUOTA 99999999999P"));
+        assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET DATA QUOTA 99999999999999999999999"));
+    }
+    
+    @Test
+    void assertVisitAlterDatabaseSetDataQuotaWithInvalidValue() {
+        assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET DATA QUOTA foo"));
+        assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET DATA QUOTA 1XB"));
+        assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET DATA QUOTA 1.5"));
+    }
+    
+    @Test
+    void assertVisitAlterDatabaseSetReplicaAndTransactionQuota() {
+        AlterDatabaseStatement replicaStatement = (AlterDatabaseStatement) parse("ALTER DATABASE db SET REPLICA QUOTA 1024");
+        assertThat(replicaStatement.getQuotaType().orElse(null), is("REPLICA"));
+        assertThat(replicaStatement.getQuotaValue().orElse(null), is(1024L));
+        AlterDatabaseStatement transactionStatement = (AlterDatabaseStatement) parse("ALTER DATABASE db SET TRANSACTION QUOTA 1000");
+        assertThat(transactionStatement.getQuotaType().orElse(null), is("TRANSACTION"));
+        assertThat(transactionStatement.getQuotaValue().orElse(null), is(1000L));
+    }
+    
+    @Test
+    void assertVisitAlterDatabaseSetReplicaAndTransactionQuotaWithUnit() {
+        assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET REPLICA QUOTA 1G"));
+        assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET TRANSACTION QUOTA 1G"));
+        assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET REPLICA QUOTA 1.5"));
+    }
+    
+    private long getDataQuotaValue(final String sql) {
+        AlterDatabaseStatement result = (AlterDatabaseStatement) parse(sql);
+        assertThat(result.getQuotaType().orElse(null), is("DATA"));
+        return result.getQuotaValue().orElse(0L);
     }
     
     private Object parse(final String sql) {

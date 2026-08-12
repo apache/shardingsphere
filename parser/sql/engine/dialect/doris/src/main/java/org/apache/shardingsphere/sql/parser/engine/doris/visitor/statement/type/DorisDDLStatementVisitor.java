@@ -377,7 +377,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             } else if (null != ctx.TRANSACTION()) {
                 result.setQuotaType("TRANSACTION");
             }
-            result.setQuotaValue(Long.parseLong(ctx.NUMBER_().getText()));
+            result.setQuotaValue(parseQuotaNumber(ctx.NUMBER_()));
         }
         if (null != ctx.PROPERTIES() && null != ctx.properties()) {
             PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().getStart().getStartIndex(), ctx.properties().getStop().getStopIndex());
@@ -394,7 +394,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     private long getDataQuotaValue(final DataQuotaValueContext ctx) {
         if (null != ctx.NUMBER_()) {
-            return Long.parseLong(ctx.NUMBER_().getText());
+            return parseQuotaNumber(ctx.NUMBER_());
         }
         TerminalNode token = null != ctx.FILESIZE_LITERAL() ? ctx.FILESIZE_LITERAL() : ctx.IDENTIFIER_();
         String text = token.getText();
@@ -402,31 +402,51 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         while (unitIndex < text.length() && Character.isDigit(text.charAt(unitIndex))) {
             unitIndex++;
         }
-        if (0 == unitIndex) {
+        long unitBytes = 0 == unitIndex ? 0L : getDataQuotaUnitBytes(text.substring(unitIndex));
+        if (0L == unitBytes) {
             throw new SQLParsingException(String.format("Expected data quota value, got: %s", text), text, token.getSymbol().getLine());
         }
-        long value = Long.parseLong(text.substring(0, unitIndex));
-        switch (text.substring(unitIndex).toUpperCase()) {
+        try {
+            return Math.multiplyExact(Long.parseLong(text.substring(0, unitIndex)), unitBytes);
+        } catch (final ArithmeticException | NumberFormatException ex) {
+            throw new SQLParsingException(String.format("Data quota value out of range: %s", text), text, token.getSymbol().getLine());
+        }
+    }
+
+    private long getDataQuotaUnitBytes(final String unit) {
+        switch (unit.toUpperCase()) {
             case "":
             case "B":
-                return value;
+                return 1L;
             case "K":
             case "KB":
-                return value * 1024L;
+                return 1024L;
             case "M":
             case "MB":
-                return value * 1024L * 1024L;
+                return 1024L * 1024L;
             case "G":
             case "GB":
-                return value * 1024L * 1024L * 1024L;
+                return 1024L * 1024L * 1024L;
             case "T":
             case "TB":
-                return value * 1024L * 1024L * 1024L * 1024L;
+                return 1024L * 1024L * 1024L * 1024L;
             case "P":
             case "PB":
-                return value * 1024L * 1024L * 1024L * 1024L * 1024L;
+                return 1024L * 1024L * 1024L * 1024L * 1024L;
             default:
-                throw new SQLParsingException(String.format("Expected data quota value, got: %s", text), text, token.getSymbol().getLine());
+                return 0L;
+        }
+    }
+
+    private long parseQuotaNumber(final TerminalNode token) {
+        String text = token.getText();
+        if (!text.chars().allMatch(Character::isDigit)) {
+            throw new SQLParsingException(String.format("Expected integer quota value, got: %s", text), text, token.getSymbol().getLine());
+        }
+        try {
+            return Long.parseLong(text);
+        } catch (final NumberFormatException ex) {
+            throw new SQLParsingException(String.format("Quota value out of range: %s", text), text, token.getSymbol().getLine());
         }
     }
     
