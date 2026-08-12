@@ -26,6 +26,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * MySQL savepoint transaction integration test.
@@ -51,11 +52,8 @@ public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1,1,1)");
             executeWithLog(connection, "SAVEPOINT point1");
             executeWithLog(connection, "RELEASE SAVEPOINT point1");
-            try {
-                executeWithLog(connection, "ROLLBACK TO SAVEPOINT point1");
-            } catch (final SQLException ex) {
-                assertThat(ex.getMessage(), is("SAVEPOINT point1 does not exist"));
-            }
+            SQLException actualException = assertThrows(SQLException.class, () -> executeWithLog(connection, "ROLLBACK TO SAVEPOINT point1"));
+            assertThat(actualException.getMessage(), is("SAVEPOINT point1 does not exist"));
             connection.rollback();
         }
     }
