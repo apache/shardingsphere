@@ -76,6 +76,8 @@ class TableExtractorTest {
     
     private final TableExtractor tableExtractor = new TableExtractor();
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private final DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
     @Test
@@ -169,6 +171,22 @@ class TableExtractorTest {
         assertThat(actual.size(), is(1));
         assertTableSegment(actual.iterator().next(), 0, 0, "Employee");
         assertFalse(actual.stream().anyMatch(each -> "@MyTableVar".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithAtSignTargetInDefaultDialectIncludesPhysicalTable() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.stream().anyMatch(each -> "@MyTableVar".equals(each.getTableName().getIdentifier().getValue())));
+        assertTrue(actual.stream().anyMatch(each -> "Employee".equals(each.getTableName().getIdentifier().getValue())));
     }
     
     @Test

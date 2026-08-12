@@ -210,11 +210,13 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Get variable table name prefix.
+     * Judge whether an identifier represents a table variable.
      *
-     * @return variable table name prefix
+     * @param value identifier value
+     * @param quoteCharacter quote character
+     * @return whether the identifier represents a table variable
      */
-    default Optional<String> getVariableTableNamePrefix() {
-        return Optional.empty();
+    default boolean isTableVariableIdentifier(final String value, final QuoteCharacter quoteCharacter) {
+        return false;
     }
 }

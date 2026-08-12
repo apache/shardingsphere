@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -301,6 +302,32 @@ class ColumnSegmentBinderTest {
     }
     
     @Test
+    void assertBindAssignmentColumnWithTableVariableTarget() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentColumnBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegmentBinderContext tableVariableBinderContext = new SimpleTableSegmentBinderContext(
+                Collections.emptyList(), TableSourceType.TEMPORARY_TABLE, new IdentifierValue("@MyTableVar"));
+        tableVariableBinderContext.setContainsTableVariable(true);
+        assignmentColumnBinderContexts.put(CaseInsensitiveString.of("@MyTableVar"), tableVariableBinderContext);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        ColumnSegment actual = ColumnSegmentBinder.bindAssignmentColumn(columnSegment, createBinderContext(), assignmentColumnBinderContexts, LinkedHashMultimap.create(), true);
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
+    }
+    
+    @Test
+    void assertBindAssignmentColumnWithAliasedTableVariableTarget() {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentColumnBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegmentBinderContext tableVariableBinderContext = new SimpleTableSegmentBinderContext(
+                Collections.emptyList(), TableSourceType.TEMPORARY_TABLE, new IdentifierValue("@MyTableVar"));
+        tableVariableBinderContext.setContainsTableVariable(true);
+        assignmentColumnBinderContexts.put(CaseInsensitiveString.of("target"), tableVariableBinderContext);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        ColumnSegment actual = ColumnSegmentBinder.bindAssignmentColumn(columnSegment, createBinderContext(), assignmentColumnBinderContexts, LinkedHashMultimap.create(), true);
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
+    }
+    
+    @Test
     void assertBindWithOwnerAndWrongColumnOnPhysicalTableThrowsColumnNotFoundException() {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         tableBinderContexts.put(CaseInsensitiveString.of("e"), createEmployeeBinderContext());
@@ -365,6 +392,10 @@ class ColumnSegmentBinderTest {
         ColumnSegment vacationHoursColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationHours"));
         vacationHoursColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("HumanResources")),
                 new IdentifierValue("Employee"), new IdentifierValue("VacationHours"), TableSourceType.PHYSICAL_TABLE));
-        return new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(vacationHoursColumn)), TableSourceType.PHYSICAL_TABLE);
+        ColumnSegment vacationNoteColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        vacationNoteColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("HumanResources")),
+                new IdentifierValue("Employee"), new IdentifierValue("VacationNote"), TableSourceType.PHYSICAL_TABLE));
+        return new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(vacationHoursColumn), new ColumnProjectionSegment(vacationNoteColumn)),
+                TableSourceType.PHYSICAL_TABLE);
     }
 }

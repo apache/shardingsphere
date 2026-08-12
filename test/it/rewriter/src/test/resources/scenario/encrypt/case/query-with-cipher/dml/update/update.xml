@@ -140,9 +140,48 @@
         <output sql="UPDATE @MyTableVar SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.[vacation_note_cipher] = 'encrypt_annual leave'" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="update_table_variable_colliding_set_column_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTableVar SET VacationNote = 'annual leave' FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE @MyTableVar SET VacationNote = 'annual leave' FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_colliding_set_column_from_employee_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE @MyTableVar SET VacationNote = ? FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.VacationNote = ?" parameters="annual leave, annual leave" />
+        <output sql="UPDATE @MyTableVar SET VacationNote = ? FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.[vacation_note_cipher] = ?" parameters="annual leave, encrypt_annual leave" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_physical_target_with_table_variable_source_colliding_set_column_for_literals" db-types="SQLServer">
+        <input sql="UPDATE HumanResources.Employee SET VacationNote = 'x' FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" />
+        <output sql="UPDATE HumanResources.Employee SET [vacation_note_cipher] = 'encrypt_x' FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" />
+    </rewrite-assertion>
+    <rewrite-assertion id="update_physical_target_with_table_variable_source_colliding_set_column_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE HumanResources.Employee SET VacationNote = ? FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" parameters="x" />
+        <output sql="UPDATE HumanResources.Employee SET [vacation_note_cipher] = ? FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" parameters="encrypt_x" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="update_aliased_table_variable_from_employee_for_literals" db-types="SQLServer">
         <input sql="UPDATE target SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = 'annual leave'" />
         <output sql="UPDATE target SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_colliding_set_column_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE target SET VacationNote = 'annual leave' FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE target SET VacationNote = 'annual leave' FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_colliding_set_column_from_employee_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE target SET VacationNote = ? FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = ?" parameters="annual leave, annual leave" />
+        <output sql="UPDATE target SET VacationNote = ? FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = ?" parameters="annual leave, encrypt_annual leave" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_among_multiple_table_variables_colliding_set_column_for_literals" db-types="SQLServer">
+        <input sql="UPDATE target SET VacationNote = 'annual leave' FROM @OtherVar AS o JOIN @MyTableVar AS target ON o.EmpID = EmpID JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE target SET VacationNote = 'annual leave' FROM @OtherVar AS o JOIN @MyTableVar AS target ON o.EmpID = EmpID JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_among_multiple_table_variables_colliding_set_column_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE target SET VacationNote = ? FROM @OtherVar AS o JOIN @MyTableVar AS target ON o.EmpID = EmpID JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = ?" parameters="annual leave, annual leave" />
+        <output sql="UPDATE target SET VacationNote = ? FROM @OtherVar AS o JOIN @MyTableVar AS target ON o.EmpID = EmpID JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = ?" parameters="annual leave, encrypt_annual leave" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_aliased_table_variable_physical_table_before_variable_for_literals" db-types="SQLServer">

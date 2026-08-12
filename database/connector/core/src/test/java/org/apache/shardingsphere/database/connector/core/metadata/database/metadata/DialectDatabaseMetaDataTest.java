@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
@@ -125,5 +126,11 @@ class DialectDatabaseMetaDataTest {
     @Test
     void assertGetProtocolVersionOption() {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is(""));
+    }
+    
+    @Test
+    void assertIsTableVariableIdentifier() {
+        assertFalse(dialectDatabaseMetaData.isTableVariableIdentifier("@tableVariable", QuoteCharacter.NONE));
+        assertFalse(dialectDatabaseMetaData.isTableVariableIdentifier("@tableVariable", QuoteCharacter.BRACKETS));
     }
 }

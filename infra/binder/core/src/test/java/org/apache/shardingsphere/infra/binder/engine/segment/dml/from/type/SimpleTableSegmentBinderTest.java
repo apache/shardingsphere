@@ -137,6 +137,19 @@ class SimpleTableSegmentBinderTest {
     }
     
     @Test
+    void assertBindWithAtSignTableInDefaultDialectUpdateThrowsTableNotFoundException() {
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("@MyTableVar")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(table)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        assertThrows(TableNotFoundException.class,
+                () -> SimpleTableSegmentBinder.bind(table, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement), tableBinderContexts));
+    }
+    
+    @Test
     void assertBindTableSampleExpression() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 6, new IdentifierValue("t_order")));
         simpleTableSegment.setTableSampled(true);

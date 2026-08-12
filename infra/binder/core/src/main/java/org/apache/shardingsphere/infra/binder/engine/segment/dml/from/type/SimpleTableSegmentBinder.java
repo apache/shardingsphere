@@ -340,11 +340,8 @@ public final class SimpleTableSegmentBinder {
             return false;
         }
         IdentifierValue tableName = segment.getTableName().getIdentifier();
-        if (QuoteCharacter.NONE != tableName.getQuoteCharacter()) {
-            return false;
-        }
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getVariableTableNamePrefix().filter(tableName.getValue()::startsWith).isPresent();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(tableName.getValue(), tableName.getQuoteCharacter());
     }
     
     private static boolean isCreateTable(final SimpleTableSegment simpleTableSegment, final String tableName) {

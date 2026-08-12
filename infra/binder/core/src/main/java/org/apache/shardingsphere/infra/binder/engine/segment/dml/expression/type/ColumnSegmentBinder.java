@@ -81,6 +81,12 @@ public final class ColumnSegmentBinder {
     public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        return bind(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts, false);
+    }
+    
+    private static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
+                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final boolean bindTableVariableTargetColumn) {
         if (isExcludedColumn(segment, parentSegmentType)) {
             return segment;
         }
@@ -91,12 +97,30 @@ public final class ColumnSegmentBinder {
         ColumnSegment result = copy(columnSegment);
         Collection<TableSegmentBinderContext> tableSegmentBinderContexts =
                 getTableSegmentBinderContexts(columnSegment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
-        ColumnSegmentInfo columnSegmentInfo = getColumnSegmentInfo(columnSegment, parentSegmentType, tableSegmentBinderContexts, outerTableBinderContexts, binderContext);
+        ColumnSegmentInfo columnSegmentInfo = getColumnSegmentInfo(columnSegment, parentSegmentType, tableSegmentBinderContexts, outerTableBinderContexts, binderContext,
+                bindTableVariableTargetColumn);
         Optional<ColumnSegment> inputColumnSegment = columnSegmentInfo.getInputColumnSegment();
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         columnSegment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
         result.setColumnBoundInfo(createColumnSegmentBoundInfo(columnSegment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));
         return result;
+    }
+    
+    /**
+     * Bind assignment column segment.
+     *
+     * @param segment column segment
+     * @param binderContext statement binder context
+     * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
+     * @param bindTableVariableTargetColumn whether assignment columns should bind to the target table variable
+     * @return bound column segment
+     */
+    public static ColumnSegment bindAssignmentColumn(final ColumnSegment segment, final SQLStatementBinderContext binderContext,
+                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
+                                                     final boolean bindTableVariableTargetColumn) {
+        return bind(segment, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts, bindTableVariableTargetColumn);
     }
     
     private static Optional<ColumnSegment> createNestedObjectColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType,
@@ -192,10 +216,13 @@ public final class ColumnSegmentBinder {
     
     private static ColumnSegmentInfo getColumnSegmentInfo(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
-                                                          final SQLStatementBinderContext binderContext) {
-        ColumnSegmentInfo result = isModelProjectionColumn(segment, parentSegmentType, binderContext.getModelColumnNames())
+                                                          final SQLStatementBinderContext binderContext, final boolean bindTableVariableTargetColumn) {
+        Optional<ColumnSegmentInfo> tableVariableTargetColumnSegmentInfo = bindTableVariableTargetColumn
+                ? findInputColumnSegmentFromTableVariableTarget(segment, tableBinderContexts)
+                : Optional.empty();
+        ColumnSegmentInfo result = tableVariableTargetColumnSegmentInfo.orElseGet(() -> isModelProjectionColumn(segment, parentSegmentType, binderContext.getModelColumnNames())
                 ? new ColumnSegmentInfo(findInputColumnSegmentByModelColumns(segment, binderContext.getModelColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE)
-                : getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
+                : getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType));
         if (isNotFoundInputColumn(result, segment)) {
             ColumnSegment inputColumnSegment = findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts).orElse(null);
             result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
@@ -215,6 +242,23 @@ public final class ColumnSegmentBinder {
         }
         ShardingSpherePreconditions.checkState(result.getInputColumnSegment().isPresent() || isSkipColumnBind(tableBinderContexts, outerTableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
+        return result;
+    }
+    
+    private static Optional<ColumnSegmentInfo> findInputColumnSegmentFromTableVariableTarget(final ColumnSegment segment,
+                                                                                             final Collection<TableSegmentBinderContext> tableBinderContexts) {
+        for (TableSegmentBinderContext each : tableBinderContexts) {
+            if (each instanceof SimpleTableSegmentBinderContext && ((SimpleTableSegmentBinderContext) each).isContainsTableVariable()) {
+                return Optional.of(new ColumnSegmentInfo(createTableVariableColumnSegment(segment, (SimpleTableSegmentBinderContext) each), each.getTableSourceType()));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private static ColumnSegment createTableVariableColumnSegment(final ColumnSegment segment, final SimpleTableSegmentBinderContext tableBinderContext) {
+        ColumnSegment result = copy(segment);
+        IdentifierValue originalTable = tableBinderContext.getOriginalTableName().orElseGet(() -> result.getColumnBoundInfo().getOriginalTable());
+        result.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(null, null), originalTable, result.getIdentifier(), TableSourceType.TEMPORARY_TABLE));
         return result;
     }
     

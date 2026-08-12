@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
@@ -352,11 +351,8 @@ public final class TableExtractor {
             return false;
         }
         IdentifierValue tableName = tableSegment.getTableName().getIdentifier();
-        if (QuoteCharacter.NONE != tableName.getQuoteCharacter()) {
-            return false;
-        }
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(updateStatement.getDatabaseType()).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getVariableTableNamePrefix().filter(tableName.getValue()::startsWith).isPresent();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(tableName.getValue(), tableName.getQuoteCharacter());
     }
     
     /**

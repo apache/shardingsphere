@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -210,6 +212,208 @@ class UpdateStatementBinderTest {
         assertThat(((SimpleTableSegment) updateStatementContext.getSqlStatement().getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
         assertThat(updateStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("Employee")));
         assertFalse(updateStatementContext.getTablesContext().getTableNames().contains("@MyTableVar"));
+    }
+    
+    @Test
+    void assertBindUpdateTableVariableTargetPreservesOwnershipWhenSetColumnCollidesWithPhysicalSource() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        ColumnSegment whereLeft = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        whereLeft.setOwner(new OwnerSegment(0, 0, new IdentifierValue("e")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, "annual leave")))))
+                .where(new WhereSegment(0, 0, new BinaryOperationExpression(
+                        0, 0, whereLeft, new LiteralExpressionSegment(0, 0, "annual leave"), "=", "e.VacationNote = 'annual leave'")))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        ColumnSegment actualWhereColumn = (ColumnSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
+        assertThat(actualWhereColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("Employee"));
+        assertThat(actualWhereColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+    }
+    
+    @Test
+    void assertBindUpdateTableVariableTargetPreservesOwnershipWhenSetColumnCollidesWithPhysicalSourceForParameter() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new ParameterMarkerExpressionSegment(0, 0, 0)))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
+    }
+    
+    @Test
+    void assertBindPhysicalTargetPreservesOwnershipWhenFromContainsTableVariableWithCollidingSetColumn() {
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(employee);
+        fromJoin.setRight(tableVariable);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, "x")))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("Employee"));
+    }
+    
+    @Test
+    void assertBindAliasedTableVariableTargetPreservesOwnershipWhenSetColumnCollidesWithPhysicalSource() {
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(tableVariable);
+        fromJoin.setRight(employee);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        ColumnSegment whereLeft = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        whereLeft.setOwner(new OwnerSegment(0, 0, new IdentifierValue("e")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, "annual leave")))))
+                .where(new WhereSegment(0, 0, new BinaryOperationExpression(
+                        0, 0, whereLeft, new LiteralExpressionSegment(0, 0, "annual leave"), "=", "e.VacationNote = 'annual leave'")))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        ColumnSegment actualWhereColumn = (ColumnSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
+        assertThat(actualWhereColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("Employee"));
+        assertThat(actualWhereColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+    }
+    
+    @Test
+    void assertBindAliasedTableVariableTargetPreservesOwnershipWhenSetColumnCollidesWithPhysicalSourceForParameter() {
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(tableVariable);
+        fromJoin.setRight(employee);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new ParameterMarkerExpressionSegment(0, 0, 0)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
+    }
+    
+    @Test
+    void assertBindAliasedTableVariableTargetPreservesOwnershipAmongMultipleTableVariables() {
+        SimpleTableSegment otherVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@OtherVar")));
+        otherVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment rightJoin = new JoinTableSegment();
+        rightJoin.setLeft(tableVariable);
+        rightJoin.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(otherVar);
+        fromJoin.setRight(rightJoin);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        ColumnSegment whereLeft = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        whereLeft.setOwner(new OwnerSegment(0, 0, new IdentifierValue("e")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, "annual leave")))))
+                .where(new WhereSegment(0, 0, new BinaryOperationExpression(
+                        0, 0, whereLeft, new LiteralExpressionSegment(0, 0, "annual leave"), "=", "e.VacationNote = 'annual leave'")))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(((SimpleTableSegment) actual.getTable()).getTableName().getIdentifier().getValue(), is("@MyTableVar"));
+        assertThat(((SimpleTableSegment) actual.getTable()).getAliasName().get(), is("target"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
+        ColumnSegment actualWhereColumn = (ColumnSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft();
+        assertThat(actualWhereColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("Employee"));
+        assertThat(actualWhereColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+    }
+    
+    @Test
+    void assertBindAliasedTableVariableTargetPreservesOwnershipAmongMultipleTableVariablesForParameter() {
+        SimpleTableSegment otherVar = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@OtherVar")));
+        otherVar.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment rightJoin = new JoinTableSegment();
+        rightJoin.setLeft(tableVariable);
+        rightJoin.setRight(employee);
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(otherVar);
+        fromJoin.setRight(rightJoin);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationNote"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("target"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new ParameterMarkerExpressionSegment(0, 0, 0)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
     }
     
     @Test
