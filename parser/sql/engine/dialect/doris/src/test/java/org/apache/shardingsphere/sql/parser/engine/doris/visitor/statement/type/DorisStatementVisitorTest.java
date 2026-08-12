@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -103,6 +104,14 @@ class DorisStatementVisitorTest {
         assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET REPLICA QUOTA 1G"));
         assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET TRANSACTION QUOTA 1G"));
         assertThrows(SQLParsingException.class, () -> parse("ALTER DATABASE db SET REPLICA QUOTA 1.5"));
+    }
+    
+    @Test
+    void assertVisitWorkloadKeywordUsedAsIdentifier() {
+        assertDoesNotThrow(() -> parse("SELECT workload FROM t"));
+        assertDoesNotThrow(() -> parse("SELECT t.workload FROM t"));
+        assertDoesNotThrow(() -> parse("CREATE TABLE t (workload INT)"));
+        assertDoesNotThrow(() -> parse("SELECT * FROM workload"));
     }
     
     private long getDataQuotaValue(final String sql) {
