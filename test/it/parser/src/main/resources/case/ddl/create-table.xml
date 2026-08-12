@@ -417,6 +417,16 @@
         </column-definition>
     </create-table>
     
+    <create-table sql-case-id="create_table_with_explicit_column_nullability_postgresql">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" not-null="true" start-index="22" stop-index="42">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" not-null="false" start-index="45" stop-index="60">
+            <column name="user_id" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_column_default">
         <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT" start-index="22" stop-index="43">
