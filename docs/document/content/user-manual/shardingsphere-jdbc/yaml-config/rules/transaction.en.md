@@ -60,8 +60,6 @@ narayana-jts-integration-5.12.7.Final.jar
 shardingsphere-transaction-xa-narayana-x.x.x-SNAPSHOT.jar
 ```
 
-When using Atomikos, add `org.apache.shardingsphere:shardingsphere-transaction-xa-atomikos` and its dependencies.
-
 ### Use BASE Mode
 
 Configure the JDBC YAML file as follows:
