@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.constant;
 
+import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCollationException;
 import org.junit.jupiter.api.Test;
 
@@ -40,5 +41,45 @@ class MySQLCharacterSetsTest {
     @Test
     void assertFoundUnsupportedCharacterSetById() {
         assertThrows(UnknownCollationException.class, () -> MySQLCharacterSets.findById(63));
+    }
+    
+    @Test
+    void assertFindByCharacterSetName() {
+        assertThat(MySQLCharacterSets.findByCharacterSetName("UTF8MB4"), is(MySQLCharacterSets.UTF8MB4_GENERAL_CI));
+    }
+    
+    @Test
+    void assertFindDefaultCollationByCharacterSetName() {
+        assertThat(MySQLCharacterSets.findByCharacterSetName("latin1"), is(MySQLCharacterSets.LATIN1_SWEDISH_CI));
+    }
+    
+    @Test
+    void assertCharacterSetNotFoundByName() {
+        assertThrows(UnknownCharsetException.class, () -> MySQLCharacterSets.findByCharacterSetName("unknown_charset"));
+    }
+    
+    @Test
+    void assertFindByCollationName() {
+        assertThat(MySQLCharacterSets.findByCollationName("UTF8MB4_BIN"), is(MySQLCharacterSets.UTF8MB4_BIN));
+    }
+    
+    @Test
+    void assertCollationNotFoundByName() {
+        assertThrows(UnknownCollationException.class, () -> MySQLCharacterSets.findByCollationName("unknown_collation"));
+    }
+    
+    @Test
+    void assertGetCharacterSetName() {
+        assertThat(MySQLCharacterSets.UTF8MB4_GENERAL_CI.getCharacterSetName(), is("utf8mb4"));
+    }
+    
+    @Test
+    void assertGetBinaryCharacterSetName() {
+        assertThat(MySQLCharacterSets.BINARY.getCharacterSetName(), is("binary"));
+    }
+    
+    @Test
+    void assertGetCollationName() {
+        assertThat(MySQLCharacterSets.UTF8MB4_GENERAL_CI.getCollationName(), is("utf8mb4_general_ci"));
     }
 }

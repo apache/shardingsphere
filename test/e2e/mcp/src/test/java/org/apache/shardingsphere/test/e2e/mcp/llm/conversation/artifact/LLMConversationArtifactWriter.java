@@ -19,10 +19,13 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRunner.Result;
+import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,9 +33,10 @@ import java.util.Map;
  */
 public final class LLMConversationArtifactWriter {
     
-    private final LLME2EArtifactRedactor redactor = new LLME2EArtifactRedactor();
-    
-    private final LLME2ERuntimeEvidenceValidator runtimeEvidenceValidator = new LLME2ERuntimeEvidenceValidator();
+    private static final List<String> REQUIRED_SCORE_EVIDENCE_KEYS = List.of(
+            "runtimeMode", "dockerOwned", "provider", "serverRuntime", "serverImage", "serverImageId", "baseServerImage", "baseServerImageDigest",
+            "modelRepository", "modelReference", "servedModelId",
+            "modelQuantization", "modelRevision", "modelFileName", "modelSha256", "modelPackaging", "contextWindowTokens", "baseUrlOwnedByTest");
     
     /**
      * Write one conversation result.
@@ -40,20 +44,21 @@ public final class LLMConversationArtifactWriter {
      * @param artifactDirectory artifact directory
      * @param conversationResult conversation result
      * @param runtimeEvidence runtime evidence
+     * @param sensitiveValues concrete sensitive values
      * @throws IOException IO exception
      */
-    public void write(final Path artifactDirectory, final Result conversationResult, final Map<String, Object> runtimeEvidence) throws IOException {
-        runtimeEvidenceValidator.validate(runtimeEvidence);
-        writeContent(artifactDirectory.resolve("run-context.json"), JsonUtils.toJsonString(createRunContext(conversationResult, runtimeEvidence)));
-        writeContent(artifactDirectory.resolve("system-prompt.md"), conversationResult.systemPrompt());
-        writeContent(artifactDirectory.resolve("question.txt"), conversationResult.scenario().question());
-        writeContent(artifactDirectory.resolve("answer.txt"), conversationResult.actualAnswer());
+    public void write(final Path artifactDirectory, final Result conversationResult, final Map<String, Object> runtimeEvidence,
+                      final Collection<String> sensitiveValues) throws IOException {
+        validateRuntimeEvidence(runtimeEvidence);
+        writeContent(artifactDirectory.resolve("run-context.json"), JsonUtils.toJsonString(createRunContext(conversationResult, runtimeEvidence)), sensitiveValues);
+        writeContent(artifactDirectory.resolve("system-prompt.md"), conversationResult.systemPrompt(), sensitiveValues);
+        writeContent(artifactDirectory.resolve("question.txt"), conversationResult.scenario().question(), sensitiveValues);
+        writeContent(artifactDirectory.resolve("answer.txt"), conversationResult.actualAnswer(), sensitiveValues);
         writeContent(artifactDirectory.resolve("raw-model-output.txt"),
-                String.join(System.lineSeparator() + System.lineSeparator(), conversationResult.evidence().rawModelOutputs()));
-        writeContent(artifactDirectory.resolve("available-tools.json"), JsonUtils.toJsonString(conversationResult.evidence().toolDefinitions()));
-        writeContent(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(conversationResult.evidence().interactionTrace()));
-        writeContent(artifactDirectory.resolve("mcp-runtime.log"), String.join(System.lineSeparator(), conversationResult.evidence().runtimeLogLines()));
-        writeContent(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(conversationResult.assertionReport()));
+                String.join(System.lineSeparator() + System.lineSeparator(), conversationResult.evidence().rawModelOutputs()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("available-tools.json"), JsonUtils.toJsonString(conversationResult.evidence().toolDefinitions()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(conversationResult.evidence().interactionTrace()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(conversationResult.assertionReport()), sensitiveValues);
     }
     
     private Map<String, Object> createRunContext(final Result conversationResult, final Map<String, Object> runtimeEvidence) {
@@ -65,8 +70,26 @@ public final class LLMConversationArtifactWriter {
                 "failureType", conversationResult.assertionReport().getFailureType());
     }
     
-    private void writeContent(final Path file, final String content) throws IOException {
+    private void validateRuntimeEvidence(final Map<String, Object> runtimeEvidence) {
+        if (!Boolean.TRUE.equals(runtimeEvidence.get("scoreClosing"))) {
+            return;
+        }
+        for (String each : REQUIRED_SCORE_EVIDENCE_KEYS) {
+            if (isMissingEvidenceValue(runtimeEvidence.get(each))) {
+                throw new IllegalStateException(String.format("Missing score-closing LLM runtime evidence field `%s`.", each));
+            }
+        }
+        if (!Boolean.TRUE.equals(runtimeEvidence.get("dockerOwned")) || !Boolean.TRUE.equals(runtimeEvidence.get("baseUrlOwnedByTest"))) {
+            throw new IllegalStateException("Score-closing LLM runtime evidence must be Docker-owned and test-owned.");
+        }
+    }
+    
+    private boolean isMissingEvidenceValue(final Object value) {
+        return null == value || value instanceof String && ((String) value).isBlank();
+    }
+    
+    private void writeContent(final Path file, final String content, final Collection<String> sensitiveValues) throws IOException {
         Files.createDirectories(file.getParent());
-        Files.writeString(file, redactor.redact(content));
+        Files.writeString(file, MCPArtifactUtils.redact(content, sensitiveValues));
     }
 }

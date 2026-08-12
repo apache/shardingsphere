@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
@@ -81,10 +80,9 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
     }
     
     private void addRuleDistSQLIssues(final List<Map<String, Object>> issues, final WorkflowContextSnapshot snapshot, final String sql, final String displaySql) {
-        if (!isReadwriteSplittingRuleDistSQL(sql) || !(snapshot.getRequest() instanceof ReadwriteSplittingRuleWorkflowRequest)) {
+        if (!isReadwriteSplittingRuleDistSQL(sql) || !(snapshot.getRequest() instanceof final ReadwriteSplittingRuleWorkflowRequest request)) {
             return;
         }
-        ReadwriteSplittingRuleWorkflowRequest request = (ReadwriteSplittingRuleWorkflowRequest) snapshot.getRequest();
         addLoadBalancerIssue(issues, request, displaySql);
         addWeightIssues(issues, request, displaySql);
     }
@@ -99,7 +97,7 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
             return;
         }
         if (!WorkflowAlgorithmUtils.isAlgorithmServiceAvailable(LoadBalanceAlgorithm.class, request.getLoadBalancerType(), request.getLoadBalancerProperties())) {
-            issues.add(createValidationIssue(String.format("Generated readwrite-splitting DistSQL references load balancer algorithm `%s`, "
+            issues.add(validationSupport.createSQLExecutabilityIssue(String.format("Generated readwrite-splitting DistSQL references load balancer algorithm `%s`, "
                     + "but it cannot be loaded or initialized by LoadBalanceAlgorithm SPI.", request.getLoadBalancerType()), displaySql));
         }
     }
@@ -109,24 +107,21 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
             return;
         }
         if (request.getLoadBalancerProperties().isEmpty()) {
-            issues.add(createValidationIssue("Generated readwrite-splitting DistSQL uses WEIGHT load balancer without weight properties.", displaySql));
+            issues.add(validationSupport.createSQLExecutabilityIssue("Generated readwrite-splitting DistSQL uses WEIGHT load balancer without weight properties.", displaySql));
             return;
         }
         for (String each : request.getLoadBalancerProperties().keySet()) {
             if (!request.getReadStorageUnits().contains(each)) {
-                issues.add(createValidationIssue(String.format("Generated readwrite-splitting DistSQL defines weight for unknown read storage unit `%s`.", each), displaySql));
+                issues.add(validationSupport.createSQLExecutabilityIssue(
+                        String.format("Generated readwrite-splitting DistSQL defines weight for unknown read storage unit `%s`.", each), displaySql));
             }
         }
         for (String each : request.getReadStorageUnits()) {
             if (!request.getLoadBalancerProperties().containsKey(each)) {
-                issues.add(createValidationIssue(String.format("Generated readwrite-splitting DistSQL is missing weight for read storage unit `%s`.", each), displaySql));
+                issues.add(validationSupport.createSQLExecutabilityIssue(
+                        String.format("Generated readwrite-splitting DistSQL is missing weight for read storage unit `%s`.", each), displaySql));
             }
         }
-    }
-    
-    private Map<String, Object> createValidationIssue(final String message, final String sql) {
-        return new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", WorkflowLifecycle.STEP_REVIEW,
-                message, "Regenerate the workflow artifact through the feature planner before approval.", true, Map.of("sql", sql)).toMap();
     }
     
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
@@ -142,11 +137,13 @@ public final class ReadwriteSplittingRuleWorkflowValidationService implements MC
                                             final ValidationReport validationReport, final MCPFeatureQueryFacade queryFacade) {
         ReadwriteSplittingRuleWorkflowRequest request = (ReadwriteSplittingRuleWorkflowRequest) snapshot.getRequest();
         boolean ruleExists = containsRule(rules, queryFacade, request.getDatabase(), request.getRuleName());
-        if (WorkflowLifecycleUtils.isDropWorkflow(snapshot) && ruleExists || !WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !ruleExists) {
-            addRuleMismatch(validationReport, request.getRuleName(), WorkflowLifecycleUtils.isDropWorkflow(snapshot));
+        boolean dropWorkflow = WorkflowLifecycleUtils.isDropWorkflow(snapshot);
+        boolean expectedRuleExists = !dropWorkflow;
+        if (expectedRuleExists != ruleExists) {
+            addRuleMismatch(validationReport, request.getRuleName(), dropWorkflow);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Readwrite-splitting rule state does not match the planned DistSQL artifact.");
         }
-        if (!WorkflowLifecycleUtils.isDropWorkflow(snapshot) && !matchesRuleShape(rules, queryFacade, request)) {
+        if (!dropWorkflow && !matchesRuleShape(rules, queryFacade, request)) {
             addRuleShapeMismatch(validationReport, request.getRuleName());
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, rules, "Readwrite-splitting rule fields do not match the planned DistSQL artifact.");
         }

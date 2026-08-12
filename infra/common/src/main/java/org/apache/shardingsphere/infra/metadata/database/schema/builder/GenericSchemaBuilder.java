@@ -23,6 +23,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.loader.Me
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -69,9 +71,8 @@ public final class GenericSchemaBuilder {
      * @throws SQLException SQL exception
      */
     public static Map<String, ShardingSphereSchema> build(final Collection<String> tableNames, final DatabaseType protocolType, final GenericSchemaBuilderMaterial material) throws SQLException {
-        boolean isSameProtocolAndStorageTypes = isSameProtocolAndStorageTypes(protocolType, material.getStorageUnits());
-        Map<String, SchemaMetaData> result = loadSchemas(tableNames, material);
-        if (!isSameProtocolAndStorageTypes) {
+        Map<String, SchemaMetaData> result = loadSchemas(tableNames, protocolType, material);
+        if (!isSchemaCompatible(protocolType, material.getStorageUnits())) {
             result = translate(result, protocolType, material);
         }
         return revise(result, material, protocolType);
@@ -85,13 +86,24 @@ public final class GenericSchemaBuilder {
         return result;
     }
     
-    private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
-        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, material);
+    private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final DatabaseType protocolType,
+                                                           final GenericSchemaBuilderMaterial material) throws SQLException {
+        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, protocolType, material);
         return materials.isEmpty() ? Collections.emptyMap() : MetaDataLoader.load(materials);
+    }
+    
+    private static boolean isSchemaCompatible(final DatabaseType protocolType, final Map<String, StorageUnit> storageUnits) {
+        return isSameProtocolAndStorageTypes(protocolType, storageUnits) || isSchemaAvailable(protocolType)
+                && storageUnits.values().stream().map(StorageUnit::getStorageType).allMatch(GenericSchemaBuilder::isSchemaAvailable);
     }
     
     private static boolean isSameProtocolAndStorageTypes(final DatabaseType protocolType, final Map<String, StorageUnit> storageUnits) {
         return storageUnits.values().stream().map(StorageUnit::getStorageType).allMatch(protocolType::equals);
+    }
+    
+    private static boolean isSchemaAvailable(final DatabaseType databaseType) {
+        return DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)
+                .map(each -> each.getSchemaOption().isSchemaAvailable()).orElse(false);
     }
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final DatabaseType protocolType, final GenericSchemaBuilderMaterial material) {

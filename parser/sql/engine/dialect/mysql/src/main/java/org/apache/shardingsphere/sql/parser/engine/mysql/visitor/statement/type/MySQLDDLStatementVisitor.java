@@ -280,16 +280,22 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
                 }
             }
         }
-        return CreateTableStatement.builder()
+        SelectStatement selectStatement = null == ctx.duplicateAsQueryExpression() ? null : (SelectStatement) visit(ctx.duplicateAsQueryExpression().select());
+        CreateTableStatement result = CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .ifNotExists(null != ctx.ifNotExists())
                 .temporary(null != ctx.TEMPORARY())
                 .likeTable(null == ctx.createLikeClause() ? null : (SimpleTableSegment) visit(ctx.createLikeClause()))
                 .createTableOption(null == ctx.createTableOptions() ? null : (CreateTableOptionSegment) visit(ctx.createTableOptions()))
+                .selectStatement(selectStatement)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
+        if (null != selectStatement) {
+            result.addParameterMarkers(selectStatement.getParameterMarkers());
+        }
+        return result;
     }
     
     @Override
@@ -379,8 +385,8 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.columnAttribute().stream().anyMatch(each -> null != each.KEY() && null == each.UNIQUE());
         boolean isAutoIncrement = ctx.columnAttribute().stream().anyMatch(each -> null != each.AUTO_INCREMENT());
-        // TODO parse not null
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, false, getText(ctx));
+        boolean isNotNull = ctx.columnAttribute().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, isNotNull, getText(ctx));
         result.setAutoIncrement(isAutoIncrement);
         return result;
     }

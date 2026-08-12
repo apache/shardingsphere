@@ -23,6 +23,8 @@ import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine
 import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -63,6 +65,16 @@ class OpenGaussStatementVisitorTest {
         assertThat(functionTableSegment.getAliasSegment().get().getIdentifier().getValue(), is("s"));
         Collection<String> actualColumns = functionTableSegment.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
         assertThat(actualColumns, contains("r"));
+    }
+    
+    @Test
+    void assertVisitLimitWithOffsetAndRowCountParameterMarkers() {
+        SelectStatement statement = parseSelectStatement("SELECT * FROM t ORDER BY id LIMIT ?, ?");
+        LimitSegment limit = statement.getLimit().get();
+        ParameterMarkerLimitValueSegment offset = (ParameterMarkerLimitValueSegment) limit.getOffset().get();
+        ParameterMarkerLimitValueSegment rowCount = (ParameterMarkerLimitValueSegment) limit.getRowCount().get();
+        assertThat(offset.getParameterIndex(), is(0));
+        assertThat(rowCount.getParameterIndex(), is(1));
     }
     
     private SelectStatement parseSelectStatement(final String sql) {

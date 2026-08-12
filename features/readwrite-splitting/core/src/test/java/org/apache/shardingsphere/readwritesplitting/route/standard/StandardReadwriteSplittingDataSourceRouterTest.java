@@ -19,15 +19,18 @@ package org.apache.shardingsphere.readwritesplitting.route.standard;
 
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin.RoundRobinLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.exception.route.NoAvailableReadwriteSplittingReadDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StandardReadwriteSplittingDataSourceRouterTest {
     
@@ -49,5 +52,16 @@ class StandardReadwriteSplittingDataSourceRouterTest {
     void assertRouteWithFilter() {
         rule.disableDataSource("read_ds_0");
         assertThat(new StandardReadwriteSplittingDataSourceRouter().route(rule), is("read_ds_1"));
+    }
+    
+    @Test
+    void assertRouteWithAllReadDataSourcesDisabled() {
+        rule.disableDataSource("read_ds_0");
+        rule.disableDataSource("read_ds_1");
+        SQLException actual = assertThrows(NoAvailableReadwriteSplittingReadDataSourceException.class,
+                () -> new StandardReadwriteSplittingDataSourceRouter().route(rule)).toSQLException();
+        assertThat(actual.getErrorCode(), is(20206));
+        assertThat(actual.getSQLState(), is("42S02"));
+        assertThat(actual.getMessage(), is("No available read data source in readwrite-splitting data source rule 'test_config'."));
     }
 }

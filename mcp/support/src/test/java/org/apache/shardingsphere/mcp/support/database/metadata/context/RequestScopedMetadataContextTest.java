@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.mcp.support.database.metadata.context;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPMetadataSnapshot;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -42,6 +46,24 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class RequestScopedMetadataContextTest {
+    
+    @Test
+    void assertLoadSchemasAndSequencesOncePerDatabase() {
+        RuntimeDatabaseConfiguration configuration = mock(RuntimeDatabaseConfiguration.class);
+        RuntimeDatabaseProfile profile = mock(RuntimeDatabaseProfile.class);
+        MCPDatabaseCapabilityProvider capabilityProvider = createCapabilityProvider(profile);
+        MCPMetadataSnapshot expected = new MCPMetadataSnapshot(
+                List.of(new ShardingSphereSchema("public", mock(DatabaseType.class))),
+                Map.of("public", List.of(new MCPSequenceMetadata("logic_db", "public", "order_seq"))));
+        try (
+                MockedConstruction<MCPJdbcMetadataLoader> mockedLoader = mockConstruction(MCPJdbcMetadataLoader.class,
+                        (mock, context) -> when(mock.load("logic_db", configuration, profile)).thenReturn(expected))) {
+            RequestScopedMetadataContext context = new RequestScopedMetadataContext(Map.of("logic_db", configuration), capabilityProvider);
+            assertThat(context.loadSchemas("logic_db").orElseThrow().stream().map(ShardingSphereSchema::getName).toList(), is(List.of("public")));
+            assertThat(context.loadSequences("logic_db", "public").orElseThrow().stream().map(MCPSequenceMetadata::getSequence).toList(), is(List.of("order_seq")));
+            verify(mockedLoader.constructed().getFirst()).load("logic_db", configuration, profile);
+        }
+    }
     
     @Test
     void assertLoadColumnsOncePerRelation() {

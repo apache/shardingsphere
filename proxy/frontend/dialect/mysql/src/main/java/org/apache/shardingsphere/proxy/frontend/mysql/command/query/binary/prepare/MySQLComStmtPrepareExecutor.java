@@ -53,6 +53,8 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQL
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,7 +62,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.sql.SQLException;
 
 /**
  * COM_STMT_PREPARE command executor for MySQL.
@@ -125,8 +126,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private Collection<MySQLPacket> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
                                                                              final MySQLServerPreparedStatement serverPreparedStatement) {
-        List<ShardingSphereColumn> columnsOfParameterMarkers =
-                MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, getSchema(sqlStatementContext));
+        List<ShardingSphereColumn> columnsOfParameterMarkers = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, getSchema(sqlStatementContext));
         Map<ShardingSphereColumn, MySQLColumnDefinition41Packet> columnPacketCache = new HashMap<>();
         MySQLColumnDefinition41Packet defaultColumnPacket = null;
         Collection<ParameterMarkerSegment> parameterMarkerSegments = sqlStatementContext.getSqlStatement().getParameterMarkers();
@@ -139,9 +139,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             }
             if (null != column) {
                 int columnDefinitionFlag = calculateColumnDefinitionFlag(column);
-                result.add(createMySQLColumnDefinition41PacketByCache(characterSet, columnPacketCache, column, columnDefinitionFlag));
-                MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(column.getDataType());
-                parameterColumnTypes.add(columnType);
+                MySQLBinaryColumnType columnType = getParameterColumnType(column.getDataType());
+                result.add(createMySQLColumnDefinition41PacketByCache(characterSet, columnPacketCache, column, columnDefinitionFlag, columnType));
+                parameterColumnTypes.add(isCharacterLargeObject(column.getDataType()) ? MySQLBinaryColumnType.VAR_STRING : columnType);
             } else {
                 if (null == defaultColumnPacket) {
                     defaultColumnPacket = createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING);
@@ -154,14 +154,17 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return result;
     }
     
+    private MySQLBinaryColumnType getParameterColumnType(final int jdbcType) {
+        return isCharacterLargeObject(jdbcType) ? MySQLBinaryColumnType.LONG_BLOB : MySQLBinaryColumnType.valueOfJDBCType(jdbcType);
+    }
+    
     private MySQLColumnDefinition41Packet createMySQLColumnDefinition41PacketByCache(final int characterSet, final Map<ShardingSphereColumn, MySQLColumnDefinition41Packet> columnPacketCache,
-                                                                                     final ShardingSphereColumn column,
-                                                                                     final int columnDefinitionFlag) {
+                                                                                     final ShardingSphereColumn column, final int columnDefinitionFlag, final MySQLBinaryColumnType columnType) {
         MySQLColumnDefinition41Packet cachedPacket = columnPacketCache.get(column);
         if (null != cachedPacket) {
             return cachedPacket;
         }
-        MySQLColumnDefinition41Packet result = createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, MySQLBinaryColumnType.valueOfJDBCType(column.getDataType()));
+        MySQLColumnDefinition41Packet result = createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, columnType);
         columnPacketCache.put(column, result);
         return result;
     }
@@ -197,7 +200,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             ColumnProjection columnProjection = (ColumnProjection) each;
             result.add(Optional.ofNullable(schema.getTable(columnProjection.getOriginalTable().getValue()))
                     .map(table -> table.getColumn(columnProjection.getOriginalColumn().getValue()))
-                    .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
+                    .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateProjectionColumnDefinitionFlag(column),
+                            MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
                     .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
         }
         return result;
@@ -232,6 +236,14 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         result |= column.isPrimaryKey() ? MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() : 0;
         result |= column.isUnsigned() ? MySQLColumnDefinitionFlag.UNSIGNED.getValue() : 0;
         return result;
+    }
+    
+    private int calculateProjectionColumnDefinitionFlag(final ShardingSphereColumn column) {
+        return calculateColumnDefinitionFlag(column) | (isCharacterLargeObject(column.getDataType()) ? MySQLColumnDefinitionFlag.BLOB.getValue() : 0);
+    }
+    
+    private boolean isCharacterLargeObject(final int jdbcType) {
+        return Types.CLOB == jdbcType || Types.NCLOB == jdbcType;
     }
     
     private MySQLColumnDefinition41Packet createMySQLColumnDefinition41Packet(final int characterSet, final int columnDefinitionFlag, final MySQLBinaryColumnType columnType) {

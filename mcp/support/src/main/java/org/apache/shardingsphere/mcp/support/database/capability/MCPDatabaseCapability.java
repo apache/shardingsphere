@@ -51,10 +51,10 @@ public final class MCPDatabaseCapability {
     MCPDatabaseCapability(final RuntimeDatabaseProfile databaseProfile, final MCPDatabaseCapabilityOption option) {
         databaseName = databaseProfile.getDatabase();
         databaseType = option.getType();
-        MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
-        supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(databaseDialect);
+        supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(option);
         transactionCapability = databaseProfile.getTransactionCapability();
         supportedStatementClasses = createSupportedStatementClasses(transactionCapability, option.isExplainSupported());
+        MCPDatabaseDialect databaseDialect = MCPDatabaseDialect.of(option.getType());
         defaultSchemaSemantics = databaseDialect.getDefaultSchemaSemantics();
         schemaExecutionSemantics = createSchemaExecutionSemantics(defaultSchemaSemantics);
         identifierContext = databaseProfile.getIdentifierContext();
@@ -64,14 +64,14 @@ public final class MCPDatabaseCapability {
         return DialectSchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics ? SchemaExecutionSemantics.FIXED_TO_DATABASE : SchemaExecutionSemantics.BEST_EFFORT;
     }
     
-    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseDialect databaseDialect) {
+    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseCapabilityOption option) {
         Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPMetadataObjectType.SCHEMA);
         result.add(SupportedMCPMetadataObjectType.TABLE);
         result.add(SupportedMCPMetadataObjectType.VIEW);
         result.add(SupportedMCPMetadataObjectType.COLUMN);
         result.add(SupportedMCPMetadataObjectType.INDEX);
-        if (databaseDialect.isSequenceSupported()) {
+        if (option.getSequenceQuery().isPresent()) {
             result.add(SupportedMCPMetadataObjectType.SEQUENCE);
         }
         return result;

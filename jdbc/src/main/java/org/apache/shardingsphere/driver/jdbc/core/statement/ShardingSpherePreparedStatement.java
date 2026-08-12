@@ -278,6 +278,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void replay() throws SQLException {
         replaySetParameter(statements, parameterSets);
+        replayStatementMethods(statements);
+    }
+    
+    private void replayStatementMethods(final Collection<? extends Statement> statements) throws SQLException {
         for (Statement each : statements) {
             getMethodInvocationRecorder().replay(each);
         }

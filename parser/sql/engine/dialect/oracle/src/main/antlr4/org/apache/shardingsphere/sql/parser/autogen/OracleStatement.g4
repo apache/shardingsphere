@@ -69,6 +69,7 @@ execute
     | alterDimension
     | dropDimension
     | createFunction
+    | createPackage
     | dropDatabaseLink
     | dropDirectory
     | dropView
@@ -163,6 +164,7 @@ execute
     | show
     | spool
     | createOperator
+    | createIndexType
     | createOutline
     ) SEMI_? SLASH_? EOF
     ;

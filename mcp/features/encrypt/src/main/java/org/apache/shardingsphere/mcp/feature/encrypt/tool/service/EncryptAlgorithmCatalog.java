@@ -70,15 +70,6 @@ public final class EncryptAlgorithmCatalog {
         return null == definition ? List.of() : definition.createRequirements(algorithmRole);
     }
     
-    /**
-     * Get supported fallback algorithm types.
-     *
-     * @return supported algorithm types
-     */
-    public static List<String> getSupportedAlgorithmTypes() {
-        return new LinkedList<>(DEFINITIONS.keySet());
-    }
-    
     private static String normalize(final String algorithmType) {
         return Objects.toString(algorithmType, "").trim().toUpperCase(Locale.ENGLISH);
     }

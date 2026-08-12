@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatCompletion;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatMessage;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCal
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -51,8 +51,9 @@ public final class LLMConversationRunner {
     private static final String SYSTEM_PROMPT = """
             You are evaluating a live ShardingSphere MCP server. Use the available MCP functions to inspect current state and complete the user's task.
             Choose tools from their advertised names, descriptions, and input schemas. Pass resource URIs only to mcp_read_resource, never as SQL.
-            Never guess or stop before retrieving the requested evidence. Preview side effects without executing them. Use function calls for every
-            tool invocation rather than printing a tool-call object as the answer. When you have enough evidence, answer the user's question concisely.
+            Never guess or stop before retrieving the requested evidence. When target metadata is explicitly marked as already verified, use the requested
+            planning response as evidence instead of repeating metadata discovery. Preview side effects without executing them. Use function calls for
+            every tool invocation rather than printing a tool-call object as the answer. When you have enough evidence, answer the user's question concisely.
             """;
     
     private final int maxTurns;
@@ -67,15 +68,12 @@ public final class LLMConversationRunner {
     
     private final LLMMCPSafetyValidator safetyValidator = new LLMMCPSafetyValidator();
     
-    private final LLMMCPActionExecutor actionExecutor;
-    
     public LLMConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient,
                                  final String modelName) {
         this.maxTurns = maxTurns;
         this.llmChatClient = llmChatClient;
         this.mcpInteractionClient = mcpInteractionClient;
         this.modelName = modelName;
-        actionExecutor = new LLMMCPActionExecutor(mcpInteractionClient);
     }
     
     /**
@@ -89,7 +87,7 @@ public final class LLMConversationRunner {
         try {
             mcpInteractionClient.open();
             List<Map<String, Object>> advertisedTools = mcpInteractionClient.listTools();
-            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createFromRemote(advertisedTools, scenario.allowsSideEffectPreview());
+            List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createFromRemote(advertisedTools, scenario.allowedToolNames());
             artifacts.setToolDefinitions(toolDefinitions);
             return runTurns(scenario, artifacts, toolDefinitions);
         } catch (final IOException ex) {
@@ -165,18 +163,18 @@ public final class LLMConversationRunner {
                 return Optional.of(artifacts.createResult(scenario, modelName,
                         LLME2EAssertionReport.failure("invalid_tool_arguments", "Model returned invalid tool arguments JSON.")));
             }
-            Optional<LLMMCPToolCallValidationFailure> validationFailure = safetyValidator.validate(each.getName(), arguments);
+            Optional<LLMMCPSafetyValidator.ValidationFailure> validationFailure = safetyValidator.validate(each.getName(), arguments);
             if (validationFailure.isPresent()) {
-                LLMMCPToolCallValidationFailure failure = validationFailure.get();
+                LLMMCPSafetyValidator.ValidationFailure failure = validationFailure.get();
                 artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(
-                        artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), each.getName(), arguments, failure.getFailureType()));
+                        artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), each.getName(), arguments, failure.failureType()));
                 return Optional.of(artifacts.createResult(scenario, modelName,
-                        LLME2EAssertionReport.failure(failure.getFailureType(), failure.getMessage())));
+                        LLME2EAssertionReport.failure(failure.failureType(), failure.message())));
             }
             long startTime = System.currentTimeMillis();
             Map<String, Object> response;
             try {
-                response = actionExecutor.executeSafely(each.getName(), arguments);
+                response = executeAction(each.getName(), arguments);
             } catch (final IllegalArgumentException ex) {
                 artifacts.addTrace(MCPInteractionTraceRecord.createInvalidAction(
                         artifacts.nextSequence(), modelTurn, TOOL_CALL_KIND, each.getName(), arguments, "invalid_tool_arguments"));
@@ -190,15 +188,31 @@ public final class LLMConversationRunner {
             artifacts.addTrace(new MCPInteractionTraceRecord(
                     artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
                     each.getName(), getTraceArguments(each.getName(), arguments), response, true, latencyMillis));
-            artifacts.addRuntimeLogLine("action=" + each.getName() + " args=" + JsonUtils.toJsonString(arguments));
-            artifacts.addRuntimeLogLine("response=" + JsonUtils.toJsonString(response));
-            messages.add(LLMChatMessage.tool(each.getId(), LLMMCPModelFacingToolResponseFormatter.format(response)));
+            messages.add(LLMChatMessage.tool(each.getId(), JsonUtils.toJsonString(response)));
         }
         return Optional.empty();
     }
     
     private String getActionKind(final String toolName) {
         return READ_RESOURCE_TOOL_NAME.equals(toolName) ? RESOURCE_READ_KIND : TOOL_CALL_KIND;
+    }
+    
+    private Map<String, Object> executeAction(final String actionName, final Map<String, Object> arguments) throws InterruptedException {
+        try {
+            return READ_RESOURCE_TOOL_NAME.equals(actionName)
+                    ? mcpInteractionClient.readResource(getRequiredResourceUri(arguments))
+                    : mcpInteractionClient.call(actionName, arguments);
+        } catch (final IOException | IllegalStateException ex) {
+            throw new IllegalStateException(String.format("MCP action `%s` failed: %s", actionName, ex.getMessage()), ex);
+        }
+    }
+    
+    private String getRequiredResourceUri(final Map<String, Object> arguments) {
+        Object value = arguments.get("uri");
+        if (!(value instanceof String) || ((String) value).trim().isEmpty()) {
+            throw new IllegalArgumentException("Resource URI is required.");
+        }
+        return ((String) value).trim();
     }
     
     private Map<String, Object> getTraceArguments(final String toolName, final Map<String, Object> arguments) {
@@ -227,10 +241,10 @@ public final class LLMConversationRunner {
      *
      * @param id scenario ID
      * @param question question
-     * @param allowsSideEffectPreview whether the scenario may expose update preview
+     * @param allowedToolNames tools exposed only to this scenario
      * @param evaluator scenario evidence evaluator
      */
-    public record Scenario(String id, String question, boolean allowsSideEffectPreview,
+    public record Scenario(String id, String question, Set<String> allowedToolNames,
                            BiFunction<String, List<MCPInteractionTraceRecord>, LLME2EAssertionReport> evaluator) {
     }
     
@@ -255,10 +269,9 @@ public final class LLMConversationRunner {
      * @param rawModelOutputs raw model outputs
      * @param toolDefinitions tool definitions derived from MCP discovery
      * @param interactionTrace interaction trace
-     * @param runtimeLogLines runtime log lines
      */
     public record Evidence(List<String> rawModelOutputs, List<Map<String, Object>> toolDefinitions,
-                           List<MCPInteractionTraceRecord> interactionTrace, List<String> runtimeLogLines) {
+                           List<MCPInteractionTraceRecord> interactionTrace) {
     }
     
     private static final class ConversationArtifacts {
@@ -270,8 +283,6 @@ public final class LLMConversationRunner {
         private List<Map<String, Object>> toolDefinitions = List.of();
         
         private final List<MCPInteractionTraceRecord> trace = new LinkedList<>();
-        
-        private final List<String> runtimeLogLines = new LinkedList<>();
         
         private int nextSequence() {
             return trace.size() + 1;
@@ -301,13 +312,9 @@ public final class LLMConversationRunner {
             return trace;
         }
         
-        private void addRuntimeLogLine(final String runtimeLogLine) {
-            runtimeLogLines.add(runtimeLogLine);
-        }
-        
         private Result createResult(final Scenario scenario, final String modelName, final LLME2EAssertionReport assertionReport) {
             return new Result(scenario, SYSTEM_PROMPT, LLME2EConfiguration.MODEL_PROVIDER, modelName, actualAnswer,
-                    new Evidence(rawModelOutputs, toolDefinitions, trace, runtimeLogLines), assertionReport);
+                    new Evidence(rawModelOutputs, toolDefinitions, trace), assertionReport);
         }
     }
 }

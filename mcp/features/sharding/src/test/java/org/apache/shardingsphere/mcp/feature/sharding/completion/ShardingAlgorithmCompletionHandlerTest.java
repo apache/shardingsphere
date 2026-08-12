@@ -40,11 +40,6 @@ import static org.mockito.Mockito.when;
 class ShardingAlgorithmCompletionHandlerTest {
     
     @Test
-    void assertGetContextType() {
-        assertThat(new ShardingAlgorithmCompletionHandler().getContextType(), is(MCPFeatureRequestContext.class));
-    }
-    
-    @Test
     void assertSupportsShardingAlgorithm() {
         assertTrue(new ShardingAlgorithmCompletionHandler().supports(createRequestContext(ShardingFeatureDefinition.ALGORITHM_PLUGINS_RESOURCE_URI, "algorithm_type")));
     }

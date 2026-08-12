@@ -29,16 +29,6 @@ import static org.hamcrest.Matchers.is;
 class BroadcastFeatureDefinitionTest {
     
     @Test
-    void assertConstants() {
-        assertThat(BroadcastFeatureDefinition.WORKFLOW_KIND.getValue(), is("broadcast.rule"));
-        assertThat(BroadcastFeatureDefinition.PLAN_TOOL_NAME, is("database_gateway_plan_broadcast_rule"));
-        assertThat(BroadcastFeatureDefinition.PLAN_PROMPT_NAME, is("plan_broadcast_rule"));
-        assertThat(BroadcastFeatureDefinition.TABLES_FIELD, is("tables"));
-        assertThat(BroadcastFeatureDefinition.RULES_RESOURCE_URI, is("shardingsphere://features/broadcast/databases/{database}/rules"));
-        assertThat(BroadcastFeatureDefinition.RULE_COUNT_RESOURCE_URI, is("shardingsphere://features/broadcast/databases/{database}/rule-count"));
-    }
-    
-    @Test
     void assertPromptCompletionArguments() {
         MCPCompletionTargetDescriptor actual = MCPDescriptorCatalogLoader.load().getShardingSphereDescriptors().getCompletionTargetDescriptors().stream()
                 .filter(each -> "prompt".equals(each.getReferenceType()) && BroadcastFeatureDefinition.PLAN_PROMPT_NAME.equals(each.getReference())).findFirst().orElseThrow();

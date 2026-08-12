@@ -23,7 +23,9 @@
             <projections start-index="29" stop-index="49">
                 <expression-projection text="DB29023216.TESTFUNC()" start-index="29" stop-index="49">
                     <expr>
-                        <function function-name="DB29023216.TESTFUNC()" text="DB29023216.TESTFUNC()" start-index="29" stop-index="49" />
+                        <function function-name="TESTFUNC" text="DB29023216.TESTFUNC()" start-index="29" stop-index="49">
+                            <owner name="DB29023216" start-index="29" stop-index="38" />
+                        </function>
                     </expr>
                 </expression-projection>
             </projections>
@@ -35,7 +37,8 @@
             <projections start-index="29" stop-index="54">
                 <expression-projection text="DB29023216.TESTFUNC(NOW())" start-index="29" stop-index="54">
                     <expr>
-                        <function function-name="DB29023216.TESTFUNC(NOW())" text="DB29023216.TESTFUNC(NOW())" start-index="29" stop-index="54">
+                        <function function-name="TESTFUNC" text="DB29023216.TESTFUNC(NOW())" start-index="29" stop-index="54">
+                            <owner name="DB29023216" start-index="29" stop-index="38" />
                             <parameter>
                                 <function function-name="NOW" text="NOW()" start-index="49" stop-index="53" />
                             </parameter>
@@ -51,7 +54,8 @@
             <projections start-index="29" stop-index="56">
                 <expression-projection text="DB29023216.TESTFUNC(1,2,3,4)" start-index="29" stop-index="56">
                     <expr>
-                        <function function-name="DB29023216.TESTFUNC(1,2,3,4)" text="DB29023216.TESTFUNC(1,2,3,4)" start-index="29" stop-index="56">
+                        <function function-name="TESTFUNC" text="DB29023216.TESTFUNC(1,2,3,4)" start-index="29" stop-index="56">
+                            <owner name="DB29023216" start-index="29" stop-index="38" />
                             <parameter>
                                 <literal-expression start-index="49" stop-index="49" value="1" />
                             </parameter>

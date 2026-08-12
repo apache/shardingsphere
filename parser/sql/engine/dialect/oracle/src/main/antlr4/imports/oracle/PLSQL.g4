@@ -20,6 +20,25 @@ grammar PLSQL;
 import Keyword, BaseRule, DDLStatement, DMLStatement, TCLStatement;
 
 @parser::members {
+    private boolean isUnquotedHanTextQueryBlock() {
+        if (SELECT != _input.LA(1) || IDENTIFIER_ != _input.LA(2) || !containsHanCharacter(_input.LT(2).getText())) {
+            return false;
+        }
+        int offset = 3;
+        while (COMMA_ == _input.LA(offset)) {
+            if (!"\uFF0C".equals(_input.LT(offset).getText()) || IDENTIFIER_ != _input.LA(++offset) || !containsHanCharacter(_input.LT(offset).getText())) {
+                return false;
+            }
+            offset++;
+        }
+        return AS == _input.LA(offset) && FROM == _input.LA(offset + 2) && IDENTIFIER_ == _input.LA(offset + 3)
+                && "DUAL".equalsIgnoreCase(_input.LT(offset + 3).getText());
+    }
+
+    private boolean containsHanCharacter(final String value) {
+        return value.codePoints().anyMatch(each -> Character.UnicodeScript.HAN == Character.UnicodeScript.of(each));
+    }
+
     private boolean isNotPlsqlBlockTerminator() {
         switch (_input.LA(1)) {
             case END:
@@ -66,6 +85,36 @@ createProcedure
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? PROCEDURE plsqlProcedureSource
     ;
 
+createPackage
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? PACKAGE (plsqlPackageSource | BODY plsqlPackageBodySource)
+    ;
+
+plsqlPackageSource
+    : packageIfNotExists? (schemaName DOT_)? packageName sharingClause? (defaultCollationClause | invokerRightsClause | accessibleByClause)* (IS | AS)
+    packageSpecificationItem* END packageName? SEMI_?
+    ;
+
+packageSpecificationItem
+    : typeDefinition
+    | cursorDeclaration
+    | itemDeclaration
+    | functionDeclaration SEMI_
+    | procedureDeclaration SEMI_
+    | pragma
+    ;
+
+plsqlPackageBodySource
+    : packageIfNotExists? (schemaName DOT_)? packageName (IS | AS) declareItem*? packageInitialization? END packageName? SEMI_?
+    ;
+
+packageIfNotExists
+    : IF NOT EXISTS
+    ;
+
+packageInitialization
+    : BEGIN plsqlStatements (EXCEPTION exceptionHandler+)?
+    ;
+
 plsqlProcedureSource
     : (schemaName DOT_)? procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? sharingClause?
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
@@ -87,10 +136,8 @@ plsqlFunctionSource
     | deterministicClause
     | parallelEnableClause
     | resultCacheClause
-    | aggregateClause
-    | pipelinedClause
     | sqlMacroClause)*
-    (IS | AS) (callSpec | declareSection? body)
+    (aggregateClause SEMI_? | PIPELINED USING implementationType SEMI_? | pipelinedClause? (IS | AS) (callSpec | declareSection? body))
     ;
 
 returnDateType
@@ -652,15 +699,39 @@ seriallyReusablePragma
     ;
 
 plsqlTriggerSource
-    : (schemaName DOT_)? triggerName sharingClause? defaultCollationClause? (simpleDmlTrigger | systemTrigger)
+    : (schemaName DOT_)? triggerName sharingClause? defaultCollationClause? (simpleDmlTrigger | compoundDmlTrigger | systemTrigger)
     ;
 
 simpleDmlTrigger
-    : (BEFORE | AFTER) dmlEventClause (FOR EACH ROW)? triggerBody
+    : (BEFORE | AFTER | INSTEAD OF) dmlEventClause referencingClause? (FOR EACH ROW)? triggerEditionClause? triggerOrderingClause? (ENABLE | DISABLE)? triggerWhenClause? triggerBody
+    ;
+
+compoundDmlTrigger
+    : FOR dmlEventClause referencingClause? triggerEditionClause? triggerOrderingClause? (ENABLE | DISABLE)? triggerWhenClause? compoundTriggerBlock
+    ;
+
+compoundTriggerBlock
+    : COMPOUND TRIGGER declareSection? compoundTriggerSection+ END triggerName? SEMI_?
+    ;
+
+compoundTriggerSection
+    : compoundTriggerTimingPoint IS compoundTriggerBody
+    ;
+
+compoundTriggerTimingPoint
+    : BEFORE STATEMENT
+    | BEFORE EACH ROW
+    | AFTER STATEMENT
+    | AFTER EACH ROW
+    | INSTEAD OF EACH ROW
+    ;
+
+compoundTriggerBody
+    : BEGIN plsqlStatements? (EXCEPTION exceptionHandler+)? END compoundTriggerTimingPoint? SEMI_?
     ;
 
 dmlEventClause
-    : dmlEventElement (OR dmlEventElement)* ON viewName
+    : dmlEventElement (OR dmlEventElement)* ON (NESTED TABLE columnName OF)? viewName
     ;
 
 dmlEventElement
@@ -668,7 +739,27 @@ dmlEventElement
     ;
 
 systemTrigger
-    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)* | dmlEvent) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA?) tableName? triggerBody
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)* | dmlEvent) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA?) tableName? triggerOrderingClause? triggerBody
+    ;
+
+referencingClause
+    : REFERENCING referencingItem+
+    ;
+
+referencingItem
+    : (OLD | NEW | PARENT) AS? name
+    ;
+
+triggerEditionClause
+    : (FORWARD | REVERSE) CROSSEDITION
+    ;
+
+triggerOrderingClause
+    : (FOLLOWS | PRECEDES) triggerName (COMMA_ triggerName)*
+    ;
+
+triggerWhenClause
+    : WHEN LP_ expr RP_
     ;
 
 ddlEvent
@@ -716,5 +807,5 @@ dmlEvent
     ;
 
 triggerBody
-    : plsqlBlock
+    : plsqlBlock | call
     ;

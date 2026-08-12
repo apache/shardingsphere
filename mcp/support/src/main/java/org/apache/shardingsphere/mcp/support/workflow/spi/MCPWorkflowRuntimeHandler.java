@@ -17,8 +17,42 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.spi;
 
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+
+import java.util.Map;
+
 /**
  * Workflow runtime handler for validation and apply synchronization.
  */
-public interface MCPWorkflowRuntimeHandler extends MCPWorkflowValidationHandler, MCPWorkflowApplySynchronizationHandler {
+public interface MCPWorkflowRuntimeHandler {
+    
+    /**
+     * Validate one workflow plan.
+     *
+     * @param workflowSessionContext workflow session context
+     * @param metadataQueryFacade metadata query facade
+     * @param queryFacade direct query facade
+     * @param executionFacade execution facade
+     * @param sessionId session id
+     * @param snapshot workflow snapshot
+     * @return validation payload
+     */
+    Map<String, Object> validate(WorkflowSessionContext workflowSessionContext, MCPMetadataQueryFacade metadataQueryFacade,
+                                 MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade, String sessionId, WorkflowContextSnapshot snapshot);
+    
+    /**
+     * Synchronize workflow state after apply execution.
+     *
+     * @param snapshot workflow snapshot
+     * @param metadataQueryFacade metadata query facade
+     * @param queryFacade direct query facade
+     * @param executionFacade execution facade
+     * @param sessionId session id
+     */
+    void synchronize(WorkflowContextSnapshot snapshot, MCPMetadataQueryFacade metadataQueryFacade,
+                     MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade, String sessionId);
 }

@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
@@ -32,11 +31,13 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPMetadataSnapshot;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.fixture.SupportDatabaseTypeFactoryMocker;
 import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.MockedStatic;
@@ -100,7 +101,7 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
             MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
             Map<String, RuntimeDatabaseProfile> databaseProfiles = databaseProfileLoader.load(runtimeDatabases);
             mockDatabaseTypedSPI(databaseProfiles.values(), sequenceSupportedDatabaseTypes, systemSchemas, schemaSemantics, typedSPILoader, databaseTypedSPILoader);
-            Map<String, Collection<ShardingSphereSchema>> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
+            Map<String, MCPMetadataSnapshot> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
             for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
                 result.put(entry.getKey(), metadataLoader.load(entry.getKey(), entry.getValue(), databaseProfiles.get(entry.getKey())));
             }
@@ -171,16 +172,18 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
         when(databaseTypeFromSPI.getTrunkDatabaseType()).thenReturn(Optional.empty());
         typedSPILoader.when(() -> TypedSPILoader.findService(DatabaseType.class, databaseType)).thenReturn(Optional.of(databaseTypeFromSPI));
         typedSPILoader.when(() -> TypedSPILoader.getService(DatabaseType.class, databaseType)).thenReturn(databaseTypeFromSPI);
-        mockDialectDatabaseMetaData(databaseTypeFromSPI, sequenceSupportedDatabaseTypes.contains(databaseType),
-                schemaSemantics.getOrDefault(databaseType, DialectSchemaSemantics.NATIVE_SCHEMA), databaseTypedSPILoader);
+        MCPDatabaseCapabilityOption capabilityOption = mock(MCPDatabaseCapabilityOption.class);
+        when(capabilityOption.getSequenceQuery()).thenReturn(
+                sequenceSupportedDatabaseTypes.contains(databaseType) ? Optional.of(SEQUENCE_METADATA_QUERY) : Optional.empty());
+        typedSPILoader.when(() -> TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType)).thenReturn(Optional.of(capabilityOption));
+        mockDialectDatabaseMetaData(databaseTypeFromSPI, schemaSemantics.getOrDefault(databaseType, DialectSchemaSemantics.NATIVE_SCHEMA), databaseTypedSPILoader);
         mockDialectSystemDatabase(databaseTypeFromSPI, systemSchemas.getOrDefault(databaseType, List.of()), databaseTypedSPILoader);
     }
     
-    private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final boolean sequenceSupported, final DialectSchemaSemantics schemaSemantics,
+    private void mockDialectDatabaseMetaData(final DatabaseType databaseType, final DialectSchemaSemantics schemaSemantics,
                                              final MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
         when(result.getSchemaOption()).thenReturn(new DefaultSchemaOption(false, null, schemaSemantics));
-        when(result.getSequenceOption()).thenReturn(sequenceSupported ? Optional.of(new DialectSequenceOption(SEQUENCE_METADATA_QUERY)) : Optional.empty());
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabaseMetaData.class, databaseType)).thenReturn(Optional.of(result));
         databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(result);
     }
@@ -415,7 +418,6 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
     private int countSchemaMetadata(final ShardingSphereSchema schemaMetadata, final SupportedMCPMetadataObjectType objectType, final String objectName) {
         int result = SupportedMCPMetadataObjectType.SCHEMA == objectType && objectName.equals(schemaMetadata.getName()) ? 1 : 0;
         result += countTableMetadata(schemaMetadata.getAllTables(), objectType, objectName);
-        result += countSequenceMetadata(schemaMetadata.getAllSequences(), objectType, objectName);
         return result;
     }
     
@@ -432,14 +434,22 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
         return result;
     }
     
-    private int countSequenceMetadata(final Collection<ShardingSphereSequence> sequences, final SupportedMCPMetadataObjectType objectType, final String objectName) {
+    private int countSequenceMetadata(final Collection<MCPSequenceMetadata> sequences, final SupportedMCPMetadataObjectType objectType, final String objectName) {
         int result = 0;
-        for (ShardingSphereSequence each : sequences) {
-            if (SupportedMCPMetadataObjectType.SEQUENCE == objectType && objectName.equals(each.getName())) {
+        for (MCPSequenceMetadata each : sequences) {
+            if (SupportedMCPMetadataObjectType.SEQUENCE == objectType && objectName.equals(each.getSequence())) {
                 result++;
             }
         }
         return result;
+    }
+    
+    protected boolean containsMetadata(final MCPMetadataSnapshot snapshot, final SupportedMCPMetadataObjectType objectType, final String objectName) {
+        int sequenceCount = 0;
+        for (ShardingSphereSchema each : snapshot.getSchemas()) {
+            sequenceCount += countSequenceMetadata(snapshot.getSequences(each.getName()), objectType, objectName);
+        }
+        return 0 < countMetadata(snapshot.getSchemas(), objectType, objectName) + sequenceCount;
     }
     
     protected boolean containsMetadata(final Collection<ShardingSphereSchema> schemas, final SupportedMCPMetadataObjectType objectType, final String objectName) {
@@ -450,9 +460,13 @@ abstract class AbstractMCPJdbcMetadataLoaderTest {
     @Getter(AccessLevel.PROTECTED)
     protected static final class LoadedMetadataCatalog {
         
-        private final Map<String, Collection<ShardingSphereSchema>> databaseMetadataMap;
+        private final Map<String, MCPMetadataSnapshot> databaseMetadataMap;
         
         protected Optional<Collection<ShardingSphereSchema>> findMetadata(final String databaseName) {
+            return Optional.ofNullable(databaseMetadataMap.get(databaseName)).map(MCPMetadataSnapshot::getSchemas);
+        }
+        
+        protected Optional<MCPMetadataSnapshot> findSnapshot(final String databaseName) {
             return Optional.ofNullable(databaseMetadataMap.get(databaseName));
         }
     }

@@ -22,8 +22,11 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -63,11 +66,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Locale;
+import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -239,6 +249,82 @@ class SingleRuleTest {
         assertTrue(actualLogicTableNames.contains("student"));
         assertTrue(actualLogicTableNames.contains("t_order_0"));
         assertTrue(actualLogicTableNames.contains("t_order_1"));
+    }
+    
+    @Test
+    void assertCopyAndPut() {
+        SingleRule original = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
+        SingleRule copied = original.copyAndPut("foo_ds", "foo_db", "teacher");
+        assertThat(copied, not(sameInstance(original)));
+        assertFalse(original.getSingleTableDataNodes().containsKey("teacher"));
+        assertFalse(original.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames().contains("teacher"));
+        assertFalse(original.getConfiguration().getLogicTableNames().contains("teacher"));
+        assertTrue(copied.getSingleTableDataNodes().containsKey("teacher"));
+        assertTrue(copied.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames().contains("teacher"));
+        assertTrue(copied.getConfiguration().getLogicTableNames().contains("teacher"));
+    }
+    
+    @Test
+    void assertCopyAndPutWithWildcardConfiguration() {
+        SingleRuleConfiguration wildcardConfig = new SingleRuleConfiguration(Collections.singleton("*.*"), null);
+        SingleRule original = new SingleRule(wildcardConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
+        SingleRule copied = original.copyAndPut("foo_ds", "foo_db", "teacher");
+        assertThat(copied.getConfiguration().getTables().size(), is(1));
+        assertTrue(copied.getConfiguration().getTables().contains("*.*"));
+        assertThat(original.getConfiguration().getTables().size(), is(1));
+        assertTrue(original.getConfiguration().getTables().contains("*.*"));
+    }
+    
+    @Test
+    void assertCopyAndRemove() {
+        SingleRule original = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
+        SingleRule copied = original.copyAndRemove("foo_db", "employee");
+        assertThat(copied, not(sameInstance(original)));
+        assertTrue(original.getSingleTableDataNodes().containsKey("employee"));
+        assertTrue(original.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames().contains("employee"));
+        assertTrue(original.getConfiguration().getLogicTableNames().contains("employee"));
+        assertFalse(copied.getSingleTableDataNodes().containsKey("employee"));
+        assertFalse(copied.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames().contains("employee"));
+        assertFalse(copied.getConfiguration().getLogicTableNames().contains("employee"));
+    }
+    
+    @Test
+    void assertConcurrentRuleMetaDataPublication() throws Exception {
+        SingleRule original = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class),
+                new RuleMetaData(Collections.singleton(original)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        CountDownLatch writing = new CountDownLatch(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        try {
+            Future<?> writer = executorService.submit(() -> {
+                try {
+                    for (int i = 0; i < 1000; i++) {
+                        database.putDataNode("foo_ds", "foo_db", "teacher");
+                        database.removeDataNode("foo_db", "teacher");
+                    }
+                } finally {
+                    writing.countDown();
+                }
+            });
+            Future<?> reader = executorService.submit(() -> {
+                do {
+                    assertSingleRuleSnapshot(database.getRuleMetaData(), "teacher");
+                } while (0L < writing.getCount());
+            });
+            writer.get();
+            reader.get();
+        } finally {
+            executorService.shutdownNow();
+        }
+        assertFalse(original.getSingleTableDataNodes().containsKey("teacher"));
+    }
+    
+    private void assertSingleRuleSnapshot(final RuleMetaData ruleMetaData, final String tableName) {
+        assertFalse(ruleMetaData.getRules().isEmpty());
+        SingleRule rule = ruleMetaData.getSingleRule(SingleRule.class);
+        boolean dataNodePresent = rule.getSingleTableDataNodes().containsKey(tableName);
+        assertThat(rule.getAttributes().getAttribute(TableMapperRuleAttribute.class).getLogicTableNames().contains(tableName), is(dataNodePresent));
+        assertThat(rule.getConfiguration().getLogicTableNames().contains(tableName), is(dataNodePresent));
     }
     
     @Test

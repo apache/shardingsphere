@@ -17,6 +17,5 @@
 
 org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.dialect.MySQLPipelineNativeContainerDropTableOption
 org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.dialect.PostgreSQLPipelineNativeContainerDropTableOption
-org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.dialect.OraclePipelineNativeContainerDropTableOption
 org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.dialect.MariaDBPipelineNativeContainerDropTableOption
 org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.dialect.OpenGaussPipelineNativeContainerDropTableOption

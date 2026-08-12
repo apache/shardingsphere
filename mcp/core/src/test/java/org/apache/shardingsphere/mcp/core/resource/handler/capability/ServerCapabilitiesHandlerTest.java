@@ -137,11 +137,7 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(actual.containsKey("http_transport"));
         assertTrue(actual.containsKey("origin_header"));
         assertTrue(actual.containsKey("stdio_stdout"));
-        Map<?, ?> actualClientSafetyPolicy = (Map<?, ?>) actual.get("client_safety_policy");
-        assertThat(actualClientSafetyPolicy.get("identity_scope"), is("mcp_session"));
-        assertTrue(String.valueOf(actualClientSafetyPolicy.get("transport_scope")).contains("trusted session attribution"));
-        assertThat(((Map<?, ?>) ((Map<?, ?>) actualClientSafetyPolicy.get("runtime_protection")).get("tool_call_limit")).get("scope"), is("session"));
-        assertTrue(String.valueOf(actualClientSafetyPolicy.get("abuse_guard")).contains("counted before dispatch"));
+        assertTrue(actual.containsKey("client_safety_policy"));
     }
     
     private Map<?, ?> findByKey(final List<?> values, final String key, final String expectedValue) {

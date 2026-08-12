@@ -99,4 +99,6 @@
     <sql-case id="create_index_doris_with_properties" value="CREATE INDEX index1 ON table1 (column1) USING INVERTED PROPERTIES ('parser' = 'standard')" db-types="Doris" />
     <sql-case id="create_index_doris_with_comment" value="CREATE INDEX index1 ON table1 (column1) USING INVERTED COMMENT 'inverted index'" db-types="Doris" />
     <sql-case id="create_index_doris_full_syntax" value="CREATE INDEX IF NOT EXISTS index1 ON table1 (column1) USING INVERTED PROPERTIES ('parser' = 'standard') COMMENT 'full syntax'" db-types="Doris" />
+    <sql-case id="create_index_with_domain_index_type" value="CREATE INDEX doc_idx on docs(document) indextype is ctxsys.context FILTER BY category, author ORDER BY pub_date desc, docid PARAMETERS ('memory 500M')" db-types="Oracle" />
+    <sql-case id="create_index_with_indextype_and_parameters" value="CREATE INDEX Test_indx ON Test_tab(col_a) INDEXTYPE IS indtype PARAMETERS('example')" db-types="Oracle" />
 </sql-cases>

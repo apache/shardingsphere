@@ -22,6 +22,8 @@ mode:
     props:
       namespace: mcp_workflow
       server-lists: zk.workflow.host:2181
+      maxRetries: 10
+      operationTimeoutMilliseconds: 5000
 
 authority:
   users:

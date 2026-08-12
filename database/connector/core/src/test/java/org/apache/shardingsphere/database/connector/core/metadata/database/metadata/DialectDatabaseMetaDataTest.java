@@ -25,6 +25,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DefaultSQLOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.junit.jupiter.api.Test;
@@ -121,6 +123,13 @@ class DialectDatabaseMetaDataTest {
     @Test
     void assertGetSQLBatchOption() {
         assertTrue(dialectDatabaseMetaData.getSQLBatchOption().isSupportSQLBatch());
+    }
+    
+    @Test
+    void assertGetSQLOption() {
+        DialectSQLOption actual = dialectDatabaseMetaData.getSQLOption();
+        assertThat(actual, isA(DefaultSQLOption.class));
+        assertFalse(actual.isSupportWholeRowProjection());
     }
     
     @Test

@@ -66,10 +66,11 @@ class ShardingDistSQLStatementVisitorTest {
     @Test
     void assertCreateKeyGenerator() {
         CreateShardingKeyGeneratorStatement actual = (CreateShardingKeyGeneratorStatement) parse(
-                "CREATE SHARDING KEY GENERATOR snowflake_generator (TYPE(NAME='SNOWFLAKE', PROPERTIES('worker-id'=1)))");
+                "CREATE SHARDING KEY GENERATOR snowflake_generator (TYPE(NAME='SNOWFLAKE', PROPERTIES('worker-id'=1, ' foo_key '=' bar_value ')))");
         assertThat(actual.getName(), is("snowflake_generator"));
         assertThat(actual.getAlgorithmSegment().getName(), is("SNOWFLAKE"));
         assertThat(actual.getAlgorithmSegment().getProps().getProperty("worker-id"), is("1"));
+        assertThat(actual.getAlgorithmSegment().getProps().getProperty(" foo_key "), is(" bar_value "));
     }
     
     @Test

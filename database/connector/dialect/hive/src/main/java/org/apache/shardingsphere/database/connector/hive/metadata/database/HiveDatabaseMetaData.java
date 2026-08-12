@@ -40,7 +40,7 @@ public final class HiveDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public IdentifierPatternType getIdentifierPatternType() {
-        return IdentifierPatternType.KEEP_ORIGIN;
+        return IdentifierPatternType.LOWER_CASE;
     }
     
     @Override

@@ -27,8 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -39,25 +39,48 @@ class FirebirdStatusVectorTest {
     private FirebirdPacketPayload payload;
     
     @Test
-    void assertWriteWithArithmeticCodeAndTrimmedMessage() {
-        SQLException richMessage = new SQLException("prefix; detail [SQLState:42000]", "42000", ISCConstants.isc_arith_except);
-        FirebirdStatusVector vector = new FirebirdStatusVector(richMessage);
-        assertThat(vector.getGdsCode(), is(richMessage.getErrorCode()));
-        assertThat(vector.getErrorMessage(), is("detail"));
+    void assertWriteKeepsNativeCodeAndStripsStateSuffix() {
+        SQLException ex = new SQLException("prefix; detail [SQLState:42000]", "42000", ISCConstants.isc_arith_except);
+        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        assertThat(vector.getGdsCode(), is(ISCConstants.isc_arith_except));
+        assertThat(vector.getErrorMessage(), is("prefix; detail"));
         vector.write(payload);
         InOrder inOrder = inOrder(payload);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arith_except);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
-        inOrder.verify(payload).writeString("detail");
+        inOrder.verify(payload).writeString("prefix; detail");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteRebuildsDuplicateKeyVectorAsSegments() {
+        String message = "violation of PRIMARY or UNIQUE KEY constraint \"INTEG_2\" on table \"MY_TABLE\";"
+                + " Problematic key value is (\"COL1\" = 1) [SQLState:23000, ISC error code:335544665]";
+        SQLException ex = new SQLException(message, "23000", ISCConstants.isc_unique_key_violation);
+        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        assertThat(vector.getGdsCode(), is(ISCConstants.isc_unique_key_violation));
+        vector.write(payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_unique_key_violation);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
+        inOrder.verify(payload).writeString("INTEG_2");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
+        inOrder.verify(payload).writeString("MY_TABLE");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_random);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
+        inOrder.verify(payload).writeString("Problematic key value is (\"COL1\" = 1)");
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
         verifyNoMoreInteractions(payload);
     }
     
     @Test
     void assertWriteOmitsArgumentWhenMessageIsEmpty() {
-        SQLException emptyMessage = new SQLException("", "28000", ISCConstants.isc_login);
-        FirebirdStatusVector vector = new FirebirdStatusVector(emptyMessage);
+        SQLException ex = new SQLException("", "28000", ISCConstants.isc_login);
+        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
         vector.write(payload);
         InOrder inOrder = inOrder(payload);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
@@ -68,8 +91,8 @@ class FirebirdStatusVectorTest {
     
     @Test
     void assertWriteWithNullMessage() {
-        SQLException nullMessage = new SQLException(null, "28000", ISCConstants.isc_login);
-        FirebirdStatusVector vector = new FirebirdStatusVector(nullMessage);
+        SQLException ex = new SQLException(null, "28000", ISCConstants.isc_login);
+        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
         assertThat(vector.getErrorMessage(), is(""));
         vector.write(payload);
         InOrder inOrder = inOrder(payload);
@@ -81,14 +104,32 @@ class FirebirdStatusVectorTest {
     
     @Test
     void assertWriteUsesRandomCodeWhenErrorCodeIsLowerThanArithExcept() {
-        SQLException plainMessage = new SQLException("plain", "00000", ISCConstants.isc_arith_except - 1);
-        FirebirdStatusVector vector = new FirebirdStatusVector(plainMessage);
+        SQLException ex = new SQLException("plain", "00000", ISCConstants.isc_arith_except - 1);
+        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        assertThat(vector.getGdsCode(), is(ISCConstants.isc_random));
         vector.write(payload);
         InOrder inOrder = inOrder(payload);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_random);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
         inOrder.verify(payload).writeString("plain");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteFailSafeUsesRandomCodeAndKeepsSqlStateForUnmatchedParameterizedTemplate() {
+        SQLException ex = new SQLException("totally unrelated text", "23000", ISCConstants.isc_unique_key_violation);
+        FirebirdStatusVector vector = new FirebirdStatusVector(ex);
+        assertThat(vector.getGdsCode(), is(ISCConstants.isc_random));
+        vector.write(payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_random);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
+        inOrder.verify(payload).writeString("totally unrelated text");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_sql_state);
+        inOrder.verify(payload).writeString("23000");
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
         verifyNoMoreInteractions(payload);
     }

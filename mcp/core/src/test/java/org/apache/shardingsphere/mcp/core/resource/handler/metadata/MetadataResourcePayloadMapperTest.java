@@ -25,12 +25,13 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSequence;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MetadataResourcePayloadMapperTest {
@@ -51,6 +54,8 @@ class MetadataResourcePayloadMapperTest {
     void assertMapDatabaseDetail() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(createSchemaMetadata()));
+        when(metadataQueryFacade.isSupportedMetadataObjectType("logic_db", SupportedMCPMetadataObjectType.SEQUENCE)).thenReturn(true);
+        when(metadataQueryFacade.querySequences("logic_db", "public")).thenReturn(List.of(new MCPSequenceMetadata("logic_db", "public", "order_seq")));
         List<?> actual = new MetadataResourcePayloadMapper(metadataQueryFacade, new MCPResourceURIVariables(Map.of()), true)
                 .map(createMetadata("logical-database"), List.of(
                         new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL_WITH_SAVEPOINT,
@@ -63,6 +68,24 @@ class MetadataResourcePayloadMapperTest {
         assertThat(getNames(actualSchema, "tables", "table"), is(List.of("order_items", "orders")));
         assertThat(getNames(actualSchema, "views", "view"), is(List.of("active_orders")));
         assertThat(getNames(actualSchema, "sequences", "sequence"), is(List.of("order_seq")));
+    }
+    
+    @Test
+    void assertMapSchemaDetailWithoutSequenceSupport() {
+        MCPResourceURIVariables uriVariables = new MCPResourceURIVariables(Map.of("database", "logic_db"));
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        List<?> actual = new MetadataResourcePayloadMapper(metadataQueryFacade, uriVariables, true)
+                .map(createMetadata("schema"), List.of(createSchemaMetadata()));
+        assertThat(((Map<?, ?>) actual.getFirst()).get("sequences"), is(List.of()));
+        verify(metadataQueryFacade, never()).querySequences("logic_db", "public");
+    }
+    
+    @Test
+    void assertMapSequence() {
+        MCPSequenceMetadata sequence = new MCPSequenceMetadata("logic_db", "public", "order_seq");
+        List<?> actual = new MetadataResourcePayloadMapper(mock(MCPMetadataQueryFacade.class), new MCPResourceURIVariables(Map.of()), false)
+                .map(createMetadata("sequence"), List.of(sequence));
+        assertThat(actual, is(List.of(Map.of("database", "logic_db", "schema", "public", "sequence", "order_seq"))));
     }
     
     @Test
@@ -111,7 +134,7 @@ class MetadataResourcePayloadMapperTest {
         return new ShardingSphereSchema("public", mock(DatabaseType.class), List.of(
                 createTable("orders", TableType.TABLE),
                 createTable("order_items", TableType.TABLE),
-                createTable("active_orders", TableType.VIEW)), List.of(), List.of(new ShardingSphereSequence("order_seq")));
+                createTable("active_orders", TableType.VIEW)), List.of());
     }
     
     private ShardingSphereTable createTable(final String name, final TableType tableType) {

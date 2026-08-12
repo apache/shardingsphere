@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -187,6 +188,15 @@ class SimpleTableSegmentBinderTest {
         assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("ds_sharding_db"));
     }
     
+    @Test
+    void assertBindDefaultSchemaWhenTableNameIsNotUnique() {
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 6, new IdentifierValue("t_order")));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(
+                createHiveMetaDataWithDuplicateTables(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(hiveDatabaseType).build()), tableBinderContexts);
+        assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("default"));
+    }
+    
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         IdentifierValue fooDatabase = new IdentifierValue("foo_db");
@@ -253,11 +263,13 @@ class SimpleTableSegmentBinderTest {
     
     private ShardingSphereMetaData createHiveMetaDataWithLoadedSchema() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        ShardingSphereSchema systemSchema = mock(ShardingSphereSchema.class);
         IdentifierValue fooDatabase = new IdentifierValue("foo_db");
         IdentifierValue shardingDatabase = new IdentifierValue("sharding_db");
         IdentifierValue loadedSchema = new IdentifierValue("ds_sharding_db");
         IdentifierValue tOrder = new IdentifierValue("t_order");
         when(schema.getName()).thenReturn("ds_sharding_db");
+        when(systemSchema.getName()).thenReturn("shardingsphere");
         when(schema.containsTable(tOrder)).thenReturn(true);
         when(schema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
@@ -268,12 +280,40 @@ class SimpleTableSegmentBinderTest {
         when(result.containsDatabase(shardingDatabase)).thenReturn(true);
         when(result.getDatabase("foo_db").containsSchema(shardingDatabase)).thenReturn(false);
         when(result.getDatabase(fooDatabase).containsSchema(shardingDatabase)).thenReturn(false);
-        when(result.getDatabase("sharding_db").getAllSchemas()).thenReturn(Collections.singleton(schema));
-        when(result.getDatabase(shardingDatabase).getAllSchemas()).thenReturn(Collections.singleton(schema));
+        when(result.getDatabase("sharding_db").getProtocolType()).thenReturn(hiveDatabaseType);
+        when(result.getDatabase(shardingDatabase).getProtocolType()).thenReturn(hiveDatabaseType);
+        when(result.getDatabase("sharding_db").getAllSchemas()).thenReturn(Arrays.asList(schema, systemSchema));
+        when(result.getDatabase(shardingDatabase).getAllSchemas()).thenReturn(Arrays.asList(schema, systemSchema));
         when(result.getDatabase("sharding_db").containsSchema(loadedSchema)).thenReturn(true);
         when(result.getDatabase(shardingDatabase).containsSchema(loadedSchema)).thenReturn(true);
         when(result.getDatabase("sharding_db").getSchema(loadedSchema)).thenReturn(schema);
         when(result.getDatabase(shardingDatabase).getSchema(loadedSchema)).thenReturn(schema);
+        return result;
+    }
+    
+    private ShardingSphereMetaData createHiveMetaDataWithDuplicateTables() {
+        IdentifierValue databaseName = new IdentifierValue("foo_db");
+        IdentifierValue defaultSchemaName = new IdentifierValue("default");
+        IdentifierValue analyticsSchemaName = new IdentifierValue("analytics");
+        IdentifierValue tOrder = new IdentifierValue("t_order");
+        ShardingSphereSchema defaultSchema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        ShardingSphereSchema analyticsSchema = mock(ShardingSphereSchema.class);
+        when(defaultSchema.getName()).thenReturn(defaultSchemaName.getValue());
+        when(defaultSchema.containsTable(tOrder)).thenReturn(true);
+        when(defaultSchema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false)));
+        when(analyticsSchema.getName()).thenReturn(analyticsSchemaName.getValue());
+        when(analyticsSchema.containsTable(tOrder)).thenReturn(true);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getDefaultSchemaName()).thenReturn(defaultSchemaName.getValue());
+        when(database.containsSchema(defaultSchemaName)).thenReturn(true);
+        when(database.getSchema(defaultSchemaName)).thenReturn(defaultSchema);
+        when(database.getAllSchemas()).thenReturn(Arrays.asList(defaultSchema, analyticsSchema));
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+        when(result.containsDatabase(databaseName)).thenReturn(true);
+        when(result.getDatabase(databaseName)).thenReturn(database);
+        when(result.getDatabase(databaseName.getValue())).thenReturn(database);
         return result;
     }
 }

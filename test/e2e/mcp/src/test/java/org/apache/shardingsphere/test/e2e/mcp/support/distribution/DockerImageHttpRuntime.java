@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ReadinessProbe.ReadinessResult;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
@@ -95,6 +96,7 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
         } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
         } finally {
+            MCPArtifactUtils.writeRuntimeLogIfConfigured("docker-image-http-", outputMessages);
             process = null;
             outputCollector = null;
             httpPort = 0;
@@ -117,7 +119,7 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
         }
     }
     
-    static List<String> createDockerCommand(final String imageName, final Path configFile, final String containerName) {
+    private static List<String> createDockerCommand(final String imageName, final Path configFile, final String containerName) {
         List<String> result = new LinkedList<>(List.of("docker", "run", "--rm", "--name", containerName,
                 "--add-host=host.docker.internal:host-gateway", "-p", "127.0.0.1::18088", "-e", "SHARDINGSPHERE_MCP_TRANSPORT=http"));
         if (null != configFile) {
@@ -183,7 +185,7 @@ public final class DockerImageHttpRuntime implements AutoCloseable {
         }
     }
     
-    static OptionalInt parsePublishedPort(final String output) {
+    private static OptionalInt parsePublishedPort(final String output) {
         for (String each : output.lines().toList()) {
             int separatorIndex = each.lastIndexOf(':');
             if (separatorIndex < 0 || separatorIndex == each.length() - 1) {

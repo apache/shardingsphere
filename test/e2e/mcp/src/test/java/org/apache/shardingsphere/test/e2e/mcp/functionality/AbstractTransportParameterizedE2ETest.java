@@ -17,27 +17,45 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.params.provider.Arguments;
 
-abstract class AbstractTransportParameterizedE2ETest extends AbstractFunctionalityE2ETest {
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+abstract class AbstractTransportParameterizedE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
-    private RuntimeTransport transport;
+    private RuntimeTransport transport = RuntimeTransport.HTTP;
+    
+    protected static Stream<Arguments> allTransportCases() {
+        return Stream.of(
+                Arguments.of("http", RuntimeTransport.HTTP),
+                Arguments.of("stdio", RuntimeTransport.STDIO));
+    }
+    
+    protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
+        return MCPInteractionPayloads.getRequiredObjectList(payload, "items");
+    }
+    
+    protected final List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
+        return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
+    }
     
     protected final void useTransport(final RuntimeTransport transport) {
         this.transport = transport;
     }
     
     @AfterEach
-    void clearTransport() {
-        transport = null;
+    void resetTransport() {
+        transport = RuntimeTransport.HTTP;
     }
     
     @Override
     protected final RuntimeTransport getTransport() {
-        if (null == transport) {
-            throw new IllegalStateException("Runtime transport is not selected for current MCP Functionality E2E test.");
-        }
         return transport;
     }
 }

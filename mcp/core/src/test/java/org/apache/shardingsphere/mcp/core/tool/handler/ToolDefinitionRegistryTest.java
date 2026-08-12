@@ -35,6 +35,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentCont
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestContextFixture;
+import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -79,6 +80,20 @@ class ToolDefinitionRegistryTest {
         assertRequiredFields(actual.get(5), List.of("plan_id", "execution_mode"));
         assertField(actual.get(5), "execution_mode", "string", List.of("preview", "review-then-execute", "manual-only"), true);
         assertField(actual.get(5), "approved_steps", "array", List.of(), false);
+    }
+    
+    @Test
+    void assertGetSupportedToolDescriptorsWithRuntimeProtectionLimits() {
+        List<MCPToolDescriptor> descriptors = ToolDefinitionRegistry.getSupportedToolDescriptors();
+        for (String each : List.of("database_gateway_execute_query", "database_gateway_execute_explain_query", "database_gateway_execute_update")) {
+            MCPToolDescriptor descriptor = descriptors.stream().filter(tool -> each.equals(tool.getName())).findFirst().orElseThrow();
+            Map<?, ?> actualMaxRows = findField(descriptor, "max_rows");
+            assertThat(actualMaxRows.get("default"), is(MCPRuntimeProtectionPolicy.DEFAULT_MAX_ROWS));
+            assertThat(actualMaxRows.get("maximum"), is(MCPRuntimeProtectionPolicy.MAX_ROWS_LIMIT));
+            Map<?, ?> actualTimeout = findField(descriptor, "timeout_ms");
+            assertThat(actualTimeout.get("default"), is(MCPRuntimeProtectionPolicy.DEFAULT_TIMEOUT_MILLISECONDS));
+            assertThat(actualTimeout.get("maximum"), is(MCPRuntimeProtectionPolicy.MAX_TIMEOUT_MILLISECONDS));
+        }
     }
     
     @Test

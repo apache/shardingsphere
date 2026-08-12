@@ -209,25 +209,16 @@ tools:
             - drop
         natural_language_intent:
           type: string
-          description: "User request in natural language, used together with structured_intent_evidence to clarify encryption behavior."
-        structured_intent_evidence:
-          type: object
-          description: "Structured intent extracted from the user request. Use these fields when the user mentions decrypt, equality filtering, LIKE queries, or domain semantics."
-          properties:
-            requires_decrypt:
-              type: boolean
-              description: "Whether applications must read plaintext through ShardingSphere decryption."
-            requires_equality_filter:
-              type: boolean
-              description: "Whether equality predicates on this column must remain usable."
-            requires_like_query:
-              type: boolean
-              description: "Whether LIKE predicates on this column must remain usable."
-            field_semantics:
-              type: string
-              description: "Domain meaning such as phone number, email, ID card, or other sensitive field category."
-          required: []
-          additionalProperties: false
+          description: "Original user request retained for context. The server does not infer structured arguments from this field; missing required arguments produce clarification."
+        requires_decrypt:
+          type: boolean
+          description: "Whether applications must read plaintext through ShardingSphere decryption."
+        requires_equality_filter:
+          type: boolean
+          description: "Whether equality predicates on this column must remain usable."
+        requires_like_query:
+          type: boolean
+          description: "Whether LIKE predicates on this column must remain usable."
         delivery_mode:
           type: string
           description: "Whether the plan should return all artifacts at once or guide the user step by step."
@@ -354,10 +345,10 @@ tools:
           description: "Preferred later apply mode captured by the plan."
         intent_inference:
           type: object
-          description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+          description: "Resolved operation type, server-derived or defaulted values, and unresolved fields."
         argument_provenance:
           type: object
-          description: "Source of important workflow arguments, such as user-provided, inferred, or server-defaulted values."
+          description: "Source of important workflow arguments, such as user-provided, server-derived, or server-defaulted values."
         review_focus:
           type: object
           description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."

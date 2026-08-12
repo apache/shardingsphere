@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
@@ -232,7 +233,7 @@ public final class MetadataResourceResponseFactory {
         largeResult.put("search_arguments", createNarrowSearchArguments(metadata, uriVariables));
         payload.put("continuation_mode", "metadata_search");
         payload.put("large_result_guidance", largeResult);
-        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool("database_gateway_search_metadata",
+        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(CoreToolNames.SEARCH_METADATA,
                 String.format("Narrow the broad %s metadata list before reading detail resources.", resolveGuidanceScope(metadata)),
                 createNarrowSearchArguments(metadata, uriVariables))));
     }

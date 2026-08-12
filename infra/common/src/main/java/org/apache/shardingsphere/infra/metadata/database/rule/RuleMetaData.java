@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 
 import java.util.Collection;
@@ -55,6 +56,51 @@ public final class RuleMetaData {
     
     public RuleMetaData(final Collection<ShardingSphereRule> rules) {
         this.rules = new CacheInvalidatingCopyOnWriteArrayList(rules);
+    }
+    
+    /**
+     * Copy rule meta data and add data node.
+     *
+     * @param dataSourceName data source name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return copied rule meta data, or current rule meta data if data node exists
+     */
+    public RuleMetaData copyAndPutDataNode(final String dataSourceName, final String schemaName, final String tableName) {
+        Collection<ShardingSphereRule> copiedRules = new LinkedList<>();
+        boolean changed = false;
+        for (ShardingSphereRule each : rules) {
+            Optional<MutableDataNodeRuleAttribute> attribute = each.getAttributes().findAttribute(MutableDataNodeRuleAttribute.class);
+            if (attribute.isPresent() && !attribute.get().findTableDataNode(schemaName, tableName).isPresent()) {
+                copiedRules.add(attribute.get().copyRuleAndPut(dataSourceName, schemaName, tableName));
+                changed = true;
+            } else {
+                copiedRules.add(each);
+            }
+        }
+        return changed ? new RuleMetaData(copiedRules) : this;
+    }
+    
+    /**
+     * Copy rule meta data and remove data node.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return copied rule meta data, or current rule meta data if data node does not exist
+     */
+    public RuleMetaData copyAndRemoveDataNode(final String schemaName, final String tableName) {
+        Collection<ShardingSphereRule> copiedRules = new LinkedList<>();
+        boolean changed = false;
+        for (ShardingSphereRule each : rules) {
+            Optional<MutableDataNodeRuleAttribute> attribute = each.getAttributes().findAttribute(MutableDataNodeRuleAttribute.class);
+            if (attribute.isPresent() && attribute.get().findTableDataNode(schemaName, tableName).isPresent()) {
+                copiedRules.add(attribute.get().copyRuleAndRemove(schemaName, tableName));
+                changed = true;
+            } else {
+                copiedRules.add(each);
+            }
+        }
+        return changed ? new RuleMetaData(copiedRules) : this;
     }
     
     /**

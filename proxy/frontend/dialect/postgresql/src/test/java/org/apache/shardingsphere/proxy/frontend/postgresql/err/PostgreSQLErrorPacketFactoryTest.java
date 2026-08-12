@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.err;
 
+import org.apache.shardingsphere.database.exception.core.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.database.exception.postgresql.exception.PostgreSQLException;
 import org.apache.shardingsphere.database.exception.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
@@ -64,6 +65,15 @@ class PostgreSQLErrorPacketFactoryTest {
         PostgreSQLErrorResponsePacket actual = PostgreSQLErrorPacketFactory.newInstance(new RuntimeException("No reason"));
         Map<Character, String> fields = getFields(actual);
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("Unknown exception." + System.lineSeparator() + "More details: java.lang.RuntimeException: No reason"));
+    }
+    
+    @Test
+    void assertTableModifyInTransactionException() throws ReflectiveOperationException {
+        PostgreSQLErrorResponsePacket actual = PostgreSQLErrorPacketFactory.newInstance(new TableModifyInTransactionException("foo_table"));
+        Map<Character, String> fields = getFields(actual);
+        assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY), is(PostgreSQLMessageSeverityLevel.ERROR));
+        assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE), is(PostgreSQLVendorError.METADATA_CHANGING_DDL_IN_TRANSACTION_NOT_SUPPORTED.getSqlState().getValue()));
+        assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("DDL statements that modify metadata are not supported in transactions by ShardingSphere-Proxy."));
     }
     
     @Test

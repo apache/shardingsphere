@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.support.database.capability.dialect;
 
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
 
+import java.util.Optional;
+
 /**
  * MCP database capability option for Firebird.
  */
@@ -27,6 +29,11 @@ public final class FirebirdMCPDatabaseCapabilityOption implements MCPDatabaseCap
     @Override
     public boolean isExplainSupported() {
         return false;
+    }
+    
+    @Override
+    public Optional<String> getSequenceQuery() {
+        return Optional.of("SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0");
     }
     
     @Override

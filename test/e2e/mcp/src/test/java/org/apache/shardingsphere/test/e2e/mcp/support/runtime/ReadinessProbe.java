@@ -21,8 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.function.LongSupplier;
-
 /**
  * Readiness retry probe.
  */
@@ -34,21 +32,11 @@ public final class ReadinessProbe {
     
     private final long maxIntervalMillis;
     
-    private final LongSupplier currentTimeMillis;
-    
-    private final Sleeper sleeper;
-    
     public ReadinessProbe(final long timeoutMillis, final long initialIntervalMillis, final long maxIntervalMillis) {
-        this(timeoutMillis, initialIntervalMillis, maxIntervalMillis, System::currentTimeMillis, Thread::sleep);
-    }
-    
-    ReadinessProbe(final long timeoutMillis, final long initialIntervalMillis, final long maxIntervalMillis, final LongSupplier currentTimeMillis, final Sleeper sleeper) {
         checkArguments(timeoutMillis, initialIntervalMillis, maxIntervalMillis);
         this.timeoutMillis = timeoutMillis;
         this.initialIntervalMillis = initialIntervalMillis;
         this.maxIntervalMillis = maxIntervalMillis;
-        this.currentTimeMillis = currentTimeMillis;
-        this.sleeper = sleeper;
     }
     
     private void checkArguments(final long timeoutMillis, final long initialIntervalMillis, final long maxIntervalMillis) {
@@ -75,12 +63,12 @@ public final class ReadinessProbe {
      * @throws InterruptedException interrupted exception
      */
     public <T, E extends Exception> T waitUntilReady(final ReadinessCheck<T> readinessCheck, final FailureFactory<E> failureFactory) throws E, InterruptedException {
-        long startTimeMillis = currentTimeMillis.getAsLong();
+        long startTimeMillis = System.currentTimeMillis();
         long deadlineMillis = startTimeMillis + timeoutMillis;
         long intervalMillis = initialIntervalMillis;
         int attemptCount = 0;
         Exception lastFailure = null;
-        while (currentTimeMillis.getAsLong() < deadlineMillis) {
+        while (System.currentTimeMillis() < deadlineMillis) {
             attemptCount++;
             ReadinessResult<T> readinessResult = readinessCheck.check();
             if (readinessResult.isReady()) {
@@ -98,12 +86,12 @@ public final class ReadinessProbe {
     }
     
     private long sleepBeforeRetry(final long deadlineMillis, final long intervalMillis) throws InterruptedException {
-        long remainingMillis = deadlineMillis - currentTimeMillis.getAsLong();
+        long remainingMillis = deadlineMillis - System.currentTimeMillis();
         if (0L >= remainingMillis) {
             return intervalMillis;
         }
         try {
-            sleeper.sleep(Math.min(intervalMillis, remainingMillis));
+            Thread.sleep(Math.min(intervalMillis, remainingMillis));
             return Math.min(maxIntervalMillis, intervalMillis * 2L);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
@@ -112,7 +100,7 @@ public final class ReadinessProbe {
     }
     
     private long getElapsedMillis(final long startTimeMillis) {
-        return currentTimeMillis.getAsLong() - startTimeMillis;
+        return System.currentTimeMillis() - startTimeMillis;
     }
     
     /**
@@ -149,12 +137,6 @@ public final class ReadinessProbe {
          * @return failure exception
          */
         E create(Exception cause, int attemptCount, long elapsedMillis);
-    }
-    
-    @FunctionalInterface
-    interface Sleeper {
-        
-        void sleep(long millis) throws InterruptedException;
     }
     
     /**

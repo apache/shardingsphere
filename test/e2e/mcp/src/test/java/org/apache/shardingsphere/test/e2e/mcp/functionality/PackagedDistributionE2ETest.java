@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
-import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.DockerImageHttpRuntime;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionHttpRuntime;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionPluginFixtureSupport;
@@ -75,7 +76,9 @@ class PackagedDistributionE2ETest {
             "database_gateway_execute_query", "database_gateway_execute_explain_query", "database_gateway_execute_update",
             "database_gateway_apply_workflow", "database_gateway_validate_workflow");
     
-    private static final List<String> REMOVED_FEATURE_TOOL_NAMES = OfficialMCPToolNames.getAll().stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
+    private static final List<String> OFFICIAL_TOOL_NAMES = ToolDefinitionRegistry.getSupportedToolDescriptors().stream().map(MCPToolDescriptor::getName).toList();
+    
+    private static final List<String> REMOVED_FEATURE_TOOL_NAMES = OFFICIAL_TOOL_NAMES.stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
     
     private static final String FIXTURE_RESOURCE_URI = "shardingsphere://features/test-fixture/status";
     
@@ -314,7 +317,7 @@ class PackagedDistributionE2ETest {
     }
     
     private void assertOfficialToolNames(final List<String> actualToolNames) {
-        assertThat(actualToolNames, containsInAnyOrder(OfficialMCPToolNames.getAll().toArray()));
+        assertThat(actualToolNames, containsInAnyOrder(OFFICIAL_TOOL_NAMES.toArray()));
     }
     
     private void assertMySQLMetadata(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {

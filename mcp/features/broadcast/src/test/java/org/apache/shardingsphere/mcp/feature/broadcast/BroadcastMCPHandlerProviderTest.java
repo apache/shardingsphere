@@ -61,8 +61,7 @@ class BroadcastMCPHandlerProviderTest {
     void assertGetWorkflowDefinitions() {
         WorkflowRuntimeDefinition actual = new BroadcastMCPHandlerProvider().getWorkflowDefinitions().iterator().next();
         assertThat(actual.getWorkflowKind(), is(BroadcastFeatureDefinition.WORKFLOW_KIND));
-        assertThat(actual.getApplySynchronizationHandler(), isA(BroadcastWorkflowValidationService.class));
-        assertThat(actual.getValidationHandler(), isA(BroadcastWorkflowValidationService.class));
+        assertThat(actual.getRuntimeHandler(), isA(BroadcastWorkflowValidationService.class));
     }
     
     @Test

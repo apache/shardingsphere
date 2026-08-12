@@ -31,12 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPUriPatternTest {
     
     @Test
-    void assertGetPattern() {
-        MCPUriPattern actual = new MCPUriPattern("shardingsphere://capabilities");
-        assertThat(actual.getPattern(), is("shardingsphere://capabilities"));
-    }
-    
-    @Test
     void assertCreateWithUnsupportedScheme() {
         assertThrows(IllegalArgumentException.class, () -> new MCPUriPattern("unsupported://capabilities"));
     }

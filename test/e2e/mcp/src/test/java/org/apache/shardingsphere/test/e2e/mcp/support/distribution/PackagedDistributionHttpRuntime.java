@@ -96,7 +96,7 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
         }
     }
     
-    static Optional<URI> findEndpointUri(final Collection<String> outputMessages) {
+    private static Optional<URI> findEndpointUri(final Collection<String> outputMessages) {
         for (String each : outputMessages) {
             int startIndex = each.indexOf(ENDPOINT_MARKER);
             if (startIndex < 0) {

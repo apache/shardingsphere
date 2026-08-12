@@ -75,8 +75,7 @@ class ShardingMCPHandlerProviderTest {
         assertThat(actual.stream().map(each -> each.getWorkflowKind().getValue()).toList(),
                 containsInAnyOrder("sharding.table.rule", "sharding.table.reference", "sharding.default.strategy",
                         "sharding.key.generator", "sharding.key.generate.strategy", "sharding.component.cleanup"));
-        assertTrue(actual.stream().allMatch(each -> each.getValidationHandler() instanceof ShardingWorkflowValidationService));
-        assertTrue(actual.stream().allMatch(each -> each.getApplySynchronizationHandler() instanceof ShardingWorkflowValidationService));
+        assertTrue(actual.stream().allMatch(each -> each.getRuntimeHandler() instanceof ShardingWorkflowValidationService));
         assertTrue(actual.stream().allMatch(each -> each.getApplyArtifactValidator() instanceof ShardingWorkflowApplyArtifactValidator));
     }
     

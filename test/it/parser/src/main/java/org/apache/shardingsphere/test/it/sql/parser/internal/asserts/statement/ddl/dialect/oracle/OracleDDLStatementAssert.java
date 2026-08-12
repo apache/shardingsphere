@@ -27,7 +27,9 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAuditStat
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePurgeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleAssociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleCreateIndexTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleAlterSessionStatementAssert;
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleAnalyzeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleAssociateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleAuditStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleCreatePackageStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleDisassociateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleFlashbackTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleNoAuditStatementAssert;
@@ -44,9 +47,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAuditStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleCreatePackageStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleNoAuditStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OraclePurgeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.flashback.OracleFlashbackTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.index.OracleCreateIndexTypeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.statistics.OracleAssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.statistics.OracleDisassociateStatisticsStatementTestCase;
 
@@ -76,12 +81,17 @@ public final class OracleDDLStatementAssert {
             OracleDisassociateStatisticsStatementAssert.assertIs(assertContext, (OracleDisassociateStatisticsStatement) actual, (OracleDisassociateStatisticsStatementTestCase) expected);
         } else if (actual instanceof OracleAuditStatement) {
             OracleAuditStatementAssert.assertIs(assertContext, (OracleAuditStatement) actual, (OracleAuditStatementTestCase) expected);
+        } else if (actual instanceof OracleCreatePackageStatement) {
+            OracleCreatePackageStatementAssert.assertIs(assertContext, (OracleCreatePackageStatement) actual, (OracleCreatePackageStatementTestCase) expected);
         } else if (actual instanceof OracleNoAuditStatement) {
             OracleNoAuditStatementAssert.assertIs(assertContext, (OracleNoAuditStatement) actual, (OracleNoAuditStatementTestCase) expected);
         } else if (actual instanceof OracleFlashbackTableStatement) {
             OracleFlashbackTableStatementAssert.assertIs(assertContext, (OracleFlashbackTableStatement) actual, (OracleFlashbackTableStatementTestCase) expected);
         } else if (actual instanceof OraclePurgeStatement) {
             OraclePurgeStatementAssert.assertIs(assertContext, (OraclePurgeStatement) actual, (OraclePurgeStatementTestCase) expected);
+        } else if (expected instanceof OracleCreateIndexTypeStatementTestCase) {
+            org.hamcrest.MatcherAssert.assertThat(assertContext.getText("Actual statement should be OracleCreateIndexTypeStatement."),
+                    actual, org.hamcrest.CoreMatchers.instanceOf(OracleCreateIndexTypeStatement.class));
         }
     }
 }

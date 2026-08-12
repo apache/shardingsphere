@@ -851,7 +851,7 @@
     <alter-table sql-case-id="alter_table_modify_unsigned_not_null">
         <table name="t1" start-index="12" stop-index="13" />
         <modify-column>
-            <column-definition type="real" start-index="22" stop-index="46">
+            <column-definition type="real" not-null="true" start-index="22" stop-index="46">
                 <column name="c1" />
             </column-definition>
         </modify-column>
@@ -860,7 +860,16 @@
     <alter-table sql-case-id="alter_table_modify_unsigned_zerofill_not_null">
         <table name="t1" start-index="12" stop-index="13" />
         <modify-column>
-            <column-definition type="real" start-index="22" stop-index="55">
+            <column-definition type="real" not-null="true" start-index="22" stop-index="55">
+                <column name="c1" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_explicit_null">
+        <table name="t1" start-index="12" stop-index="13" />
+        <modify-column>
+            <column-definition type="real" not-null="false" start-index="22" stop-index="33">
                 <column name="c1" />
             </column-definition>
         </modify-column>

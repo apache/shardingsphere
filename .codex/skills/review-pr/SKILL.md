@@ -42,6 +42,28 @@ may still be required from code, official specifications, public reproductions,
 or local verification. If such a decisive fact is unavailable, identify that
 fact—not CI—as the incomplete reason.
 
+## Canonical Assessment
+
+Resolve one review basis before discovery: the effective candidate, applicable
+requirements, selected review focus, and admissible evidence. Run the Review
+Workflow against that basis and produce one mode-independent assessment:
+confirmed findings consolidated by fix boundary, needs-discussion conditions,
+incomplete-evidence gaps, and Completion Gate state.
+
+Output mode must not affect candidate discovery, proof, classification,
+coverage, or convergence. Never use a previous Local or Formal result as
+evidence or as a conclusion to match. Treat previous public findings only as
+hypotheses whose cited facts must be reverified.
+
+Two reviews with the same effective candidate, requirements, focus, and
+evidence must produce the same canonical assessment. Local and Formal modes may
+resolve different candidates and render different status labels, but they must
+not apply different code-correctness judgment. A changed focus, requirement,
+or external fact changes the review basis and may legitimately change the
+assessment. Mergeability or CI evidence may add external-state findings or
+gaps, but it must not change code-correctness findings derived from an otherwise
+unchanged basis.
+
 ## Core Contracts
 
 1. Review only. Do not modify PR code, post comments, submit reviews, resolve
@@ -79,6 +101,11 @@ For formal reviews:
   current-head readiness.
 - Prefer PR facts, same-repository issues, code and tests, ShardingSphere
   documentation and conventions, then external official specifications.
+
+For Local Candidate Preflight targeting an existing PR, resolve the same public
+requirements and code-correctness evidence before applying the authorized local
+delta. Record any explicit local requirement that extends the public PR scope
+as a distinct part of the review basis.
 
 For discussion replies, establish the latest public head, complete thread
 context, relevant earlier review, and affected production or test paths. Fetch
@@ -141,10 +168,15 @@ baselines, also read
 
 ## Review Workflow
 
-1. Select output mode and review focus.
-2. Establish the authoritative latest-head scope and linked requirements.
+Apply this workflow to the canonical review basis without using output mode or
+a previous result to influence the assessment:
+
+1. Establish the authoritative effective-candidate scope and applicable
+   requirements.
+2. Confirm the selected review focus and admissible evidence.
 3. Build behavior clusters and complete the mandatory risk triage.
-4. Discover candidates across the complete scope before choosing a verdict.
+4. Discover candidates across the complete scope before classifying the
+   assessment.
    Use three distinct lenses:
    - `Root Cause and Behavior`: intended fix, changed decisions, boundaries,
      disabled paths, adjacent cases, and old-scenario regression.
@@ -159,7 +191,8 @@ baselines, also read
    evidence or coverage gap that could still change the blocker set.
 7. Review the latest delta and run a full-scope convergence pass after the most
    recent candidate change. If it finds a new independent candidate, return to
-   step 5 and repeat. Select the verdict only after the Completion Gate passes.
+   step 5 and repeat. Freeze the canonical assessment only after the Completion
+   Gate evaluation, then map it to the selected mode's status.
 
 If the scope cannot be reviewed honestly, return the mode-appropriate incomplete
 result or request a split. Do not produce a complete verdict from a partial
@@ -196,7 +229,8 @@ complete change-request set.
 
 ## Formal Decision Contract
 
-Apply this order to Formal Review only after the Completion Gate evaluation:
+Map the canonical assessment to Formal Review only after the Completion Gate
+evaluation:
 
 1. If the gate fails, use `Review Incomplete`, even when some blockers are
    already confirmed.
@@ -221,10 +255,13 @@ unclear.
 - Review from the public PR merge-base through the working tree. Scope is the
   union of GitHub files and the authorized local delta; exclude unrelated local
   changes.
-- Apply Code Correctness Review, the same proof and completion gates, triggered
-  high-risk criteria, and convergence loop.
-- Return exactly one status: `Local Preflight Result: Pass`, `Local Preflight
-  Result: Changes Required`, or `Local Preflight Result: Incomplete`.
+- Apply Code Correctness Review through the canonical assessment, including the
+  same proof and completion gates, triggered high-risk criteria, and
+  convergence loop.
+- Map a failed Completion Gate or needs-discussion condition to `Local Preflight
+  Result: Incomplete`, confirmed findings to `Local Preflight Result: Changes
+  Required`, and a complete assessment with neither to `Local Preflight Result:
+  Pass`.
 - Keep this Skill review-only. The active implementation loop fixes safe
   in-scope findings and reruns preflight; scope expansion, architecture choices,
   and high-risk actions return to their existing authorization gates.
@@ -277,9 +314,9 @@ For each blocking issue include:
 
 Do not add patch-level changes after selecting Needs Discussion. Do not include
 placeholder headings. In `### Coverage`, report the reviewed head, authoritative
-files accounted for, behavior clusters, completed discovery lenses, unresolved
-gaps, and CI scope. In Code Correctness Review, state that the result is
-code-scope only and CI was not reviewed.
+requirements and files accounted for, behavior clusters, completed discovery
+lenses, unresolved gaps, and CI scope. In Code Correctness Review, state that
+the result is code-scope only and CI was not reviewed.
 
 ### PR Discussion Reply
 
@@ -290,7 +327,9 @@ evidence and minimum next action. Do not force a formal verdict.
 ### Local Candidate Preflight
 
 Return `### Local Preflight`, exactly one bold Local Preflight Result line,
-confirmed required findings when present, and `### Coverage`.
+confirmed required findings or needs-discussion conditions when present, and
+`### Coverage`. Identify the effective candidate, applicable requirements,
+review focus, and unresolved gaps in Coverage.
 
 ### Correction
 

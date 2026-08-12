@@ -302,7 +302,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
     void assertSwapToYamlConfigurationWithRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
         databases.put("logic_db", new RuntimeDatabaseConfiguration("jdbc:mysql://localhost:3306/logic_db", "demo", "", "com.mysql.cj.jdbc.Driver"));
-        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(MCPTransportType.HTTP, new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), databases);
+        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), databases);
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         assertThat(actual.getRuntimeDatabases().get("logic_db").getUsername(), is("demo"));
         assertThat(actual.getTransport().getType(), is(MCPTransportType.HTTP));
@@ -311,7 +311,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfigurationWithStdioTransport() {
-        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(MCPTransportType.STDIO, new HttpTransportConfiguration("127.0.0.1", 18088, "/mcp"), Collections.emptyMap());
+        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(Collections.emptyMap());
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         assertThat(actual.getTransport().getType(), is(MCPTransportType.STDIO));
         assertNull(actual.getTransport().getHttp());

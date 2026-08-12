@@ -1814,4 +1814,38 @@
             <parameter-marker-expression parameter-index="1" start-index="140" stop-index="140" />
         </parameters>
     </select>
+    <select sql-case-id="select_unquoted_text_with_chinese_comma_from_dual">
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅" start-index="7" stop-index="47" alias="RESULT">
+                <expr>
+                    <literal-expression value="图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅" start-index="7" stop-index="37" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="54" stop-index="57">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="FOO_DB_1" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
+    <select sql-case-id="select_unquoted_text_without_comma_from_dual">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="欢迎使用测试系统" start-index="7" stop-index="24" alias="RESULT">
+                <expr>
+                    <literal-expression value="欢迎使用测试系统" start-index="7" stop-index="14" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="31" stop-index="34">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="FOO_DB_1" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

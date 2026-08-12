@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 
 import java.util.Map;
 
@@ -31,8 +32,6 @@ import java.util.Map;
  */
 public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
     
-    private static final String TOOL_NAME = "database_gateway_execute_explain_query";
-    
     @Override
     public Class<MCPFeatureRequestContext> getContextType() {
         return MCPFeatureRequestContext.class;
@@ -40,7 +39,7 @@ public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPFeatur
     
     @Override
     public String getToolName() {
-        return TOOL_NAME;
+        return CoreToolNames.EXECUTE_EXPLAIN_QUERY;
     }
     
     @Override
@@ -48,10 +47,10 @@ public final class ExecuteExplainToolHandler implements MCPToolHandler<MCPFeatur
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         String sql = toolArguments.getStringArgument("sql");
         String explainSql = toolArguments.getStringArgument("explain_sql");
-        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, TOOL_NAME);
+        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, CoreToolNames.EXECUTE_EXPLAIN_QUERY);
         String schema = SQLExecutionToolHandlerSupport.resolveSchema(requestContext, toolArguments);
         SQLExecutionRequest executionRequest = SQLExecutionToolHandlerSupport.createReadOnlyExecutionRequest(requestContext.getSessionIdentity().getSessionId(), toolArguments,
-                schema, explainSql, TOOL_NAME);
+                schema, explainSql, CoreToolNames.EXECUTE_EXPLAIN_QUERY);
         return SQLExecutionPayload.query(requestContext.getExecutionFacade().executeExplain(executionRequest, sql));
     }
 }

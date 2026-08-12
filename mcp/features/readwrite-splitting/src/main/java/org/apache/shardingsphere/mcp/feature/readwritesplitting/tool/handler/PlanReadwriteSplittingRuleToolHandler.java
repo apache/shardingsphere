@@ -29,11 +29,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Tool handler for readwrite-splitting rule workflow planning.
@@ -54,8 +50,7 @@ public final class PlanReadwriteSplittingRuleToolHandler implements MCPToolHandl
     
     @Override
     public MCPSuccessPayload handle(final MCPFeatureRequestContext requestContext, final Map<String, Object> arguments) {
-        ReadwriteSplittingRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ReadwriteSplittingRuleWorkflowRequest::new, arguments,
-                this::bindFeatureArguments, this::applyStructuredIntentEvidence);
+        ReadwriteSplittingRuleWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(ReadwriteSplittingRuleWorkflowRequest::new, arguments, this::bindFeatureArguments);
         WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getQueryFacade(), request);
         return new MCPMapPayload(WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest()));
     }
@@ -69,30 +64,4 @@ public final class PlanReadwriteSplittingRuleToolHandler implements MCPToolHandl
         request.putLoadBalancerProperties(workflowPlanningArguments.getMapArgument(ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_PROPERTIES_FIELD));
     }
     
-    private void applyStructuredIntentEvidence(final ReadwriteSplittingRuleWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.RULE_FIELD, request::setRuleName);
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.WRITE_STORAGE_UNIT_FIELD, request::setWriteStorageUnit);
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.READ_STORAGE_UNITS_FIELD, request::setReadStorageUnits);
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.TRANSACTIONAL_READ_QUERY_STRATEGY_FIELD, request::setTransactionalReadQueryStrategy);
-        WorkflowRequestBinder.applyStringField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_TYPE_FIELD, request::setLoadBalancerType);
-        applyMapField(structuredIntentEvidence, ReadwriteSplittingFeatureDefinition.LOAD_BALANCER_PROPERTIES_FIELD, request::putLoadBalancerProperties);
-    }
-    
-    private void applyMapField(final Map<String, Object> values, final String fieldName, final Consumer<Map<String, String>> consumer) {
-        Object value = values.get(fieldName);
-        if (value instanceof Map) {
-            consumer.accept(createStringMap((Map<?, ?>) value));
-        }
-    }
-    
-    private Map<String, String> createStringMap(final Map<?, ?> values) {
-        Map<String, String> result = new LinkedHashMap<>(values.size(), 1F);
-        for (Entry<?, ?> entry : values.entrySet()) {
-            String key = Objects.toString(entry.getKey(), "").trim();
-            if (!key.isEmpty()) {
-                result.put(key, Objects.toString(entry.getValue(), "").trim());
-            }
-        }
-        return result;
-    }
 }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyReq
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -47,19 +46,4 @@ class EncryptAlgorithmPropertyTemplateServiceTest {
         assertTrue(actual.isEmpty());
     }
     
-    @Test
-    void assertGetSupportedAlgorithmTypes() {
-        List<String> actual = service.getSupportedAlgorithmTypes();
-        assertThat(actual, is(List.of("AES", "MD5")));
-    }
-    
-    @Test
-    void assertMaskProperties() {
-        List<AlgorithmPropertyRequirement> requirements = List.of(
-                new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""),
-                new AlgorithmPropertyRequirement("primary", "digest-algorithm-name", false, false, "digest", "SHA-1"));
-        Map<String, String> actual = service.maskProperties(requirements, Map.of("aes-key-value", "secret", "digest-algorithm-name", "SHA-256"));
-        assertThat(actual.get("aes-key-value"), is("******"));
-        assertThat(actual.get("digest-algorithm-name"), is("SHA-256"));
-    }
 }

@@ -417,9 +417,7 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
             return false;
         }
         TableSegment from = sqlStatement.getFrom().get();
-        return projectionSegment.getOwner().isPresent()
-                ? isOwnerPivotTable(projectionSegment.getOwner().get().getIdentifier().getValue(), from)
-                : containsPivotTable(from);
+        return projectionSegment.getOwner().isPresent() ? isOwnerPivotTable(projectionSegment.getOwner().get().getIdentifier().getValue(), from) : containsPivotTable(from);
     }
     
     private boolean isOwnerPivotTable(final String owner, final TableSegment tableSegment) {

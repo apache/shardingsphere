@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.service;
 
-import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowQueryResult;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowDistSQLQueryUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
@@ -105,20 +102,8 @@ public final class ReadwriteSplittingInspectionService {
      * @param queryFacade query facade
      * @return algorithm plugin query result with built-in property hints
      */
-    public WorkflowQueryResult queryLoadBalanceAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
-        WorkflowQueryResult result = queryAlgorithmRows(queryFacade);
-        return new WorkflowQueryResult(result.getRows().stream().map(this::appendPropertyGuidance).toList(), result.isAvailabilityConfirmed());
-    }
-    
-    private WorkflowQueryResult queryAlgorithmRows(final MCPFeatureQueryFacade queryFacade) {
-        try {
-            return WorkflowQueryResult.confirmed(queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS"));
-        } catch (final MCPQueryFailedException ex) {
-            if (WorkflowDistSQLQueryUtils.isUnsupportedDistSQLQueryFailure(ex)) {
-                return WorkflowQueryResult.fallback(List.of(Map.of("type", "RANDOM"), Map.of("type", "ROUND_ROBIN"), Map.of("type", "WEIGHT")));
-            }
-            throw ex;
-        }
+    public List<Map<String, Object>> queryLoadBalanceAlgorithmPlugins(final MCPFeatureQueryFacade queryFacade) {
+        return queryFacade.queryWithAnyDatabase("SHOW LOAD BALANCE ALGORITHM PLUGINS").stream().map(this::appendPropertyGuidance).toList();
     }
     
     private Map<String, Object> appendPropertyGuidance(final Map<String, Object> row) {

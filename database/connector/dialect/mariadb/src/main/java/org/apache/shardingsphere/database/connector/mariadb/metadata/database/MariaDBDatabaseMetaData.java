@@ -17,91 +17,26 @@
 
 package org.apache.shardingsphere.database.connector.mariadb.metadata.database;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.column.DialectColumnOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.AbstractDelegatingDialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.MySQLDatabaseMetaData;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Database meta data of MariaDB.
  */
-public final class MariaDBDatabaseMetaData implements DialectDatabaseMetaData {
+public final class MariaDBDatabaseMetaData extends AbstractDelegatingDialectDatabaseMetaData {
     
-    private final DialectDatabaseMetaData delegate = new MySQLDatabaseMetaData();
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return delegate.getQuoteCharacter();
-    }
-    
-    @Override
-    public IdentifierPatternType getIdentifierPatternType() {
-        return delegate.getIdentifierPatternType();
-    }
-    
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return delegate.getDefaultNullsOrderType();
-    }
-    
-    @Override
-    public DialectDataTypeOption getDataTypeOption() {
-        return delegate.getDataTypeOption();
-    }
-    
-    @Override
-    public DialectColumnOption getColumnOption() {
-        return delegate.getColumnOption();
-    }
-    
-    @Override
-    public DialectSchemaOption getSchemaOption() {
-        return delegate.getSchemaOption();
-    }
-    
-    @Override
-    public DialectConnectionOption getConnectionOption() {
-        return delegate.getConnectionOption();
+    public MariaDBDatabaseMetaData() {
+        super(new MySQLDatabaseMetaData());
     }
     
     @Override
     public DialectTransactionOption getTransactionOption() {
         return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, true, false, true, false, false,
                 Collections.singleton("org.mariadb.jdbc.MariaDbDataSource"));
-    }
-    
-    @Override
-    public DialectJoinOption getJoinOption() {
-        return delegate.getJoinOption();
-    }
-    
-    @Override
-    public Optional<DialectGeneratedKeyOption> getGeneratedKeyOption() {
-        return delegate.getGeneratedKeyOption();
-    }
-    
-    @Override
-    public Optional<DialectSequenceOption> getSequenceOption() {
-        return Optional.of(new DialectSequenceOption("SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'"));
-    }
-    
-    @Override
-    public DialectProtocolVersionOption getProtocolVersionOption() {
-        return delegate.getProtocolVersionOption();
     }
     
     @Override

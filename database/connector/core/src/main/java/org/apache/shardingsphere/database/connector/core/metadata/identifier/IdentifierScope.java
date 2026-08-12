@@ -36,7 +36,5 @@ public enum IdentifierScope {
     
     INDEX,
     
-    SEQUENCE,
-    
     CONSTRAINT
 }

@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -39,10 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledIf("org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition#isDockerEnabled")
 class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertExecuteUpdate(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertExecuteUpdate() throws SQLException, IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_update",
                     createExecuteUpdateArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
@@ -52,10 +49,8 @@ class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertExecuteRollback(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertExecuteRollback() throws SQLException, IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> beginResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
             interactionClient.call("database_gateway_execute_update",
@@ -67,10 +62,8 @@ class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertExecuteSavepointFlow(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertExecuteSavepointFlow() throws SQLException, IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
             interactionClient.call("database_gateway_execute_update",
@@ -87,10 +80,8 @@ class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertExecuteReleaseSavepoint(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertExecuteReleaseSavepoint() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
             Map<String, Object> savepointResponse = interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("SAVEPOINT sp_release"));
@@ -102,10 +93,8 @@ class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertExecuteDdlRefreshesMetadata(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertExecuteDdlRefreshesMetadata() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> executeResponse = interactionClient.call("database_gateway_execute_update",
                     createExecuteUpdateArguments("CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
@@ -116,10 +105,8 @@ class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertCloseRollsBackPendingTransaction(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertCloseRollsBackPendingTransaction() throws SQLException, IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments("BEGIN"));
             interactionClient.call("database_gateway_execute_update",
@@ -129,10 +116,8 @@ class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertListDatabasesWithMultipleRuntimeDatabases(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertListDatabasesWithMultipleRuntimeDatabases() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient(createPreparedProgrammaticRuntimeDatabases())) {
             List<String> actualDatabaseNames = getPayloadItems(interactionClient.readResource("shardingsphere://databases")).stream()
                     .map(each -> String.valueOf(each.get("database"))).toList();
@@ -140,10 +125,8 @@ class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertRefreshMetadataVisibleForTargetDatabaseOnly(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertRefreshMetadataVisibleForTargetDatabaseOnly() throws IOException, InterruptedException {
         try (MCPInteractionClient firstInteractionClient = createOpenedInteractionClient(createPreparedProgrammaticRuntimeDatabases())) {
             firstInteractionClient.call("database_gateway_execute_update",
                     createExecuteUpdateArguments(LOGICAL_DATABASE_NAME, "CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
@@ -159,15 +142,35 @@ class MySQLSQLExecutionE2ETest extends AbstractMySQLRuntimeE2ETest {
         }
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("httpTransportCase")
-    void assertRejectCrossDatabaseTransactionSwitch(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
+    @Test
+    void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient(createPreparedProgrammaticRuntimeDatabases())) {
             interactionClient.call("database_gateway_execute_update", createExecuteUpdateArguments(LOGICAL_DATABASE_NAME, "BEGIN"));
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
                     Map.of("database", "analytics_db", "schema", "analytics_db", "sql", "SELECT metric_name FROM metrics ORDER BY metric_id"));
             assertRecoveryResponse(actual, "Cross-database transaction switching is not supported.");
         }
+    }
+    
+    private static Map<String, Object> createExecuteUpdateArguments(final String sql) {
+        return Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", sql, "execution_mode", "execute");
+    }
+    
+    private static Map<String, Object> createExecuteUpdateArguments(final String databaseName, final String sql) {
+        return Map.of("database", databaseName, "schema", databaseName, "sql", sql, "execution_mode", "execute");
+    }
+    
+    private Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases() throws IOException {
+        prepareRuntime();
+        try {
+            return MySQLRuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(getContainer());
+        } catch (final SQLException ex) {
+            throw new IOException("Failed to initialize MySQL programmatic runtime databases.", ex);
+        }
+    }
+    
+    private List<String> readTableNames(final MCPInteractionClient interactionClient, final String databaseName) throws IOException, InterruptedException {
+        return getPayloadItems(interactionClient.readResource(String.format("shardingsphere://databases/%s/schemas/%s/tables", databaseName, databaseName)))
+                .stream().map(each -> String.valueOf(each.get("table"))).toList();
     }
 }

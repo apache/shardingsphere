@@ -23,7 +23,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdTransactionIdGeneratorTest {
     
@@ -54,5 +56,28 @@ class FirebirdTransactionIdGeneratorTest {
     void assertGetTransactionIdWithoutRegisteredConnection() {
         FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         assertThrows(IllegalStateException.class, () -> FirebirdTransactionIdGenerator.getInstance().getTransactionId(CONNECTION_ID));
+    }
+    
+    @Test
+    void assertIsTransactionActiveWithClosedTransaction() {
+        int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        assertTrue(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, transactionId));
+        FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
+        assertFalse(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, transactionId));
+    }
+    
+    @Test
+    void assertIsTransactionActiveWithoutRegisteredConnection() {
+        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        assertThrows(IllegalStateException.class, () -> FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, 1));
+    }
+    
+    @Test
+    void assertHasActiveTransaction() {
+        assertFalse(FirebirdTransactionIdGenerator.getInstance().hasActiveTransaction(CONNECTION_ID));
+        int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        assertTrue(FirebirdTransactionIdGenerator.getInstance().hasActiveTransaction(CONNECTION_ID));
+        FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
+        assertFalse(FirebirdTransactionIdGenerator.getInstance().hasActiveTransaction(CONNECTION_ID));
     }
 }

@@ -38,6 +38,11 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? ORDER BY o.order_id LIMIT ?" db-types="MySQL" scenario-types="db_tbl_sql_federation"
+               scenario-comments="Test MySQL federation pagination accepts long row count parameter.">
+        <assertion parameters="10:int, 2:long" expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m USING(merchant_id) WHERE o.user_id = ? ORDER BY o.order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>

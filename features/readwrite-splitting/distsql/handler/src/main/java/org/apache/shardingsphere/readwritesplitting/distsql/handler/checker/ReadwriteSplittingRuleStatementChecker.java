@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmDefinitionException;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
@@ -220,18 +220,18 @@ public final class ReadwriteSplittingRuleStatementChecker {
         }
     }
     
-    private static void checkProperties(final ReadwriteSplittingRuleSegment each) {
-        if ("WEIGHT".equalsIgnoreCase(each.getLoadBalancer().getName())) {
-            ShardingSpherePreconditions.checkNotEmpty(each.getLoadBalancer().getProps(), () -> new InvalidAlgorithmConfigurationException("Load balancer", each.getLoadBalancer().getName()));
-            checkDataSource(each);
+    private static void checkProperties(final ReadwriteSplittingRuleSegment segment) {
+        if ("WEIGHT".equalsIgnoreCase(segment.getLoadBalancer().getName())) {
+            ShardingSpherePreconditions.checkNotEmpty(segment.getLoadBalancer().getProps(), () -> new InvalidAlgorithmDefinitionException("Load balancer", segment.getLoadBalancer().getName()));
+            checkDataSource(segment);
         }
     }
     
     private static void checkDataSource(final ReadwriteSplittingRuleSegment ruleSegment) {
         Collection<String> weightKeys = ruleSegment.getLoadBalancer().getProps().stringPropertyNames();
         weightKeys.forEach(each -> ShardingSpherePreconditions.checkContains(ruleSegment.getReadDataSources(), each,
-                () -> new InvalidAlgorithmConfigurationException("Load balancer", ruleSegment.getLoadBalancer().getName(), String.format("Can not find read storage unit '%s'", each))));
+                () -> new InvalidAlgorithmDefinitionException("Load balancer", ruleSegment.getLoadBalancer().getName(), String.format("Can not find read storage unit '%s'", each))));
         ruleSegment.getReadDataSources().forEach(each -> ShardingSpherePreconditions.checkContains(weightKeys, each,
-                () -> new InvalidAlgorithmConfigurationException("Load balancer", ruleSegment.getLoadBalancer().getName(), String.format("Weight of '%s' is required", each))));
+                () -> new InvalidAlgorithmDefinitionException("Load balancer", ruleSegment.getLoadBalancer().getName(), String.format("Weight of '%s' is required", each))));
     }
 }

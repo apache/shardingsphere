@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExp
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanPrimaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BuiltinFunctionsExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CaseExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CaseWhenContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CastFunctionContext;
@@ -67,6 +68,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JsonOb
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JsonObjectKeyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.KeepClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MaterializedViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByClauseContext;
@@ -532,6 +534,17 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
+    public final ASTNode visitMaterializedViewName(final MaterializedViewNameContext ctx) {
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(),
+                ctx.name().getStop().getStopIndex(), new IdentifierValue(ctx.name().identifier().getText())));
+        OwnerContext owner = ctx.owner();
+        if (null != owner) {
+            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+        }
+        return result;
+    }
+    
+    @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
         IndexNameSegment indexName = new IndexNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.name()));
         return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName);
@@ -599,6 +612,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         if (null != ctx.multisetExpr()) {
             return createMultisetExpression(ctx);
+        }
+        if (null != ctx.builtinFunctionsExpr()) {
+            return visit(ctx.builtinFunctionsExpr());
         }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
@@ -1499,6 +1515,15 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         result.getParameters().addAll(getExpressions(ctx.expr()));
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitBuiltinFunctionsExpr(final BuiltinFunctionsExprContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.builtinFunction().getText(), getOriginalText(ctx));
+        result.setOwner(new OwnerSegment(ctx.packageIdentifier().getStart().getStartIndex(), ctx.packageIdentifier().getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.packageIdentifier().identifier())));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
     

@@ -40,4 +40,5 @@
     <sql-case id="select_sub_query_with_sum" value="SELECT [T1_1].[col] AS [col] FROM (SELECT SUM([T2_1].[Quantity]) AS [col] FROM [AdventureWorks2022].[Production].[ProductInventory] AS T2_1) AS T1_1" db-types="SQLServer"/>
     <sql-case id="select_sub_query_with_rownumber" value="SELECT * FROM (SELECT col1, ROW_NUMBER () OVER (PARTITION by col1 ORDER BY col1) rn FROM tab1 WHERE col1='XYZ') WHERE rn = 1" db-types="SQLServer"/>
     <sql-case id="select_sub_query_with_alias" value="SELECT B.* FROM (SELECT A.* FROM (SELECT * FROM ACT_DEPLOY_FORM WHERE FORM_KEY = 1) AS A) AS B" db-types="Oracle"/>
+    <sql-case id="select_oracle_full_width_symbols_with_subquery" value="SELECT DECODE（COUNT（t.item_id），0，0，1） FROM t_order_item t WHERE t.user_id ＝ （SELECT u.user_id FROM t_user u WHERE u.user_name = ? AND u.status ＝ 1） AND t.quantity ＋ 1 ＞ 0" db-types="Oracle" case-types="PLACEHOLDER" />
 </sql-cases>

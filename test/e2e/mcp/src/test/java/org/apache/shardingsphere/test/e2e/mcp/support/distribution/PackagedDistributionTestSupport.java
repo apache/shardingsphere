@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -57,18 +56,6 @@ public final class PackagedDistributionTestSupport {
     private static final int DOCKER_HTTP_PORT = 18088;
     
     private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
-    
-    /**
-     * Prepare one packaged MCP distribution copy for E2E tests.
-     *
-     * @param tempDir temporary directory
-     * @param transport runtime transport
-     * @return prepared packaged distribution
-     * @throws IOException I/O exception
-     */
-    public static PreparedPackagedDistribution prepare(final Path tempDir, final RuntimeTransport transport) throws IOException {
-        return prepare(tempDir, transport, Map.of());
-    }
     
     /**
      * Prepare one packaged MCP distribution copy with supplied runtime databases.
@@ -117,8 +104,10 @@ public final class PackagedDistributionTestSupport {
      */
     public static Path createDockerConfigurationFile(final Path targetFile, final RuntimeTransport transport,
                                                      final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
-        return writeConfiguration(targetFile, new MCPLaunchConfiguration(resolveTransportType(transport),
-                new HttpTransportConfiguration(DOCKER_BIND_HOST, DOCKER_HTTP_PORT, DEFAULT_ENDPOINT_PATH), runtimeDatabases));
+        MCPLaunchConfiguration config = RuntimeTransport.HTTP == transport
+                ? new MCPLaunchConfiguration(new HttpTransportConfiguration(DOCKER_BIND_HOST, DOCKER_HTTP_PORT, DEFAULT_ENDPOINT_PATH), runtimeDatabases)
+                : new MCPLaunchConfiguration(runtimeDatabases);
+        return writeConfiguration(targetFile, config);
     }
     
     private static Path writeConfiguration(final Path targetFile, final MCPLaunchConfiguration config) throws IOException {
@@ -126,14 +115,7 @@ public final class PackagedDistributionTestSupport {
         return targetFile;
     }
     
-    /**
-     * Find the packaged MCP distribution home.
-     *
-     * @return packaged MCP distribution home
-     * @throws IOException I/O exception
-     * @throws IllegalStateException configured distribution home does not exist
-     */
-    public static Optional<Path> findDistributionHome() throws IOException {
+    private static Optional<Path> findDistributionHome() throws IOException {
         Optional<Path> configuredDistributionHome = resolveConfiguredDistributionHome();
         if (configuredDistributionHome.isPresent()) {
             return configuredDistributionHome;
@@ -271,19 +253,14 @@ public final class PackagedDistributionTestSupport {
     
     private static MCPLaunchConfiguration createRuntimeConfiguration(final MCPLaunchConfiguration sourceConfig, final RuntimeTransport transport,
                                                                      final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        HttpTransportConfiguration actualHttpTransport = new HttpTransportConfiguration(sourceConfig.getHttpTransport().getBindHost(),
-                RuntimeTransport.HTTP == transport ? 0 : sourceConfig.getHttpTransport().getPort(), sourceConfig.getHttpTransport().getEndpointPath());
-        return new MCPLaunchConfiguration(resolveTransportType(transport), actualHttpTransport, runtimeDatabases.isEmpty() ? sourceConfig.getDatabases() : runtimeDatabases);
-    }
-    
-    private static MCPTransportType resolveTransportType(final RuntimeTransport transport) {
-        return RuntimeTransport.HTTP == transport ? MCPTransportType.HTTP : MCPTransportType.STDIO;
+        Map<String, RuntimeDatabaseConfiguration> actualRuntimeDatabases = runtimeDatabases.isEmpty() ? sourceConfig.getDatabases() : runtimeDatabases;
+        if (RuntimeTransport.STDIO == transport) {
+            return new MCPLaunchConfiguration(actualRuntimeDatabases);
+        }
+        HttpTransportConfiguration sourceHttpTransport = sourceConfig.getHttpTransport();
+        return new MCPLaunchConfiguration(new HttpTransportConfiguration(sourceHttpTransport.getBindHost(), 0, sourceHttpTransport.getEndpointPath()), actualRuntimeDatabases);
     }
     
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport) {
-
-        public Path getStartScript() {
-            return PackagedDistributionProcessSupport.resolveStartScript(home);
-        }
     }
 }

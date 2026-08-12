@@ -58,12 +58,10 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -83,11 +81,11 @@ public abstract class SQLBinderIT {
     void assertBind(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_BINDER_TEST_CASES.get(sqlCaseId).getParameters());
         SQLParserTestCase expected = SQL_BINDER_TEST_CASES.get(sqlCaseId);
-        SQLStatement actual = bindSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql, new ArrayList<>(expected.getParameters()));
+        SQLStatement actual = bindSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
         SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
     }
     
-    private SQLStatement bindSQLStatement(final String databaseType, final String sql, final List<Object> parameters) {
+    protected final SQLStatement bindSQLStatement(final String databaseType, final String sql) {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         SQLStatement sqlStatement = new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
         return new SQLBindEngine(mockMetaData(TypedSPILoader.getService(DatabaseType.class, databaseType)), "foo_db_1", hintValueContext).bind(sqlStatement).getSqlStatement();

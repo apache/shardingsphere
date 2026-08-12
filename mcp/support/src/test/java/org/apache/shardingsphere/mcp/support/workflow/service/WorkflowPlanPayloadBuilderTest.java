@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -54,9 +56,7 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setRequest(request);
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         clarifiedIntent.setOperationType("create");
-        clarifiedIntent.setFieldSemantics("phone");
-        clarifiedIntent.setReasoningNotes("Resolved from explicit arguments, heuristic inference for requires_decrypt.");
-        clarifiedIntent.getInferredValues().put("requires_decrypt", true);
+        clarifiedIntent.getInferredValues().put(WorkflowFieldNames.SCHEMA, "public");
         clarifiedIntent.getUnresolvedFields().add("requires_like_query");
         clarifiedIntent.getClarificationMessages().add("Do you need LIKE query?");
         snapshot.setClarifiedIntent(clarifiedIntent);
@@ -77,8 +77,8 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actual.get("plan_id"), is("plan-1"));
         assertThat(actual.get("workflow_kind"), is("encrypt.rule"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("operation_type"), is("create"));
-        assertThat(((Map<?, ?>) actual.get("intent_inference")).get("field_semantics"), is("phone"));
-        assertTrue((Boolean) ((Map<?, ?>) ((Map<?, ?>) actual.get("intent_inference")).get("inferred_values")).get("requires_decrypt"));
+        assertThat(((Map<?, ?>) actual.get("intent_inference")).keySet(), is(Set.of("operation_type", "inferred_values", "unresolved_fields")));
+        assertThat(((Map<?, ?>) ((Map<?, ?>) actual.get("intent_inference")).get("inferred_values")).get(WorkflowFieldNames.SCHEMA), is("public"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("unresolved_fields"), is(clarifiedIntent.getUnresolvedFields()));
         assertThat(actual.get("missing_required_inputs"), is(List.of("requires_like_query", "primary_algorithm_properties.aes-key-value")));
         Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
@@ -193,7 +193,6 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
         snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.getInferredValues().put("execution_mode", "manual-only");
         snapshot.setClarifiedIntent(clarifiedIntent);
         WorkflowRequest request = new WorkflowRequest();
         request.setExecutionMode("manual-only");
@@ -202,7 +201,7 @@ class WorkflowPlanPayloadBuilderTest {
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
         assertTrue((Boolean) actualReviewFocus.get("manual_only"));
-        assertThat(((Map<?, ?>) actual.get("argument_provenance")).get("execution_mode"), is("inferred_from_intent"));
+        assertThat(((Map<?, ?>) actual.get("argument_provenance")).get("execution_mode"), is("user_provided"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).getFirst();
         assertThat(actualNextAction.get("tool_name"), is("database_gateway_apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));

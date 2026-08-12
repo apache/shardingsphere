@@ -34,7 +34,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sequence.DialectSequenceOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DefaultSQLOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
@@ -165,15 +166,6 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     }
     
     /**
-     * Get sequence option.
-     *
-     * @return sequence option
-     */
-    default Optional<DialectSequenceOption> getSequenceOption() {
-        return Optional.empty();
-    }
-    
-    /**
      * Get alter table option.
      *
      * @return alter table option
@@ -189,6 +181,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      */
     default DialectSQLBatchOption getSQLBatchOption() {
         return new DialectSQLBatchOption(true);
+    }
+    
+    /**
+     * Get SQL option.
+     *
+     * @return SQL option
+     */
+    default DialectSQLOption getSQLOption() {
+        return new DefaultSQLOption();
     }
     
     /**
