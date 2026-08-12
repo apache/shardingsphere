@@ -250,7 +250,8 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         ColumnSegment column = new ColumnSegment(ctx.columnName().getStart().getStartIndex(), ctx.columnName().getStop().getStopIndex(),
                 new IdentifierValue(ctx.columnName().getText()));
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataTypeClause());
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false, getText(ctx));
+        boolean isNotNull = ctx.columnConstraintSpecification().stream().anyMatch(each -> null != each.notNullConstraint());
+        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, isNotNull, getText(ctx));
     }
     
     @Override

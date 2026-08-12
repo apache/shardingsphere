@@ -3601,7 +3601,7 @@
 
     <create-table sql-case-id="create_table_with_col_not_null_basic">
         <table name="test_col_not_null" start-index="13" stop-index="29" />
-        <column-definition type="STRING" not-null="false" start-index="32" stop-index="51">
+        <column-definition type="STRING" not-null="true" start-index="32" stop-index="51">
             <column name="name" />
         </column-definition>
     </create-table>
@@ -4087,7 +4087,7 @@
         <column-definition type="INT" primary-key="false" start-index="89" stop-index="125">
             <column name="id" />
         </column-definition>
-        <column-definition type="STRING" not-null="false" comment="User name" start-index="140" stop-index="179">
+        <column-definition type="STRING" not-null="true" comment="User name" start-index="140" stop-index="179">
             <column name="name" />
         </column-definition>
         <column-definition type="INT" check-constraint="age&gt;0 AND age&lt;150" start-index="194" stop-index="253">
