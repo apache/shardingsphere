@@ -122,8 +122,8 @@ class KeepFromXToYMaskAlgorithmTest {
         @Override
         protected Collection<MaskAlgorithmExecuteCaseAssert> getCaseAsserts() {
             return Arrays.asList(
-                    new MaskAlgorithmExecuteCaseAssert("zero_from_x_normal", "abc123456", "***123456"),
-                    new MaskAlgorithmExecuteCaseAssert("zero_from_x_short", "ab", "***"),
+                    new MaskAlgorithmExecuteCaseAssert("zero_from_x_normal", "abc123456", "abc******"),
+                    new MaskAlgorithmExecuteCaseAssert("zero_from_x_short", "ab", "ab"),
                     new MaskAlgorithmExecuteCaseAssert("zero_from_x_empty", "", ""));
         }
     }
