@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.typ
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.DropFunctionStatement;
@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePLSQLBlockStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement.Authorization;
@@ -285,11 +286,13 @@ class OracleDDLStatementVisitorTest {
         OracleCreateProcedureStatement actual = (OracleCreateProcedureStatement) parseStatement(sql);
         assertTrue(actual.getRoutineBody().isPresent());
         assertThat(actual.getRoutineBody().get().getValidStatements().size(), is(4));
-        Iterator<SimpleTableSegment> tables = new TableExtractor().extractExistTableFromRoutineBody(actual.getRoutineBody().get()).iterator();
-        assertThat(tables.next().getTableName().getIdentifier().getValue(), is("t_user"));
-        assertThat(tables.next().getTableName().getIdentifier().getValue(), is("t_user"));
-        assertThat(tables.next().getTableName().getIdentifier().getValue(), is("v_std_user_source"));
-        assertThat(tables.next().getTableName().getIdentifier().getValue(), is("t_user"));
+        Iterator<ValidStatementSegment> statements = actual.getRoutineBody().get().getValidStatements().iterator();
+        assertThat(((SimpleTableSegment) statements.next().getDelete().get().getTable()).getTableName().getIdentifier().getValue(), is("t_user"));
+        assertThat(statements.next().getInsert().get().getTable().get().getTableName().getIdentifier().getValue(), is("t_user"));
+        InsertStatement insertSelectStatement = statements.next().getInsert().get();
+        assertThat(insertSelectStatement.getTable().get().getTableName().getIdentifier().getValue(), is("t_user"));
+        assertThat(((SimpleTableSegment) insertSelectStatement.getInsertSelect().get().getSelect().getFrom().get()).getTableName().getIdentifier().getValue(), is("v_std_user_source"));
+        assertThat(((SimpleTableSegment) statements.next().getDelete().get().getTable()).getTableName().getIdentifier().getValue(), is("t_user"));
     }
     
     private void assertTypeAttributeTable(final SimpleTableSegment actual, final int expectedStartIndex) {
