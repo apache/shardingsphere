@@ -141,6 +141,8 @@
     <sql-case id="alter_table_add_constraints_sqlserver" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id), UNIQUE (order_id), CHECK (order_id > 0), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="SQLServer" />
     <sql-case id="alter_table_drop_constraints_sqlserver" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, uk_order_id, order_index" db-types="SQLServer" />
     <sql-case id="alter_table_alter_column_for_postgresql" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_alter_column_set_not_null_opengauss" value="ALTER TABLE t_order ALTER COLUMN column4 SET NOT NULL" db-types="openGauss" />
+    <sql-case id="alter_table_alter_column_drop_not_null_opengauss" value="ALTER TABLE t_order ALTER COLUMN column4 DROP NOT NULL" db-types="openGauss" />
     <sql-case id="alter_table_alter_column_for_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
     <sql-case id="alter_table_alter_column_not_null_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20) NOT NULL" db-types="SQLServer" />
     <sql-case id="alter_table_alter_column_null_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20) NULL" db-types="SQLServer" />
