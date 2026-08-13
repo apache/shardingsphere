@@ -671,7 +671,7 @@ extractFunction
     ;
 
 regularFunction
-    : (owner DOT_)? regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : (owner DOT_)* regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName
