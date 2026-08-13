@@ -50,7 +50,9 @@ Follow `AGENTS.md` and the applicable `CODE_OF_CONDUCT.md` sections. Their autho
 
 - Edit only `<ResolvedTestFileSet>` under `src/test/java` or `src/test/resources`.
 - Do not edit production, generated output, unrelated tests, or another file type.
-- Capture `Task scope baseline` after resolving the file set and before editing. Any changed path outside that set is a failure, including further mutation of a path already dirty at task start.
+- Capture `Task scope baseline` after resolving the file set and before editing. Any candidate-relevant changed path outside that set is a failure,
+  including further mutation of a path already dirty at task start. Exclude only untracked or ignored reproducible verification outputs such as Maven `target/`
+  and Python `__pycache__/`; they are not editable scope and must not be modified intentionally.
 - Obtain explicit approval before expanding scope. Never use destructive Git operations.
 
 ### R4: Branch map
@@ -141,7 +143,8 @@ Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or con
 
 - `R15-A`: complete the semantic `R8` decision; the scanner cannot infer high-fit.
 - `R15-B`: confirm any metadata-accessor candidate was explicitly requested; the scanner only reports likely candidates.
-- `R15-C`: compare the final worktree with `Task scope baseline`; any out-of-scope mutation fails.
+- `R15-C`: compare the final worktree with `Task scope baseline`; any candidate-relevant out-of-scope mutation fails. Ignore only reproducible,
+  untracked or Git-ignored verification outputs.
 - `R15-D`: every parameterized test uses `@MethodSource` with at least three `Arguments` rows. Inspect external providers manually.
 - `R15-E`: the first parameter is exactly `final String name`.
 - `R15-F`: parameterized bodies contain no `switch`.

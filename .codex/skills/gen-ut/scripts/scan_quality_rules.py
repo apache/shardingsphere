@@ -147,6 +147,7 @@ PUBLIC_METHOD_DECL_PATTERN = re.compile(
 )
 CONSTRUCTOR_TEST_PREFIXES = ("New", "Construct", "Constructor")
 TEST_SCOPE_MARKERS = ("src/test/java/", "src/test/resources/")
+REPRODUCIBLE_VERIFICATION_OUTPUT_DIRECTORIES = frozenset(("target", "__pycache__"))
 
 
 def line_number(source: str, index: int) -> int:
@@ -381,6 +382,10 @@ def parse_status_entries(raw: bytes) -> dict[str, str]:
     return result
 
 
+def is_reproducible_verification_output(path: str, status: str) -> bool:
+    return status in ("??", "!!") and any(each in REPRODUCIBLE_VERIFICATION_OUTPUT_DIRECTORIES for each in Path(path).parts)
+
+
 def collect_worktree_entries(repo_root: Path, allowed_paths: set[str]) -> dict[str, dict[str, str]]:
     completed = subprocess.run(
         ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all", "--ignored=traditional"],
@@ -389,7 +394,7 @@ def collect_worktree_entries(repo_root: Path, allowed_paths: set[str]) -> dict[s
     return {
         path: {"status": status, "fingerprint": fingerprint_path(repo_root / path)}
         for path, status in parse_status_entries(completed.stdout).items()
-        if path not in allowed_paths
+        if path not in allowed_paths and not is_reproducible_verification_output(path, status)
     }
 
 

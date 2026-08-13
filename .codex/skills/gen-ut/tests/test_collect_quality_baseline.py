@@ -64,7 +64,7 @@ class CollectQualityBaselineTest(unittest.TestCase):
         self.assertEqual((5, 1, 5 * 100.0 / 6), counters["BRANCH"])
         self.assertEqual([12], missed_branch_lines)
 
-    def test_missing_counter_does_not_satisfy_target(self):
+    def test_branchless_target_satisfies_target(self):
         root = ET.fromstring("""
             <report>
               <package name="sample">
@@ -72,12 +72,32 @@ class CollectQualityBaselineTest(unittest.TestCase):
                   <counter type="CLASS" missed="0" covered="1" />
                   <counter type="LINE" missed="0" covered="1" />
                 </class>
+                <sourcefile name="Target.java">
+                  <line nr="1" mb="0" cb="0" />
+                </sourcefile>
+              </package>
+            </report>
+        """)
+        found, counters, missed_branch_lines = baseline.summarize_target_coverage(root, "sample.Target")
+        self.assertTrue(found)
+        self.assertEqual((0, 0, 100.0), counters["BRANCH"])
+        self.assertEqual([], missed_branch_lines)
+        self.assertTrue(baseline.meets_target(found, counters, 100.0))
+
+    def test_missing_line_counter_does_not_satisfy_target(self):
+        root = ET.fromstring("""
+            <report>
+              <package name="sample">
+                <class name="sample/Target" sourcefilename="Target.java">
+                  <counter type="CLASS" missed="0" covered="1" />
+                </class>
               </package>
             </report>
         """)
         found, counters, _ = baseline.summarize_target_coverage(root, "sample.Target")
         self.assertTrue(found)
-        self.assertIsNone(counters["BRANCH"])
+        self.assertIsNone(counters["LINE"])
+        self.assertEqual((0, 0, 100.0), counters["BRANCH"])
         self.assertFalse(baseline.meets_target(found, counters, 100.0))
 
 

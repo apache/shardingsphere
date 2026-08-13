@@ -145,18 +145,63 @@ class ScanQualityRulesTest(unittest.TestCase):
             repo_root = Path(temp_dir)
             self.run_git(repo_root, "init")
             allowed = repo_root / "module/src/test/java/TargetTest.java"
-            ignored = repo_root / "target/generated.bin"
+            ignored = repo_root / ".task-cache/generated.bin"
             allowed.parent.mkdir(parents=True)
             ignored.parent.mkdir(parents=True)
             allowed.write_text("class TargetTest {}\n", encoding="utf-8")
-            (repo_root / ".gitignore").write_text("target/\n", encoding="utf-8")
+            (repo_root / ".gitignore").write_text(".task-cache/\n", encoding="utf-8")
             self.run_git(repo_root, "add", ".")
             self.run_git(repo_root, "-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-m", "initial")
             baseline_path = Path(temp_dir).parent / f"{repo_root.name}-ignored-scope.json"
             try:
                 rules.write_scope_baseline(baseline_path, repo_root, [allowed])
                 ignored.write_bytes(b"generated")
-                self.assertEqual(["target/generated.bin"], rules.check_scope_baseline(baseline_path, [allowed]))
+                self.assertEqual([".task-cache/generated.bin"], rules.check_scope_baseline(baseline_path, [allowed]))
+            finally:
+                baseline_path.unlink(missing_ok=True)
+
+    def test_scope_baseline_ignores_verification_outputs(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            self.run_git(repo_root, "init")
+            allowed = repo_root / "module/src/test/java/TargetTest.java"
+            allowed.parent.mkdir(parents=True)
+            allowed.write_text("class TargetTest {}\n", encoding="utf-8")
+            (repo_root / ".gitignore").write_text("target/\n", encoding="utf-8")
+            self.run_git(repo_root, "add", ".")
+            self.run_git(repo_root, "-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-m", "initial")
+            baseline_path = Path(temp_dir).parent / f"{repo_root.name}-verification-output-scope.json"
+            try:
+                rules.write_scope_baseline(baseline_path, repo_root, [allowed])
+                maven_output = repo_root / "module/target/surefire-reports/result.xml"
+                python_output = repo_root / ".codex/skills/gen-ut/scripts/__pycache__/scan.pyc"
+                maven_output.parent.mkdir(parents=True)
+                python_output.parent.mkdir(parents=True)
+                maven_output.write_text("verified\n", encoding="utf-8")
+                python_output.write_bytes(b"compiled")
+                self.assertEqual([], rules.check_scope_baseline(baseline_path, [allowed]))
+            finally:
+                baseline_path.unlink(missing_ok=True)
+
+    def test_scope_baseline_detects_tracked_file_in_verification_output_directory(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            self.run_git(repo_root, "init")
+            allowed = repo_root / "module/src/test/java/TargetTest.java"
+            tracked = repo_root / "fixtures/target/reference.txt"
+            allowed.parent.mkdir(parents=True)
+            tracked.parent.mkdir(parents=True)
+            allowed.write_text("class TargetTest {}\n", encoding="utf-8")
+            tracked.write_text("before\n", encoding="utf-8")
+            (repo_root / ".gitignore").write_text("target/\n", encoding="utf-8")
+            self.run_git(repo_root, "add", ".")
+            self.run_git(repo_root, "add", "-f", "fixtures/target/reference.txt")
+            self.run_git(repo_root, "-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-m", "initial")
+            baseline_path = Path(temp_dir).parent / f"{repo_root.name}-tracked-output-scope.json"
+            try:
+                rules.write_scope_baseline(baseline_path, repo_root, [allowed])
+                tracked.write_text("after\n", encoding="utf-8")
+                self.assertEqual(["fixtures/target/reference.txt"], rules.check_scope_baseline(baseline_path, [allowed]))
             finally:
                 baseline_path.unlink(missing_ok=True)
 

@@ -69,7 +69,10 @@ def summarize_target_coverage(root: ET.Element, fqcn: str) -> tuple[bool, dict[s
             covered += int(counter.get("covered"))
             missed += int(counter.get("missed"))
         total = covered + missed
-        counters[counter_type] = (covered, missed, 100.0 if 0 == total else covered * 100.0 / total) if found_counter else None
+        if found_counter:
+            counters[counter_type] = (covered, missed, 100.0 if 0 == total else covered * 100.0 / total)
+        else:
+            counters[counter_type] = (0, 0, 100.0) if matched_nodes and "BRANCH" == counter_type else None
     sourcefile = find_sourcefile_node(root, fqcn)
     missed_branch_lines = []
     if sourcefile is not None:

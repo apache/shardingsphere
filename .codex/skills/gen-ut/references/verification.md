@@ -33,6 +33,8 @@ python3 .codex/skills/gen-ut/scripts/scan_quality_rules.py \
 ```
 
 Do not use shared fixed files under `/tmp`. Keep the temporary directory through delivery so logs and evidence remain inspectable.
+The scope guard excludes untracked or ignored Maven `target/` files and Python `__pycache__/` files because the required verification commands create them.
+It still rejects tracked files in those directories and other ignored files outside the resolved test file set.
 
 ## Baseline
 
@@ -56,7 +58,8 @@ python3 .codex/skills/gen-ut/scripts/collect_quality_baseline.py \
   <ResolvedTestFileSet>
 ```
 
-`coverageStatus=missing` means no coverage evidence exists; it never means 100%.
+`coverageStatus=missing` means required target, CLASS, or LINE evidence does not exist; it never means 100%.
+For a present target with no BRANCH counter, report `covered=0 missed=0 ratio=100%` because JaCoCo omits zero-total branch counters.
 
 ## Edit-loop checks
 
@@ -97,7 +100,7 @@ python3 .codex/skills/gen-ut/scripts/collect_quality_baseline.py \
   <ResolvedTestFileSet>
 ```
 
-Missing target classes or counters fail when `--minimum-ratio` is present.
+Missing target classes, CLASS counters, or LINE counters fail when `--minimum-ratio` is present. A branchless target satisfies BRANCH coverage with zero missed branches.
 
 ## Repository completion gates
 
