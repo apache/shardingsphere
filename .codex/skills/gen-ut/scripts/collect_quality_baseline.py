@@ -21,11 +21,8 @@ Collect a baseline quality summary for gen-ut before editing begins.
 """
 
 import argparse
-import subprocess
 import sys
-import time
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass
 from pathlib import Path
 
 
@@ -36,27 +33,6 @@ if str(SCRIPT_DIR) not in sys.path:
 import scan_quality_rules as quality_rules
 
 
-@dataclass(frozen=True)
-class CommandResult:
-    command: str
-    returncode: int
-    stdout: str
-    stderr: str
-    duration_seconds: float
-
-
-def run_command(command: str, workdir: Path) -> CommandResult:
-    started = time.monotonic()
-    completed = subprocess.run(command, shell=True, cwd=workdir, capture_output=True, text=True)
-    return CommandResult(
-        command=command,
-        returncode=completed.returncode,
-        stdout=completed.stdout,
-        stderr=completed.stderr,
-        duration_seconds=time.monotonic() - started,
-    )
-
-
 def parse_target_classes(raw: str) -> list[str]:
     result = [each.strip() for each in raw.split(",") if each.strip()]
     if result:
@@ -64,17 +40,8 @@ def parse_target_classes(raw: str) -> list[str]:
     raise ValueError("target-classes must not be empty")
 
 
-def validate_workdir(path: Path) -> Path:
-    workdir = path.resolve()
-    if not workdir.exists():
-        raise ValueError(f"working directory does not exist: {workdir}")
-    if not workdir.is_dir():
-        raise ValueError(f"working directory is not a directory: {workdir}")
-    return workdir
-
-
 def find_sourcefile_node(root: ET.Element, fqcn: str) -> ET.Element | None:
-    package_name, simple_name = fqcn.rsplit(".", 1)
+    package_name, _, simple_name = fqcn.rpartition(".")
     package_path = package_name.replace(".", "/")
     source_name = f"{simple_name}.java"
     for package in root.findall("package"):
@@ -86,26 +53,32 @@ def find_sourcefile_node(root: ET.Element, fqcn: str) -> ET.Element | None:
     return None
 
 
-def summarize_target_coverage(root: ET.Element, fqcn: str) -> tuple[dict[str, tuple[int, int, float]], list[int]]:
+def summarize_target_coverage(root: ET.Element, fqcn: str) -> tuple[bool, dict[str, tuple[int, int, float] | None], list[int]]:
     class_name = fqcn.replace(".", "/")
     matched_nodes = [each for each in root.iter("class") if each.get("name") == class_name or each.get("name", "").startswith(class_name + "$")]
-    counters = {}
+    counters: dict[str, tuple[int, int, float] | None] = {}
     for counter_type in ("CLASS", "LINE", "BRANCH"):
         covered = 0
         missed = 0
+        found_counter = False
         for each in matched_nodes:
             counter = next((item for item in each.findall("counter") if item.get("type") == counter_type), None)
             if counter is None:
                 continue
+            found_counter = True
             covered += int(counter.get("covered"))
             missed += int(counter.get("missed"))
         total = covered + missed
-        counters[counter_type] = (covered, missed, 100.0 if 0 == total else covered * 100.0 / total)
+        counters[counter_type] = (covered, missed, 100.0 if 0 == total else covered * 100.0 / total) if found_counter else None
     sourcefile = find_sourcefile_node(root, fqcn)
     missed_branch_lines = []
     if sourcefile is not None:
         missed_branch_lines = [int(each.get("nr")) for each in sourcefile.findall("line") if int(each.get("mb", "0")) > 0]
-    return counters, missed_branch_lines
+    return bool(matched_nodes), counters, missed_branch_lines
+
+
+def meets_target(found: bool, counters: dict[str, tuple[int, int, float] | None], minimum_ratio: float) -> bool:
+    return found and all(counters[each] is not None and counters[each][2] + 1e-9 >= minimum_ratio for each in ("CLASS", "LINE", "BRANCH"))
 
 
 def print_rule_baseline(scan_result: dict) -> None:
@@ -123,7 +96,15 @@ def print_rule_baseline(scan_result: dict) -> None:
             for each in violations:
                 print(each)
         else:
-            print(f"[{rule}] ok")
+            mode = scan_result["rules"][rule]["mode"]
+            if "automated" == mode:
+                print(f"[{rule}] ok")
+            elif "manual" == mode:
+                print(f"[{rule}] semanticReviewRequired=true")
+            else:
+                print(f"[{rule}] mechanical=ok semanticReviewRequired=true")
+            for each in scan_result.get("reviews", {}).get(rule, []):
+                print(f"review: {each}")
     prechecks = scan_result.get("prechecks", {})
     for name in sorted(prechecks):
         violations = prechecks[name]["violations"]
@@ -135,61 +116,63 @@ def print_rule_baseline(scan_result: dict) -> None:
             print(each)
 
 
-def print_coverage_baseline(jacoco_xml_path: Path, target_classes: list[str]) -> None:
+def print_coverage_baseline(jacoco_xml_path: Path, target_classes: list[str], minimum_ratio: float | None) -> bool:
     root = ET.parse(jacoco_xml_path).getroot()
+    result = True
     for fqcn in target_classes:
-        counters, missed_branch_lines = summarize_target_coverage(root, fqcn)
+        found, counters, missed_branch_lines = summarize_target_coverage(root, fqcn)
+        if not found:
+            print(f"[baseline] {fqcn} coverageStatus=missing")
+            result = False
+            continue
         for counter_type in ("CLASS", "LINE", "BRANCH"):
-            covered, missed, ratio = counters[counter_type]
+            counter = counters[counter_type]
+            if counter is None:
+                print(f"[baseline] {fqcn} (+inner) {counter_type} coverageStatus=missing")
+                result = False
+                continue
+            covered, missed, ratio = counter
             print(f"[baseline] {fqcn} (+inner) {counter_type} covered={covered} missed={missed} ratio={ratio:.2f}%")
         if missed_branch_lines:
             line_text = ",".join(str(each) for each in missed_branch_lines)
             print(f"[baseline] {fqcn} branchMissLines={line_text}")
         else:
             print(f"[baseline] {fqcn} branchMissLines=none")
+        if minimum_ratio is not None and not meets_target(found, counters, minimum_ratio):
+            result = False
+    return result
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Collect baseline coverage and quality-rule diagnostics for gen-ut.")
-    parser.add_argument("--workdir", default=".", help="Working directory for the coverage command.")
-    parser.add_argument("--coverage-command", required=True, help="Shell command that generates the jacoco report for the target test scope.")
     parser.add_argument("--jacoco-xml-path", required=True, help="Path to the jacoco.xml generated by the coverage command.")
     parser.add_argument("--target-classes", required=True, help="Comma-separated target production classes.")
-    parser.add_argument("--baseline-before", help="Path to the baseline git status captured at task start.")
-    parser.add_argument("--allow-metadata-accessor-tests", action="store_true", help="Allow R15-B when the user explicitly requested metadata accessor tests.")
+    parser.add_argument("--scope-baseline", help="Structured task scope baseline created by scan_quality_rules.py.")
+    parser.add_argument("--minimum-ratio", type=float, help="Fail unless every target CLASS, LINE, and BRANCH ratio meets this percentage.")
     parser.add_argument("paths", nargs="+", help="Resolved test file set.")
     args = parser.parse_args()
 
     try:
-        workdir = validate_workdir(Path(args.workdir))
         target_classes = parse_target_classes(args.target_classes)
+        if args.minimum_ratio is not None and not 0.0 <= args.minimum_ratio <= 100.0:
+            raise ValueError("minimum-ratio must be between 0 and 100")
     except ValueError as ex:
         parser.error(str(ex))
-    java_paths = [Path(each) for each in args.paths if each.endswith(".java")]
-    baseline_path = Path(args.baseline_before) if args.baseline_before else None
-    scan_result = quality_rules.collect_scan_result(java_paths, baseline_path, args.allow_metadata_accessor_tests)
+    paths = [Path(each) for each in args.paths]
+    baseline_path = Path(args.scope_baseline) if args.scope_baseline else None
+    scan_result = quality_rules.collect_scan_result(paths, baseline_path)
+    rules_ok = not quality_rules.failed_rule_names(scan_result)
     print_rule_baseline(scan_result)
-    coverage_result = run_command(args.coverage_command, workdir)
-    print(f"[baseline] coverageCommandExit={coverage_result.returncode} duration={coverage_result.duration_seconds:.2f}s")
-    print(f"[baseline] coverageCommand={coverage_result.command}")
-    if 0 != coverage_result.returncode:
-        if coverage_result.stdout.strip():
-            print("[baseline] coverageStdout:")
-            print(coverage_result.stdout.rstrip())
-        if coverage_result.stderr.strip():
-            print("[baseline] coverageStderr:")
-            print(coverage_result.stderr.rstrip())
-        return coverage_result.returncode
     jacoco_xml_path = Path(args.jacoco_xml_path)
     if not jacoco_xml_path.exists():
         print(f"[baseline] missingJacocoXml={jacoco_xml_path}", file=sys.stderr)
         return 2
     try:
-        print_coverage_baseline(jacoco_xml_path, target_classes)
+        coverage_ok = print_coverage_baseline(jacoco_xml_path, target_classes, args.minimum_ratio)
     except (OSError, ET.ParseError) as ex:
         print(f"[baseline] invalidJacocoXml={jacoco_xml_path}: {ex}", file=sys.stderr)
         return 2
-    return 0
+    return 0 if args.minimum_ratio is None or coverage_ok and rules_ok else 1
 
 
 if __name__ == "__main__":
