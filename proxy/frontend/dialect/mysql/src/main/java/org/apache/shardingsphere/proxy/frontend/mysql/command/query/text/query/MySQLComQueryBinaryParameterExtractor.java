@@ -40,7 +40,7 @@ import java.util.List;
  * Binary parameter extractor for MySQL COM_QUERY.
  *
  * <p>Rewrite unambiguous single-quoted literals containing malformed bytes to placeholders and preserve their values as {@link SerialBlob} parameters.
- * Literals with mode-dependent or grammar-dependent semantics are left unchanged.</p>
+ * Backslash escapes use MySQL's default escaping rules; literals with grammar-dependent semantics are left unchanged.</p>
  */
 final class MySQLComQueryBinaryParameterExtractor {
     
@@ -81,7 +81,7 @@ final class MySQLComQueryBinaryParameterExtractor {
             replacementStart = 0 <= replacementStart ? replacementStart : each.startIndex;
             sql.write(this.sql, offset, replacementStart - offset);
             sql.write('?');
-            binaryLiteralValues.add(new SerialBlob(extractLiteralValue(each.startIndex + 1, each.endIndex)));
+            binaryLiteralValues.add(new SerialBlob(unescape(each.startIndex + 1, each.endIndex)));
             offset = each.endIndex + 1;
         }
         sql.write(this.sql, offset, this.sql.length - offset);
@@ -123,12 +123,11 @@ final class MySQLComQueryBinaryParameterExtractor {
     }
     
     private boolean isParameterLiteral(final byte quote, final QuotedLiteral literal) {
-        return '\'' == quote && literal.containsMalformedBytes && !literal.containsBackslash;
+        return '\'' == quote && literal.containsMalformedBytes;
     }
     
     private QuotedLiteral findQuotedLiteral(final int startIndex, final byte quote) {
         boolean containsMalformedBytes = false;
-        boolean containsBackslash = false;
         for (int i = startIndex + 1; i < sql.length;) {
             int characterLength = readCharacterLength(i);
             if (0 > characterLength) {
@@ -137,7 +136,6 @@ final class MySQLComQueryBinaryParameterExtractor {
             } else if (1 < characterLength) {
                 i += characterLength;
             } else if ('\\' == sql[i]) {
-                containsBackslash = true;
                 int escapedCharacterLength = i + 1 < sql.length ? readCharacterLength(i + 1) : 0;
                 if (0 > escapedCharacterLength) {
                     containsMalformedBytes = true;
@@ -148,10 +146,10 @@ final class MySQLComQueryBinaryParameterExtractor {
             } else if (i + 1 < sql.length && quote == sql[i + 1]) {
                 i += 2;
             } else {
-                return new QuotedLiteral(startIndex, i, containsMalformedBytes, containsBackslash);
+                return new QuotedLiteral(startIndex, i, containsMalformedBytes);
             }
         }
-        return new QuotedLiteral(startIndex, -1, containsMalformedBytes, containsBackslash);
+        return new QuotedLiteral(startIndex, -1, containsMalformedBytes);
     }
     
     private boolean areAdjacent(final QuotedLiteral previousLiteral, final QuotedLiteral currentLiteral) {
@@ -269,7 +267,7 @@ final class MySQLComQueryBinaryParameterExtractor {
         return sql.length;
     }
     
-    private byte[] extractLiteralValue(final int startIndex, final int endIndex) {
+    private byte[] unescape(final int startIndex, final int endIndex) {
         ByteArrayOutputStream result = new ByteArrayOutputStream(endIndex - startIndex);
         for (int i = startIndex; i < endIndex;) {
             int characterLength = readCharacterLength(i);
@@ -279,12 +277,52 @@ final class MySQLComQueryBinaryParameterExtractor {
             } else if ('\'' == sql[i] && i + 1 < endIndex && '\'' == sql[i + 1]) {
                 result.write('\'');
                 i += 2;
-            } else {
+            } else if ('\\' != sql[i] || i + 1 >= endIndex) {
                 result.write(sql[i]);
                 i++;
+            } else {
+                int escapedCharacterLength = readCharacterLength(i + 1);
+                if (1 < escapedCharacterLength) {
+                    result.write(sql, i + 1, escapedCharacterLength);
+                    i += escapedCharacterLength + 1;
+                } else {
+                    writeEscapedByte(result, sql[i + 1]);
+                    i += 2;
+                }
             }
         }
         return result.toByteArray();
+    }
+    
+    private static void writeEscapedByte(final ByteArrayOutputStream output, final byte value) {
+        switch (value) {
+            case '0':
+                output.write(0);
+                break;
+            case 'b':
+                output.write('\b');
+                break;
+            case 'n':
+                output.write('\n');
+                break;
+            case 'r':
+                output.write('\r');
+                break;
+            case 't':
+                output.write('\t');
+                break;
+            case 'Z':
+                output.write(0x1A);
+                break;
+            case '%':
+            case '_':
+                output.write('\\');
+                output.write(value);
+                break;
+            default:
+                output.write(value);
+                break;
+        }
     }
     
     @RequiredArgsConstructor
@@ -304,8 +342,6 @@ final class MySQLComQueryBinaryParameterExtractor {
         private final int endIndex;
         
         private final boolean containsMalformedBytes;
-        
-        private final boolean containsBackslash;
         
         private boolean isClosed() {
             return 0 <= endIndex;

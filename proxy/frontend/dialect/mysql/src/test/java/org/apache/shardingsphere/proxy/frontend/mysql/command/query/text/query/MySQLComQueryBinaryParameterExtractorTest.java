@@ -33,11 +33,21 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 class MySQLComQueryBinaryParameterExtractorTest {
     
     @Test
-    void assertSkipBackslashAmbiguousLiteral() throws SQLException {
+    void assertExtractConnectorJBinaryLiteral() throws SQLException {
         byte[] content = {'\\', '0', '\\', '\'', '\\', '\\', (byte) 0xFF};
         MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(
                 sql("INSERT INTO t VALUES (_binary'", content, "')"), StandardCharsets.UTF_8);
-        assertThat(actual.getBinaryLiteralValues(), empty());
+        assertThat(actual.getSql(), is("INSERT INTO t VALUES (?)"));
+        assertArrayEquals(new byte[]{0, '\'', '\\', (byte) 0xFF}, getBlobBytes(actual.getBinaryLiteralValues().get(0)));
+    }
+    
+    @Test
+    void assertExtractBackslashEscapedMalformedLiteral() throws SQLException {
+        byte[] content = {'\\', 'b', '\\', 'n', '\\', 'r', '\\', 't', '\\', 'Z', '\\', 'q', '\\', '%', '\\', '_', (byte) 0xFF};
+        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(
+                sql("INSERT INTO t VALUES ('", content, "')"), StandardCharsets.UTF_8);
+        assertThat(actual.getSql(), is("INSERT INTO t VALUES (?)"));
+        assertArrayEquals(new byte[]{'\b', '\n', '\r', '\t', 0x1A, 'q', '\\', '%', '\\', '_', (byte) 0xFF}, getBlobBytes(actual.getBinaryLiteralValues().get(0)));
     }
     
     @Test
