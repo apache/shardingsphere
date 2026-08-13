@@ -115,6 +115,14 @@ readiness conclusion.
 Read [evidence-access.md](references/evidence-access.md) whenever current GitHub,
 CI, Actions, or third-party behavior evidence is required.
 
+AI-assistance disclosure is a mergeability concern, not a code-correctness
+signal. In Mergeability Review or an explicit policy-compliance review, apply
+`AI_POLICY.md` only when public PR evidence explicitly establishes material AI
+assistance. Verify that the PR description names the tool and affected files or
+scope. Never infer AI use from code, prose style, metadata, or an automated
+classifier; without explicit public evidence, missing disclosure is neither a
+finding nor an evidence gap.
+
 ## Finding Proof Gate
 
 A candidate may become a blocking issue only when all five conditions hold:
