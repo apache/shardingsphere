@@ -1201,6 +1201,24 @@
         </modify-column>
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_alter_column_not_null_sqlserver">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR" not-null="true" start-index="20" stop-index="60">
+                <column name="column4" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_alter_column_null_sqlserver">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR" not-null="false" start-index="20" stop-index="56">
+                <column name="column4" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_set_schema">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
