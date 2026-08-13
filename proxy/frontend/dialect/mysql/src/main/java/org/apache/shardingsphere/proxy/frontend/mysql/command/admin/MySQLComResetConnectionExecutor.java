@@ -52,11 +52,12 @@ public final class MySQLComResetConnectionExecutor implements CommandExecutor {
     }
     
     private void resetSQLMode() {
-        if (MySQLSessionSQLMode.DEFAULT_SQL_MODE.equals(MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue())) {
+        String globalSQLMode = MySQLSessionSQLMode.getGlobalValue();
+        if (globalSQLMode.equals(MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue())) {
             return;
         }
-        MySQLSessionSQLMode.set(MySQLSessionSQLMode.DEFAULT_SQL_MODE, connectionSession.getAttributeMap());
-        connectionSession.getRequiredSessionVariableRecorder().setVariable(SQL_MODE, "DEFAULT");
+        MySQLSessionSQLMode.set(globalSQLMode, connectionSession.getAttributeMap());
+        connectionSession.getRequiredSessionVariableRecorder().setVariable(SQL_MODE, MySQLSessionSQLMode.formatAssignValue(globalSQLMode));
         connectionSession.getDatabaseConnectionManager().markSessionVariablesDirty();
     }
 }

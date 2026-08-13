@@ -37,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.s
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableScope;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.select.UnicastResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset.MySQLSessionCharsetContext;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment.VariableType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -89,8 +91,8 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
             VariableAssignSegment each = sessionVariableAssigns.get(i);
             String variableName = each.getVariable().getVariable();
             if (SQL_MODE.equalsIgnoreCase(variableName)) {
-                sqlMode = parseSQLMode(each.getAssignValue());
-                replayedSessionVariables.put(SQL_MODE, each.getAssignValue());
+                sqlMode = parseSQLMode(each.getAssignValue(), connectionSession, metaData);
+                replayedSessionVariables.put(SQL_MODE, MySQLSessionSQLMode.formatAssignValue(sqlMode));
                 continue;
             }
             if (!isCharsetVariable(variableName)) {
@@ -119,13 +121,26 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
         executeSetGlobalVariablesIfPresent(connectionSession, metaData);
     }
     
-    private String parseSQLMode(final String assignValue) {
+    private String parseSQLMode(final String assignValue, final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         if (isKeyword(assignValue, "default")) {
-            return MySQLSessionSQLMode.DEFAULT_SQL_MODE;
+            return MySQLSessionSQLMode.getGlobalValue();
         }
-        ShardingSpherePreconditions.checkState(QuoteCharacter.SINGLE_QUOTE.isWrapped(assignValue), () -> new InvalidParameterValueException(SQL_MODE, assignValue));
-        String value = assignValue.substring(1, assignValue.length() - 1);
+        String value = QuoteCharacter.SINGLE_QUOTE.isWrapped(assignValue)
+                ? assignValue.substring(1, assignValue.length() - 1)
+                : evaluateSQLModeExpression(assignValue, connectionSession, metaData);
         return Arrays.stream(value.split(",", -1)).map(String::trim).map(each -> each.toUpperCase(Locale.ROOT)).collect(Collectors.joining(","));
+    }
+    
+    private String evaluateSQLModeExpression(final String expression, final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
+        String sql = "SELECT " + expression;
+        SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SelectStatement selectStatement = (SelectStatement) sqlParserRule.getSQLParserEngine(sqlStatement.getDatabaseType()).parse(sql, false);
+        UnicastResourceShowExecutor executor = new UnicastResourceShowExecutor(selectStatement, sql);
+        executor.execute(connectionSession, metaData);
+        ShardingSpherePreconditions.checkState(executor.getMergedResult().next(), () -> new InvalidParameterValueException(SQL_MODE, expression));
+        Object result = executor.getMergedResult().getValue(1, String.class);
+        ShardingSpherePreconditions.checkNotNull(result, () -> new InvalidParameterValueException(SQL_MODE, expression));
+        return result.toString();
     }
     
     private List<VariableAssignSegment> extractSessionVariableAssigns() {
@@ -242,7 +257,8 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
         if (null == connectionSession.getUsedDatabaseName()) {
             return;
         }
-        String concatenatedGlobalVariables = extractGlobalVariables().entrySet().stream().map(entry -> String.format("@@GLOBAL.%s = %s", entry.getKey(), entry.getValue()))
+        Map<String, String> globalVariables = extractGlobalVariables();
+        String concatenatedGlobalVariables = globalVariables.entrySet().stream().map(entry -> String.format("@@GLOBAL.%s = %s", entry.getKey(), entry.getValue()))
                 .collect(Collectors.joining(", "));
         if (concatenatedGlobalVariables.isEmpty()) {
             return;
@@ -259,6 +275,9 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
             databaseProxyBackendHandler.execute();
         } finally {
             databaseProxyBackendHandler.close();
+        }
+        if (globalVariables.keySet().stream().anyMatch(SQL_MODE::equalsIgnoreCase)) {
+            MySQLSessionSQLMode.setGlobalValue(parseSQLMode("@@global.sql_mode", connectionSession, metaData));
         }
     }
     

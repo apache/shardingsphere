@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionSt
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.ConstructionMockSettings;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -50,6 +51,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @ConstructionMockSettings(ProxyBackendTransactionManager.class)
 class MySQLComResetConnectionExecutorTest {
+    
+    @AfterEach
+    void resetGlobalSQLMode() {
+        MySQLSessionSQLMode.setGlobalValue(MySQLSessionSQLMode.DEFAULT_SQL_MODE);
+    }
     
     @Test
     void assertExecute() throws SQLException {
@@ -71,6 +77,7 @@ class MySQLComResetConnectionExecutorTest {
     
     @Test
     void assertExecuteResetsSQLMode() throws SQLException {
+        MySQLSessionSQLMode.setGlobalValue("STRICT_TRANS_TABLES");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
@@ -82,9 +89,10 @@ class MySQLComResetConnectionExecutorTest {
         RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
         Collection<DatabasePacket> actual = new MySQLComResetConnectionExecutor(connectionSession).execute();
-        assertFalse(MySQLSessionSQLMode.get(attributeMap).isNoBackslashEscapes());
-        assertThat(recorder.toSetSQLs("MySQL"), is(Collections.singletonList("SET sql_mode=DEFAULT")));
         assertThat(((MySQLOKPacket) actual.iterator().next()).getStatusFlag(), is(0));
+        assertFalse(MySQLSessionSQLMode.get(attributeMap).isNoBackslashEscapes());
+        assertThat(MySQLSessionSQLMode.get(attributeMap).getValue(), is("STRICT_TRANS_TABLES"));
+        assertThat(recorder.toSetSQLs("MySQL"), is(Collections.singletonList("SET sql_mode='STRICT_TRANS_TABLES'")));
         verify(databaseConnectionManager).markSessionVariablesDirty();
     }
 }
