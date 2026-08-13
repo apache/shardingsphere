@@ -26,7 +26,7 @@ public final class MySQLReplayedSessionVariableProvider implements ReplayedSessi
     
     @Override
     public boolean isNeedToReplay(final String variableName) {
-        return variableName.startsWith("@") || "collation_connection".equalsIgnoreCase(variableName);
+        return variableName.startsWith("@") || "collation_connection".equalsIgnoreCase(variableName) || "sql_mode".equalsIgnoreCase(variableName);
     }
     
     @Override

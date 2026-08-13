@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackend
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariableScope;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset.MySQLSessionCharsetContext;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
@@ -68,6 +70,8 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
     
     private static final String COLLATION_CONNECTION = "collation_connection";
     
+    private static final String SQL_MODE = "sql_mode";
+    
     private static final Collection<String> IMPERMISSIBLE_CLIENT_CHARACTER_SETS = Arrays.asList("ucs2", "utf16", "utf16le", "utf32");
     
     private final SetStatement sqlStatement;
@@ -78,11 +82,17 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
         validateSessionVariables(sessionVariableAssigns.stream().map(VariableAssignSegment::getVariable).collect(Collectors.toList()));
         boolean setNamesWithCollation = isSetNamesWithCollation(sessionVariableAssigns);
         MySQLSessionCharsetContext charsetContext = setNamesWithCollation ? MySQLSessionCharsetContext.create(MySQLConstants.DEFAULT_CHARSET) : null;
+        String sqlMode = null;
         Map<String, String> replayedSessionVariables = new LinkedHashMap<>();
         String connectionCollationReplayValue = null;
         for (int i = 0; i < sessionVariableAssigns.size(); i++) {
             VariableAssignSegment each = sessionVariableAssigns.get(i);
             String variableName = each.getVariable().getVariable();
+            if (SQL_MODE.equalsIgnoreCase(variableName)) {
+                sqlMode = parseSQLMode(each.getAssignValue());
+                replayedSessionVariables.put(SQL_MODE, each.getAssignValue());
+                continue;
+            }
             if (!isCharsetVariable(variableName)) {
                 replayedSessionVariables.put(variableName, each.getAssignValue());
                 continue;
@@ -98,12 +108,24 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
         if (null != charsetContext) {
             charsetContext.apply(connectionSession.getAttributeMap());
         }
+        if (null != sqlMode) {
+            MySQLSessionSQLMode.set(sqlMode, connectionSession.getAttributeMap());
+        }
         SessionVariableRecordExecutor sessionVariableRecordExecutor = new SessionVariableRecordExecutor(sqlStatement.getDatabaseType(), connectionSession);
         sessionVariableRecordExecutor.recordVariable(replayedSessionVariables);
         if (null != connectionCollationReplayValue) {
             sessionVariableRecordExecutor.recordVariable(COLLATION_CONNECTION, connectionCollationReplayValue);
         }
         executeSetGlobalVariablesIfPresent(connectionSession, metaData);
+    }
+    
+    private String parseSQLMode(final String assignValue) {
+        if (isKeyword(assignValue, "default")) {
+            return MySQLSessionSQLMode.DEFAULT_SQL_MODE;
+        }
+        ShardingSpherePreconditions.checkState(QuoteCharacter.SINGLE_QUOTE.isWrapped(assignValue), () -> new InvalidParameterValueException(SQL_MODE, assignValue));
+        String value = assignValue.substring(1, assignValue.length() - 1);
+        return Arrays.stream(value.split(",", -1)).map(String::trim).map(each -> each.toUpperCase(Locale.ROOT)).collect(Collectors.joining(","));
     }
     
     private List<VariableAssignSegment> extractSessionVariableAssigns() {

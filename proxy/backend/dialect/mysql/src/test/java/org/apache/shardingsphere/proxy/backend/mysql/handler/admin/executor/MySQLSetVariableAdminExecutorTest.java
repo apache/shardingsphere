@@ -39,6 +39,7 @@ import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyCo
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset.MySQLSessionCharsetContext;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
@@ -63,6 +64,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
@@ -289,6 +291,40 @@ class MySQLSetVariableAdminExecutorTest {
         RequiredSessionVariableRecorder recorder = connectionSession.getRequiredSessionVariableRecorder();
         executor.execute(connectionSession, mock());
         assertThat(recorder.toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET @test_var=1")));
+    }
+    
+    @Test
+    void assertExecuteWithSQLMode() throws SQLException {
+        SetStatement setStatement = parseSetStatement("SET SESSION sql_mode = 'strict_trans_tables, no_backslash_escapes'");
+        ConnectionSession connectionSession = mockReplayableConnectionSession();
+        new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock());
+        MySQLSessionSQLMode actual = MySQLSessionSQLMode.get(connectionSession.getAttributeMap());
+        assertThat(actual.getValue(), is("STRICT_TRANS_TABLES,NO_BACKSLASH_ESCAPES"));
+        assertTrue(actual.isNoBackslashEscapes());
+        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
+                is(Collections.singletonList("SET sql_mode='strict_trans_tables, no_backslash_escapes'")));
+    }
+    
+    @Test
+    void assertExecuteWithDefaultSQLMode() throws SQLException {
+        SetStatement setStatement = parseSetStatement("SET sql_mode = DEFAULT");
+        ConnectionSession connectionSession = mockReplayableConnectionSession();
+        MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", connectionSession.getAttributeMap());
+        new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock());
+        assertThat(MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue(), is(MySQLSessionSQLMode.DEFAULT_SQL_MODE));
+        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET sql_mode=DEFAULT")));
+    }
+    
+    @Test
+    void assertExecuteRejectsSQLModeExpressionAtomically() {
+        SetStatement setStatement = parseSetStatement("SET sql_mode = CONCAT(@@sql_mode, ',NO_BACKSLASH_ESCAPES')");
+        ConnectionSession connectionSession = mockConnectionSession();
+        MySQLSessionSQLMode.set("STRICT_TRANS_TABLES", connectionSession.getAttributeMap());
+        MySQLSessionSQLMode expected = MySQLSessionSQLMode.get(connectionSession.getAttributeMap());
+        InvalidParameterValueException actual = assertThrows(
+                InvalidParameterValueException.class, () -> new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock()));
+        assertThat(actual.getParameterName(), is("sql_mode"));
+        assertThat(MySQLSessionSQLMode.get(connectionSession.getAttributeMap()), is(expected));
     }
     
     private ConnectionContext mockConnectionContext() {

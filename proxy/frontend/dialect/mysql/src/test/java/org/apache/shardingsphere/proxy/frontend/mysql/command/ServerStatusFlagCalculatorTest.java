@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command;
 
+import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,5 +65,13 @@ class ServerStatusFlagCalculatorTest {
     void assertCalculateForWithMultiStatements() {
         assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession, false), is(MySQLStatusFlag.SERVER_MORE_RESULTS_EXISTS.getValue()));
         assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession, true), is(0));
+    }
+    
+    @Test
+    void assertNoBackslashEscapes() {
+        DefaultAttributeMap attributeMap = new DefaultAttributeMap();
+        MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", attributeMap);
+        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
+        assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession, true), is(MySQLStatusFlag.SERVER_STATUS_NO_BACKSLASH_ESCAPES.getValue()));
     }
 }

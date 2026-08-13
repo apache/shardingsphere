@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar;
 
+import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.database.exception.mysql.exception.IncorrectGlobalLocalVariableException;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -29,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MySQLSystemVariableTest {
     
@@ -51,6 +55,19 @@ class MySQLSystemVariableTest {
     @Test
     void assertGetValueForSessionScope() {
         assertThat(MySQLSystemVariable.AUTOCOMMIT.getValue(MySQLSystemVariableScope.SESSION, mock()), is("1"));
+    }
+    
+    @Test
+    void assertGetSessionSQLModeValue() {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getAttributeMap()).thenReturn(new DefaultAttributeMap());
+        MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", connectionSession.getAttributeMap());
+        assertThat(MySQLSystemVariable.SQL_MODE.getValue(MySQLSystemVariableScope.SESSION, connectionSession), is("NO_BACKSLASH_ESCAPES"));
+    }
+    
+    @Test
+    void assertGetGlobalSQLModeValue() {
+        assertThat(MySQLSystemVariable.SQL_MODE.getValue(MySQLSystemVariableScope.GLOBAL, null), is(MySQLSessionSQLMode.DEFAULT_SQL_MODE));
     }
     
     @Test
