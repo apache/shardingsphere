@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
@@ -71,7 +70,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -137,8 +135,9 @@ class MySQLComQueryBackendHandlerFactoryTest {
     
     @Test
     void assertCreatePreparedHandlerForBinaryLiteral() throws SQLException {
-        String sql = "INSERT INTO t (id, v) VALUES (1, _binary'foo')";
-        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */ " + sql).getBytes(StandardCharsets.UTF_8)));
+        when(packet.getSQL()).thenReturn("INSERT INTO t (id, v) VALUES (1, _binary'�')");
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql(
+                "/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */ INSERT INTO t (id, v) VALUES (1, _binary'", (byte) 0xFF, "')")));
         when(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getConnectionContext().getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
@@ -149,15 +148,37 @@ class MySQLComQueryBackendHandlerFactoryTest {
         assertThat(actual.getSql(), is("INSERT INTO t (id, v) VALUES (1, ?)"));
         assertThat(actual.getParameters().size(), is(1));
         Blob blob = (Blob) actual.getParameters().get(0);
-        assertArrayEquals("foo".getBytes(StandardCharsets.UTF_8), blob.getBytes(1, (int) blob.length()));
+        assertArrayEquals(new byte[]{(byte) 0xFF}, blob.getBytes(1, (int) blob.length()));
     }
     
     @Test
-    void assertRejectMultiStatementsWithBinaryParameters() {
-        String sql = "UPDATE t SET v = _binary'foo' WHERE id = 1; UPDATE t SET v = _binary'bar' WHERE id = 2";
-        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql.getBytes(StandardCharsets.UTF_8)));
+    void assertCreateMultiStatementsHandlerForMalformedBinaryLiteral() throws SQLException {
+        enableMultiStatements();
+        when(packet.getSQL()).thenReturn("UPDATE t SET v = _binary'�' WHERE id = 1; UPDATE t SET v = _binary'bar' WHERE id = 2");
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql(
+                "UPDATE t SET v = _binary'", (byte) 0xFF, "' WHERE id = 1; UPDATE t SET v = _binary'bar' WHERE id = 2")));
         when(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
-        assertThrows(UnsupportedPreparedStatementException.class, () -> MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession));
+        ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
+        assertThat(actual, isA(MySQLMultiStatementsProxyBackendHandler.class));
+    }
+    
+    @Test
+    void assertCreateStandardHandlerForStructuralBinaryLiteral() throws SQLException {
+        when(packet.getSQL()).thenReturn("SHOW TABLES LIKE _binary'�'");
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql("SHOW TABLES LIKE _binary'", (byte) 0xFF, "'")));
+        when(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+        ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
+        assertThat(actual, is(proxyBackendHandler));
+    }
+    
+    private static byte[] sql(final String prefix, final byte content, final String suffix) {
+        byte[] prefixBytes = prefix.getBytes(StandardCharsets.UTF_8);
+        byte[] suffixBytes = suffix.getBytes(StandardCharsets.UTF_8);
+        byte[] result = new byte[prefixBytes.length + 1 + suffixBytes.length];
+        System.arraycopy(prefixBytes, 0, result, 0, prefixBytes.length);
+        result[prefixBytes.length] = content;
+        System.arraycopy(suffixBytes, 0, result, prefixBytes.length + 1, suffixBytes.length);
+        return result;
     }
     
     private void mockProxyContext() {

@@ -39,8 +39,8 @@ import java.util.List;
 /**
  * Binary parameter extractor for MySQL COM_QUERY.
  *
- * <p>Rewrite binary string literals in original SQL bytes to placeholders and preserve their values as {@link SerialBlob} parameters.
- * Original bytes are required because decoding malformed binary data as text loses the original value.</p>
+ * <p>Rewrite unambiguous single-quoted literals containing malformed bytes to placeholders and preserve their values as {@link SerialBlob} parameters.
+ * Literals with mode-dependent or grammar-dependent semantics are left unchanged.</p>
  */
 final class MySQLComQueryBinaryParameterExtractor {
     
@@ -81,7 +81,7 @@ final class MySQLComQueryBinaryParameterExtractor {
             replacementStart = 0 <= replacementStart ? replacementStart : each.startIndex;
             sql.write(this.sql, offset, replacementStart - offset);
             sql.write('?');
-            binaryLiteralValues.add(new SerialBlob(unescape(each.startIndex + 1, each.endIndex)));
+            binaryLiteralValues.add(new SerialBlob(extractLiteralValue(each.startIndex + 1, each.endIndex)));
             offset = each.endIndex + 1;
         }
         sql.write(this.sql, offset, this.sql.length - offset);
@@ -90,6 +90,8 @@ final class MySQLComQueryBinaryParameterExtractor {
     
     private Collection<QuotedLiteral> findParameterLiterals() {
         Collection<QuotedLiteral> result = new LinkedList<>();
+        QuotedLiteral previousLiteral = null;
+        boolean previousLiteralIsParameter = false;
         for (int i = 0; i < sql.length;) {
             if ('#' == sql[i]) {
                 i = skipLineComment(i + 1);
@@ -102,9 +104,15 @@ final class MySQLComQueryBinaryParameterExtractor {
                 if ('\'' == sql[i] && !literal.isClosed()) {
                     return Collections.emptyList();
                 }
-                if (isParameterLiteral(sql[i], literal)) {
+                boolean parameterLiteral = isParameterLiteral(sql[i], literal);
+                if (null != previousLiteral && (previousLiteralIsParameter || parameterLiteral) && areAdjacent(previousLiteral, literal)) {
+                    return Collections.emptyList();
+                }
+                if (parameterLiteral) {
                     result.add(literal);
                 }
+                previousLiteral = literal;
+                previousLiteralIsParameter = parameterLiteral;
                 i = literal.isClosed() ? literal.endIndex + 1 : sql.length;
             } else {
                 int characterLength = readCharacterLength(i);
@@ -115,11 +123,12 @@ final class MySQLComQueryBinaryParameterExtractor {
     }
     
     private boolean isParameterLiteral(final byte quote, final QuotedLiteral literal) {
-        return '\'' == quote && (literal.containsMalformedBytes || 0 <= findBinaryIntroducerStart(literal.startIndex));
+        return '\'' == quote && literal.containsMalformedBytes && !literal.containsBackslash;
     }
     
     private QuotedLiteral findQuotedLiteral(final int startIndex, final byte quote) {
         boolean containsMalformedBytes = false;
+        boolean containsBackslash = false;
         for (int i = startIndex + 1; i < sql.length;) {
             int characterLength = readCharacterLength(i);
             if (0 > characterLength) {
@@ -128,6 +137,7 @@ final class MySQLComQueryBinaryParameterExtractor {
             } else if (1 < characterLength) {
                 i += characterLength;
             } else if ('\\' == sql[i]) {
+                containsBackslash = true;
                 int escapedCharacterLength = i + 1 < sql.length ? readCharacterLength(i + 1) : 0;
                 if (0 > escapedCharacterLength) {
                     containsMalformedBytes = true;
@@ -138,10 +148,44 @@ final class MySQLComQueryBinaryParameterExtractor {
             } else if (i + 1 < sql.length && quote == sql[i + 1]) {
                 i += 2;
             } else {
-                return new QuotedLiteral(startIndex, i, containsMalformedBytes);
+                return new QuotedLiteral(startIndex, i, containsMalformedBytes, containsBackslash);
             }
         }
-        return new QuotedLiteral(startIndex, -1, containsMalformedBytes);
+        return new QuotedLiteral(startIndex, -1, containsMalformedBytes, containsBackslash);
+    }
+    
+    private boolean areAdjacent(final QuotedLiteral previousLiteral, final QuotedLiteral currentLiteral) {
+        return containsOnlyTrivia(previousLiteral.endIndex + 1, findLiteralTokenStart(currentLiteral.startIndex));
+    }
+    
+    private int findLiteralTokenStart(final int quoteIndex) {
+        int prefixEnd = quoteIndex;
+        while (0 < prefixEnd && isWhitespace(sql[prefixEnd - 1])) {
+            prefixEnd--;
+        }
+        int prefixStart = prefixEnd;
+        while (0 < prefixStart && isIdentifierCharacter(prefixStart - 1)) {
+            prefixStart--;
+        }
+        boolean hasCharacterSetIntroducer = prefixStart < prefixEnd && ('_' == sql[prefixStart] || prefixEnd - prefixStart == 1 && 'n' == toLowerCase(sql[prefixStart]));
+        return hasCharacterSetIntroducer ? prefixStart : quoteIndex;
+    }
+    
+    private boolean containsOnlyTrivia(final int startIndex, final int endIndex) {
+        for (int i = startIndex; i < endIndex;) {
+            if (isWhitespace(sql[i])) {
+                i++;
+            } else if ('#' == sql[i]) {
+                i = skipLineComment(i + 1);
+            } else if (isDashComment(i)) {
+                i = skipLineComment(i + 2);
+            } else if (isBlockComment(i)) {
+                i = skipBlockComment(i + 2);
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
     
     private int readCharacterLength(final int index) {
@@ -225,7 +269,7 @@ final class MySQLComQueryBinaryParameterExtractor {
         return sql.length;
     }
     
-    private byte[] unescape(final int startIndex, final int endIndex) {
+    private byte[] extractLiteralValue(final int startIndex, final int endIndex) {
         ByteArrayOutputStream result = new ByteArrayOutputStream(endIndex - startIndex);
         for (int i = startIndex; i < endIndex;) {
             int characterLength = readCharacterLength(i);
@@ -235,52 +279,12 @@ final class MySQLComQueryBinaryParameterExtractor {
             } else if ('\'' == sql[i] && i + 1 < endIndex && '\'' == sql[i + 1]) {
                 result.write('\'');
                 i += 2;
-            } else if ('\\' != sql[i] || i + 1 >= endIndex) {
+            } else {
                 result.write(sql[i]);
                 i++;
-            } else {
-                int escapedCharacterLength = readCharacterLength(i + 1);
-                if (1 < escapedCharacterLength) {
-                    result.write(sql, i + 1, escapedCharacterLength);
-                    i += escapedCharacterLength + 1;
-                } else {
-                    writeEscapedByte(result, sql[i + 1]);
-                    i += 2;
-                }
             }
         }
         return result.toByteArray();
-    }
-    
-    private static void writeEscapedByte(final ByteArrayOutputStream output, final byte value) {
-        switch (value) {
-            case '0':
-                output.write(0);
-                break;
-            case 'b':
-                output.write('\b');
-                break;
-            case 'n':
-                output.write('\n');
-                break;
-            case 'r':
-                output.write('\r');
-                break;
-            case 't':
-                output.write('\t');
-                break;
-            case 'Z':
-                output.write(0x1A);
-                break;
-            case '%':
-            case '_':
-                output.write('\\');
-                output.write(value);
-                break;
-            default:
-                output.write(value);
-                break;
-        }
     }
     
     @RequiredArgsConstructor
@@ -300,6 +304,8 @@ final class MySQLComQueryBinaryParameterExtractor {
         private final int endIndex;
         
         private final boolean containsMalformedBytes;
+        
+        private final boolean containsBackslash;
         
         private boolean isClosed() {
             return 0 <= endIndex;
