@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
-import com.sphereex.dbplusengine.sql.parser.statement.core.statement.type.ddl.pkg.CreatePackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg.CreatePackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -44,9 +44,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class CreateDatabaseObjectStatementContextTest {

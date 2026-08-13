@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
-import com.sphereex.dbplusengine.infra.annotation.SphereEx;
-import com.sphereex.dbplusengine.infra.binder.context.statement.type.ddl.InternalSQLStatementContextsAvailable;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
@@ -32,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
-import com.sphereex.dbplusengine.sql.parser.statement.core.statement.type.ddl.pkg.CreatePackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg.CreatePackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 
@@ -45,7 +43,7 @@ import java.util.Optional;
  * Create database object statement context.
  */
 @Getter
-public final class CreateDatabaseObjectStatementContext implements SQLStatementContext, @SphereEx InternalSQLStatementContextsAvailable {
+public final class CreateDatabaseObjectStatementContext implements SQLStatementContext {
     
     private final SQLStatement sqlStatement;
     

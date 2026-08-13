@@ -317,7 +317,7 @@ class OracleDDLStatementVisitorTest {
     
     @Test
     void assertVisitCreateTriggerWithDeclarationAndNewReferences() {
-        CreateTriggerStatement actual = parseCreateTrigger("/* SPHEREEX_HINT: ENCRYPT_OBJECT_DDL_TARGET=SPEX */ CREATE OR REPLACE TRIGGER trg_proc_trigger_data\n"
+        CreateTriggerStatement actual = parseCreateTrigger("/* SHARDINGSPHERE_HINT: TEST=TEST1 */ CREATE OR REPLACE TRIGGER trg_proc_trigger_data\n"
                 + "AFTER INSERT ON t_proc_trigger_source\n"
                 + "FOR EACH ROW\n"
                 + "DECLARE\n"

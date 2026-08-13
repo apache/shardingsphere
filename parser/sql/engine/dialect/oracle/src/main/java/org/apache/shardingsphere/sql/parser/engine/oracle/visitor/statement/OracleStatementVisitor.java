@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement;
 
-import com.sphereex.dbplusengine.infra.annotation.SphereEx;
-import com.sphereex.dbplusengine.infra.annotation.SphereEx.Type;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -50,8 +48,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTy
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DateTimeLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DefaultStringContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DefaultStringContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExtractFunctionContext;
@@ -506,13 +504,11 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (SequenceFunction.valueFrom(ctx.name().getText()).isPresent()) {
             return createSequenceFunction(ctx);
         }
-        // SPEX ADDED: BEGIN
         if (null != ctx.nestedItem() && !ctx.nestedItem().isEmpty()) {
             if (SequenceFunction.valueFrom(ctx.nestedItem().get(0).getText()).isPresent()) {
                 return createSequenceFunction(ctx);
             }
         }
-        // SPEX ADDED: END
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
@@ -1293,7 +1289,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitXmlNamespacesClause(final XmlNamespacesClauseContext ctx) {
         // TODO : throw exception if more than one defaultString exists in a xml name space clause
-        @SphereEx(Type.MODIFY)
         String defaultString = getDefaultXmlNamespaceString(ctx);
         Collection<XmlNamespaceStringAsIdentifierSegment> xmlNamespaceStringAsIdentifierSegments = null == ctx.xmlNamespaceStringAsIdentifier() ? Collections.emptyList()
                 : ctx.xmlNamespaceStringAsIdentifier().stream().map(each -> (XmlNamespaceStringAsIdentifierSegment) visit(each)).collect(Collectors.toList());
@@ -1302,7 +1297,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return result;
     }
     
-    @SphereEx
     private String getDefaultXmlNamespaceString(final XmlNamespacesClauseContext ctx) {
         for (DefaultStringContext each : ctx.defaultString()) {
             if (null != each && null != each.STRING_()) {
@@ -1320,7 +1314,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitXmlTableOptions(final XmlTableOptionsContext ctx) {
         XmlTableOptionsSegment result = new XmlTableOptionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
-        @SphereEx(Type.MODIFY)
         Collection<ExpressionSegment> expressionSegments = null == ctx.xmlPassingClause()
                 ? Collections.emptyList()
                 : ctx.xmlPassingClause().expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
@@ -1552,16 +1545,13 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (!ctx.owner().isEmpty()) {
             result.setOwner(createOwnerSegment(ctx.owner()));
         }
-        // SPEX CHANGED: BEGIN
         if (!isRefFunction(ctx)) {
             getProcedureCallNames().add(createRegularFunctionCallNameSegment(ctx));
             result.getParameters().addAll(getExpressions(ctx.expr()));
         }
-        // SPEX CHANGED: END
         return result;
     }
     
-    @SphereEx
     private ProcedureCallNameSegment createRegularFunctionCallNameSegment(final RegularFunctionContext ctx) {
         PackageSegment packageSegment = createRegularFunctionPackageSegment(ctx.owner());
         ProcedureCallNameSegment result = new ProcedureCallNameSegment(
@@ -1571,7 +1561,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return result;
     }
     
-    @SphereEx
     private PackageSegment createRegularFunctionPackageSegment(final List<OwnerContext> ownerContexts) {
         if (ownerContexts.isEmpty()) {
             return null;
@@ -1584,7 +1573,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return result;
     }
     
-    @SphereEx
     private OwnerSegment createOwnerSegment(final List<OwnerContext> ownerContexts) {
         OwnerSegment result = null;
         for (OwnerContext each : ownerContexts) {
@@ -1595,7 +1583,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return result;
     }
     
-    @SphereEx
     private boolean isRefFunction(final RegularFunctionContext ctx) {
         return ctx.owner().isEmpty() && "REF".equalsIgnoreCase(ctx.regularFunctionName().getText());
     }
