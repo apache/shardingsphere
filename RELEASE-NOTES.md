@@ -25,6 +25,7 @@
 1. SQL Parser: Preserve openGauss `CREATE TABLE` column nullability metadata - [#39425](https://github.com/apache/shardingsphere/pull/39425)
 1. SQL Parser: Preserve Hive `CREATE TABLE` column nullability metadata - [#39428](https://github.com/apache/shardingsphere/pull/39428)
 1. SQL Parser: Preserve SQLServer `ALTER TABLE ALTER COLUMN` nullability metadata - [#39430](https://github.com/apache/shardingsphere/pull/39430)
+1. SQL Parser: Preserve PostgreSQL `ALTER TABLE ALTER COLUMN` nullability metadata - [#39432](https://github.com/apache/shardingsphere/pull/39432)
 1. SQL Parser: Preserve openGauss `ALTER TABLE ALTER COLUMN` nullability metadata - [#39435](https://github.com/apache/shardingsphere/pull/39435)
 1. SQL Parser: Fix No value specified for parameter exception when sql is 'INSERT INTO tableName ON CONFLICT  DO UPDATE set  WHERE ' - [#38668](https://github.com/apache/shardingsphere/pull/38668)
 1. SQL Binder: Add DialectFunctionOption to handle wrong skip column bind in ColumnSegmentBinder - [#38350](https://github.com/apache/shardingsphere/pull/38350)
