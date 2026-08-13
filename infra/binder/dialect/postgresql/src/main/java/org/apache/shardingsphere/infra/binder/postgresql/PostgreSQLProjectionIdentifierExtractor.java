@@ -33,12 +33,12 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
     
     @Override
     public String getIdentifierValue(final IdentifierValue identifierValue) {
-        return identifierValue.getValue().toLowerCase();
+        return PostgreSQLIdentifierUtils.fold(identifierValue.getValue());
     }
     
     @Override
     public String getColumnNameFromFunction(final String functionName, final String functionExpression) {
-        return functionName.toLowerCase();
+        return PostgreSQLIdentifierUtils.fold(functionName);
     }
     
     @Override
@@ -58,6 +58,9 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
     }
     
     private String getColumnNameFromFunctionSegment(final FunctionSegment functionSegment) {
+        if (PostgreSQLIdentifierUtils.isUnicodeQuoted(functionSegment.getFunctionName())) {
+            return PostgreSQLIdentifierUtils.unquoteUnicode(functionSegment.getFunctionName());
+        }
         IdentifierValue functionName = new IdentifierValue(functionSegment.getFunctionName());
         return QuoteCharacter.NONE == functionName.getQuoteCharacter()
                 ? getColumnNameFromFunction(functionName.getValue(), functionSegment.getText())

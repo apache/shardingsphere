@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,6 +72,35 @@ class OpenGaussProjectionIdentifierExtractorTest {
     @Test
     void assertGetColumnNameFromQuotedFunctionExpression() {
         assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "\"MyFunc\"(ID)", new FunctionSegment(0, 0, "\"MyFunc\"", "\"MyFunc\"(ID)"))), is("MyFunc"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromUnicodeQuotedFunctionExpression() {
+        assertThat(extractor.getColumnNameFromExpression(
+                new ExpressionProjectionSegment(0, 0, "U&\"MyFunc\"(ID)", new FunctionSegment(0, 0, "U&\"MyFunc\"", "U&\"MyFunc\"(ID)"))), is("MyFunc"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromUnicodeQuotedFunctionExpressionWithUescapeClause() {
+        assertThat(extractor.getColumnNameFromExpression(
+                new ExpressionProjectionSegment(0, 0, "u&\"d!0061t\" UESCAPE '!'(ID)", new FunctionSegment(0, 0, "u&\"d!0061t\"UESCAPE'!'", "u&\"d!0061t\" UESCAPE '!'(ID)"))), is("dat"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromFunctionExpressionWithNonAsciiName() {
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "ÄBC(ID)", new FunctionSegment(0, 0, "ÄBC", "ÄBC(ID)"))), is("Äbc"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromFunctionExpressionWithTurkishDefaultLocale() {
+        Locale originalLocale = Locale.getDefault();
+        Locale.setDefault(new Locale("tr", "TR"));
+        try {
+            assertThat(extractor.getIdentifierValue(new IdentifierValue("INITCAP", QuoteCharacter.NONE)), is("initcap"));
+            assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "INITCAP(ID)", new FunctionSegment(0, 0, "INITCAP", "INITCAP(ID)"))), is("initcap"));
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
     }
     
     @Test
