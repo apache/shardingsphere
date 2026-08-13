@@ -54,6 +54,10 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MySQLComQueryBackendHandlerFactory {
     
+    private static final String BINARY_INTRODUCER = "_binary";
+    
+    private static final char MALFORMED_INPUT_REPLACEMENT = (char) 0xFFFD;
+    
     static ProxyBackendHandler newInstance(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         String sql = packet.getSQL();
@@ -70,7 +74,7 @@ final class MySQLComQueryBackendHandlerFactory {
     private static Optional<ProxyBackendHandler> tryCreateBinaryLiteralHandler(final DatabaseType databaseType, final String sql, final MySQLComQueryPacket packet,
                                                                                final ConnectionSession connectionSession) throws SQLException {
         Optional<byte[]> originalSQLBytes = packet.findOriginalSQLBytes();
-        if (!originalSQLBytes.isPresent() || 1 != MultiSQLSplitter.split(sql).size()) {
+        if (!originalSQLBytes.isPresent() || !requiresBinaryLiteralInspection(sql) || 1 != MultiSQLSplitter.split(sql).size()) {
             return Optional.empty();
         }
         ExtractionResult extractionResult = MySQLComQueryBinaryParameterExtractor.extract(
@@ -94,6 +98,16 @@ final class MySQLComQueryBackendHandlerFactory {
         QueryContext queryContext = new QueryContext(
                 sqlStatementContext, parameterizedSQL, binaryLiteralValues, packet.getHintValueContext(), connectionSession.getConnectionContext(), metaData, true);
         return Optional.of(ProxyBackendHandlerFactory.newInstance(databaseType, queryContext, connectionSession, true));
+    }
+    
+    private static boolean requiresBinaryLiteralInspection(final String sql) {
+        for (int i = 0; i < sql.length(); i++) {
+            char current = sql.charAt(i);
+            if (MALFORMED_INPUT_REPLACEMENT == current || '_' == current && sql.regionMatches(true, i, BINARY_INTRODUCER, 0, BINARY_INTRODUCER.length())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private static boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {

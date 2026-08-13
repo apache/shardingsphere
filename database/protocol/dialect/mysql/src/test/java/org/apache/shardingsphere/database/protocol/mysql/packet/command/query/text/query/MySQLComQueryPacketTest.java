@@ -60,16 +60,7 @@ class MySQLComQueryPacketTest {
         MySQLComQueryPacket actual = new MySQLComQueryPacket(payload);
         assertThat(actual.getSQL(), is(expectedSQL));
         assertThat(actual.getHintValueContext().isWriteRouteOnly(), is(expectedWriteRouteOnly));
-        assertFalse(actual.findOriginalSQLBytes().isPresent());
-    }
-    
-    @Test
-    void assertRetainBinaryLiteralOriginalSQLBytes() {
-        byte[] sql = "SELECT _binary'foo'".getBytes(StandardCharsets.UTF_8);
-        when(payload.readStringEOFByBytes()).thenReturn(sql);
-        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
-        MySQLComQueryPacket actual = new MySQLComQueryPacket(payload);
-        assertArrayEquals(sql, actual.findOriginalSQLBytes().get());
+        assertArrayEquals(inputSQL.getBytes(StandardCharsets.UTF_8), actual.findOriginalSQLBytes().get());
     }
     
     @Test

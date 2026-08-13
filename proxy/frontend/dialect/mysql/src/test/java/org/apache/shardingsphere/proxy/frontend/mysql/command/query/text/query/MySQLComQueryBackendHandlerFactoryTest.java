@@ -98,7 +98,7 @@ class MySQLComQueryBackendHandlerFactoryTest {
     @BeforeEach
     void setUp() throws SQLException {
         when(packet.getSQL()).thenReturn("");
-        when(packet.findOriginalSQLBytes()).thenReturn(Optional.empty());
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(new byte[0]));
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), anyString(), any(SQLStatement.class), eq(connectionSession), any())).thenReturn(proxyBackendHandler);
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
@@ -107,7 +107,17 @@ class MySQLComQueryBackendHandlerFactoryTest {
     
     @Test
     void assertCreateStandardSQLHandler() throws SQLException {
+        String sql = "SELECT 1";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql.getBytes(StandardCharsets.UTF_8)));
+        ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
+        assertThat(actual, is(proxyBackendHandler));
+    }
+    
+    @Test
+    void assertCreateStandardSQLHandlerWithoutOriginalSQLBytes() throws SQLException {
         when(packet.getSQL()).thenReturn("SELECT 1");
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.empty());
         ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
         assertThat(actual, is(proxyBackendHandler));
     }
@@ -115,7 +125,9 @@ class MySQLComQueryBackendHandlerFactoryTest {
     @Test
     void assertCreateMultiStatementsHandlerForUpdate() throws SQLException {
         enableMultiStatements();
-        when(packet.getSQL()).thenReturn("UPDATE t SET v=v+1 WHERE id=1;UPDATE t SET v=v+1 WHERE id=2");
+        String sql = "UPDATE t SET v=v+1 WHERE id=1;UPDATE t SET v=v+1 WHERE id=2";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql.getBytes(StandardCharsets.UTF_8)));
         ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
         assertThat(actual, isA(MySQLMultiStatementsProxyBackendHandler.class));
     }
@@ -123,7 +135,9 @@ class MySQLComQueryBackendHandlerFactoryTest {
     @Test
     void assertCreateMultiStatementsHandlerForInsertOnDuplicateKey() throws SQLException {
         enableMultiStatements();
-        when(packet.getSQL()).thenReturn("INSERT INTO t (id, v) VALUES(1,1) ON DUPLICATE KEY UPDATE v=2;INSERT INTO t (id, v) VALUES(2,1) ON DUPLICATE KEY UPDATE v=3");
+        String sql = "INSERT INTO t (id, v) VALUES(1,1) ON DUPLICATE KEY UPDATE v=2;INSERT INTO t (id, v) VALUES(2,1) ON DUPLICATE KEY UPDATE v=3";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql.getBytes(StandardCharsets.UTF_8)));
         ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
         assertThat(actual, isA(MySQLMultiStatementsProxyBackendHandler.class));
     }
@@ -149,6 +163,16 @@ class MySQLComQueryBackendHandlerFactoryTest {
         assertThat(actual.getParameters().size(), is(1));
         Blob blob = (Blob) actual.getParameters().get(0);
         assertArrayEquals(new byte[]{(byte) 0xFF}, blob.getBytes(1, (int) blob.length()));
+    }
+    
+    @Test
+    void assertCreateStandardHandlerForValidBinaryLiteral() throws SQLException {
+        String sql = "SELECT _binary'foo'";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql.getBytes(StandardCharsets.UTF_8)));
+        when(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+        ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
+        assertThat(actual, is(proxyBackendHandler));
     }
     
     @Test
