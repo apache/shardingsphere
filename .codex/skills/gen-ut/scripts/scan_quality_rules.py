@@ -383,7 +383,8 @@ def parse_status_entries(raw: bytes) -> dict[str, str]:
 
 def collect_worktree_entries(repo_root: Path, allowed_paths: set[str]) -> dict[str, dict[str, str]]:
     completed = subprocess.run(
-        ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"], cwd=repo_root, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all", "--ignored=traditional"],
+        cwd=repo_root, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
     return {
         path: {"status": status, "fingerprint": fingerprint_path(repo_root / path)}

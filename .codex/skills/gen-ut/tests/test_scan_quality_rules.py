@@ -140,6 +140,26 @@ class ScanQualityRulesTest(unittest.TestCase):
             finally:
                 baseline_path.unlink(missing_ok=True)
 
+    def test_scope_baseline_detects_new_ignored_file(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            self.run_git(repo_root, "init")
+            allowed = repo_root / "module/src/test/java/TargetTest.java"
+            ignored = repo_root / "target/generated.bin"
+            allowed.parent.mkdir(parents=True)
+            ignored.parent.mkdir(parents=True)
+            allowed.write_text("class TargetTest {}\n", encoding="utf-8")
+            (repo_root / ".gitignore").write_text("target/\n", encoding="utf-8")
+            self.run_git(repo_root, "add", ".")
+            self.run_git(repo_root, "-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-m", "initial")
+            baseline_path = Path(temp_dir).parent / f"{repo_root.name}-ignored-scope.json"
+            try:
+                rules.write_scope_baseline(baseline_path, repo_root, [allowed])
+                ignored.write_bytes(b"generated")
+                self.assertEqual(["target/generated.bin"], rules.check_scope_baseline(baseline_path, [allowed]))
+            finally:
+                baseline_path.unlink(missing_ok=True)
+
     def test_missing_scope_baseline_is_failure(self):
         missing = Path(tempfile.gettempdir()) / "missing-gen-ut-scope-baseline.json"
         missing.unlink(missing_ok=True)
