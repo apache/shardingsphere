@@ -147,7 +147,9 @@ PUBLIC_METHOD_DECL_PATTERN = re.compile(
 )
 CONSTRUCTOR_TEST_PREFIXES = ("New", "Construct", "Constructor")
 TEST_SCOPE_MARKERS = ("src/test/java/", "src/test/resources/")
-REPRODUCIBLE_VERIFICATION_OUTPUT_DIRECTORIES = frozenset(("target", "__pycache__"))
+MAVEN_OUTPUT_DIRECTORY = "target"
+PYTHON_CACHE_DIRECTORY = "__pycache__"
+PYTHON_CACHE_SUFFIXES = frozenset((".pyc", ".pyo"))
 
 
 def line_number(source: str, index: int) -> int:
@@ -382,8 +384,24 @@ def parse_status_entries(raw: bytes) -> dict[str, str]:
     return result
 
 
-def is_reproducible_verification_output(path: str, status: str) -> bool:
-    return status in ("??", "!!") and any(each in REPRODUCIBLE_VERIFICATION_OUTPUT_DIRECTORIES for each in Path(path).parts)
+def is_maven_target_output(repo_root: Path, path: Path, module_cache: dict[Path, bool]) -> bool:
+    for index, each in enumerate(path.parts):
+        if MAVEN_OUTPUT_DIRECTORY != each:
+            continue
+        module_path = Path(*path.parts[:index])
+        if module_path not in module_cache:
+            module_cache[module_path] = (repo_root / module_path / "pom.xml").is_file()
+        if module_cache[module_path]:
+            return True
+    return False
+
+
+def is_reproducible_verification_output(repo_root: Path, path: str, status: str, module_cache: dict[Path, bool]) -> bool:
+    if status not in ("??", "!!"):
+        return False
+    relative_path = Path(path)
+    python_cache = PYTHON_CACHE_DIRECTORY in relative_path.parts and relative_path.suffix in PYTHON_CACHE_SUFFIXES
+    return python_cache or is_maven_target_output(repo_root, relative_path, module_cache)
 
 
 def collect_worktree_entries(repo_root: Path, allowed_paths: set[str]) -> dict[str, dict[str, str]]:
@@ -391,10 +409,11 @@ def collect_worktree_entries(repo_root: Path, allowed_paths: set[str]) -> dict[s
         ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all", "--ignored=traditional"],
         cwd=repo_root, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
+    module_cache = {}
     return {
         path: {"status": status, "fingerprint": fingerprint_path(repo_root / path)}
         for path, status in parse_status_entries(completed.stdout).items()
-        if path not in allowed_paths and not is_reproducible_verification_output(path, status)
+        if path not in allowed_paths and not is_reproducible_verification_output(repo_root, path, status, module_cache)
     }
 
 

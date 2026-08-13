@@ -167,6 +167,7 @@ class ScanQualityRulesTest(unittest.TestCase):
             allowed = repo_root / "module/src/test/java/TargetTest.java"
             allowed.parent.mkdir(parents=True)
             allowed.write_text("class TargetTest {}\n", encoding="utf-8")
+            (repo_root / "module/pom.xml").write_text("<project />\n", encoding="utf-8")
             (repo_root / ".gitignore").write_text("target/\n", encoding="utf-8")
             self.run_git(repo_root, "add", ".")
             self.run_git(repo_root, "-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-m", "initial")
@@ -180,6 +181,45 @@ class ScanQualityRulesTest(unittest.TestCase):
                 maven_output.write_text("verified\n", encoding="utf-8")
                 python_output.write_bytes(b"compiled")
                 self.assertEqual([], rules.check_scope_baseline(baseline_path, [allowed]))
+            finally:
+                baseline_path.unlink(missing_ok=True)
+
+    def test_scope_baseline_detects_untracked_source_in_target_package(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            self.run_git(repo_root, "init")
+            allowed = repo_root / "module/src/test/java/sample/AllowedTest.java"
+            allowed.parent.mkdir(parents=True)
+            allowed.write_text("class AllowedTest {}\n", encoding="utf-8")
+            (repo_root / "module/pom.xml").write_text("<project />\n", encoding="utf-8")
+            self.run_git(repo_root, "add", ".")
+            self.run_git(repo_root, "-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-m", "initial")
+            baseline_path = Path(temp_dir).parent / f"{repo_root.name}-target-package-scope.json"
+            try:
+                rules.write_scope_baseline(baseline_path, repo_root, [allowed])
+                outside = repo_root / "module/src/test/java/target/HiddenTest.java"
+                outside.parent.mkdir(parents=True)
+                outside.write_text("class HiddenTest {}\n", encoding="utf-8")
+                self.assertEqual(["module/src/test/java/target/HiddenTest.java"], rules.check_scope_baseline(baseline_path, [allowed]))
+            finally:
+                baseline_path.unlink(missing_ok=True)
+
+    def test_scope_baseline_detects_untracked_resource_in_python_cache_directory(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            self.run_git(repo_root, "init")
+            allowed = repo_root / "module/src/test/java/sample/AllowedTest.java"
+            allowed.parent.mkdir(parents=True)
+            allowed.write_text("class AllowedTest {}\n", encoding="utf-8")
+            self.run_git(repo_root, "add", ".")
+            self.run_git(repo_root, "-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-m", "initial")
+            baseline_path = Path(temp_dir).parent / f"{repo_root.name}-python-cache-resource-scope.json"
+            try:
+                rules.write_scope_baseline(baseline_path, repo_root, [allowed])
+                outside = repo_root / "module/src/test/resources/__pycache__/fixture.bin"
+                outside.parent.mkdir(parents=True)
+                outside.write_bytes(b"fixture")
+                self.assertEqual(["module/src/test/resources/__pycache__/fixture.bin"], rules.check_scope_baseline(baseline_path, [allowed]))
             finally:
                 baseline_path.unlink(missing_ok=True)
 
