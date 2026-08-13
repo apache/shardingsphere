@@ -49,6 +49,7 @@
 1. Proxy: Fix incorrect openGauss composite column type OIDs in simple and extended query row descriptions - [#39253](https://github.com/apache/shardingsphere/pull/39253)
 1. Proxy: Fix MySQL CLOB and NCLOB result set handling - [#39338](https://github.com/apache/shardingsphere/pull/39338)
 1. Proxy: Fix MySQL BLOB result set handling in text and binary protocols - [#39340](https://github.com/apache/shardingsphere/pull/39340)
+1. Proxy: Fix MySQL COM_QUERY binary string literal corruption - [#39433](https://github.com/apache/shardingsphere/pull/39433)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
 1. Agent: Fix wrong target class name in StaticMethodAdviceExecutor error logs - [#39077](https://github.com/apache/shardingsphere/pull/39077)
