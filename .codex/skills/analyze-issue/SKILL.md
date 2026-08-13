@@ -2,9 +2,8 @@
 name: analyze-issue
 description: >-
   Used to analyze Apache ShardingSphere community issues. Emphasizes root-cause-first
-  and evidence-first classification before conclusions, and by default produces
-  copy-ready GitHub issue replies in the voice of an Apache ShardingSphere
-  community maintainer followed by reference analysis for traceability.
+  and evidence-first classification before conclusions, and produces copy-ready
+  GitHub issue replies in the voice of an Apache ShardingSphere community maintainer.
 ---
 
 # Analyze Issue
@@ -16,9 +15,9 @@ Prioritize identifying the real root cause and aligning with official ShardingSp
 
 ## Default Output Contract
 
-Default to a two-part, copy-ready GitHub issue comment:
-1. **Maintainer Reply:** A concise Apache ShardingSphere maintainer reply written directly to the issue author.
-2. **Reference Analysis:** A detailed evidence-based analysis appended after the reply for reviewers, maintainers, and follow-up contributors.
+Default to one concise, copy-ready GitHub issue comment written directly to the
+issue author. Complete the evidence analysis internally, but do not append the
+detailed Reference Analysis unless the user explicitly requests it.
 
 The default maintainer reply must:
 - Start by addressing the issue author when the author is known, for example `Hi @user, thanks for the question.`
@@ -27,13 +26,10 @@ The default maintainer reply must:
 - Give the next action: correct usage, label/close recommendation, required missing facts, or PR/design expectations.
 - Read like a community member helping in the issue thread, not an external analyst summarizing the issue.
 
-After the maintainer reply, add a short bridge sentence before the reference analysis:
-`The reply above is based on the analysis below; the detailed reasoning is kept here for reference and follow-up contributors.`
-
-The default reference analysis must:
-- Preserve the detailed four-/five-section structure in `Reference Analysis Output Structure`.
-- Include evidence IDs, `Issue Type`, `Recommended Labels`, and `Next Action`.
-- Make the maintainer reply traceable without making the opening reply feel like a report.
+When returning the reply in Codex chat, wrap only the copyable GitHub-facing
+body in one fenced `markdown` block and keep any copy instruction outside it.
+Tell the user to copy only the content inside the fenced block.
+When posting directly through an API or tool, submit only the inner body.
 
 ## Community Role
 
@@ -70,13 +66,18 @@ Do not use blogs, third-party tutorials, or forum posts as evidence.
 ## Output Mode Selection
 
 Choose output mode before drafting:
-- **Maintainer Reply + Reference Analysis (default):** Use for requests to reply to an issue, draft an issue comment, answer a community question,
+- **Maintainer Reply Only (default):** Use for requests to reply to an issue, draft an issue comment, answer a community question,
   classify an issue, or when the user gives only an issue URL.
-- **Maintainer Reply Only (explicit only):** Use only when the user asks for a concise reply/comment only, no detailed analysis, or no appendix.
+- **Maintainer Reply + Reference Analysis (explicit only):** Use only when the user asks for the reply plus detailed analysis,
+  evidence IDs, traceability appendix, or follow-up contributor notes.
 - **Reference Analysis Only (explicit only):** Use only when the user asks for detailed analysis only, evidence IDs only, triage report only,
   root-cause report only, or the fixed four-/five-section structure only.
 
-Internal evidence gathering is always required. In the default output, keep evidence IDs and report sections in the appended Reference Analysis, not in the opening maintainer reply.
+Internal evidence gathering is always required. Do not expose the evidence ledger
+in the default reply unless it improves clarity or the user explicitly requests it.
+Read [output-contract.md](references/output-contract.md) when the user requests
+Reference Analysis, a two-part response, a reusable template, or multi-line code
+whose Markdown fences require special handling.
 
 ## Fast Triage Gate
 
@@ -129,19 +130,10 @@ Use `Needs More Info` only when missing facts block the supportability decision 
 
 1. Identify the issue number from user input.
 2. Use the canonical URL: `https://github.com/apache/shardingsphere/issues/${issueNO}`.
-3. Try normal browsing first.
-4. If normal access fails, use curl fallback:
-
-```bash
-curl -L -sS "https://github.com/apache/shardingsphere/issues/${issueNO}"
-```
-
-5. If structured data is needed, use the GitHub API:
-
-```bash
-curl -sS -H "Accept: application/vnd.github+json" \
-  "https://api.github.com/repos/apache/shardingsphere/issues/${issueNO}"
-```
+3. Follow `AGENTS.md` for GitHub authentication, route selection, pagination,
+   sensitive-data handling, and read-only boundaries.
+4. Fetch the issue body, all relevant comments, linked same-repository issues or
+   PRs, and any other pages required by the selected evidence checks.
 
 ## Minimum Evidence Package
 
@@ -282,195 +274,16 @@ Default to maintainer replies shaped by the issue type:
 - Use one concise consolidated list and set a 7-14 day follow-up window.
 - Recommend `status: need more info`.
 
-For the default appended Reference Analysis, and for explicit Reference Analysis Only mode, use the detailed four-/five-section structures below.
+For explicit Maintainer Reply + Reference Analysis and Reference Analysis Only
+modes, use the detailed four-/five-section structures in the output reference.
 
-## Maintainer Reply Templates
+## Detailed Output Resources
 
-Use these as compact shape guides, not rigid text:
-
-Question:
-```markdown
-Hi @user, thanks for the question.
-<Direct answer from current ShardingSphere behavior.>
-<Brief reason from docs/code.>
-Community members are also welcome to share related experience, examples, or documentation improvements.
-I suggest labeling this as `type: question` and closing it once the answer is clear.
-```
-
-Misunderstanding / Invalid Usage:
-```markdown
-Hi @user, thanks for the question.
-This configuration is not supported by the current <feature> rule model.
-<Explain the two or three project-level reasons, using `we` / `current ShardingSphere` language.>
-Please <correct usage>. I suggest closing this as invalid usage / question.
-```
-
-Bug:
-```markdown
-Hi @user, thanks for reporting this.
-This looks like a bug in <module/path> because <documented expected behavior> does not match <current code behavior>.
-The fix should cover <key classes/paths> and include <test scope>. Contributors are welcome to submit a PR with code and tests.
-```
-
-Duplicate:
-```markdown
-Hi @user, thanks for reporting this.
-This is a duplicate of #<issue-or-pr>, which already fixed or tracks the same root cause in <module/class>.
-Please verify with a version that includes #<fix-pr>. I suggest labeling this as `type: duplicate` and closing it as duplicate.
-```
-
-Enhancement:
-```markdown
-Hi @user, thanks for the suggestion.
-This is not supported today and should be handled as an enhancement rather than a bug.
-Before implementation, we need to define <semantic contract>, <compatibility impact>, and <test scope>. I suggest labeling this as `type: enhancement`.
-```
-
-Needs More Info:
-```markdown
-Hi @user, thanks for reporting this.
-We need a bit more information before we can classify this issue:
-- <blocking fact 1>
-- <blocking fact 2>
-Please provide these details within <7-14 days>. If there is no update, we may close this as inactive / invalid due to insufficient information.
-```
-
-## Reference Analysis Output Structure
-
-Use this section for the default appended Reference Analysis and for explicit Reference Analysis Only mode.
-
-### Reference Analysis Markdown Requirements
-
-- Format the reference analysis as GitHub-flavored Markdown that can be pasted directly into a GitHub issue comment after the maintainer reply and bridge sentence.
-- The GitHub-facing issue analysis body must not be wrapped in a code fence, blockquote, XML/HTML container, or plain-text transcript.
-- Use the same natural language as the user request for explanatory prose unless the user explicitly asks for another language.
-- Keep the mandatory Markdown structure unchanged regardless of output language.
-- Keep mandatory section titles and stable fields in English, such as `Problem Understanding`, `Root Cause`, `Problem Analysis`,
-  `Problem Conclusion`, `Evidence Confidence`, `Issue Type`, `Recommended Labels`, and `Next Action`.
-- Use Markdown headings (`### Problem Understanding`, `### Root Cause`, etc.) with a blank line before and after each heading.
-- Use short unordered bullets under each heading; use bold inline labels such as `Observation:`, `Inference:`, `Confidence:`, and `Action:`.
-- Use repo-relative paths with line numbers, for example `infra/.../Foo.java:123`; do not use local absolute file paths in GitHub-facing analysis text.
-- Keep evidence IDs, labels, severity values, topology values, commands, class names, method names, SQL, YAML, and Java snippets in their original English/code form.
-- Prefer bullets over tables. Use tables only for compact status summaries that remain readable in GitHub's issue comment pane.
-- Keep command evidence in inline code or short fenced blocks; avoid long raw JSON, full logs, or unrendered terminal transcripts.
-- Before final output, perform a formatting self-check on the inner GitHub-facing issue analysis body:
-    - The inner GitHub-facing issue analysis body is not wrapped in a code fence, blockquote, XML/HTML container, or transcript.
-    - The default body starts with a maintainer reply, includes the bridge sentence, and then contains the required `###` headings for the selected issue-type template.
-    - The reference analysis contains `Problem Conclusion` with the required conclusion fields.
-    - File references are repo-relative paths with line numbers, not local absolute paths.
-    - Stable section titles, evidence IDs, labels, severity values, and conclusion field labels remain in English/code form.
-
-### Codex Chat Delivery
-
-- When returning the default output in Codex chat, wrap the complete two-part GitHub issue comment in a fenced `markdown` code block.
-- When returning Maintainer Reply Only or Reference Analysis Only, wrap only the requested GitHub-facing body in a fenced `markdown` code block.
-- The fenced code block is only a chat delivery wrapper; it is not part of the GitHub-facing issue analysis body.
-- Tell the user to copy only the content inside the fenced block.
-- Keep any copy instruction outside the fenced block.
-- When posting directly to GitHub through an API or tool, submit only the inner GitHub-facing issue analysis body and do not include the outer fence.
-- Apply formatting self-checks to the inner GitHub-facing body, not to the chat delivery wrapper.
-
-### Markdown Fence Safety
-
-- Default to inline code for short SQL, commands, paths, and single-line examples inside GitHub-facing issue comments.
-- Avoid inner fenced code blocks inside the GitHub-facing body unless the snippet is multi-line or syntax highlighting materially improves readability.
-- If the GitHub-facing body contains any inner fenced code block, the outer Codex chat delivery fence must use more backticks than the longest inner fence.
-- Before final output, verify every inner fence has a matching closing fence, the outer delivery fence cannot be closed by an inner fence, and the copyable body starts after the outer opening fence and ends before the outer closing fence.
-- If fence safety is uncertain, remove the inner fenced block and use inline code or a plain bullet instead.
-
-In Reference Analysis mode, use this GitHub Markdown skeleton for Question, Misunderstanding / Invalid Usage, and Duplicate:
-
-```markdown
-### Problem Understanding
-
-- **Issue:** ...
-- **Topology:** ...
-- **Observed Evidence:** `OBS-1`, `OBS-2`
-
-### Root Cause
-
-- **Observation:** ...
-- **Inference:** ...
-- **Confidence:** High/Medium/Low
-
-### Problem Analysis
-
-- **Issue Type:** Question / Misunderstanding / Invalid Usage / Duplicate
-- **Evidence:** ...
-- **Label Recommendation:** ...
-
-### Problem Conclusion
-
-- **Evidence Confidence:** High/Medium/Low
-- **Impact Scope:** ...
-- **Topology:** JDBC/Proxy + Standalone/Cluster
-- **Issue Type:** ...
-- **Duplicate Of:** #issue-or-pr (Duplicate only)
-- **Fix PR:** #pr (Duplicate only)
-- **Merged In:** commit/milestone/version if known (Duplicate only)
-- **Recommended Labels:** ...
-- **Next Action:** ...
-```
-
-In Reference Analysis mode, use this GitHub Markdown skeleton for Bug and Enhancement:
-
-```markdown
-### Problem Understanding
-
-- **Issue:** ...
-- **Topology:** ...
-- **Observed Evidence:** `OBS-1`, `OBS-2`
-
-### Root Cause
-
-- **Observation:** ...
-- **Inference:** ...
-- **Confidence:** High/Medium/Low
-
-### Problem Analysis
-
-- **Issue Type:** Bug / Enhancement
-- **Evidence:** ...
-- **Compatibility Checklist:** Behavior / Config / API-SPI / SQL
-
-### Code-Level Design Suggestions
-
-- **Affected Modules:** ...
-- **Key Classes:** ...
-- **Required Test Scope:** ...
-- **Rollback Hint:** ...
-
-### Problem Conclusion
-
-- **Evidence Confidence:** High/Medium/Low
-- **Severity:** S0/S1/S2/S3
-- **Impact Scope:** ...
-- **Topology:** JDBC/Proxy + Standalone/Cluster
-- **Issue Type:** ...
-- **Recommended Labels:** ...
-- **Next Action:** ...
-- **Compatibility:** Behavior/Config/API-SPI/SQL
-- **Regression Scope:** ...
-```
-
-- Reference four-section structure for Question, Misunderstanding / Invalid Usage, and Duplicate: Problem Understanding, Root Cause, Problem Analysis, Problem Conclusion.
-- Reference five-section structure for Bug and Enhancement: Problem Understanding, Root Cause, Problem Analysis, Code-Level Design Suggestions, Problem Conclusion.
-
-At the end of `Problem Conclusion`, append:
-- `Evidence Confidence: High/Medium/Low`
-- `Severity: S0/S1/S2/S3` (Bug/Enhancement required)
-- `Impact Scope: ...`
-- `Topology: JDBC/Proxy + Standalone/Cluster`
-- `Issue Type: ...`
-- `Duplicate Of: #issue-or-pr` (Duplicate required)
-- `Fix PR: #pr` (Duplicate required when a fixing PR is found)
-- `Merged In: commit/milestone/version if known` (Duplicate required when known)
-- `Recommended Labels: ...`
-- `Next Action: ...`
-
-For Bug/Enhancement, also append:
-- `Compatibility: Behavior/Config/API-SPI/SQL`
-- `Regression Scope: ...`
+Read [output-contract.md](references/output-contract.md) only when its trigger in
+`Output Mode Selection` applies. It contains reusable maintainer-reply templates,
+the Reference Analysis schemas, Codex chat delivery rules, and Markdown fence
+safety checks. Its templates guide structure; they do not replace evidence-based
+wording for the current issue.
 
 ## Community Voice Guardrails
 
@@ -487,7 +300,8 @@ Before final output, run this self-check:
 - **Audience Check:** The reply addresses the issue author directly when the author is known.
 - **Decision Check:** The first paragraph states the supportability/classification decision.
 - **Reason Check:** The explanation is grounded in official docs, repository code/tests, or issue content.
-- **Traceability Check:** Default output includes the bridge sentence and appended Reference Analysis.
+- **Traceability Check:** The reply is supported by the internal evidence ledger;
+  explicit two-part output includes the bridge sentence and Reference Analysis.
 - **Action Check:** The reply gives a clear next action, label recommendation, close recommendation, or PR expectation.
 
 ## Missing Information Handling
@@ -525,21 +339,25 @@ Extended types are valid final classifications when evidence supports them:
 - Security (use responsible security disclosure workflow)
 
 Each must still include a clear maintainer reply by default, with labels and next action.
-Default output must also append Reference Analysis. If the user explicitly requests only one output mode, return only that requested mode.
+Append Reference Analysis only when the user explicitly requests a detailed or
+two-part output mode.
+
+For a suspected undisclosed vulnerability, do not reproduce or deepen sensitive
+details in a public issue reply. Direct the reporter to the responsible disclosure
+process in `docs/community/content/security/_index.en.md` and keep the public reply
+limited to that safe next action.
 
 ## Lightweight Lint Recommendation
 
-For default output, verify:
+For Maintainer Reply output, verify:
 - The reply addresses the issue author or community directly.
 - The first paragraph contains the decision.
 - The maintainer reply does not contain detailed report headings.
-- The bridge sentence appears before Reference Analysis.
-- The Reference Analysis contains required detailed sections and conclusion fields.
 - The reply includes a next action and label/close recommendation when appropriate.
 - For questions, the reply invites community participation when appropriate.
-- If the Codex chat delivery wrapper contains inner fenced code blocks, the outer fence is longer than every inner fence and all fences are closed.
 
-For Reference Analysis output, a local checker (script or CI step) may verify:
+For explicit Reference Analysis output, also verify:
+- The bridge sentence appears before Reference Analysis in two-part mode.
 - Required detailed sections exist.
 - Required conclusion fields exist.
 - Evidence IDs are present and referenced.
@@ -552,5 +370,5 @@ If lint fails, mark analysis as incomplete.
 - Do not recommend behavior that conflicts with official ShardingSphere conventions.
 - Do not provide certainty when evidence is insufficient.
 - Do not output a neutral machine-style report when the user asked for a reply to an issue author.
-- Do not omit the default Reference Analysis unless the user explicitly asks for maintainer reply only.
+- Do not append Reference Analysis unless the user explicitly requests it.
 - Source and workaround restrictions are governed by Source Policy and Response Strategy by Type.
