@@ -10,14 +10,16 @@ unless that rule authorizes it. Paths are relative to the repository root.
 1. `CODE_OF_CONDUCT.md` is the authority for contribution, Java, and unit-test
    style. Inspect the applicable section before changing code or tests and
    record it when it controls a decision.
-2. Before Maven, E2E, Proxy startup, database clients, IDE/MCP run
+2. `AI_POLICY.md` defines the responsibilities for AI-assisted contributions,
+   including disclosure, provenance, and sensitive-information handling.
+3. Before Maven, E2E, Proxy startup, database clients, IDE/MCP run
    configurations, commands likely to output more than 100 lines, or large
    structured analysis, read or reuse
    `.codex/context/token-efficiency.md` and follow its Mandatory Execution
    Contract.
-3. Use repository Skills for specialized workflows instead of reproducing their
+4. Use repository Skills for specialized workflows instead of reproducing their
    detailed instructions here.
-4. Keep task-specific notes in the task, issue, or PR. Do not add session notes
+5. Keep task-specific notes in the task, issue, or PR. Do not add session notes
    to this file.
 
 ### Changing This Guide
