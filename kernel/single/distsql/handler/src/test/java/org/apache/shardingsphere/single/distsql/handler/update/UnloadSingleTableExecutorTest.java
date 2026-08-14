@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -113,6 +114,12 @@ class UnloadSingleTableExecutorTest {
         assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
     }
     
+    @Test
+    void assertCheckBeforeUpdateWithMissingDefaultSchema() {
+        when(database.findDefaultSchema()).thenReturn(Optional.empty());
+        assertThrows(NoSuchTableException.class, () -> executor.checkBeforeUpdate(new UnloadSingleTableStatement(false, Collections.singletonList("foo_tbl"))));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertBuildToBeAlteredRuleConfigurationArguments")
     void assertBuildToBeAlteredRuleConfiguration(final String name, final Collection<String> currentTables,
@@ -147,7 +154,7 @@ class UnloadSingleTableExecutorTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllTables()).thenReturn(
                 allTables.stream().map(each -> new ShardingSphereTable(each, Collections.emptyList(), Collections.emptyList(), Collections.emptyList())).collect(Collectors.toList()));
-        when(database.getSchema("foo_db")).thenReturn(schema);
+        when(database.findDefaultSchema()).thenReturn(Optional.of(schema));
         when(tableMapperRuleAttribute.getLogicTableNames()).thenReturn(singleTables);
         when(dataNodeRuleAttribute.getDataNodesByTableName(anyString())).thenAnswer(invocation -> tableDataNodes.getOrDefault(invocation.getArgument(0), Collections.emptyList()));
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(new LinkedList<>(configuredTables), null));
