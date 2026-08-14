@@ -72,6 +72,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -163,6 +164,7 @@ class MySQLComQueryBackendHandlerFactoryTest {
         QueryContext actual = queryContextCaptor.getValue();
         assertThat(actual.getSql(), is("INSERT INTO t (id, v) VALUES (1, ?)"));
         assertThat(actual.getParameters().size(), is(1));
+        assertTrue(actual.isUseCache());
         Blob blob = (Blob) actual.getParameters().get(0);
         assertArrayEquals(new byte[]{(byte) 0xFF}, blob.getBytes(1, (int) blob.length()));
     }
@@ -207,11 +209,14 @@ class MySQLComQueryBackendHandlerFactoryTest {
     
     @Test
     void assertCreateStandardHandlerForStructuralBinaryLiteral() throws SQLException {
-        when(packet.getSQL()).thenReturn("SHOW TABLES LIKE _binary'�'");
+        String sql = "SHOW TABLES LIKE _binary'�'";
+        when(packet.getSQL()).thenReturn(sql);
         when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql("SHOW TABLES LIKE _binary'", (byte) 0xFF, "'")));
         when(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+        ProxyBackendHandler expectedBackendHandler = mock(ProxyBackendHandler.class);
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), eq(sql), any(SQLStatement.class), eq(connectionSession), any())).thenReturn(expectedBackendHandler);
         ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
-        assertThat(actual, is(proxyBackendHandler));
+        assertThat(actual, is(expectedBackendHandler));
     }
     
     private static byte[] sql(final String prefix, final byte content, final String suffix) {
