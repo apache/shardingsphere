@@ -29,6 +29,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
@@ -50,7 +52,7 @@ public final class MultiJDBCConnectionsTestCase extends BaseTransactionTestCase 
             statement.setLong(1, 1L);
             statement.setFloat(2, 1F);
             statement.setInt(3, 1);
-            statement.execute();
+            assertThat(statement.executeUpdate(), is(1));
             try (
                     Connection connection2 = getDataSource().getConnection();
                     Statement queryStatement = connection2.createStatement();
