@@ -48,7 +48,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment.VariableType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -77,11 +76,6 @@ import static org.mockito.Mockito.when;
 class MySQLSetVariableAdminExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-    
-    @AfterEach
-    void resetGlobalSQLMode() {
-        MySQLSessionSQLMode.setGlobalValue(MySQLSessionSQLMode.DEFAULT_SQL_MODE);
-    }
     
     @Test
     void assertExecute() throws SQLException {
@@ -310,19 +304,17 @@ class MySQLSetVariableAdminExecutorTest {
         assertThat(actual.getValue(), is("STRICT_TRANS_TABLES,NO_BACKSLASH_ESCAPES"));
         assertTrue(actual.isNoBackslashEscapes());
         assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
-                is(Collections.singletonList("SET sql_mode='STRICT_TRANS_TABLES,NO_BACKSLASH_ESCAPES'")));
+                is(Collections.singletonList("SET sql_mode='strict_trans_tables, no_backslash_escapes'")));
     }
     
     @Test
     void assertExecuteWithDefaultSQLMode() throws SQLException {
-        MySQLSessionSQLMode.setGlobalValue("STRICT_TRANS_TABLES");
         SetStatement setStatement = parseSetStatement("SET sql_mode = DEFAULT");
         ConnectionSession connectionSession = mockReplayableConnectionSession();
         MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", connectionSession.getAttributeMap());
         new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock());
-        assertThat(MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue(), is("STRICT_TRANS_TABLES"));
-        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
-                is(Collections.singletonList("SET sql_mode='STRICT_TRANS_TABLES'")));
+        assertThat(MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue(), is(MySQLSessionSQLMode.DEFAULT_SQL_MODE));
+        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()), is(Collections.singletonList("SET sql_mode=DEFAULT")));
     }
     
     @Test
@@ -345,29 +337,6 @@ class MySQLSetVariableAdminExecutorTest {
         assertTrue(actual.isNoBackslashEscapes());
         assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
                 is(Collections.singletonList("SET sql_mode='STRICT_TRANS_TABLES,NO_BACKSLASH_ESCAPES'")));
-    }
-    
-    @Test
-    void assertExecuteWithGlobalSQLMode() throws SQLException {
-        SetStatement setStatement = parseSetStatement("SET GLOBAL sql_mode = 'NO_BACKSLASH_ESCAPES'");
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
-        ConnectionContext connectionContext = mockConnectionContext();
-        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        when(connectionSession.getDatabaseConnectionManager()).thenReturn(mock(ProxyDatabaseConnectionManager.class));
-        MergedResult mergedResult = mock(MergedResult.class);
-        when(mergedResult.next()).thenReturn(true);
-        when(mergedResult.getValue(1, String.class)).thenReturn("NO_BACKSLASH_ESCAPES");
-        ShardingSphereMetaData metaData = mockMetaData();
-        try (
-                MockedConstruction<StandardDatabaseProxyConnector> mockedConnector = mockConstruction(StandardDatabaseProxyConnector.class);
-                MockedConstruction<UnicastResourceShowExecutor> mockedExecutor = mockConstruction(
-                        UnicastResourceShowExecutor.class, (mock, context) -> when(mock.getMergedResult()).thenReturn(mergedResult))) {
-            new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, metaData);
-            verify(mockedConnector.constructed().get(0)).execute();
-            verify(mockedExecutor.constructed().get(0)).execute(connectionSession, metaData);
-        }
-        assertThat(MySQLSessionSQLMode.getGlobalValue(), is("NO_BACKSLASH_ESCAPES"));
     }
     
     private ConnectionContext mockConnectionContext() {

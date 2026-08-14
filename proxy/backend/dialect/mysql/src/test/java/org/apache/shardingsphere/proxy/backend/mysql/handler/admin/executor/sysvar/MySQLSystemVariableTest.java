@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.exception.mysql.exception.ErrorLocalVa
 import org.apache.shardingsphere.database.exception.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -36,11 +35,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MySQLSystemVariableTest {
-    
-    @AfterEach
-    void resetGlobalSQLMode() {
-        MySQLSessionSQLMode.setGlobalValue(MySQLSessionSQLMode.DEFAULT_SQL_MODE);
-    }
     
     @Test
     void assertFindSystemVariable() {
@@ -69,12 +63,6 @@ class MySQLSystemVariableTest {
         when(connectionSession.getAttributeMap()).thenReturn(new DefaultAttributeMap());
         MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", connectionSession.getAttributeMap());
         assertThat(MySQLSystemVariable.SQL_MODE.getValue(MySQLSystemVariableScope.SESSION, connectionSession), is("NO_BACKSLASH_ESCAPES"));
-    }
-    
-    @Test
-    void assertGetGlobalSQLModeValue() {
-        MySQLSessionSQLMode.setGlobalValue("NO_BACKSLASH_ESCAPES");
-        assertThat(MySQLSystemVariable.SQL_MODE.getValue(MySQLSystemVariableScope.GLOBAL, null), is("NO_BACKSLASH_ESCAPES"));
     }
     
     @Test

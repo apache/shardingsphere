@@ -1097,7 +1097,7 @@ public enum MySQLSystemVariable {
         
         @Override
         public String get(final MySQLSystemVariableScope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
-            return MySQLSystemVariableScope.GLOBAL == scope ? MySQLSessionSQLMode.getGlobalValue() : MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue();
+            return MySQLSystemVariableScope.GLOBAL == scope ? variable.getDefaultValue() : MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue();
         }
     }
     

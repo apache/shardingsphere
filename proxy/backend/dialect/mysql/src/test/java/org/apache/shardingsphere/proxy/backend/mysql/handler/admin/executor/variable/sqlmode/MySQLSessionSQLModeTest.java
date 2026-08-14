@@ -18,26 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MySQLSessionSQLModeTest {
-    
-    @AfterEach
-    void resetGlobalSQLMode() {
-        MySQLSessionSQLMode.setGlobalValue(MySQLSessionSQLMode.DEFAULT_SQL_MODE);
-    }
     
     @Test
     void assertGetDefault() {
@@ -61,20 +49,6 @@ class MySQLSessionSQLModeTest {
         MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", attributeMap);
         MySQLSessionSQLMode.set(MySQLSessionSQLMode.DEFAULT_SQL_MODE, attributeMap);
         assertFalse(MySQLSessionSQLMode.get(attributeMap).isNoBackslashEscapes());
-    }
-    
-    @Test
-    void assertInitialize() {
-        MySQLSessionSQLMode.setGlobalValue("NO_BACKSLASH_ESCAPES");
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
-        DefaultAttributeMap attributeMap = new DefaultAttributeMap();
-        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
-        RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
-        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
-        MySQLSessionSQLMode.initialize(connectionSession);
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        assertTrue(MySQLSessionSQLMode.get(attributeMap).isNoBackslashEscapes());
-        assertThat(recorder.toSetSQLs(databaseType.getType()), is(java.util.Collections.singletonList("SET sql_mode='NO_BACKSLASH_ESCAPES'")));
     }
     
 }

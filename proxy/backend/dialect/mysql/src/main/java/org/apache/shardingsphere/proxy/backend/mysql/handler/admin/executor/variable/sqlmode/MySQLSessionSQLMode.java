@@ -22,9 +22,6 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * MySQL session SQL mode.
@@ -40,13 +37,9 @@ public final class MySQLSessionSQLMode {
     
     private static final String NO_BACKSLASH_ESCAPES = "NO_BACKSLASH_ESCAPES";
     
-    private static final String SQL_MODE = "sql_mode";
-    
     private static final AttributeKey<MySQLSessionSQLMode> ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLSessionSQLMode.class.getName());
     
     private static final MySQLSessionSQLMode DEFAULT = new MySQLSessionSQLMode(DEFAULT_SQL_MODE, false);
-    
-    private static final AtomicReference<String> GLOBAL_VALUE = new AtomicReference<>(DEFAULT_SQL_MODE);
     
     private final String value;
     
@@ -71,41 +64,11 @@ public final class MySQLSessionSQLMode {
      * @return MySQL session SQL mode
      */
     public static MySQLSessionSQLMode get(final AttributeMap attributeMap) {
+        if (!attributeMap.hasAttr(ATTRIBUTE_KEY)) {
+            return DEFAULT;
+        }
         MySQLSessionSQLMode result = attributeMap.attr(ATTRIBUTE_KEY).get();
         return null == result ? DEFAULT : result;
-    }
-    
-    /**
-     * Initialize MySQL session SQL mode.
-     *
-     * @param connectionSession connection session
-     */
-    public static void initialize(final ConnectionSession connectionSession) {
-        AttributeMap attributeMap = connectionSession.getAttributeMap();
-        if (null != attributeMap.attr(ATTRIBUTE_KEY).get()) {
-            return;
-        }
-        String globalValue = GLOBAL_VALUE.get();
-        attributeMap.attr(ATTRIBUTE_KEY).set(create(globalValue));
-        connectionSession.getRequiredSessionVariableRecorder().setVariable(SQL_MODE, formatAssignValue(globalValue));
-    }
-    
-    /**
-     * Get global SQL mode value.
-     *
-     * @return global SQL mode value
-     */
-    public static String getGlobalValue() {
-        return GLOBAL_VALUE.get();
-    }
-    
-    /**
-     * Set global SQL mode value.
-     *
-     * @param value global SQL mode value
-     */
-    public static void setGlobalValue(final String value) {
-        GLOBAL_VALUE.set(value);
     }
     
     /**
@@ -115,16 +78,8 @@ public final class MySQLSessionSQLMode {
      * @param attributeMap attribute map
      */
     public static void set(final String value, final AttributeMap attributeMap) {
-        attributeMap.attr(ATTRIBUTE_KEY).set(create(value));
+        MySQLSessionSQLMode sqlMode = create(value);
+        attributeMap.attr(ATTRIBUTE_KEY).set(DEFAULT == sqlMode ? null : sqlMode);
     }
     
-    /**
-     * Format SQL assignment value.
-     *
-     * @param value SQL mode value
-     * @return SQL assignment value
-     */
-    public static String formatAssignValue(final String value) {
-        return "'" + value.replace("'", "''") + "'";
-    }
 }

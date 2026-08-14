@@ -91,8 +91,10 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
             VariableAssignSegment each = sessionVariableAssigns.get(i);
             String variableName = each.getVariable().getVariable();
             if (SQL_MODE.equalsIgnoreCase(variableName)) {
-                sqlMode = parseSQLMode(each.getAssignValue(), connectionSession, metaData);
-                replayedSessionVariables.put(SQL_MODE, MySQLSessionSQLMode.formatAssignValue(sqlMode));
+                String assignValue = each.getAssignValue();
+                sqlMode = parseSQLMode(assignValue, connectionSession, metaData);
+                replayedSessionVariables.put(SQL_MODE,
+                        isKeyword(assignValue, "default") || QuoteCharacter.SINGLE_QUOTE.isWrapped(assignValue) ? assignValue : QuoteCharacter.SINGLE_QUOTE.wrap(sqlMode.replace("'", "''")));
                 continue;
             }
             if (!isCharsetVariable(variableName)) {
@@ -123,7 +125,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
     
     private String parseSQLMode(final String assignValue, final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         if (isKeyword(assignValue, "default")) {
-            return MySQLSessionSQLMode.getGlobalValue();
+            return MySQLSessionSQLMode.DEFAULT_SQL_MODE;
         }
         String value = QuoteCharacter.SINGLE_QUOTE.isWrapped(assignValue)
                 ? assignValue.substring(1, assignValue.length() - 1)
@@ -257,8 +259,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
         if (null == connectionSession.getUsedDatabaseName()) {
             return;
         }
-        Map<String, String> globalVariables = extractGlobalVariables();
-        String concatenatedGlobalVariables = globalVariables.entrySet().stream().map(entry -> String.format("@@GLOBAL.%s = %s", entry.getKey(), entry.getValue()))
+        String concatenatedGlobalVariables = extractGlobalVariables().entrySet().stream().map(entry -> String.format("@@GLOBAL.%s = %s", entry.getKey(), entry.getValue()))
                 .collect(Collectors.joining(", "));
         if (concatenatedGlobalVariables.isEmpty()) {
             return;
@@ -275,9 +276,6 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
             databaseProxyBackendHandler.execute();
         } finally {
             databaseProxyBackendHandler.close();
-        }
-        if (globalVariables.keySet().stream().anyMatch(SQL_MODE::equalsIgnoreCase)) {
-            MySQLSessionSQLMode.setGlobalValue(parseSQLMode("@@global.sql_mode", connectionSession, metaData));
         }
     }
     
