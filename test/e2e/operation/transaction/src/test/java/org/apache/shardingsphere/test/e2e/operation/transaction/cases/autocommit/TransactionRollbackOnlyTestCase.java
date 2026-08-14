@@ -29,6 +29,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Transaction rollback only test case.
@@ -51,15 +52,16 @@ public class TransactionRollbackOnlyTestCase extends BaseTransactionTestCase {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertExceptionOccur(connection, false);
-            try {
-                executeUpdateWithLog(connection, "UPDATE account SET balance = 100 WHERE id = 1");
-                String duplicatedKeySQL = "INSERT INTO account (id, balance, transaction_id) values (1, 11, 11)";
-                executeUpdateWithLog(connection, duplicatedKeySQL);
-                throw new SQLException("Expect report SQLException, but not report");
-            } catch (final SQLException ignored) {
-                assertExceptionOccur(connection, true);
-            }
+            executeUpdateWithLog(connection, "UPDATE account SET balance = 100 WHERE id = 1");
+            String duplicatedKeySQL = "INSERT INTO account (id, balance, transaction_id) values (1, 11, 11)";
+            SQLException duplicatedKeyException = assertThrows(SQLException.class, () -> executeUpdateWithLog(connection, duplicatedKeySQL));
+            assertThat(duplicatedKeyException.getSQLState(), is("23505"));
+            assertExceptionOccur(connection, true);
+            assertThrows(SQLException.class,
+                    () -> executeUpdateWithLog(connection, "INSERT INTO account (id, balance, transaction_id) values (2, 2, 2)"));
             connection.commit();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
             assertAccountBalances(connection, 1);
         }
     }
@@ -69,16 +71,18 @@ public class TransactionRollbackOnlyTestCase extends BaseTransactionTestCase {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertExceptionOccur(connection, false);
-            try {
-                executeUpdateWithLog(connection, "UPDATE account SET balance = 100 WHERE id = 1");
-                PreparedStatement duplicatedKeyInsertStatement = connection.prepareStatement("INSERT INTO account (id, balance, transaction_id) values (?, 11, 11)");
+            executeUpdateWithLog(connection, "UPDATE account SET balance = 100 WHERE id = 1");
+            try (PreparedStatement duplicatedKeyInsertStatement = connection.prepareStatement("INSERT INTO account (id, balance, transaction_id) values (?, 11, 11)")) {
                 duplicatedKeyInsertStatement.setInt(1, 1);
-                duplicatedKeyInsertStatement.execute();
-                throw new SQLException("Expect report SQLException, but not report");
-            } catch (final SQLException ignored) {
-                assertExceptionOccur(connection, true);
+                SQLException duplicatedKeyException = assertThrows(SQLException.class, duplicatedKeyInsertStatement::execute);
+                assertThat(duplicatedKeyException.getSQLState(), is("23505"));
+                duplicatedKeyInsertStatement.setInt(1, 2);
+                assertThrows(SQLException.class, duplicatedKeyInsertStatement::execute);
             }
+            assertExceptionOccur(connection, true);
             connection.commit();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
             assertAccountBalances(connection, 1);
         }
     }

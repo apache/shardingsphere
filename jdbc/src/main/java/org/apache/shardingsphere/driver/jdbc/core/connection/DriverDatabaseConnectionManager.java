@@ -198,6 +198,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepoint.getSavepointName());
         }
+        connectionContext.getTransactionContext().setExceptionOccur(false);
     }
     
     private void clear() {
