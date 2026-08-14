@@ -36,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryBinaryParameterExtractor.ExtractionResult;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -73,12 +74,13 @@ final class MySQLComQueryBackendHandlerFactory {
     private static Optional<ProxyBackendHandler> tryCreateBinaryLiteralHandler(final DatabaseType databaseType, final String sql, final MySQLComQueryPacket packet,
                                                                                final ConnectionSession connectionSession) throws SQLException {
         Optional<byte[]> originalSQLBytes = packet.findOriginalSQLBytes();
-        if (!originalSQLBytes.isPresent() || !requiresBinaryLiteralInspection(sql) || 1 != MultiSQLSplitter.split(sql).size()) {
+        if (!originalSQLBytes.isPresent() || !requiresBinaryLiteralInspection(sql)) {
             return Optional.empty();
         }
+        boolean noBackslashEscapes = MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).isNoBackslashEscapes();
         ExtractionResult extractionResult = MySQLComQueryBinaryParameterExtractor.extract(
-                originalSQLBytes.get(), connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
-        if (extractionResult.getBinaryLiteralValues().isEmpty()) {
+                originalSQLBytes.get(), connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), noBackslashEscapes);
+        if (extractionResult.getBinaryLiteralValues().isEmpty() || 1 != MultiSQLSplitter.split(extractionResult.getSql()).size()) {
             return Optional.empty();
         }
         String parameterizedSQL = SQLHintUtils.removeHint(extractionResult.getSql());

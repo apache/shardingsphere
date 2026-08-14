@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -40,6 +41,7 @@ public final class ServerStatusFlagCalculator {
         result |= connectionSession.isAutoCommit() ? MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue() : 0;
         result |= connectionSession.getTransactionStatus().isInTransaction() ? MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue() : 0;
         result |= lastPacket ? 0 : MySQLStatusFlag.SERVER_MORE_RESULTS_EXISTS.getValue();
+        result |= MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).isNoBackslashEscapes() ? MySQLStatusFlag.SERVER_STATUS_NO_BACKSLASH_ESCAPES.getValue() : 0;
         return result;
     }
 }
