@@ -194,6 +194,84 @@ Before editing:
 4. Convert these items into a compact acceptance checklist and a 3–10 step plan
    for non-trivial work.
 
+### Strict Scope and Task-Delta Gate
+
+Apply this gate to every file-changing task and action, including changes made
+by formatters, generators, scripts, Skills, and review fixes, except a
+standalone restoration or rollback governed by its existing gates.
+
+For this gate, an active task is one independent, verifiable user objective,
+not the permanent lifetime of a UI conversation. It includes every later turn
+and correction for that objective, including after a handoff. Only after the
+previous objective is complete and the user explicitly requests an independent
+objective may Codex capture a new baseline and freeze a new boundary. When a
+user request could reasonably be either a follow-up or an independent
+objective, remain read-only and confirm the task boundary before writing. An
+agent finding, review result, failure, or mention of another module is not an
+independent objective and does not create that ambiguity.
+
+1. Derive the acceptance checklist only from user-requested outcomes, direct
+   prerequisites proven by inspected evidence, and focused regression
+   protection required by the Test Rules. Do not turn an agent-proposed
+   cleanup, refactor, generalization, consistency improvement, or adjacent fix
+   into an acceptance criterion.
+2. Treat a prerequisite as direct only when omitting it would prevent the
+   requested behavior, compilation, or scoped verification and no smaller
+   in-boundary alternative exists. Relevance, repository evidence, a test
+   failure, or a review finding may prove that expansion is required, but does
+   not authorize that expansion.
+3. Before the first write, record the pre-task working-tree baseline, including
+   the existing status and relevant diffs, then freeze the allowed files and
+   the allowed change intent for each file. An allowed file does not authorize
+   unrelated hunks in that file.
+4. For a file-changing request that is authorized to proceed, use initial
+   read-only analysis and, before the first write, derive the smallest owning
+   module or repository-path set from the user request and inspected evidence,
+   whether or not the user named it, then freeze it as the hard write allowlist
+   for the active Codex task. Later user turns, follow-up changes, reviews,
+   failures, and further inspection in that task do not reset or expand it.
+   Inspection and verification outside it remain read-only. Never edit any
+   other module, including a sibling, shared, dependency, parent, root, or
+   consuming module. Its code, tests, resources, configuration, build files,
+   and generated sources remain outside the write boundary unless the user
+   explicitly authorizes the exact additional module or path and its change
+   intent before the edit. Treat that authorization as an append-only
+   expansion: map it to an acceptance criterion, freeze only the smallest newly
+   authorized path and intent, and retain the original task baseline. Never
+   rebaseline an active task, infer whole-module authorization from an exact
+   file authorization, or treat an added path as blanket authorization. A
+   direct prerequisite does not self-authorize expansion. The allowlist is a
+   maximum boundary, not blanket authorization or a reason to repeat completed
+   work; every later edit still needs an unsatisfied acceptance criterion. Do
+   not repeat completed edits, checks, or reviews unless an authorized
+   in-boundary edit invalidates them.
+5. When the request makes the boundary clear, infer and freeze it without
+   asking the user to repeat it. The checklist is the maximum change boundary.
+   Every changed file and task-introduced hunk must map directly to one
+   acceptance criterion and be necessary to satisfy it.
+6. After each file-changing action, inspect the paths and hunks that action may
+   have changed before continuing. Tool-produced changes are task changes and
+   receive no scope exemption.
+7. If evidence proves that work outside the frozen boundary is required, stop
+   before that edit. Report the blocking evidence, smallest additional scope,
+   exact files or contracts, and consequence of declining it, then request
+   confirmation. Until expansion is authorized, limit outside-boundary work to
+   the read-only evidence needed for that report; do not start its design or
+   implementation workflow. Report other out-of-scope findings without fixing
+   them.
+8. After the last file-changing action, audit the task-introduced delta against
+   the pre-task baseline, not merely the aggregate working-tree diff. Preserve
+   every pre-existing user change and every later delta that cannot be proven
+   to result from a current-task write. Absence from the baseline does not prove
+   task ownership. Treat an unattributed delta as user-owned, do not overwrite,
+   format, remove, or roll it back, and stop the affected write path to report
+   the conflict. Remove only proven current-task changes that lack a direct
+   acceptance-criterion mapping; if precise removal is unsafe or a tool keeps
+   recreating them, stop and report the blocker.
+9. Hand off only when the audited task delta is the smallest correct change.
+   Summarize each remaining file as `file -> changed behavior -> acceptance
+   criterion -> necessity` so the user can verify the scope directly.
+
 ### Unused and Removal Conclusions
 
 Apply this gate to every analysis or change that classifies code, dependencies,
@@ -217,12 +295,6 @@ unused or removable.
    when evidence is incomplete. Use verified removal candidate only after a
    controlled removal experiment, or equivalent existing evidence, covers the
    affected compilation, tests, packaging, and runtime paths.
-
-When the request makes the boundary clear, infer and record it without asking
-the user to repeat it. The checklist is the maximum change boundary. Every
-changed file and hunk must satisfy it; nearby cleanup and unrelated failures do
-not expand it. If evidence proves that work outside the boundary is required,
-stop before that edit, report the required expansion, and request confirmation.
 
 Changes to public contracts, SPIs, extension or loading contracts, class or
 method `final`, visibility, inheritance, constructors or signatures, module
@@ -451,29 +523,91 @@ not expand scope or rewrite unrelated existing code.
 
 ## Specialized Workflows
 
-Use the matching Skill when its trigger applies:
+### Repository Workflows
+
+Use the matching repository Skill when its trigger applies:
 
 - Issue diagnosis and copy-ready maintainer replies: `$analyze-issue`.
 - Unit-test generation or systematic coverage work: `$gen-ut`.
 - PR correctness, side effects, mergeability, GitHub review replies, or the
   pre-handoff review of an authorized implementation targeting an existing PR:
   `$review-pr`. For pre-handoff review, use its Local Candidate Preflight Mode.
+
+If a matching repository Skill is unavailable, apply an equivalent manual
+checklist, record the fallback in the plan or final response, and continue
+without installing it. Do not create a new Skill merely to hold task-specific
+instructions.
+
+### Optional Cross-Cutting Skills
+
+The Skills in this subsection are optional workflow accelerators, not
+prerequisites. Availability alone is not a trigger. When an optional Skill is
+available and its trigger below applies, prefer it and use only the smallest
+matching Skill set. If it is unavailable, skip the Skill itself and continue
+with the applicable repository gates and ordinary workflow. Do not install,
+create, reconstruct, or treat the absence of an optional Skill as a blocker.
+Mention the absence only when the user explicitly requested the Skill or it
+leaves a material residual risk.
+
+Skipping a Skill never waives compatibility, correctness, security, scope,
+verification, or completion requirements. Using a Skill never expands the
+frozen task scope, allowed modules or files, acceptance checklist, write or
+remote authority, Git authority, or tool permissions. This guide prevails when
+a Skill conflicts with it.
+
 - Implementation or review whose correctness depends on the current version of
-  an external framework or library: use `$source-driven-development`. Identify
-  the applicable version from repository dependency metadata, verify the
-  relevant decision against authoritative primary documentation, record the
-  source, and mark anything that cannot be verified as unverified. Do not invoke
-  it for version-independent local logic.
+  an external framework or library: use `$source-driven-development` when
+  available. Identify the applicable version from repository dependency
+  metadata, verify the relevant decision against authoritative primary
+  documentation, record the source, and mark anything that cannot be verified
+  as unverified. This verification remains required without the Skill. Do not
+  invoke it for version-independent local logic.
 - Designing, adding, or changing a public API, SPI, extension, loading or
   registration contract, module boundary, externally visible interface, or
-  cross-module type contract: use `$api-and-interface-design` before
-  implementation. Apply it together with the Architecture change and Contract
-  and Impact gates; using the Skill does not authorize the change or expand the
-  confirmed scope.
-
-If a named Skill is unavailable, apply an equivalent manual checklist, record
-the fallback in the plan or final response, and continue without installing it.
-Do not create a new Skill merely to hold task-specific instructions.
+  cross-module type contract: use `$api-and-interface-design` when available
+  before implementation. Apply the Architecture change and Contract and Impact
+  gates whether or not the Skill is available; using it does not authorize the
+  change or expand the confirmed scope.
+- An unexpected test, build, runtime, or behavior failure: use
+  `$debugging-and-error-recovery` when available. Stop unrelated implementation,
+  preserve evidence, reproduce, localize, reduce, identify the root cause, and
+  verify the result. Add focused regression protection only when the root cause
+  is an in-scope production defect and the test protects meaningful owned
+  behavior; do not add a test for an environment, infrastructure, or unrelated
+  failure. A failure never authorizes an out-of-boundary fix or a Git write.
+- An explicit performance requirement, reproducible reported slowness or
+  suspected regression, profiling evidence, or a requested change that can
+  materially alter the cost of a confirmed performance-sensitive path: use
+  `$performance-optimization` when available to measure first. A path being
+  high-volume by itself is not a trigger. Freeze the workload, metric,
+  environment, and baseline; identify the owning bottleneck before editing;
+  test one hypothesis at a time; and repeat the same measurement with
+  correctness checks. Keep a change only when the improvement exceeds
+  run-to-run variance and correctness remains intact. Remove neutral, worse,
+  or incorrect current-task experiments. Record attempts in the task unless an
+  exact file or remote target is separately authorized. Do not optimize by
+  intuition or follow adjacent hotspots outside the frozen boundary.
+- After scoped behavior and checks pass, when the effective task delta contains
+  concrete unnecessary complexity or a review identifies it: use
+  `$code-simplification` when available on that delta only. Preserve behavior
+  exactly and never perform a drive-by refactor or gain Git authority from the
+  Skill. Do not invoke it merely because the Completion Loop is running or when
+  the candidate is already clear.
+- An explicit user request to threat model a repository or path, enumerate
+  threats or abuse paths, or perform AppSec threat modeling: use
+  `$security-threat-model` when available. Do not invoke it for an ordinary
+  architecture summary, code review, security check, or non-security design.
+  The request remains read-only unless the user also authorizes the exact
+  output file; the Skill's default artifact creation grants no write authority.
+- A non-trivial decision involving module boundaries, public contracts,
+  unfamiliar code, or high-risk behavior, or a branching invariant that is not
+  directly established by types, existing tests, or an explicit contract and
+  whose failure would materially affect correctness, compatibility, security,
+  or another high-risk behavior: use `$doubt-driven-development` when available
+  only within the active task. An ordinary branch is not a trigger. The
+  prohibition on additional Codex tasks and external review overrides its
+  fresh-context and cross-model steps. Perform bounded adversarial self-review
+  instead and do not report the full Skill as completed.
 
 Do not include sensitive repository data in external searches.
 
@@ -568,19 +702,22 @@ After the last file-changing action:
 For an authorized change, build, implement, or fix request, excluding a
 standalone restoration or rollback:
 
-1. Compare the read-only `git diff` and surrounding context with the acceptance
-   checklist.
-2. Confirm every hunk is necessary, prohibited paths have zero diff, direct
-   reuse was considered, architecture changes were authorized, and every test
-   protects owned behavior. Inspect Java changes for newly added local-variable
-   `final`, scan changed code and Skills for local absolute paths, and remove
-   only current-task violations.
+1. Compare the task-introduced delta with the recorded pre-edit baseline, the
+   read-only `git diff`, surrounding context, and the acceptance checklist.
+2. Confirm every task-introduced file and hunk is necessary, expected changed
+   files contain only their frozen change intent, prohibited paths have zero
+   task delta, direct reuse was considered, architecture changes were
+   authorized, and every test protects owned behavior. Inspect Java changes for
+   newly added local-variable `final`, scan changed code and Skills for local
+   absolute paths, and remove only current-task violations.
 3. Treat scripts, searches, formatting, compilation, and passing tests as
    evidence, not proof of semantic compliance. Judge the final behavior,
    contracts, architecture, and user request directly; fix every safe in-scope
    violation instead of reporting it as an accepted risk.
-4. Apply `$code-simplification` when available, or its equivalent checklist, to
-   remove unnecessary complexity without changing behavior.
+4. Apply `$code-simplification` under Optional Cross-Cutting Skills only when
+   its concrete complexity trigger is present and the Skill is available. Do
+   not invoke it merely because this loop is running; a clear task delta or an
+   unavailable Skill does not block handoff.
 5. Review the effective local candidate against the same code-correctness gates
    used by `$review-pr`: root cause and fix mapping, affected behavior, side
    effects and regressions, contracts and architecture, test validity, and
@@ -595,8 +732,9 @@ standalone restoration or rollback:
    unresolved architecture choice, or a high-risk action, stop at its existing
    authorization gate instead of fixing it automatically.
 8. Hand off and propose a commit message only after one complete applicable
-   review pass finds zero new required issues. Do not defer a locally
-   discoverable required finding to a later formal PR review.
+   review pass finds zero new required issues. Before that review passes, do not
+   hand off or propose a commit message. Do not defer a locally discoverable
+   required finding to a later formal PR review.
 9. Stop when no required in-scope finding remains. Do not iterate for optional
    polish, broad cleanup, or risky refactoring.
 
