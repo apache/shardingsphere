@@ -17,6 +17,153 @@
   -->
 
 <sql-parser-test-cases>
+    <update sql-case-id="update_cast_assignment_hive" parameters="1, 2">
+        <table start-index="7" stop-index="22">
+            <simple-table name="t_product_detail" start-index="7" stop-index="22" />
+        </table>
+        <set start-index="24" stop-index="58">
+            <assignment start-index="28" stop-index="58">
+                <column name="description" start-index="28" stop-index="38" />
+                <assignment-value>
+                    <function function-name="cast" text="cast(? AS STRING)" start-index="42" stop-index="58">
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="STRING" start-index="52" stop-index="57" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="60" stop-index="78">
+            <expr>
+                <binary-operation-expression start-index="66" stop-index="78">
+                    <left>
+                        <column name="detail_id" start-index="66" stop-index="74" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="1" start-index="78" stop-index="78" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
+    <update sql-case-id="update_case_when_assignment_hive" parameters="1, 2, 3, 4">
+        <table start-index="7" stop-index="12">
+            <simple-table name="t_user" start-index="7" stop-index="12" />
+        </table>
+        <set start-index="14" stop-index="95">
+            <assignment start-index="18" stop-index="95">
+                <column name="user_name" start-index="18" stop-index="26" />
+                <assignment-value>
+                    <case-when-expression text="CASE WHEN user_id = ? THEN concat(user_name, ?) ELSE user_name END">
+                        <when-exprs>
+                            <binary-operation-expression start-index="40" stop-index="50">
+                                <left>
+                                    <column name="user_id" start-index="40" stop-index="46" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <parameter-marker-expression parameter-index="0" start-index="50" stop-index="50" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <function function-name="concat" text="concat(user_name, ?)" start-index="57" stop-index="76">
+                                <parameter>
+                                    <column name="user_name" start-index="64" stop-index="72" />
+                                </parameter>
+                                <parameter>
+                                    <parameter-marker-expression parameter-index="1" start-index="75" stop-index="75" />
+                                </parameter>
+                            </function>
+                        </then-exprs>
+                        <else-expr>
+                            <column name="user_name" start-index="83" stop-index="91" />
+                        </else-expr>
+                    </case-when-expression>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="97" stop-index="119">
+            <expr>
+                <in-expression start-index="103" stop-index="119">
+                    <not>false</not>
+                    <left>
+                        <column name="user_id" start-index="103" stop-index="109" />
+                    </left>
+                    <right>
+                        <list-expression start-index="114" stop-index="119">
+                            <items>
+                                <parameter-marker-expression parameter-index="2" start-index="115" stop-index="115" />
+                            </items>
+                            <items>
+                                <parameter-marker-expression parameter-index="3" start-index="118" stop-index="118" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </update>
+
+    <update sql-case-id="update_values_derived_table_aliases_postgresql">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="35">
+            <assignment start-index="19" stop-index="35">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <column name="status" start-index="28" stop-index="35">
+                        <owner name="t" start-index="28" stop-index="28" />
+                    </column>
+                </assignment-value>
+            </assignment>
+        </set>
+        <from start-index="42" stop-index="84">
+            <subquery-table alias="t" start-index="42" stop-index="84">
+                <subquery start-index="42" stop-index="61">
+                    <select>
+                        <projections start-index="43" stop-index="60">
+                            <expression-projection text="1" start-index="51" stop-index="51">
+                                <expr>
+                                    <literal-expression value="1" start-index="51" stop-index="51" />
+                                </expr>
+                            </expression-projection>
+                            <expression-projection text="PAID" start-index="54" stop-index="59">
+                                <expr>
+                                    <literal-expression value="PAID" start-index="54" stop-index="59" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+                <column-alias>order_id</column-alias>
+                <column-alias>status</column-alias>
+            </subquery-table>
+        </from>
+        <where start-index="86" stop-index="120">
+            <expr>
+                <binary-operation-expression start-index="92" stop-index="120">
+                    <left>
+                        <column name="order_id" start-index="92" stop-index="107">
+                            <owner name="t_order" start-index="92" stop-index="98" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="order_id" start-index="111" stop-index="120">
+                            <owner name="t" start-index="111" stop-index="111" />
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
     <update sql-case-id="update_without_alias" parameters="'update', 1, 1">
         <table start-index="7" stop-index="13">
             <simple-table name="t_order" start-index="7" stop-index="13" />

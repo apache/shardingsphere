@@ -17,10 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-package sql-case-id="drop_package" />
-    <drop-package sql-case-id="drop_package_body_with_owner_visitor_oracle" body="true">
-        <package name="foo_pkg" start-index="18" stop-index="35">
-            <owner name="foo_schema" start-index="18" stop-index="27" />
-        </package>
-    </drop-package>
+    <plsql-block sql-case-id="plsql_block_with_procedure_and_function_calls_visitor_oracle">
+        <procedure-call name="simple_insert_data" />
+        <procedure-call name="function_insert_data" />
+    </plsql-block>
 </sql-parser-test-cases>

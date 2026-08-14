@@ -20,8 +20,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.packages.PackageAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleCreatePackageStatementTestCase;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,5 +59,14 @@ public final class OracleCreatePackageStatementAssert {
         assertThat(assertContext.getText("Package edition assertion error: "), actual.getEdition().map(Enum::name).orElse(null), is(expected.getEdition()));
         assertThat(assertContext.getText("Package authorization assertion error: "), actual.getAuthorization().map(Enum::name).orElse(null), is(expected.getAuthorization()));
         assertThat(assertContext.getText("Package initialization assertion error: "), actual.getInitialization().isPresent(), is(expected.isHasInitialization()));
+        if (null != expected.getSqlStatementCount()) {
+            assertThat(assertContext.getText("Package SQL statements size assertion error: "), actual.getSqlStatements().size(), is(expected.getSqlStatementCount()));
+        }
+        if (!expected.getTables().isEmpty()) {
+            TableAssert.assertIs(assertContext, actual.getAttributes().getAttribute(TableSQLStatementAttribute.class).getTables(), expected.getTables());
+        }
+        if (!expected.getColumns().isEmpty()) {
+            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
+        }
     }
 }

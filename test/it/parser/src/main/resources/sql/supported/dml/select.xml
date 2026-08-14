@@ -17,6 +17,8 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_not_scalar_subquery_postgresql" value="select 1 from t17 as ref_0 where not ((ref_0.c59) &lt; (select ref_1.c36 as c_0 from t23 as ref_1 join t22 as ref_2 on(ref_1.colocated_key = ref_2.colocated_key)))" db-types="PostgreSQL" />
+    <sql-case id="select_values_derived_table_aliases_postgresql" value="SELECT * FROM (VALUES ('k1', 'v1', 1)) AS t(pk, col_a, col_a_type)" db-types="PostgreSQL" />
     <sql-case id="select_with_comment" value="/*FORCE_IMCI_NODES*/ select /*+ SET_VAR(cost_threshold_for_imci=0) */ * from t_order" db-types="MySQL" />
     <sql-case id="select_position_function" value="select position(&quot;0&quot; in &quot;baaa&quot; in (1)),position(&quot;0&quot; in &quot;1&quot; in (1,2,3)),position(&quot;sql&quot; in (&quot;mysql&quot;))" db-types="MySQL" />
     <sql-case id="select_extract_function_with_day_hour" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />

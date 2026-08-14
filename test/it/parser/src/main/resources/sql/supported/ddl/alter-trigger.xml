@@ -25,4 +25,5 @@
     <sql-case id="alter_trigger_extension" value="ALTER TRIGGER emp_stamp ON emp DEPENDS ON EXTENSION emplib;" db-types="PostgreSQL" />
     <sql-case id="alter_trigger_disable" value="ALTER TRIGGER update_job_history DISABLE;" db-types="Oracle" />
     <sql-case id="alter_trigger_enable" value="ALTER TRIGGER update_job_history ENABLE;" db-types="Oracle" />
+    <sql-case id="alter_trigger_with_owner_visitor_oracle" value="ALTER TRIGGER foo_schema.foo_trigger DISABLE" db-types="Oracle" />
 </sql-cases>

@@ -35,4 +35,39 @@
         <package name="foo_pkg" start-index="34" stop-index="40" />
         <package-end-name name="foo_pkg" start-index="81" stop-index="87" />
     </create-package>
+
+    <create-package sql-case-id="create_package_visitor_oracle" replace="true" if-not-exists="true" edition="EDITIONABLE" authorization="CURRENT_USER">
+        <package name="foo_pkg" start-index="63" stop-index="69">
+            <owner name="foo_schema" start-index="52" stop-index="61" />
+        </package>
+        <package-end-name name="foo_pkg" start-index="221" stop-index="227" />
+        <table name="T_USER" start-index="147" stop-index="152" />
+        <table name="T_USER" start-index="195" stop-index="200" />
+    </create-package>
+
+    <create-package sql-case-id="create_package_body_visitor_oracle" body="true" replace="true" edition="NONEDITIONABLE" has-initialization="true" sql-statement-count="2">
+        <package name="foo_pkg" start-index="57" stop-index="63">
+            <owner name="foo_schema" start-index="46" stop-index="55" />
+        </package>
+        <package-end-name name="foo_pkg" start-index="290" stop-index="296" />
+        <table name="T_USER" start-index="99" stop-index="104" />
+        <table name="T_USER" start-index="199" stop-index="204" />
+    </create-package>
+
+    <create-package sql-case-id="create_package_body_with_type_attributes_visitor_oracle" body="true" replace="true">
+        <package name="PKG_E2E_RDL_CONVERT" start-index="31" stop-index="49" />
+        <package-end-name name="PKG_E2E_RDL_CONVERT" start-index="514" stop-index="532" />
+        <table name="T_E2E_RDL_CONVERT" start-index="83" stop-index="99" />
+        <table name="T_E2E_RDL_CONVERT" start-index="146" stop-index="162" />
+        <table name="T_E2E_RDL_CONVERT" start-index="323" stop-index="339" />
+        <column name="ID" start-index="101" stop-index="102">
+            <owner name="T_E2E_RDL_CONVERT" start-index="83" stop-index="99" />
+        </column>
+        <column name="STATUS" start-index="164" stop-index="169">
+            <owner name="T_E2E_RDL_CONVERT" start-index="146" stop-index="162" />
+        </column>
+        <column name="ID" start-index="341" stop-index="342">
+            <owner name="T_E2E_RDL_CONVERT" start-index="323" stop-index="339" />
+        </column>
+    </create-package>
 </sql-parser-test-cases>

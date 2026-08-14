@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.transform;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.packages.ExpectedPackage;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Alter package statement test case.
+ * Expected transform segment.
  */
 @Getter
-@Setter
-public final class AlterPackageStatementTestCase extends SQLParserTestCase {
+public final class ExpectedTransformSegment {
     
-    @XmlElement(name = "package")
-    private ExpectedPackage packageName;
+    @XmlAttribute(name = "function-name")
+    private String functionName;
+    
+    @XmlAttribute(name = "parameter-count")
+    private int parameterCount;
 }

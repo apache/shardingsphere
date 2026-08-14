@@ -388,6 +388,9 @@ public final class ExpressionAssert {
      * @param expected expected case when expression
      */
     public static void assertCaseWhenExpression(final SQLCaseAssertContext assertContext, final CaseWhenExpression actual, final ExpectedCaseWhenExpression expected) {
+        if (null != expected.getText()) {
+            assertThat(assertContext.getText("Case when expression text assertion error: "), actual.getText(), is(expected.getText()));
+        }
         assertThat(assertContext.getText("When exprs size is not same!"), actual.getWhenExprs().size(), is(expected.getWhenExprs().size()));
         assertThat(assertContext.getText("Then exprs size is not same!"), actual.getThenExprs().size(), is(expected.getThenExprs().size()));
         Iterator<ExpectedExpression> whenExprsIterator = expected.getWhenExprs().iterator();
