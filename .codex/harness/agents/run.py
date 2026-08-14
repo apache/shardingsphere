@@ -134,6 +134,7 @@ REASONS = [
     "production_test_class_name_required",
     "aligned_code_correctness_review_required",
 ]
+MAX_EVALUATIONS = 2
 
 
 def parse_args() -> argparse.Namespace:
@@ -427,9 +428,9 @@ Return exactly one result for every case and preserve each case ID.
 
 def run_codex(
         policy: bytes, codex_home: Path, output_dir: Path, schema_path: Path,
-        prompt: str, timeout: int) -> tuple[int, float]:
+        prompt: str, timeout: int, evaluation_number: int) -> tuple[int, float, dict[str, Any]]:
     """Run one read-only, ephemeral Codex evaluation."""
-    result_path = output_dir / "result.json"
+    result_path = output_dir / f"result-evaluation-{evaluation_number}.json"
     events_path = output_dir / "events.jsonl"
     stderr_path = output_dir / "stderr.log"
     with tempfile.TemporaryDirectory(prefix="shardingsphere-agent-policy-source-") as isolated_directory, tempfile.TemporaryDirectory(
@@ -466,7 +467,7 @@ def run_codex(
         started = time.monotonic()
         environment = os.environ.copy()
         environment["CODEX_HOME"] = str(isolated_codex_home)
-        with events_path.open("w", encoding="utf-8") as events_file, stderr_path.open("w", encoding="utf-8") as stderr_file:
+        with events_path.open("a", encoding="utf-8") as events_file, stderr_path.open("a", encoding="utf-8") as stderr_file:
             try:
                 completed = subprocess.run(
                     command,
@@ -479,20 +480,25 @@ def run_codex(
                     timeout=timeout,
                     check=False,
                 )
-                return completed.returncode, time.monotonic() - started
+                duration = time.monotonic() - started
+                if completed.returncode:
+                    return completed.returncode, duration, {}
+                with result_path.open(encoding="utf-8") as result_file:
+                    return 0, duration, json.load(result_file)
             except subprocess.TimeoutExpired:
                 stderr_file.write(f"\nHarness timeout after {timeout} seconds.\n")
-                return 124, time.monotonic() - started
+                return 124, time.monotonic() - started, {}
 
 
 def read_usage(events_path: Path) -> dict[str, int]:
-    """Read the last usage record from the Codex JSONL event stream."""
-    usage: dict[str, int] = {}
+    """Aggregate usage records from the Codex JSONL event stream."""
+    usage = {"input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0}
     with events_path.open(encoding="utf-8") as events_file:
         for line in events_file:
             event = json.loads(line)
             if event.get("type") == "turn.completed":
-                usage = event.get("usage", {})
+                for key in usage:
+                    usage[key] += event.get("usage", {}).get(key, 0)
     input_tokens = usage.get("input_tokens", 0)
     cached_input_tokens = usage.get("cached_input_tokens", 0)
     return {
@@ -571,6 +577,59 @@ def grade(cases: list[dict[str, Any]], actual: dict[str, Any]) -> list[dict[str,
             "failures": [f"unexpected case IDs={sorted(unexpected)}"],
         })
     return results
+
+
+def run_cases(
+        policy: bytes, codex_home: Path, output_dir: Path, cases: list[dict[str, Any]],
+        policy_sha256: str, timeout: int) -> tuple[int, float, dict[str, Any], list[dict[str, Any]]]:
+    """Run all cases, then confirm only failed classifications once."""
+    pending_cases = cases
+    actual_by_id = {}
+    unexpected_results = []
+    evaluations = []
+    duration = 0.0
+    for evaluation_number in range(1, MAX_EVALUATIONS + 1):
+        schema_path = output_dir / f"decision-evaluation-{evaluation_number}.schema.json"
+        with schema_path.open("w", encoding="utf-8") as schema_file:
+            json.dump(create_schema([each["id"] for each in pending_cases]), schema_file, indent=2)
+            schema_file.write("\n")
+        exit_code, evaluation_duration, actual = run_codex(
+            policy, codex_home, output_dir, schema_path, create_prompt(pending_cases, policy_sha256), timeout,
+            evaluation_number
+        )
+        duration += evaluation_duration
+        if exit_code:
+            evaluations.append({
+                "evaluation": evaluation_number,
+                "case_count": len(pending_cases),
+                "runner_exit_code": exit_code,
+                "failed_case_ids": [],
+            })
+            return exit_code, duration, {}, evaluations
+        pending_ids = {each["id"] for each in pending_cases}
+        for each in actual.get("results", []):
+            if each["case_id"] in pending_ids:
+                actual_by_id[each["case_id"]] = each
+            else:
+                unexpected_results.append(each)
+        evaluation_results = grade(pending_cases, actual)
+        failed_case_ids = [
+            each["case_id"] for each in evaluation_results
+            if not each["passed"] and "<unexpected>" != each["case_id"]
+        ]
+        evaluations.append({
+            "evaluation": evaluation_number,
+            "case_count": len(pending_cases),
+            "runner_exit_code": 0,
+            "failed_case_ids": failed_case_ids,
+        })
+        if not failed_case_ids or any("<unexpected>" == each["case_id"] for each in evaluation_results):
+            break
+        failed_ids = set(failed_case_ids)
+        pending_cases = [each for each in pending_cases if each["id"] in failed_ids]
+    return 0, duration, {
+        "results": [actual_by_id[each["id"]] for each in cases if each["id"] in actual_by_id] + unexpected_results,
+    }, evaluations
 
 
 def load_baseline(path: Path | None) -> dict[str, Any] | None:
@@ -665,24 +724,21 @@ def main() -> int:
     case_catalog = normalize_case_catalog(cases)
     baseline = load_baseline(args.baseline)
     output_dir = create_output_dir(args.output_dir)
-    schema_path = output_dir / "decision.schema.json"
-    with schema_path.open("w", encoding="utf-8") as schema_file:
-        json.dump(create_schema([each["id"] for each in cases]), schema_file, indent=2)
-        schema_file.write("\n")
-
-    exit_code, duration = run_codex(
-        policy, codex_home, output_dir, schema_path, create_prompt(cases, policy_sha256), args.timeout
+    exit_code, duration, actual, evaluations = run_cases(
+        policy, codex_home, output_dir, cases, policy_sha256, args.timeout
     )
     if exit_code:
         print(json.dumps({
             "label": args.label,
             "runner_exit_code": exit_code,
+            "evaluations": evaluations,
             "output_dir": str(output_dir),
         }, indent=2))
         return exit_code
 
-    with (output_dir / "result.json").open(encoding="utf-8") as result_file:
-        actual = json.load(result_file)
+    with (output_dir / "result.json").open("w", encoding="utf-8") as result_file:
+        json.dump(actual, result_file, indent=2)
+        result_file.write("\n")
     results = grade(cases, actual)
     regressions, contract_changes = compare_with_baseline(
         results, baseline, case_contracts, args.case_ids, set(args.authorized_contract_change)
@@ -701,6 +757,7 @@ def main() -> int:
         "pass_rate": passed / len(results),
         "duration_seconds": round(duration, 3),
         "usage": read_usage(output_dir / "events.jsonl"),
+        "evaluations": evaluations,
         "contract_changes": contract_changes,
         "authorized_contract_changes": sorted(args.authorized_contract_change),
         "critical_regressions": regressions,
