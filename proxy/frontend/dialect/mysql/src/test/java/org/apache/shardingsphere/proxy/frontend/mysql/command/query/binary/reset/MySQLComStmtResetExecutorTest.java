@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.reset;
 
-import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLComStmtSendLongDataPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
@@ -46,7 +45,6 @@ class MySQLComStmtResetExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getAttributeMap()).thenReturn(new DefaultAttributeMap());
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", mock(SQLStatementContext.class), new HintValueContext());

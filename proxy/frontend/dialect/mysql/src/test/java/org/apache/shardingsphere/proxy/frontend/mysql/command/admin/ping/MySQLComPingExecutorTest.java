@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.admin.ping;
 
-import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -46,7 +45,6 @@ class MySQLComPingExecutorTest {
     private static ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.isAutoCommit()).thenReturn(true);
-        when(result.getAttributeMap()).thenReturn(new DefaultAttributeMap());
         when(result.getTransactionStatus()).thenReturn(new TransactionStatus());
         return result;
     }
