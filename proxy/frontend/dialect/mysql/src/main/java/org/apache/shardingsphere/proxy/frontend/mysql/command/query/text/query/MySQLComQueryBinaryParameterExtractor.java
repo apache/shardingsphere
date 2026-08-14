@@ -40,7 +40,7 @@ import java.util.List;
  * Binary parameter extractor for MySQL COM_QUERY.
  *
  * <p>Rewrite unambiguous single-quoted literals containing malformed bytes to placeholders and preserve their values as {@link SerialBlob} parameters.
- * Backslash escapes follow the current MySQL session SQL mode; literals with grammar-dependent semantics are left unchanged.</p>
+ * Backslash escapes use MySQL's default escaping rules; literals with grammar-dependent semantics are left unchanged.</p>
  */
 final class MySQLComQueryBinaryParameterExtractor {
     
@@ -50,25 +50,22 @@ final class MySQLComQueryBinaryParameterExtractor {
     
     private final Charset charset;
     
-    private final boolean noBackslashEscapes;
-    
     private final CharsetDecoder decoder;
     
     private final ByteBuffer input;
     
     private final CharBuffer output;
     
-    private MySQLComQueryBinaryParameterExtractor(final byte[] sql, final Charset charset, final boolean noBackslashEscapes) {
+    private MySQLComQueryBinaryParameterExtractor(final byte[] sql, final Charset charset) {
         this.sql = sql;
         this.charset = charset;
-        this.noBackslashEscapes = noBackslashEscapes;
         decoder = charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT);
         input = ByteBuffer.wrap(sql);
         output = CharBuffer.allocate(2);
     }
     
-    static ExtractionResult extract(final byte[] sql, final Charset charset, final boolean noBackslashEscapes) throws SQLException {
-        return new MySQLComQueryBinaryParameterExtractor(sql, charset, noBackslashEscapes).extract();
+    static ExtractionResult extract(final byte[] sql, final Charset charset) throws SQLException {
+        return new MySQLComQueryBinaryParameterExtractor(sql, charset).extract();
     }
     
     private ExtractionResult extract() throws SQLException {
@@ -138,7 +135,7 @@ final class MySQLComQueryBinaryParameterExtractor {
                 i++;
             } else if (1 < characterLength) {
                 i += characterLength;
-            } else if (!noBackslashEscapes && '\\' == sql[i]) {
+            } else if ('\\' == sql[i]) {
                 int escapedCharacterLength = i + 1 < sql.length ? readCharacterLength(i + 1) : 0;
                 if (0 > escapedCharacterLength) {
                     containsMalformedBytes = true;
@@ -280,7 +277,7 @@ final class MySQLComQueryBinaryParameterExtractor {
             } else if ('\'' == sql[i] && i + 1 < endIndex && '\'' == sql[i + 1]) {
                 result.write('\'');
                 i += 2;
-            } else if (noBackslashEscapes || '\\' != sql[i] || i + 1 >= endIndex) {
+            } else if ('\\' != sql[i] || i + 1 >= endIndex) {
                 result.write(sql[i]);
                 i++;
             } else {

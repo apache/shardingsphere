@@ -45,7 +45,6 @@ class MySQLReplayedSessionVariableProviderTest {
         return Stream.of(
                 Arguments.of("user variable", "@@tx_isolation", true),
                 Arguments.of("connection collation", "COLLATION_CONNECTION", true),
-                Arguments.of("SQL mode", "SQL_MODE", true),
                 Arguments.of("discarded system variable", "tx_isolation", false));
     }
 }

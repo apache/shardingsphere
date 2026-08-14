@@ -36,7 +36,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryBinaryParameterExtractor.ExtractionResult;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -61,26 +60,25 @@ final class MySQLComQueryBackendHandlerFactory {
     static ProxyBackendHandler newInstance(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         String sql = packet.getSQL();
-        boolean noBackslashEscapes = MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).isNoBackslashEscapes();
-        Optional<ProxyBackendHandler> binaryLiteralHandler = tryCreateBinaryLiteralHandler(databaseType, sql, packet, connectionSession, noBackslashEscapes);
+        Optional<ProxyBackendHandler> binaryLiteralHandler = tryCreateBinaryLiteralHandler(databaseType, sql, packet, connectionSession);
         if (binaryLiteralHandler.isPresent()) {
             return binaryLiteralHandler.get();
         }
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        return areMultiStatements(connectionSession, sqlStatement, sql, noBackslashEscapes)
+        return areMultiStatements(connectionSession, sqlStatement, sql)
                 ? new MySQLMultiStatementsProxyBackendHandler(connectionSession, sqlStatement, sql)
                 : ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, packet.getHintValueContext());
     }
     
     private static Optional<ProxyBackendHandler> tryCreateBinaryLiteralHandler(final DatabaseType databaseType, final String sql, final MySQLComQueryPacket packet,
-                                                                               final ConnectionSession connectionSession, final boolean noBackslashEscapes) throws SQLException {
+                                                                               final ConnectionSession connectionSession) throws SQLException {
         Optional<byte[]> originalSQLBytes = packet.findOriginalSQLBytes();
-        if (!originalSQLBytes.isPresent() || !requiresBinaryLiteralInspection(sql)) {
+        if (!originalSQLBytes.isPresent() || !requiresBinaryLiteralInspection(sql) || 1 != MultiSQLSplitter.split(sql).size()) {
             return Optional.empty();
         }
         ExtractionResult extractionResult = MySQLComQueryBinaryParameterExtractor.extract(
-                originalSQLBytes.get(), connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), noBackslashEscapes);
-        if (extractionResult.getBinaryLiteralValues().isEmpty() || 1 != MultiSQLSplitter.split(extractionResult.getSql(), noBackslashEscapes).size()) {
+                originalSQLBytes.get(), connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
+        if (extractionResult.getBinaryLiteralValues().isEmpty()) {
             return Optional.empty();
         }
         String parameterizedSQL = SQLHintUtils.removeHint(extractionResult.getSql());
@@ -110,10 +108,9 @@ final class MySQLComQueryBackendHandlerFactory {
         return false;
     }
     
-    private static boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql, final boolean noBackslashEscapes) {
+    private static boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {
         return isMultiStatementsEnabled(connectionSession)
-                && isSuitableMultiStatementsSQLStatement(sqlStatement)
-                && MultiSQLSplitter.hasSameTypeMultiStatements(sqlStatement, MultiSQLSplitter.split(sql, noBackslashEscapes));
+                && isSuitableMultiStatementsSQLStatement(sqlStatement) && MultiSQLSplitter.hasSameTypeMultiStatements(sqlStatement, MultiSQLSplitter.split(sql));
     }
     
     private static boolean isMultiStatementsEnabled(final ConnectionSession connectionSession) {

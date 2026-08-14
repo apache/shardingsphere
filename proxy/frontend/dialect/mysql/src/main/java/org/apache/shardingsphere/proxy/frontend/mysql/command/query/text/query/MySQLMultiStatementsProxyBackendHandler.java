@@ -49,7 +49,6 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBack
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.MultiStatementsUpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -89,8 +88,7 @@ public final class MySQLMultiStatementsProxyBackendHandler implements ProxyBacke
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         batchExecutor = new BatchPreparedStatementExecutor(metaDataContexts.getMetaData().getDatabase(connectionSession.getUsedDatabaseName()), jdbcExecutor, connectionSession.getProcessId());
         SQLParserEngine sqlParserEngine = getSQLParserEngine();
-        boolean noBackslashEscapes = MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).isNoBackslashEscapes();
-        for (String each : MultiSQLSplitter.split(sql, noBackslashEscapes)) {
+        for (String each : MultiSQLSplitter.split(sql)) {
             SQLStatement eachSQLStatement = sqlParserEngine.parse(each, false);
             multiSQLQueryContexts.add(createQueryContext(each, eachSQLStatement));
         }

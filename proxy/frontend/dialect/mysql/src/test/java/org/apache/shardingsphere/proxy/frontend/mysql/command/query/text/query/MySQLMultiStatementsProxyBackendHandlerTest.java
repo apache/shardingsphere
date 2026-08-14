@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
-import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -40,7 +38,6 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.MultiStatementsUpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -53,7 +50,6 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -77,8 +73,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -123,28 +117,6 @@ class MySQLMultiStatementsProxyBackendHandlerTest {
         ResponseHeader actual = new MySQLMultiStatementsProxyBackendHandler(connectionSession, expectedStatement, sql).execute();
         assertThat(actual, isA(MultiStatementsUpdateResponseHeader.class));
         assertThat(((MultiStatementsUpdateResponseHeader) actual).getUpdateResponseHeaders().size(), is(3));
-    }
-    
-    @Test
-    void assertSplitWithoutBackslashEscapes() throws SQLException {
-        ConnectionSession connectionSession = mockConnectionSession();
-        DefaultAttributeMap attributeMap = new DefaultAttributeMap();
-        MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", attributeMap);
-        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
-        SQLParserEngine sqlParserEngine = mock(SQLParserEngine.class);
-        SQLParserRule sqlParserRule = mock(SQLParserRule.class);
-        when(sqlParserRule.getSQLParserEngine(any(DatabaseType.class))).thenReturn(sqlParserEngine);
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        SQLParserRule actualSQLParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
-        UpdateStatement parsedStatement = (UpdateStatement) actualSQLParserRule.getSQLParserEngine(databaseType).parse("UPDATE t SET v='PAID'", false);
-        when(sqlParserEngine.parse(any(String.class), eq(false))).thenReturn(parsedStatement);
-        ContextManager contextManager = mockContextManager(sqlParserRule);
-        initBackendExecutorContext(contextManager);
-        String sql = "UPDATE t SET v='PAID\\'; UPDATE t SET v='FAILED'";
-        new MySQLMultiStatementsProxyBackendHandler(connectionSession, mock(UpdateStatement.class), sql);
-        ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
-        verify(sqlParserEngine, times(2)).parse(sqlCaptor.capture(), eq(false));
-        assertThat(sqlCaptor.getAllValues(), is(Arrays.asList("UPDATE t SET v='PAID\\'", "UPDATE t SET v='FAILED'")));
     }
     
     private void assertBackendExecutorContextReinitialized(final ExecutorEngine previousExecutorEngine) {
@@ -231,10 +203,6 @@ class MySQLMultiStatementsProxyBackendHandlerTest {
     }
     
     private ContextManager mockContextManager() {
-        return mockContextManager(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));
-    }
-    
-    private ContextManager mockContextManager(final SQLParserRule sqlParserRule) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
@@ -245,7 +213,8 @@ class MySQLMultiStatementsProxyBackendHandlerTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
-        RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(sqlParserRule, new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(
+                Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(result.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
