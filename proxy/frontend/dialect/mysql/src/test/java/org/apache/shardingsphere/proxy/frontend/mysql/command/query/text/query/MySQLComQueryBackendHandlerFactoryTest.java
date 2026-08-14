@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
-import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
@@ -41,7 +40,6 @@ import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigu
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -167,23 +165,6 @@ class MySQLComQueryBackendHandlerFactoryTest {
         assertTrue(actual.isUseCache());
         Blob blob = (Blob) actual.getParameters().get(0);
         assertArrayEquals(new byte[]{(byte) 0xFF}, blob.getBytes(1, (int) blob.length()));
-    }
-    
-    @Test
-    void assertCreatePreparedHandlerForBinaryLiteralWithoutBackslashEscapes() throws SQLException {
-        when(packet.getSQL()).thenReturn("INSERT INTO t (id, v) VALUES (1, _binary'a\\n�')");
-        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql("INSERT INTO t (id, v) VALUES (1, _binary'a\\n", (byte) 0xFF, "')")));
-        DefaultAttributeMap attributeMap = new DefaultAttributeMap();
-        attributeMap.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
-        MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", attributeMap);
-        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
-        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
-        when(connectionSession.getConnectionContext().getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
-        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
-        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
-        MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
-        Blob blob = (Blob) queryContextCaptor.getValue().getParameters().get(0);
-        assertArrayEquals(new byte[]{'a', '\\', 'n', (byte) 0xFF}, blob.getBytes(1, (int) blob.length()));
     }
     
     @Test

@@ -36,7 +36,7 @@ class MySQLComQueryBinaryParameterExtractorTest {
     void assertExtractConnectorJBinaryLiteral() throws SQLException {
         byte[] content = {'\\', '0', '\\', '\'', '\\', '\\', (byte) 0xFF};
         MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(
-                sql("INSERT INTO t VALUES (_binary'", content, "')"), StandardCharsets.UTF_8, false);
+                sql("INSERT INTO t VALUES (_binary'", content, "')"), StandardCharsets.UTF_8);
         assertThat(actual.getSql(), is("INSERT INTO t VALUES (?)"));
         assertArrayEquals(new byte[]{0, '\'', '\\', (byte) 0xFF}, getBlobBytes(actual.getBinaryLiteralValues().get(0)));
     }
@@ -45,33 +45,16 @@ class MySQLComQueryBinaryParameterExtractorTest {
     void assertExtractBackslashEscapedMalformedLiteral() throws SQLException {
         byte[] content = {'\\', 'b', '\\', 'n', '\\', 'r', '\\', 't', '\\', 'Z', '\\', 'q', '\\', '%', '\\', '_', (byte) 0xFF};
         MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(
-                sql("INSERT INTO t VALUES ('", content, "')"), StandardCharsets.UTF_8, false);
+                sql("INSERT INTO t VALUES ('", content, "')"), StandardCharsets.UTF_8);
         assertThat(actual.getSql(), is("INSERT INTO t VALUES (?)"));
         assertArrayEquals(new byte[]{'\b', '\n', '\r', '\t', 0x1A, 'q', '\\', '%', '\\', '_', (byte) 0xFF}, getBlobBytes(actual.getBinaryLiteralValues().get(0)));
-    }
-    
-    @Test
-    void assertExtractMalformedLiteralWithoutBackslashEscapes() throws SQLException {
-        byte[] content = {'a', '\\', 'n', (byte) 0xFF};
-        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(
-                sql("INSERT INTO t VALUES (_binary'", content, "')"), StandardCharsets.UTF_8, true);
-        assertThat(actual.getSql(), is("INSERT INTO t VALUES (?)"));
-        assertArrayEquals(content, getBlobBytes(actual.getBinaryLiteralValues().get(0)));
-    }
-    
-    @Test
-    void assertRespectQuoteBoundaryWithoutBackslashEscapes() throws SQLException {
-        byte[] content = {'a', '\\', '\'', ';', (byte) 0xFF};
-        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(
-                sql("SELECT _binary'", content, "'"), StandardCharsets.UTF_8, true);
-        assertThat(actual.getBinaryLiteralValues(), empty());
     }
     
     @Test
     void assertExtractMalformedLiteral() throws SQLException {
         byte[] content = {'f', 'o', '\'', '\'', (byte) 0xFF};
         MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(
-                sql("INSERT INTO t VALUES ('", content, "')"), StandardCharsets.UTF_8, false);
+                sql("INSERT INTO t VALUES ('", content, "')"), StandardCharsets.UTF_8);
         assertThat(actual.getSql(), is("INSERT INTO t VALUES (?)"));
         assertArrayEquals(new byte[]{'f', 'o', '\'', (byte) 0xFF}, getBlobBytes(actual.getBinaryLiteralValues().get(0)));
     }
@@ -79,7 +62,7 @@ class MySQLComQueryBinaryParameterExtractorTest {
     @Test
     void assertExtractOnlyMalformedLiteral() throws SQLException {
         byte[] sql = sql("SELECT _BiNaRy 'fo''o', '", new byte[]{(byte) 0xFF}, "'");
-        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql, StandardCharsets.UTF_8, false);
+        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql, StandardCharsets.UTF_8);
         assertThat(actual.getSql(), is("SELECT _BiNaRy 'fo''o', ?"));
         assertThat(actual.getBinaryLiteralValues().size(), is(1));
         assertArrayEquals(new byte[]{(byte) 0xFF}, getBlobBytes(actual.getBinaryLiteralValues().get(0)));
@@ -88,14 +71,14 @@ class MySQLComQueryBinaryParameterExtractorTest {
     @Test
     void assertSkipValidLiteral() throws SQLException {
         String sql = "SELECT '😀', _binary'foo'";
-        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8, false);
+        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         assertThat(actual.getBinaryLiteralValues(), empty());
     }
     
     @Test
     void assertIgnoreNonLiteralBinaryTokens() throws SQLException {
         String sql = "SELECT '_binary', `_binary'ignored`, \"_binary'ignored'\", 1 /* _binary'x' */ -- _binary'y'\n";
-        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8, false);
+        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         assertThat(actual.getBinaryLiteralValues(), empty());
     }
     
@@ -103,28 +86,28 @@ class MySQLComQueryBinaryParameterExtractorTest {
     void assertExtractMalformedLiteralWithMultibyteTrailBackslash() throws SQLException {
         Charset charset = Charset.forName("Shift_JIS");
         byte[] content = {(byte) 0x83, '\\', (byte) 0xFF};
-        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql("SELECT _binary'", content, "'"), charset, false);
+        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql("SELECT _binary'", content, "'"), charset);
         assertArrayEquals(content, getBlobBytes(actual.getBinaryLiteralValues().get(0)));
     }
     
     @Test
     void assertKeepMalformedSQLForParser() throws SQLException {
         byte[] sql = "SELECT _binary'foo".getBytes(StandardCharsets.UTF_8);
-        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql, StandardCharsets.UTF_8, false);
+        MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(sql, StandardCharsets.UTF_8);
         assertThat(actual.getBinaryLiteralValues(), empty());
     }
     
     @Test
     void assertSkipDoubleQuotedLiteral() throws SQLException {
         MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(
-                sql("SELECT _binary\"", new byte[]{(byte) 0xFF}, "\""), StandardCharsets.UTF_8, false);
+                sql("SELECT _binary\"", new byte[]{(byte) 0xFF}, "\""), StandardCharsets.UTF_8);
         assertThat(actual.getBinaryLiteralValues(), empty());
     }
     
     @Test
     void assertSkipAdjacentLiteral() throws SQLException {
         MySQLComQueryBinaryParameterExtractor.ExtractionResult actual = MySQLComQueryBinaryParameterExtractor.extract(
-                sql("SELECT _binary'", new byte[]{(byte) 0xFF}, "' 'foo'"), StandardCharsets.UTF_8, false);
+                sql("SELECT _binary'", new byte[]{(byte) 0xFF}, "' 'foo'"), StandardCharsets.UTF_8);
         assertThat(actual.getBinaryLiteralValues(), empty());
     }
     

@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
@@ -36,8 +35,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class MySQLComResetConnectionExecutor implements CommandExecutor {
     
-    private static final String SQL_MODE = "sql_mode";
-    
     private final ConnectionSession connectionSession;
     
     @Override
@@ -47,16 +44,6 @@ public final class MySQLComResetConnectionExecutor implements CommandExecutor {
         connectionSession.setAutoCommit(true);
         connectionSession.setIsolationLevel(null);
         connectionSession.getServerPreparedStatementRegistry().clear();
-        resetSQLMode();
         return Collections.singleton(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession, true)));
-    }
-    
-    private void resetSQLMode() {
-        if (MySQLSessionSQLMode.DEFAULT_SQL_MODE.equals(MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue())) {
-            return;
-        }
-        MySQLSessionSQLMode.set(MySQLSessionSQLMode.DEFAULT_SQL_MODE, connectionSession.getAttributeMap());
-        connectionSession.getRequiredSessionVariableRecorder().setVariable(SQL_MODE, "DEFAULT");
-        connectionSession.getDatabaseConnectionManager().markSessionVariablesDirty();
     }
 }
