@@ -24,6 +24,9 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.Tran
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 /**
  * Integration test of multiple operations in one transaction.
  */
@@ -46,8 +49,9 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
             assertAccountRowCount(connection, 0);
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1)");
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(2, 2, 2)");
-            executeUpdateWithLog(connection, "UPDATE account SET balance = 3, transaction_id = 3 WHERE id = 2");
-            assertAccountBalances(connection, 1, 3);
+            assertThat(executeUpdateWithLog(connection, "UPDATE account SET balance = 3, transaction_id = 3 WHERE id = 2"), is(1));
+            assertThat(executeUpdateWithLog(connection, "DELETE FROM account WHERE id = 1"), is(1));
+            assertAccountBalances(connection, 3);
             connection.rollback();
         }
         try (Connection connection = getDataSource().getConnection()) {
@@ -62,13 +66,14 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
             assertAccountRowCount(connection, 0);
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1)");
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(2, 2, 2)");
-            executeUpdateWithLog(connection, "UPDATE account SET balance = 3, transaction_id = 3 WHERE id = 2");
-            assertAccountBalances(connection, 1, 3);
+            assertThat(executeUpdateWithLog(connection, "UPDATE account SET balance = 3, transaction_id = 3 WHERE id = 2"), is(1));
+            assertThat(executeUpdateWithLog(connection, "DELETE FROM account WHERE id = 1"), is(1));
+            assertAccountBalances(connection, 3);
             connection.commit();
         }
         try (Connection connection = getDataSource().getConnection()) {
-            assertAccountRowCount(connection, 2);
-            assertAccountBalances(connection, 1, 3);
+            assertAccountRowCount(connection, 1);
+            assertAccountBalances(connection, 3);
         }
     }
 }
