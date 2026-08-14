@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 import java.util.Map;
@@ -51,36 +50,12 @@ class EncryptRuleInspectionServiceTest {
     }
     
     @Test
-    void assertQueryEncryptRulesForDatabaseWithUnavailableDistSQL() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "SHOW ENCRYPT RULES FROM logic_db"))
-                .thenThrow(new MCPQueryFailedException("syntax error near 'ENCRYPT RULES FROM logic_db'", new SQLSyntaxErrorException("syntax error")));
-        assertTrue(service.queryEncryptRules(queryFacade, "logic_db").isEmpty());
-    }
-    
-    @Test
     void assertQueryEncryptRules() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "SHOW ENCRYPT TABLE RULE orders FROM logic_db"))
                 .thenReturn(List.of(Map.of("logic_column", "phone", "like_query_column", "phone_like")));
         List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "logic_db", "orders");
         assertThat(actual.getFirst().get("like_query_column"), is("phone_like"));
-    }
-    
-    @Test
-    void assertQueryEncryptRulesWithUnavailableDistSQL() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "SHOW ENCRYPT TABLE RULE orders FROM logic_db"))
-                .thenThrow(new MCPQueryFailedException("syntax error near 'ENCRYPT TABLE RULE orders FROM logic_db'", new SQLSyntaxErrorException("syntax error")));
-        assertTrue(service.queryEncryptRules(queryFacade, "logic_db", "orders").isEmpty());
-    }
-    
-    @Test
-    void assertQueryEncryptRulesPropagatesQueryFailure() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.query("logic_db", "SHOW ENCRYPT TABLE RULE orders FROM logic_db"))
-                .thenThrow(new MCPQueryFailedException("Connection refused.", new SQLException("Connection refused.")));
-        assertThrows(MCPQueryFailedException.class, () -> service.queryEncryptRules(queryFacade, "logic_db", "orders"));
     }
     
     @Test

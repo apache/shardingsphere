@@ -21,16 +21,16 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg.CreatePackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 
@@ -59,6 +59,10 @@ public final class CreateDatabaseObjectStatementContext implements SQLStatementC
         this(sqlStatement, sqlStatement.getSqlStatements(), currentDatabaseName, metaData);
     }
     
+    public CreateDatabaseObjectStatementContext(final CreatePackageStatement sqlStatement, final String currentDatabaseName, final ShardingSphereMetaData metaData) {
+        this((SQLStatement) sqlStatement, sqlStatement.getSqlStatements(), currentDatabaseName, metaData);
+    }
+    
     public CreateDatabaseObjectStatementContext(final CreateProcedureStatement sqlStatement, final String currentDatabaseName, final ShardingSphereMetaData metaData) {
         this(sqlStatement, sqlStatement.getSqlStatements(), currentDatabaseName, metaData);
     }
@@ -67,27 +71,22 @@ public final class CreateDatabaseObjectStatementContext implements SQLStatementC
                                                  final String currentDatabaseName, final ShardingSphereMetaData metaData) {
         this.sqlStatement = sqlStatement;
         Collection<SimpleTableSegment> tables = new LinkedList<>(extractTables(sqlStatement));
-        SQLBindEngine sqlBindEngine = new SQLBindEngine(metaData, currentDatabaseName, new HintValueContext());
         for (SQLStatementSegment each : internalSqlStatements) {
-            SQLStatementContext sqlStatementContext = createInternalSQLStatementContext(sqlBindEngine, sqlStatement, each, currentDatabaseName, metaData);
+            SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, each.getSqlStatement(), currentDatabaseName);
             sqlStatementContexts.add(sqlStatementContext);
             tables.addAll(sqlStatementContext.getTablesContext().getSimpleTables());
         }
         tablesContext = new TablesContext(tables);
     }
     
-    private SQLStatementContext createInternalSQLStatementContext(final SQLBindEngine sqlBindEngine, final SQLStatement sqlStatement, final SQLStatementSegment segment,
-                                                                  final String currentDatabaseName, final ShardingSphereMetaData metaData) {
-        return sqlStatement instanceof CreateProcedureStatement
-                ? SQLStatementContextFactory.newInstance(metaData, segment.getSqlStatement(), currentDatabaseName)
-                : sqlBindEngine.bind(segment.getSqlStatement());
-    }
-    
     private Collection<SimpleTableSegment> extractTables(final SQLStatement sqlStatement) {
+        SQLStatementAttributes attributes = sqlStatement.getAttributes();
+        Optional<TableSQLStatementAttribute> tableAttribute = null == attributes ? Optional.empty() : attributes.findAttribute(TableSQLStatementAttribute.class);
+        Collection<SimpleTableSegment> result = new LinkedList<>(tableAttribute.map(TableSQLStatementAttribute::getTables).orElseGet(Collections::emptyList));
         if (sqlStatement instanceof CreateProcedureStatement) {
             Optional<RoutineBodySegment> routineBody = ((CreateProcedureStatement) sqlStatement).getRoutineBody();
-            return routineBody.map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList);
+            routineBody.ifPresent(optional -> result.addAll(new TableExtractor().extractExistTableFromRoutineBody(optional)));
         }
-        return sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).map(TableSQLStatementAttribute::getTables).orElseGet(Collections::emptyList);
+        return result;
     }
 }

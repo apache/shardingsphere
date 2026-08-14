@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysv
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionReadOnlyValueProvider;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.VersionValueProvider;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.CharsetValueProvider;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.Arrays;
@@ -877,8 +878,7 @@ public enum MySQLSystemVariable {
     
     SQL_LOG_OFF(MySQLSystemVariableFlag.SESSION, "0"),
     
-    SQL_MODE(MySQLSystemVariableFlag.SESSION | MySQLSystemVariableFlag.HINT_UPDATEABLE,
-            "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"),
+    SQL_MODE(MySQLSystemVariableFlag.SESSION | MySQLSystemVariableFlag.HINT_UPDATEABLE, MySQLSessionSQLMode.DEFAULT_SQL_MODE, new SQLModeValueProvider()),
     
     SQL_NOTES(MySQLSystemVariableFlag.SESSION, "1"),
     
@@ -1091,6 +1091,14 @@ public enum MySQLSystemVariable {
     
     MySQLSystemVariable(final int flag, final String defaultValue) {
         this(flag, defaultValue, MySQLSystemVariableValueProvider.DEFAULT_PROVIDER);
+    }
+    
+    private static final class SQLModeValueProvider implements MySQLSystemVariableValueProvider {
+        
+        @Override
+        public String get(final MySQLSystemVariableScope scope, final ConnectionSession connectionSession, final MySQLSystemVariable variable) {
+            return MySQLSystemVariableScope.GLOBAL == scope ? variable.getDefaultValue() : MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue();
+        }
     }
     
     /**

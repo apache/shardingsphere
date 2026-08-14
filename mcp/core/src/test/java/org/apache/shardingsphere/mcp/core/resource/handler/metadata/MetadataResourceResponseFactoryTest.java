@@ -82,6 +82,17 @@ class MetadataResourceResponseFactoryTest {
     }
     
     @Test
+    void assertCreateDefaultStorageUnitResponsePreservesNavigationResourceKinds() {
+        MCPResourceURIVariables uriVariables = new MCPResourceURIVariables(Map.of("database", "logic_db"));
+        Map<String, Object> actual = createResponse("shardingsphere://databases/{database}/single-table/default-storage-unit", uriVariables,
+                List.of(Map.of("storage_unit", "ds_0"))).toPayload();
+        assertThat(((Map<?, ?>) actual.get("self_resource")).get("resource_kind"), is("single-table"));
+        Map<?, ?> actualParentResource = (Map<?, ?>) actual.get("parent_resource");
+        assertThat(actualParentResource.get("uri"), is("shardingsphere://databases/logic_db/single-table"));
+        assertThat(actualParentResource.get("resource_kind"), is("logical-database"));
+    }
+    
+    @Test
     void assertCreateMissingDetailResponse() {
         Map<String, Object> actual = createResponse("shardingsphere://databases/{database}", mock(MCPResourceURIVariables.class), List.of()).toPayload();
         assertThat(actual.get("summary"), is("No logical-database detail item matched this resource URI."));

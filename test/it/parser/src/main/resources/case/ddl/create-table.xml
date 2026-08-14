@@ -427,6 +427,26 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_explicit_column_nullability_opengauss">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" not-null="true" start-index="22" stop-index="42">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" not-null="false" start-index="45" stop-index="60">
+            <column name="user_id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_explicit_column_nullability_sqlserver">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" not-null="true" start-index="22" stop-index="42">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" not-null="false" start-index="45" stop-index="60">
+            <column name="user_id" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_column_default">
         <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT" start-index="22" stop-index="43">
@@ -3581,7 +3601,7 @@
 
     <create-table sql-case-id="create_table_with_col_not_null_basic">
         <table name="test_col_not_null" start-index="13" stop-index="29" />
-        <column-definition type="STRING" not-null="false" start-index="32" stop-index="51">
+        <column-definition type="STRING" not-null="true" start-index="32" stop-index="51">
             <column name="name" />
         </column-definition>
     </create-table>
@@ -4067,7 +4087,7 @@
         <column-definition type="INT" primary-key="false" start-index="89" stop-index="125">
             <column name="id" />
         </column-definition>
-        <column-definition type="STRING" not-null="false" comment="User name" start-index="140" stop-index="179">
+        <column-definition type="STRING" not-null="true" comment="User name" start-index="140" stop-index="179">
             <column name="name" />
         </column-definition>
         <column-definition type="INT" check-constraint="age&gt;0 AND age&lt;150" start-index="194" stop-index="253">
@@ -4289,6 +4309,16 @@
         <constraint-definition constraint-name="fk_t" start-index="78" stop-index="139">
             <referenced-table name="t_firebird_len" start-index="122" stop-index="135" />
         </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_column_not_null_firebird">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" not-null="true" start-index="22" stop-index="42">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" not-null="false" start-index="45" stop-index="55">
+            <column name="user_id" />
+        </column-definition>
     </create-table>
 
     <create-table sql-case-id="create_table_with_ref_column_oracle">

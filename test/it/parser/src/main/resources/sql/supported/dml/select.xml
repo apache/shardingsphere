@@ -561,5 +561,11 @@
     <sql-case id="select_oracle_first_value_ignore_nulls_window" value="SELECT FIRST_VALUE(price) IGNORE NULLS OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
     <sql-case id="select_oracle_first_value_window" value="SELECT FIRST_VALUE(price) OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
     <sql-case id="select_with_log_table_alias_oracle" value="SELECT * FROM t_order LOG" db-types="Oracle" />
+    <sql-case id="select_unquoted_text_with_chinese_comma_from_dual" value="SELECT 图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_unquoted_text_without_comma_from_dual" value="SELECT 欢迎使用测试系统 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_dummy_with_alias_from_dual" value="SELECT DUMMY AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_quoted_chinese_column_from_dual" value="SELECT &quot;中文列名&quot; AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_chinese_columns_with_ascii_comma_from_dual" value="SELECT 中文列一, 中文列二 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_chinese_columns_from_table" value="SELECT 中文列一，中文列二 AS RESULT FROM t_order" db-types="Oracle" />
     <sql-case id="select_for_system_version_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_VERSION AS OF 1234567;" db-types="Hive" />
 </sql-cases>

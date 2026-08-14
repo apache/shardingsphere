@@ -21,15 +21,18 @@
         <package name="foo_pkg" start-index="49" stop-index="55">
             <owner name="foo_schema" start-index="38" stop-index="47" />
         </package>
+        <package-end-name name="foo_pkg" start-index="180" stop-index="186" />
     </create-package>
     
     <create-package sql-case-id="create_or_replace_noneditionable_package_body" body="true" replace="true" edition="NONEDITIONABLE" has-initialization="true">
         <package name="foo_pkg" start-index="57" stop-index="63">
             <owner name="foo_schema" start-index="46" stop-index="55" />
         </package>
+        <package-end-name name="foo_pkg" start-index="257" stop-index="263" />
     </create-package>
     
     <create-package sql-case-id="create_package_body_if_not_exists" body="true" if-not-exists="true">
         <package name="foo_pkg" start-index="34" stop-index="40" />
+        <package-end-name name="foo_pkg" start-index="81" stop-index="87" />
     </create-package>
 </sql-parser-test-cases>

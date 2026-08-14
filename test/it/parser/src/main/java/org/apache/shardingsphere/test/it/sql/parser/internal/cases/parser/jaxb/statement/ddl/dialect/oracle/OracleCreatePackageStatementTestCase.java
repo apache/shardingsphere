@@ -35,6 +35,9 @@ public final class OracleCreatePackageStatementTestCase extends SQLParserTestCas
     @XmlElement(name = "package")
     private ExpectedPackage packageName;
     
+    @XmlElement(name = "package-end-name")
+    private ExpectedPackage packageEndName;
+    
     @XmlAttribute
     private boolean body;
     

@@ -36,12 +36,12 @@ the selected review focus requires CI or Actions evidence.
 
 ## GitHub Read Strategy
 
-Use the first available read-only route that can obtain the required endpoint:
-
-1. Authenticated GitHub connector or app.
-2. Authenticated GitHub CLI.
-3. Token-backed GitHub REST or GraphQL.
-4. Anonymous API or HTML.
+Follow the GitHub access contract in `AGENTS.md` before choosing a read route.
+In particular, use the first configured token in its required order and call
+the GitHub REST or GraphQL API directly when a token is available. Do not search
+for, inspect, or invoke `gh` in that case. When neither token is configured, use
+an authenticated read-only connector or app when it can obtain the required
+endpoint, then `gh` or anonymous API/HTML as needed.
 
 Fetch every page needed for authoritative PR files, commits, comments, reviews,
 review threads, and focus-required checks. Classify availability per endpoint;
@@ -84,7 +84,7 @@ When CI is in scope:
   conclusion incomplete.
 - Passing CI supports only the behavior it actually exercises; it never
   replaces code, root-cause, scope, compatibility, or test-validity review.
-- If Actions logs are needed, try authenticated CLI or API access before
+- If Actions logs are needed, follow the GitHub read strategy above before
   treating anonymous failures as missing evidence.
 - Download large logs to a system temporary file and inspect only focused,
   sanitized excerpts. Do not copy raw logs into the review.

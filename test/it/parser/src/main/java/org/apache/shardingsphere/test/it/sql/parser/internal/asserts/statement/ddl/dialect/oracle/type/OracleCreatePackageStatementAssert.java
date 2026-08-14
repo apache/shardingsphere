@@ -26,6 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Create package statement assert for Oracle.
@@ -42,6 +44,12 @@ public final class OracleCreatePackageStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OracleCreatePackageStatement actual, final OracleCreatePackageStatementTestCase expected) {
         PackageAssert.assertIs(assertContext, actual.getPackageName(), expected.getPackageName());
+        if (null == expected.getPackageEndName()) {
+            assertFalse(actual.getPackageEndName().isPresent(), assertContext.getText("Actual package end name should not exist."));
+        } else {
+            assertTrue(actual.getPackageEndName().isPresent(), assertContext.getText("Actual package end name should exist."));
+            PackageAssert.assertIs(assertContext, actual.getPackageEndName().get(), expected.getPackageEndName());
+        }
         assertThat(assertContext.getText("Package body assertion error: "), actual.isBody(), is(expected.isBody()));
         assertThat(assertContext.getText("Package replacement assertion error: "), actual.isReplace(), is(expected.isReplace()));
         assertThat(assertContext.getText("Package IF NOT EXISTS assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));

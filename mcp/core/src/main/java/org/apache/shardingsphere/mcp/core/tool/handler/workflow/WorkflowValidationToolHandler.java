@@ -18,24 +18,28 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
-import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 
 import java.util.Map;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 
 /**
  * Generic workflow validation tool handler.
  */
 @RequiredArgsConstructor
 public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPFeatureRequestContext> {
+    
+    private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
     private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
     
@@ -54,8 +58,9 @@ public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPFe
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         WorkflowSessionContext workflowSessionContext = requestContext.getWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(toolArguments.getStringArgument(WorkflowFieldNames.PLAN_ID));
-        return new MCPMapPayload(workflowRuntimeDefinitionRegistry.getRequired(snapshot).getRuntimeHandler().validate(workflowSessionContext,
-                requestContext.getMetadataQueryFacade(), requestContext.getQueryFacade(), requestContext.getExecutionFacade(), requestContext.getSessionIdentity().getSessionId(), snapshot));
+        MCPWorkflowRuntimeHandler runtimeHandler = workflowRuntimeDefinitionRegistry.getRequired(snapshot).getRuntimeHandler();
+        return new MCPMapPayload(validationSupport.validateAndFinalize(workflowSessionContext, requestContext.getSessionIdentity().getSessionId(), snapshot,
+                () -> runtimeHandler.validate(snapshot, requestContext.getQueryFacade())));
     }
     
 }
