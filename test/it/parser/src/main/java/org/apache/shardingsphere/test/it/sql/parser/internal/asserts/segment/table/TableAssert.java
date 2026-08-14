@@ -115,10 +115,7 @@ public final class TableAssert {
      */
     private static void assertIs(final SQLCaseAssertContext assertContext, final FunctionTableSegment actual, final ExpectedFunctionTable expected) {
         assertTableFunction(assertContext, actual.getTableFunction(), expected.getTableFunction());
-        if (null != expected.getTableAlias()) {
-            assertTrue(actual.getAliasName().isPresent(), assertContext.getText("Table function alias should exist."));
-            assertThat(assertContext.getText("Table function alias assertion error"), actual.getAliasName().get(), is(expected.getTableAlias()));
-        }
+        assertThat(assertContext.getText("Table function alias assertion error"), actual.getAliasName().orElse(null), is(expected.getTableAlias()));
         if (!expected.getColumns().isEmpty()) {
             ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }
