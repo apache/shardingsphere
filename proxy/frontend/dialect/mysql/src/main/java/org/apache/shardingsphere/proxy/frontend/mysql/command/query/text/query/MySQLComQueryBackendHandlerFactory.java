@@ -46,6 +46,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.util.MultiSQLSplitter;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -61,18 +63,27 @@ final class MySQLComQueryBackendHandlerFactory {
     static ProxyBackendHandler newInstance(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         String sql = packet.getSQL();
-        Optional<ProxyBackendHandler> binaryLiteralHandler = tryCreateBinaryLiteralHandler(databaseType, sql, packet, connectionSession);
-        if (binaryLiteralHandler.isPresent()) {
-            return binaryLiteralHandler.get();
+        List<Object> binaryLiteralValues = Collections.emptyList();
+        SQLStatement sqlStatement;
+        Optional<ExtractionResult> extractionResult = tryExtractBinaryLiteral(sql, packet, connectionSession);
+        if (extractionResult.isPresent() && 1 == MultiSQLSplitter.split(extractionResult.get().getSql()).size()) {
+            String parameterizedSQL = SQLHintUtils.removeHint(extractionResult.get().getSql());
+            try {
+                sqlStatement = ProxySQLComQueryParser.parse(parameterizedSQL, databaseType, connectionSession);
+                sql = parameterizedSQL;
+                binaryLiteralValues = extractionResult.get().getBinaryLiteralValues();
+            } catch (final DialectSQLParsingException ignored) {
+                sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
+            }
+        } else {
+            sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         }
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        return areMultiStatements(connectionSession, sqlStatement, sql)
+        return binaryLiteralValues.isEmpty() && areMultiStatements(connectionSession, sqlStatement, sql)
                 ? new MySQLMultiStatementsProxyBackendHandler(connectionSession, sqlStatement, sql)
-                : ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, packet.getHintValueContext());
+                : createSingleStatementHandler(databaseType, sql, sqlStatement, binaryLiteralValues, packet, connectionSession);
     }
     
-    private static Optional<ProxyBackendHandler> tryCreateBinaryLiteralHandler(final DatabaseType databaseType, final String sql, final MySQLComQueryPacket packet,
-                                                                               final ConnectionSession connectionSession) throws SQLException {
+    private static Optional<ExtractionResult> tryExtractBinaryLiteral(final String sql, final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         Optional<byte[]> originalSQLBytes = packet.findOriginalSQLBytes();
         if (!originalSQLBytes.isPresent() || !requiresBinaryLiteralInspection(sql)) {
             return Optional.empty();
@@ -80,24 +91,22 @@ final class MySQLComQueryBackendHandlerFactory {
         boolean noBackslashEscapes = MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).isNoBackslashEscapes();
         ExtractionResult extractionResult = MySQLComQueryBinaryParameterExtractor.extract(
                 originalSQLBytes.get(), connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), noBackslashEscapes);
-        if (extractionResult.getBinaryLiteralValues().isEmpty() || 1 != MultiSQLSplitter.split(extractionResult.getSql()).size()) {
-            return Optional.empty();
-        }
-        String parameterizedSQL = SQLHintUtils.removeHint(extractionResult.getSql());
-        SQLStatement parameterizedSQLStatement;
-        try {
-            parameterizedSQLStatement = ProxySQLComQueryParser.parse(parameterizedSQL, databaseType, connectionSession);
-        } catch (final DialectSQLParsingException ignored) {
-            return Optional.empty();
+        return extractionResult.getBinaryLiteralValues().isEmpty() ? Optional.empty() : Optional.of(extractionResult);
+    }
+    
+    private static ProxyBackendHandler createSingleStatementHandler(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
+                                                                    final List<Object> binaryLiteralValues, final MySQLComQueryPacket packet,
+                                                                    final ConnectionSession connectionSession) throws SQLException {
+        if (binaryLiteralValues.isEmpty()) {
+            return ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, packet.getHintValueContext());
         }
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(parameterizedSQLStatement);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
         if (sqlStatementContext instanceof ParameterAware) {
-            ((ParameterAware) sqlStatementContext).bindParameters(extractionResult.getBinaryLiteralValues());
+            ((ParameterAware) sqlStatementContext).bindParameters(binaryLiteralValues);
         }
-        QueryContext queryContext = new QueryContext(
-                sqlStatementContext, parameterizedSQL, extractionResult.getBinaryLiteralValues(), packet.getHintValueContext(), connectionSession.getConnectionContext(), metaData, true);
-        return Optional.of(ProxyBackendHandlerFactory.newInstance(databaseType, queryContext, connectionSession, true));
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, binaryLiteralValues, packet.getHintValueContext(), connectionSession.getConnectionContext(), metaData, true);
+        return ProxyBackendHandlerFactory.newInstance(databaseType, queryContext, connectionSession, true);
     }
     
     private static boolean requiresBinaryLiteralInspection(final String sql) {
