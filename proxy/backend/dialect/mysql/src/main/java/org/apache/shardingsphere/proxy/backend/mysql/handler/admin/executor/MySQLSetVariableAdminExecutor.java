@@ -56,6 +56,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -73,6 +75,8 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
     private static final String COLLATION_CONNECTION = "collation_connection";
     
     private static final String SQL_MODE = "sql_mode";
+    
+    private static final Pattern CURRENT_SQL_MODE_CONCAT_PATTERN = Pattern.compile("^CONCAT\\(@@SQL_MODE,'([A-Z_,]*)'\\)$", Pattern.CASE_INSENSITIVE);
     
     private static final Collection<String> IMPERMISSIBLE_CLIENT_CHARACTER_SETS = Arrays.asList("ucs2", "utf16", "utf16le", "utf32");
     
@@ -130,10 +134,14 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminUpdateE
         String value = QuoteCharacter.SINGLE_QUOTE.isWrapped(assignValue)
                 ? assignValue.substring(1, assignValue.length() - 1)
                 : evaluateSQLModeExpression(assignValue, connectionSession, metaData);
-        return Arrays.stream(value.split(",", -1)).map(String::trim).map(each -> each.toUpperCase(Locale.ROOT)).collect(Collectors.joining(","));
+        return Arrays.stream(value.split(",", -1)).map(String::trim).map(each -> each.toUpperCase(Locale.ROOT)).distinct().collect(Collectors.joining(","));
     }
     
     private String evaluateSQLModeExpression(final String expression, final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
+        Matcher matcher = CURRENT_SQL_MODE_CONCAT_PATTERN.matcher(expression);
+        if (matcher.matches()) {
+            return MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).getValue() + matcher.group(1);
+        }
         String sql = "SELECT " + expression;
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SelectStatement selectStatement = (SelectStatement) sqlParserRule.getSQLParserEngine(sqlStatement.getDatabaseType()).parse(sql, false);

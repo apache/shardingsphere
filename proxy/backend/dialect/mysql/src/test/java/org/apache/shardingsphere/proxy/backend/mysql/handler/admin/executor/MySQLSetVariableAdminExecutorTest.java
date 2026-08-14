@@ -319,7 +319,7 @@ class MySQLSetVariableAdminExecutorTest {
     
     @Test
     void assertExecuteWithSQLModeExpression() throws SQLException {
-        SetStatement setStatement = parseSetStatement("SET sql_mode = CONCAT(@@sql_mode, ',NO_BACKSLASH_ESCAPES')");
+        SetStatement setStatement = parseSetStatement("SET sql_mode = CONCAT('STRICT_TRANS_TABLES', ',NO_BACKSLASH_ESCAPES')");
         ConnectionSession connectionSession = mockReplayableConnectionSession();
         MySQLSessionSQLMode.set("STRICT_TRANS_TABLES", connectionSession.getAttributeMap());
         MergedResult mergedResult = mock(MergedResult.class);
@@ -337,6 +337,17 @@ class MySQLSetVariableAdminExecutorTest {
         assertTrue(actual.isNoBackslashEscapes());
         assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
                 is(Collections.singletonList("SET sql_mode='STRICT_TRANS_TABLES,NO_BACKSLASH_ESCAPES'")));
+    }
+    
+    @Test
+    void assertExecuteWithSQLModeExpressionWithoutStorageUnit() throws SQLException {
+        SetStatement setStatement = parseSetStatement("SET sql_mode = CONCAT(@@sql_mode, ',STRICT_TRANS_TABLES')");
+        ConnectionSession connectionSession = mockReplayableConnectionSession();
+        new MySQLSetVariableAdminExecutor(setStatement).execute(connectionSession, mock());
+        MySQLSessionSQLMode actual = MySQLSessionSQLMode.get(connectionSession.getAttributeMap());
+        assertThat(actual.getValue(), is(MySQLSessionSQLMode.DEFAULT_SQL_MODE));
+        assertThat(connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType.getType()),
+                is(Collections.singletonList("SET sql_mode='" + MySQLSessionSQLMode.DEFAULT_SQL_MODE + "'")));
     }
     
     private ConnectionContext mockConnectionContext() {
