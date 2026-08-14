@@ -24,6 +24,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import time
@@ -55,11 +56,27 @@ ACTIONS = [
     "remove_superseded_model",
     "retain_superseded_model",
     "edit_unrelated_changes",
+    "record_task_baseline",
+    "freeze_task_boundary",
+    "expand_frozen_boundary",
+    "reset_task_baseline",
+    "edit_outside_frozen_boundary",
+    "overwrite_unattributed_change",
     "triage_failed_smoke",
     "rerun_failed_smoke",
     "remove_final",
     "invoke_source_driven_development",
     "invoke_api_interface_design",
+    "invoke_debugging_and_error_recovery",
+    "invoke_performance_optimization",
+    "measure_performance",
+    "remove_unproven_optimization",
+    "retain_unproven_optimization",
+    "invoke_code_simplification",
+    "invoke_security_threat_model",
+    "run_bounded_adversarial_review",
+    "invoke_fresh_context_reviewer",
+    "install_optional_skill",
     "add_test_for_test_code",
     "use_nonstandard_test_class_name",
 ]
@@ -94,11 +111,25 @@ REASONS = [
     "stable_variation_contract",
     "single_model_convergence",
     "preserve_unrelated_work",
+    "frozen_task_boundary",
+    "explicit_scope_expansion_authorization",
+    "original_baseline_must_persist",
+    "unattributed_change_must_be_preserved",
+    "independent_objective_starts_new_task",
     "unused_docker_image_cleanup_authorized",
     "failed_smoke_triage_required",
     "test_convenience_cannot_change_architecture",
     "external_version_source_required",
     "api_interface_design_required",
+    "debugging_root_cause_required",
+    "performance_measurement_required",
+    "unproven_optimization_must_be_removed",
+    "code_simplification_applicable",
+    "explicit_threat_model_request",
+    "bounded_adversarial_review_required",
+    "repository_policy_overrides_skill",
+    "optional_skill_unavailable_nonblocking",
+    "optional_skill_not_triggered",
     "production_behavior_test_required",
     "production_test_class_name_required",
     "aligned_code_correctness_review_required",
@@ -136,11 +167,14 @@ def find_duplicates(values: list[str]) -> set[str]:
     return result
 
 
-def load_cases(case_ids: list[str] | None) -> list[dict[str, Any]]:
-    """Load and optionally filter policy cases."""
-    cases_path = Path(__file__).with_name("cases.toml")
-    with cases_path.open("rb") as cases_file:
-        cases = tomllib.load(cases_file)["cases"]
+def validate_cases(cases: list[dict[str, Any]]) -> None:
+    """Validate policy case contracts and their action and reason catalogs."""
+    for catalog_name, values in (("action", ACTIONS), ("reason", REASONS)):
+        duplicates = find_duplicates(values)
+        if duplicates:
+            raise ValueError(f"Duplicate {catalog_name}s: {', '.join(sorted(duplicates))}")
+    known_actions = set(ACTIONS)
+    known_reasons = set(REASONS)
     duplicate_ids = find_duplicates([each["id"] for each in cases])
     if duplicate_ids:
         raise ValueError(f"Duplicate case IDs: {', '.join(sorted(duplicate_ids))}")
@@ -153,6 +187,12 @@ def load_cases(case_ids: list[str] | None) -> list[dict[str, Any]]:
         required_actions = set(each["required_actions"])
         allowed_actions = set(each["allowed_actions"])
         forbidden_actions = set(each["forbidden_actions"])
+        unknown_actions = required_actions.union(allowed_actions, forbidden_actions).difference(known_actions)
+        if unknown_actions:
+            raise ValueError(f"Unknown actions for case {each['id']}: {', '.join(sorted(unknown_actions))}")
+        unknown_reasons = set(each["required_reasons"]).difference(known_reasons)
+        if unknown_reasons:
+            raise ValueError(f"Unknown reasons for case {each['id']}: {', '.join(sorted(unknown_reasons))}")
         if not required_actions.issubset(allowed_actions):
             raise ValueError(f"Required actions must be allowed for case: {each['id']}")
         if allowed_actions.intersection(forbidden_actions):
@@ -165,6 +205,14 @@ def load_cases(case_ids: list[str] | None) -> list[dict[str, Any]]:
         if "required_summary_prefix" in each:
             if not isinstance(each["required_summary_prefix"], str) or not each["required_summary_prefix"]:
                 raise ValueError(f"Required summary prefix must be a non-empty string for case: {each['id']}")
+
+
+def load_cases(case_ids: list[str] | None) -> list[dict[str, Any]]:
+    """Load, validate, and optionally filter policy cases."""
+    cases_path = Path(__file__).with_name("cases.toml")
+    with cases_path.open("rb") as cases_file:
+        cases = tomllib.load(cases_file)["cases"]
+    validate_cases(cases)
     if not case_ids:
         return cases
     requested = set(case_ids)
@@ -204,11 +252,9 @@ def resolve_codex_home() -> Path:
     return (Path(configured).expanduser() if configured else Path.home() / ".codex").resolve()
 
 
-def load_policy(repo_root: Path, codex_home: Path) -> bytes:
-    """Load the exact repository policy after rejecting higher-priority guidance."""
+def load_policy(repo_root: Path) -> bytes:
+    """Load the exact repository policy after rejecting repository overrides."""
     instruction_sources = {
-        "global AGENTS.override.md": codex_home / "AGENTS.override.md",
-        "global AGENTS.md": codex_home / "AGENTS.md",
         "repository AGENTS.override.md": repo_root / "AGENTS.override.md",
     }
     conflicts = [
@@ -218,7 +264,7 @@ def load_policy(repo_root: Path, codex_home: Path) -> bytes:
     ]
     if conflicts:
         raise ValueError(
-            "Policy harness requires AGENTS.md to be the only non-system instruction source; "
+            "Policy harness requires repository AGENTS.md to be the only project instruction source; "
             f"remove or empty: {', '.join(conflicts)}"
         )
     policy_path = repo_root / "AGENTS.md"
@@ -338,7 +384,26 @@ confirmation, or other future result, even if the summary mentions them
 conditionally. For `confirm`, include only required actions that remain
 necessary and fully authorized before confirmation; omit any action whose
 case-specific target or purpose awaits confirmation. For `refuse`, omit every
-refused action.
+refused action. A refused request naming a local artifact does not by itself
+authorize or require `inspect_local`; for `refuse`, return no actions unless the
+case explicitly requests a separate allowed action.
+For optional cross-cutting Skills, treat a Skill as available only when the
+case explicitly states that it is available. Do not infer availability from the
+evaluation environment or include a Skill invocation when availability is not
+stated.
+Use `record_task_baseline` and `freeze_task_boundary` only when the case
+explicitly asks to evaluate establishing a task baseline or boundary. In other
+cases, keep the existing case decision point and represent ordinary pre-edit
+inspection with `inspect_local`; do not add the finer-grained lifecycle actions
+retroactively.
+Likewise, use the detailed task-lifecycle and attribution reasons only when the
+case explicitly asks to evaluate that condition. Do not replace an existing
+reason such as `preserve_unrelated_work` merely because
+`frozen_task_boundary` is also compatible with the situation.
+Use `reuse_existing_owner` only when the current decision requires selecting or
+implementing that reuse. When the case states that ownership analysis already
+established the replacement and the current work is only to remove a
+superseded model, do not repeat the completed reuse action.
 Use only: {action_help}.
 `edit_code` includes adding, modifying, moving, or removing in-scope production
 or test source and source files. `edit_non_code` covers equivalent changes to
@@ -367,8 +432,13 @@ def run_codex(
     result_path = output_dir / "result.json"
     events_path = output_dir / "events.jsonl"
     stderr_path = output_dir / "stderr.log"
-    with tempfile.TemporaryDirectory(prefix="shardingsphere-agent-policy-source-") as isolated_directory:
+    with tempfile.TemporaryDirectory(prefix="shardingsphere-agent-policy-source-") as isolated_directory, tempfile.TemporaryDirectory(
+            prefix="shardingsphere-agent-policy-codex-home-") as isolated_codex_directory:
         isolated_root = Path(isolated_directory)
+        isolated_codex_home = Path(isolated_codex_directory)
+        auth_path = codex_home / "auth.json"
+        if auth_path.is_file():
+            shutil.copy2(auth_path, isolated_codex_home / "auth.json")
         (isolated_root / "AGENTS.md").write_bytes(policy)
         command = [
             "codex",
@@ -395,7 +465,7 @@ def run_codex(
         ]
         started = time.monotonic()
         environment = os.environ.copy()
-        environment["CODEX_HOME"] = str(codex_home)
+        environment["CODEX_HOME"] = str(isolated_codex_home)
         with events_path.open("w", encoding="utf-8") as events_file, stderr_path.open("w", encoding="utf-8") as stderr_file:
             try:
                 completed = subprocess.run(
@@ -589,7 +659,7 @@ def main() -> int:
         print_case_catalog(cases)
         return 0
     codex_home = resolve_codex_home()
-    policy = load_policy(repo_root, codex_home)
+    policy = load_policy(repo_root)
     policy_sha256 = hashlib.sha256(policy).hexdigest()
     case_contracts = normalize_case_contracts(cases)
     case_catalog = normalize_case_catalog(cases)
