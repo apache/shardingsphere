@@ -33,7 +33,9 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
     
     @Override
     public String getIdentifierValue(final IdentifierValue identifierValue) {
-        return PostgreSQLIdentifierUtils.fold(identifierValue.getValue());
+        return PostgreSQLIdentifierUtils.isUnicodeQuoted(identifierValue.getValue())
+                ? PostgreSQLIdentifierUtils.unquoteUnicode(identifierValue.getValue())
+                : PostgreSQLIdentifierUtils.fold(identifierValue.getValue());
     }
     
     @Override

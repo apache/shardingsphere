@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.postgresql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.OptionalInt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,8 +41,9 @@ public final class PostgreSQLIdentifierUtils {
     /**
      * Fold unquoted identifier to lower case as PostgreSQL does.
      *
-     * <p>PostgreSQL folds ASCII {@code A}-{@code Z} only and leaves other characters unchanged,
-     * so JVM default locale rules must not be applied here.</p>
+     * <p>With a multibyte server encoding, which UTF-8 makes the common case, PostgreSQL folds ASCII {@code A}-{@code Z}
+     * only and leaves other characters unchanged. JVM default locale rules must not be applied here, since they fold
+     * {@code I} to a dotless {@code i} under a Turkish locale and fold non-ASCII letters PostgreSQL leaves alone.</p>
      *
      * @param identifier identifier to be folded
      * @return folded identifier
@@ -64,7 +66,7 @@ public final class PostgreSQLIdentifierUtils {
      */
     public static boolean isUnicodeQuoted(final String identifier) {
         return identifier.length() > 3 && ('U' == identifier.charAt(0) || 'u' == identifier.charAt(0)) && '&' == identifier.charAt(1) && '"' == identifier.charAt(2)
-                && identifier.lastIndexOf('"') > 2;
+                && identifier.indexOf('"', 3) >= 0;
     }
     
     /**
@@ -74,9 +76,8 @@ public final class PostgreSQLIdentifierUtils {
      * @return unquoted identifier
      */
     public static String unquoteUnicode(final String identifier) {
-        int endQuoteIndex = identifier.lastIndexOf('"');
-        String content = identifier.substring(3, endQuoteIndex).replace("\"\"", "\"");
-        return decodeUnicodeEscapes(content, getUnicodeEscapeCharacter(identifier.substring(endQuoteIndex + 1)));
+        int endQuoteIndex = identifier.indexOf('"', 3);
+        return decodeUnicodeEscapes(identifier.substring(3, endQuoteIndex), getUnicodeEscapeCharacter(identifier.substring(endQuoteIndex + 1)));
     }
     
     private static char getUnicodeEscapeCharacter(final String uescapeClause) {
@@ -110,25 +111,22 @@ public final class PostgreSQLIdentifierUtils {
         boolean isLongEscape = escapeIndex + 1 < content.length() && '+' == content.charAt(escapeIndex + 1);
         int digitsBeginIndex = isLongEscape ? escapeIndex + 2 : escapeIndex + 1;
         int digitsEndIndex = digitsBeginIndex + (isLongEscape ? LONG_UNICODE_ESCAPE_LENGTH : SHORT_UNICODE_ESCAPE_LENGTH);
-        if (digitsEndIndex > content.length()) {
+        OptionalInt codePoint = digitsEndIndex > content.length() ? OptionalInt.empty() : parseCodePoint(content.substring(digitsBeginIndex, digitsEndIndex));
+        if (!codePoint.isPresent()) {
             result.append(content.charAt(escapeIndex));
             return escapeIndex + 1;
         }
-        String digits = content.substring(digitsBeginIndex, digitsEndIndex);
-        if (!isHexDigits(digits)) {
-            result.append(content.charAt(escapeIndex));
-            return escapeIndex + 1;
-        }
-        result.appendCodePoint(Integer.parseInt(digits, 16));
+        result.appendCodePoint(codePoint.getAsInt());
         return digitsEndIndex;
     }
     
-    private static boolean isHexDigits(final String digits) {
+    private static OptionalInt parseCodePoint(final String digits) {
         for (int i = 0; i < digits.length(); i++) {
             if (-1 == Character.digit(digits.charAt(i), 16)) {
-                return false;
+                return OptionalInt.empty();
             }
         }
-        return true;
+        int result = Integer.parseInt(digits, 16);
+        return Character.isValidCodePoint(result) ? OptionalInt.of(result) : OptionalInt.empty();
     }
 }

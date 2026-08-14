@@ -56,6 +56,11 @@ class PostgreSQLProjectionIdentifierExtractorTest {
     }
     
     @Test
+    void assertGetIdentifierValueWithUnicodeQuotedAlias() {
+        assertThat(extractor.getIdentifierValue(new IdentifierValue("U&\"MyAlias\"", QuoteCharacter.NONE)), is("MyAlias"));
+    }
+    
+    @Test
     void assertGetColumnNameFromFunction() {
         assertThat(extractor.getColumnNameFromFunction("Function", "FunctionExpression"), is("function"));
     }
