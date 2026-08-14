@@ -95,4 +95,18 @@ class MultiSQLSplitterTest {
                 Arguments.of("doubleDashWithoutWhitespaceTreatedAsText", "--not comment; update t_order set status=1;", Arrays.asList("--not comment", "update t_order set status=1")),
                 Arguments.of("singleTrailingDash", "update t_order set price = price -", Collections.singletonList("update t_order set price = price -")));
     }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideSQLModeSplitArguments")
+    void assertSplitWithSQLMode(final String name, final boolean noBackslashEscapes, final Collection<String> expected) {
+        String sql = "update t_order set status='PAID\\'; update t_order set status='FAILED'";
+        assertThat(name, MultiSQLSplitter.split(sql, noBackslashEscapes), is(expected));
+    }
+    
+    private static Stream<Arguments> provideSQLModeSplitArguments() {
+        return Stream.of(
+                Arguments.of("backslashEscapesQuote", false, Collections.singletonList("update t_order set status='PAID\\'; update t_order set status='FAILED'")),
+                Arguments.of("backslashDoesNotEscapeQuote", true,
+                        Arrays.asList("update t_order set status='PAID\\'", "update t_order set status='FAILED'")));
+    }
 }

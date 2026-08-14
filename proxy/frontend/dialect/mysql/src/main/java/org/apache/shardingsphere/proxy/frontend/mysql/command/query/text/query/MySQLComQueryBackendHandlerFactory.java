@@ -61,26 +61,26 @@ final class MySQLComQueryBackendHandlerFactory {
     static ProxyBackendHandler newInstance(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         String sql = packet.getSQL();
-        Optional<ProxyBackendHandler> binaryLiteralHandler = tryCreateBinaryLiteralHandler(databaseType, sql, packet, connectionSession);
+        boolean noBackslashEscapes = MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).isNoBackslashEscapes();
+        Optional<ProxyBackendHandler> binaryLiteralHandler = tryCreateBinaryLiteralHandler(databaseType, sql, packet, connectionSession, noBackslashEscapes);
         if (binaryLiteralHandler.isPresent()) {
             return binaryLiteralHandler.get();
         }
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        return areMultiStatements(connectionSession, sqlStatement, sql)
+        return areMultiStatements(connectionSession, sqlStatement, sql, noBackslashEscapes)
                 ? new MySQLMultiStatementsProxyBackendHandler(connectionSession, sqlStatement, sql)
                 : ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, packet.getHintValueContext());
     }
     
     private static Optional<ProxyBackendHandler> tryCreateBinaryLiteralHandler(final DatabaseType databaseType, final String sql, final MySQLComQueryPacket packet,
-                                                                               final ConnectionSession connectionSession) throws SQLException {
+                                                                               final ConnectionSession connectionSession, final boolean noBackslashEscapes) throws SQLException {
         Optional<byte[]> originalSQLBytes = packet.findOriginalSQLBytes();
         if (!originalSQLBytes.isPresent() || !requiresBinaryLiteralInspection(sql)) {
             return Optional.empty();
         }
-        boolean noBackslashEscapes = MySQLSessionSQLMode.get(connectionSession.getAttributeMap()).isNoBackslashEscapes();
         ExtractionResult extractionResult = MySQLComQueryBinaryParameterExtractor.extract(
                 originalSQLBytes.get(), connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), noBackslashEscapes);
-        if (extractionResult.getBinaryLiteralValues().isEmpty() || 1 != MultiSQLSplitter.split(extractionResult.getSql()).size()) {
+        if (extractionResult.getBinaryLiteralValues().isEmpty() || 1 != MultiSQLSplitter.split(extractionResult.getSql(), noBackslashEscapes).size()) {
             return Optional.empty();
         }
         String parameterizedSQL = SQLHintUtils.removeHint(extractionResult.getSql());
@@ -110,9 +110,10 @@ final class MySQLComQueryBackendHandlerFactory {
         return false;
     }
     
-    private static boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {
+    private static boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql, final boolean noBackslashEscapes) {
         return isMultiStatementsEnabled(connectionSession)
-                && isSuitableMultiStatementsSQLStatement(sqlStatement) && MultiSQLSplitter.hasSameTypeMultiStatements(sqlStatement, MultiSQLSplitter.split(sql));
+                && isSuitableMultiStatementsSQLStatement(sqlStatement)
+                && MultiSQLSplitter.hasSameTypeMultiStatements(sqlStatement, MultiSQLSplitter.split(sql, noBackslashEscapes));
     }
     
     private static boolean isMultiStatementsEnabled(final ConnectionSession connectionSession) {

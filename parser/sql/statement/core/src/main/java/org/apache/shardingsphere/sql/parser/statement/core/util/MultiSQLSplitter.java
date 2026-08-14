@@ -133,6 +133,17 @@ public final class MultiSQLSplitter {
      * @return SQL statements
      */
     public static Collection<String> split(final String sql) {
+        return split(sql, false);
+    }
+    
+    /**
+     * Split SQL text by semicolon ignoring literals and comments.
+     *
+     * @param sql SQL text
+     * @param noBackslashEscapes whether backslash escape is disabled
+     * @return SQL statements
+     */
+    public static Collection<String> split(final String sql, final boolean noBackslashEscapes) {
         if (null == sql || sql.isEmpty()) {
             return Collections.emptyList();
         }
@@ -149,7 +160,7 @@ public final class MultiSQLSplitter {
             switch (state) {
                 case QUOTE:
                     current.append(ch);
-                    if (QuoteCharacter.BACK_QUOTE != quote && '\\' == ch && index + 1 < length) {
+                    if (!noBackslashEscapes && QuoteCharacter.BACK_QUOTE != quote && '\\' == ch && index + 1 < length) {
                         current.append(sql.charAt(index + 1));
                         step = 2;
                         break;

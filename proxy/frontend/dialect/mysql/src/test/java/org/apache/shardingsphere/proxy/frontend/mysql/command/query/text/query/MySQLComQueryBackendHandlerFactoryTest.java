@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigu
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.sqlmode.MySQLSessionSQLMode;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -81,7 +83,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxyContext.class, ProxyBackendHandlerFactory.class})
+@StaticMockSettings({ProxyContext.class, ProxyBackendHandlerFactory.class, ProxySQLComQueryParser.class})
 @ConstructionMockSettings(MySQLMultiStatementsProxyBackendHandler.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class MySQLComQueryBackendHandlerFactoryTest {
@@ -104,6 +106,14 @@ class MySQLComQueryBackendHandlerFactoryTest {
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), anyString(), any(SQLStatement.class), eq(connectionSession), any())).thenReturn(proxyBackendHandler);
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        SQLParserEngine sqlParserEngine = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine(databaseType);
+        SQLStatement updateStatement = sqlParserEngine.parse("UPDATE t SET v='PAID'", false);
+        when(ProxySQLComQueryParser.parse(anyString(), eq(databaseType), eq(connectionSession))).thenAnswer(invocation -> {
+            String sql = invocation.getArgument(0);
+            return sql.startsWith("UPDATE t SET v='PAID\\';") || sql.startsWith("UPDATE t SET v = _binary'a\\';")
+                    ? updateStatement
+                    : sqlParserEngine.parse(sql, false);
+        });
         mockProxyContext();
     }
     
@@ -128,6 +138,19 @@ class MySQLComQueryBackendHandlerFactoryTest {
     void assertCreateMultiStatementsHandlerForUpdate() throws SQLException {
         enableMultiStatements();
         String sql = "UPDATE t SET v=v+1 WHERE id=1;UPDATE t SET v=v+1 WHERE id=2";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql.getBytes(StandardCharsets.UTF_8)));
+        ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
+        assertThat(actual, isA(MySQLMultiStatementsProxyBackendHandler.class));
+    }
+    
+    @Test
+    void assertCreateMultiStatementsHandlerWithoutBackslashEscapes() throws SQLException {
+        DefaultAttributeMap attributeMap = new DefaultAttributeMap();
+        attributeMap.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).set(MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON);
+        MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", attributeMap);
+        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
+        String sql = "UPDATE t SET v='PAID\\'; UPDATE t SET v='FAILED'";
         when(packet.getSQL()).thenReturn(sql);
         when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql.getBytes(StandardCharsets.UTF_8)));
         ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
@@ -201,6 +224,20 @@ class MySQLComQueryBackendHandlerFactoryTest {
         when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql(
                 "UPDATE t SET v = _binary'", (byte) 0xFF, "' WHERE id = 1; UPDATE t SET v = _binary'bar' WHERE id = 2")));
         when(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+        ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
+        assertThat(actual, isA(MySQLMultiStatementsProxyBackendHandler.class));
+    }
+    
+    @Test
+    void assertCreateMultiStatementsHandlerForMalformedBinaryLiteralWithoutBackslashEscapes() throws SQLException {
+        DefaultAttributeMap attributeMap = new DefaultAttributeMap();
+        attributeMap.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        attributeMap.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).set(MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON);
+        MySQLSessionSQLMode.set("NO_BACKSLASH_ESCAPES", attributeMap);
+        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
+        String sql = "UPDATE t SET v = _binary'a\\'; UPDATE t SET v = _binary'�'";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.findOriginalSQLBytes()).thenReturn(Optional.of(sql("UPDATE t SET v = _binary'a\\'; UPDATE t SET v = _binary'", (byte) 0xFF, "'")));
         ProxyBackendHandler actual = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
         assertThat(actual, isA(MySQLMultiStatementsProxyBackendHandler.class));
     }
