@@ -387,6 +387,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.UpdateStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.plsql.CreateProcedureTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.plsql.OraclePLSQLBlockStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterComputeNodeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterGlobalClockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterLocalTransactionRuleStatementTestCase;
@@ -1006,6 +1007,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-procedure")
     private final List<CreateProcedureTestCase> createProcedureTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "plsql-block")
+    private final List<OraclePLSQLBlockStatementTestCase> plsqlBlockTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-server")
     private final List<CreateServerStatementTestCase> createServerTestCases = new LinkedList<>();

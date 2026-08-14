@@ -25,6 +25,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureCallNameSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedRoutineName;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedSQLStatementSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedValidStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -56,4 +59,13 @@ public final class CreateProcedureTestCase extends SQLParserTestCase {
     @XmlElementWrapper(name = "dynamic-sql-statement-expressions")
     @XmlElement(name = "dynamic-sql-statement-expression")
     private List<ExpectedDynamicSqlStatementExpressionSegment> dynamicSqlStatementExpressions = new LinkedList<>();
+    
+    @XmlElement(name = "table")
+    private final List<ExpectedSimpleTable> tables = new LinkedList<>();
+    
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> columns = new LinkedList<>();
+    
+    @XmlElement(name = "valid-statement")
+    private final List<ExpectedValidStatement> validStatements = new LinkedList<>();
 }

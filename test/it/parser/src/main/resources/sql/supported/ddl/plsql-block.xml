@@ -16,11 +16,6 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <drop-package sql-case-id="drop_package" />
-    <drop-package sql-case-id="drop_package_body_with_owner_visitor_oracle" body="true">
-        <package name="foo_pkg" start-index="18" stop-index="35">
-            <owner name="foo_schema" start-index="18" stop-index="27" />
-        </package>
-    </drop-package>
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="plsql_block_with_procedure_and_function_calls_visitor_oracle" value="BEGIN simple_insert_data(1, 123); ignored := function_insert_data(1, 123); END;" db-types="Oracle" />
+</sql-cases>

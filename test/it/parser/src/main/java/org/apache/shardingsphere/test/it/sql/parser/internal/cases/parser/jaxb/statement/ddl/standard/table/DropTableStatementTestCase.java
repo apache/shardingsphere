@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,7 +31,11 @@ import java.util.List;
  * Drop table statement test case.
  */
 @Getter
+@Setter
 public final class DropTableStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute
+    private Boolean temporary;
     
     @XmlElement(name = "table")
     private final List<ExpectedSimpleTable> tables = new LinkedList<>();

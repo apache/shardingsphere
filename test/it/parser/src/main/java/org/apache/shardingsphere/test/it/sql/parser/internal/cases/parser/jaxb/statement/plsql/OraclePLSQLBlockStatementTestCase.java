@@ -15,36 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.plsql;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureCallNameSegment;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlAttribute;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected case when expression.
+ * Oracle PL/SQL block statement test case.
  */
 @Getter
-@Setter
-public final class ExpectedCaseWhenExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+public final class OraclePLSQLBlockStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute
-    private String text;
-    
-    @XmlElement(name = "case-expr")
-    private ExpectedExpression caseExpr;
-    
-    @XmlElement(name = "when-exprs")
-    private final List<ExpectedExpression> whenExprs = new LinkedList<>();
-    
-    @XmlElement(name = "then-exprs")
-    private final List<ExpectedExpression> thenExprs = new LinkedList<>();
-    
-    @XmlElement(name = "else-expr")
-    private ExpectedExpression elseExpr;
+    @XmlElement(name = "procedure-call")
+    private final List<ExpectedProcedureCallNameSegment> procedureCalls = new LinkedList<>();
 }

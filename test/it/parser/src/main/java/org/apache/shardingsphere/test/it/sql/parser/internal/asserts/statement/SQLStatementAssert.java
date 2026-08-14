@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DM
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.function.OracleCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePLSQLBlockStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.procedure.OracleCreateProcedureStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.parameter.ParameterMarkerAssert;
@@ -48,6 +49,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.r
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.TCLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 /**
  * SQL statement assert.
  */
@@ -62,11 +66,14 @@ public final class SQLStatementAssert {
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof OracleCreateProcedureStatement || actual instanceof OracleCreateFunctionStatement) {
+        if (actual instanceof OracleCreateProcedureStatement || actual instanceof OracleCreateFunctionStatement || actual instanceof OraclePLSQLBlockStatement) {
             PLSQLStatementAssert.assertIs(assertContext, actual, expected);
             return;
         }
         ParameterMarkerAssert.assertCount(assertContext, actual.getParameterCount(), expected.getParameters().size());
+        if (null != expected.getParameterMarkerCount()) {
+            assertThat(assertContext.getText("Parameter markers size assertion error: "), actual.getParameterMarkers().size(), is(expected.getParameterMarkerCount()));
+        }
         CommentAssert.assertComment(assertContext, actual, expected);
         if (actual instanceof DMLStatement) {
             DMLStatementAssert.assertIs(assertContext, (DMLStatement) actual, expected);

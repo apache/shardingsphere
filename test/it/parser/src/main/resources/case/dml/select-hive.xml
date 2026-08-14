@@ -1121,7 +1121,26 @@
 
     <select sql-case-id="hive_select_first_value_skip_null_placeholder" parameters="1">
         <projections start-index="7" stop-index="90">
-            <expression-projection text="first_value(remark, ?) OVER (PARTITION BY user_id ORDER BY order_id)" alias="first_remark" start-index="7" stop-index="90" />
+            <expression-projection text="first_value(remark, ?) OVER (PARTITION BY user_id ORDER BY order_id)" alias="first_remark" start-index="7" stop-index="90">
+                <expr>
+                    <function function-name="first_value" text="first_value(remark, ?) OVER (PARTITION BY user_id ORDER BY order_id)" start-index="7" stop-index="74">
+                        <parameter>
+                            <column name="remark" start-index="19" stop-index="24" />
+                        </parameter>
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="27" stop-index="27" />
+                        </parameter>
+                        <window-item start-index="30" stop-index="74">
+                            <partition-by>
+                                <column name="user_id" start-index="49" stop-index="55" />
+                            </partition-by>
+                            <order-by start-index="57" stop-index="73">
+                                <column-item name="order_id" order-direction="ASC" start-index="66" stop-index="73" />
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="t_order" start-index="97" stop-index="103" />
@@ -1476,6 +1495,8 @@
                         <from>
                             <simple-table name="t_user" start-index="105" stop-index="110" />
                         </from>
+                        <variable-name>transformed_user_id</variable-name>
+                        <transform function-name="TRANSFORM" parameter-count="1" />
                     </select>
                 </subquery>
             </subquery-table>
@@ -1499,6 +1520,114 @@
                     </select>
                 </subquery>
             </subquery-table>
+        </from>
+    </select>
+
+    <select sql-case-id="hive_select_transform_default_output">
+        <projections start-index="7" stop-index="36">
+            <column-projection name="key" start-index="7" stop-index="7" />
+            <column-projection name="value" start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_user" start-index="43" stop-index="48" />
+        </from>
+        <variable-name>key</variable-name>
+        <variable-name>value</variable-name>
+        <transform function-name="TRANSFORM" parameter-count="1" />
+    </select>
+
+    <select sql-case-id="hive_select_map_transform_multiple_inputs">
+        <projections start-index="12" stop-index="91">
+            <column-projection name="transformed_user_id" start-index="50" stop-index="68" />
+            <column-projection name="transformed_user_name" start-index="71" stop-index="91" />
+        </projections>
+        <from>
+            <simple-table name="t_user" start-index="5" stop-index="10" />
+        </from>
+        <transform function-name="MAP" parameter-count="2" />
+    </select>
+
+    <select sql-case-id="hive_select_grouping_with_cube_multiple_items">
+        <projections start-index="7" stop-index="49">
+            <column-projection name="status" start-index="7" stop-index="12" />
+            <column-projection name="merchant_id" start-index="15" stop-index="25" />
+            <column-projection name="grouping__id" start-index="28" stop-index="39" />
+            <aggregation-projection type="COUNT" expression="(*)" start-index="42" stop-index="49" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="56" stop-index="62" />
+        </from>
+        <group-by contains-grouping-extension="true">
+            <column-item name="status" start-index="73" stop-index="78" />
+            <column-item name="merchant_id" start-index="81" stop-index="91" />
+        </group-by>
+    </select>
+
+    <select sql-case-id="hive_select_system_column_variable">
+        <projections start-index="7" stop-index="25">
+            <column-projection name="INPUT__FILE__NAME" start-delimiter="`" end-delimiter="`" start-index="7" stop-index="25" />
+        </projections>
+        <from>
+            <simple-table name="t_user" start-index="32" stop-index="37" />
+        </from>
+        <variable-name>INPUT__FILE__NAME</variable-name>
+    </select>
+
+    <select sql-case-id="hive_select_row_number_window">
+        <projections start-index="7" stop-index="109">
+            <expression-projection text="ROW_NUMBER() OVER (PARTITION BY merchant_id, telephone ORDER BY creation_date DESC)" alias="row_number_value" start-index="7" stop-index="109">
+                <expr>
+                    <function function-name="ROW_NUMBER" text="ROW_NUMBER() OVER (PARTITION BY merchant_id, telephone ORDER BY creation_date DESC)" start-index="7" stop-index="89">
+                        <window-item start-index="20" stop-index="89">
+                            <partition-by>
+                                <column name="merchant_id" start-index="39" stop-index="49" />
+                                <column name="telephone" start-index="52" stop-index="60" />
+                            </partition-by>
+                            <order-by start-index="62" stop-index="88">
+                                <column-item name="creation_date" order-direction="DESC" start-index="71" stop-index="83" />
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_merchant" start-index="116" stop-index="125" />
+        </from>
+    </select>
+
+    <select sql-case-id="hive_select_avg_window">
+        <projections start-index="7" stop-index="122">
+            <aggregation-projection type="AVG" expression="(quantity) OVER (PARTITION BY order_id ORDER BY item_id ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)"
+                                    alias="avg_quantity" start-index="7" stop-index="106">
+                <window-item start-index="26" stop-index="106">
+                    <partition-by>
+                        <column name="order_id" start-index="40" stop-index="47" />
+                    </partition-by>
+                    <order-by start-index="49" stop-index="64">
+                        <column-item name="item_id" order-direction="ASC" start-index="58" stop-index="64" />
+                    </order-by>
+                </window-item>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order_item" start-index="129" stop-index="140" />
+        </from>
+    </select>
+
+    <select sql-case-id="hive_select_count_distinct_window">
+        <projections start-index="7" stop-index="87">
+            <aggregation-distinct-projection type="COUNT" expression="(DISTINCT product_id) OVER (PARTITION BY order_id)" distinct-inner-expression="product_id)"
+                                             alias="distinct_product_count" start-index="7" stop-index="61">
+                <window-item start-index="39" stop-index="61">
+                    <partition-by>
+                        <column name="order_id" start-index="53" stop-index="60" />
+                    </partition-by>
+                </window-item>
+            </aggregation-distinct-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order_item" start-index="94" stop-index="105" />
         </from>
     </select>
 

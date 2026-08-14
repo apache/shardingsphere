@@ -59,6 +59,9 @@ public final class CreateTableStatementAssert {
      * @param expected expected create table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        if (null != expected.getTemporary()) {
+            assertThat(assertContext.getText("Temporary table assertion error: "), actual.isTemporary(), is(expected.getTemporary()));
+        }
         assertTable(assertContext, actual, expected);
         assertColumnDefinitions(assertContext, actual, expected);
         assertConstraintDefinitions(assertContext, actual, expected);

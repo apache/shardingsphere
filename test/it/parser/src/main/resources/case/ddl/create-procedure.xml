@@ -305,4 +305,48 @@
             <sql-statement start-index="90" stop-index="100" statement-class-simple-name="SetStatement" />
         </sql-statements>
     </create-procedure>
+
+    <create-procedure sql-case-id="create_procedure_with_type_attributes_visitor_oracle">
+        <procedure-name name="INSERT_ROW" start-index="28" stop-index="37" />
+        <sql-statements>
+            <sql-statement start-index="126" stop-index="191" statement-class-simple-name="InsertStatement" />
+        </sql-statements>
+        <procedure-body-end-names>
+            <procedure-body-end-name name="INSERT_ROW" />
+        </procedure-body-end-names>
+        <table name="T_E2E_RDL_CONVERT" start-index="47" stop-index="63" />
+        <table name="T_E2E_RDL_CONVERT" start-index="86" stop-index="102" />
+        <column name="ID" start-index="65" stop-index="66">
+            <owner name="T_E2E_RDL_CONVERT" start-index="47" stop-index="63" />
+        </column>
+        <column name="STATUS" start-index="104" stop-index="109">
+            <owner name="T_E2E_RDL_CONVERT" start-index="86" stop-index="102" />
+        </column>
+        <valid-statement type="InsertStatement" table-name="T_E2E_RDL_CONVERT" />
+    </create-procedure>
+
+    <create-procedure sql-case-id="create_procedure_with_dml_routine_body_table_visitor_oracle">
+        <procedure-name name="P_E2E_RDL_SHOW_OBJECT" start-index="28" stop-index="48" />
+        <sql-statements>
+            <sql-statement start-index="99" stop-index="172" statement-class-simple-name="InsertStatement" />
+        </sql-statements>
+        <valid-statement type="InsertStatement" table-name="T_E2E_RDL_SHOW_OBJECT" />
+    </create-procedure>
+
+    <create-procedure sql-case-id="create_procedure_with_insert_select_routine_body_table_visitor_oracle">
+        <procedure-name name="std_view_select_insert_user" start-index="28" stop-index="54" />
+        <sql-statements>
+            <sql-statement start-index="186" stop-index="203" statement-class-simple-name="DeleteStatement" />
+            <sql-statement start-index="206" stop-index="382" statement-class-simple-name="InsertStatement" />
+            <sql-statement start-index="385" stop-index="582" statement-class-simple-name="InsertStatement" />
+            <sql-statement start-index="585" stop-index="622" statement-class-simple-name="DeleteStatement" />
+        </sql-statements>
+        <dynamic-sql-statement-expressions>
+            <dynamic-sql-statement-expression start-index="132" stop-index="183" />
+        </dynamic-sql-statement-expressions>
+        <valid-statement type="DeleteStatement" table-name="t_user" />
+        <valid-statement type="InsertStatement" table-name="t_user" />
+        <valid-statement type="InsertStatement" table-name="t_user" select-table-name="v_std_user_source" />
+        <valid-statement type="DeleteStatement" table-name="t_user" />
+    </create-procedure>
 </sql-parser-test-cases>

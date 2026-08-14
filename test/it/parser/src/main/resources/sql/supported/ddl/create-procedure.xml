@@ -122,4 +122,7 @@
             DECLARE @V INT;
             SET @V = 1;
         END" db-types="SQLServer" />
+    <sql-case id="create_procedure_with_type_attributes_visitor_oracle" value="CREATE OR REPLACE PROCEDURE INSERT_ROW(P_ID IN T_E2E_RDL_CONVERT.ID%TYPE, P_STATUS IN T_E2E_RDL_CONVERT.STATUS%TYPE) IS BEGIN INSERT INTO T_E2E_RDL_CONVERT (ID, STATUS) VALUES (P_ID, P_STATUS); END INSERT_ROW;" db-types="Oracle" />
+    <sql-case id="create_procedure_with_dml_routine_body_table_visitor_oracle" value="CREATE OR REPLACE PROCEDURE P_E2E_RDL_SHOW_OBJECT(P_ID IN NUMBER, P_PASSWORD IN VARCHAR2) IS BEGIN INSERT INTO T_E2E_RDL_SHOW_OBJECT (ID, PASSWORD) VALUES (P_ID, P_PASSWORD); END;" db-types="Oracle" />
+    <sql-case id="create_procedure_with_insert_select_routine_body_table_visitor_oracle" value="CREATE OR REPLACE PROCEDURE std_view_select_insert_user(var_user_id IN NUMBER, var_password IN VARCHAR2) IS BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET NLS_DATE_FORMAT = ''YYYY-MM-DD'''; DELETE FROM t_user; INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (100, 'zhangsan', var_password, 'zhangsan@gmail.com', '12345678900', DATE '2017-08-08'); INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) SELECT var_user_id, user_name, password, email, telephone, creation_date FROM v_std_user_source WHERE user_id = 100; DELETE FROM t_user WHERE user_id = 100; END;" db-types="Oracle" />
 </sql-cases>
