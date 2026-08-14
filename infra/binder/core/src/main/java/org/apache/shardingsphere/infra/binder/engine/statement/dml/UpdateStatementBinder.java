@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.assign.AssignmentSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -60,7 +62,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
             boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
             boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         }
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> targetTableVariableBinderContexts = findTargetTableVariableBinderContexts(boundTable, tableBinderContexts);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> targetTableVariableBinderContexts = findTargetTableVariableBinderContexts(binderContext, boundTable, tableBinderContexts);
         boolean bindTableVariableTargetColumn = !targetTableVariableBinderContexts.isEmpty();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentColumnBinderContexts = bindTableVariableTargetColumn ? targetTableVariableBinderContexts : tableBinderContexts;
         SetAssignmentSegment boundSetAssignment = sqlStatement.getAssignment()
@@ -73,10 +75,10 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         return copy(sqlStatement, boundWith, boundTable, boundFrom, boundSetAssignment, boundWhere, boundOrderBy);
     }
     
-    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> findTargetTableVariableBinderContexts(final TableSegment boundTable,
+    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> findTargetTableVariableBinderContexts(final SQLStatementBinderContext binderContext, final TableSegment boundTable,
                                                                                                              final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
-        if (!(boundTable instanceof SimpleTableSegment)) {
+        if (!(boundTable instanceof SimpleTableSegment) || !isTableVariableTarget(binderContext, (SimpleTableSegment) boundTable)) {
             return result;
         }
         IdentifierValue targetTableName = ((SimpleTableSegment) boundTable).getTableName().getIdentifier();
@@ -86,6 +88,15 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
             }
         }
         return result;
+    }
+    
+    private boolean isTableVariableTarget(final SQLStatementBinderContext binderContext, final SimpleTableSegment targetTable) {
+        if (targetTable.getOwner().isPresent()) {
+            return false;
+        }
+        IdentifierValue targetTableName = targetTable.getTableName().getIdentifier();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(targetTableName.getValue(), targetTableName.getQuoteCharacter());
     }
     
     private boolean isTargetTableVariableBinderContext(final IdentifierValue targetTableName, final TableSegmentBinderContext tableBinderContext) {

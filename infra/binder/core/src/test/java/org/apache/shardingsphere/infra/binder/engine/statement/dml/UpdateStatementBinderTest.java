@@ -579,6 +579,95 @@ class UpdateStatementBinderTest {
     }
     
     @Test
+    void assertBindBracketDelimitedAtSignTargetWithUnquotedSameTextTableVariableSourceRetainsPhysicalTableValidation() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Status"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        SimpleTableSegment boundFrom = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        assertThat(boundFrom.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundFrom.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.NONE));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Status"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.PHYSICAL_TABLE));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+    }
+    
+    @Test
+    void assertBindQuoteDelimitedAtSignTargetWithUnquotedSameTextTableVariableSourceRetainsPhysicalTableValidation() {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Status"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.QUOTE))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        SimpleTableSegment boundFrom = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        assertThat(boundFrom.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundFrom.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.NONE));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Status"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.PHYSICAL_TABLE));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+    }
+    
+    @Test
+    void assertBindSchemaQualifiedBracketDelimitedAtSignTargetWithUnquotedSameTextTableVariableSourceRetainsPhysicalTableValidation() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", QuoteCharacter.BRACKETS)));
+        targetTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("dbo")));
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Status"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        assertTrue(boundTable.getOwner().isPresent());
+        assertThat(boundTable.getOwner().get().getIdentifier().getValue(), is("dbo"));
+        SimpleTableSegment boundFrom = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(boundFrom.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundFrom.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.NONE));
+        assertFalse(boundFrom.getOwner().isPresent());
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getQuoteCharacter(), is(QuoteCharacter.BRACKETS));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Status"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.PHYSICAL_TABLE));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+    }
+    
+    @Test
     void assertBindAliasedTableVariableTarget() {
         UpdateStatement updateStatement = createAliasedTableVariableTargetUpdateStatement();
         UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,

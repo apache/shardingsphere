@@ -219,4 +219,44 @@
         <input sql="UPDATE &quot;@MyTable&quot; SET src.Remark = 'tool malfunction' FROM &quot;@MyTable&quot; AS src" />
         <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_tool malfunction' FROM &quot;@MyTable&quot; AS src" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET Remark = 'tool malfunction' FROM @MyTable" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = 'encrypt_tool malfunction' FROM @MyTable" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET Remark = ? FROM @MyTable" parameters="tool malfunction" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = ? FROM @MyTable" parameters="encrypt_tool malfunction" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET Remark = 'tool malfunction' FROM @MyTable" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_tool malfunction' FROM @MyTable" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET Remark = ? FROM @MyTable" parameters="tool malfunction" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = ? FROM @MyTable" parameters="encrypt_tool malfunction" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_bracket_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.[@MyTable] SET Remark = 'tool malfunction' FROM @MyTable" />
+        <output sql="UPDATE dbo.[@MyTable] SET [remark_cipher] = 'encrypt_tool malfunction' FROM @MyTable" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_bracket_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE dbo.[@MyTable] SET Remark = ? FROM @MyTable" parameters="tool malfunction" />
+        <output sql="UPDATE dbo.[@MyTable] SET [remark_cipher] = ? FROM @MyTable" parameters="encrypt_tool malfunction" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_quote_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.&quot;@MyTable&quot; SET Remark = 'tool malfunction' FROM @MyTable" />
+        <output sql="UPDATE dbo.&quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_tool malfunction' FROM @MyTable" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_quote_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE dbo.&quot;@MyTable&quot; SET Remark = ? FROM @MyTable" parameters="tool malfunction" />
+        <output sql="UPDATE dbo.&quot;@MyTable&quot; SET [remark_cipher] = ? FROM @MyTable" parameters="encrypt_tool malfunction" />
+    </rewrite-assertion>
 </rewrite-assertions>
