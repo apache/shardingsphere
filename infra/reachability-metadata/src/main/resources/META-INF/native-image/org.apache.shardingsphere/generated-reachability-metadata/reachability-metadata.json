@@ -3220,47 +3220,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
-      },
-      "type": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQL",
-      "fields": [
-        {
-          "name": "createTableSQL"
-        },
-        {
-          "name": "deleteSQL"
-        },
-        {
-          "name": "driverClassName"
-        },
-        {
-          "name": "insertSQL"
-        },
-        {
-          "name": "isDefault"
-        },
-        {
-          "name": "selectByKeySQL"
-        },
-        {
-          "name": "selectByParentKeySQL"
-        },
-        {
-          "name": "type"
-        },
-        {
-          "name": "updateSQL"
-        }
-      ],
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.standalone.StandaloneContextManagerBuilder"
       },
       "type": "org.apache.shardingsphere.mode.repository.standalone.memory.MemoryRepository",
@@ -6122,18 +6081,6 @@
         "typeReached": "org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset.PostgreSQLCharacterSets"
       },
       "glob": "META-INF/services/java.nio.charset.spi.CharsetProvider"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
-      },
-      "glob": "META-INF/services/javax.xml.stream.XMLInputFactory"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"
-      },
-      "glob": "META-INF/services/javax.xml.stream.XMLOutputFactory"
     },
     {
       "condition": {
