@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 /**
  * MCP transport JSON mapper factory.
@@ -39,12 +35,7 @@ public final class MCPTransportJsonMapperFactory {
      * @return MCP JSON mapper
      */
     public static McpJsonMapper create() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        objectMapper.setSerializationInclusion(Include.NON_NULL);
-        return new JacksonMcpJsonMapper(objectMapper);
+        return new JacksonMcpJsonMapper(JsonUtils.createObjectMapper());
     }
     
 }

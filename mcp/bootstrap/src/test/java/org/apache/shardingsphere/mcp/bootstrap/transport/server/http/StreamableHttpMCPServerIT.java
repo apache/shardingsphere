@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
@@ -45,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StreamableHttpMCPServerIT {
     
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = JsonUtils.createObjectMapper();
     
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     

@@ -22,12 +22,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
+
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class LLMMCPJsonValues {
     
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = JsonUtils.createObjectMapper();
     
     static Map<String, Object> parseToolArguments(final String argumentsJson) {
         try {
