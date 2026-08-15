@@ -24,11 +24,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Show sharding key generators statement test case.
+ * Show sharding key generate strategies statement test case.
  */
 @Getter
 @Setter
-public final class ShowShardingKeyGeneratorsStatementTestCase extends DatabaseContainedTestCase {
+public final class ShowShardingKeyGenerateStrategiesStatementTestCase extends DatabaseContainedTestCase {
     
     @XmlAttribute
     private String name;

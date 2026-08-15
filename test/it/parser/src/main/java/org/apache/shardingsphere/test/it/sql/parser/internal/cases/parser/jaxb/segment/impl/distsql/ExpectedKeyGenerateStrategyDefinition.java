@@ -19,39 +19,33 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedAuditStrategy;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedShardingStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
 
 /**
- * Expected table rule.
+ * Expected key generate strategy definition.
  */
 @Getter
 @Setter
-public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedKeyGenerateStrategyDefinition extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "data-node")
-    private List<String> dataNodes;
+    @XmlAttribute
+    private String type;
     
-    @XmlElement(name = "table-strategy")
-    private ExpectedShardingStrategy tableStrategy;
+    @XmlAttribute(name = "table-name")
+    private String tableName;
     
-    @XmlElement(name = "database-strategy")
-    private ExpectedShardingStrategy dataStrategy;
+    @XmlAttribute(name = "column-name")
+    private String columnName;
     
-    @XmlAttribute(name = "key-generate-strategy-column")
-    private String keyGenerateStrategyColumn;
+    @XmlAttribute(name = "sequence-name")
+    private String sequenceName;
     
     @XmlAttribute(name = "key-generator-name")
     private String keyGeneratorName;
     
-    @XmlElement(name = "key-generate-strategy")
-    private ExpectedAlgorithm keyGenerateStrategy;
-    
-    @XmlElement(name = "audit-strategy")
-    private ExpectedAuditStrategy auditStrategy;
+    @XmlElement
+    private ExpectedAlgorithm algorithm;
 }

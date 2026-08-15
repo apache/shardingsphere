@@ -103,6 +103,18 @@
         <database name="sharding_db" start-index="34" stop-index="44" />
     </show-sharding-key-generators>
 
+    <show-sharding-key-generators sql-case-id="show-sharding-key-generator" name="snowflake_generator">
+        <database name="sharding_db" start-index="53" stop-index="63" />
+    </show-sharding-key-generators>
+
+    <show-sharding-key-generate-strategies sql-case-id="show-sharding-key-generate-strategies">
+        <database name="sharding_db" start-index="43" stop-index="53" />
+    </show-sharding-key-generate-strategies>
+
+    <show-sharding-key-generate-strategies sql-case-id="show-sharding-key-generate-strategy" name="order_id_strategy">
+        <database name="sharding_db" start-index="59" stop-index="69" />
+    </show-sharding-key-generate-strategies>
+
     <show-default-sharding-strategy sql-case-id="show-default-sharding-strategy">
         <database name="sharding_db" start-index="36" stop-index="46" />
     </show-default-sharding-strategy>

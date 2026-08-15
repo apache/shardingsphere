@@ -748,4 +748,42 @@
             </column>
         </rule>
     </create-mask-rule>
+
+    <create-sharding-key-generate-strategy sql-case-id="create-sharding-key-generate-strategy-with-algorithm" name="order_id_strategy">
+        <strategy type="COLUMN" table-name="t_order" column-name="order_id">
+            <algorithm algorithm-name="snowflake">
+                <property key="worker-id" value="1" />
+            </algorithm>
+        </strategy>
+    </create-sharding-key-generate-strategy>
+
+    <create-sharding-key-generator sql-case-id="create-sharding-key-generator" name="snowflake_generator">
+        <algorithm algorithm-name="SNOWFLAKE">
+            <property key="worker-id" value="1" />
+            <property key=" foo_key " value=" bar_value " />
+        </algorithm>
+    </create-sharding-key-generator>
+
+    <create-sharding-key-generate-strategy sql-case-id="create-sharding-key-generate-strategy-with-generator" name="order_id_strategy">
+        <strategy type="COLUMN" table-name="t_order" column-name="order_id" key-generator-name="snowflake_generator" />
+    </create-sharding-key-generate-strategy>
+
+    <create-sharding-key-generate-strategy sql-case-id="create-sharding-sequence-key-generate-strategy-with-algorithm" name="order_sequence_strategy">
+        <strategy type="SEQUENCE" sequence-name="order_seq">
+            <algorithm algorithm-name="redis_cluster_auto_increment">
+                <property key="increment" value="1" />
+            </algorithm>
+        </strategy>
+    </create-sharding-key-generate-strategy>
+
+    <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-key-generator">
+        <rule name="t_order" key-generate-strategy-column="order_id" key-generator-name="snowflake_generator">
+            <data-node>ds_${0..1}.t_order_${0..1}</data-node>
+            <table-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="inline">
+                    <property key="algorithm-expression" value="t_order_${order_id % 2}" />
+                </algorithm-segment>
+            </table-strategy>
+        </rule>
+    </create-sharding-table-rule>
 </sql-parser-test-cases>

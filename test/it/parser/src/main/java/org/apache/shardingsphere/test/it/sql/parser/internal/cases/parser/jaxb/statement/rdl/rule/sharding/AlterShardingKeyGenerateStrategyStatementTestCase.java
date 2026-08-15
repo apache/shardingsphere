@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedKeyGenerateStrategyDefinition;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Show sharding key generators statement test case.
+ * Alter sharding key generate strategy statement test case.
  */
 @Getter
 @Setter
-public final class ShowShardingKeyGeneratorsStatementTestCase extends DatabaseContainedTestCase {
+public final class AlterShardingKeyGenerateStrategyStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute
     private String name;
+    
+    @XmlElement
+    private ExpectedKeyGenerateStrategyDefinition strategy;
 }
