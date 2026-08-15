@@ -25,6 +25,7 @@ import java.sql.Types;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,7 +63,7 @@ class PostgreSQLPreparedStatementParameterTypeTest {
         assertThat(actual.getWireOID(), is(12345));
         
         Object decoded = actual.decode("my_value");
-        assertTrue(decoded instanceof PGobject);
+        assertThat(decoded, isA(PGobject.class));
         assertThat(((PGobject) decoded).getType(), is("my_enum"));
         assertThat(((PGobject) decoded).getValue(), is("my_value"));
     }
@@ -71,7 +72,7 @@ class PostgreSQLPreparedStatementParameterTypeTest {
     void assertDecodeJSON() {
         PostgreSQLPreparedStatementParameterType actual = PostgreSQLPreparedStatementParameterType.valueOf(PostgreSQLBinaryColumnType.JSON);
         Object decoded = actual.decode("{\"key\":\"value\"}");
-        assertTrue(decoded instanceof PGobject);
+        assertThat(decoded, isA(PGobject.class));
         assertThat(((PGobject) decoded).getType(), is("json"));
         assertThat(((PGobject) decoded).getValue(), is("{\"key\":\"value\"}"));
     }
@@ -80,7 +81,7 @@ class PostgreSQLPreparedStatementParameterTypeTest {
     void assertDecodeJSONB() {
         PostgreSQLPreparedStatementParameterType actual = PostgreSQLPreparedStatementParameterType.valueOf(PostgreSQLBinaryColumnType.JSONB);
         Object decoded = actual.decode("{\"key\":\"value\"}");
-        assertTrue(decoded instanceof PGobject);
+        assertThat(decoded, isA(PGobject.class));
         assertThat(((PGobject) decoded).getType(), is("jsonb"));
         assertThat(((PGobject) decoded).getValue(), is("{\"key\":\"value\"}"));
     }

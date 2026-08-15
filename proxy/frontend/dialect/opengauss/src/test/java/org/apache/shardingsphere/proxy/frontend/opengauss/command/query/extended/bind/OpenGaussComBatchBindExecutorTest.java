@@ -132,10 +132,12 @@ class OpenGaussComBatchBindExecutorTest {
         when(result.getConnectionContext()).thenReturn(connectionContext);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), nullable(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        lenient().when(preparedStatement.getConnection()).thenReturn(connection);
         JDBCBackendStatement backendStatement = mock(JDBCBackendStatement.class);
-        when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), anyInt(), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
+        when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), anyInt(), nullable(ConnectionMode.class), any(StatementOption.class),
+                nullable(DatabaseType.class)))
                 .thenReturn(preparedStatement);
         when(result.getStatementManager()).thenReturn(backendStatement);
         when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
@@ -147,6 +149,7 @@ class OpenGaussComBatchBindExecutorTest {
         ConnectionSession result = mockConnectionSession();
         Connection connection = result.getDatabaseConnectionManager().getConnections("foo_db", null, 0, 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        lenient().when(preparedStatement.getConnection()).thenReturn(connection);
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
         when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
         when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
