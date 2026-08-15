@@ -66,7 +66,7 @@ class PostgreSQLPreparedStatementParameterTypeTest {
         assertThat(((PGobject) decoded).getType(), is("my_enum"));
         assertThat(((PGobject) decoded).getValue(), is("my_value"));
     }
-
+    
     @Test
     void assertDecodeJSON() {
         PostgreSQLPreparedStatementParameterType actual = PostgreSQLPreparedStatementParameterType.valueOf(PostgreSQLBinaryColumnType.JSON);
@@ -75,7 +75,7 @@ class PostgreSQLPreparedStatementParameterTypeTest {
         assertThat(((PGobject) decoded).getType(), is("json"));
         assertThat(((PGobject) decoded).getValue(), is("{\"key\":\"value\"}"));
     }
-
+    
     @Test
     void assertDecodeJSONB() {
         PostgreSQLPreparedStatementParameterType actual = PostgreSQLPreparedStatementParameterType.valueOf(PostgreSQLBinaryColumnType.JSONB);
