@@ -43,6 +43,8 @@ class SubqueryRouteTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
+                    Arguments.of("notShardingTable",
+                            "SELECT (SELECT MAX(id) FROM t_category b WHERE b.id = ?) FROM t_category a WHERE id = ? ", Arrays.asList(1, 1)),
                     Arguments.of("bindingTableWithDifferentValueWithFederation",
                             "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id = ? ) FROM t_order a WHERE user_id = ? ", Arrays.asList(2, 3)),
                     Arguments.of("twoTableWithDifferentOperatorWithFederation",
