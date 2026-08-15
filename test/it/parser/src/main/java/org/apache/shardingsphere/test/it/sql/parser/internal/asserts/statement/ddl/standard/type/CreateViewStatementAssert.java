@@ -19,10 +19,14 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedViewColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view.CreateViewStatementTestCase;
 
 import static org.hamcrest.Matchers.is;
@@ -45,12 +49,24 @@ public final class CreateViewStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
         assertView(assertContext, actual, expected);
+        assertColumns(assertContext, actual, expected);
         assertViewDefinition(assertContext, actual, expected);
         assertSelect(assertContext, actual, expected);
     }
     
     private static void assertView(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getView(), expected.getView());
+    }
+    
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
+        assertThat(assertContext.getText("View columns size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
+        int count = 0;
+        for (ViewColumnSegment each : actual.getColumns()) {
+            ExpectedViewColumn expectedColumn = expected.getColumns().get(count);
+            IdentifierValueAssert.assertIs(assertContext, each.getColumn().getIdentifier(), expectedColumn, "View column");
+            SQLSegmentAssert.assertIs(assertContext, each, expectedColumn);
+            count++;
+        }
     }
     
     private static void assertViewDefinition(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {

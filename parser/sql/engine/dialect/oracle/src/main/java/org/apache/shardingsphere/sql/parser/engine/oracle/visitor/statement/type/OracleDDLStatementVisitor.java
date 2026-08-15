@@ -65,6 +65,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterT
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyzeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditContext;
@@ -249,6 +250,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.V
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -417,9 +419,20 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
         getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        result.getColumns().addAll(createViewColumns(ctx.alias()));
         result.setSelect((SelectStatement) visitor.visit(ctx.select()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.addParameterMarkers(getGlobalParameterMarkerSegments());
+        return result;
+    }
+    
+    private Collection<ViewColumnSegment> createViewColumns(final Collection<AliasContext> aliases) {
+        Collection<ViewColumnSegment> result = new LinkedList<>();
+        for (AliasContext each : aliases) {
+            IdentifierValue identifier = null == each.identifier() ? new IdentifierValue(each.STRING_().getText()) : (IdentifierValue) visit(each.identifier());
+            ColumnSegment column = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), identifier);
+            result.add(new ViewColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), column, null));
+        }
         return result;
     }
     
