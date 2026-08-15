@@ -44,7 +44,7 @@ public final class CreateViewStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "select")
     private SelectStatementTestCase selectStatement;
-
+    
     @XmlElement(name = "column")
     private List<ExpectedViewColumn> columns = new LinkedList<>();
 }

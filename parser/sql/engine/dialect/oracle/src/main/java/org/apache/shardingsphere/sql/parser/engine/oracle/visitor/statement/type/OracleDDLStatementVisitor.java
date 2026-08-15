@@ -425,7 +425,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         result.addParameterMarkers(getGlobalParameterMarkerSegments());
         return result;
     }
-
+    
     private Collection<ViewColumnSegment> createViewColumns(final Collection<AliasContext> aliases) {
         Collection<ViewColumnSegment> result = new LinkedList<>();
         for (AliasContext each : aliases) {
@@ -435,7 +435,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

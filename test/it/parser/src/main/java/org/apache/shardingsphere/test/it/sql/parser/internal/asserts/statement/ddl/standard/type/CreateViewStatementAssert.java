@@ -68,7 +68,7 @@ public final class CreateViewStatementAssert {
             count++;
         }
     }
-
+    
     private static void assertViewDefinition(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
         if (null == expected.getViewDefinition()) {
             assertNull(actual.getViewDefinition(), "actual view definition should not exist");

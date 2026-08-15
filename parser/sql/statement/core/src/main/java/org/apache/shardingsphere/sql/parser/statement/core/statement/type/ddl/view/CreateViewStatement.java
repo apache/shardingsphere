@@ -44,7 +44,7 @@ public final class CreateViewStatement extends DDLStatement {
     private SelectStatement select;
     
     private List<ViewColumnSegment> columns = new LinkedList<>();
-
+    
     public CreateViewStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
