@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.json.JsonException;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.util.Map;
@@ -29,13 +28,11 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class LLMMCPJsonValues {
     
-    private static final ObjectMapper OBJECT_MAPPER = JsonUtils.createObjectMapper();
-    
     static Map<String, Object> parseToolArguments(final String argumentsJson) {
         try {
-            return OBJECT_MAPPER.readValue(argumentsJson, new TypeReference<>() {
+            return JsonUtils.fromJsonString(argumentsJson, new JsonTypeReference<Map<String, Object>>() {
             });
-        } catch (final JsonProcessingException ex) {
+        } catch (final JsonException ex) {
             throw new IllegalArgumentException("Invalid tool arguments JSON.", ex);
         }
     }

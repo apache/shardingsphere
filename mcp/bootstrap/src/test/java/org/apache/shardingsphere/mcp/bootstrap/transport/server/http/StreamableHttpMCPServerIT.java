@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import io.modelcontextprotocol.json.McpJsonMapper;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StreamableHttpMCPServerIT {
     
-    private static final ObjectMapper OBJECT_MAPPER = JsonUtils.createObjectMapper();
+    private static final McpJsonMapper JSON_MAPPER = MCPTransportJsonMapperFactory.create();
     
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     
@@ -226,7 +226,7 @@ class StreamableHttpMCPServerIT {
     }
     
     private HttpResponse<String> sendPost(final Map<String, Object> payload, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpoint).POST(HttpRequest.BodyPublishers.ofString(OBJECT_MAPPER.writeValueAsString(payload)));
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpoint).POST(HttpRequest.BodyPublishers.ofString(JSON_MAPPER.writeValueAsString(payload)));
         headers.forEach(requestBuilder::header);
         return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
     }
@@ -269,7 +269,7 @@ class StreamableHttpMCPServerIT {
     }
     
     private Map<?, ?> parseBody(final HttpResponse<String> response) throws IOException {
-        return OBJECT_MAPPER.readValue(normalizeJsonBody(response.body()), Map.class);
+        return JSON_MAPPER.readValue(normalizeJsonBody(response.body()), Map.class);
     }
     
     private String normalizeJsonBody(final String responseBody) {

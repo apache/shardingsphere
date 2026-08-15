@@ -17,17 +17,20 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
+import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
 import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationResponse;
 import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +38,8 @@ import java.util.Objects;
 final class MCPCallToolResultFactory {
     
     private static final int RESOURCE_LINK_LIMIT = 24;
+    
+    private final McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
     
     private final JsonSchemaValidator outputSchemaValidator = new DefaultJsonSchemaValidator();
     
@@ -52,15 +57,23 @@ final class MCPCallToolResultFactory {
     
     CallToolResult create(final MCPErrorPayload errorPayload) {
         Map<String, Object> payload = errorPayload.toPayload();
-        CallToolResult.Builder result = CallToolResult.builder().addTextContent(JsonUtils.toJsonString(payload)).isError(true);
+        CallToolResult.Builder result = CallToolResult.builder().addTextContent(toJsonString(payload)).isError(true);
         appendResourceLinks(payload, result);
         return result.build();
     }
     
     private CallToolResult createSuccess(final Map<String, Object> payload) {
-        CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(false);
+        CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(toJsonString(payload)).isError(false);
         appendResourceLinks(payload, result);
         return result.build();
+    }
+    
+    private String toJsonString(final Object value) {
+        try {
+            return jsonMapper.writeValueAsString(value);
+        } catch (final IOException ex) {
+            throw MCPTransportErrorFactory.createError(ex);
+        }
     }
     
     private void appendResourceLinks(final Map<String, Object> payload, final CallToolResult.Builder builder) {

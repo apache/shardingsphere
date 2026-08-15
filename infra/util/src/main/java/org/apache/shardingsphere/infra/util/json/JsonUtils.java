@@ -19,14 +19,12 @@ package org.apache.shardingsphere.infra.util.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 
 /**
  * Json utility class.
@@ -51,23 +49,33 @@ public final class JsonUtils {
     }
     
     /**
-     * Create object mapper with ShardingSphere JSON configurations.
-     *
-     * @return object mapper
-     */
-    public static ObjectMapper createObjectMapper() {
-        return MAPPER.copy();
-    }
-    
-    /**
      * Serialize object as json string.
      *
      * @param obj object
      * @return json string
+     * @throws JsonException when object cannot be serialized
      */
-    @SneakyThrows(JsonProcessingException.class)
     public static String toJsonString(final Object obj) {
-        return MAPPER.writeValueAsString(obj);
+        try {
+            return MAPPER.writeValueAsString(obj);
+        } catch (final JsonProcessingException ex) {
+            throw new JsonException(ex);
+        }
+    }
+    
+    /**
+     * Serialize object as pretty JSON string.
+     *
+     * @param obj object
+     * @return pretty JSON string
+     * @throws JsonException when object cannot be serialized
+     */
+    public static String toPrettyJsonString(final Object obj) {
+        try {
+            return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+        } catch (final JsonProcessingException ex) {
+            throw new JsonException(ex);
+        }
     }
     
     /**
@@ -77,22 +85,30 @@ public final class JsonUtils {
      * @param clazz target object type
      * @param <T> the type of target object
      * @return object
+     * @throws JsonException when JSON cannot be deserialized
      */
-    @SneakyThrows(JsonProcessingException.class)
-    public static <T extends JsonConfiguration> T fromJsonString(final String value, final Class<T> clazz) {
-        return MAPPER.readValue(value, clazz);
+    public static <T> T fromJsonString(final String value, final Class<T> clazz) {
+        try {
+            return MAPPER.readValue(value, clazz);
+        } catch (final JsonProcessingException ex) {
+            throw new JsonException(ex);
+        }
     }
     
     /**
-     * Deserialize from json string to object.
+     * Deserialize from JSON string to object.
      *
-     * @param value json string
+     * @param value JSON string
      * @param typeReference target object type reference
      * @param <T> the type of target object
      * @return object
+     * @throws JsonException when JSON cannot be deserialized
      */
-    @SneakyThrows(JsonProcessingException.class)
-    public static <T> T fromJsonString(final String value, final TypeReference<T> typeReference) {
-        return MAPPER.readValue(value, typeReference);
+    public static <T> T fromJsonString(final String value, final JsonTypeReference<T> typeReference) {
+        try {
+            return MAPPER.readValue(value, MAPPER.getTypeFactory().constructType(typeReference.getType()));
+        } catch (final JsonProcessingException ex) {
+            throw new JsonException(ex);
+        }
     }
 }
