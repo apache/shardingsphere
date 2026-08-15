@@ -184,7 +184,7 @@ class ShardingRouteEngineFactoryTest {
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, props);
         assertThat(actual, isA(ShardingStandardRouteEngine.class));
     }
-
+    
     @Test
     void assertNewInstanceForBindingTables() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SQLStatement.class));

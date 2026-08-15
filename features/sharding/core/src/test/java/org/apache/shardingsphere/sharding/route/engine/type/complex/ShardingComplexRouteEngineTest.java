@@ -70,7 +70,7 @@ class ShardingComplexRouteEngineTest {
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
-
+    
     @Test
     void assertRoutingForMultipleShardingTables() {
         ShardingCondition shardingCondition = new ShardingCondition();
