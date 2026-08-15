@@ -30,7 +30,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTableBroadcastRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingComplexRouteEngine;
@@ -178,6 +180,20 @@ class ShardingRouteEngineFactoryTest {
         tableNames.add("");
         when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(tableNames);
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, props);
+        assertThat(actual, isA(ShardingStandardRouteEngine.class));
+    }
+
+    @Test
+    void assertNewInstanceForBindingTables() {
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SQLStatement.class));
+        tableNames.add("t_order");
+        tableNames.add("t_order_item");
+        when(shardingRule.isBindingTablesUseShardingColumnsJoin(sqlStatementContext, tableNames)).thenReturn(true);
+        ShardingCondition shardingCondition = new ShardingCondition();
+        shardingCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_order", Collections.singleton(1L)));
+        when(shardingConditions.getConditions()).thenReturn(Collections.singletonList(shardingCondition));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, props);
         assertThat(actual, isA(ShardingStandardRouteEngine.class));
