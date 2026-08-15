@@ -37,8 +37,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,13 +66,12 @@ public final class CreateViewStatementBinder implements SQLStatementBinder<Creat
     }
     
     private Collection<ViewColumnSegment> bindColumns(final List<ViewColumnSegment> columns, final SelectStatement boundSelect) {
-        ShardingSpherePreconditions.checkState(columns.isEmpty() || columns.size() == boundSelect.getProjections().getProjections().size(),
-                DifferenceInColumnCountOfSelectListAndColumnNameListException::new);
-        Collection<ViewColumnSegment> result = new LinkedList<>();
+        List<ProjectionSegment> projections = boundSelect.getProjections().getProjections();
+        ShardingSpherePreconditions.checkState(columns.isEmpty() || columns.size() == projections.size(), DifferenceInColumnCountOfSelectListAndColumnNameListException::new);
+        Collection<ViewColumnSegment> result = new ArrayList<>(columns.size());
         int index = 0;
         for (ViewColumnSegment each : columns) {
-            result.add(new ViewColumnSegment(each.getStartIndex(), each.getStopIndex(), bindColumn(each.getColumn(), boundSelect.getProjections().getProjections().get(index)),
-                    each.getComment().orElse(null)));
+            result.add(new ViewColumnSegment(each.getStartIndex(), each.getStopIndex(), bindColumn(each.getColumn(), projections.get(index)), each.getComment().orElse(null)));
             index++;
         }
         return result;
