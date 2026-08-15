@@ -84,6 +84,42 @@ class ConditionValueCompareOperatorGeneratorTest {
         assertTrue(((ListShardingConditionValue<Integer>) shardingConditionValue.get()).getValues().contains(value));
     }
     
+    @Test
+    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndGreaterThanOperator() {
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
+                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), ">", null);
+        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
+    }
+    
+    @Test
+    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndGreaterThanOrEqualOperator() {
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
+                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), ">=", null);
+        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
+    }
+    
+    @Test
+    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndLessThanOperator() {
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
+                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), "<", null);
+        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
+    }
+    
+    @Test
+    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndLessThanOrEqualOperator() {
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
+                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), "<=", null);
+        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
+    }
+    
+    @Test
+    void assertGenerateEmptyConditionValueWithBinaryOperatorValueAndGreaterThanOperator() {
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
+                mock(ColumnSegment.class),
+                new UnaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, "100"), "BINARY", "BINARY '100'"), ">", null);
+        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
+    }
+    
     @SuppressWarnings("unchecked")
     @Test
     void assertGenerateNullConditionValue() {

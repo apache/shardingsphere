@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -79,6 +80,21 @@ public final class ShardingRouteEngineFixtureBuilder {
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put(
                 "t_order_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+    }
+    
+    /**
+     * Create volume range sharding rule.
+     *
+     * @return created sharding rule
+     */
+    public static ShardingRule createVolumeRangeShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order", "ds_0");
+        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_no", "t_order_volume_range"));
+        shardingRuleConfig.getAutoTables().add(autoTableRuleConfig);
+        shardingRuleConfig.getShardingAlgorithms().put("t_order_volume_range", new AlgorithmConfiguration("VOLUME_RANGE",
+                PropertiesBuilder.build(new Property("range-lower", "10"), new Property("range-upper", "1000"), new Property("sharding-volume", "330"))));
         return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     

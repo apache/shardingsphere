@@ -76,6 +76,21 @@ class ShardingStandardRouteEngineTest {
     }
     
     @Test
+    void assertRouteToAllTablesByNonConditionsUnderRangeAlgorithm() {
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_order",
+                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class), new HintValueContext());
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createVolumeRangeShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(5));
+        for (int i = 0; i < 5; i++) {
+            assertThat(routeUnits.get(i).getDataSourceMapper().getActualName(), is("ds_0"));
+            assertThat(routeUnits.get(i).getTableMappers().size(), is(1));
+            assertThat(routeUnits.get(i).getTableMappers().iterator().next().getActualName(), is("t_order_" + i));
+            assertThat(routeUnits.get(i).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+        }
+    }
+    
+    @Test
     void assertRouteByShardingConditions() {
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_order",
                 ShardingRouteEngineFixtureBuilder.createShardingConditions("t_order"), mock(SQLStatementContext.class), new HintValueContext());
