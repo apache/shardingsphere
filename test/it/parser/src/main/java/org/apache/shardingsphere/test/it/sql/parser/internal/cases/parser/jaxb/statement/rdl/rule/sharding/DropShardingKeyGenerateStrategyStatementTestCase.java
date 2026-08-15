@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Show sharding key generators statement test case.
+ * Drop sharding key generate strategy statement test case.
  */
 @Getter
 @Setter
-public final class ShowShardingKeyGeneratorsStatementTestCase extends DatabaseContainedTestCase {
+public final class DropShardingKeyGenerateStrategyStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute
-    private String name;
+    @XmlElement(name = "name")
+    private final List<String> names = new LinkedList<>();
+    
+    @XmlAttribute(name = "if-exists")
+    private boolean ifExists;
 }

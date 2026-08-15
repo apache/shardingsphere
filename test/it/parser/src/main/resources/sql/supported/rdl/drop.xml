@@ -38,6 +38,8 @@
     <sql-case id="drop-shadow-algorithm-if-exists" value="DROP SHADOW ALGORITHM IF EXISTS shadow_algorithm_1,shadow_algorithm_2" db-types="ShardingSphere" />
     <sql-case id="drop-sharding-key-generator" value="DROP SHARDING KEY GENERATOR uuid_key_generator" db-types="ShardingSphere" />
     <sql-case id="drop-sharding-key-generator-if-exists" value="DROP SHARDING KEY GENERATOR IF EXISTS uuid_key_generator" db-types="ShardingSphere" />
+    <sql-case id="drop-sharding-key-generator-multiple-if-exists" value="DROP SHARDING KEY GENERATOR IF EXISTS snowflake_generator, uuid_generator" db-types="ShardingSphere" />
+    <sql-case id="drop-sharding-key-generate-strategy-if-exists" value="DROP SHARDING KEY GENERATE STRATEGY IF EXISTS order_id_strategy, order_sequence_strategy" db-types="ShardingSphere" />
     <sql-case id="drop-sharding-auditor" value="DROP SHARDING AUDITOR sharding_key_required_auditor" db-types="ShardingSphere" />
     <sql-case id="drop-sharding-auditor-if-exists" value="DROP SHARDING AUDITOR IF EXISTS sharding_key_required_auditor" db-types="ShardingSphere" />
     <sql-case id="drop-default-sharding-strategy" value="DROP DEFAULT SHARDING TABLE STRATEGY" db-types="ShardingSphere" />
