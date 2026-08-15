@@ -51,6 +51,15 @@ public final class JsonUtils {
     }
     
     /**
+     * Create object mapper with ShardingSphere JSON configurations.
+     *
+     * @return object mapper
+     */
+    public static ObjectMapper createObjectMapper() {
+        return MAPPER.copy();
+    }
+    
+    /**
      * Serialize object as json string.
      *
      * @param obj object

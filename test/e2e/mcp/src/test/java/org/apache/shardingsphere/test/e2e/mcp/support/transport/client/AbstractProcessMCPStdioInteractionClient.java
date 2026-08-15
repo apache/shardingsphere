@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
@@ -52,7 +53,7 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     
     private static final String INITIALIZE_REQUEST_ID = "init-1";
     
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = JsonUtils.createObjectMapper();
     
     private final List<String> stdErrorMessages = new CopyOnWriteArrayList<>();
     

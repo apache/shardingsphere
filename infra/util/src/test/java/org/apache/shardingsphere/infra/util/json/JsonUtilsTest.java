@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.infra.util.json;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -25,8 +29,22 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JsonUtilsTest {
+    
+    @Test
+    void assertCreateObjectMapper() {
+        ObjectMapper actual = JsonUtils.createObjectMapper();
+        assertTrue(actual.getRegisteredModuleIds().contains("jackson-datatype-jsr310"));
+        assertTrue(actual.getRegisteredModuleIds().contains("com.fasterxml.jackson.datatype.jdk8.Jdk8Module"));
+        assertFalse(actual.isEnabled(SerializationFeature.FAIL_ON_EMPTY_BEANS));
+        assertFalse(actual.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
+        assertThat(actual.getSerializationConfig().getDefaultPropertyInclusion().getValueInclusion(), is(Include.NON_NULL));
+        actual.enable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        assertThat(JsonUtils.toJsonString(new Object()), is("{}"));
+    }
     
     @Test
     void assertToJsonString() {

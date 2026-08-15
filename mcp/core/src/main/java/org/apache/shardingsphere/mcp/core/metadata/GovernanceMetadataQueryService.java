@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.metadata;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
@@ -37,7 +38,7 @@ import java.util.Objects;
  */
 public final class GovernanceMetadataQueryService {
     
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = JsonUtils.createObjectMapper();
     
     private static final TypeReference<Object> JSON_VALUE_TYPE = new TypeReference<>() {
     };
