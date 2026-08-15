@@ -1336,6 +1336,9 @@
     
     <create-view sql-case-id="create_view_select_with_read_only" view-definition="SELECT cust_last_name, nls_language, credit_limit FROM customers">
         <view name="customer_ro" start-index="12" stop-index="22" />
+        <column name="name" start-index="25" stop-index="28" />
+        <column name="language" start-index="31" stop-index="38" />
+        <column name="credit" start-index="41" stop-index="46" />
         <select>
             <projections start-index="59" stop-index="100">
                 <column-projection name="cust_last_name" start-index="59" stop-index="72" />
@@ -1427,6 +1430,9 @@
     
     <create-view sql-case-id="create_view_define_column_with_select" view-definition="SELECT employee_id, last_name, email FROM employees">
         <view name="emp_sal" start-index="12" stop-index="18" />
+        <column name="emp_id" start-index="21" stop-index="26" />
+        <column name="last_name" start-index="29" stop-index="37" />
+        <column name="email" start-index="40" stop-index="44" />
         <select>
             <projections start-index="151" stop-index="179">
                 <column-projection name="employee_id" start-index="151" stop-index="161" />
