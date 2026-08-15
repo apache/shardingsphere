@@ -17,33 +17,36 @@
 
 package org.apache.shardingsphere.infra.util.json;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.Getter;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JsonUtilsTest {
     
-    @Test
-    void assertCreateObjectMapper() {
-        ObjectMapper actual = JsonUtils.createObjectMapper();
-        assertTrue(actual.getRegisteredModuleIds().contains("jackson-datatype-jsr310"));
-        assertTrue(actual.getRegisteredModuleIds().contains("com.fasterxml.jackson.datatype.jdk8.Jdk8Module"));
-        assertFalse(actual.isEnabled(SerializationFeature.FAIL_ON_EMPTY_BEANS));
-        assertFalse(actual.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
-        assertThat(actual.getSerializationConfig().getDefaultPropertyInclusion().getValueInclusion(), is(Include.NON_NULL));
-        actual.enable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        assertThat(JsonUtils.toJsonString(new Object()), is("{}"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getJsonConfigurationArguments")
+    void assertJsonConfigurations(final String name, final Object value, final String expected) {
+        assertThat(JsonUtils.toJsonString(value), is(expected));
+    }
+    
+    private static Stream<Arguments> getJsonConfigurationArguments() {
+        return Stream.of(
+                Arguments.of("empty beans", new Object(), "{}"),
+                Arguments.of("Java time", Collections.singletonMap("date", LocalDate.of(2025, 4, 9)), "{\"date\":[2025,4,9]}"),
+                Arguments.of("JDK optional", Collections.singletonMap("optional", Optional.of("foo")), "{\"optional\":\"foo\"}"),
+                Arguments.of("null property", Collections.singletonMap("ignored", null), "{}"));
     }
     
     @Test
@@ -52,15 +55,36 @@ class JsonUtilsTest {
     }
     
     @Test
-    void assertFromJsonStringToClass() {
-        assertThat(JsonUtils.fromJsonString("{\"name\":\"foo\"}", JsonConfigurationFixture.class).getName(), is("foo"));
+    void assertToPrettyJsonString() {
+        assertThat(JsonUtils.toPrettyJsonString(Collections.singletonMap("k", "v")), is("{" + System.lineSeparator() + "  \"k\" : \"v\"" + System.lineSeparator() + "}"));
     }
     
     @Test
-    void assertFromJsonStringToTypeReference() {
-        List<JsonConfigurationFixture> actual = JsonUtils.fromJsonString("[{\"name\":\"foo\"}]", new TypeReference<List<JsonConfigurationFixture>>() {
+    void assertFromJsonStringToClass() {
+        assertThat(JsonUtils.fromJsonString("{\"name\":\"foo\",\"ignored\":true}", JsonConfigurationFixture.class).getName(), is("foo"));
+    }
+    
+    @Test
+    void assertFromJsonStringToJsonTypeReference() {
+        List<JsonConfigurationFixture> actual = JsonUtils.fromJsonString("[{\"name\":\"foo\"}]", new JsonTypeReference<List<JsonConfigurationFixture>>() {
         });
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getName(), is("foo"));
+    }
+    
+    @Test
+    void assertFromMalformedJsonString() {
+        assertThrows(JsonException.class, () -> JsonUtils.fromJsonString("{", Object.class));
+    }
+    
+    @Test
+    void assertSerializeCyclicObject() {
+        assertThrows(JsonException.class, () -> JsonUtils.toJsonString(new CyclicFixture()));
+    }
+    
+    @Getter
+    private static final class CyclicFixture {
+        
+        private final CyclicFixture value = this;
     }
 }

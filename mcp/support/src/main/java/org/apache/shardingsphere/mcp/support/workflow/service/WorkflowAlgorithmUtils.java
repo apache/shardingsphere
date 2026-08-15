@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.json.JsonException;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
@@ -45,7 +45,7 @@ public final class WorkflowAlgorithmUtils {
     
     private static final String ALGORITHM_TYPE_KEY = "type";
     
-    private static final TypeReference<Map<?, ?>> JSON_PROPERTY_MAP_TYPE = new TypeReference<>() {
+    private static final JsonTypeReference<Map<?, ?>> JSON_PROPERTY_MAP_TYPE = new JsonTypeReference<Map<?, ?>>() {
     };
     
     /**
@@ -179,14 +179,14 @@ public final class WorkflowAlgorithmUtils {
             }
             try {
                 return parseJSONPropertyString(actualValue);
-            } catch (final JsonProcessingException ignored) {
+            } catch (final JsonException ignored) {
                 return Map.of();
             }
         }
         return parseLegacyPropertyString(actualValue);
     }
     
-    private static Map<String, String> parseJSONPropertyString(final String value) throws JsonProcessingException {
+    private static Map<String, String> parseJSONPropertyString(final String value) {
         return createPropertyMap(JsonUtils.fromJsonString(value, JSON_PROPERTY_MAP_TYPE));
     }
     

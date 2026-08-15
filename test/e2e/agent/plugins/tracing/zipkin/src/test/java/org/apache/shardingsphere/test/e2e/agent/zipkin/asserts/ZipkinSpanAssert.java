@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin.asserts;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.agent.engine.util.AgentE2EHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.response.ZipkinSpanResponse;
@@ -75,7 +75,7 @@ public final class ZipkinSpanAssert {
     
     @SneakyThrows(IOException.class)
     private static Collection<ZipkinSpanResponse> queryTraceResponses(final ZipkinE2ETestCase expected, final String url) {
-        List<List<ZipkinSpanResponse>> result = JsonUtils.fromJsonString(AgentE2EHttpUtils.query(url), new TypeReference<List<List<ZipkinSpanResponse>>>() {
+        List<List<ZipkinSpanResponse>> result = JsonUtils.fromJsonString(AgentE2EHttpUtils.query(url), new JsonTypeReference<List<List<ZipkinSpanResponse>>>() {
         });
         return result.stream().findFirst().orElse(Collections.emptyList()).stream().filter(each -> expected.getSpanName().equalsIgnoreCase(each.getName())).collect(Collectors.toList());
     }

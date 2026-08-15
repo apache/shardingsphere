@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.type;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
@@ -35,6 +32,7 @@ import java.net.URLConnection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -43,8 +41,6 @@ import java.util.stream.Collectors;
 public final class GitHubTestParameterLoadStrategy implements ExternalTestParameterLoadStrategy {
     
     private static final String TOKEN_KEY = "it.github.token";
-    
-    private static final ObjectMapper JSON_MAPPER = JsonUtils.createObjectMapper();
     
     @Override
     public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {
@@ -55,21 +51,16 @@ public final class GitHubTestParameterLoadStrategy implements ExternalTestParame
         if (content.isEmpty()) {
             return Collections.emptyList();
         }
-        JsonNode rootNode = parseContent(content);
-        return rootNode.isArray() ? getFileSummariesByArray(rootNode) : getFileSummaries(rootNode);
+        Object rootNode = JsonUtils.fromJsonString(content, Object.class);
+        return rootNode instanceof Collection ? getFileSummariesByArray((Collection<?>) rootNode) : getFileSummaries((Map<?, ?>) rootNode);
     }
     
-    @SneakyThrows(JsonProcessingException.class)
-    private JsonNode parseContent(final String content) {
-        return JSON_MAPPER.readTree(content);
-    }
-    
-    private Collection<FileSummary> getFileSummaries(final JsonNode rootNode) {
+    private Collection<FileSummary> getFileSummaries(final Map<?, ?> rootNode) {
         Collection<FileSummary> result = new LinkedList<>();
-        String fileName = rootNode.get("name").textValue();
-        String folderType = rootNode.get("type").textValue();
-        String downloadURL = rootNode.get("download_url").textValue();
-        String htmlURL = rootNode.get("html_url").textValue();
+        String fileName = (String) rootNode.get("name");
+        String folderType = (String) rootNode.get("type");
+        String downloadURL = (String) rootNode.get("download_url");
+        String htmlURL = (String) rootNode.get("html_url");
         if ("file".equals(folderType)) {
             result.add(new FileSummary(fileName, downloadURL));
         } else if ("dir".equals(folderType)) {
@@ -78,10 +69,10 @@ public final class GitHubTestParameterLoadStrategy implements ExternalTestParame
         return result;
     }
     
-    private Collection<FileSummary> getFileSummariesByArray(final JsonNode rootNode) {
+    private Collection<FileSummary> getFileSummariesByArray(final Collection<?> rootNode) {
         Collection<FileSummary> result = new LinkedList<>();
-        for (JsonNode each : rootNode) {
-            result.addAll(getFileSummaries(each));
+        for (Object each : rootNode) {
+            result.addAll(getFileSummaries((Map<?, ?>) each));
         }
         return result;
     }

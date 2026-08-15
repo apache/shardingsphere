@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.mcp.registry;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,8 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPRegistryMetadataCommandTest {
-    
-    private static final ObjectMapper JSON_MAPPER = JsonUtils.createObjectMapper();
     
     private static final String REGISTRY_SCHEMA_URL = "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json";
     
@@ -239,7 +236,7 @@ class MCPRegistryMetadataCommandTest {
     
     private Path createServerJson(final Map<String, Object> server) throws IOException {
         Path result = tempDir.resolve("server.json");
-        Files.writeString(result, JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(server));
+        Files.writeString(result, JsonUtils.toPrettyJsonString(server));
         return result;
     }
     
@@ -281,7 +278,7 @@ class MCPRegistryMetadataCommandTest {
     }
     
     private Map<String, Object> readServerJson(final Path serverPath) throws IOException {
-        return JSON_MAPPER.readValue(serverPath.toFile(), new TypeReference<>() {
+        return JsonUtils.fromJsonString(Files.readString(serverPath), new JsonTypeReference<Map<String, Object>>() {
         });
     }
     

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 
@@ -233,7 +233,7 @@ public final class LLMChatModelClient {
     
     private Map<String, Object> parseJsonObject(final String responseBody, final String errorMessage) {
         try {
-            return JsonUtils.fromJsonString(responseBody, new TypeReference<>() {
+            return JsonUtils.fromJsonString(responseBody, new JsonTypeReference<Map<String, Object>>() {
             });
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
