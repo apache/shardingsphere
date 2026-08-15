@@ -164,18 +164,18 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private void prepareJDBCExecutionUnit(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
-        PreparedStatement preparedStatement = (PreparedStatement) jdbcExecutionUnit.getStorageResource();
+        PreparedStatement actualPreparedStatement = (PreparedStatement) jdbcExecutionUnit.getStorageResource();
         for (List<Object> eachGroupParam : executionUnitParams.getOrDefault(jdbcExecutionUnit.getExecutionUnit(), Collections.emptyList())) {
             ListIterator<Object> params = eachGroupParam.listIterator();
             while (params.hasNext()) {
                 int paramIndex = params.nextIndex() + 1;
                 Object value = params.next();
-                if (value instanceof PostgreSQLTypeUnspecifiedSQLParameter) {
-                    value = value.toString();
+                if (value instanceof PostgreSQLTypeUnspecifiedSQLParameter && this.preparedStatement.getParameterTypeStates().get(paramIndex - 1).isResolved()) {
+                    value = this.preparedStatement.getParameterTypeStates().get(paramIndex - 1).decode(value.toString());
                 }
-                preparedStatement.setObject(paramIndex, value);
+                actualPreparedStatement.setObject(paramIndex, value);
             }
-            preparedStatement.addBatch();
+            actualPreparedStatement.addBatch();
         }
     }
     

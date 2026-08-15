@@ -48,6 +48,8 @@ public final class PostgreSQLServerPreparedStatement implements ServerPreparedSt
     
     private final List<PostgreSQLBinaryColumnType> parameterTypes;
     
+    private final List<PostgreSQLPreparedStatementParameterType> parameterTypeStates = new ArrayList<>();
+    
     private final List<Integer> actualParameterMarkerIndexes;
     
     @Getter(AccessLevel.NONE)
@@ -59,7 +61,7 @@ public final class PostgreSQLServerPreparedStatement implements ServerPreparedSt
      * @return packet of parameter descriptions
      */
     public PostgreSQLParameterDescriptionPacket describeParameters() {
-        return new PostgreSQLParameterDescriptionPacket(parameterTypes);
+        return new PostgreSQLParameterDescriptionPacket(getParameterTypeOIDs());
     }
     
     /**
@@ -69,6 +71,53 @@ public final class PostgreSQLServerPreparedStatement implements ServerPreparedSt
      */
     public Optional<PostgreSQLPacket> describeRows() {
         return Optional.ofNullable(rowDescription);
+    }
+    
+    /**
+     * Get parameter type states.
+     *
+     * @return parameter type states
+     */
+    public List<PostgreSQLPreparedStatementParameterType> getParameterTypeStates() {
+        if (parameterTypeStates.isEmpty()) {
+            for (PostgreSQLBinaryColumnType each : parameterTypes) {
+                parameterTypeStates.add(PostgreSQLPreparedStatementParameterType.valueOf(each));
+            }
+        }
+        return parameterTypeStates;
+    }
+    
+    /**
+     * Set parameter type state.
+     *
+     * @param paramIndex parameter index
+     * @param parameterType parameter type state
+     */
+    public void setParameterType(final int paramIndex, final PostgreSQLPreparedStatementParameterType parameterType) {
+        getParameterTypeStates().set(paramIndex, parameterType);
+        parameterTypes.set(paramIndex, parameterType.getProtocolType());
+    }
+    
+    /**
+     * Check whether all parameter types are resolved.
+     *
+     * @return whether all parameter types are resolved
+     */
+    public boolean isParameterTypesResolved() {
+        for (PostgreSQLPreparedStatementParameterType each : getParameterTypeStates()) {
+            if (!each.isResolved()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private List<Integer> getParameterTypeOIDs() {
+        List<Integer> result = new ArrayList<>(getParameterTypeStates().size());
+        for (PostgreSQLPreparedStatementParameterType each : getParameterTypeStates()) {
+            result.add(each.getWireOID());
+        }
+        return result;
     }
     
     /**

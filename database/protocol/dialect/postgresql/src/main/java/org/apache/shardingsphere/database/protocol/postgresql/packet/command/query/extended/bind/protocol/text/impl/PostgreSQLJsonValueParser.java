@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.postgresql.util.PGobject;
@@ -26,13 +27,20 @@ import java.sql.SQLException;
 /**
  * Json value parser of PostgreSQL.
  */
+@RequiredArgsConstructor
 public final class PostgreSQLJsonValueParser implements PostgreSQLTextValueParser<PGobject> {
+    
+    private final String type;
+    
+    public PostgreSQLJsonValueParser() {
+        type = "json";
+    }
     
     @Override
     public PGobject parse(final String value) {
         try {
             PGobject result = new PGobject();
-            result.setType("json");
+            result.setType(type);
             result.setValue(value);
             return result;
         } catch (final SQLException ex) {

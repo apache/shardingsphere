@@ -158,7 +158,7 @@ class PortalTest {
         PostgreSQLColumnDescription binaryColumnDescription = columnDescriptionIterator.next();
         assertThat(textColumnDescription.getTypeOID(), is(2249));
         assertThat(textColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.TEXT.getCode()));
-        assertThat(binaryColumnDescription.getTypeOID(), is(PostgreSQLBinaryColumnType.VARCHAR.getValue()));
+        assertThat(binaryColumnDescription.getTypeOID(), is(PostgreSQLBinaryColumnType.UNSPECIFIED.getValue()));
         assertThat(binaryColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.BINARY.getCode()));
         List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));

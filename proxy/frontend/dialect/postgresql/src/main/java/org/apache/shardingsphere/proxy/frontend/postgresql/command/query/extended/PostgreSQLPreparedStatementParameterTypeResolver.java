@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
+import org.apache.shardingsphere.database.protocol.postgresql.type.PostgreSQLColumnTypeOIDResolver;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -67,7 +67,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
      * @param parameters parameters
      */
     public static void resolveParameterTypes(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> parameters) {
-        if (!hasUnspecifiedParameterTypes(preparedStatement)) {
+        if (isParameterTypesResolved(preparedStatement)) {
             return;
         }
         if (tryResolveFromBoundAST(connectionSession, preparedStatement)) {
@@ -84,13 +84,13 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
      * @throws SQLException SQL exception
      */
     public static void resolveParameterTypes(final PostgreSQLServerPreparedStatement preparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
-        if (!hasUnspecifiedParameterTypes(preparedStatement)) {
+        if (isParameterTypesResolved(preparedStatement)) {
             return;
         }
         ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
         int paramCount = preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount();
         for (int i = 0; i < paramCount; i++) {
-            if (PostgreSQLBinaryColumnType.UNSPECIFIED == preparedStatement.getParameterTypes().get(i)) {
+            if (!preparedStatement.getParameterTypeStates().get(i).isResolved()) {
                 int paramIndex = i + 1;
                 int jdbcType = Types.OTHER;
                 String parameterTypeName = null;
@@ -101,7 +101,8 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
                     log.debug("Failed to resolve parameter type via JDBC metadata for index {}", paramIndex, ex);
                 }
                 if (null != parameterTypeName && !parameterTypeName.trim().isEmpty() && !"unknown".equalsIgnoreCase(parameterTypeName)) {
-                    preparedStatement.getParameterTypes().set(i, PostgreSQLBinaryColumnType.valueOfJDBCType(jdbcType, parameterTypeName));
+                    preparedStatement.setParameterType(i, PostgreSQLPreparedStatementParameterType.valueOf(jdbcType, parameterTypeName,
+                            new PostgreSQLColumnTypeOIDResolver().findTypeOID(actualPreparedStatement.getConnection(), parameterTypeName).orElse(null)));
                 }
             }
         }
@@ -122,12 +123,6 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaData()
                 .getDatabase(connectionSession.getUsedDatabaseName());
-        TablesContext tablesContext = sqlStatementContext.getTablesContext();
-        String schemaName = null == tablesContext ? database.getDefaultSchemaName() : tablesContext.getSchemaName().orElse(database.getDefaultSchemaName());
-        if (null == schemaName || !database.containsSchema(schemaName)) {
-            return false;
-        }
-        ShardingSphereSchema schema = database.getSchema(schemaName);
         boolean anyResolved = false;
         for (ParameterMarkerSegment marker : sqlStatementContext.getSqlStatement().getParameterMarkers()) {
             if (!(marker instanceof ParameterMarkerExpressionSegment)) {
@@ -142,9 +137,18 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             if (paramIndex >= preparedStatement.getParameterTypes().size()) {
                 continue;
             }
-            if (PostgreSQLBinaryColumnType.UNSPECIFIED != preparedStatement.getParameterTypes().get(paramIndex)) {
+            if (preparedStatement.getParameterTypeStates().get(paramIndex).isResolved()) {
                 continue;
             }
+            
+            if (isIncompleteBoundInfo(boundInfo)) {
+                continue;
+            }
+            String originalDatabaseName = boundInfo.getOriginalDatabase().getValue();
+            if (!connectionSession.getUsedDatabaseName().equalsIgnoreCase(originalDatabaseName) || !database.containsSchema(boundInfo.getOriginalSchema().getValue())) {
+                continue;
+            }
+            ShardingSphereSchema schema = database.getSchema(boundInfo.getOriginalSchema().getValue());
             String tableName = boundInfo.getOriginalTable().getValue();
             String columnName = boundInfo.getOriginalColumn().getValue();
             if (null == tableName || tableName.isEmpty() || null == columnName || columnName.isEmpty()) {
@@ -158,10 +162,29 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             if (null == column) {
                 continue;
             }
-            preparedStatement.getParameterTypes().set(paramIndex, PostgreSQLBinaryColumnType.valueOfJDBCType(column.getDataType(), column.getTypeName()));
+            
+            PostgreSQLPreparedStatementParameterType parameterType = PostgreSQLPreparedStatementParameterType.valueOf(column.getDataType(), column.getTypeName(), null);
+            if (!parameterType.isResolved()) {
+                continue;
+            }
+            preparedStatement.setParameterType(paramIndex, parameterType);
             anyResolved = true;
         }
-        return anyResolved && !hasUnspecifiedParameterTypes(preparedStatement);
+        return anyResolved && preparedStatement.isParameterTypesResolved();
+    }
+    
+    /**
+     * Check if column segment bound info contains incomplete target column metadata.
+     *
+     * @param boundInfo column segment bound info
+     * @return true if incomplete
+     */
+    public static boolean isIncompleteBoundInfo(final ColumnSegmentBoundInfo boundInfo) {
+        return null == boundInfo
+                || null == boundInfo.getOriginalDatabase() || null == boundInfo.getOriginalDatabase().getValue() || boundInfo.getOriginalDatabase().getValue().isEmpty()
+                || null == boundInfo.getOriginalSchema() || null == boundInfo.getOriginalSchema().getValue() || boundInfo.getOriginalSchema().getValue().isEmpty()
+                || null == boundInfo.getOriginalTable() || null == boundInfo.getOriginalTable().getValue() || boundInfo.getOriginalTable().getValue().isEmpty()
+                || null == boundInfo.getOriginalColumn() || null == boundInfo.getOriginalColumn().getValue() || boundInfo.getOriginalColumn().getValue().isEmpty();
     }
     
     private static void tryResolveFromJDBCMetadata(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> parameters) {
@@ -172,8 +195,23 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         }
     }
     
-    private static boolean hasUnspecifiedParameterTypes(final PostgreSQLServerPreparedStatement preparedStatement) {
-        return 0 != preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount()
-                && preparedStatement.getParameterTypes().stream().anyMatch(each -> PostgreSQLBinaryColumnType.UNSPECIFIED == each);
+    private static boolean isParameterTypesResolved(final PostgreSQLServerPreparedStatement preparedStatement) {
+        return 0 == preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount()
+                || preparedStatement.isParameterTypesResolved();
+    }
+    
+    /**
+     * Decode resolved text parameters for a prepared statement.
+     *
+     * @param preparedStatement prepared statement
+     * @param parameters parameters
+     */
+    public static void decodeResolvedTextParameters(final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> parameters) {
+        for (int i = 0; i < parameters.size(); i++) {
+            Object value = parameters.get(i);
+            if (value instanceof PostgreSQLTypeUnspecifiedSQLParameter && preparedStatement.getParameterTypeStates().get(i).isResolved()) {
+                parameters.set(i, preparedStatement.getParameterTypeStates().get(i).decode(value.toString()));
+            }
+        }
     }
 }

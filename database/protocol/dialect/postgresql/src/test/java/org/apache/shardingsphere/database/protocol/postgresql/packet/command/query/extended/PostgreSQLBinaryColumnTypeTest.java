@@ -94,10 +94,10 @@ class PostgreSQLBinaryColumnTypeTest {
                 Arguments.of("date", Types.DATE, PostgreSQLBinaryColumnType.DATE),
                 Arguments.of("time", Types.TIME, PostgreSQLBinaryColumnType.TIME),
                 Arguments.of("timestamp", Types.TIMESTAMP, PostgreSQLBinaryColumnType.TIMESTAMP),
-                Arguments.of("other", Types.OTHER, PostgreSQLBinaryColumnType.VARCHAR),
+                Arguments.of("other", Types.OTHER, PostgreSQLBinaryColumnType.UNSPECIFIED),
                 Arguments.of("sqlxml", Types.SQLXML, PostgreSQLBinaryColumnType.XML),
                 Arguments.of("boolean", Types.BOOLEAN, PostgreSQLBinaryColumnType.BOOL),
-                Arguments.of("struct", Types.STRUCT, PostgreSQLBinaryColumnType.VARCHAR),
+                Arguments.of("struct", Types.STRUCT, PostgreSQLBinaryColumnType.UNSPECIFIED),
                 Arguments.of("array", Types.ARRAY, PostgreSQLBinaryColumnType.TEXT_ARRAY));
     }
     
@@ -109,9 +109,9 @@ class PostgreSQLBinaryColumnTypeTest {
                 Arguments.of("fallback to jdbc type map", Types.INTEGER, "INT4", PostgreSQLBinaryColumnType.INT4),
                 Arguments.of("json type", Types.OTHER, "json", PostgreSQLBinaryColumnType.JSON),
                 Arguments.of("jsonb type", Types.OTHER, "jsonb", PostgreSQLBinaryColumnType.JSONB),
-                Arguments.of("custom enum type", Types.OTHER, "my_enum", PostgreSQLBinaryColumnType.VARCHAR),
-                Arguments.of("custom domain type", Types.OTHER, "my_domain", PostgreSQLBinaryColumnType.VARCHAR),
-                Arguments.of("custom range type", Types.OTHER, "my_range", PostgreSQLBinaryColumnType.VARCHAR));
+                Arguments.of("custom enum type", Types.OTHER, "my_enum", PostgreSQLBinaryColumnType.UNSPECIFIED),
+                Arguments.of("custom domain type", Types.OTHER, "my_domain", PostgreSQLBinaryColumnType.UNSPECIFIED),
+                Arguments.of("custom range type", Types.OTHER, "my_range", PostgreSQLBinaryColumnType.UNSPECIFIED));
     }
     
     private static Stream<Arguments> assertIsBitArguments() {

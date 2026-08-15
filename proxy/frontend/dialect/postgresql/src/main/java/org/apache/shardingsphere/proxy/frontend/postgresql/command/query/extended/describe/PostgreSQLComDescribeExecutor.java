@@ -20,12 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
-import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDLoader;
+import org.apache.shardingsphere.database.protocol.postgresql.type.PostgreSQLColumnTypeOIDResolver;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -44,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -58,6 +61,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -100,42 +104,32 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private void tryDescribePreparedStatement(final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
         PostgreSQLPreparedStatementParameterTypeResolver.tryResolveFromBoundAST(connectionSession, preparedStatement);
         SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
-        if (sqlStatement instanceof InsertStatement) {
-            describeInsertStatementByDatabaseMetaData(preparedStatement, (InsertStatement) sqlStatement);
-        } else if (sqlStatement instanceof UpdateStatement) {
-            describeUpdateStatementByDatabaseMetaData(preparedStatement, (UpdateStatement) sqlStatement);
-        } else if (sqlStatement instanceof DeleteStatement) {
-            describeDeleteStatementByDatabaseMetaData(preparedStatement, (DeleteStatement) sqlStatement);
-        } else {
-            tryDescribePreparedStatementByJDBC(preparedStatement);
+        if (sqlStatement instanceof InsertStatement && describeDMLStatementByDatabaseMetaData(preparedStatement, ((InsertStatement) sqlStatement).getReturning().orElse(null))) {
+            return;
         }
+        if (sqlStatement instanceof UpdateStatement && describeDMLStatementByDatabaseMetaData(preparedStatement, ((UpdateStatement) sqlStatement).getReturning().orElse(null))) {
+            return;
+        }
+        if (sqlStatement instanceof DeleteStatement && describeDMLStatementByDatabaseMetaData(preparedStatement, ((DeleteStatement) sqlStatement).getReturning().orElse(null))) {
+            return;
+        }
+        tryDescribePreparedStatementByJDBC(preparedStatement);
     }
     
-    private void describeInsertStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement, final InsertStatement insertStatement) {
-        Optional<ReturningSegment> returningSegment = insertStatement.getReturning();
-        if (returningSegment.isPresent()) {
-            preparedStatement.setRowDescription(describeReturning(preparedStatement, returningSegment.get()));
+    private boolean describeDMLStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement, final ReturningSegment returningSegment) {
+        if (!preparedStatement.isParameterTypesResolved()) {
+            return false;
+        }
+        if (null != returningSegment) {
+            Optional<PostgreSQLRowDescriptionPacket> rowDescription = describeReturning(returningSegment);
+            if (!rowDescription.isPresent()) {
+                return false;
+            }
+            preparedStatement.setRowDescription(rowDescription.get());
         } else {
             preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
         }
-    }
-    
-    private void describeUpdateStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement, final UpdateStatement updateStatement) {
-        Optional<ReturningSegment> returningSegment = updateStatement.getReturning();
-        if (returningSegment.isPresent()) {
-            preparedStatement.setRowDescription(describeReturning(preparedStatement, returningSegment.get()));
-        } else {
-            preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
-        }
-    }
-    
-    private void describeDeleteStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement, final DeleteStatement deleteStatement) {
-        Optional<ReturningSegment> returningSegment = deleteStatement.getReturning();
-        if (returningSegment.isPresent()) {
-            preparedStatement.setRowDescription(describeReturning(preparedStatement, returningSegment.get()));
-        } else {
-            preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
-        }
+        return true;
     }
     
     private ShardingSphereTable getTableFromMetaData(final String databaseName, final String schemaName, final String logicTableName) {
@@ -144,55 +138,56 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         return database.getSchema(actualSchemaName).getTable(logicTableName);
     }
     
-    private PostgreSQLRowDescriptionPacket describeReturning(final PostgreSQLServerPreparedStatement preparedStatement, final ReturningSegment returningSegment) {
-        TablesContext tablesContext = preparedStatement.getSqlStatementContext().getTablesContext();
-        Collection<String> tableNames = null == tablesContext ? Collections.emptyList() : tablesContext.getTableNames();
-        String logicTableName = tableNames.isEmpty() ? "" : tableNames.iterator().next();
-        String schemaName = null == tablesContext ? null : tablesContext.getSchemaName().orElse(null);
-        ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), schemaName, logicTableName);
+    private Optional<PostgreSQLRowDescriptionPacket> describeReturning(final ReturningSegment returningSegment) {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
-                table.getAllColumns().stream()
-                        .map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), "")).forEach(result::add);
+                return Optional.empty();
             }
             if (each instanceof ColumnProjectionSegment) {
                 ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
-                String columnName = segment.getColumn().getIdentifier().getValue();
-                ShardingSphereColumn column = table.containsColumn(columnName) ? table.getColumn(columnName) : generateDefaultColumn(segment);
+                ColumnSegmentBoundInfo boundInfo = segment.getColumn().getColumnBoundInfo();
+                if (!PostgreSQLPreparedStatementParameterTypeResolver.isIncompleteBoundInfo(boundInfo)) {
+                    return Optional.empty();
+                }
+                ShardingSphereTable table = getTableFromMetaData(boundInfo.getOriginalDatabase().getValue(), boundInfo.getOriginalSchema().getValue(), boundInfo.getOriginalTable().getValue());
+                if (null == table || !table.containsColumn(boundInfo.getOriginalColumn().getValue())) {
+                    return Optional.empty();
+                }
+                ShardingSphereColumn column = table.getColumn(boundInfo.getOriginalColumn().getValue());
                 String alias = segment.getAliasName().orElseGet(column::getName);
-                result.add(new PostgreSQLColumnDescription(alias, 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""));
+                result.add(new PostgreSQLColumnDescription(alias, 0, column.getDataType(), estimateColumnLength(column.getDataType()), column.getTypeName()));
             }
             if (each instanceof ExpressionProjectionSegment) {
-                result.add(convertExpressionToDescription((ExpressionProjectionSegment) each));
+                Optional<PostgreSQLColumnDescription> columnDescription = convertExpressionToDescription((ExpressionProjectionSegment) each);
+                if (!columnDescription.isPresent()) {
+                    return Optional.empty();
+                }
+                result.add(columnDescription.get());
             }
         }
-        return new PostgreSQLRowDescriptionPacket(result);
+        return Optional.of(new PostgreSQLRowDescriptionPacket(result));
     }
     
-    private ShardingSphereColumn generateDefaultColumn(final ColumnProjectionSegment segment) {
-        return new ShardingSphereColumn(segment.getColumn().getIdentifier().getValue(), Types.VARCHAR, false, false, false, true, false, false);
-    }
-    
-    private PostgreSQLColumnDescription convertExpressionToDescription(final ExpressionProjectionSegment expressionProjectionSegment) {
+    private Optional<PostgreSQLColumnDescription> convertExpressionToDescription(final ExpressionProjectionSegment expressionProjectionSegment) {
         ExpressionSegment expressionSegment = expressionProjectionSegment.getExpr();
         String columnName = expressionProjectionSegment.getAliasName().orElse(ANONYMOUS_COLUMN_NAME);
         if (expressionSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) expressionSegment).getLiterals();
             if (value instanceof String) {
-                return new PostgreSQLColumnDescription(columnName, 0, Types.VARCHAR, estimateColumnLength(Types.VARCHAR), "");
+                return Optional.of(new PostgreSQLColumnDescription(columnName, 0, Types.VARCHAR, estimateColumnLength(Types.VARCHAR), ""));
             }
             if (value instanceof Integer) {
-                return new PostgreSQLColumnDescription(columnName, 0, Types.INTEGER, estimateColumnLength(Types.INTEGER), "");
+                return Optional.of(new PostgreSQLColumnDescription(columnName, 0, Types.INTEGER, estimateColumnLength(Types.INTEGER), ""));
             }
             if (value instanceof Long) {
-                return new PostgreSQLColumnDescription(columnName, 0, Types.BIGINT, estimateColumnLength(Types.BIGINT), "");
+                return Optional.of(new PostgreSQLColumnDescription(columnName, 0, Types.BIGINT, estimateColumnLength(Types.BIGINT), ""));
             }
             if (value instanceof Number) {
-                return new PostgreSQLColumnDescription(columnName, 0, Types.NUMERIC, estimateColumnLength(Types.NUMERIC), "");
+                return Optional.of(new PostgreSQLColumnDescription(columnName, 0, Types.NUMERIC, estimateColumnLength(Types.NUMERIC), ""));
             }
         }
-        return new PostgreSQLColumnDescription(columnName, 0, Types.VARCHAR, estimateColumnLength(Types.VARCHAR), "");
+        return Optional.empty();
     }
     
     private int estimateColumnLength(final int jdbcType) {
@@ -224,13 +219,16 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             logicPreparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
             return;
         }
+        Map<Integer, Integer> typeOIDs = ColumnTypeOIDLoader.load(actualPreparedStatement.getConnection(), resultSetMetaData, new PostgreSQLColumnTypeOIDResolver());
         List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(resultSetMetaData.getColumnCount());
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
             String columnName = resultSetMetaData.getColumnName(columnIndex);
             int columnType = resultSetMetaData.getColumnType(columnIndex);
             int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
             String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
-            columnDescriptions.add(new PostgreSQLColumnDescription(columnName, columnIndex, columnType, columnLength, columnTypeName));
+            columnDescriptions.add(typeOIDs.containsKey(columnIndex)
+                    ? new PostgreSQLColumnDescription(columnName, columnIndex, typeOIDs.get(columnIndex), columnLength, PostgreSQLValueFormat.TEXT.getCode())
+                    : new PostgreSQLColumnDescription(columnName, columnIndex, columnType, columnLength, columnTypeName));
         }
         logicPreparedStatement.setRowDescription(new PostgreSQLRowDescriptionPacket(columnDescriptions));
     }

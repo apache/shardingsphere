@@ -51,9 +51,11 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = getPreparedStatement();
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
         List<List<Object>> parameterSets = readParameterSets(preparedStatement.getParameterTypes());
         List<Object> sampleParameters = parameterSets.isEmpty() ? Collections.emptyList() : parameterSets.iterator().next();
         PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement, sampleParameters);
+        decodeResolvedTextParameters(preparedStatement, parameterSets);
         PostgreSQLBatchedStatementsExecutor executor = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, parameterSets);
         Collection<DatabasePacket> result = new ArrayList<>(packets.size());
         int totalInserted = executor.executeBatch();
@@ -86,6 +88,12 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
             }
         }
         return result;
+    }
+    
+    private void decodeResolvedTextParameters(final PostgreSQLServerPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+        for (List<Object> each : parameterSets) {
+            PostgreSQLPreparedStatementParameterTypeResolver.decodeResolvedTextParameters(preparedStatement, each);
+        }
     }
     
     private int executePacketCount() {
