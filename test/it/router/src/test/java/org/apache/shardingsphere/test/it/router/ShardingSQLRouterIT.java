@@ -73,6 +73,8 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -122,6 +124,23 @@ class ShardingSQLRouterIT {
                 Arguments.of("subqueryForBinding",
                         "SELECT count(*) FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE user_id =?) ", Collections.singletonList(1),
                         createRouteUnits("ds_1:t_order_item=t_order_item_1"), createOriginalDataNodes("ds_1.t_order_item_1")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSmokeTestArguments")
+    void assertRouteWithoutException(final String name, final String sql, final List<Object> params) {
+        RouteContext actual = assertDoesNotThrow(() -> route(sql, params));
+        assertFalse(actual.getRouteUnits().isEmpty());
+    }
+    
+    private static Stream<Arguments> getSmokeTestArguments() {
+        return Stream.of(
+                Arguments.of("bindingTableWithDifferentValueWithFederation",
+                        "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id = ? ) FROM t_order a WHERE user_id = ? ", Arrays.asList(2, 3)),
+                Arguments.of("twoTableWithDifferentOperatorWithFederation",
+                        "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id in(?,?)) FROM t_order a WHERE user_id = ? ", Arrays.asList(1, 2, 1)),
+                Arguments.of("twoTableWithInWithFederation",
+                        "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id in(?,?)) FROM t_order a WHERE user_id in(?,?) ", Arrays.asList(1, 2, 1, 3)));
     }
     
     @Test
