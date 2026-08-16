@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
@@ -53,7 +54,7 @@ public final class DorisAlterRoutineLoadStatementAssert {
     
     private static void assertJobName(final SQLCaseAssertContext assertContext, final DorisAlterRoutineLoadStatement actual, final DorisAlterRoutineLoadStatementTestCase expected) {
         if (actual.getJobName().isPresent()) {
-            MatcherAssert.assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), CoreMatchers.is(expected.getJobName()));
+            MatcherAssert.assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), is(expected.getJobName()));
             if (null != expected.getOwner()) {
                 OwnerAssert.assertIs(assertContext, actual.getJobName().get().getOwner().orElse(null), expected.getOwner());
             }
@@ -73,7 +74,7 @@ public final class DorisAlterRoutineLoadStatementAssert {
     
     private static void assertDataSource(final SQLCaseAssertContext assertContext, final DorisAlterRoutineLoadStatement actual, final DorisAlterRoutineLoadStatementTestCase expected) {
         if (null != expected.getDataSource()) {
-            MatcherAssert.assertThat(assertContext.getText("Data source does not match: "), actual.getDataSource().orElse(null), CoreMatchers.is(expected.getDataSource()));
+            MatcherAssert.assertThat(assertContext.getText("Data source does not match: "), actual.getDataSource().orElse(null), is(expected.getDataSource()));
         }
     }
     
@@ -89,8 +90,8 @@ public final class DorisAlterRoutineLoadStatementAssert {
     }
     
     private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final PropertyTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), CoreMatchers.is(expected.getKey()));
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), CoreMatchers.is(expected.getValue()));
+        MatcherAssert.assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        MatcherAssert.assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

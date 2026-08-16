@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.protocol.opengauss.constant.OpenGaussP
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -30,6 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -56,7 +56,7 @@ class OpenGaussAuthenticationSCRAMSha256PacketTest {
     @Test
     void assertGetIdentifier() {
         OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(OpenGaussProtocolVersion.PROTOCOL_350.getVersion(), 2048, authHexData, "");
-        assertThat(packet.getIdentifier(), CoreMatchers.is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
     }
     
     private static Stream<Arguments> writeCases() {
