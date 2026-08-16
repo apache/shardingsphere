@@ -449,6 +449,19 @@ not expand scope or rewrite unrelated existing code.
   resource lifecycle, concurrency, and boundary failures when the affected
   path makes them relevant.
 
+### Documentation Wording
+
+Apply this section whenever creating or revising documentation, Skills, prompts, comments, configuration descriptions, or other prose.
+
+- Identify the core rule, fact, or action first, then state it directly.
+- Do not enumerate multiple concrete actions or manifestations when one established term expresses the same requirement.
+- Merge adjacent statements that express the same rule or where one statement fully includes another.
+- Keep an exception only when a real allowed case has been verified and state its exact boundary. Do not add speculative or overly broad exceptions.
+- Keep examples only when they add an independent decision condition or materially help execution. Otherwise remove them or separate them from the rule.
+- Simplification must preserve the original scope, obligation strength, valid exceptions, and verification requirements.
+- Do not shorten mechanically or replace precise technical language with casual wording. The result must be understandable without requiring the reader to infer the underlying rule.
+- Before handoff, review every changed prose statement against these requirements.
+
 ## Test Rules
 
 - Test behavior owned by the production class: computation, decisions,

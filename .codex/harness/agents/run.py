@@ -133,6 +133,7 @@ REASONS = [
     "production_behavior_test_required",
     "production_test_class_name_required",
     "aligned_code_correctness_review_required",
+    "documentation_wording_required",
 ]
 MAX_EVALUATIONS = 2
 
