@@ -33,12 +33,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class JsonUtilsTest {
+class JsonEngineTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getJsonConfigurationArguments")
     void assertJsonConfigurations(final String name, final Object value, final String expected) {
-        assertThat(JsonUtils.toJsonString(value), is(expected));
+        assertThat(JsonEngine.toJsonString(value), is(expected));
     }
     
     private static Stream<Arguments> getJsonConfigurationArguments() {
@@ -51,22 +51,22 @@ class JsonUtilsTest {
     
     @Test
     void assertToJsonString() {
-        assertThat(JsonUtils.toJsonString(Collections.singletonMap("k", "v")), is("{\"k\":\"v\"}"));
+        assertThat(JsonEngine.toJsonString(Collections.singletonMap("k", "v")), is("{\"k\":\"v\"}"));
     }
     
     @Test
     void assertToPrettyJsonString() {
-        assertThat(JsonUtils.toPrettyJsonString(Collections.singletonMap("k", "v")), is("{" + System.lineSeparator() + "  \"k\" : \"v\"" + System.lineSeparator() + "}"));
+        assertThat(JsonEngine.toPrettyJsonString(Collections.singletonMap("k", "v")), is("{" + System.lineSeparator() + "  \"k\" : \"v\"" + System.lineSeparator() + "}"));
     }
     
     @Test
     void assertFromJsonStringToClass() {
-        assertThat(JsonUtils.fromJsonString("{\"name\":\"foo\",\"ignored\":true}", JsonConfigurationFixture.class).getName(), is("foo"));
+        assertThat(JsonEngine.fromJsonString("{\"name\":\"foo\",\"ignored\":true}", JsonConfigurationFixture.class).getName(), is("foo"));
     }
     
     @Test
     void assertFromJsonStringToJsonTypeReference() {
-        List<JsonConfigurationFixture> actual = JsonUtils.fromJsonString("[{\"name\":\"foo\"}]", new JsonTypeReference<List<JsonConfigurationFixture>>() {
+        List<JsonConfigurationFixture> actual = JsonEngine.fromJsonString("[{\"name\":\"foo\"}]", new JsonTypeReference<List<JsonConfigurationFixture>>() {
         });
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getName(), is("foo"));
@@ -74,12 +74,12 @@ class JsonUtilsTest {
     
     @Test
     void assertFromMalformedJsonString() {
-        assertThrows(JsonException.class, () -> JsonUtils.fromJsonString("{", Object.class));
+        assertThrows(JsonException.class, () -> JsonEngine.fromJsonString("{", Object.class));
     }
     
     @Test
     void assertSerializeCyclicObject() {
-        assertThrows(JsonException.class, () -> JsonUtils.toJsonString(new CyclicFixture()));
+        assertThrows(JsonException.class, () -> JsonEngine.toJsonString(new CyclicFixture()));
     }
     
     @Getter

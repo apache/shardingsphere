@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
 import java.util.Collection;
@@ -187,7 +187,7 @@ public final class WorkflowAlgorithmUtils {
     }
     
     private static Map<String, String> parseJSONPropertyString(final String value) {
-        return createPropertyMap(JsonUtils.fromJsonString(value, JSON_PROPERTY_MAP_TYPE));
+        return createPropertyMap(JsonEngine.fromJsonString(value, JSON_PROPERTY_MAP_TYPE));
     }
     
     private static boolean isJSONPropertyMap(final String value) {

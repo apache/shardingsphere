@@ -27,10 +27,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Json utility class.
+ * JSON engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JsonUtils {
+public final class JsonEngine {
     
     private static final ObjectMapper MAPPER;
     

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ final class LLMMCPJsonValues {
     
     static Map<String, Object> parseToolArguments(final String argumentsJson) {
         try {
-            return JsonUtils.fromJsonString(argumentsJson, new JsonTypeReference<Map<String, Object>>() {
+            return JsonEngine.fromJsonString(argumentsJson, new JsonTypeReference<Map<String, Object>>() {
             });
         } catch (final JsonException ex) {
             throw new IllegalArgumentException("Invalid tool arguments JSON.", ex);

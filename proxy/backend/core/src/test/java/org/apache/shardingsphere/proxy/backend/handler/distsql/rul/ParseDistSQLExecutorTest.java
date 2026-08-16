@@ -22,7 +22,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.Di
 import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -72,7 +72,7 @@ class ParseDistSQLExecutorTest {
         handler.next();
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
         assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("SelectStatement"));
-        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(sqlStatement)));
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonEngine.toJsonString(sqlStatement)));
     }
     
     @Test
@@ -84,7 +84,7 @@ class ParseDistSQLExecutorTest {
         handler.execute();
         handler.next();
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
-        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(sqlStatement)));
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonEngine.toJsonString(sqlStatement)));
     }
     
     @Test

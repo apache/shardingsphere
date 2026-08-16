@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.config.Pipeline
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -56,9 +56,9 @@ class ShowTransmissionRuleQueryResultTest {
         Collection<LocalDataQueryResultRow> actual = new ShowTransmissionRuleQueryResult("MIGRATION").getRows();
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow actualRow = actual.iterator().next();
-        assertThat(actualRow.getCell(1), is(JsonUtils.toJsonString(readConfig)));
-        assertThat(actualRow.getCell(2), is(JsonUtils.toJsonString(writeConfig)));
-        assertThat(actualRow.getCell(3), is(JsonUtils.toJsonString(streamChannel)));
+        assertThat(actualRow.getCell(1), is(JsonEngine.toJsonString(readConfig)));
+        assertThat(actualRow.getCell(2), is(JsonEngine.toJsonString(writeConfig)));
+        assertThat(actualRow.getCell(3), is(JsonEngine.toJsonString(streamChannel)));
     }
     
     @Test

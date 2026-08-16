@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.io.IOException;
 import java.net.URI;
@@ -81,7 +81,7 @@ public final class MCPRegistryMetadataCommand {
      */
     public static void execute(final String... args) throws IOException {
         CommandOptions options = parseOptions(args);
-        Map<String, Object> server = JsonUtils.fromJsonString(Files.readString(options.path()), new JsonTypeReference<Map<String, Object>>() {
+        Map<String, Object> server = JsonEngine.fromJsonString(Files.readString(options.path()), new JsonTypeReference<Map<String, Object>>() {
         });
         if (!options.validateOnly()) {
             ShardingSpherePreconditions.checkState(!options.version().isBlank() && !options.identifier().isBlank(),
@@ -93,7 +93,7 @@ public final class MCPRegistryMetadataCommand {
             MCPDockerfileMetadataValidator.validate(Path.of(options.dockerfilePath()), String.valueOf(server.get("name")));
         }
         if (!options.validateOnly()) {
-            Files.writeString(options.path(), JsonUtils.toPrettyJsonString(server) + System.lineSeparator());
+            Files.writeString(options.path(), JsonEngine.toPrettyJsonString(server) + System.lineSeparator());
         }
     }
     

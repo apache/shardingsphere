@@ -25,7 +25,7 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
@@ -179,7 +179,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     }
     
     protected Map<String, Object> getTextContentPayload(final CallToolResult actual) {
-        return JsonUtils.fromJsonString(((TextContent) actual.content().getFirst()).text(), new JsonTypeReference<>() {
+        return JsonEngine.fromJsonString(((TextContent) actual.content().getFirst()).text(), new JsonTypeReference<>() {
         });
     }
     

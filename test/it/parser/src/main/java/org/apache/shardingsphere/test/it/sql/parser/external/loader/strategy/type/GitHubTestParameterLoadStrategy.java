@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.ty
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.test.it.sql.parser.external.env.ExternalEnvironmentContext;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.ExternalTestParameterLoadStrategy;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.summary.FileSummary;
@@ -51,7 +51,7 @@ public final class GitHubTestParameterLoadStrategy implements ExternalTestParame
         if (content.isEmpty()) {
             return Collections.emptyList();
         }
-        Object rootNode = JsonUtils.fromJsonString(content, Object.class);
+        Object rootNode = JsonEngine.fromJsonString(content, Object.class);
         return rootNode instanceof Collection ? getFileSummariesByArray((Collection<?>) rootNode) : getFileSummaries((Map<?, ?>) rootNode);
     }
     

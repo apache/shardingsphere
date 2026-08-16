@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact;
 
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationRunner.Result;
 import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 
@@ -50,15 +50,15 @@ public final class LLMConversationArtifactWriter {
     public void write(final Path artifactDirectory, final Result conversationResult, final Map<String, Object> runtimeEvidence,
                       final Collection<String> sensitiveValues) throws IOException {
         validateRuntimeEvidence(runtimeEvidence);
-        writeContent(artifactDirectory.resolve("run-context.json"), JsonUtils.toJsonString(createRunContext(conversationResult, runtimeEvidence)), sensitiveValues);
+        writeContent(artifactDirectory.resolve("run-context.json"), JsonEngine.toJsonString(createRunContext(conversationResult, runtimeEvidence)), sensitiveValues);
         writeContent(artifactDirectory.resolve("system-prompt.md"), conversationResult.systemPrompt(), sensitiveValues);
         writeContent(artifactDirectory.resolve("question.txt"), conversationResult.scenario().question(), sensitiveValues);
         writeContent(artifactDirectory.resolve("answer.txt"), conversationResult.actualAnswer(), sensitiveValues);
         writeContent(artifactDirectory.resolve("raw-model-output.txt"),
                 String.join(System.lineSeparator() + System.lineSeparator(), conversationResult.evidence().rawModelOutputs()), sensitiveValues);
-        writeContent(artifactDirectory.resolve("available-tools.json"), JsonUtils.toJsonString(conversationResult.evidence().toolDefinitions()), sensitiveValues);
-        writeContent(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(conversationResult.evidence().interactionTrace()), sensitiveValues);
-        writeContent(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(conversationResult.assertionReport()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("available-tools.json"), JsonEngine.toJsonString(conversationResult.evidence().toolDefinitions()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("interaction-trace.json"), JsonEngine.toJsonString(conversationResult.evidence().interactionTrace()), sensitiveValues);
+        writeContent(artifactDirectory.resolve("assertion-report.json"), JsonEngine.toJsonString(conversationResult.assertionReport()), sensitiveValues);
     }
     
     private Map<String, Object> createRunContext(final Result conversationResult, final Map<String, Object> runtimeEvidence) {
