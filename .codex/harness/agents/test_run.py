@@ -75,6 +75,21 @@ class RunTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Unknown reasons"):
             run.validate_cases([self.case])
 
+    def test_summary_terms_must_be_list(self) -> None:
+        self.case["required_summary_terms"] = "term"
+        with self.assertRaisesRegex(ValueError, "Summary terms must be a non-empty list"):
+            run.validate_cases([self.case])
+
+    def test_summary_terms_must_not_be_empty(self) -> None:
+        self.case["required_summary_terms"] = []
+        with self.assertRaisesRegex(ValueError, "Summary terms must be a non-empty list"):
+            run.validate_cases([self.case])
+
+    def test_summary_terms_must_contain_non_empty_strings(self) -> None:
+        self.case["forbidden_summary_terms"] = [""]
+        with self.assertRaisesRegex(ValueError, "Summary terms must be a non-empty list"):
+            run.validate_cases([self.case])
+
     def test_required_action_must_be_allowed(self) -> None:
         self.case["required_actions"] = ["inspect_local"]
         with self.assertRaisesRegex(ValueError, "Required actions must be allowed"):
@@ -168,6 +183,41 @@ class RunTest(unittest.TestCase):
                 "uncached_input_tokens": 22,
                 "output_tokens": 6,
             }, run.read_usage(events_path))
+
+    def test_normalize_case_contracts_sorts_summary_terms(self) -> None:
+        self.case["required_summary_terms"] = ["beta", "alpha"]
+        self.case["forbidden_summary_terms"] = ["delta", "gamma"]
+        actual = run.normalize_case_contracts([self.case])[0]
+        self.assertEqual(["alpha", "beta"], actual["required_summary_terms"])
+        self.assertEqual(["delta", "gamma"], actual["forbidden_summary_terms"])
+
+    def test_grade_checks_summary_terms_case_insensitively(self) -> None:
+        self.case["required_summary_terms"] = ["required term"]
+        self.case["forbidden_summary_terms"] = ["internal label"]
+        actual = {"results": [{
+            "case_id": self.case["id"],
+            "decision": "proceed",
+            "actions": [],
+            "reasons": [],
+            "summary": "The REQUIRED TERM replaces the Internal Label.",
+            "response_style": "concise",
+        }]}
+        failures = run.grade([self.case], actual)[0]["failures"]
+        self.assertNotIn("summary lacks required terms=['required term']", failures)
+        self.assertIn("summary contains forbidden terms=['internal label']", failures)
+
+    def test_grade_reports_missing_summary_terms(self) -> None:
+        self.case["required_summary_terms"] = ["required term"]
+        actual = {"results": [{
+            "case_id": self.case["id"],
+            "decision": "proceed",
+            "actions": [],
+            "reasons": [],
+            "summary": "The required content is absent.",
+            "response_style": "concise",
+        }]}
+        failures = run.grade([self.case], actual)[0]["failures"]
+        self.assertIn("summary lacks required terms=['required term']", failures)
 
 
 if __name__ == "__main__":
