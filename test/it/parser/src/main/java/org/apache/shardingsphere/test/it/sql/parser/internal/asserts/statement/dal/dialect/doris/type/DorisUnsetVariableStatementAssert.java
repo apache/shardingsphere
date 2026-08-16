@@ -22,8 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.UnsetVariableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisUnsetVariableStatementTestCase;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
+
+import static org.hamcrest.Matchers.is;
 
 /**
  * Unset variable statement assert for Doris.
@@ -39,7 +40,7 @@ public final class DorisUnsetVariableStatementAssert {
      * @param expected expected unset variable statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UnsetVariableStatement actual, final DorisUnsetVariableStatementTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText("Unset variable scope assertion error: "), actual.getScope(), CoreMatchers.is(expected.getScope()));
-        MatcherAssert.assertThat(assertContext.getText("Unset variable name assertion error: "), actual.getVariableName(), CoreMatchers.is(expected.getVariableName()));
+        MatcherAssert.assertThat(assertContext.getText("Unset variable scope assertion error: "), actual.getScope(), is(expected.getScope()));
+        MatcherAssert.assertThat(assertContext.getText("Unset variable name assertion error: "), actual.getVariableName(), is(expected.getVariableName()));
     }
 }

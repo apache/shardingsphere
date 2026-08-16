@@ -26,7 +26,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,6 +34,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -55,7 +55,7 @@ class DatabaseRuleOperatorFactoryTest {
     void assertNewInstanceWithUnsupportedExecutor() {
         DatabaseRuleDefinitionExecutor executor = mock(DatabaseRuleDefinitionExecutor.class);
         String expectedMessage = String.format("Unsupported SQL operation: Cannot support RDL executor type `%s`.", executor.getClass().getName());
-        assertThat(assertThrows(UnsupportedSQLOperationException.class, () -> DatabaseRuleOperatorFactory.newInstance(contextManager, executor)).getMessage(), CoreMatchers.is(expectedMessage));
+        assertThat(assertThrows(UnsupportedSQLOperationException.class, () -> DatabaseRuleOperatorFactory.newInstance(contextManager, executor)).getMessage(), is(expectedMessage));
     }
     
     private static Stream<Arguments> assertNewInstanceWithSupportedExecutorArguments() {
