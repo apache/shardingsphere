@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.metadata;
 
 import org.apache.shardingsphere.infra.util.json.JsonException;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
@@ -192,7 +192,7 @@ public final class GovernanceMetadataQueryService {
             return new RedactedValue(value, false);
         }
         try {
-            return redactNested(JsonUtils.fromJsonString(text, Object.class));
+            return redactNested(JsonEngine.fromJsonString(text, Object.class));
         } catch (final JsonException ignored) {
             return new RedactedValue(value, false);
         }

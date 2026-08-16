@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.registry;
 
 import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -236,7 +236,7 @@ class MCPRegistryMetadataCommandTest {
     
     private Path createServerJson(final Map<String, Object> server) throws IOException {
         Path result = tempDir.resolve("server.json");
-        Files.writeString(result, JsonUtils.toPrettyJsonString(server));
+        Files.writeString(result, JsonEngine.toPrettyJsonString(server));
         return result;
     }
     
@@ -278,7 +278,7 @@ class MCPRegistryMetadataCommandTest {
     }
     
     private Map<String, Object> readServerJson(final Path serverPath) throws IOException {
-        return JsonUtils.fromJsonString(Files.readString(serverPath), new JsonTypeReference<Map<String, Object>>() {
+        return JsonEngine.fromJsonString(Files.readString(serverPath), new JsonTypeReference<Map<String, Object>>() {
         });
     }
     

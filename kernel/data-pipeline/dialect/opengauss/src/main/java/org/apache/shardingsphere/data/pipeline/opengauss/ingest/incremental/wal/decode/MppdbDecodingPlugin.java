@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.WriteRowEvent;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.opengauss.util.PGInterval;
 import org.opengauss.util.PGobject;
 
@@ -119,7 +119,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private AbstractRowEvent readTableEvent(final String mppData) {
         MppTableData mppTableData;
-        mppTableData = JsonUtils.fromJsonString(mppData, MppTableData.class);
+        mppTableData = JsonEngine.fromJsonString(mppData, MppTableData.class);
         String rowEventType = mppTableData.getOpType();
         PipelineSQLOperationType type;
         try {

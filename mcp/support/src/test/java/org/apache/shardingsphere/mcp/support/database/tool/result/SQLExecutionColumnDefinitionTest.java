@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.support.database.tool.result;
 
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,7 +27,7 @@ class SQLExecutionColumnDefinitionTest {
     
     @Test
     void assertJsonFieldNames() {
-        assertThat(JsonUtils.toJsonString(new SQLExecutionColumnDefinition("order_id", "INTEGER", "int4", false)),
+        assertThat(JsonEngine.toJsonString(new SQLExecutionColumnDefinition("order_id", "INTEGER", "int4", false)),
                 is("{\"columnName\":\"order_id\",\"logicalType\":\"INTEGER\",\"nativeType\":\"int4\",\"nullable\":false}"));
     }
 }

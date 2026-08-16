@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCal
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -188,7 +188,7 @@ public final class LLMConversationRunner {
             artifacts.addTrace(new MCPInteractionTraceRecord(
                     artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
                     each.getName(), getTraceArguments(each.getName(), arguments), response, true, latencyMillis));
-            messages.add(LLMChatMessage.tool(each.getId(), JsonUtils.toJsonString(response)));
+            messages.add(LLMChatMessage.tool(each.getId(), JsonEngine.toJsonString(response)));
         }
         return Optional.empty();
     }

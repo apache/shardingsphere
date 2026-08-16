@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.jaeger.asserts;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.test.e2e.agent.engine.util.AgentE2EHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.response.JaegerSpanResponse;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.response.JaegerSpanResponse.Tag;
@@ -67,7 +67,7 @@ public final class JaegerSpanAssert {
     
     private static void assertTagValue(final String jaegerUrl, final JaegerE2ETestCase expected, final JaegerTagAssertion expectedTagCase) {
         String queryURL = String.format("%s/api/traces?service=%s&operation=%s&tags=%s&limit=%s", jaegerUrl, encode(expected.getServiceName()),
-                encode(expected.getSpanName()), encode(JsonUtils.toJsonString(ImmutableMap.of(expectedTagCase.getTagKey(), expectedTagCase.getTagValue()))), 1000);
+                encode(expected.getSpanName()), encode(JsonEngine.toJsonString(ImmutableMap.of(expectedTagCase.getTagKey(), expectedTagCase.getTagValue()))), 1000);
         assertFalse(queryTraceResponses(queryURL).isEmpty(),
                 String.format("The tag `%s`=`%s` does not exist in `%s` span", expectedTagCase.getTagKey(), expectedTagCase.getTagValue(), expected.getSpanName()));
     }
@@ -79,6 +79,6 @@ public final class JaegerSpanAssert {
     
     @SneakyThrows(IOException.class)
     private static Collection<JaegerTraceResponseData> queryTraceResponses(final String queryURL) {
-        return JsonUtils.fromJsonString(AgentE2EHttpUtils.query(queryURL), JaegerTraceResponse.class).getData();
+        return JsonEngine.fromJsonString(AgentE2EHttpUtils.query(queryURL), JaegerTraceResponse.class).getData();
     }
 }
