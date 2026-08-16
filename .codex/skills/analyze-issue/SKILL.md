@@ -126,11 +126,37 @@ If the answer supports invalid usage or unsupported behavior, classify as `Misun
 Do not default to `Needs More Info` only because the issue lacks a full SQL, database version, or stack trace when the current evidence is already enough to judge supportability.
 Use `Needs More Info` only when missing facts block the supportability decision or root-cause classification.
 
+## GitHub Access Preflight
+
+Complete this gate before the first GitHub request:
+
+1. Resolve the target repository and required GitHub endpoints.
+2. Apply the GitHub access contract in `AGENTS.md`: check `GH_TOKEN`, then
+   `GITHUB_TOKEN`, without exposing their values, and record only the selected
+   route.
+3. When a token is configured, call the GitHub REST or GraphQL API directly. Do
+   not invoke a browser, search, connector, `gh`, or anonymous HTTP route first.
+4. Only when neither token is configured, use an authenticated read-only
+   connector or app when it can obtain the required endpoint, then `gh` or
+   anonymous API or HTML as needed.
+
+For a known or user-identified private target, a `404 Not Found` does not prove
+that the repository, PR, or issue is absent until the selected token has both
+authenticated successfully and demonstrated access to the repository. Retry an
+unauthenticated `404` through the selected token route. If token validity,
+repository permission, or required organization or SSO authorization cannot be
+confirmed, classify the GitHub evidence as unavailable and stop with an
+incomplete analysis that identifies the access gap instead of claiming that the
+resource does not exist. Report the access gap to the user without drafting a
+GitHub-facing maintainer reply. Only a `404` after authentication and repository
+access are confirmed may establish that the requested issue or linked PR
+endpoint is absent.
+
 ## Intake Workflow
 
 1. Identify the issue number from user input.
 2. Use the canonical URL: `https://github.com/apache/shardingsphere/issues/${issueNO}`.
-3. Follow `AGENTS.md` for GitHub authentication, route selection, pagination,
+3. Complete `GitHub Access Preflight`, then follow `AGENTS.md` for pagination,
    sensitive-data handling, and read-only boundaries.
 4. Fetch the issue body, all relevant comments, linked same-repository issues or
    PRs, and any other pages required by the selected evidence checks.

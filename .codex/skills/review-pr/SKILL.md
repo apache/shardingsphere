@@ -1,11 +1,11 @@
 ---
 name: review-pr
 description: >-
-  Review Apache ShardingSphere pull requests and PR discussions from public evidence.
-  Use for code-correctness or mergeability decisions, CI-focused review, root-cause and
-  regression analysis, complete consolidated findings, copy-ready committer feedback,
-  challenged findings, multi-round review, and the repository completion loop's Local
-  Candidate Preflight Mode.
+  Review Apache ShardingSphere or user-authorized downstream pull requests and PR
+  discussions from public or authorized repository evidence. Use for code-correctness or
+  mergeability decisions, CI-focused review, root-cause and regression analysis, complete
+  consolidated findings, copy-ready committer feedback, challenged findings, multi-round
+  review, and the repository completion loop's Local Candidate Preflight Mode.
 ---
 
 # Review PR
@@ -13,7 +13,7 @@ description: >-
 ## Purpose and Modes
 
 Judge the latest reviewed scope from root cause, behavior, contracts, tests, and
-public evidence. Select one output mode:
+public or user-authorized repository evidence. Select one output mode:
 
 - `Formal Review Mode`: return one formal result for a PR review, code-readiness
   judgment, mergeability decision, or CI review.
@@ -68,12 +68,14 @@ unchanged basis.
 
 1. Review only. Do not modify PR code, post comments, submit reviews, resolve
    threads, rerun workflows, or change remote state without explicit authority.
-2. Formal review scope is the latest public PR head and the complete GitHub
+2. Formal review scope is the latest target PR head and the complete GitHub
    changed-file list. Use local triple-dot semantics when reproducing it. A
    discussion reply starts from the latest head, thread context, and affected
    behavior; expand to complete scope only when the claim depends on it.
-3. Community-visible conclusions use only public evidence and sanitized
-   verification summaries.
+3. Public community conclusions use only public evidence and sanitized
+   verification summaries. Private-repository conclusions may use authorized
+   repository evidence but must remain within the user-authorized task and
+   target repository.
 4. Reconstruct `trigger -> failing path -> observed result -> expected
    behavior` before judging the patch. A fallback, default, null check,
    try-catch, or swallowed error is not a root-cause repair unless it fixes the
@@ -112,8 +114,11 @@ context, relevant earlier review, and affected production or test paths. Fetch
 the complete file list when scope is disputed or the reply changes an overall
 readiness conclusion.
 
-Read [evidence-access.md](references/evidence-access.md) whenever current GitHub,
-CI, Actions, or third-party behavior evidence is required.
+Before the first GitHub request, read and complete `GitHub Access Preflight` in
+[evidence-access.md](references/evidence-access.md). Do not invoke a browser,
+search, connector, `gh`, or anonymous HTTP route before the preflight selects
+the read route. Read the remaining reference whenever CI, Actions, or
+third-party behavior evidence is required.
 
 AI-assistance disclosure is a mergeability concern, not a code-correctness
 signal. In Mergeability Review or an explicit policy-compliance review, apply
