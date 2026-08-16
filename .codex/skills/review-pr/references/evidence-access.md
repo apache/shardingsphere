@@ -43,25 +43,20 @@ the selected review focus requires CI or Actions evidence.
 
 Complete this gate before the first GitHub request:
 
-1. Resolve the target repository and required GitHub endpoints.
-2. Apply the GitHub access contract in `AGENTS.md`: check `GH_TOKEN`, then
-   `GITHUB_TOKEN`, without exposing their values, and record only the selected
-   route.
-3. When a token is configured, call the GitHub REST or GraphQL API directly. Do
+1. Resolve the target repository and endpoints, then apply the GitHub access
+   contract in `AGENTS.md`: check `GH_TOKEN`, then `GITHUB_TOKEN`, without
+   exposing their values; record only the selected route.
+2. When a token is configured, call the GitHub REST or GraphQL API directly. Do
    not invoke a browser, search, connector, `gh`, or anonymous HTTP route first.
-4. Only when neither token is configured, use an authenticated read-only
+3. Only when neither token is configured, use an authenticated read-only
    connector or app when it can obtain the required endpoint, then `gh` or
    anonymous API or HTML as needed.
 
-For a known or user-identified private target, a `404 Not Found` does not prove
-that the repository, PR, or issue is absent until the selected token has both
-authenticated successfully and demonstrated access to the repository. Retry an
-unauthenticated `404` through the selected token route. If token validity,
-repository permission, or required organization or SSO authorization cannot be
-confirmed, classify the GitHub evidence as unavailable and return an incomplete
-result instead of claiming that the resource does not exist. Only a `404` after
-authentication and repository access are confirmed may establish that the
-requested PR or issue endpoint is absent.
+For a known private target, a `404 Not Found` before authenticated repository
+access is confirmed does not prove absence. Retry through the selected
+authenticated route. If access cannot be confirmed, classify the GitHub
+evidence as unavailable and return `Review Incomplete`. Only after access is
+confirmed may an endpoint `404` establish absence.
 
 Fetch every page needed for authoritative PR files, commits, comments, reviews,
 review threads, and focus-required checks. Classify availability per endpoint;
