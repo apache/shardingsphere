@@ -40,7 +40,7 @@ public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<Impor
     @Override
     public void executeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) {
         String jsonMetaDataConfig = sqlStatement.getFilePath().isPresent() ? getMetaDataFromFile(sqlStatement) : getMetaDataFromConsole(sqlStatement);
-        ExportedClusterInfo exportedClusterInfo = JsonEngine.fromJsonString(jsonMetaDataConfig, ExportedClusterInfo.class);
+        ExportedClusterInfo exportedClusterInfo = JsonEngine.unmarshal(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();
         new MetaDataImportExecutor(contextManager).importClusterConfigurations(exportedMetaData);
     }

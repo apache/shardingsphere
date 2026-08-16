@@ -51,7 +51,7 @@ public final class ShowTransmissionRuleQueryResult {
     }
     
     private String getString(final Object obj) {
-        return null == obj ? "" : JsonEngine.toJsonString(obj);
+        return null == obj ? "" : JsonEngine.marshal(obj);
     }
     
     /**

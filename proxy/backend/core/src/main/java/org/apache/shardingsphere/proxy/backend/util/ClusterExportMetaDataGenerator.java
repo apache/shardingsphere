@@ -62,7 +62,7 @@ public final class ClusterExportMetaDataGenerator {
         ExportedClusterInfo exportedClusterInfo = new ExportedClusterInfo();
         exportedClusterInfo.setMetaData(exportedMetaData);
         generateSnapshotInfo(metaData, exportedClusterInfo);
-        return JsonEngine.toJsonString(exportedClusterInfo);
+        return JsonEngine.marshal(exportedClusterInfo);
     }
     
     private Map<String, String> generatorDatabasesExportData() {

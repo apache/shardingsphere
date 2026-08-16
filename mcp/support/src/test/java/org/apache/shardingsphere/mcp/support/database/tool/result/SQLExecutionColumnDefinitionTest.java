@@ -27,7 +27,7 @@ class SQLExecutionColumnDefinitionTest {
     
     @Test
     void assertJsonFieldNames() {
-        assertThat(JsonEngine.toJsonString(new SQLExecutionColumnDefinition("order_id", "INTEGER", "int4", false)),
+        assertThat(JsonEngine.marshal(new SQLExecutionColumnDefinition("order_id", "INTEGER", "int4", false)),
                 is("{\"columnName\":\"order_id\",\"logicalType\":\"INTEGER\",\"nativeType\":\"int4\",\"nullable\":false}"));
     }
 }

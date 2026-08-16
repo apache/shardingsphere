@@ -188,7 +188,7 @@ public final class LLMConversationRunner {
             artifacts.addTrace(new MCPInteractionTraceRecord(
                     artifacts.nextSequence(), modelTurn, getActionKind(each.getName()), MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN,
                     each.getName(), getTraceArguments(each.getName(), arguments), response, true, latencyMillis));
-            messages.add(LLMChatMessage.tool(each.getId(), JsonEngine.toJsonString(response)));
+            messages.add(LLMChatMessage.tool(each.getId(), JsonEngine.marshal(response)));
         }
         return Optional.empty();
     }

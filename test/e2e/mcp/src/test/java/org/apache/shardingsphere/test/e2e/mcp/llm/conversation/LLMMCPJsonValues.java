@@ -30,7 +30,7 @@ final class LLMMCPJsonValues {
     
     static Map<String, Object> parseToolArguments(final String argumentsJson) {
         try {
-            return JsonEngine.fromJsonString(argumentsJson, new JsonTypeReference<Map<String, Object>>() {
+            return JsonEngine.unmarshal(argumentsJson, new JsonTypeReference<Map<String, Object>>() {
             });
         } catch (final JsonException ex) {
             throw new IllegalArgumentException("Invalid tool arguments JSON.", ex);

@@ -75,7 +75,7 @@ public final class ZipkinSpanAssert {
     
     @SneakyThrows(IOException.class)
     private static Collection<ZipkinSpanResponse> queryTraceResponses(final ZipkinE2ETestCase expected, final String url) {
-        List<List<ZipkinSpanResponse>> result = JsonEngine.fromJsonString(AgentE2EHttpUtils.query(url), new JsonTypeReference<List<List<ZipkinSpanResponse>>>() {
+        List<List<ZipkinSpanResponse>> result = JsonEngine.unmarshal(AgentE2EHttpUtils.query(url), new JsonTypeReference<List<List<ZipkinSpanResponse>>>() {
         });
         return result.stream().findFirst().orElse(Collections.emptyList()).stream().filter(each -> expected.getSpanName().equalsIgnoreCase(each.getName())).collect(Collectors.toList());
     }

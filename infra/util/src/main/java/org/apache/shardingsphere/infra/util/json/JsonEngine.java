@@ -55,7 +55,7 @@ public final class JsonEngine {
      * @return json string
      * @throws JsonException when object cannot be serialized
      */
-    public static String toJsonString(final Object obj) {
+    public static String marshal(final Object obj) {
         try {
             return MAPPER.writeValueAsString(obj);
         } catch (final JsonProcessingException ex) {
@@ -70,7 +70,7 @@ public final class JsonEngine {
      * @return pretty JSON string
      * @throws JsonException when object cannot be serialized
      */
-    public static String toPrettyJsonString(final Object obj) {
+    public static String marshalPretty(final Object obj) {
         try {
             return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
         } catch (final JsonProcessingException ex) {
@@ -87,7 +87,7 @@ public final class JsonEngine {
      * @return object
      * @throws JsonException when JSON cannot be deserialized
      */
-    public static <T> T fromJsonString(final String value, final Class<T> clazz) {
+    public static <T> T unmarshal(final String value, final Class<T> clazz) {
         try {
             return MAPPER.readValue(value, clazz);
         } catch (final JsonProcessingException ex) {
@@ -104,7 +104,7 @@ public final class JsonEngine {
      * @return object
      * @throws JsonException when JSON cannot be deserialized
      */
-    public static <T> T fromJsonString(final String value, final JsonTypeReference<T> typeReference) {
+    public static <T> T unmarshal(final String value, final JsonTypeReference<T> typeReference) {
         try {
             return MAPPER.readValue(value, MAPPER.getTypeFactory().constructType(typeReference.getType()));
         } catch (final JsonProcessingException ex) {

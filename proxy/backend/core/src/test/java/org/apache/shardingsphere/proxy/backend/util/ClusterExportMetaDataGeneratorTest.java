@@ -61,7 +61,7 @@ class ClusterExportMetaDataGeneratorTest {
     @Test
     void assertGenerateJsonFormatWithoutData() {
         ContextManager contextManager = mockContextManager(Collections.emptyList(), mockGlobalClockRule(false, null), Collections.singleton(mockDatabaseWithoutSources("empty_db")), new Properties());
-        ExportedClusterInfo actual = JsonEngine.fromJsonString(new ClusterExportMetaDataGenerator(contextManager).generateJsonFormat(), ExportedClusterInfo.class);
+        ExportedClusterInfo actual = JsonEngine.unmarshal(new ClusterExportMetaDataGenerator(contextManager).generateJsonFormat(), ExportedClusterInfo.class);
         ExportedMetaData actualMetaData = actual.getMetaData();
         assertTrue(actualMetaData.getDatabases().isEmpty());
         assertThat(actualMetaData.getProps(), is(""));
@@ -77,7 +77,7 @@ class ClusterExportMetaDataGeneratorTest {
         when(provider.getCurrentTimestamp()).thenReturn(123L);
         ContextManager contextManager = mockContextManager(Collections.singletonList(new GlobalClockRuleConfiguration("TSO", "LOCAL", true, new Properties())),
                 mockGlobalClockRule(true, provider), Arrays.asList(mockDatabaseWithoutSources("skip_db"), mockDatabaseWithStorage()), props);
-        ExportedClusterInfo actual = JsonEngine.fromJsonString(new ClusterExportMetaDataGenerator(contextManager).generateJsonFormat(), ExportedClusterInfo.class);
+        ExportedClusterInfo actual = JsonEngine.unmarshal(new ClusterExportMetaDataGenerator(contextManager).generateJsonFormat(), ExportedClusterInfo.class);
         ExportedMetaData metaData = actual.getMetaData();
         assertTrue(metaData.getDatabases().containsKey("logic_db"));
         assertThat(metaData.getDatabases().size(), is(1));
@@ -92,7 +92,7 @@ class ClusterExportMetaDataGeneratorTest {
     void assertGenerateJsonFormatWithSnapshotFallback() {
         ContextManager contextManager = mockContextManager(Collections.singletonList(new GlobalClockRuleConfiguration("TSO", "LOCAL", true, new Properties())),
                 mockGlobalClockRule(true, null), Collections.singleton(mockDatabaseWithStorage()), new Properties());
-        ExportedClusterInfo actual = JsonEngine.fromJsonString(new ClusterExportMetaDataGenerator(contextManager).generateJsonFormat(), ExportedClusterInfo.class);
+        ExportedClusterInfo actual = JsonEngine.unmarshal(new ClusterExportMetaDataGenerator(contextManager).generateJsonFormat(), ExportedClusterInfo.class);
         assertThat(actual.getSnapshotInfo().getCsn(), is("0"));
     }
     

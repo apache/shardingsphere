@@ -51,6 +51,6 @@ public interface PipelineJobId {
      * @return marshaled suffix
      */
     default String marshalSuffix() {
-        return DigestUtils.md5Hex(JsonEngine.toJsonString(this).getBytes(StandardCharsets.UTF_8));
+        return DigestUtils.md5Hex(JsonEngine.marshal(this).getBytes(StandardCharsets.UTF_8));
     }
 }
