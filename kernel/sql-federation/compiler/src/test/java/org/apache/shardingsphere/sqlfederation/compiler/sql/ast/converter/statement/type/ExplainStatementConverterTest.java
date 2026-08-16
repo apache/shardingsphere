@@ -38,13 +38,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
@@ -83,7 +83,7 @@ class ExplainStatementConverterTest {
     
     @Test
     void assertConvertUnsupportedSQLStatementThrowsException() {
-        DCLStatement mockStatement = mock(DCLStatement.class, withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
+        DCLStatement mockStatement = mock(DCLStatement.class, withSettings().defaultAnswer(CALLS_REAL_METHODS));
         when(mockStatement.getDatabaseType()).thenReturn(databaseType);
         ExplainStatement explainStatement = new ExplainStatement(databaseType, mockStatement);
         assertThrows(IllegalStateException.class, () -> new ExplainStatementConverter().convert(explainStatement));
