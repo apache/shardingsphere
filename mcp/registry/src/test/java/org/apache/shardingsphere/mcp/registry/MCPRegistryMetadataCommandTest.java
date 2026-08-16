@@ -236,7 +236,7 @@ class MCPRegistryMetadataCommandTest {
     
     private Path createServerJson(final Map<String, Object> server) throws IOException {
         Path result = tempDir.resolve("server.json");
-        Files.writeString(result, JsonEngine.toPrettyJsonString(server));
+        Files.writeString(result, JsonEngine.marshalPretty(server));
         return result;
     }
     
@@ -278,7 +278,7 @@ class MCPRegistryMetadataCommandTest {
     }
     
     private Map<String, Object> readServerJson(final Path serverPath) throws IOException {
-        return JsonEngine.fromJsonString(Files.readString(serverPath), new JsonTypeReference<Map<String, Object>>() {
+        return JsonEngine.unmarshal(Files.readString(serverPath), new JsonTypeReference<Map<String, Object>>() {
         });
     }
     

@@ -58,15 +58,15 @@ public final class LocalDataQueryResultRow {
             return ((Enum<?>) data).name();
         }
         if (data instanceof Properties) {
-            return ((Properties) data).isEmpty() ? "" : JsonEngine.toJsonString(convert((Properties) data));
+            return ((Properties) data).isEmpty() ? "" : JsonEngine.marshal(convert((Properties) data));
         }
         if (data instanceof Map) {
-            return ((Map<?, ?>) data).isEmpty() ? "" : JsonEngine.toJsonString(data);
+            return ((Map<?, ?>) data).isEmpty() ? "" : JsonEngine.marshal(data);
         }
         if (data instanceof Collection) {
-            return ((Collection<?>) data).isEmpty() ? "" : JsonEngine.toJsonString(data);
+            return ((Collection<?>) data).isEmpty() ? "" : JsonEngine.marshal(data);
         }
-        return JsonEngine.toJsonString(data);
+        return JsonEngine.marshal(data);
     }
     
     private Map<Object, Object> convert(final Properties props) {

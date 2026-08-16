@@ -56,9 +56,9 @@ class ShowTransmissionRuleQueryResultTest {
         Collection<LocalDataQueryResultRow> actual = new ShowTransmissionRuleQueryResult("MIGRATION").getRows();
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow actualRow = actual.iterator().next();
-        assertThat(actualRow.getCell(1), is(JsonEngine.toJsonString(readConfig)));
-        assertThat(actualRow.getCell(2), is(JsonEngine.toJsonString(writeConfig)));
-        assertThat(actualRow.getCell(3), is(JsonEngine.toJsonString(streamChannel)));
+        assertThat(actualRow.getCell(1), is(JsonEngine.marshal(readConfig)));
+        assertThat(actualRow.getCell(2), is(JsonEngine.marshal(writeConfig)));
+        assertThat(actualRow.getCell(3), is(JsonEngine.marshal(streamChannel)));
     }
     
     @Test

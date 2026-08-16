@@ -187,7 +187,7 @@ public final class WorkflowAlgorithmUtils {
     }
     
     private static Map<String, String> parseJSONPropertyString(final String value) {
-        return createPropertyMap(JsonEngine.fromJsonString(value, JSON_PROPERTY_MAP_TYPE));
+        return createPropertyMap(JsonEngine.unmarshal(value, JSON_PROPERTY_MAP_TYPE));
     }
     
     private static boolean isJSONPropertyMap(final String value) {

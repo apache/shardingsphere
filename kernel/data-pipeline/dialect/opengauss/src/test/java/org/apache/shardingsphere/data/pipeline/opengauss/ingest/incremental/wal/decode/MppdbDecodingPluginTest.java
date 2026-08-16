@@ -70,7 +70,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsType(insertTypes);
         tableData.setColumnsName(IntStream.range(0, insertTypes.length).mapToObj(idx -> "data" + idx).toArray(String[]::new));
         tableData.setColumnsVal(IntStream.range(0, insertTypes.length).mapToObj(idx -> "'1 2 3'").toArray(String[]::new));
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -85,7 +85,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"character varying"});
         tableData.setColumnsVal(new String[]{"'1 2 3'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         UpdateRowEvent actual = (UpdateRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -102,7 +102,7 @@ class MppdbDecodingPluginTest {
         tableData.setOldKeysType(deleteTypes);
         tableData.setOldKeysName(IntStream.range(0, deleteTypes.length).mapToObj(idx -> "data" + idx).toArray(String[]::new));
         tableData.setOldKeysVal(deleteValues);
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         DeleteRowEvent actual = (DeleteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -117,7 +117,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"money"});
         tableData.setColumnsVal(new String[]{"'$1.08'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -133,7 +133,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"boolean"});
         tableData.setColumnsVal(new String[]{Boolean.TRUE.toString()});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -152,7 +152,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(IntStream.range(0, insertTypes.length).mapToObj(idx -> "data" + idx).toArray(String[]::new));
         tableData.setColumnsType(insertTypes);
         tableData.setColumnsVal(insertValues);
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         TimestampUtils timestampUtils = mock(TimestampUtils.class);
         when(timestampUtils.toTime(null, "21:21:21")).thenReturn(Time.valueOf("21:21:21"));
         when(timestampUtils.toTime(null, "21:21:21 pst")).thenReturn(Time.valueOf("13:21:21"));
@@ -175,7 +175,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"bytea"});
         tableData.setColumnsVal(new String[]{"'\\xff00ab'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -192,7 +192,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"raw"});
         tableData.setColumnsVal(new String[]{"'7D'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -215,7 +215,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"character varying"});
         tableData.setColumnsVal(new String[]{"1 2 3"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         assertThrows(IngestException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
     }
     
@@ -229,7 +229,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsVal(new String[]{"'1 2 3'"});
         TimestampUtils timestampUtils = mock(TimestampUtils.class);
         when(timestampUtils.toTime(null, "1 2 3")).thenThrow(new SQLException(""));
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         assertThrows(DecodingException.class, () -> new MppdbDecodingPlugin(new OpenGaussTimestampUtils(timestampUtils), true, false).decode(data, logSequenceNumber));
     }
     
@@ -241,7 +241,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"raw"});
         tableData.setColumnsVal(new String[]{"'7D'"});
-        List<String> dataList = Arrays.asList("BEGIN 1", JsonEngine.toJsonString(tableData), JsonEngine.toJsonString(tableData),
+        List<String> dataList = Arrays.asList("BEGIN 1", JsonEngine.marshal(tableData), JsonEngine.marshal(tableData),
                 "COMMIT 1 (at 2022-10-27 04:19:39.476261+00) CSN 3468");
         MppdbDecodingPlugin mppdbDecodingPlugin = new MppdbDecodingPlugin(null, true, false);
         List<AbstractWALEvent> expectedEvent = new LinkedList<>();
@@ -265,7 +265,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"raw"});
         tableData.setColumnsVal(new String[]{"'7D'"});
-        List<String> dataList = Arrays.asList("BEGIN CSN: 951909 first_lsn: 5/59825858", JsonEngine.toJsonString(tableData), JsonEngine.toJsonString(tableData), "commit xid: 1006076");
+        List<String> dataList = Arrays.asList("BEGIN CSN: 951909 first_lsn: 5/59825858", JsonEngine.marshal(tableData), JsonEngine.marshal(tableData), "commit xid: 1006076");
         MppdbDecodingPlugin mppdbDecodingPlugin = new MppdbDecodingPlugin(null, true, true);
         List<AbstractWALEvent> actual = new LinkedList<>();
         for (String each : dataList) {
@@ -288,7 +288,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"tsrange"});
         tableData.setColumnsVal(new String[]{"'[\"2020-01-01 00:00:00\",\"2021-01-01 00:00:00\")'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         Object byteaObj = actual.getAfterRow().getFirst();
         assertThat(byteaObj, isA(PGobject.class));
@@ -303,7 +303,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"daterange"});
         tableData.setColumnsVal(new String[]{"'[2020-01-02,2021-01-02)'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         Object byteaObj = actual.getAfterRow().getFirst();
         assertThat(byteaObj, isA(PGobject.class));
@@ -318,7 +318,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"tsquery"});
         tableData.setColumnsVal(new String[]{"'''fff'' | ''faa'''"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         Object byteaObj = actual.getAfterRow().getFirst();
         assertThat(byteaObj.toString(), is("'fff' | 'faa'"));
@@ -332,7 +332,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"tinyint"});
         tableData.setColumnsVal(new String[]{"255"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         Object byteaObj = actual.getAfterRow().getFirst();
         assertThat(byteaObj, is(255));
@@ -348,7 +348,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsType(columnTypes);
         String[] columnValues = new String[]{"10.1", "b101", "1.5", "2.5", "'1.08'", "'\\x'", "'\\x01'", "'abc year'", "a", "null", "'[\"2020-01-01 00:00:00+00\",\"2021-01-01 00:00:00+00\"]'"};
         tableData.setColumnsVal(columnValues);
-        WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes()), logSequenceNumber);
+        WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes()), logSequenceNumber);
         assertThat(actual.getAfterRow().getFirst(), is(new BigDecimal("10.1")));
         assertThat(actual.getAfterRow().get(1), is("101"));
         assertThat(actual.getAfterRow().get(2), is(1.5F));
@@ -395,7 +395,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"character varying"});
         tableData.setColumnsVal(new String[]{"'1'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         assertThrows(IngestException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
     }
     
@@ -409,7 +409,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsVal(new String[]{"'2020-01-01'"});
         TimestampUtils timestampUtils = mock(TimestampUtils.class);
         when(timestampUtils.toTimestamp(null, "2020-01-01")).thenThrow(new SQLException(""));
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         assertThrows(DecodingException.class, () -> new MppdbDecodingPlugin(new OpenGaussTimestampUtils(timestampUtils), false, false).decode(data, logSequenceNumber));
     }
     
@@ -421,7 +421,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"raw"});
         tableData.setColumnsVal(new String[]{"'7D'"});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         try (MockedConstruction<PGobject> ignored = mockConstruction(PGobject.class, (mocked, mockContext) -> doThrow(new SQLException()).when(mocked).setValue(anyString()))) {
             WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
             assertNull(actual.getAfterRow().getFirst());
@@ -437,7 +437,7 @@ class MppdbDecodingPluginTest {
         tableData.setColumnsName(new String[]{"data"});
         tableData.setColumnsType(new String[]{"bytea"});
         tableData.setColumnsVal(new String[]{hexValue});
-        ByteBuffer data = ByteBuffer.wrap(JsonEngine.toJsonString(tableData).getBytes());
+        ByteBuffer data = ByteBuffer.wrap(JsonEngine.marshal(tableData).getBytes());
         assertThrows(IllegalArgumentException.class, () -> new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber));
     }
     

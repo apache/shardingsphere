@@ -51,7 +51,7 @@ public final class GitHubTestParameterLoadStrategy implements ExternalTestParame
         if (content.isEmpty()) {
             return Collections.emptyList();
         }
-        Object rootNode = JsonEngine.fromJsonString(content, Object.class);
+        Object rootNode = JsonEngine.unmarshal(content, Object.class);
         return rootNode instanceof Collection ? getFileSummariesByArray((Collection<?>) rootNode) : getFileSummaries((Map<?, ?>) rootNode);
     }
     

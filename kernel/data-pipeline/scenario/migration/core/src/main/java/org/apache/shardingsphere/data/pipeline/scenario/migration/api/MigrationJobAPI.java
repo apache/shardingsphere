@@ -271,7 +271,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
             props.add(getStandardProperty(standardProps, "minPoolSize"));
             props.add(getStandardProperty(standardProps, "readOnly"));
             Map<String, Object> otherProps = value.getCustomProperties().getProperties();
-            props.add(otherProps.isEmpty() ? "" : JsonEngine.toJsonString(otherProps));
+            props.add(otherProps.isEmpty() ? "" : JsonEngine.marshal(otherProps));
             result.add(props);
         }
         return result;

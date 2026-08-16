@@ -192,7 +192,7 @@ public final class GovernanceMetadataQueryService {
             return new RedactedValue(value, false);
         }
         try {
-            return redactNested(JsonEngine.fromJsonString(text, Object.class));
+            return redactNested(JsonEngine.unmarshal(text, Object.class));
         } catch (final JsonException ignored) {
             return new RedactedValue(value, false);
         }

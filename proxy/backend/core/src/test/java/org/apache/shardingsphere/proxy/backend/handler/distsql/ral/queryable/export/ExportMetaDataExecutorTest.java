@@ -334,7 +334,7 @@ class ExportMetaDataExecutorTest {
     }
     
     private ExportedClusterInfo convertToExportedClusterInfo(final String base64String) {
-        return JsonEngine.fromJsonString(new String(Base64.decodeBase64(base64String)), ExportedClusterInfo.class);
+        return JsonEngine.unmarshal(new String(Base64.decodeBase64(base64String)), ExportedClusterInfo.class);
     }
     
     private YamlProxyServerConfiguration convertToYamlProxyServerConfig(final String serverConfig) {

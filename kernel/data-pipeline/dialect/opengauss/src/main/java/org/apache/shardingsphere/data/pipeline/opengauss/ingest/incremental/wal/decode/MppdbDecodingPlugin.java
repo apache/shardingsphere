@@ -119,7 +119,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private AbstractRowEvent readTableEvent(final String mppData) {
         MppTableData mppTableData;
-        mppTableData = JsonEngine.fromJsonString(mppData, MppTableData.class);
+        mppTableData = JsonEngine.unmarshal(mppData, MppTableData.class);
         String rowEventType = mppTableData.getOpType();
         PipelineSQLOperationType type;
         try {

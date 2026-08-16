@@ -179,7 +179,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     }
     
     protected Map<String, Object> getTextContentPayload(final CallToolResult actual) {
-        return JsonEngine.fromJsonString(((TextContent) actual.content().getFirst()).text(), new JsonTypeReference<>() {
+        return JsonEngine.unmarshal(((TextContent) actual.content().getFirst()).text(), new JsonTypeReference<>() {
         });
     }
     
