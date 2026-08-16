@@ -101,7 +101,7 @@ class MCPDescriptorYamlKeyValidatorTest {
                 """;
         assertDoesNotThrow(() -> MCPDescriptorYamlKeyValidator.validate("test.yaml", toBytes(yamlContent)));
     }
-
+    
     @Test
     void assertValidateNullRoot() {
         assertValidationError("null", "MCP descriptor resource `test.yaml` expects map at `$`.");
