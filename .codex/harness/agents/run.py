@@ -207,6 +207,10 @@ def validate_cases(cases: list[dict[str, Any]]) -> None:
         if "required_summary_prefix" in each:
             if not isinstance(each["required_summary_prefix"], str) or not each["required_summary_prefix"]:
                 raise ValueError(f"Required summary prefix must be a non-empty string for case: {each['id']}")
+        for field in ("required_summary_terms", "forbidden_summary_terms"):
+            terms = each.get(field)
+            if field in each and (not isinstance(terms, list) or not terms or any(not isinstance(term, str) or not term for term in terms)):
+                raise ValueError(f"Summary terms must be a non-empty list of non-empty strings for case: {each['id']}")
 
 
 def load_cases(case_ids: list[str] | None) -> list[dict[str, Any]]:
@@ -295,6 +299,9 @@ def normalize_case_contracts(cases: list[dict[str, Any]]) -> list[dict[str, Any]
             contract["max_summary_chars"] = each["max_summary_chars"]
         if "required_summary_prefix" in each:
             contract["required_summary_prefix"] = each["required_summary_prefix"]
+        for field in ("required_summary_terms", "forbidden_summary_terms"):
+            if field in each:
+                contract[field] = sorted(each[field])
         contracts.append(contract)
     return sorted(contracts, key=lambda each: each["id"])
 
@@ -551,6 +558,17 @@ def grade(cases: list[dict[str, Any]], actual: dict[str, Any]) -> list[dict[str,
                 failures.append(
                     f"summary does not start with required prefix={expected['required_summary_prefix']!r}"
                 )
+            folded_summary = summary.casefold()
+            missing_summary_terms = [
+                each for each in expected.get("required_summary_terms", []) if each.casefold() not in folded_summary
+            ]
+            forbidden_summary_terms = [
+                each for each in expected.get("forbidden_summary_terms", []) if each.casefold() in folded_summary
+            ]
+            if missing_summary_terms:
+                failures.append(f"summary lacks required terms={missing_summary_terms}")
+            if forbidden_summary_terms:
+                failures.append(f"summary contains forbidden terms={forbidden_summary_terms}")
             if "max_summary_chars" in expected and len(summary) > expected["max_summary_chars"]:
                 failures.append(
                     f"summary characters={len(summary)} maximum={expected['max_summary_chars']}"

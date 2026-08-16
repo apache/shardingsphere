@@ -704,6 +704,94 @@ required_summary_prefix = "Parser adapters must not reference LegacyNode. Before
 critical = true
 
 [[cases]]
+id = "documentation_wording_replaces_abstract_fields"
+group = "reasoning"
+description = "Requires abstract field labels to become a concrete check, action, and failure result."
+phase = "documentation wording review and ordinary completion loop"
+ordinary_loop = true
+prompt = "This is a self-contained wording request; do not edit a local artifact. Rewrite the field-style text as one direct sentence and return only the revised rule: `Authority source: API schema. Constraint strength: mandatory. Compatibility goal: preserve compatibility. Check object: each changed key. Action: reject the change. Problem result: the key differs from the schema.`"
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = ["documentation_wording_required"]
+response_style = "concise"
+max_summary_chars = 160
+required_summary_terms = ["changed key", "API schema", "reject", "differs", "compatibility"]
+forbidden_summary_terms = ["Authority source", "Constraint strength", "Compatibility goal", "Check object", "Action:", "Problem result"]
+critical = true
+
+[[cases]]
+id = "documentation_wording_removes_redundant_structure"
+group = "reasoning"
+description = "Removes a repeated heading, a non-comparative table, field-style fragments, and a duplicate summary from a short document."
+phase = "documentation wording review and ordinary completion loop"
+ordinary_loop = true
+prompt = "This is a self-contained wording request; do not edit a local artifact. Rewrite this short document without redundant structure and return only the revision: `## Validation\n\n### Validation\n\n| Field | Value |\n| --- | --- |\n| Scope | YAML keys. |\n| Rule | Reject unknown keys. |\n| Check | Compare them with the schema. |\n\n**Summary:** Reject unknown YAML keys.`"
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = ["documentation_wording_required"]
+response_style = "concise"
+max_summary_chars = 100
+required_summary_terms = ["## YAML", "schema", "reject", "unknown"]
+forbidden_summary_terms = ["###", "|", "**Summary:**"]
+critical = true
+
+[[cases]]
+id = "documentation_wording_uses_established_term"
+group = "reasoning"
+description = "Replaces a coined umbrella term with the established project term."
+phase = "documentation wording review and ordinary completion loop"
+ordinary_loop = true
+prompt = "This is a self-contained wording request; do not edit a local artifact. In this repository, `validate configuration` is the established term for comparing configuration keys with the schema and rejecting unknown keys. Rewrite this sentence and return only the revised rule: `Perform configuration-schema congruence before loading.`"
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = ["documentation_wording_required"]
+response_style = "concise"
+max_summary_chars = 60
+required_summary_terms = ["validate", "configuration", "before loading"]
+forbidden_summary_terms = ["congruence"]
+critical = true
+
+[[cases]]
+id = "documentation_wording_keeps_sentence_on_one_line"
+group = "reasoning"
+description = "Keeps a complete sentence on one physical line."
+phase = "documentation wording review and ordinary completion loop"
+ordinary_loop = true
+prompt = "This is a self-contained wording request; do not edit a local artifact. Return one Markdown bullet, keep its complete sentence on one physical line, and return only the revision: `Reject unknown keys when\nloading configuration.`"
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = ["documentation_wording_required"]
+response_style = "concise"
+max_summary_chars = 49
+required_summary_prefix = "- Reject unknown keys when loading configuration."
+critical = true
+
+[[cases]]
+id = "documentation_wording_preserves_complete_policy"
+group = "reasoning"
+description = "Preserves scope, obligation strength, a verified exception, and its verification duty while simplifying policy text."
+phase = "documentation wording review and ordinary completion loop"
+ordinary_loop = true
+prompt = "This is a self-contained wording request; do not edit a local artifact. In this repository, `reference LegacyNode` is the established term for importing it, creating its instances, or using type checks against it. The migration-test fixture exception is verified and permits that reference only while reading archived v1 snapshots. Simplify this policy and return only the revised rule: `Every parser adapter must not import LegacyNode, create LegacyNode instances, or use type checks against LegacyNode. Parser adapters must never create LegacyNode instances. Migration-test fixtures may import LegacyNode, but only while reading archived v1 snapshots. Before release, inspect every parser adapter and migration-test fixture and confirm that no other LegacyNode import, construction, or type check remains.`"
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = ["documentation_wording_required"]
+response_style = "concise"
+max_summary_chars = 280
+required_summary_terms = ["Parser adapters must not reference LegacyNode", "Migration-test fixtures may reference", "only while reading archived v1 snapshots", "Before release", "inspect every parser adapter and migration-test fixture", "no other LegacyNode reference remains"]
+critical = true
+
+[[cases]]
 id = "meaningless_getter_test"
 group = "coding / tests"
 description = "Rejects tests that prove only trivial mechanics or inflate coverage."
