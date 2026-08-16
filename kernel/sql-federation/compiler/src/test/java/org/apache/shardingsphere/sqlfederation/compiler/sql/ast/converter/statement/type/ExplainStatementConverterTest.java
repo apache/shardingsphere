@@ -46,6 +46,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class ExplainStatementConverterTest {
     
@@ -81,8 +83,8 @@ class ExplainStatementConverterTest {
     
     @Test
     void assertConvertUnsupportedSQLStatementThrowsException() {
-        DCLStatement mockStatement = mock(DCLStatement.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
-        Mockito.when(mockStatement.getDatabaseType()).thenReturn(databaseType);
+        DCLStatement mockStatement = mock(DCLStatement.class, withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
+        when(mockStatement.getDatabaseType()).thenReturn(databaseType);
         ExplainStatement explainStatement = new ExplainStatement(databaseType, mockStatement);
         assertThrows(IllegalStateException.class, () -> new ExplainStatementConverter().convert(explainStatement));
     }
