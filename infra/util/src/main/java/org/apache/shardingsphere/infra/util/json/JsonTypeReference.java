@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.json;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.lang.reflect.ParameterizedType;
@@ -27,18 +28,14 @@ import java.lang.reflect.Type;
  *
  * @param <T> referenced type
  */
+@Getter
 public abstract class JsonTypeReference<T> {
     
     private final Type type;
     
     protected JsonTypeReference() {
         Type genericSuperclass = getClass().getGenericSuperclass();
-        ShardingSpherePreconditions.checkState(genericSuperclass instanceof ParameterizedType,
-                () -> new IllegalArgumentException("JsonTypeReference must be constructed with actual type information."));
+        ShardingSpherePreconditions.checkState(genericSuperclass instanceof ParameterizedType, () -> new IllegalArgumentException("JsonTypeReference must be constructed with actual type info."));
         type = ((ParameterizedType) genericSuperclass).getActualTypeArguments()[0];
-    }
-    
-    final Type getType() {
-        return type;
     }
 }
