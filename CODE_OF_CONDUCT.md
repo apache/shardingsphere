@@ -97,6 +97,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
    - Error tolerance testing: Get expected results through incorrect inputs such as illegal data, exception flows, etc.
 - Use `assert` prefix for all test method names.
 - Unit tests must exercise behavior through public APIs only. Reflection-based invocation of private members is forbidden. If tests must access fields via reflection, use `Plugins.getMemberAccessor()` and limit reflection to `Field` access only.
+- Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class.
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
 - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
 - Each test case needs precise assertions, try not to use `not`, `containsString` assertions.
@@ -116,6 +117,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
    - When unit tests contain objects that are not easy to construct, for example: objects with more than two levels of nesting and unrelated to testing, `mock` should be used.
    - For mocking static methods or constructors, consider using `AutoMockExtension` and `StaticMockSettings` provided by the testing framework for automatic resource release; if using Mockito's `mockStatic` and `mockConstruction` methods, must be paired with `try-with-resource` or closed in cleanup methods to avoid leaks.
    - When verifying only one call, there's no need to use `times(1)` parameter, the single-parameter method of `verify` is sufficient.
+- Do not stub methods or verify interactions that do not affect the behavior or result being tested. Omit stubbing when Mockito's default return value is sufficient.
 - For deep chained interactions, use Mockito’s `RETURNS_DEEP_STUBS` instead of layering intermediate mocks.
 - Test data should use standardized prefixes (e.g., `foo_`/`bar_`) to clearly identify their test purpose
 - Use `PropertiesBuilder` simplify `Properties` building.
