@@ -227,6 +227,27 @@ class FirebirdBatchExecuteCommandExecutorTest {
     }
     
     @Test
+    void assertExecuteWhenBatchExecutionFailed() {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
+        when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(batchStatement.getParameterValues()).thenReturn(Collections.singletonList(Collections.singletonList("foo_value")));
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+        when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
+        SQLException expected = new SQLException("batch execution failed");
+        try (
+                MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
+                MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
+                        (mock, context) -> when(mock.executeBatch()).thenThrow(expected))) {
+            mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
+            SQLException actual = assertThrows(SQLException.class, () -> new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute());
+            assertThat(actual, is(expected));
+            verify(batchStatement, never()).reset();
+        }
+    }
+    
+    @Test
     void assertExecuteWithNoBatchStatement() throws SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
