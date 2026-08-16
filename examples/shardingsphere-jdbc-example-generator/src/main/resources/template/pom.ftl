@@ -224,11 +224,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <artifactId>snakeyaml</artifactId>
-            <groupId>org.yaml</groupId>
-            <version>1.33</version>
-        </dependency>
     <#elseif framework=="spring-boot-starter-mybatis">
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
