@@ -28,8 +28,6 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -76,7 +74,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         if (null == connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId)) {
             throw new InvalidStatementHandleException(statementId);
         }
-        if (null != FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, statementId)) {
+        if (null != FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionId, statementId)) {
             throw new BatchAlreadyOpenedException(statementId);
         }
         ByteBuf batchBlr = packet.getBatchBlr();
@@ -91,8 +89,8 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         }
         ByteBuf batchParametersBuffer = packet.getBatchParametersBuffer();
         BatchParameters batchParameters = BatchParameters.parse(batchParametersBuffer);
-        FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionId, statementId,
-                new FirebirdBatchStatement(statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts(), batchParameters.isMultiError()));
+        FirebirdBatchStatementManager.getInstance().registerBatchStatement(
+                connectionId, statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts(), batchParameters.isMultiError());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
     

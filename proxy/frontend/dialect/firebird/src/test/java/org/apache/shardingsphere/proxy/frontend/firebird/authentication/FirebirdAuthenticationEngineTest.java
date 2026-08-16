@@ -50,11 +50,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset.FirebirdCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -94,8 +90,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({
-        ConnectionIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdStatementIdGenerator.class, FirebirdFetchStatementCache.class,
-        FirebirdBlobIdGenerator.class, FirebirdBlobWriteCache.class, ProxyContext.class
+        ConnectionIdGenerator.class, FirebirdConnectionResourceManager.class, ProxyContext.class
 })
 class FirebirdAuthenticationEngineTest {
     
@@ -106,19 +101,7 @@ class FirebirdAuthenticationEngineTest {
     private ConnectionIdGenerator idGenerator;
     
     @Mock
-    private FirebirdTransactionIdGenerator transactionIdGenerator;
-    
-    @Mock
-    private FirebirdStatementIdGenerator statementIdGenerator;
-    
-    @Mock
-    private FirebirdFetchStatementCache fetchStatementCache;
-    
-    @Mock
-    private FirebirdBlobIdGenerator blobIdGenerator;
-    
-    @Mock
-    private FirebirdBlobWriteCache blobUploadCache;
+    private FirebirdConnectionResourceManager connectionResourceManager;
     
     @Mock
     private ProxyContext proxyContext;
@@ -129,17 +112,9 @@ class FirebirdAuthenticationEngineTest {
     void assertHandshake() {
         when(ConnectionIdGenerator.getInstance()).thenReturn(idGenerator);
         when(idGenerator.nextId()).thenReturn(1);
-        when(FirebirdTransactionIdGenerator.getInstance()).thenReturn(transactionIdGenerator);
-        when(FirebirdStatementIdGenerator.getInstance()).thenReturn(statementIdGenerator);
-        when(FirebirdFetchStatementCache.getInstance()).thenReturn(fetchStatementCache);
-        when(FirebirdBlobIdGenerator.getInstance()).thenReturn(blobIdGenerator);
-        when(FirebirdBlobWriteCache.getInstance()).thenReturn(blobUploadCache);
+        when(FirebirdConnectionResourceManager.getInstance()).thenReturn(connectionResourceManager);
         assertThat(authenticationEngine.handshake(context), is(1));
-        verify(transactionIdGenerator).registerConnection(1);
-        verify(statementIdGenerator).registerConnection(1);
-        verify(fetchStatementCache).registerConnection(1);
-        verify(blobIdGenerator).registerConnection(1);
-        verify(blobUploadCache).registerConnection(1);
+        verify(connectionResourceManager).registerConnection(1);
     }
     
     @Test
