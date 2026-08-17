@@ -23,7 +23,11 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverTabl
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RecoverTableStatementTestCase;
-import org.junit.jupiter.api.Assertions;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Recover table statement assert for Doris.
@@ -46,27 +50,27 @@ public final class DorisRecoverTableStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final DorisRecoverTableStatement actual, final RecoverTableStatementTestCase expected) {
         if (null == expected.getTable()) {
-            Assertions.assertNull(actual.getTableName(), assertContext.getText("Actual table should not exist."));
+            assertNull(actual.getTableName(), assertContext.getText("Actual table should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getTableName(), assertContext.getText("Actual table should exist."));
+            assertNotNull(actual.getTableName(), assertContext.getText("Actual table should exist."));
             TableAssert.assertIs(assertContext, actual.getTableName(), expected.getTable());
         }
     }
     
     private static void assertTableId(final SQLCaseAssertContext assertContext, final DorisRecoverTableStatement actual, final RecoverTableStatementTestCase expected) {
         if (null == expected.getTableId()) {
-            Assertions.assertNull(actual.getTableId(), assertContext.getText("Actual table id should not exist."));
+            assertNull(actual.getTableId(), assertContext.getText("Actual table id should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getTableId(), assertContext.getText("Actual table id should exist."));
-            Assertions.assertEquals(expected.getTableId(), actual.getTableId().getIdentifier().getValue(), assertContext.getText("Table id assertion error: "));
+            assertNotNull(actual.getTableId(), assertContext.getText("Actual table id should exist."));
+            assertThat(assertContext.getText("Table id assertion error: "), actual.getTableId().getIdentifier().getValue(), is(expected.getTableId()));
         }
     }
     
     private static void assertNewTable(final SQLCaseAssertContext assertContext, final DorisRecoverTableStatement actual, final RecoverTableStatementTestCase expected) {
         if (null == expected.getNewTable()) {
-            Assertions.assertNull(actual.getNewTableName(), assertContext.getText("Actual new table should not exist."));
+            assertNull(actual.getNewTableName(), assertContext.getText("Actual new table should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getNewTableName(), assertContext.getText("Actual new table should exist."));
+            assertNotNull(actual.getNewTableName(), assertContext.getText("Actual new table should exist."));
             TableAssert.assertIs(assertContext, actual.getNewTableName(), expected.getNewTable());
         }
     }

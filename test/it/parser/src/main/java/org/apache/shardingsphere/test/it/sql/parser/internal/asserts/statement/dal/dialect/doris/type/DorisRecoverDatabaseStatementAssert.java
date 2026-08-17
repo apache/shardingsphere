@@ -23,7 +23,11 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverData
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RecoverDatabaseStatementTestCase;
-import org.junit.jupiter.api.Assertions;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Recover database statement assert for Doris.
@@ -46,27 +50,27 @@ public final class DorisRecoverDatabaseStatementAssert {
     
     private static void assertDatabase(final SQLCaseAssertContext assertContext, final DorisRecoverDatabaseStatement actual, final RecoverDatabaseStatementTestCase expected) {
         if (null == expected.getDatabase()) {
-            Assertions.assertNull(actual.getDatabaseName(), assertContext.getText("Actual database should not exist."));
+            assertNull(actual.getDatabaseName(), assertContext.getText("Actual database should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getDatabaseName(), assertContext.getText("Actual database should exist."));
+            assertNotNull(actual.getDatabaseName(), assertContext.getText("Actual database should exist."));
             DatabaseAssert.assertIs(assertContext, actual.getDatabaseName(), expected.getDatabase());
         }
     }
     
     private static void assertDatabaseId(final SQLCaseAssertContext assertContext, final DorisRecoverDatabaseStatement actual, final RecoverDatabaseStatementTestCase expected) {
         if (null == expected.getDatabaseId()) {
-            Assertions.assertNull(actual.getDatabaseId(), assertContext.getText("Actual database id should not exist."));
+            assertNull(actual.getDatabaseId(), assertContext.getText("Actual database id should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getDatabaseId(), assertContext.getText("Actual database id should exist."));
-            Assertions.assertEquals(expected.getDatabaseId(), actual.getDatabaseId().getIdentifier().getValue(), assertContext.getText("Database id assertion error: "));
+            assertNotNull(actual.getDatabaseId(), assertContext.getText("Actual database id should exist."));
+            assertThat(assertContext.getText("Database id assertion error: "), actual.getDatabaseId().getIdentifier().getValue(), is(expected.getDatabaseId()));
         }
     }
     
     private static void assertNewDatabase(final SQLCaseAssertContext assertContext, final DorisRecoverDatabaseStatement actual, final RecoverDatabaseStatementTestCase expected) {
         if (null == expected.getNewDatabase()) {
-            Assertions.assertNull(actual.getNewDatabaseName(), assertContext.getText("Actual new database should not exist."));
+            assertNull(actual.getNewDatabaseName(), assertContext.getText("Actual new database should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getNewDatabaseName(), assertContext.getText("Actual new database should exist."));
+            assertNotNull(actual.getNewDatabaseName(), assertContext.getText("Actual new database should exist."));
             DatabaseAssert.assertIs(assertContext, actual.getNewDatabaseName(), expected.getNewDatabase());
         }
     }

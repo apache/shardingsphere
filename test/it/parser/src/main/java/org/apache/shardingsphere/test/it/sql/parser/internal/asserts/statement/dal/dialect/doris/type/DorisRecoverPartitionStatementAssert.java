@@ -24,7 +24,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.partition.PartitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RecoverPartitionStatementTestCase;
-import org.junit.jupiter.api.Assertions;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Recover partition statement assert for Doris.
@@ -48,36 +52,36 @@ public final class DorisRecoverPartitionStatementAssert {
     
     private static void assertPartition(final SQLCaseAssertContext assertContext, final DorisRecoverPartitionStatement actual, final RecoverPartitionStatementTestCase expected) {
         if (null == expected.getPartition()) {
-            Assertions.assertNull(actual.getPartitionName(), assertContext.getText("Actual partition should not exist."));
+            assertNull(actual.getPartitionName(), assertContext.getText("Actual partition should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getPartitionName(), assertContext.getText("Actual partition should exist."));
+            assertNotNull(actual.getPartitionName(), assertContext.getText("Actual partition should exist."));
             PartitionAssert.assertIs(assertContext, actual.getPartitionName(), expected.getPartition());
         }
     }
     
     private static void assertPartitionId(final SQLCaseAssertContext assertContext, final DorisRecoverPartitionStatement actual, final RecoverPartitionStatementTestCase expected) {
         if (null == expected.getPartitionId()) {
-            Assertions.assertNull(actual.getPartitionId(), assertContext.getText("Actual partition id should not exist."));
+            assertNull(actual.getPartitionId(), assertContext.getText("Actual partition id should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getPartitionId(), assertContext.getText("Actual partition id should exist."));
-            Assertions.assertEquals(expected.getPartitionId(), actual.getPartitionId().getIdentifier().getValue(), assertContext.getText("Partition id assertion error: "));
+            assertNotNull(actual.getPartitionId(), assertContext.getText("Actual partition id should exist."));
+            assertThat(assertContext.getText("Partition id assertion error: "), actual.getPartitionId().getIdentifier().getValue(), is(expected.getPartitionId()));
         }
     }
     
     private static void assertNewPartition(final SQLCaseAssertContext assertContext, final DorisRecoverPartitionStatement actual, final RecoverPartitionStatementTestCase expected) {
         if (null == expected.getNewPartition()) {
-            Assertions.assertNull(actual.getNewPartitionName(), assertContext.getText("Actual new partition should not exist."));
+            assertNull(actual.getNewPartitionName(), assertContext.getText("Actual new partition should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getNewPartitionName(), assertContext.getText("Actual new partition should exist."));
+            assertNotNull(actual.getNewPartitionName(), assertContext.getText("Actual new partition should exist."));
             PartitionAssert.assertIs(assertContext, actual.getNewPartitionName(), expected.getNewPartition());
         }
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final DorisRecoverPartitionStatement actual, final RecoverPartitionStatementTestCase expected) {
         if (null == expected.getTable()) {
-            Assertions.assertNull(actual.getTableName(), assertContext.getText("Actual table should not exist."));
+            assertNull(actual.getTableName(), assertContext.getText("Actual table should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getTableName(), assertContext.getText("Actual table should exist."));
+            assertNotNull(actual.getTableName(), assertContext.getText("Actual table should exist."));
             TableAssert.assertIs(assertContext, actual.getTableName(), expected.getTable());
         }
     }
