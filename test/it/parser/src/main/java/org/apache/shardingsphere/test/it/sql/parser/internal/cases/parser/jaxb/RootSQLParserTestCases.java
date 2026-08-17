@@ -22,6 +22,9 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DorisRefreshStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RecoverDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RecoverPartitionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RecoverTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowAlterTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBuildIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
@@ -680,6 +683,15 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-alter-table")
     private final List<ShowAlterTableStatementTestCase> showAlterTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "recover-database")
+    private final List<RecoverDatabaseStatementTestCase> recoverDatabaseTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "recover-table")
+    private final List<RecoverTableStatementTestCase> recoverTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "recover-partition")
+    private final List<RecoverPartitionStatementTestCase> recoverPartitionTestCases = new LinkedList<>();
     
     @XmlElement(name = "doris-show-proc")
     private final List<DorisShowProcStatementTestCase> dorisShowProcTestCases = new LinkedList<>();

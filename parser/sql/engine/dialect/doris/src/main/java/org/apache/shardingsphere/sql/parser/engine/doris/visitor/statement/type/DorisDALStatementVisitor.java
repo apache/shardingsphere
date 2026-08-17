@@ -65,6 +65,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OptionV
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepairTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverPartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepositoryNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResetOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResetPersistContext;
@@ -194,6 +197,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionIdSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetMasterOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
@@ -215,9 +219,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseIdSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableIdSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
@@ -272,6 +279,9 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadSta
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadWarningsStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowResourcesStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowStreamLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverPartitionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesNameConditionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesResourceTypeConditionSegment;
@@ -1159,6 +1169,53 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitRestart(final RestartContext ctx) {
         return new MySQLRestartStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitRecoverDatabase(final RecoverDatabaseContext ctx) {
+        DorisRecoverDatabaseStatement result = new DorisRecoverDatabaseStatement(getDatabaseType());
+        result.setDatabaseName((DatabaseSegment) visit(ctx.databaseName()));
+        if (null != ctx.databaseId()) {
+            result.setDatabaseId(new DatabaseIdSegment(ctx.databaseId().start.getStartIndex(), ctx.databaseId().stop.getStopIndex(),
+                    new IdentifierValue(ctx.databaseId().getText())));
+        }
+        if (null != ctx.newDatabaseName) {
+            result.setNewDatabaseName(new DatabaseSegment(ctx.newDatabaseName.start.getStartIndex(), ctx.newDatabaseName.stop.getStopIndex(),
+                    new IdentifierValue(ctx.newDatabaseName.getText())));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRecoverTable(final RecoverTableContext ctx) {
+        DorisRecoverTableStatement result = new DorisRecoverTableStatement(getDatabaseType());
+        result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.tableId()) {
+            result.setTableId(new TableIdSegment(ctx.tableId().start.getStartIndex(), ctx.tableId().stop.getStopIndex(),
+                    new IdentifierValue(ctx.tableId().getText())));
+        }
+        if (null != ctx.newTableName) {
+            result.setNewTableName(new SimpleTableSegment(new TableNameSegment(ctx.newTableName.start.getStartIndex(), ctx.newTableName.stop.getStopIndex(),
+                    new IdentifierValue(ctx.newTableName.getText()))));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRecoverPartition(final RecoverPartitionContext ctx) {
+        DorisRecoverPartitionStatement result = new DorisRecoverPartitionStatement(getDatabaseType());
+        result.setPartitionName(new PartitionSegment(ctx.partitionName().start.getStartIndex(), ctx.partitionName().stop.getStopIndex(),
+                new IdentifierValue(ctx.partitionName().getText())));
+        if (null != ctx.partitionId()) {
+            result.setPartitionId(new PartitionIdSegment(ctx.partitionId().start.getStartIndex(), ctx.partitionId().stop.getStopIndex(),
+                    new IdentifierValue(ctx.partitionId().getText())));
+        }
+        if (null != ctx.newPartitionName) {
+            result.setNewPartitionName(new PartitionSegment(ctx.newPartitionName.start.getStartIndex(), ctx.newPartitionName.stop.getStopIndex(),
+                    new IdentifierValue(ctx.newPartitionName.getText())));
+        }
+        result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
     }
     
     @Override

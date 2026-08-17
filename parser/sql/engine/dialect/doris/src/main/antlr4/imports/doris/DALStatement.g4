@@ -668,6 +668,18 @@ resetPersist
     : RESET PERSIST (ifExists? identifier)?
     ;
 
+recoverDatabase
+    : RECOVER DATABASE databaseName databaseId? (AS newDatabaseName=identifier)?
+    ;
+
+recoverTable
+    : RECOVER TABLE tableName tableId? (AS newTableName=identifier)?
+    ;
+
+recoverPartition
+    : RECOVER PARTITION partitionName partitionId? (AS newPartitionName=identifier)? FROM tableName
+    ;
+
 restart
     : RESTART
     ;

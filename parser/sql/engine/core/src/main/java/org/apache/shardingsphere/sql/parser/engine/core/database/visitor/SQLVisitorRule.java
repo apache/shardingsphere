@@ -557,6 +557,12 @@ public enum SQLVisitorRule {
     
     REPAIR_TABLE("RepairTable", SQLStatementType.DAL),
     
+    RECOVER_DATABASE("RecoverDatabase", SQLStatementType.DAL),
+    
+    RECOVER_TABLE("RecoverTable", SQLStatementType.DAL),
+    
+    RECOVER_PARTITION("RecoverPartition", SQLStatementType.DAL),
+    
     KILL("Kill", SQLStatementType.DAL),
     
     RESET("ResetStatement", SQLStatementType.DAL),
