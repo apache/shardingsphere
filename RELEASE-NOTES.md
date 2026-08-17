@@ -9,6 +9,7 @@
 ### New Features
 
 1. MCP: Add standalone ShardingSphere-MCP Server - [#38541](https://github.com/apache/shardingsphere/pull/38541)
+1. SQL Parser: Support parsing Doris RECOVER statements - [#31504](https://github.com/apache/shardingsphere/issues/31504)
 
 ### Bug Fixes
 
