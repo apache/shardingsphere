@@ -45,7 +45,7 @@ public final class WorkflowAlgorithmUtils {
     
     private static final String ALGORITHM_TYPE_KEY = "type";
     
-    private static final JsonTypeReference<Map<?, ?>> JSON_PROPERTY_MAP_TYPE = new JsonTypeReference<Map<?, ?>>() {
+    private static final JsonTypeReference<Map<?, ?>> JSON_PROPERTY_MAP_TYPE = new JsonTypeReference<>() {
     };
     
     /**
