@@ -250,6 +250,18 @@ public final class ShardingTable {
         return actualTables.contains(actualTableName);
     }
     
+    /**
+     * Whether contains data node with specified data source name and actual table name.
+     *
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return contains or not
+     */
+    public boolean containsDataNode(final String dataSourceName, final String actualTableName) {
+        Collection<String> tables = dataSourceToTablesMap.get(dataSourceName);
+        return null != tables && tables.contains(actualTableName);
+    }
+    
     private void checkRule(final Collection<String> dataNodes) {
         ShardingSpherePreconditions.checkState(!isEmptyDataNodes(dataNodes) || null == tableShardingStrategyConfig || tableShardingStrategyConfig instanceof NoneShardingStrategyConfiguration,
                 () -> new MissingRequiredDataNodesException(logicTable));
