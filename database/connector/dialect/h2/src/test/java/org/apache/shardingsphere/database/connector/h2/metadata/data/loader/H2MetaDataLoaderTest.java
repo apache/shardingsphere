@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Ind
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -33,9 +34,12 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
@@ -101,6 +105,31 @@ class H2MetaDataLoaderTest {
     }
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
+    @Test
+    void assertLoadWithView() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        ResultSet resultSet = mockTableAndViewMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION, COALESCE(IS_VISIBLE, FALSE) IS_VISIBLE, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS"
+                        + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL','TBL_VIEW') ORDER BY ORDINAL_POSITION")
+                .executeQuery()).thenReturn(resultSet);
+        ResultSet viewResultSet = mockViewMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_TYPE='VIEW' AND UPPER(TABLE_NAME) IN ('TBL_VIEW','TBL')")
+                .executeQuery()).thenReturn(viewResultSet);
+        DataTypeRegistry.load(dataSource, "H2");
+        Collection<SchemaMetaData> schemaMetaDataList = getDialectTableMetaDataLoader().load(
+                new MetaDataLoaderMaterial(Arrays.asList("tbl", "tbl_view"), "foo_ds", dataSource, databaseType, "sharding_db"));
+        assertThat(schemaMetaDataList.size(), is(1));
+        Map<String, TableType> actualTableTypes = new HashMap<>();
+        for (TableMetaData each : schemaMetaDataList.iterator().next().getTables()) {
+            actualTableTypes.put(each.getName(), each.getType());
+        }
+        assertThat(actualTableTypes.get("tbl"), is(TableType.TABLE));
+        assertThat(actualTableTypes.get("tbl_view"), is(TableType.VIEW));
+    }
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
@@ -126,6 +155,24 @@ class H2MetaDataLoaderTest {
         when(result.getInt("ORDINAL_POSITION")).thenReturn(0, 1);
         when(result.getBoolean("IS_VISIBLE")).thenReturn(true, false);
         when(result.getString("IS_NULLABLE")).thenReturn("NO", "YES");
+        return result;
+    }
+    
+    private ResultSet mockTableAndViewMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "tbl_view");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "id");
+        when(result.getString("DATA_TYPE")).thenReturn("int", "int");
+        when(result.getBoolean("IS_VISIBLE")).thenReturn(true);
+        when(result.getString("IS_NULLABLE")).thenReturn("NO");
+        return result;
+    }
+    
+    private ResultSet mockViewMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl_view");
         return result;
     }
     
