@@ -720,6 +720,10 @@ databaseName
     : identifier
     ;
 
+databaseId
+    : identifier | NUMBER_
+    ;
+
 databaseNames
     : databaseName (COMMA_ databaseName)*
     ;
@@ -746,6 +750,10 @@ databasePair
 
 tableName
     : (owner DOT_)? name
+    ;
+
+tableId
+    : identifier | NUMBER_
     ;
 
 columnName
@@ -918,6 +926,10 @@ userOrRole
 
 partitionName
     : identifier
+    ;
+
+partitionId
+    : identifier | NUMBER_
     ;
 
 identifierList

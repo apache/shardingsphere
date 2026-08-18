@@ -28,6 +28,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Sh
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverPartitionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
@@ -40,6 +43,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.standard.type.ShowAlterTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAlterSqlBlockRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisDropSqlBlockRuleStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisRecoverDatabaseStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisRecoverPartitionStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisRecoverTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisShowSqlBlockRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisShowRoutineLoadTaskStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisShowRoutineLoadStatementAssert;
@@ -49,6 +55,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadTaskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RecoverDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RecoverPartitionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RecoverTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBuildIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowAlterTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.standard.EmptyStatementTestCase;
@@ -90,6 +99,12 @@ public final class StandardDALStatementAssert {
             DorisShowRoutineLoadTaskStatementAssert.assertIs(assertContext, (DorisShowRoutineLoadTaskStatement) actual, (DorisShowRoutineLoadTaskStatementTestCase) expected);
         } else if (actual instanceof DorisShowRoutineLoadStatement) {
             DorisShowRoutineLoadStatementAssert.assertIs(assertContext, (DorisShowRoutineLoadStatement) actual, (DorisShowRoutineLoadStatementTestCase) expected);
+        } else if (actual instanceof DorisRecoverDatabaseStatement) {
+            DorisRecoverDatabaseStatementAssert.assertIs(assertContext, (DorisRecoverDatabaseStatement) actual, (RecoverDatabaseStatementTestCase) expected);
+        } else if (actual instanceof DorisRecoverTableStatement) {
+            DorisRecoverTableStatementAssert.assertIs(assertContext, (DorisRecoverTableStatement) actual, (RecoverTableStatementTestCase) expected);
+        } else if (actual instanceof DorisRecoverPartitionStatement) {
+            DorisRecoverPartitionStatementAssert.assertIs(assertContext, (DorisRecoverPartitionStatement) actual, (RecoverPartitionStatementTestCase) expected);
         } else if (actual instanceof ShowAlterTableStatement) {
             ShowAlterTableStatementAssert.assertIs(assertContext, (ShowAlterTableStatement) actual, (ShowAlterTableStatementTestCase) expected);
         }

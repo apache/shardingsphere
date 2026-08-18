@@ -102,6 +102,9 @@ execute
     | setResourceGroup
     | resignalStatement
     | signalStatement
+    | recoverDatabase
+    | recoverTable
+    | recoverPartition
     | restart
     | shutdown
     | begin
