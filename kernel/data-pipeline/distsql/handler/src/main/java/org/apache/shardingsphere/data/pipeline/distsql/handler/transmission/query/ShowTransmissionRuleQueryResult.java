@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +51,7 @@ public final class ShowTransmissionRuleQueryResult {
     }
     
     private String getString(final Object obj) {
-        return null == obj ? "" : JsonUtils.toJsonString(obj);
+        return null == obj ? "" : JsonEngine.marshal(obj);
     }
     
     /**

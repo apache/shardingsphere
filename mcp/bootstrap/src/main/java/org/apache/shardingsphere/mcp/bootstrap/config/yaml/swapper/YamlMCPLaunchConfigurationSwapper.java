@@ -23,6 +23,9 @@ import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+
+import java.util.Map;
 
 /**
  * YAML MCP launch configuration swapper.
@@ -45,8 +48,10 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
         MCPConfigurationValidator.validate(yamlConfig, "MCP launch configuration");
         YamlMCPTransportConfiguration yamlTransportConfig = yamlConfig.getTransport();
-        return new MCPLaunchConfiguration(yamlTransportConfig.getType(), httpTransportConfigSwapper.swapToObject(yamlTransportConfig.getHttp()),
-                runtimeDatabasesSwapper.swapToObject(yamlConfig.getRuntimeDatabases()));
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = runtimeDatabasesSwapper.swapToObject(yamlConfig.getRuntimeDatabases());
+        return MCPTransportType.HTTP == yamlTransportConfig.getType()
+                ? new MCPLaunchConfiguration(httpTransportConfigSwapper.swapToObject(yamlTransportConfig.getHttp()), runtimeDatabases)
+                : new MCPLaunchConfiguration(runtimeDatabases);
     }
     
     private YamlMCPTransportConfiguration createYamlTransportConfiguration(final MCPLaunchConfiguration data) {

@@ -20,6 +20,25 @@ grammar PLSQL;
 import Keyword, BaseRule, DDLStatement, DMLStatement, TCLStatement;
 
 @parser::members {
+    private boolean isUnquotedHanTextQueryBlock() {
+        if (SELECT != _input.LA(1) || IDENTIFIER_ != _input.LA(2) || !containsHanCharacter(_input.LT(2).getText())) {
+            return false;
+        }
+        int offset = 3;
+        while (COMMA_ == _input.LA(offset)) {
+            if (!"\uFF0C".equals(_input.LT(offset).getText()) || IDENTIFIER_ != _input.LA(++offset) || !containsHanCharacter(_input.LT(offset).getText())) {
+                return false;
+            }
+            offset++;
+        }
+        return AS == _input.LA(offset) && FROM == _input.LA(offset + 2) && IDENTIFIER_ == _input.LA(offset + 3)
+                && "DUAL".equalsIgnoreCase(_input.LT(offset + 3).getText());
+    }
+
+    private boolean containsHanCharacter(final String value) {
+        return value.codePoints().anyMatch(each -> Character.UnicodeScript.HAN == Character.UnicodeScript.of(each));
+    }
+
     private boolean isNotPlsqlBlockTerminator() {
         switch (_input.LA(1)) {
             case END:
@@ -64,6 +83,36 @@ dropProcedure
 
 createProcedure
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? PROCEDURE plsqlProcedureSource
+    ;
+
+createPackage
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? PACKAGE (plsqlPackageSource | BODY plsqlPackageBodySource)
+    ;
+
+plsqlPackageSource
+    : packageIfNotExists? (schemaName DOT_)? packageName sharingClause? (defaultCollationClause | invokerRightsClause | accessibleByClause)* (IS | AS)
+    packageSpecificationItem* END packageName? SEMI_?
+    ;
+
+packageSpecificationItem
+    : typeDefinition
+    | cursorDeclaration
+    | itemDeclaration
+    | functionDeclaration SEMI_
+    | procedureDeclaration SEMI_
+    | pragma
+    ;
+
+plsqlPackageBodySource
+    : packageIfNotExists? (schemaName DOT_)? packageName (IS | AS) declareItem*? packageInitialization? END packageName? SEMI_?
+    ;
+
+packageIfNotExists
+    : IF NOT EXISTS
+    ;
+
+packageInitialization
+    : BEGIN plsqlStatements (EXCEPTION exceptionHandler+)?
     ;
 
 plsqlProcedureSource

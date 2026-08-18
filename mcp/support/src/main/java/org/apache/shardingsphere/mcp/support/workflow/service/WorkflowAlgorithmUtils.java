@@ -23,6 +23,10 @@ import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternal
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.json.JsonException;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -39,9 +43,10 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowAlgorithmUtils {
     
-    private static final String SECRET_REFERENCE_PREFIX = "secret_reference:";
-    
     private static final String ALGORITHM_TYPE_KEY = "type";
+    
+    private static final JsonTypeReference<Map<?, ?>> JSON_PROPERTY_MAP_TYPE = new JsonTypeReference<>() {
+    };
     
     /**
      * Normalize algorithm type.
@@ -160,7 +165,7 @@ public final class WorkflowAlgorithmUtils {
     }
     
     private static boolean hasSecretReference(final Map<String, String> properties) {
-        return properties.values().stream().anyMatch(each -> Objects.toString(each, "").startsWith(SECRET_REFERENCE_PREFIX));
+        return properties.values().stream().anyMatch(each -> SecretReferenceValue.isPlaceholder(Objects.toString(each, "")));
     }
     
     private static Map<String, String> parsePropertyString(final String value) {
@@ -168,7 +173,54 @@ public final class WorkflowAlgorithmUtils {
         if (actualValue.isEmpty() || "{}".equals(actualValue)) {
             return Map.of();
         }
-        String normalizedValue = actualValue;
+        if (isJSONPropertyMap(actualValue)) {
+            if (!hasSingleJSONObject(actualValue)) {
+                return Map.of();
+            }
+            try {
+                return parseJSONPropertyString(actualValue);
+            } catch (final JsonException ignored) {
+                return Map.of();
+            }
+        }
+        return parseLegacyPropertyString(actualValue);
+    }
+    
+    private static Map<String, String> parseJSONPropertyString(final String value) {
+        return createPropertyMap(JsonEngine.unmarshal(value, JSON_PROPERTY_MAP_TYPE));
+    }
+    
+    private static boolean isJSONPropertyMap(final String value) {
+        return value.startsWith("{") && value.substring(1).trim().startsWith("\"");
+    }
+    
+    private static boolean hasSingleJSONObject(final String value) {
+        int objectDepth = 0;
+        boolean inString = false;
+        boolean escaped = false;
+        for (int i = 0; i < value.length(); i++) {
+            char each = value.charAt(i);
+            if (inString) {
+                if (escaped) {
+                    escaped = false;
+                } else if ('\\' == each) {
+                    escaped = true;
+                } else if ('"' == each) {
+                    inString = false;
+                }
+            } else if ('"' == each) {
+                inString = true;
+            } else if ('{' == each) {
+                objectDepth++;
+            } else if ('}' == each && 0 == --objectDepth) {
+                return value.substring(i + 1).isBlank();
+            }
+        }
+        return false;
+    }
+    
+    private static Map<String, String> parseLegacyPropertyString(final String value) {
+        String normalizedValue = value;
         if (normalizedValue.startsWith("{") && normalizedValue.endsWith("}")) {
             normalizedValue = normalizedValue.substring(1, normalizedValue.length() - 1);
         }

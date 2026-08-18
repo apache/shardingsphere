@@ -28,7 +28,9 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.bi
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -124,7 +126,12 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
         if (isStringParameterType(parameterType) && isBinaryColumnType(parameterColumnTypes, paramIndex)) {
             return payload.readStringLenencByBytes();
         }
-        return binaryProtocolValue.read(payload, (unsignedFlag & UNSIGNED_FLAG) == UNSIGNED_FLAG);
+        Object result = binaryProtocolValue.read(payload, (unsignedFlag & UNSIGNED_FLAG) == UNSIGNED_FLAG);
+        return isDateParameter(parameterColumnTypes, paramIndex, parameterType) && result instanceof Timestamp ? new Date(((Timestamp) result).getTime()) : result;
+    }
+    
+    private boolean isDateParameter(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex, final MySQLBinaryColumnType parameterType) {
+        return MySQLBinaryColumnType.DATE == parameterType || MySQLBinaryColumnType.DATE == getParameterColumnType(parameterColumnTypes, paramIndex);
     }
     
     private MySQLBinaryColumnType getParameterColumnType(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex) {

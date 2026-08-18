@@ -28,9 +28,11 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShar
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -48,6 +50,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -112,5 +115,16 @@ class WhereClauseShardingConditionEngineTest {
         List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertThat(actual.get(0).getStartIndex(), is(0));
         assertThat(actual.get(0).getValues().get(0), isA(ListShardingConditionValue.class));
+    }
+    
+    @Test
+    void assertCreateEmptyShardingConditionsForBinaryOperatorRangeStatement() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        ExpressionSegment binaryColumn = new UnaryOperationExpression(0, 0, left, "BINARY", "BINARY foo_sharding_col");
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, binaryColumn, new LiteralExpressionSegment(0, 0, "100"), ">", null);
+        when(whereSegment.getExpr()).thenReturn(expression);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
+        assertTrue(actual.isEmpty());
     }
 }

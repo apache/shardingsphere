@@ -25,14 +25,20 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
+import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
+
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class ExecutorEngineTest {
@@ -87,5 +93,35 @@ class ExecutorEngineTest {
         List<String> actual = executorEngine.execute(executionGroupContext, firstCallback, callback, true);
         latch.await();
         assertThat(actual.size(), is(4));
+    }
+    
+    @Test
+    void assertParallelExecuteThrowsWhenInterrupted() throws InterruptedException {
+        CountDownLatch neverReleased = new CountDownLatch(1);
+        CountDownLatch asyncStarted = new CountDownLatch(1);
+        // The trunk thread interrupts itself while the async group is still running, so the
+        // Future.get() that follows throws InterruptedException. A future that has already
+        // completed hands back its value even with the flag set, hence the block.
+        ExecutorCallback<Object, String> interruptingFirstCallback = (inputs, isTrunkThread, processId) -> {
+            Thread.currentThread().interrupt();
+            return Collections.singletonList("succeed");
+        };
+        ExecutorCallback<Object, String> blockingCallback = (inputs, isTrunkThread, processId) -> {
+            asyncStarted.countDown();
+            try {
+                neverReleased.await(30L, TimeUnit.SECONDS);
+            } catch (final InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+            return Collections.singletonList("succeed");
+        };
+        try {
+            assertThrows(UnknownSQLException.class,
+                    () -> executorEngine.execute(executionGroupContext, interruptingFirstCallback, blockingCallback, false));
+        } finally {
+            Thread.interrupted();
+            neverReleased.countDown();
+            asyncStarted.await(30L, TimeUnit.SECONDS);
+        }
     }
 }

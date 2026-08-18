@@ -21,10 +21,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureCallNameSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedRoutineName;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.List;
+import java.util.LinkedList;
 
 /**
  * Create trigger statement test case.
@@ -33,7 +38,22 @@ import java.util.List;
 @Setter
 public final class CreateTriggerStatementTestCase extends SQLParserTestCase {
     
+    @XmlElement(name = "trigger-name")
+    private ExpectedRoutineName triggerName;
+    
     @XmlElementWrapper(name = "procedure-calls")
     @XmlElement(name = "procedure-call")
     private List<ExpectedProcedureCallNameSegment> procedureCalls;
+    
+    @XmlAttribute(name = "sql-statement-count")
+    private Integer sqlStatementCount;
+    
+    @XmlAttribute(name = "disable-clause-start-index")
+    private Integer disableClauseStartIndex;
+    
+    @XmlElement(name = "table")
+    private final List<ExpectedSimpleTable> tables = new LinkedList<>();
+    
+    @XmlElement(name = "pseudo-column")
+    private final List<ExpectedColumn> pseudoColumns = new LinkedList<>();
 }

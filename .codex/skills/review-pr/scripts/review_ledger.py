@@ -80,9 +80,44 @@ def ensure_safe_ledger_file(ledger_file: Path) -> None:
         raise RuntimeError(f"Ledger is outside the private review ledger root: {target}")
 
 
-def validate_schema(ledger: dict[str, Any]) -> None:
+def validate_schema(ledger: object) -> None:
+    if not isinstance(ledger, dict):
+        raise RuntimeError("Malformed review coverage ledger")
     if LEDGER_KIND != ledger.get("kind") or LEDGER_VERSION != ledger.get("version"):
         raise RuntimeError("Unsupported or invalid review coverage ledger")
+    required_types = {
+        "scope": dict,
+        "files": list,
+        "findings": list,
+        "passes": list,
+        "review_revision": int,
+    }
+    if any(not isinstance(ledger.get(key), expected_type) for key, expected_type in required_types.items()):
+        raise RuntimeError("Malformed review coverage ledger")
+    if not isinstance(ledger["scope"].get("github_files", {}), dict):
+        raise RuntimeError("Malformed review coverage ledger scope")
+    entry_schemas = (
+        ("file", ledger["files"], {
+            "path": str, "status": str, "clusters": list, "risk_axes": list, "findings": list,
+        }),
+        ("finding", ledger["findings"], {
+            "id": str, "status": str, "origin": str, "fix_boundary": str, "evidence": list, "full_path": list,
+            "counter_evidence": list, "necessity": str, "scope_proof": str, "files": list, "reason": str,
+        }),
+        ("pass", ledger["passes"], {
+            "focus": str, "new_findings": int, "review_revision": int,
+        }),
+    )
+    for entry_name, entries, schema in entry_schemas:
+        for entry in entries:
+            if not isinstance(entry, dict) or any(not isinstance(entry.get(key), expected_type) for key, expected_type in schema.items()):
+                raise RuntimeError(f"Malformed review coverage ledger {entry_name} entry")
+    list_fields = ((ledger["files"], ("clusters", "risk_axes", "findings")),
+                   (ledger["findings"], ("evidence", "full_path", "counter_evidence", "files")))
+    for entries, fields in list_fields:
+        for entry in entries:
+            if any(not all(isinstance(value, str) for value in entry[field]) for field in fields):
+                raise RuntimeError("Malformed review coverage ledger list entry")
 
 
 def read_ledger(value: str | Path) -> dict[str, Any]:
@@ -114,6 +149,15 @@ def unique_extend(values: list[str], additions: Iterable[str]) -> None:
     for each in additions:
         if each not in values:
             values.append(each)
+
+
+def has_text(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def has_text_entries(values: Iterable[object]) -> bool:
+    entries = list(values)
+    return bool(entries) and all(has_text(each) for each in entries)
 
 
 def sync_file_findings(ledger: dict[str, Any]) -> None:
@@ -230,6 +274,7 @@ def cmd_add_pass(args: argparse.Namespace) -> int:
 
 
 def validate_ledger(ledger: dict[str, Any]) -> list[str]:
+    validate_schema(ledger)
     result: list[str] = []
     github_files = ledger["scope"].get("github_files", {})
     if github_files.get("provided") and not github_files.get("matched"):
@@ -249,16 +294,16 @@ def validate_ledger(ledger: dict[str, Any]) -> list[str]:
         result.append(f"Blocked files require more evidence or an incomplete result: {len(blocked_files)}")
     missing_clusters = [each["path"] for each in ledger["files"]
                         if each["status"] in SUBSTANTIVE_FILE_STATUSES
-                        and (not each.get("clusters") or not all(each["clusters"]))]
+                        and not has_text_entries(each["clusters"])]
     if missing_clusters:
         result.append(f"Substantive files missing behavior clusters: {len(missing_clusters)}")
     missing_risk_axes = [each["path"] for each in ledger["files"]
                          if each["status"] in SUBSTANTIVE_FILE_STATUSES
-                         and (not each.get("risk_axes") or not all(each["risk_axes"]))]
+                         and not has_text_entries(each["risk_axes"])]
     if missing_risk_axes:
         result.append(f"Substantive files missing reviewed risk axes: {len(missing_risk_axes)}")
     unexplained_files = [each["path"] for each in ledger["files"]
-                         if each["status"] in EXPLAINED_FILE_STATUSES and not each.get("reason")]
+                         if each["status"] in EXPLAINED_FILE_STATUSES and not has_text(each.get("reason"))]
     if unexplained_files:
         result.append(f"Non-substantive file classifications missing reasons: {len(unexplained_files)}")
     finding_counts = Counter(each["id"] for each in ledger["findings"])
@@ -285,24 +330,24 @@ def validate_ledger(ledger: dict[str, Any]) -> list[str]:
         if unknown_files:
             result.append(f"{each['id']} references files outside scope: {', '.join(unknown_files)}")
         if "confirmed" == each["status"]:
-            if not each["origin"]:
+            if not has_text(each["origin"]):
                 result.append(f"{each['id']} confirmed finding is missing origin")
-            if not each["fix_boundary"]:
+            if not has_text(each["fix_boundary"]):
                 result.append(f"{each['id']} confirmed finding is missing fix boundary")
-            if not each["evidence"]:
+            if not has_text_entries(each["evidence"]):
                 result.append(f"{each['id']} confirmed finding is missing evidence")
-            if not each.get("full_path"):
+            if not has_text_entries(each["full_path"]):
                 result.append(f"{each['id']} confirmed finding is missing full-path review")
-            if not each.get("counter_evidence"):
+            if not has_text_entries(each["counter_evidence"]):
                 result.append(f"{each['id']} confirmed finding is missing counter-evidence review")
-            if not each.get("necessity"):
+            if not has_text(each["necessity"]):
                 result.append(f"{each['id']} confirmed finding is missing necessity")
-            if not each.get("scope_proof"):
+            if not has_text(each["scope_proof"]):
                 result.append(f"{each['id']} confirmed finding is missing scope proof")
-            if not each["files"]:
+            if not has_text_entries(each["files"]):
                 result.append(f"{each['id']} confirmed finding is missing scope files")
         if "review-incomplete-gap" == each["status"]:
-            if not each["reason"]:
+            if not has_text(each["reason"]):
                 result.append(f"{each['id']} incomplete gap is missing a reason")
             result.append(f"{each['id']} requires a Review Incomplete result")
     pass_foci = {each.get("focus") for each in ledger["passes"]}

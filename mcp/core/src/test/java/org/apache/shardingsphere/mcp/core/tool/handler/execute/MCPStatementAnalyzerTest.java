@@ -152,6 +152,13 @@ class MCPStatementAnalyzerTest {
     }
     
     @Test
+    void assertAnalyzeMultipleDCLReferences() {
+        ClassificationResult actual = analyzer.analyze("GRANT CONNECT ON DATABASE other_db, archive_db TO PUBLIC", createCapability("PostgreSQL"));
+        assertThat(getObjectNames(actual), contains("other_db", "archive_db"));
+        assertTrue(actual.getReferencedObjects().stream().allMatch(SQLStatementObjectName::isNamespaceTarget));
+    }
+    
+    @Test
     void assertAnalyzeQualifiedFunctionReference() {
         ClassificationResult actual = analyzer.analyze("SELECT other_db.foo_refresh_orders()", createCapability("MySQL"));
         assertThat(getObjectNames(actual), contains("other_db.foo_refresh_orders"));
@@ -228,23 +235,31 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("drop schema", "PostgreSQL", "DROP SCHEMA order_archive", List.of("order_archive")),
                 Arguments.of("create sequence", "PostgreSQL", "CREATE SEQUENCE order_seq", List.of("order_seq")),
                 Arguments.of("alter sequence", "PostgreSQL", "ALTER SEQUENCE order_seq INCREMENT BY 2", List.of("order_seq")),
-                Arguments.of("drop sequence", "PostgreSQL", "DROP SEQUENCE order_seq", List.of("order_seq")));
+                Arguments.of("drop sequence", "PostgreSQL", "DROP SEQUENCE order_seq", List.of("order_seq")),
+                Arguments.of("qualified function in XML expression", "PostgreSQL", "SELECT XMLELEMENT(NAME result, other_db.foo_refresh_orders())",
+                        List.of("other_db.foo_refresh_orders")));
     }
     
     private static Stream<Arguments> statementCases() {
         return Stream.of(
                 Arguments.of("trim trailing semicolon", "MySQL", "  SELECT * FROM orders ;  ", SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM orders", "orders", ""),
+                Arguments.of("trailing comment after semicolon", "ClickHouse", "SELECT 1; /* trailing comment */", SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", ""),
+                Arguments.of("trailing line comment after semicolon", "ClickHouse", "SELECT 1; --trailing comment", SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", ""),
+                Arguments.of("trailing executable comment after semicolon", "MySQL", "SELECT 1; /*!80018 SELECT 2 */", SupportedMCPStatement.QUERY, "SELECT", "SELECT 1", "", ""),
+                Arguments.of("supplementary character before semicolon", "MySQL", "SELECT '😀';", SupportedMCPStatement.QUERY, "SELECT", "SELECT '😀'", "", ""),
                 Arguments.of("semicolon literal", "MySQL", "SELECT ';' AS literal_value", SupportedMCPStatement.QUERY, "SELECT", "SELECT ';' AS literal_value", "", ""),
                 Arguments.of("mysql hash comment", "MySQL", "SELECT 1 # @order_status := 1", SupportedMCPStatement.QUERY, "SELECT",
                         "SELECT 1 # @order_status := 1", "", ""),
                 Arguments.of("postgresql adjacent dash comment", "PostgreSQL", "SELECT 1--@order_status:=1", SupportedMCPStatement.QUERY, "SELECT",
                         "SELECT 1--@order_status:=1", "", ""),
-                Arguments.of("postgresql dollar quoted literal", "PostgreSQL", "SELECT $$@order_status:=1; /*!80018 ANALYZE */$$", SupportedMCPStatement.QUERY, "SELECT",
-                        "SELECT $$@order_status:=1; /*!80018 ANALYZE */$$", "", ""),
+                Arguments.of("postgresql dollar quoted literal", "PostgreSQL", "SELECT $$/*!80018 ANALYZE */; @order_status:=1$$", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT $$/*!80018 ANALYZE */; @order_status:=1$$", "", ""),
                 Arguments.of("opengauss tagged dollar quoted literal", "openGauss", "SELECT $tag$a;b$tag$", SupportedMCPStatement.QUERY, "SELECT",
                         "SELECT $tag$a;b$tag$", "", ""),
                 Arguments.of("user variable assignment string", "MySQL", "SELECT '@order_status := 1'", SupportedMCPStatement.QUERY, "SELECT",
                         "SELECT '@order_status := 1'", "", ""),
+                Arguments.of("executable comment marker string", "MySQL", "SELECT '/*M!100000 SELECT 1 */'", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT '/*M!100000 SELECT 1 */'", "", ""),
                 Arguments.of("with query", "PostgreSQL", "WITH order_result AS (SELECT * FROM orders) SELECT * FROM order_result",
                         SupportedMCPStatement.QUERY, "SELECT", "WITH order_result AS (SELECT * FROM orders) SELECT * FROM order_result", "orders", ""),
                 Arguments.of("with update", "PostgreSQL", "WITH order_result AS (SELECT * FROM orders) UPDATE order_archive SET status = 'DONE' FROM order_result",
@@ -266,6 +281,7 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("grant", "MySQL", "GRANT SELECT ON orders TO PUBLIC", SupportedMCPStatement.DCL, "GRANT", "GRANT SELECT ON orders TO PUBLIC", "orders", ""),
                 Arguments.of("revoke", "MySQL", "REVOKE SELECT ON orders FROM PUBLIC", SupportedMCPStatement.DCL, "REVOKE", "REVOKE SELECT ON orders FROM PUBLIC", "orders", ""),
                 Arguments.of("begin", "MySQL", "BEGIN", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "BEGIN", "", ""),
+                Arguments.of("begin without dialect parser support", "SQLServer", "BEGIN", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "BEGIN", "", ""),
                 Arguments.of("start transaction", "MySQL", "START TRANSACTION", SupportedMCPStatement.TRANSACTION_CONTROL, "START TRANSACTION", "START TRANSACTION", "", ""),
                 Arguments.of("commit", "MySQL", "COMMIT", SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "COMMIT", "", ""),
                 Arguments.of("rollback", "MySQL", "ROLLBACK", SupportedMCPStatement.TRANSACTION_CONTROL, "ROLLBACK", "ROLLBACK", "", ""),
@@ -283,9 +299,16 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("blank", "MySQL", "   ", MCPInvalidRequestException.class, "sql cannot be empty."),
                 Arguments.of("delimiter only", "MySQL", ";", MCPInvalidRequestException.class, "sql cannot be empty."),
                 Arguments.of("multiple statements", "MySQL", "SELECT 1; SELECT 2", MCPMultipleSQLStatementsException.class, "Only one SQL statement is allowed."),
+                Arguments.of("string-only second statement", "MySQL", "SELECT 1; 'value'", MCPMultipleSQLStatementsException.class, "Only one SQL statement is allowed."),
+                Arguments.of("dollar-quoted second statement", "PostgreSQL", "SELECT 1; $$value$$", MCPMultipleSQLStatementsException.class,
+                        "Only one SQL statement is allowed."),
                 Arguments.of("multiple statements after dollar quoted literal", "PostgreSQL", "SELECT $$a;b$$; SELECT 2", MCPMultipleSQLStatementsException.class,
                         "Only one SQL statement is allowed."),
                 Arguments.of("unterminated quote", "MySQL", "SELECT 'value", MCPUnsupportedSQLStatementException.class,
+                        "Statement is not supported by the MCP contract."),
+                Arguments.of("unterminated block comment", "MySQL", "SELECT 1 /* comment", MCPUnsupportedSQLStatementException.class,
+                        "Statement is not supported by the MCP contract."),
+                Arguments.of("unterminated bracket", "SQLServer", "SELECT [value", MCPUnsupportedSQLStatementException.class,
                         "Statement is not supported by the MCP contract."),
                 Arguments.of("unterminated dollar quote", "PostgreSQL", "SELECT $tag$value", MCPUnsupportedSQLStatementException.class,
                         "Statement is not supported by the MCP contract."),
@@ -307,9 +330,17 @@ class MCPStatementAnalyzerTest {
                 Arguments.of("banned call", "MySQL", "CALL refresh_orders()", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned select into outfile", "MySQL", "SELECT * FROM orders INTO OUTFILE '/tmp/orders.csv'", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
+                Arguments.of("banned select into outfile before from", "MySQL", "SELECT * INTO OUTFILE '/tmp/orders.csv' FROM orders", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned select into dumpfile", "MySQL", "SELECT * FROM orders INTO DUMPFILE '/tmp/orders.bin'", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
                 Arguments.of("banned executable comment", "MySQL", "SELECT 1 /*!50000 UNION SELECT 2 */", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned MariaDB executable comment", "MariaDB", "SELECT 1 /*M!100000 UNION SELECT 2 */", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned PostgreSQL executable comment", "PostgreSQL", "SELECT 1 /*! UNION SELECT 2 */", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned ClickHouse executable comment", "ClickHouse", "SELECT 1 /*! UNION SELECT 2 */", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned nextval", "PostgreSQL", "SELECT nextval('order_seq')", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
@@ -317,6 +348,8 @@ class MCPStatementAnalyzerTest {
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned next value for", "SQLServer", "SELECT NEXT VALUE FOR order_seq", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
+                Arguments.of("banned next value for with ordering", "SQLServer", "SELECT NEXT VALUE FOR logic_db.dbo.order_seq OVER (ORDER BY order_id)",
+                        MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned nextval pseudocolumn", "Oracle", "SELECT order_seq.NEXTVAL FROM dual", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned named lock", "MySQL", "SELECT GET_LOCK('order_lock', 1)", MCPBannedSQLStatementException.class,
@@ -325,6 +358,12 @@ class MCPStatementAnalyzerTest {
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned advisory lock", "PostgreSQL", "SELECT pg_advisory_lock(1)", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
+                Arguments.of("banned advisory lock in combined query", "PostgreSQL", "SELECT 1 UNION SELECT pg_advisory_lock(1)", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned advisory lock in XML expression", "PostgreSQL", "SELECT XMLELEMENT(NAME result, pg_advisory_lock(1))",
+                        MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned advisory lock in aggregation window", "PostgreSQL", "SELECT SUM(order_id) OVER (ORDER BY pg_advisory_lock(1)) FROM orders",
+                        MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned configuration mutation", "PostgreSQL", "SELECT set_config('search_path', 'public', false)", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned replication slot advance", "PostgreSQL", "SELECT pg_replication_slot_advance('order_slot', '0/1')",
@@ -345,7 +384,12 @@ class MCPStatementAnalyzerTest {
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned metadata lookup", "PostgreSQL", "SELECT to_regclass('orders')", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
+                Arguments.of("banned metadata lookup in SQL Server case expression", "SQLServer",
+                        "SELECT CASE WHEN 1 = 1 THEN OBJECT_ID('foo_orders') ELSE 0 END", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
                 Arguments.of("banned alter system", "PostgreSQL", "ALTER SYSTEM SET shared_buffers = '128MB'", MCPBannedSQLStatementException.class,
+                        "Statement is banned by the MCP contract."),
+                Arguments.of("banned alter system with line break", "PostgreSQL", "ALTER\nSYSTEM SET shared_buffers = '128MB'", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),
                 Arguments.of("banned create user", "MySQL", "CREATE USER app_user IDENTIFIED BY 'pwd'", MCPBannedSQLStatementException.class,
                         "Statement is banned by the MCP contract."),

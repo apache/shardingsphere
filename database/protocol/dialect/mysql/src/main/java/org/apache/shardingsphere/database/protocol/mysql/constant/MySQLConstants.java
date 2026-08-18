@@ -21,6 +21,7 @@ import io.netty.util.AttributeKey;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,6 +34,8 @@ public final class MySQLConstants {
     public static final AttributeKey<AtomicInteger> SEQUENCE_ID_ATTRIBUTE_KEY = AttributeKey.valueOf("MYSQL_SEQUENCE_ID");
     
     public static final AttributeKey<MySQLCharacterSets> CHARACTER_SET_ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLCharacterSets.class.getName());
+    
+    public static final AttributeKey<Charset> RESULT_CHARSET_ATTRIBUTE_KEY = AttributeKey.valueOf("MYSQL_RESULT_CHARSET");
     
     public static final AttributeKey<Integer> OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY = AttributeKey.valueOf("MYSQL_OPTION_MULTI_STATEMENTS");
     

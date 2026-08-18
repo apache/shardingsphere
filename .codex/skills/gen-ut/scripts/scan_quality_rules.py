@@ -16,13 +16,15 @@
 #
 
 #!/usr/bin/env python3
-"""
-Consolidated quality-rule scan for gen-ut.
-"""
+"""Mechanical quality-rule scan and task-scope guard for gen-ut."""
 
 import argparse
+import difflib
+import hashlib
 import json
+import os
 import re
+import stat
 import subprocess
 import sys
 from collections import defaultdict
@@ -37,13 +39,13 @@ class CandidateSummary:
     method: str
     plain_test_count: int
     parameterized_present: bool
-    high_fit: bool
 
 
 @dataclass(frozen=True)
 class RuleSpec:
     name: str
     message: str
+    mode: str
 
 
 @dataclass(frozen=True)
@@ -55,6 +57,7 @@ class FileScanContext:
     candidates: list[CandidateSummary]
     target_type_name: str | None
     target_public_methods: set[str]
+    added_lines: list[str]
 
 
 RULE_ORDER = ("R8", "R14", "R15-A", "R15-B", "R15-C", "R15-D", "R15-E", "R15-F", "R15-G", "R15-H", "R15-I", "R15-J")
@@ -71,22 +74,29 @@ PRECHECK_MESSAGES = {
 RULE_MESSAGES = {
     "R8": "@ParameterizedTest must use name = \"{0}\"",
     "R14": "forbidden boolean assertion found",
-    "R15-A": "high-fit candidate likely exists but no parameterized test found",
-    "R15-B": "metadata accessor test detected without explicit user request",
-    "R15-C": "out-of-scope production path modified",
+    "R15-A": "parameterization suitability requires semantic evidence",
+    "R15-B": "metadata accessor candidates require request-scope review",
+    "R15-C": "out-of-scope worktree mutation detected",
     "R15-D": "each @ParameterizedTest must have >= 3 Arguments rows from @MethodSource",
     "R15-E": "each @ParameterizedTest method must declare first parameter as `final String name`",
     "R15-F": "@ParameterizedTest method body must not contain switch",
     "R15-G": "parameterized tests must not introduce nested helper type declarations",
     "R15-H": "do not dispatch boolean assertions by control flow to choose assertTrue/assertFalse",
     "R15-I": "parameterized tests must not use Consumer in signatures or @MethodSource argument rows",
-    "R15-J": "non-test helpers and @MethodSource providers must not invoke target public methods without assertions in test bodies",
+    "R15-J": "helper and provider target invocations require semantic ownership review",
 }
-RULE_SPECS = tuple(RuleSpec(each, RULE_MESSAGES[each]) for each in RULE_ORDER)
+RULE_MODES = {
+    "R15-A": "manual",
+    "R15-B": "manual",
+    "R15-D": "hybrid",
+    "R15-I": "hybrid",
+    "R15-J": "hybrid",
+}
+RULE_SPECS = tuple(RuleSpec(each, RULE_MESSAGES[each], RULE_MODES.get(each, "automated")) for each in RULE_ORDER)
 BOOLEAN_ASSERTION_BAN_PATTERN = re.compile(
-    r"assertThat\s*\((?s:.*?)is\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)\s*\)"
+    r"assertThat\s*\((?s:[^;]*?)is\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)\s*\)"
     r"|assertEquals\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*,"
-    r"|assertEquals\s*\((?s:.*?),\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)",
+    r"|assertEquals\s*\((?s:[^;]*?),\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)",
     re.S,
 )
 CONSUMER_TOKEN_PATTERN = re.compile(r"\bConsumer\s*(?:<|\b)")
@@ -128,13 +138,6 @@ R15_H_IF_RETURN_PATTERN = re.compile(
 )
 R15_NAME_PATTERN = re.compile(r'name\s*=\s*"\{0\}"')
 R15_SWITCH_PATTERN = re.compile(r"\bswitch\s*\(")
-R15_B_PATTERN = re.compile(
-    r"@Test(?s:.*?)void\s+assert\w*(GetType|GetOrder|GetTypeClass)\b"
-    r"|assertThat\((?s:.*?)\.getType\(\)"
-    r"|assertThat\((?s:.*?)\.getOrder\(\)"
-    r"|assertThat\((?s:.*?)\.getTypeClass\(\)",
-    re.S,
-)
 TYPE_DECL_LINE_PATTERN = re.compile(
     r"^\s*(?:(?:public|protected|private|static|final|abstract|sealed|non-sealed)\s+)*(class|interface|enum|record)\s+(\w+)\b"
 )
@@ -142,12 +145,87 @@ PUBLIC_METHOD_DECL_PATTERN = re.compile(
     r"^\s*public\s+(?:default\s+)?(?:static\s+)?(?:final\s+)?[\w$<>\[\], ?]+\s+(\w+)\s*\(",
     re.M,
 )
-UNTRACKED_STATUS_PREFIX = "?? "
 CONSTRUCTOR_TEST_PREFIXES = ("New", "Construct", "Constructor")
+TEST_SCOPE_MARKERS = ("src/test/java/", "src/test/resources/")
+MAVEN_OUTPUT_DIRECTORY = "target"
+PYTHON_CACHE_DIRECTORY = "__pycache__"
+PYTHON_CACHE_SUFFIXES = frozenset((".pyc", ".pyo"))
 
 
 def line_number(source: str, index: int) -> int:
     return source.count("\n", 0, index) + 1
+
+
+def mask_java_non_code(source: str, mask_literals: bool) -> str:
+    result = list(source)
+    index = 0
+    state = "code"
+    while index < len(source):
+        if "line-comment" == state:
+            if "\n" == source[index]:
+                state = "code"
+            else:
+                result[index] = " "
+            index += 1
+            continue
+        if "block-comment" == state:
+            if source.startswith("*/", index):
+                result[index:index + 2] = [" ", " "]
+                index += 2
+                state = "code"
+            else:
+                if "\n" != source[index]:
+                    result[index] = " "
+                index += 1
+            continue
+        if state in ("string", "character"):
+            delimiter = '"' if "string" == state else "'"
+            if "\\" == source[index] and index + 1 < len(source):
+                if mask_literals:
+                    result[index:index + 2] = [" ", " "]
+                index += 2
+                continue
+            if mask_literals and "\n" != source[index]:
+                result[index] = " "
+            if delimiter == source[index]:
+                state = "code"
+            index += 1
+            continue
+        if "text-block" == state:
+            if source.startswith('"""', index):
+                if mask_literals:
+                    result[index:index + 3] = [" ", " ", " "]
+                index += 3
+                state = "code"
+            else:
+                escaped = "\\" == source[index] and index + 1 < len(source)
+                if mask_literals:
+                    result[index] = " " if "\n" != source[index] else "\n"
+                    if escaped and "\n" != source[index + 1]:
+                        result[index + 1] = " "
+                index += 2 if escaped else 1
+            continue
+        if source.startswith("//", index):
+            result[index:index + 2] = [" ", " "]
+            index += 2
+            state = "line-comment"
+        elif source.startswith("/*", index):
+            result[index:index + 2] = [" ", " "]
+            index += 2
+            state = "block-comment"
+        elif source.startswith('"""', index):
+            if mask_literals:
+                result[index:index + 3] = [" ", " ", " "]
+            index += 3
+            state = "text-block"
+        elif source[index] in ('"', "'"):
+            if mask_literals:
+                result[index] = " "
+            state = "string" if '"' == source[index] else "character"
+            index += 1
+        else:
+            index += 1
+    return "".join(result)
 
 
 def opening_brace_index(match: re.Match[str]) -> int:
@@ -216,10 +294,6 @@ def parse_method_sources(method_name: str, annotation_block: str) -> list[str]:
     return result
 
 
-def parse_method_bodies(source: str) -> dict[str, str]:
-    return {name: body for name, (_, body) in parse_method_blocks(source).items()}
-
-
 def parse_method_blocks(source: str) -> dict[str, tuple[int, str]]:
     result = {}
     for match in METHOD_DECL_PATTERN.finditer(source):
@@ -231,39 +305,190 @@ def parse_method_blocks(source: str) -> dict[str, tuple[int, str]]:
     return result
 
 
-def run_git_command(args: list[str], *, allow_failure: bool = False) -> str:
+def run_git_command(args: list[str], *, cwd: Path | None = None, allow_failure: bool = False) -> str:
     try:
-        return subprocess.run(args, check=True, capture_output=True, text=True).stdout
+        return subprocess.run(args, cwd=cwd, check=True, capture_output=True, text=True).stdout
     except subprocess.CalledProcessError:
         if allow_failure:
             return ""
         raise
 
 
-def get_git_diff_lines(path: Path, *, cached: bool = False) -> list[str]:
-    command = ["git", "diff"]
-    if cached:
-        command.append("--cached")
-    command.extend(["-U0", "--", str(path)])
-    return run_git_command(command, allow_failure=True).splitlines()
+def get_repo_root(path: Path | None = None) -> Path:
+    output = run_git_command(["git", "rev-parse", "--show-toplevel"], cwd=path)
+    return Path(output.strip()).resolve()
 
 
-def get_status_line_for_path(path: Path) -> str | None:
-    output = run_git_command(["git", "status", "--porcelain", "--", str(path)], allow_failure=True)
-    lines = [each for each in output.splitlines() if each]
-    return lines[0] if lines else None
+def get_head(repo_root: Path) -> str | None:
+    result = run_git_command(["git", "rev-parse", "--verify", "HEAD"], cwd=repo_root, allow_failure=True).strip()
+    return result or None
 
 
-def get_added_lines_for_path(path: Path) -> list[str]:
+def normalize_repo_paths(repo_root: Path, paths: list[Path]) -> list[str]:
     result = []
-    for cached in (False, True):
-        result.extend(get_git_diff_lines(path, cached=cached))
-    if result:
-        return list(dict.fromkeys(result))
-    status_line = get_status_line_for_path(path)
-    if status_line and status_line.startswith(UNTRACKED_STATUS_PREFIX):
-        return [f"+{each}" for each in path.read_text(encoding="utf-8").splitlines()]
+    for each in paths:
+        resolved = (repo_root / each).resolve() if not each.is_absolute() else each.resolve()
+        try:
+            relative = resolved.relative_to(repo_root)
+        except ValueError as ex:
+            raise ValueError(f"path is outside repository: {resolved}") from ex
+        result.append(relative.as_posix())
+    return sorted(set(result))
+
+
+def validate_test_scope_paths(paths: list[str]) -> None:
+    invalid = [each for each in paths if not any(marker in each for marker in TEST_SCOPE_MARKERS)]
+    if invalid:
+        raise ValueError(f"path is outside test scope: {invalid[0]}")
+
+
+def fingerprint_path(path: Path) -> str:
+    digest = hashlib.sha256()
+    if path.is_symlink():
+        digest.update(b"symlink\0")
+        digest.update(str(path.readlink()).encode("utf-8", errors="surrogateescape"))
+        return digest.hexdigest()
+    if not path.exists():
+        return "missing"
+    if path.is_dir():
+        return "directory"
+    digest.update(b"file\0")
+    digest.update(str(stat.S_IMODE(path.stat().st_mode)).encode("ascii"))
+    digest.update(b"\0")
+    with path.open("rb") as input_file:
+        while chunk := input_file.read(64 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def parse_status_entries(raw: bytes) -> dict[str, str]:
+    records = raw.split(b"\0")
+    result = {}
+    index = 0
+    while index < len(records):
+        record = records[index]
+        index += 1
+        if not record:
+            continue
+        if len(record) < 4 or b" " != record[2:3]:
+            raise ValueError("unexpected git status --porcelain output")
+        status = record[:2].decode("ascii")
+        path = record[3:].decode("utf-8", errors="surrogateescape")
+        result[path] = status
+        if status[0] in "RC" or status[1] in "RC":
+            if index >= len(records) or not records[index]:
+                raise ValueError("incomplete rename entry in git status output")
+            old_path = records[index].decode("utf-8", errors="surrogateescape")
+            result[old_path] = "rename-source"
+            index += 1
     return result
+
+
+def is_maven_target_output(repo_root: Path, path: Path, module_cache: dict[Path, bool]) -> bool:
+    for index, each in enumerate(path.parts):
+        if MAVEN_OUTPUT_DIRECTORY != each:
+            continue
+        module_path = Path(*path.parts[:index])
+        if module_path not in module_cache:
+            module_cache[module_path] = (repo_root / module_path / "pom.xml").is_file()
+        if module_cache[module_path]:
+            return True
+    return False
+
+
+def is_reproducible_verification_output(repo_root: Path, path: str, status: str, module_cache: dict[Path, bool]) -> bool:
+    if status not in ("??", "!!"):
+        return False
+    relative_path = Path(path)
+    python_cache = PYTHON_CACHE_DIRECTORY in relative_path.parts and relative_path.suffix in PYTHON_CACHE_SUFFIXES
+    return python_cache or is_maven_target_output(repo_root, relative_path, module_cache)
+
+
+def collect_worktree_entries(repo_root: Path, allowed_paths: set[str]) -> dict[str, dict[str, str]]:
+    completed = subprocess.run(
+        ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all", "--ignored=traditional"],
+        cwd=repo_root, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    module_cache = {}
+    return {
+        path: {"status": status, "fingerprint": fingerprint_path(repo_root / path)}
+        for path, status in parse_status_entries(completed.stdout).items()
+        if path not in allowed_paths and not is_reproducible_verification_output(repo_root, path, status, module_cache)
+    }
+
+
+def build_scope_snapshot(repo_root: Path, allowed_paths: list[Path]) -> dict:
+    normalized_allowed = normalize_repo_paths(repo_root, allowed_paths)
+    validate_test_scope_paths(normalized_allowed)
+    return {
+        "version": 1,
+        "repo_root": str(repo_root),
+        "head": get_head(repo_root),
+        "allowed_paths": normalized_allowed,
+        "allowed_contents": {
+            each: (repo_root / each).read_text(encoding="utf-8") if each.endswith(".java") and (repo_root / each).is_file() else None
+            for each in normalized_allowed
+        },
+        "outside_entries": collect_worktree_entries(repo_root, set(normalized_allowed)),
+    }
+
+
+def write_scope_baseline(output_path: Path, repo_root: Path, allowed_paths: list[Path]) -> None:
+    repo_root = repo_root.resolve()
+    output_path = output_path.resolve()
+    try:
+        output_path.relative_to(repo_root)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("scope baseline must be stored outside the repository")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = json.dumps(build_scope_snapshot(repo_root, allowed_paths), indent=2, sort_keys=True) + "\n"
+    descriptor = os.open(output_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(descriptor, "w", encoding="utf-8") as output_file:
+        output_file.write(payload)
+
+
+def load_scope_baseline(baseline_path: Path) -> dict:
+    result = json.loads(baseline_path.read_text(encoding="utf-8"))
+    if not isinstance(result, dict) or 1 != result.get("version"):
+        raise ValueError(f"invalid scope baseline: {baseline_path}")
+    expected_types = {
+        "repo_root": str,
+        "allowed_paths": list,
+        "allowed_contents": dict,
+        "outside_entries": dict,
+    }
+    if any(not isinstance(result.get(key), expected_type) for key, expected_type in expected_types.items()):
+        raise ValueError(f"invalid scope baseline: {baseline_path}")
+    if result.get("head") is not None and not isinstance(result.get("head"), str):
+        raise ValueError(f"invalid scope baseline: {baseline_path}")
+    return result
+
+
+def check_scope_baseline(baseline_path: Path, allowed_paths: list[Path]) -> list[str]:
+    if not baseline_path.exists():
+        return [f"missing scope baseline: {baseline_path}"]
+    baseline = load_scope_baseline(baseline_path)
+    repo_root = Path(baseline["repo_root"])
+    if get_head(repo_root) != baseline.get("head"):
+        return ["repository HEAD differs from scope baseline"]
+    normalized_allowed = normalize_repo_paths(repo_root, allowed_paths)
+    if normalized_allowed != baseline.get("allowed_paths"):
+        return ["resolved test file set differs from scope baseline"]
+    current = collect_worktree_entries(repo_root, set(normalized_allowed))
+    before = baseline.get("outside_entries", {})
+    return sorted(path for path in set(before) | set(current) if before.get(path) != current.get(path))
+
+
+def get_added_lines_for_path(path: Path, scope_baseline: dict | None = None) -> list[str]:
+    if scope_baseline is None:
+        return []
+    repo_root = Path(scope_baseline["repo_root"])
+    relative_path = normalize_repo_paths(repo_root, [path])[0]
+    before = scope_baseline.get("allowed_contents", {}).get(relative_path) or ""
+    after = path.read_text(encoding="utf-8") if path.exists() else ""
+    return [f"+{each[2:]}" for each in difflib.ndiff(before.splitlines(), after.splitlines()) if each.startswith("+ ")]
 
 
 def get_top_level_class_name(source: str) -> str | None:
@@ -289,35 +514,21 @@ def resolve_target_source_path(path: Path, source: str) -> Path | None:
     target_type_name = get_target_type_name(source)
     if not target_type_name:
         return None
-    path_text = str(path)
-    test_marker = "/src/test/java/"
-    if test_marker not in path_text:
+    path_text = path.as_posix()
+    test_marker = "src/test/java/"
+    marker_index = path_text.find(test_marker)
+    if marker_index < 0:
         return None
-    return Path(path_text.replace(test_marker, "/src/main/java/")).with_name(f"{target_type_name}.java")
+    target_path = path_text[:marker_index] + "src/main/java/" + path_text[marker_index + len(test_marker):]
+    return Path(target_path).with_name(f"{target_type_name}.java")
 
 
 def load_target_public_methods(path: Path, source: str) -> set[str]:
     target_source_path = resolve_target_source_path(path, source)
     if target_source_path is None or not target_source_path.exists():
         return set()
-    target_source = target_source_path.read_text(encoding="utf-8")
+    target_source = mask_java_non_code(target_source_path.read_text(encoding="utf-8"), False)
     return {match.group(1) for match in PUBLIC_METHOD_DECL_PATTERN.finditer(target_source)}
-
-
-def get_after_status_lines() -> set[str]:
-    output = run_git_command(["git", "status", "--porcelain"])
-    return set(each for each in output.splitlines() if each)
-
-
-def is_src_main_path(path: str) -> bool:
-    return "/src/main/" in path or path.startswith("src/main/")
-
-
-def normalize_status_path(line: str) -> str:
-    path = line[3:].strip()
-    if " -> " in path:
-        path = path.split(" -> ", 1)[1].strip()
-    return path
 
 
 def list_distinct(values: list[str]) -> list[str]:
@@ -349,7 +560,8 @@ def infer_candidate_target(test_method_name: str, invoked_methods: list[str], co
     return None
 
 
-def analyze_parameterization_candidates(path: Path, source: str) -> list[CandidateSummary]:
+def analyze_parameterization_candidates(path: Path, source: str, target_public_methods: set[str]) -> list[CandidateSummary]:
+    source = mask_java_non_code(source, False)
     target_type_name = get_target_type_name(source)
     statistics = defaultdict(lambda: {"plain": 0, "parameterized": False})
     for match in TEST_METHOD_DECL_PATTERN.finditer(source):
@@ -357,7 +569,7 @@ def analyze_parameterization_candidates(path: Path, source: str) -> list[Candida
         test_method_name = match.group(2)
         brace_index = opening_brace_index(match)
         body = extract_block(source, brace_index)
-        invoked_methods = extract_invoked_methods(body)
+        invoked_methods = [each for each in extract_invoked_methods(body) if each in target_public_methods]
         constructed_types = extract_constructed_types(body)
         target = infer_candidate_target(test_method_name, invoked_methods, constructed_types, target_type_name)
         if target is None:
@@ -376,17 +588,17 @@ def analyze_parameterization_candidates(path: Path, source: str) -> list[Candida
                 method=method_name,
                 plain_test_count=plain_test_count,
                 parameterized_present=parameterized_present,
-                high_fit=plain_test_count >= 3,
             ))
     return result
 
 
 def describe_candidate(candidate: dict) -> str:
-    decision = "recommend refactor" if candidate["high_fit"] and not candidate["parameterized_present"] else "already parameterized" if candidate["parameterized_present"] else "observe"
+    decision = "already parameterized" if candidate["parameterized_present"] else "manual-review-required"
     return f'{candidate["path"]}: method={candidate["method"]} plainTestCount={candidate["plain_test_count"]} parameterizedPresent={candidate["parameterized_present"]} decision={decision}'
 
 
 def check_parameterized_name(path: Path, source: str) -> list[str]:
+    source = mask_java_non_code(source, False)
     violations = []
     token = "@ParameterizedTest"
     pos = 0
@@ -416,14 +628,6 @@ def check_parameterized_name(path: Path, source: str) -> list[str]:
     return violations
 
 
-def check_r15_a(candidates: list[CandidateSummary]) -> list[str]:
-    result = []
-    for each in candidates:
-        if each.high_fit and not each.parameterized_present:
-            result.append(f"{each.path}: method={each.method} nonParameterizedCount={each.plain_test_count}")
-    return result
-
-
 def check_r15_d(path: Path, source: str, method_bodies: dict[str, str]) -> list[str]:
     violations = []
     for match in PARAM_METHOD_PATTERN.finditer(source):
@@ -435,19 +639,27 @@ def check_r15_d(path: Path, source: str, method_bodies: dict[str, str]) -> list[
             violations.append(f"{path}:{line} method={method_name} missing @MethodSource")
             continue
         total_rows = 0
-        unresolved = []
         for provider in providers:
             body = method_bodies.get(provider)
             if body is None:
-                unresolved.append(provider)
                 continue
             total_rows += len(re.findall(r"\b(?:Arguments\.of|arguments)\s*\(", body))
-        if unresolved:
-            violations.append(f"{path}:{line} method={method_name} unresolvedProviders={','.join(unresolved)}")
+        if any(provider not in method_bodies for provider in providers):
             continue
         if total_rows < 3:
             violations.append(f"{path}:{line} method={method_name} argumentsRows={total_rows}")
     return violations
+
+
+def find_unresolved_method_sources(path: Path, source: str, method_bodies: dict[str, str]) -> list[str]:
+    result = []
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        method_name = match.group(2)
+        providers = parse_method_sources(method_name, match.group(1))
+        unresolved = [each for each in providers if each not in method_bodies]
+        if unresolved:
+            result.append(f"{path}:{line_number(source, match.start())} method={method_name} unresolvedProviders={','.join(unresolved)}")
+    return result
 
 
 def check_r15_e(path: Path, source: str) -> list[str]:
@@ -478,12 +690,12 @@ def check_r15_f(path: Path, source: str) -> list[str]:
     return violations
 
 
-def check_r15_g(path: Path, source: str) -> list[str]:
+def check_r15_g(path: Path, source: str, added_lines: list[str]) -> list[str]:
     if "@ParameterizedTest" not in source:
         return []
     top_level_class_name = get_top_level_class_name(source)
     violations = []
-    for line in get_added_lines_for_path(path):
+    for line in added_lines:
         if line.startswith("+++") or line.startswith("@@"):
             continue
         if not line.startswith("+"):
@@ -538,23 +750,32 @@ def check_r15_j(context: FileScanContext) -> list[str]:
 
 
 def check_r14(path: Path, source: str) -> list[str]:
+    source = mask_java_non_code(source, True)
     return [f"{path}:{line_number(source, match.start())}" for match in BOOLEAN_ASSERTION_BAN_PATTERN.finditer(source)]
 
 
 def check_r15_h(path: Path, source: str) -> list[str]:
+    source = mask_java_non_code(source, True)
     violations = []
     for match in TEST_METHOD_DECL_PATTERN.finditer(source):
         method_name = match.group(2)
         line = line_number(source, match.start())
         brace_index = opening_brace_index(match)
         body = extract_block(source, brace_index)
-        if R15_H_IF_ELSE_PATTERN.search(body) or R15_H_IF_RETURN_PATTERN.search(body):
+        switch_dispatch = R15_SWITCH_PATTERN.search(body) and "assertTrue" in body and "assertFalse" in body
+        if R15_H_IF_ELSE_PATTERN.search(body) or R15_H_IF_RETURN_PATTERN.search(body) or switch_dispatch:
             violations.append(f"{path}:{line} method={method_name}")
     return violations
 
 
-def check_r15_b(path: Path, source: str) -> list[str]:
-    return [f"{path}:{line_number(source, match.start())}" for match in R15_B_PATTERN.finditer(source)]
+def find_metadata_accessor_test_candidates(path: Path, source: str) -> list[str]:
+    source = mask_java_non_code(source, False)
+    result = []
+    for match in TEST_METHOD_DECL_PATTERN.finditer(source):
+        method_name = match.group(2)
+        if any(method_name.startswith(f"assert{each}") for each in ("GetType", "GetOrder", "GetTypeClass")):
+            result.append(f"{path}:{line_number(source, match.start())} method={method_name}")
+    return result
 
 
 def checkstyle_preview_final_parameters(path: Path, source: str) -> list[str]:
@@ -580,67 +801,33 @@ def collect_precheck_violations(context: FileScanContext) -> dict[str, list[str]
     }
 
 
-def scan_java_file(path: Path, allow_metadata_accessor_tests: bool) -> tuple[dict[str, list[str]], list[CandidateSummary]]:
-    source = path.read_text(encoding="utf-8")
-    method_bodies = parse_method_bodies(source)
-    violations = defaultdict(list)
-    violations["R8"].extend(check_parameterized_name(path, source))
-    violations["R15-A"].extend(check_r15_a(path, source))
-    violations["R15-D"].extend(check_r15_d(path, source, method_bodies))
-    violations["R15-E"].extend(check_r15_e(path, source))
-    violations["R15-F"].extend(check_r15_f(path, source))
-    violations["R15-G"].extend(check_r15_g(path, source))
-    violations["R15-I"].extend(check_r15_i(path, source, method_bodies))
-    violations["R14"].extend(check_r14(path, source))
-    violations["R15-H"].extend(check_r15_h(path, source))
-    if not allow_metadata_accessor_tests:
-        violations["R15-B"].extend(check_r15_b(path, source))
-    return violations, analyze_parameterization_candidates(path, source)
-
-
-def check_r15_c(baseline_before: Path | None) -> list[str]:
-    if baseline_before is None:
-        return []
-    before_lines = baseline_before.read_text(encoding="utf-8").splitlines() if baseline_before.exists() else []
-    before_paths = {
-        normalize_status_path(each) for each in before_lines
-        if each and is_src_main_path(normalize_status_path(each))
-    }
-    after_paths = {
-        normalize_status_path(each) for each in get_after_status_lines()
-        if is_src_main_path(normalize_status_path(each))
-    }
-    return sorted(after_paths - before_paths)
-
-
-def create_file_scan_context(path: Path) -> FileScanContext:
+def create_file_scan_context(path: Path, scope_baseline: dict | None = None) -> FileScanContext:
     source = path.read_text(encoding="utf-8")
     method_blocks = parse_method_blocks(source)
+    target_public_methods = load_target_public_methods(path, source)
     return FileScanContext(
         path=path,
         source=source,
         method_bodies={name: body for name, (_, body) in method_blocks.items()},
         method_blocks=method_blocks,
-        candidates=analyze_parameterization_candidates(path, source),
+        candidates=analyze_parameterization_candidates(path, source, target_public_methods),
         target_type_name=get_target_type_name(source),
-        target_public_methods=load_target_public_methods(path, source),
+        target_public_methods=target_public_methods,
+        added_lines=get_added_lines_for_path(path, scope_baseline),
     )
 
 
-def file_rule_violations(context: FileScanContext, allow_metadata_accessor_tests: bool) -> dict[str, list[str]]:
+def file_rule_violations(context: FileScanContext) -> dict[str, list[str]]:
     violations = defaultdict(list)
     violations["R8"].extend(check_parameterized_name(context.path, context.source))
     violations["R14"].extend(check_r14(context.path, context.source))
-    violations["R15-A"].extend(check_r15_a(context.candidates))
     violations["R15-D"].extend(check_r15_d(context.path, context.source, context.method_bodies))
     violations["R15-E"].extend(check_r15_e(context.path, context.source))
     violations["R15-F"].extend(check_r15_f(context.path, context.source))
-    violations["R15-G"].extend(check_r15_g(context.path, context.source))
+    violations["R15-G"].extend(check_r15_g(context.path, context.source, context.added_lines))
     violations["R15-H"].extend(check_r15_h(context.path, context.source))
     violations["R15-I"].extend(check_r15_i(context.path, context.source, context.method_bodies))
     violations["R15-J"].extend(check_r15_j(context))
-    if not allow_metadata_accessor_tests:
-        violations["R15-B"].extend(check_r15_b(context.path, context.source))
     return violations
 
 
@@ -648,22 +835,32 @@ def build_rule_result(violations_by_rule: dict[str, list[str]]) -> dict[str, dic
     return {
         each.name: {
             "message": each.message,
+            "mode": each.mode,
             "violations": violations_by_rule[each.name],
         }
         for each in RULE_SPECS
     }
 
 
-def collect_scan_result(java_paths: list[Path], baseline_before: Path | None, allow_metadata_accessor_tests: bool) -> dict:
+def collect_scan_result(paths: list[Path], scope_baseline_path: Path | None) -> dict:
     violations_by_rule = defaultdict(list)
     precheck_violations = defaultdict(list)
-    contexts = [create_file_scan_context(each) for each in java_paths]
+    java_paths = [each for each in paths if each.suffix == ".java"]
+    scope_baseline = load_scope_baseline(scope_baseline_path) if scope_baseline_path and scope_baseline_path.exists() else None
+    contexts = [create_file_scan_context(each, scope_baseline) for each in java_paths]
     for context in contexts:
-        for rule, entries in file_rule_violations(context, allow_metadata_accessor_tests).items():
+        for rule, entries in file_rule_violations(context).items():
             violations_by_rule[rule].extend(entries)
         for name, entries in collect_precheck_violations(context).items():
             precheck_violations[name].extend(entries)
-    violations_by_rule["R15-C"].extend(check_r15_c(baseline_before))
+    violations_by_rule["R15-C"].extend(
+        check_scope_baseline(scope_baseline_path, paths) if scope_baseline_path else ["missing scope baseline"]
+    )
+    unresolved_sources = [
+        each
+        for context in contexts
+        for each in find_unresolved_method_sources(context.path, context.source, context.method_bodies)
+    ]
     return {
         "rules": build_rule_result(violations_by_rule),
         "prechecks": {
@@ -674,17 +871,19 @@ def collect_scan_result(java_paths: list[Path], baseline_before: Path | None, al
             for name in PRECHECK_ORDER
         },
         "candidates": [asdict(each) for context in contexts for each in context.candidates],
+        "reviews": {
+            "R15-A": [str(context.path) for context in contexts if not context.target_public_methods],
+            "R15-B": [each for context in contexts for each in find_metadata_accessor_test_candidates(context.path, context.source)],
+            "R15-D": unresolved_sources,
+            "R15-I": unresolved_sources,
+            "R15-J": [str(context.path) for context in contexts if not context.target_public_methods],
+        },
         "java_file_count": len(contexts),
     }
 
 
 def failed_rule_names(result: dict) -> list[str]:
     return [each.name for each in RULE_SPECS if result["rules"][each.name]["violations"]]
-
-
-def failed_precheck_names(result: dict) -> list[str]:
-    prechecks = result.get("prechecks", {})
-    return [each for each in PRECHECK_ORDER if prechecks.get(each, {}).get("violations")]
 
 
 def print_rule_summary(result: dict) -> int:
@@ -696,7 +895,14 @@ def print_rule_summary(result: dict) -> int:
             for violation in violations:
                 print(violation)
             continue
-        print(f"[{each.name}] ok")
+        if "automated" == each.mode:
+            print(f"[{each.name}] ok")
+        elif "manual" == each.mode:
+            print(f"[{each.name}] semanticReviewRequired=true")
+        else:
+            print(f"[{each.name}] mechanical=ok semanticReviewRequired=true")
+        for review in result.get("reviews", {}).get(each.name, []):
+            print(f"review: {review}")
     return 1 if failed_rules else 0
 
 
@@ -710,10 +916,12 @@ def print_summary_only(result: dict) -> int:
         print("[R8-CANDIDATES] no candidates")
     failed_rules = [f"{each.name}={len(result['rules'][each.name]['violations'])}" for each in RULE_SPECS if result["rules"][each.name]["violations"]]
     print(f"[summary] javaFiles={result['java_file_count']}")
+    manual_rules = ",".join(each.name for each in RULE_SPECS if "automated" != each.mode)
+    print(f"[summary] semanticReviewRequired={manual_rules}")
     if failed_rules:
         print(f"[summary] violations={' '.join(failed_rules)}")
         return 1
-    print("[summary] all rules ok")
+    print("[summary] all mechanical rules ok")
     return 0
 
 
@@ -736,26 +944,37 @@ def print_precheck_summary(result: dict) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Consolidated quality-rule scan for gen-ut.")
-    parser.add_argument("--baseline-before", help="Path to the baseline git status captured at task start.")
-    parser.add_argument("--allow-metadata-accessor-tests", action="store_true", help="Allow R15-B when user explicitly requested metadata accessor tests.")
+    parser = argparse.ArgumentParser(description="Mechanical quality-rule scan and task-scope guard for gen-ut.")
+    parser.add_argument("--scope-baseline", help="Structured task scope baseline created before editing.")
+    parser.add_argument("--capture-scope-baseline", help="Write a structured task scope baseline to this path, then exit.")
     parser.add_argument("--json", action="store_true", help="Emit JSON output instead of the default text report.")
     parser.add_argument("--summary-only", action="store_true", help="Emit a compact text summary with candidate information.")
     parser.add_argument("--precheck-only", action="store_true", help="Emit only lightweight deterministic prechecks for early edit loops.")
-    parser.add_argument("paths", nargs="+", help="Resolved test file set.")
+    parser.add_argument("paths", nargs="*", help="Resolved test file set.")
     args = parser.parse_args()
 
-    java_paths = [Path(each) for each in args.paths if each.endswith(".java")]
-    baseline_path = Path(args.baseline_before) if args.baseline_before else None
-    result = collect_scan_result(java_paths, baseline_path, args.allow_metadata_accessor_tests)
-    if args.json:
-        print(json.dumps(result, indent=2, sort_keys=True))
-        return 1 if failed_rule_names(result) else 0
-    if args.precheck_only:
-        return print_precheck_summary(result)
-    if args.summary_only:
-        return print_summary_only(result)
-    return print_rule_summary(result)
+    try:
+        if not args.paths:
+            parser.error("at least one resolved test file is required")
+        paths = [Path(each) for each in args.paths]
+        if args.capture_scope_baseline:
+            output_path = Path(args.capture_scope_baseline)
+            write_scope_baseline(output_path, get_repo_root(), paths)
+            print(f"[scope-baseline] path={output_path.resolve()} allowedPathCount={len(paths)}")
+            return 0
+        baseline_path = Path(args.scope_baseline) if args.scope_baseline else None
+        result = collect_scan_result(paths, baseline_path)
+        if args.json:
+            print(json.dumps(result, indent=2, sort_keys=True))
+            return 1 if failed_rule_names(result) else 0
+        if args.precheck_only:
+            return print_precheck_summary(result)
+        if args.summary_only:
+            return print_summary_only(result)
+        return print_rule_summary(result)
+    except (OSError, ValueError, json.JSONDecodeError, subprocess.CalledProcessError) as ex:
+        print(ex, file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

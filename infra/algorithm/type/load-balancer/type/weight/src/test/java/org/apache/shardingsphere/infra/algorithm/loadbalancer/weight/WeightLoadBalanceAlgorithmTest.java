@@ -41,9 +41,15 @@ class WeightLoadBalanceAlgorithmTest {
     }
     
     @Test
-    void assertCheck() {
+    void assertCheckWithUnconfiguredTarget() {
         LoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(LoadBalanceAlgorithm.class, "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5")));
         assertThrows(AlgorithmInitializationException.class, () -> loadBalanceAlgorithm.check("foo_db", Collections.singletonList("test_read_ds_0")));
+    }
+    
+    @Test
+    void assertCheckWithMissingWeight() {
+        LoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(LoadBalanceAlgorithm.class, "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_0", "5")));
+        assertThrows(AlgorithmInitializationException.class, () -> loadBalanceAlgorithm.check("foo_db", Arrays.asList("test_read_ds_0", "test_read_ds_1")));
     }
     
     @Test

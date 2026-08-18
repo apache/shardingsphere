@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.ArtifactEnvironment.Adapter;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.TransactionBaseE2EIT;
-import org.apache.shardingsphere.test.e2e.operation.transaction.engine.database.mysql.MySQLJdbcTransactionE2ETT;
+import org.apache.shardingsphere.test.e2e.operation.transaction.engine.database.mysql.MySQLJdbcTransactionE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.database.mysql.MySQLProxyTransactionE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.database.opengauss.OpenGaussJdbcTransactionE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.database.opengauss.OpenGaussProxyTransactionE2EIT;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.database.
 @Getter
 public enum TransactionTestCaseRegistry {
     
-    MYSQL_JDBC_IT(MySQLJdbcTransactionE2ETT.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"), Adapter.JDBC.getValue()),
+    MYSQL_JDBC_IT(MySQLJdbcTransactionE2EIT.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"), Adapter.JDBC.getValue()),
     
     MYSQL_PROXY_IT(MySQLProxyTransactionE2EIT.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"), Adapter.PROXY.getValue()),
     

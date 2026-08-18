@@ -101,6 +101,7 @@ chapter = true
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
  - 使用 `assert` 前缀命名所有的测试用例。
  - 单元测试必须通过公共 API 验证行为，禁止通过反射调用私有成员。 若测试必须通过反射访问字段，应使用 `Plugins.getMemberAccessor()`，且反射仅限于 `Field` 访问。
+ - 每个单元测试类必须直接测试一个对应的生产类，测试类必须使用生产类的准确简单类名并命名为 `<ProductionClassName>Test`。
  - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀。
  - 每个公有方法使用一个独立的测试方法，测试方法顺序在可行时与生产方法保持一致。
  - 参数化测试需通过参数提供显示名，并使用 `"{0}"` 作为展示名模板。
@@ -121,6 +122,7 @@ chapter = true
    - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
    - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
    - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
+ - 不得对与当前测试所验证的行为或结果无关的方法进行 stub，也不得 verify 此类交互。当 Mockito 的默认返回值足以满足测试需要时，应省略 stub。
  - 深度链式交互使用 Mockito 的 `RETURNS_DEEP_STUBS`，不要层层手动 mock。
  - 测试数据应使用标准化前缀（如 `foo_`/`bar_`）明确标识其测试用途。
  - 使用 `PropertiesBuilder` 简化 `Properties` 构造。

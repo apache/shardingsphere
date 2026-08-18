@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateDatabaseObjectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
@@ -105,7 +105,7 @@ public final class SQLStatementContextFactory {
     
     private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DDLStatement sqlStatement, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateProcedureStatement) {
-            return new CreateProcedureStatementContext((CreateProcedureStatement) sqlStatement);
+            return new CreateDatabaseObjectStatementContext((CreateProcedureStatement) sqlStatement, currentDatabaseName, metaData);
         }
         if (sqlStatement instanceof CreateViewStatement) {
             return new CreateViewStatementContext(metaData, (CreateViewStatement) sqlStatement, currentDatabaseName);

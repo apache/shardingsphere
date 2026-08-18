@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
+import com.google.common.io.ByteStreams;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemTable;
@@ -29,11 +31,11 @@ import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigura
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstructor;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
-import org.yaml.snakeyaml.Yaml;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,13 +78,16 @@ public final class SystemSchemaBuilder {
         return systemDatabase.getSystemSchemas(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName);
     }
     
+    @SneakyThrows(IOException.class)
     private static ShardingSphereSchema createSchema(final String schemaName, final DatabaseType databaseType, final boolean isSystemSchemaMetadataEnabled) {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         SystemTable systemTable = new SystemTable(databaseType);
         for (InputStream each : SystemSchemaManager.getAllInputStreams(databaseType.getType(), schemaName)) {
-            YamlShardingSphereTable metaData = new Yaml(new ShardingSphereYamlConstructor(YamlShardingSphereTable.class)).loadAs(each, YamlShardingSphereTable.class);
-            if (isSystemSchemaMetadataEnabled || systemTable.isSupportedSystemTable(schemaName, metaData.getName())) {
-                tables.add(TABLE_SWAPPER.swapToObject(metaData));
+            try (InputStream inputStream = each) {
+                YamlShardingSphereTable metaData = YamlEngine.unmarshal(ByteStreams.toByteArray(inputStream), YamlShardingSphereTable.class);
+                if (isSystemSchemaMetadataEnabled || systemTable.isSupportedSystemTable(schemaName, metaData.getName())) {
+                    tables.add(TABLE_SWAPPER.swapToObject(metaData));
+                }
             }
         }
         return new ShardingSphereSchema(schemaName, databaseType, tables, Collections.emptyList());

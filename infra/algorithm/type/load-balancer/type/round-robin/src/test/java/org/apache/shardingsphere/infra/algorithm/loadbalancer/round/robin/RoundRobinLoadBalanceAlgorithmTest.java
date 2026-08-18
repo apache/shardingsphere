@@ -20,10 +20,12 @@ package org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,6 +39,19 @@ class RoundRobinLoadBalanceAlgorithmTest {
         String availableTargetName2 = "test_read_ds_2";
         List<String> availableTargetNames = Arrays.asList(availableTargetName1, availableTargetName2);
         assertRoundRobinLoadBalance(availableTargetName1, availableTargetName2, loadBalanceAlgorithm, availableTargetNames);
+    }
+    
+    @Test
+    void assertGetAvailableTargetNameWhenCountOverflow() throws ReflectiveOperationException {
+        LoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(LoadBalanceAlgorithm.class, "ROUND_ROBIN", new Properties());
+        AtomicInteger count = (AtomicInteger) Plugins.getMemberAccessor().get(RoundRobinLoadBalanceAlgorithm.class.getDeclaredField("count"), loadBalanceAlgorithm);
+        count.set(Integer.MIN_VALUE);
+        try {
+            String actualTargetName = loadBalanceAlgorithm.getTargetName("foo_group", Arrays.asList("foo_ds_0", "foo_ds_1", "foo_ds_2"));
+            assertThat(actualTargetName, is("foo_ds_1"));
+        } finally {
+            count.set(0);
+        }
     }
     
     private void assertRoundRobinLoadBalance(final String availableTargetName1, final String availableTargetName2, final LoadBalanceAlgorithm loadBalanceAlgorithm,

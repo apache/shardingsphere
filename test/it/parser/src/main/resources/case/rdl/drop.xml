@@ -115,6 +115,16 @@
     <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator-if-exists" if-exists="true">
         <name>uuid_key_generator</name>
     </drop-sharding-key-generator>
+
+    <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator-multiple-if-exists" if-exists="true">
+        <name>snowflake_generator</name>
+        <name>uuid_generator</name>
+    </drop-sharding-key-generator>
+
+    <drop-sharding-key-generate-strategy sql-case-id="drop-sharding-key-generate-strategy-if-exists" if-exists="true">
+        <name>order_id_strategy</name>
+        <name>order_sequence_strategy</name>
+    </drop-sharding-key-generate-strategy>
     
     <drop-sharding-auditor sql-case-id="drop-sharding-auditor" >
         <name>sharding_key_required_auditor</name>

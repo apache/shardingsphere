@@ -44,6 +44,9 @@ public final class ExpectedSubqueryTable extends AbstractExpectedDelimiterSQLSeg
     @XmlElement(name = "column")
     private final List<ExpectedColumn> columns = new LinkedList<>();
     
+    @XmlElement(name = "column-alias")
+    private final List<String> columnAliases = new LinkedList<>();
+    
     @XmlElement
     private ExpectedPivot pivot;
 }

@@ -111,6 +111,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Subque
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableCollectionExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnpivotClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnquotedTextQueryBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateSetClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateSetColumnClauseContext;
@@ -609,7 +610,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.pivotInClause()) {
             ctx.pivotInClause().pivotInClauseExpr().forEach(each -> {
                 ExpressionSegment expr = (ExpressionSegment) visit(each.expr());
-                String columnName = null == each.alias() || null == each.alias().identifier() ? expr.getText() : each.alias().identifier().IDENTIFIER_().getText();
+                String columnName = null == each.alias() || null == each.alias().identifier()
+                        ? expr.getText()
+                        : ((IdentifierValue) visit(each.alias().identifier())).getValue();
                 ColumnSegment columnSegment = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(columnName));
                 pivotInColumns.add(columnSegment);
             });
@@ -764,6 +767,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitQueryBlock(final QueryBlockContext ctx) {
+        if (null != ctx.unquotedTextQueryBlock()) {
+            return visit(ctx.unquotedTextQueryBlock());
+        }
         ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.selectList());
         if (null != ctx.duplicateSpecification()) {
             projections.setDistinctRow(isDistinct(ctx));
@@ -791,6 +797,21 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result.model((ModelSegment) visit(ctx.modelClause()));
         }
         return result.build();
+    }
+    
+    @Override
+    public ASTNode visitUnquotedTextQueryBlock(final UnquotedTextQueryBlockContext ctx) {
+        int startIndex = ctx.unquotedTextProjection().IDENTIFIER_(0).getSymbol().getStartIndex();
+        int stopIndex = ctx.unquotedTextProjection().IDENTIFIER_(ctx.unquotedTextProjection().IDENTIFIER_().size() - 1).getSymbol().getStopIndex();
+        String text = ctx.start.getInputStream().getText(new Interval(startIndex, stopIndex));
+        LiteralExpressionSegment literalExpression = new LiteralExpressionSegment(startIndex, stopIndex, text);
+        AliasSegment alias = (AliasSegment) visit(ctx.unquotedTextProjection().alias());
+        ExpressionProjectionSegment projection = new ExpressionProjectionSegment(startIndex, alias.getStopIndex(), text, literalExpression);
+        projection.setAlias(alias);
+        ProjectionsSegment projections = new ProjectionsSegment(startIndex, alias.getStopIndex());
+        projections.getProjections().add(projection);
+        TableNameSegment tableName = new TableNameSegment(ctx.tableName().getStart().getStartIndex(), ctx.tableName().getStop().getStopIndex(), new IdentifierValue(ctx.tableName().getText()));
+        return SelectStatement.builder().databaseType(getDatabaseType()).projections(projections).from(new SimpleTableSegment(tableName)).build();
     }
     
     private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {

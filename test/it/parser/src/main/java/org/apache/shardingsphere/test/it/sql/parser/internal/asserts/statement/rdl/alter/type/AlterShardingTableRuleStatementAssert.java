@@ -36,6 +36,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -71,6 +73,7 @@ public final class AlterShardingTableRuleStatementAssert {
             assertNull(actual, assertContext.getText("Actual sharding auto table rule should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual sharding auto table rule should exist."));
+            assertThat(assertContext.getText("Sharding auto table rule count assertion error: "), actual.size(), is(expected.size()));
             int count = 0;
             for (AutoTableRuleSegment each : actual) {
                 AutoTableRuleAssert.assertIs(assertContext, each, expected.get(count));
@@ -84,6 +87,7 @@ public final class AlterShardingTableRuleStatementAssert {
             assertNull(actual, assertContext.getText("Actual sharding table rule should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual sharding table rule should exist."));
+            assertThat(assertContext.getText("Sharding table rule count assertion error: "), actual.size(), is(expected.size()));
             int count = 0;
             for (TableRuleSegment each : actual) {
                 TableRuleAssert.assertIs(assertContext, each, expected.get(count));

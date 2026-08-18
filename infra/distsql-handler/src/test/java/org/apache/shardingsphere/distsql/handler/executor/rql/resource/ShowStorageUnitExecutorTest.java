@@ -28,7 +28,6 @@ import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -38,8 +37,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +47,7 @@ class ShowStorageUnitExecutorTest {
     
     private final ShowStorageUnitExecutor executor = new ShowStorageUnitExecutor();
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock
     private ShardingSphereDatabase database;
     
     @BeforeEach

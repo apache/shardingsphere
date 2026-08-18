@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -75,6 +76,11 @@ class SnowflakeKeyGenerateAlgorithmTest {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         when(computeNodeInstanceContext.getWorkerId()).thenReturn(0);
         INSTANCE = computeNodeInstanceContext;
+    }
+    
+    @AfterEach
+    void resetTimeService() {
+        SnowflakeKeyGenerateAlgorithm.setTimeService(new TimeService());
     }
     
     @Test

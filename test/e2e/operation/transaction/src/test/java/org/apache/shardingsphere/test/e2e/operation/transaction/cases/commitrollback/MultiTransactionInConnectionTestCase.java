@@ -24,6 +24,10 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.Tran
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.stream.IntStream;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Multiple transactions within a connection integration test.
@@ -37,15 +41,18 @@ public final class MultiTransactionInConnectionTestCase extends BaseTransactionT
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        try (Connection connection = getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO account(id, balance, transaction_id) VALUES(?, ?, ?)");
-            for (int i = 0; i < 8; i++) {
+        try (
+                Connection connection = getDataSource().getConnection();
+                Connection queryConnection = getDataSource().getConnection();
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO account(id, balance, transaction_id) VALUES(?, ?, ?)")) {
+            for (int each = 0; each < 8; each++) {
                 connection.setAutoCommit(false);
-                statement.setLong(1, i);
-                statement.setFloat(2, i);
-                statement.setInt(3, i);
-                statement.execute();
+                statement.setLong(1, each);
+                statement.setFloat(2, each);
+                statement.setInt(3, each);
+                assertThat(statement.executeUpdate(), is(1));
                 connection.commit();
+                assertAccountBalances(queryConnection, IntStream.rangeClosed(0, each).toArray());
             }
             assertAccountRowCount(connection, 8);
         }

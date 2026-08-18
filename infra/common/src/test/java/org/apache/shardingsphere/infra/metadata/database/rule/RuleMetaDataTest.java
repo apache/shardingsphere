@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,8 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -161,6 +164,54 @@ class RuleMetaDataTest {
     @Test
     void assertFindEmptyAttribute() {
         assertFalse(new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS))).findAttribute(DataSourceMapperRuleAttribute.class).isPresent());
+    }
+    
+    @Test
+    void assertCopyAndPutDataNode() {
+        MutableDataNodeRuleAttribute attribute = mock(MutableDataNodeRuleAttribute.class);
+        ShardingSphereRule mutableRule = mock(ShardingSphereRule.class);
+        ShardingSphereRule copiedRule = mock(ShardingSphereRule.class);
+        when(mutableRule.getAttributes()).thenReturn(new RuleAttributes(attribute));
+        when(attribute.copyRuleAndPut("foo_ds", "foo_schema", "foo_tbl")).thenReturn(copiedRule);
+        RuleMetaData original = new RuleMetaData(Arrays.asList(fixtureRule, mutableRule, dataNodeRule));
+        RuleMetaData actual = original.copyAndPutDataNode("foo_ds", "foo_schema", "foo_tbl");
+        assertThat(actual, not(sameInstance(original)));
+        assertThat(actual.getRules(), is(Arrays.asList(fixtureRule, copiedRule, dataNodeRule)));
+        assertThat(original.getRules(), is(Arrays.asList(fixtureRule, mutableRule, dataNodeRule)));
+    }
+    
+    @Test
+    void assertCopyAndPutDataNodeWhenDataNodeExists() {
+        MutableDataNodeRuleAttribute attribute = mock(MutableDataNodeRuleAttribute.class);
+        ShardingSphereRule mutableRule = mock(ShardingSphereRule.class);
+        when(mutableRule.getAttributes()).thenReturn(new RuleAttributes(attribute));
+        when(attribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(new DataNode("foo_ds.foo_schema.foo_tbl")));
+        RuleMetaData original = new RuleMetaData(Collections.singleton(mutableRule));
+        assertThat(original.copyAndPutDataNode("foo_ds", "foo_schema", "foo_tbl"), sameInstance(original));
+    }
+    
+    @Test
+    void assertCopyAndRemoveDataNode() {
+        MutableDataNodeRuleAttribute attribute = mock(MutableDataNodeRuleAttribute.class);
+        ShardingSphereRule mutableRule = mock(ShardingSphereRule.class);
+        ShardingSphereRule copiedRule = mock(ShardingSphereRule.class);
+        when(mutableRule.getAttributes()).thenReturn(new RuleAttributes(attribute));
+        when(attribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(new DataNode("foo_ds.foo_schema.foo_tbl")));
+        when(attribute.copyRuleAndRemove("foo_schema", "foo_tbl")).thenReturn(copiedRule);
+        RuleMetaData original = new RuleMetaData(Arrays.asList(fixtureRule, mutableRule, dataNodeRule));
+        RuleMetaData actual = original.copyAndRemoveDataNode("foo_schema", "foo_tbl");
+        assertThat(actual, not(sameInstance(original)));
+        assertThat(actual.getRules(), is(Arrays.asList(fixtureRule, copiedRule, dataNodeRule)));
+        assertThat(original.getRules(), is(Arrays.asList(fixtureRule, mutableRule, dataNodeRule)));
+    }
+    
+    @Test
+    void assertCopyAndRemoveDataNodeWhenDataNodeDoesNotExist() {
+        MutableDataNodeRuleAttribute attribute = mock(MutableDataNodeRuleAttribute.class);
+        ShardingSphereRule mutableRule = mock(ShardingSphereRule.class);
+        when(mutableRule.getAttributes()).thenReturn(new RuleAttributes(attribute));
+        RuleMetaData original = new RuleMetaData(Collections.singleton(mutableRule));
+        assertThat(original.copyAndRemoveDataNode("foo_schema", "foo_tbl"), sameInstance(original));
     }
     
     @Test

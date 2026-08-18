@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -73,6 +74,18 @@ class PostgreSQLUnspecifiedBinaryProtocolValueTest {
         assertThat(actual, isA(PostgreSQLTypeUnspecifiedSQLParameter.class));
         assertThat(actual.toString(), is(timestampStr));
         assertThat(readBuf.readerIndex(), is(expectedLength));
+    }
+    
+    @Test
+    void assertReadWithMultiByteCharset() {
+        String expected = "中文";
+        byte[] bytes = expected.getBytes(StandardCharsets.UTF_16BE);
+        ByteBuf readBuf = Unpooled.wrappedBuffer(bytes);
+        PostgreSQLPacketPayload readPayload = new PostgreSQLPacketPayload(readBuf, StandardCharsets.UTF_16BE);
+        Object actual = new PostgreSQLUnspecifiedBinaryProtocolValue().read(readPayload, bytes.length);
+        assertThat(actual, isA(PostgreSQLTypeUnspecifiedSQLParameter.class));
+        assertThat(actual.toString(), is(expected));
+        assertThat(readBuf.readerIndex(), is(bytes.length));
     }
     
     @Test

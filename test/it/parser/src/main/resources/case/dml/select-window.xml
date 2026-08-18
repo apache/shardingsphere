@@ -17,6 +17,27 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_catalog_window_aggregation">
+        <projections start-index="7" stop-index="93">
+            <aggregation-projection type="MAX" expression="pg_catalog.max(ref_0.c36) over (partition by ref_0.c39 order by ref_0.vkey desc)" alias="c_5" start-index="7" stop-index="86">
+                <window-item start-index="38" stop-index="86">
+                    <partition-by>
+                        <column name="c39" start-index="52" stop-index="60">
+                            <owner name="ref_0" start-index="52" stop-index="56" />
+                        </column>
+                    </partition-by>
+                    <order-by start-index="62" stop-index="85">
+                        <column-item name="vkey" order-direction="DESC" start-index="71" stop-index="80">
+                            <owner name="ref_0" start-index="71" stop-index="75" />
+                        </column-item>
+                    </order-by>
+                </window-item>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t24" alias="ref_0" start-index="100" stop-index="111" />
+        </from>
+    </select>
     <select sql-case-id="select_window" parameters="1">
         <projections start-index="7" stop-index="112">
             <column-projection name="user_id" start-index="7" stop-index="13" />

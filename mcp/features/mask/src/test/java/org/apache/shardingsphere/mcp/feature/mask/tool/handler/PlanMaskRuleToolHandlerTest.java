@@ -107,11 +107,18 @@ class PlanMaskRuleToolHandlerTest {
         try (MockedConstruction<MaskWorkflowPlanningService> mockedConstruction = mockConstruction(MaskWorkflowPlanningService.class)) {
             PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
             MaskWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
-            when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+            WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "planned");
+            when(planningService.plan(any(), any(), any(), any())).thenAnswer(invocation -> {
+                snapshot.setRequest(invocation.getArgument(3));
+                return snapshot;
+            });
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            handler.handle(fixture.requestContext, Map.of(
+            Map<String, Object> actualPayload = handler.handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
-                    "primary_algorithm_properties", Map.of("replace-char", Map.of("secret_ref", "placeholder://secret-value-1"))));
+                    "primary_algorithm_properties", Map.of("replace-char", Map.of("secret_ref", "placeholder://secret-value-1")))).toPayload();
+            Map<?, ?> actualMaskedPropertyPreview = (Map<?, ?>) actualPayload.get("masked_property_preview");
+            assertThat(((Map<?, ?>) actualMaskedPropertyPreview.get("primary")).get("replace-char"), is("******"));
+            assertFalse(String.valueOf(actualPayload).contains("secret_reference:"));
             ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
             verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), requestCaptor.capture());
             WorkflowRequest actualRequest = requestCaptor.getValue();

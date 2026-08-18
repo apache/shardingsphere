@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
@@ -179,7 +179,7 @@ abstract class AbstractMCPToolSpecificationFactoryTest {
     }
     
     protected Map<String, Object> getTextContentPayload(final CallToolResult actual) {
-        return JsonUtils.fromJsonString(((TextContent) actual.content().getFirst()).text(), new TypeReference<>() {
+        return JsonEngine.unmarshal(((TextContent) actual.content().getFirst()).text(), new JsonTypeReference<>() {
         });
     }
     

@@ -17,6 +17,8 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_not_scalar_subquery_postgresql" value="select 1 from t17 as ref_0 where not ((ref_0.c59) &lt; (select ref_1.c36 as c_0 from t23 as ref_1 join t22 as ref_2 on(ref_1.colocated_key = ref_2.colocated_key)))" db-types="PostgreSQL" />
+    <sql-case id="select_values_derived_table_aliases_postgresql" value="SELECT * FROM (VALUES ('k1', 'v1', 1)) AS t(pk, col_a, col_a_type)" db-types="PostgreSQL" />
     <sql-case id="select_with_comment" value="/*FORCE_IMCI_NODES*/ select /*+ SET_VAR(cost_threshold_for_imci=0) */ * from t_order" db-types="MySQL" />
     <sql-case id="select_position_function" value="select position(&quot;0&quot; in &quot;baaa&quot; in (1)),position(&quot;0&quot; in &quot;1&quot; in (1,2,3)),position(&quot;sql&quot; in (&quot;mysql&quot;))" db-types="MySQL" />
     <sql-case id="select_extract_function_with_day_hour" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />
@@ -24,6 +26,7 @@
     <sql-case id="select_with_default_str" value="select * from t1 where str &lt;&gt; default(str)" db-types="MySQL" />
     <sql-case id="select_three_part_column_doris" value="SELECT db1.t1.c1 FROM db1.t1" db-types="Doris" />
     <sql-case id="select_digit_leading_column_doris" value="SELECT 1GB FROM t" db-types="Doris" />
+    <sql-case id="select_workload_keyword_column_doris" value="SELECT workload FROM t" db-types="Doris" />
     <sql-case id="select_subquery_excpet" value="select * from (select * from t1 except all select * from t1 limit 2) a" db-types="MySQL" />
     <sql-case id="select_point_function_with_in" value="SELECT point(1,1) IN ('1',1,'1') AS res" db-types="MySQL" />
     <sql-case id="select_with_in" value="SELECT b, b IN ('20161213'), b in ('20161213', 0) FROM t2" db-types="MySQL" />
@@ -454,7 +457,6 @@
     <sql-case id="select_cast_literal_firebird" value="SELECT CAST(1 AS VARCHAR(10)) FROM t_order" db-types="Firebird"/>
     <sql-case id="select_variable_identifier_firebird" value="SELECT LOCAL.var FROM t_order" db-types="Firebird"/>
     <sql-case id="select_comma_join_firebird" value="SELECT * FROM t_order a, t_order_item b" db-types="Firebird"/>
-    <sql-case id="select_union_firebird" value="SELECT 1 UNION SELECT 2" db-types="Firebird"/>
     <sql-case id="select_subquery_table_firebird" value="SELECT * FROM (SELECT 1) sub" db-types="Firebird"/>
     <sql-case id="select_subquery_with_with_firebird" value="SELECT * FROM (WITH t AS (SELECT 1) SELECT * FROM t) sub" db-types="Firebird"/>
     <sql-case id="select_not_expression_sql92" value="SELECT NOT (1=1) FROM t_order" db-types="SQL92" />
@@ -562,5 +564,12 @@
     <sql-case id="select_oracle_percentile_cont_window" value="SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price) OVER (PARTITION BY status) AS median_price FROM t_product" db-types="Oracle" />
     <sql-case id="select_oracle_first_value_ignore_nulls_window" value="SELECT FIRST_VALUE(price) IGNORE NULLS OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
     <sql-case id="select_oracle_first_value_window" value="SELECT FIRST_VALUE(price) OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
+    <sql-case id="select_with_log_table_alias_oracle" value="SELECT * FROM t_order LOG" db-types="Oracle" />
+    <sql-case id="select_unquoted_text_with_chinese_comma_from_dual" value="SELECT 图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_unquoted_text_without_comma_from_dual" value="SELECT 欢迎使用测试系统 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_dummy_with_alias_from_dual" value="SELECT DUMMY AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_quoted_chinese_column_from_dual" value="SELECT &quot;中文列名&quot; AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_chinese_columns_with_ascii_comma_from_dual" value="SELECT 中文列一, 中文列二 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_chinese_columns_from_table" value="SELECT 中文列一，中文列二 AS RESULT FROM t_order" db-types="Oracle" />
     <sql-case id="select_for_system_version_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_VERSION AS OF 1234567;" db-types="Hive" />
 </sql-cases>

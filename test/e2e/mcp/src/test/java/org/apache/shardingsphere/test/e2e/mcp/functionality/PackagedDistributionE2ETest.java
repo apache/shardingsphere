@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistr
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionPluginFixtureSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.DockerRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.PostgreSQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
@@ -215,9 +216,7 @@ class PackagedDistributionE2ETest {
     }
     
     private void prepareMySQLContainer() throws SQLException {
-        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed MCP distribution E2E test."));
-        }
+        DockerRuntimeTestSupport.requireAvailable("Docker is required for the MySQL-backed MCP distribution E2E test.");
         if (null != mysqlContainer) {
             return;
         }
@@ -227,9 +226,7 @@ class PackagedDistributionE2ETest {
     }
     
     private void preparePostgreSQLContainer() throws SQLException {
-        if (!PostgreSQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException("Docker is required for the PostgreSQL-backed MCP distribution E2E test.");
-        }
+        DockerRuntimeTestSupport.requireAvailable("Docker is required for the PostgreSQL-backed MCP distribution E2E test.");
         if (null != postgresqlContainer) {
             return;
         }

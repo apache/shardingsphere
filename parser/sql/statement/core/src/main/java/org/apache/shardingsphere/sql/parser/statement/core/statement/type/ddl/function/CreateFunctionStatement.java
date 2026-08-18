@@ -22,15 +22,22 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ProcedureCallNamesSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,11 +59,23 @@ public class CreateFunctionStatement extends DDLStatement {
     
     private final List<ExpressionSegment> dynamicSqlStatementExpressions;
     
+    private final List<CursorForLoopStatementSegment> cursorForLoopStatements = new ArrayList<>();
+    
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
     private final SQLStatementAttributes attributes;
     
     public CreateFunctionStatement(final DatabaseType databaseType,
                                    final FunctionNameSegment functionName, final RoutineBodySegment routineBody, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
-        this(databaseType, functionName, routineBody, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), dynamicSqlStatementExpressions);
+        super(databaseType);
+        this.functionName = functionName;
+        this.routineBody = routineBody;
+        sqlStatements = Collections.emptyList();
+        procedureCallNames = Collections.emptyList();
+        functionBodyEndNameSegments = Collections.emptyList();
+        this.dynamicSqlStatementExpressions = dynamicSqlStatementExpressions;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables(routineBody, Collections.emptyList())),
+                new ProcedureCallNamesSQLStatementAttribute(procedureCallNames));
     }
     
     public CreateFunctionStatement(final DatabaseType databaseType, final FunctionNameSegment functionName, final RoutineBodySegment routineBody,
@@ -69,7 +88,28 @@ public class CreateFunctionStatement extends DDLStatement {
         this.procedureCallNames = procedureCallNames;
         this.functionBodyEndNameSegments = functionBodyEndNameSegments;
         this.dynamicSqlStatementExpressions = dynamicSqlStatementExpressions;
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(null == routineBody ? Collections.emptyList() : new TableExtractor().extractExistTableFromRoutineBody(routineBody)));
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables(routineBody, Collections.emptyList())),
+                new ProcedureCallNamesSQLStatementAttribute(procedureCallNames));
+    }
+    
+    public CreateFunctionStatement(final DatabaseType databaseType, final FunctionNameSegment functionName, final RoutineBodySegment routineBody,
+                                   final List<SQLStatementSegment> sqlStatements, final List<ProcedureCallNameSegment> procedureCallNames,
+                                   final List<ProcedureBodyEndNameSegment> functionBodyEndNameSegments, final Collection<SimpleTableSegment> tables,
+                                   final List<ExpressionSegment> dynamicSqlStatementExpressions) {
+        super(databaseType);
+        this.functionName = functionName;
+        this.routineBody = routineBody;
+        this.sqlStatements = sqlStatements;
+        this.procedureCallNames = procedureCallNames;
+        this.functionBodyEndNameSegments = functionBodyEndNameSegments;
+        this.dynamicSqlStatementExpressions = dynamicSqlStatementExpressions;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables(routineBody, tables)), new ProcedureCallNamesSQLStatementAttribute(procedureCallNames));
+    }
+    
+    private Collection<SimpleTableSegment> getTables(final RoutineBodySegment routineBody, final Collection<SimpleTableSegment> tables) {
+        Collection<SimpleTableSegment> result = new LinkedList<>(null == routineBody ? Collections.emptyList() : new TableExtractor().extractExistTableFromRoutineBody(routineBody));
+        result.addAll(tables);
+        return result;
     }
     
     /**

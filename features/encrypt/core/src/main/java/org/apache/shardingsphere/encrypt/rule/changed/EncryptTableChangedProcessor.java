@@ -49,13 +49,13 @@ public final class EncryptTableChangedProcessor implements RuleItemConfiguration
     @Override
     public void changeRuleItemConfiguration(final String itemName, final EncryptRuleConfiguration currentRuleConfig, final EncryptTableRuleConfiguration toBeChangedItemConfig) {
         // TODO refactor DistSQL to only persist config
-        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(toBeChangedItemConfig.getName()));
+        currentRuleConfig.getTables().removeIf(each -> each.getName().equalsIgnoreCase(toBeChangedItemConfig.getName()));
         currentRuleConfig.getTables().add(toBeChangedItemConfig);
     }
     
     @Override
     public void dropRuleItemConfiguration(final String itemName, final EncryptRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(itemName));
+        currentRuleConfig.getTables().removeIf(each -> each.getName().equalsIgnoreCase(itemName));
     }
     
     @Override

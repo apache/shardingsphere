@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.metadata;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.shardingsphere.infra.util.json.JsonException;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
@@ -36,11 +35,6 @@ import java.util.Objects;
  * Query governance metadata exposed by existing DistSQL.
  */
 public final class GovernanceMetadataQueryService {
-    
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    
-    private static final TypeReference<Object> JSON_VALUE_TYPE = new TypeReference<>() {
-    };
     
     private static final String REDACTED_VALUE = "******";
     
@@ -198,8 +192,8 @@ public final class GovernanceMetadataQueryService {
             return new RedactedValue(value, false);
         }
         try {
-            return redactNested(OBJECT_MAPPER.readValue(text, JSON_VALUE_TYPE));
-        } catch (final JsonProcessingException ignored) {
+            return redactNested(JsonEngine.unmarshal(text, Object.class));
+        } catch (final JsonException ignored) {
             return new RedactedValue(value, false);
         }
     }

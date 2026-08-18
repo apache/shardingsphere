@@ -103,6 +103,8 @@ public enum SQLVisitorRule {
     
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
     
+    CREATE_PACKAGE("CreatePackage", SQLStatementType.DDL),
+    
     CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
     
     ALTER_PUBLICATION("AlterPublication", SQLStatementType.DDL),
@@ -812,6 +814,8 @@ public enum SQLVisitorRule {
     CREATE_MATERIALIZED_VIEW_LOG("CreateMaterializedViewLog", SQLStatementType.DDL),
     
     CREATE_OPERATOR("CreateOperator", SQLStatementType.DDL),
+    
+    CREATE_INDEX_TYPE("CreateIndexType", SQLStatementType.DDL),
     
     CREATE_POLICY("CreatePolicy", SQLStatementType.DDL),
     

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
@@ -232,7 +233,7 @@ public final class MetadataResourceResponseFactory {
         largeResult.put("search_arguments", createNarrowSearchArguments(metadata, uriVariables));
         payload.put("continuation_mode", "metadata_search");
         payload.put("large_result_guidance", largeResult);
-        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool("database_gateway_search_metadata",
+        payload.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.callTool(CoreToolNames.SEARCH_METADATA,
                 String.format("Narrow the broad %s metadata list before reading detail resources.", resolveGuidanceScope(metadata)),
                 createNarrowSearchArguments(metadata, uriVariables))));
     }
@@ -298,31 +299,8 @@ public final class MetadataResourceResponseFactory {
     }
     
     private String resolveResourceKind(final String uri) {
-        if (uri.contains("/columns")) {
-            return "column";
-        }
-        if (uri.contains("/indexes")) {
-            return "index";
-        }
-        if (uri.contains("/storage-units")) {
-            return "storage-unit";
-        }
-        if (uri.contains("/single-tables") || uri.contains("/single-table/default-storage-unit")) {
-            return "single-table";
-        }
-        if (uri.contains("/tables")) {
-            return "logical-table";
-        }
-        if (uri.contains("/views")) {
-            return "view";
-        }
-        if (uri.contains("/sequences")) {
-            return "sequence";
-        }
-        if (uri.contains("/schemas")) {
-            return "schema";
-        }
-        return "logical-database";
+        String result = MCPDescriptorCatalogIndex.resolveResourceKind(uri).replace('_', '-');
+        return "resource".equals(result) ? "logical-database" : result;
     }
     
     private String createParentUri(final String selfUri) {

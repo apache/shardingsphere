@@ -115,13 +115,22 @@ class PlanEncryptRuleToolHandlerTest {
         try (MockedConstruction<EncryptWorkflowPlanningService> mockedConstruction = mockConstruction(EncryptWorkflowPlanningService.class)) {
             PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
             EncryptWorkflowPlanningService planningService = mockedConstruction.constructed().getFirst();
-            when(planningService.plan(any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+            WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "planned");
+            when(planningService.plan(any(), any(), any(), any())).thenAnswer(invocation -> {
+                snapshot.setRequest(invocation.getArgument(3));
+                return snapshot;
+            });
             WorkflowContextFixture fixture = createWorkflowContextFixture();
-            handler.handle(fixture.requestContext, Map.of(
+            Map<String, Object> actualPayload = handler.handle(fixture.requestContext, Map.of(
                     "database", "logic_db",
                     "primary_algorithm_properties", Map.of("aes-key-value", Map.of("secret_ref", "placeholder://secret-value-1")),
                     "assisted_query_algorithm_properties", Map.of("salt", Map.of("secret_ref", "placeholder://secret-value-2")),
-                    "like_query_algorithm_properties", Map.of("token", Map.of("secret_ref", "placeholder://secret-value-3"))));
+                    "like_query_algorithm_properties", Map.of("token", Map.of("secret_ref", "placeholder://secret-value-3")))).toPayload();
+            Map<?, ?> actualMaskedPropertyPreview = (Map<?, ?>) actualPayload.get("masked_property_preview");
+            assertThat(((Map<?, ?>) actualMaskedPropertyPreview.get("primary")).get("aes-key-value"), is("******"));
+            assertThat(((Map<?, ?>) actualMaskedPropertyPreview.get("assisted_query")).get("salt"), is("******"));
+            assertThat(((Map<?, ?>) actualMaskedPropertyPreview.get("like_query")).get("token"), is("******"));
+            assertFalse(String.valueOf(actualPayload).contains("secret_reference:"));
             ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
             verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), requestCaptor.capture());
             EncryptWorkflowRequest actualRequest = requestCaptor.getValue();

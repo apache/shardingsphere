@@ -28,7 +28,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * An exception occurred within the transaction integration test.
@@ -43,26 +43,17 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
     
     @Override
     protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        Connection connection = null;
-        try {
-            connection = getDataSource().getConnection();
+        try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 0);
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1);");
-            int causedExceptionResult = 1 / 0;
-            log.info("Caused exception result: {}", causedExceptionResult);
-            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(2, 2, 2);");
-            connection.commit();
-            fail("It should fail here.");
-        } catch (final ArithmeticException ex) {
+            ArithmeticException ex = assertThrows(ArithmeticException.class, () -> {
+                int causedExceptionResult = 1 / 0;
+                log.info("Caused exception result: {}", causedExceptionResult);
+                executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(2, 2, 2);");
+            });
             assertThat(ex.getMessage(), is("/ by zero"));
-            if (null != connection) {
-                connection.rollback();
-            }
-        } finally {
-            if (null != connection) {
-                connection.close();
-            }
+            connection.rollback();
         }
         try (Connection connection2 = getDataSource().getConnection()) {
             assertAccountRowCount(connection2, 0);

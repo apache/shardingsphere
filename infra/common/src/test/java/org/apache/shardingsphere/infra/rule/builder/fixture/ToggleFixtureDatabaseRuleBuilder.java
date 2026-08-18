@@ -29,8 +29,7 @@ public final class ToggleFixtureDatabaseRuleBuilder implements DatabaseRuleBuild
     
     @Override
     public ToggleFixtureRule build(final ToggleFixtureDatabaseRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType,
-                                   final ResourceMetaData resourceMetaData, final Collection<ShardingSphereRule> builtRules,
-                                   final ComputeNodeInstanceContext computeNodeInstanceContext) {
+                                   final ResourceMetaData resourceMetaData, final Collection<ShardingSphereRule> builtRules, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         return new ToggleFixtureRule(ruleConfig);
     }
     

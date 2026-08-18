@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExp
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanPrimaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BuiltinFunctionsExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CaseExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CaseWhenContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CastFunctionContext;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTy
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DateTimeLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DefaultStringContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExtractFunctionContext;
@@ -79,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Parame
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PredicateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PredictionCostFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PrivateExprOfDbContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PseudorecordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryPartitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
@@ -501,6 +504,11 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (SequenceFunction.valueFrom(ctx.name().getText()).isPresent()) {
             return createSequenceFunction(ctx);
         }
+        if (null != ctx.nestedItem() && !ctx.nestedItem().isEmpty()) {
+            if (SequenceFunction.valueFrom(ctx.nestedItem().get(0).getText()).isPresent()) {
+                return createSequenceFunction(ctx);
+            }
+        }
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
@@ -611,6 +619,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         if (null != ctx.multisetExpr()) {
             return createMultisetExpression(ctx);
+        }
+        if (null != ctx.builtinFunctionsExpr()) {
+            return visit(ctx.builtinFunctionsExpr());
         }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
@@ -812,6 +823,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.subquery()) {
             return new SubquerySegment(startIndex, stopIndex, (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
         }
+        if (null != ctx.pseudorecord()) {
+            return visit(ctx.pseudorecord());
+        }
         if (null != ctx.parameterMarker()) {
             return createParameterMarkerExpressionSegment(ctx.parameterMarker());
         }
@@ -840,6 +854,18 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             }
         }
         return visitRemainSimpleExpr(ctx, startIndex, stopIndex);
+    }
+    
+    @Override
+    public ASTNode visitPseudorecord(final PseudorecordContext ctx) {
+        if (null == ctx.NEW() && null == ctx.OLD()) {
+            return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        }
+        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        int ownerStartIndex = null == ctx.NEW() ? ctx.OLD().getSymbol().getStartIndex() : ctx.NEW().getSymbol().getStartIndex();
+        int ownerStopIndex = null == ctx.NEW() ? ctx.OLD().getSymbol().getStopIndex() : ctx.NEW().getSymbol().getStopIndex();
+        result.setOwner(new OwnerSegment(ownerStartIndex, ownerStopIndex, new IdentifierValue(null == ctx.NEW() ? "OLD" : "NEW")));
+        return result;
     }
     
     protected ParameterMarkerExpressionSegment createParameterMarkerExpressionSegment(final ParameterMarkerContext ctx) {
@@ -1263,12 +1289,21 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitXmlNamespacesClause(final XmlNamespacesClauseContext ctx) {
         // TODO : throw exception if more than one defaultString exists in a xml name space clause
-        String defaultString = null == ctx.defaultString() ? null : ctx.defaultString(0).STRING_().getText();
+        String defaultString = getDefaultXmlNamespaceString(ctx);
         Collection<XmlNamespaceStringAsIdentifierSegment> xmlNamespaceStringAsIdentifierSegments = null == ctx.xmlNamespaceStringAsIdentifier() ? Collections.emptyList()
                 : ctx.xmlNamespaceStringAsIdentifier().stream().map(each -> (XmlNamespaceStringAsIdentifierSegment) visit(each)).collect(Collectors.toList());
         XmlNamespacesClauseSegment result = new XmlNamespacesClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), defaultString, getOriginalText(ctx));
         result.getStringAsIdentifier().addAll(xmlNamespaceStringAsIdentifierSegments);
         return result;
+    }
+    
+    private String getDefaultXmlNamespaceString(final XmlNamespacesClauseContext ctx) {
+        for (DefaultStringContext each : ctx.defaultString()) {
+            if (null != each && null != each.STRING_()) {
+                return each.STRING_().getText();
+            }
+        }
+        return null;
     }
     
     @Override
@@ -1279,7 +1314,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitXmlTableOptions(final XmlTableOptionsContext ctx) {
         XmlTableOptionsSegment result = new XmlTableOptionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
-        Collection<ExpressionSegment> expressionSegments = null == ctx.xmlPassingClause().expr() ? Collections.emptyList()
+        Collection<ExpressionSegment> expressionSegments = null == ctx.xmlPassingClause()
+                ? Collections.emptyList()
                 : ctx.xmlPassingClause().expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
         Collection<XmlTableColumnSegment> xmlTableColumnSegments = null == ctx.xmlTableColumn() ? Collections.emptyList()
                 : ctx.xmlTableColumn().stream().map(each -> (XmlTableColumnSegment) visit(each)).collect(Collectors.toList());
@@ -1506,11 +1542,57 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
-        if (null != ctx.owner()) {
-            OwnerContext owner = ctx.owner();
-            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+        if (!ctx.owner().isEmpty()) {
+            result.setOwner(createOwnerSegment(ctx.owner()));
         }
-        result.getParameters().addAll(getExpressions(ctx.expr()));
+        if (!isRefFunction(ctx)) {
+            getProcedureCallNames().add(createRegularFunctionCallNameSegment(ctx));
+            result.getParameters().addAll(getExpressions(ctx.expr()));
+        }
+        return result;
+    }
+    
+    private ProcedureCallNameSegment createRegularFunctionCallNameSegment(final RegularFunctionContext ctx) {
+        PackageSegment packageSegment = createRegularFunctionPackageSegment(ctx.owner());
+        ProcedureCallNameSegment result = new ProcedureCallNameSegment(
+                null == packageSegment ? ctx.regularFunctionName().start.getStartIndex() : packageSegment.getStartIndex(),
+                ctx.regularFunctionName().stop.getStopIndex(), new IdentifierValue(ctx.regularFunctionName().getText()));
+        result.setPackageSegment(packageSegment);
+        return result;
+    }
+    
+    private PackageSegment createRegularFunctionPackageSegment(final List<OwnerContext> ownerContexts) {
+        if (ownerContexts.isEmpty()) {
+            return null;
+        }
+        OwnerContext packageContext = ownerContexts.get(ownerContexts.size() - 1);
+        PackageSegment result = new PackageSegment(packageContext.getStart().getStartIndex(), packageContext.getStop().getStopIndex(), (IdentifierValue) visit(packageContext.identifier()));
+        if (ownerContexts.size() > 1) {
+            result.setOwner(createOwnerSegment(ownerContexts.subList(0, ownerContexts.size() - 1)));
+        }
+        return result;
+    }
+    
+    private OwnerSegment createOwnerSegment(final List<OwnerContext> ownerContexts) {
+        OwnerSegment result = null;
+        for (OwnerContext each : ownerContexts) {
+            OwnerSegment current = new OwnerSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each.identifier()));
+            current.setOwner(result);
+            result = current;
+        }
+        return result;
+    }
+    
+    private boolean isRefFunction(final RegularFunctionContext ctx) {
+        return ctx.owner().isEmpty() && "REF".equalsIgnoreCase(ctx.regularFunctionName().getText());
+    }
+    
+    @Override
+    public final ASTNode visitBuiltinFunctionsExpr(final BuiltinFunctionsExprContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.builtinFunction().getText(), getOriginalText(ctx));
+        result.setOwner(new OwnerSegment(ctx.packageIdentifier().getStart().getStartIndex(), ctx.packageIdentifier().getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.packageIdentifier().identifier())));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
     

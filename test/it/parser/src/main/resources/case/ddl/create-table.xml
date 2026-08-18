@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <create-table sql-case-id="create_table_with_column_dec">
+    <create-table sql-case-id="create_table_with_column_dec" temporary="false">
         <table name="test3" start-index="13" stop-index="17" />
         <column-definition type="int" auto-increment="true" start-index="19" stop-index="39">
             <column name="id" />
@@ -373,7 +373,7 @@
         </create-table-option>
     </create-table>
     
-    <create-table sql-case-id="create_temporary_table">
+    <create-table sql-case-id="create_temporary_table" temporary="true">
         <table name="t_order" start-index="23" stop-index="29" />
         <column-definition type="INT" start-index="32" stop-index="43">
             <column name="order_id" />
@@ -417,6 +417,36 @@
         </column-definition>
     </create-table>
     
+    <create-table sql-case-id="create_table_with_explicit_column_nullability_postgresql">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" not-null="true" start-index="22" stop-index="42">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" not-null="false" start-index="45" stop-index="60">
+            <column name="user_id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_explicit_column_nullability_opengauss">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" not-null="true" start-index="22" stop-index="42">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" not-null="false" start-index="45" stop-index="60">
+            <column name="user_id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_explicit_column_nullability_sqlserver">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" not-null="true" start-index="22" stop-index="42">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" not-null="false" start-index="45" stop-index="60">
+            <column name="user_id" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_column_default">
         <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT" start-index="22" stop-index="43">
@@ -2194,7 +2224,7 @@
         </column-definition>
     </create-table>
     
-    <create-table sql-case-id="create_table_with_select" db-types="Doris">
+    <create-table sql-case-id="create_table_with_select" db-types="MySQL,Doris,Hive">
         <table name="t_order_new" start-index="13" stop-index="23"/>
         <select>
             <projections start-index="35" stop-index="35">
@@ -2202,6 +2232,87 @@
             </projections>
             <from>
                 <simple-table name="t_order" start-index="42" stop-index="48" />
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_as_select_with_parameter_markers" parameters="1, 2, 3" parameter-marker-count="3">
+        <table name="t_projection" start-index="13" stop-index="24" />
+        <select>
+            <projections start-index="36" stop-index="43">
+                <column-projection name="id" start-index="36" stop-index="37" />
+                <column-projection name="name" start-index="40" stop-index="43" />
+            </projections>
+            <from>
+                <simple-table name="source_table" start-index="50" stop-index="61" />
+            </from>
+            <where start-index="63" stop-index="97">
+                <expr>
+                    <binary-operation-expression start-index="69" stop-index="97">
+                        <left>
+                            <binary-operation-expression start-index="69" stop-index="78">
+                                <left>
+                                    <column name="status" start-index="69" stop-index="74" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <parameter-marker-expression parameter-index="0" start-index="78" stop-index="78" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <in-expression start-index="84" stop-index="97">
+                                <not>false</not>
+                                <left>
+                                    <column name="type" start-index="84" stop-index="87" />
+                                </left>
+                                <right>
+                                    <list-expression start-index="92" stop-index="97">
+                                        <items>
+                                            <parameter-marker-expression parameter-index="1" start-index="93" stop-index="93" />
+                                        </items>
+                                        <items>
+                                            <parameter-marker-expression parameter-index="2" start-index="96" stop-index="96" />
+                                        </items>
+                                    </list-expression>
+                                </right>
+                            </in-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_as_select_with_window">
+        <table name="t_window" start-index="13" stop-index="20" />
+        <select>
+            <projections start-index="32" stop-index="106">
+                <shorthand-projection start-index="32" stop-index="34">
+                    <owner name="a" start-index="32" stop-index="32" />
+                </shorthand-projection>
+                <expression-projection text="ROW_NUMBER() OVER(PARTITION BY a.user_id ORDER BY a.join_date DESC)" alias="rw" start-index="37" stop-index="106">
+                    <expr>
+                        <function function-name="ROW_NUMBER" text="ROW_NUMBER() OVER(PARTITION BY a.user_id ORDER BY a.join_date DESC)" start-index="37" stop-index="103">
+                            <window-item start-index="50" stop-index="103">
+                                <partition-by>
+                                    <column name="user_id" start-index="68" stop-index="76">
+                                        <owner name="a" start-index="68" stop-index="68" />
+                                    </column>
+                                </partition-by>
+                                <order-by start-index="78" stop-index="102">
+                                    <column-item name="join_date" order-direction="DESC" start-index="87" stop-index="97">
+                                        <owner name="a" start-index="87" stop-index="87" />
+                                    </column-item>
+                                </order-by>
+                            </window-item>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="t_user" alias="a" start-index="113" stop-index="120" />
             </from>
         </select>
     </create-table>
@@ -2299,10 +2410,59 @@
 
     <create-table sql-case-id="create_table_with_select_without_query" db-types="Oracle">
         <table name="t_order_new" start-index="13" stop-index="23"/>
+        <select>
+            <projections start-index="35" stop-index="35">
+                <shorthand-projection start-index="35" stop-index="35" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="42" stop-index="48" />
+            </from>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_table_as_select_with_pivot" db-types="Oracle">
         <table name="pivot_table" start-index="13" stop-index="23"/>
+        <select>
+            <projections start-index="35" stop-index="35">
+                <shorthand-projection start-index="35" stop-index="35" />
+            </projections>
+            <from>
+                <subquery-table start-index="42" stop-index="121">
+                    <subquery>
+                        <select>
+                            <projections start-index="50" stop-index="108">
+                                <expression-projection text="EXTRACT(YEAR FROM order_date)" alias="year" start-index="50" stop-index="83">
+                                    <expr>
+                                        <function function-name="EXTRACT" text="EXTRACT(YEAR FROM order_date)" start-index="50" stop-index="78">
+                                            <parameter>
+                                                <column name="order_date" start-index="68" stop-index="77" />
+                                            </parameter>
+                                        </function>
+                                    </expr>
+                                </expression-projection>
+                                <column-projection name="order_mode" start-index="86" stop-index="95" />
+                                <column-projection name="order_total" start-index="98" stop-index="108" />
+                            </projections>
+                            <from>
+                                <simple-table name="orders" start-index="115" stop-index="120" />
+                            </from>
+                        </select>
+                    </subquery>
+                    <pivot start-index="123" stop-index="206">
+                        <aggregation-columns>
+                            <column name="order_total" start-index="134" stop-index="144" />
+                        </aggregation-columns>
+                        <for-columns>
+                            <column name="order_mode" start-index="151" stop-index="160" />
+                        </for-columns>
+                        <in-columns>
+                            <column name="Store" start-index="166" stop-index="182" />
+                            <column name="Internet" start-index="185" stop-index="204" />
+                        </in-columns>
+                    </pivot>
+                </subquery-table>
+            </from>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_table_organization_index_parallel_with_select">
@@ -2319,6 +2479,16 @@
         <column-definition start-index="45" stop-index="45">
             <column name="l" start-index="45" stop-index="45" />
         </column-definition>
+        <select>
+            <projections start-index="86" stop-index="86">
+                <shorthand-projection start-index="86" stop-index="86" />
+            </projections>
+            <from>
+                <simple-table name="jobs" start-index="93" stop-index="99">
+                    <owner name="hr" start-index="93" stop-index="94" />
+                </simple-table>
+            </from>
+        </select>
     </create-table>
     
     <create-table sql-case-id="create_table_partition_by_range">
@@ -2588,14 +2758,64 @@
     
     <create-table sql-case-id="create_table_cluster_with_select1">
         <table name="dept_10" start-index="13" stop-index="19" />
+        <select>
+            <projections start-index="65" stop-index="65">
+                <shorthand-projection start-index="65" stop-index="65" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="72" stop-index="80" />
+            </from>
+            <where start-index="82" stop-index="105">
+                <expr>
+                    <binary-operation-expression start-index="88" stop-index="105">
+                        <left>
+                            <column name="department_id" start-index="88" stop-index="100" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="10" start-index="104" stop-index="105" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
     </create-table>
     
     <create-table sql-case-id="create_table_cluster_with_select2">
         <table name="dept_20" start-index="13" stop-index="19" />
+        <select>
+            <projections start-index="65" stop-index="65">
+                <shorthand-projection start-index="65" stop-index="65" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="72" stop-index="80" />
+            </from>
+            <where start-index="82" stop-index="105">
+                <expr>
+                    <binary-operation-expression start-index="88" stop-index="105">
+                        <left>
+                            <column name="department_id" start-index="88" stop-index="100" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="20" start-index="104" stop-index="105" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
     </create-table>
     
     <create-table sql-case-id="create_table_cluster_with_select3">
         <table name="customers_demo" start-index="13" stop-index="26" />
+        <select>
+            <projections start-index="38" stop-index="38">
+                <shorthand-projection start-index="38" stop-index="38" />
+            </projections>
+            <from>
+                <simple-table name="customers" start-index="45" stop-index="53" />
+            </from>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_table_with_ref_type_column_department_typ">
@@ -2624,12 +2844,43 @@
 
     <create-table sql-case-id="create_table_with_as_sub_query">
         <table name="employees_temp" start-index="13" stop-index="26"/>
+        <select>
+            <projections start-index="38" stop-index="38">
+                <shorthand-projection start-index="38" stop-index="38" />
+            </projections>
+            <from>
+                <simple-table name="EMPLOYEES" start-index="45" stop-index="53" />
+            </from>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_table_parallel_with_as_sub_query">
         <table name="admin_emp_dept" start-index="13" stop-index="29">
             <owner name="hr" start-index="13" stop-index="14"/>
         </table>
+        <select>
+            <projections start-index="59" stop-index="59">
+                <shorthand-projection start-index="59" stop-index="59" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="66" stop-index="77">
+                    <owner name="hr" start-index="66" stop-index="67" />
+                </simple-table>
+            </from>
+            <where start-index="79" stop-index="102">
+                <expr>
+                    <binary-operation-expression start-index="85" stop-index="102">
+                        <left>
+                            <column name="department_id" start-index="85" stop-index="97" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="10" start-index="101" stop-index="102" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_table_with_edge_constraint">
@@ -2655,6 +2906,23 @@
     
     <create-table sql-case-id="create_table_with_builtin_function">
         <table name="tab" start-index="13" stop-index="15"/>
+        <select>
+            <projections start-index="27" stop-index="63">
+                <expression-projection text="DBMS_LOB.GETLENGTH@dbs2(clob_col)" alias="len" start-index="27" stop-index="63">
+                    <expr>
+                        <function function-name="GETLENGTH" text="DBMS_LOB.GETLENGTH@dbs2(clob_col)" start-index="27" stop-index="59">
+                            <owner name="DBMS_LOB" start-index="27" stop-index="34" />
+                            <parameter>
+                                <column name="clob_col" start-index="51" stop-index="58" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="tab" start-index="70" stop-index="72" />
+            </from>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_table_with_autoextend_size">
@@ -3414,7 +3682,7 @@
 
     <create-table sql-case-id="create_table_with_col_not_null_basic">
         <table name="test_col_not_null" start-index="13" stop-index="29" />
-        <column-definition type="STRING" not-null="false" start-index="32" stop-index="51">
+        <column-definition type="STRING" not-null="true" start-index="32" stop-index="51">
             <column name="name" />
         </column-definition>
     </create-table>
@@ -3900,7 +4168,7 @@
         <column-definition type="INT" primary-key="false" start-index="89" stop-index="125">
             <column name="id" />
         </column-definition>
-        <column-definition type="STRING" not-null="false" comment="User name" start-index="140" stop-index="179">
+        <column-definition type="STRING" not-null="true" comment="User name" start-index="140" stop-index="179">
             <column name="name" />
         </column-definition>
         <column-definition type="INT" check-constraint="age&gt;0 AND age&lt;150" start-index="194" stop-index="253">
@@ -4124,6 +4392,16 @@
         </constraint-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_column_not_null_firebird">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" not-null="true" start-index="22" stop-index="42">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" not-null="false" start-index="45" stop-index="55">
+            <column name="user_id" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_ref_column_oracle">
         <table name="ref_table" start-index="13" stop-index="21" />
         <column-definition type="person_t" start-index="24" stop-index="43">
@@ -4139,5 +4417,20 @@
                 <data-type-length precision="10" type="CHAR" />
             </data-type>
         </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_as_select_with_explicit_columns_oracle">
+        <table name="t_order_new" start-index="13" stop-index="23" />
+        <column name="order_id_new" start-index="26" stop-index="37" />
+        <column name="user_id_new" start-index="40" stop-index="50" />
+        <select>
+            <projections start-index="63" stop-index="79">
+                <column-projection name="order_id" start-index="63" stop-index="70" />
+                <column-projection name="user_id" start-index="73" stop-index="79" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="86" stop-index="92" />
+            </from>
+        </select>
     </create-table>
 </sql-parser-test-cases>

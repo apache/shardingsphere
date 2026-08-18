@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.id;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.nio.charset.StandardCharsets;
 
@@ -51,6 +51,6 @@ public interface PipelineJobId {
      * @return marshaled suffix
      */
     default String marshalSuffix() {
-        return DigestUtils.md5Hex(JsonUtils.toJsonString(this).getBytes(StandardCharsets.UTF_8));
+        return DigestUtils.md5Hex(JsonEngine.marshal(this).getBytes(StandardCharsets.UTF_8));
     }
 }
