@@ -145,6 +145,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCleanTrashContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminRebalanceDiskContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CleanAllProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlanReplayerPlayContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemContext;
@@ -241,6 +242,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplaye
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRebalanceDiskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
@@ -1269,6 +1271,15 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitAdminCleanTrash(final AdminCleanTrashContext ctx) {
         DorisAdminCleanTrashStatement result = new DorisAdminCleanTrashStatement(getDatabaseType());
+        if (null != ctx.string_()) {
+            ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminRebalanceDisk(final AdminRebalanceDiskContext ctx) {
+        DorisAdminRebalanceDiskStatement result = new DorisAdminRebalanceDiskStatement(getDatabaseType());
         if (null != ctx.string_()) {
             ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
         }
