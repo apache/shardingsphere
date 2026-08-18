@@ -319,11 +319,6 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
-        ShardingSphereSchema defaultSchema = database.getSchema("public");
-        when(database.getDefaultSchemaName()).thenReturn("PUBLIC");
-        when(database.getSchema("PUBLIC")).thenReturn(defaultSchema);
-        when(database.getSchema("public")).thenReturn(null);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
