@@ -24,7 +24,7 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
@@ -36,9 +36,7 @@ import org.apache.shardingsphere.mcp.core.tool.handler.MCPToolDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.tool.result.RuntimeDatabaseValidationCheckResult;
@@ -57,6 +55,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -117,7 +116,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         assertThat(actualPayload.get("status"), is("failed"));
         assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("database"));
         assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("next_actions"));
-        assertThat(((TextContent) actual.content().getFirst()).text(), is(JsonUtils.toJsonString(actualPayload)));
+        assertThat(((TextContent) actual.content().getFirst()).text(), is(JsonEngine.marshal(actualPayload)));
     }
     
     @Test
@@ -267,7 +266,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         WorkflowContextSnapshot snapshot = createMaskSnapshot();
         Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
-                new MaskAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
+                WorkflowArtifactMaskUtils.maskPropertyMap(snapshot.getRequest().getPrimaryAlgorithmProperties(), snapshot.getPropertyRequirements())));
         return new MCPMapPayload(payload);
     }
     
@@ -286,7 +285,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         WorkflowContextSnapshot snapshot = createEncryptSnapshot();
         Map<String, Object> payload = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, snapshot.getRequest());
         payload.put("masked_property_preview", Map.of("primary",
-                new EncryptAlgorithmPropertyTemplateService().maskProperties(snapshot.getPropertyRequirements(), snapshot.getRequest().getPrimaryAlgorithmProperties())));
+                WorkflowArtifactMaskUtils.maskPropertyMap(snapshot.getRequest().getPrimaryAlgorithmProperties(), snapshot.getPropertyRequirements())));
         return new MCPMapPayload(payload);
     }
     

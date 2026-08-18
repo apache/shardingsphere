@@ -19,13 +19,10 @@ package org.apache.shardingsphere.mcp.feature.shadow.tool.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.feature.shadow.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
@@ -53,7 +50,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
 
@@ -74,8 +70,7 @@ class ShadowWorkflowValidationServiceTest {
                 "shadow_table", "t_order",
                 "algorithm_type", "VALUE_MATCH",
                 "algorithm_props", Map.of("operation", "INSERT", "column", "shadow", "value", "true"))));
-        Map<String, Object> actual = createService(inspectionService)
-                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
+        Map<String, Object> actual = validate(createService(inspectionService), createRuleSnapshot(), queryFacade);
         assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_PASSED));
     }
     
@@ -84,9 +79,8 @@ class ShadowWorkflowValidationServiceTest {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(createRuleRow(Map.of("operation", "INSERT", "column", "shadow", "value", "false"))));
-        Map<String, Object> actual = createService(inspectionService)
-                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<String, Object> actual = validate(createService(inspectionService), createRuleSnapshot(), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_FAILED));
         Map<?, ?> actualMismatch = (Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst();
         assertThat(actualMismatch.get("layer"), is("shadow_rule.algorithm_properties"));
         assertThat(String.valueOf(actualMismatch.get("actual")), containsString("value=false"));
@@ -98,9 +92,8 @@ class ShadowWorkflowValidationServiceTest {
         MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
         Map<String, Object> ruleRow = createRuleRow(Map.of("operation", "INSERT", "column", "shadow", "value", "true"));
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(ruleRow, ruleRow));
-        Map<String, Object> actual = createService(inspectionService)
-                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<String, Object> actual = validate(createService(inspectionService), createRuleSnapshot(), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_FAILED));
         Map<?, ?> actualMismatch = (Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst();
         assertThat(actualMismatch.get("layer"), is("shadow_rule.row_count"));
         assertThat(actualMismatch.get("actual"), is("2"));
@@ -111,10 +104,8 @@ class ShadowWorkflowValidationServiceTest {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of());
-        Map<String, Object> actual = createService(inspectionService)
-                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                        mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<String, Object> actual = validate(createService(inspectionService), createRuleSnapshot(), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_FAILED));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst()).get("layer"), is("shadow_rule"));
     }
     
@@ -125,10 +116,8 @@ class ShadowWorkflowValidationServiceTest {
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of());
         WorkflowContextSnapshot snapshot = createRuleSnapshot();
         snapshot.getClarifiedIntent().setOperationType(WorkflowLifecycle.OPERATION_DROP);
-        Map<String, Object> actual = createService(inspectionService)
-                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                        mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_VALIDATED));
+        Map<String, Object> actual = validate(createService(inspectionService), snapshot, queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_PASSED));
     }
     
     @Test
@@ -138,10 +127,8 @@ class ShadowWorkflowValidationServiceTest {
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(createRuleRow(Map.of())));
         WorkflowContextSnapshot snapshot = createRuleSnapshot();
         snapshot.getClarifiedIntent().setOperationType(WorkflowLifecycle.OPERATION_DROP);
-        Map<String, Object> actual = createService(inspectionService)
-                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                        mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<String, Object> actual = validate(createService(inspectionService), snapshot, queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_FAILED));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -152,8 +139,7 @@ class ShadowWorkflowValidationServiceTest {
         Map<String, Object> ruleRow = new LinkedHashMap<>(createRuleRow(Map.of("operation", "INSERT", "column", "shadow", "value", "true")));
         ruleRow.put(fieldName, actualValue);
         when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(ruleRow));
-        Map<String, Object> actual = createService(inspectionService)
-                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createRuleSnapshot());
+        Map<String, Object> actual = validate(createService(inspectionService), createRuleSnapshot(), queryFacade);
         Map<?, ?> actualMismatch = (Map<?, ?>) ((List<?>) actual.get("mismatches")).getFirst();
         assertThat(actualMismatch.get("layer"), is(expectedLayer));
         assertThat(actualMismatch.get("actual"), is(actualValue));
@@ -168,9 +154,8 @@ class ShadowWorkflowValidationServiceTest {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("type", "SQL_HINT", "props", Map.of("foo", "baz"))));
-        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, "create"));
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<String, Object> actual = validate(createService(inspectionService), createSnapshot(request, "create"), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_FAILED));
     }
     
     @Test
@@ -181,9 +166,8 @@ class ShadowWorkflowValidationServiceTest {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("type", "VALUE_MATCH")));
-        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, "create"));
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<String, Object> actual = validate(createService(inspectionService), createSnapshot(request, "create"), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_FAILED));
     }
     
     @Test
@@ -195,9 +179,8 @@ class ShadowWorkflowValidationServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         Map<String, Object> row = Map.of("type", "SQL_HINT", "props", Map.of());
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(row, row));
-        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, "create"));
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<String, Object> actual = validate(createService(inspectionService), createSnapshot(request, "create"), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_FAILED));
     }
     
     @Test
@@ -209,9 +192,8 @@ class ShadowWorkflowValidationServiceTest {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("type", "SQL_HINT", "props", Map.of("foo", "bar"))));
-        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, "create"));
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_VALIDATED));
+        Map<String, Object> actual = validate(createService(inspectionService), createSnapshot(request, "create"), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_PASSED));
     }
     
     @Test
@@ -221,9 +203,8 @@ class ShadowWorkflowValidationServiceTest {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of());
-        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, WorkflowLifecycle.OPERATION_DROP));
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_VALIDATED));
+        Map<String, Object> actual = validate(createService(inspectionService), createSnapshot(request, WorkflowLifecycle.OPERATION_DROP), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_PASSED));
     }
     
     @Test
@@ -233,9 +214,8 @@ class ShadowWorkflowValidationServiceTest {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(inspectionService.queryDefaultAlgorithm(queryFacade, "logic_db")).thenReturn(List.of(Map.of("type", "SQL_HINT")));
-        Map<String, Object> actual = createService(inspectionService).validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                mock(MCPFeatureExecutionFacade.class), "session-1", createSnapshot(request, WorkflowLifecycle.OPERATION_DROP));
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<String, Object> actual = validate(createService(inspectionService), createSnapshot(request, WorkflowLifecycle.OPERATION_DROP), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_FAILED));
     }
     
     @Test
@@ -244,9 +224,8 @@ class ShadowWorkflowValidationServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "unused_algorithm", "unused_algorithm")).thenReturn(true);
         when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of(Map.of("shadow_algorithm_name", "unused_algorithm")));
-        Map<String, Object> actual = createService(inspectionService)
-                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade, mock(MCPFeatureExecutionFacade.class), "session-1", createCleanupSnapshot());
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        Map<String, Object> actual = validate(createService(inspectionService), createCleanupSnapshot(), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_FAILED));
     }
     
     @Test
@@ -254,10 +233,8 @@ class ShadowWorkflowValidationServiceTest {
         ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(inspectionService.queryAlgorithms(queryFacade, "logic_db")).thenReturn(List.of());
-        Map<String, Object> actual = createService(inspectionService)
-                .validate(new TestWorkflowSessionContext(), mock(MCPMetadataQueryFacade.class), queryFacade,
-                        mock(MCPFeatureExecutionFacade.class), "session-1", createCleanupSnapshot());
-        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_VALIDATED));
+        Map<String, Object> actual = validate(createService(inspectionService), createCleanupSnapshot(), queryFacade);
+        assertThat(actual.get("overall_status"), is(WorkflowLifecycle.STATUS_PASSED));
     }
     
     @Test
@@ -323,25 +300,17 @@ class ShadowWorkflowValidationServiceTest {
                 createCleanupSnapshot(), List.of(createRuleDistSQLArtifact("DROP SHADOW ALGORITHM `unused_algorithm`"))).size(), is(0));
     }
     
-    @Test
-    void assertSynchronize() {
-        ShadowInspectionService inspectionService = mock(ShadowInspectionService.class);
-        MCPFeatureQueryFacade queryFacade = createRuleQueryFacade();
-        when(inspectionService.queryRules(queryFacade, "logic_db")).thenReturn(List.of(createRuleRow(
-                Map.of("operation", "INSERT", "column", "shadow", "value", "true"))));
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        createService(inspectionService).synchronize(createRuleSnapshot(), metadataQueryFacade, queryFacade, executionFacade, "session-1");
-        verifyNoInteractions(metadataQueryFacade);
-        verifyNoInteractions(executionFacade);
-    }
-    
     private ShadowWorkflowValidationService createService(final ShadowInspectionService inspectionService) {
         try (
                 MockedConstruction<ShadowInspectionService> ignored = mockConstruction(
                         ShadowInspectionService.class, withSettings().defaultAnswer(AdditionalAnswers.delegatesTo(inspectionService)))) {
             return new ShadowWorkflowValidationService();
         }
+    }
+    
+    private Map<String, Object> validate(final ShadowWorkflowValidationService service, final WorkflowContextSnapshot snapshot,
+                                         final MCPFeatureQueryFacade queryFacade) {
+        return service.validate(snapshot, queryFacade).toMap();
     }
     
     private WorkflowContextSnapshot createRuleSnapshot() {

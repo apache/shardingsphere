@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.reset;
 
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLComStmtSendLongDataPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -26,9 +27,11 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLComStmtSendLongDataExecutor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.sql.SQLException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,19 +43,22 @@ import static org.mockito.Mockito.when;
 class MySQLComStmtResetExecutorTest {
     
     @Test
-    void assertExecute() {
+    void assertExecute() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", mock(SQLStatementContext.class), new HintValueContext());
-        preparedStatement.getLongData().put(0, new byte[0]);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
+        MySQLComStmtSendLongDataPacket sendLongDataPacket = mock(MySQLComStmtSendLongDataPacket.class);
+        when(sendLongDataPacket.getStatementId()).thenReturn(1);
+        when(sendLongDataPacket.getData()).thenReturn(new byte[0]);
+        new MySQLComStmtSendLongDataExecutor(sendLongDataPacket, connectionSession).execute();
         MySQLComStmtResetPacket packet = mock(MySQLComStmtResetPacket.class);
         when(packet.getStatementId()).thenReturn(1);
         MySQLComStmtResetExecutor executor = new MySQLComStmtResetExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), isA(MySQLOKPacket.class));
-        assertTrue(preparedStatement.getLongData().isEmpty());
+        assertTrue(preparedStatement.getLongDataIndexes().isEmpty());
     }
 }

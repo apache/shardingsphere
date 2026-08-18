@@ -18,4 +18,9 @@
 
 <sql-parser-test-cases>
     <drop-package sql-case-id="drop_package" />
+    <drop-package sql-case-id="drop_package_body_with_owner_visitor_oracle" body="true">
+        <package name="foo_pkg" start-index="18" stop-index="35">
+            <owner name="foo_schema" start-index="18" stop-index="27" />
+        </package>
+    </drop-package>
 </sql-parser-test-cases>

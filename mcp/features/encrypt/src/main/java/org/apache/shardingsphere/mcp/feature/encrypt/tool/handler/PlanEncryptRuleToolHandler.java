@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyReq
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
@@ -82,8 +83,8 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPFeatu
     
     private void putMaskedProperties(final Map<String, Object> target, final List<AlgorithmPropertyRequirement> requirements,
                                      final WorkflowRequest request, final String role) {
-        target.put(role, propertyTemplateService.maskProperties(
-                requirements.stream().filter(each -> role.equals(each.getAlgorithmRole())).toList(), request.getAlgorithmProperties(role)));
+        List<AlgorithmPropertyRequirement> roleRequirements = requirements.stream().filter(each -> role.equals(each.getAlgorithmRole())).toList();
+        target.put(role, WorkflowArtifactMaskUtils.maskPropertyMap(request.getAlgorithmProperties(role), roleRequirements, request, role));
     }
     
     private List<AlgorithmPropertyRequirement> createPropertyRequirements(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {

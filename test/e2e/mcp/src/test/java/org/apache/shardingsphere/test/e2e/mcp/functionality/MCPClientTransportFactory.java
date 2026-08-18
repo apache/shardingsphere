@@ -26,9 +26,9 @@ import io.modelcontextprotocol.client.transport.ServerParameters;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.modelcontextprotocol.spec.ProtocolVersions;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPStdioLogbackConfiguration;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ final class MCPClientTransportFactory {
     
     private static final String STDIO_LOGBACK_CONFIG_FILE_NAME = "mcp-functionality-e2e-sdk-stdio-logback.xml";
     
-    private static final List<String> SUPPORTED_PROTOCOL_VERSIONS = List.of(ProtocolVersions.MCP_2025_11_25);
+    private static final List<String> SUPPORTED_PROTOCOL_VERSIONS = List.of(MCPInteractionProtocolSupport.PROTOCOL_VERSION);
     
     static McpSyncClient createElicitationClient(final McpClientTransport clientTransport, final List<McpSchema.ElicitRequest> elicitationRequests,
                                                  final BiFunction<List<McpSchema.ElicitRequest>, McpSchema.ElicitRequest, McpSchema.ElicitResult> elicitationHandler) {

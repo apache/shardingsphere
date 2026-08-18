@@ -25,6 +25,7 @@ import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
@@ -47,15 +48,9 @@ import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.v
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -75,14 +70,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
     public int handshake(final ChannelHandlerContext context) {
         connectionId = ConnectionIdGenerator.getInstance().nextId();
         context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).set(connectionId);
-        FirebirdTransactionIdGenerator.getInstance().registerConnection(connectionId);
-        FirebirdStatementIdGenerator.getInstance().registerConnection(connectionId);
-        FirebirdBlobIdGenerator.getInstance().registerConnection(connectionId);
-        FirebirdBlobHandleGenerator.getInstance().registerConnection(connectionId);
-        FirebirdBlobWriteCache.getInstance().registerConnection(connectionId);
-        FirebirdBlobReadCache.getInstance().registerConnection(connectionId);
-        FirebirdFetchStatementCache.getInstance().registerConnection(connectionId);
-        FirebirdBatchRegistry.getInstance().registerConnection(connectionId);
+        FirebirdConnectionResourceManager.getInstance().registerConnection(connectionId);
         return connectionId;
     }
     
@@ -106,10 +94,21 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
     
     private AuthenticationResult processAttach(final ChannelHandlerContext context, final FirebirdPacketPayload payload, final AuthorityRule rule) {
         FirebirdAttachPacket attachPacket = new FirebirdAttachPacket(payload);
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(FirebirdCharacterSets.findCharacterSet(attachPacket.getEncoding()));
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseAttachCharset(attachPacket.getEncoding()));
         login(currentAuthResult.getDatabase(), currentAuthResult.getUsername(), attachPacket, rule);
         context.writeAndFlush(new FirebirdGenericResponsePacket());
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase(), currentAuthResult.getConnectionAttributes());
+    }
+    
+    private Charset parseAttachCharset(final String encoding) {
+        if (null == encoding) {
+            return FirebirdCharacterSets.findCharacterSet("NONE");
+        }
+        try {
+            return FirebirdCharacterSets.findCharacterSet(encoding);
+        } catch (final IllegalArgumentException ex) {
+            throw new InvalidParameterValueException("lc_ctype", encoding);
+        }
     }
     
     private void login(final String databaseName, final String username, final FirebirdAttachPacket attachPacket, final AuthorityRule rule) {

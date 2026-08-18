@@ -25,6 +25,7 @@ import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
@@ -49,11 +50,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset.FirebirdCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -79,6 +76,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -86,13 +84,13 @@ import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({
-        ConnectionIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdStatementIdGenerator.class, FirebirdFetchStatementCache.class,
-        FirebirdBlobIdGenerator.class, FirebirdBlobWriteCache.class, ProxyContext.class
+        ConnectionIdGenerator.class, FirebirdConnectionResourceManager.class, ProxyContext.class
 })
 class FirebirdAuthenticationEngineTest {
     
@@ -103,19 +101,7 @@ class FirebirdAuthenticationEngineTest {
     private ConnectionIdGenerator idGenerator;
     
     @Mock
-    private FirebirdTransactionIdGenerator transactionIdGenerator;
-    
-    @Mock
-    private FirebirdStatementIdGenerator statementIdGenerator;
-    
-    @Mock
-    private FirebirdFetchStatementCache fetchStatementCache;
-    
-    @Mock
-    private FirebirdBlobIdGenerator blobIdGenerator;
-    
-    @Mock
-    private FirebirdBlobWriteCache blobUploadCache;
+    private FirebirdConnectionResourceManager connectionResourceManager;
     
     @Mock
     private ProxyContext proxyContext;
@@ -126,17 +112,9 @@ class FirebirdAuthenticationEngineTest {
     void assertHandshake() {
         when(ConnectionIdGenerator.getInstance()).thenReturn(idGenerator);
         when(idGenerator.nextId()).thenReturn(1);
-        when(FirebirdTransactionIdGenerator.getInstance()).thenReturn(transactionIdGenerator);
-        when(FirebirdStatementIdGenerator.getInstance()).thenReturn(statementIdGenerator);
-        when(FirebirdFetchStatementCache.getInstance()).thenReturn(fetchStatementCache);
-        when(FirebirdBlobIdGenerator.getInstance()).thenReturn(blobIdGenerator);
-        when(FirebirdBlobWriteCache.getInstance()).thenReturn(blobUploadCache);
+        when(FirebirdConnectionResourceManager.getInstance()).thenReturn(connectionResourceManager);
         assertThat(authenticationEngine.handshake(context), is(1));
-        verify(transactionIdGenerator).registerConnection(1);
-        verify(statementIdGenerator).registerConnection(1);
-        verify(fetchStatementCache).registerConnection(1);
-        verify(blobIdGenerator).registerConnection(1);
-        verify(blobUploadCache).registerConnection(1);
+        verify(connectionResourceManager).registerConnection(1);
     }
     
     @Test
@@ -266,6 +244,50 @@ class FirebirdAuthenticationEngineTest {
             assertThat(actualAuthInfo[1], is(authData));
             assertThat(actualAuthInfo[2], is(attachAuthData));
         }
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @SneakyThrows(ReflectiveOperationException.class)
+    @Test
+    void assertAuthenticateAttachWithUnknownCharset() {
+        AuthorityRule rule = mock(AuthorityRule.class);
+        mockProxyContext(rule, true);
+        Attribute<Charset> charsetAttr = mock(Attribute.class);
+        when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
+        Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
+                AuthenticationResultBuilder.continued("root", "", "db", Collections.emptyMap()));
+        FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
+        try (
+                MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class,
+                        (attachPacket, construction) -> when(attachPacket.getEncoding()).thenReturn("FOO_CHARSET"))) {
+            assertThrows(InvalidParameterValueException.class, () -> authenticationEngine.authenticate(context, payload));
+        }
+        verify(charsetAttr, never()).set(any());
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @SneakyThrows(ReflectiveOperationException.class)
+    @Test
+    void assertAuthenticateAttachWithoutEncoding() {
+        AuthorityRule rule = mock(AuthorityRule.class);
+        ShardingSphereUser user = new ShardingSphereUser("root", "pwd", "");
+        when(rule.findUser(any(Grantee.class))).thenReturn(Optional.of(user));
+        mockProxyContext(rule, true);
+        Attribute<Charset> charsetAttr = mock(Attribute.class);
+        when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(charsetAttr);
+        Plugins.getMemberAccessor().set(FirebirdAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine,
+                AuthenticationResultBuilder.continued("root", "", "db", Collections.emptyMap()));
+        FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
+        FirebirdAuthenticator authenticator = mock(FirebirdAuthenticator.class);
+        when(authenticator.authenticate(any(), any())).thenReturn(true);
+        try (
+                MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> when(attachPacket.getEncoding()).thenReturn(null));
+                MockedConstruction<AuthenticatorFactory> ignoredFactory = mockConstruction(AuthenticatorFactory.class,
+                        (factory, construction) -> when(factory.newInstance(user)).thenReturn(authenticator))) {
+            AuthenticationResult actual = authenticationEngine.authenticate(context, payload);
+            assertTrue(actual.isFinished());
+        }
+        verify(charsetAttr).set(FirebirdCharacterSets.findCharacterSet("NONE"));
     }
     
     @Test

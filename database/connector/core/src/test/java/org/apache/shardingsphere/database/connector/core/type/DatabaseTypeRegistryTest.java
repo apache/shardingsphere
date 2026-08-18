@@ -62,8 +62,8 @@ class DatabaseTypeRegistryTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getDefaultSchemaNameWithIdentifierPatternArguments")
     void assertGetDefaultSchemaNameWithIdentifierPattern(final String name, final IdentifierPatternType identifierPatternType,
-                                                         final String databaseName, final String expectedSchemaName) throws ReflectiveOperationException {
-        DatabaseTypeRegistry databaseTypeRegistry = createDatabaseTypeRegistry(identifierPatternType, null);
+                                                         final String defaultSchema, final String databaseName, final String expectedSchemaName) throws ReflectiveOperationException {
+        DatabaseTypeRegistry databaseTypeRegistry = createDatabaseTypeRegistry(identifierPatternType, defaultSchema);
         assertThat(databaseTypeRegistry.getDefaultSchemaName(databaseName), is(expectedSchemaName));
     }
     
@@ -83,10 +83,11 @@ class DatabaseTypeRegistryTest {
     
     private static Stream<Arguments> getDefaultSchemaNameWithIdentifierPatternArguments() {
         return Stream.of(
-                Arguments.of("upper case identifier pattern formats default schema", IdentifierPatternType.UPPER_CASE, "foo_db", "FOO_DB"),
-                Arguments.of("lower case identifier pattern formats default schema", IdentifierPatternType.LOWER_CASE, "FOO_DB", "foo_db"),
-                Arguments.of("keep origin identifier pattern keeps default schema", IdentifierPatternType.KEEP_ORIGIN, "Foo_Db", "Foo_Db"),
-                Arguments.of("null database name keeps null default schema", IdentifierPatternType.UPPER_CASE, null, null));
+                Arguments.of("fixed default schema remains unchanged", IdentifierPatternType.UPPER_CASE, "Foo_Schema", "foo_db", "Foo_Schema"),
+                Arguments.of("upper case identifier pattern formats default schema", IdentifierPatternType.UPPER_CASE, null, "foo_db", "FOO_DB"),
+                Arguments.of("lower case identifier pattern formats default schema", IdentifierPatternType.LOWER_CASE, null, "FOO_DB", "foo_db"),
+                Arguments.of("keep origin identifier pattern keeps default schema", IdentifierPatternType.KEEP_ORIGIN, null, "Foo_Db", "Foo_Db"),
+                Arguments.of("null database name keeps null default schema", IdentifierPatternType.UPPER_CASE, null, null, null));
     }
     
     private static Stream<Arguments> formatIdentifierPatternArguments() {

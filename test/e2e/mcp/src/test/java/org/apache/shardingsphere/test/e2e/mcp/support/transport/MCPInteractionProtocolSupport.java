@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
+import io.modelcontextprotocol.json.McpJsonMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import io.modelcontextprotocol.spec.ProtocolVersions;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,7 +33,9 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPInteractionProtocolSupport {
     
-    public static final String PROTOCOL_VERSION = "2025-11-25";
+    public static final String PROTOCOL_VERSION = ProtocolVersions.MCP_2025_11_25;
+    
+    private static final McpJsonMapper JSON_MAPPER = MCPTransportJsonMapperFactory.create();
     
     /**
      * Create initialize request parameters for the given client name.
@@ -86,7 +91,7 @@ public final class MCPInteractionProtocolSupport {
      * @return JSON notification body
      */
     public static String createJsonRpcNotificationBody(final String method, final Map<String, Object> params) {
-        return JsonUtils.toJsonString(createJsonRpcNotification(method, params));
+        return toJsonString(createJsonRpcNotification(method, params));
     }
     
     /**
@@ -98,6 +103,14 @@ public final class MCPInteractionProtocolSupport {
      * @return JSON request body
      */
     public static String createJsonRpcRequestBody(final String requestId, final String method, final Map<String, Object> params) {
-        return JsonUtils.toJsonString(createJsonRpcRequest(requestId, method, params));
+        return toJsonString(createJsonRpcRequest(requestId, method, params));
+    }
+    
+    private static String toJsonString(final Object value) {
+        try {
+            return JSON_MAPPER.writeValueAsString(value);
+        } catch (final IOException ex) {
+            throw new IllegalStateException("Failed to serialize MCP JSON-RPC payload.", ex);
+        }
     }
 }

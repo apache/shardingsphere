@@ -25,8 +25,11 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,7 +39,7 @@ import static org.mockito.Mockito.when;
 class MySQLComStmtSendLongDataExecutorTest {
     
     @Test
-    void assertExecute() {
+    void assertExecute() throws SQLException {
         MySQLComStmtSendLongDataPacket packet = mock(MySQLComStmtSendLongDataPacket.class);
         when(packet.getStatementId()).thenReturn(1);
         when(packet.getParamId()).thenReturn(0);
@@ -49,6 +52,9 @@ class MySQLComStmtSendLongDataExecutorTest {
         MySQLComStmtSendLongDataExecutor executor = new MySQLComStmtSendLongDataExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual, is(Collections.emptyList()));
-        assertThat(preparedStatement.getLongData(), is(Collections.singletonMap(0, data)));
+        assertThat(preparedStatement.getLongDataIndexes(), is(Collections.singleton(0)));
+        List<Object> actualParams = new ArrayList<>(Collections.singletonList(null));
+        preparedStatement.applyLongData(actualParams, StandardCharsets.UTF_8);
+        assertThat(actualParams.get(0), is(data));
     }
 }

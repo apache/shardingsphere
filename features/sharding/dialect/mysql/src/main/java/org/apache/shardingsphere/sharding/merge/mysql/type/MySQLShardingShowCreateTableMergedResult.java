@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +61,7 @@ public final class MySQLShardingShowCreateTableMergedResult extends MySQLShardin
     }
     
     private void replaceTables(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName) {
-        memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replaceFirst(actualTableName, logicTableName));
+        memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replaceFirst(Pattern.quote(actualTableName), Matcher.quoteReplacement(logicTableName)));
     }
     
     private void replaceBindingTables(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName, final ShardingRule rule) {
@@ -75,7 +77,7 @@ public final class MySQLShardingShowCreateTableMergedResult extends MySQLShardin
                     .putAll(rule.getLogicAndActualTablesFromBindingTable(each.getDataSourceName(), logicTableName, actualTableName, bindingTableRule.get().getAllLogicTables()));
         }
         for (Entry<String, String> entry : logicAndActualTablesFromBindingTables.entrySet()) {
-            memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replaceFirst(entry.getValue(), entry.getKey()));
+            memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replaceFirst(Pattern.quote(entry.getValue()), Matcher.quoteReplacement(entry.getKey())));
         }
     }
     

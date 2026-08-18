@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.type;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AssignmentValueContext;
@@ -59,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Tabl
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -66,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -261,8 +267,45 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitCombineClause(final CombineClauseContext ctx) {
-        // TODO :Unsupported for union SQL.
-        return visit(ctx.selectClause(0));
+        SelectStatement result = (SelectStatement) visit(ctx.selectClause(0));
+        if (1 == ctx.selectClause().size()) {
+            return result;
+        }
+        SelectClauseContext firstContext = ctx.selectClause(0);
+        SubquerySegment left = new SubquerySegment(firstContext.start.getStartIndex(), firstContext.stop.getStopIndex(), result, getOriginalText(firstContext));
+        for (int i = 1; i < ctx.selectClause().size(); i++) {
+            SelectClauseContext rightContext = ctx.selectClause(i);
+            SelectStatement rightSelect = (SelectStatement) visit(rightContext);
+            boolean liftTrailingOrderBy = i == ctx.selectClause().size() - 1 && null != rightContext.orderByClause();
+            OrderBySegment trailingOrderBy = liftTrailingOrderBy ? rightSelect.getOrderBy().orElse(null) : null;
+            if (null != trailingOrderBy) {
+                rightSelect = createSelectStatementBuilder(rightSelect).orderBy(null).build();
+            }
+            SubquerySegment right = createCombineRightSubquery(rightContext, rightSelect, null != trailingOrderBy);
+            result = SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getSelect().getProjections())
+                    .from(left.getSelect().getFrom().orElse(null))
+                    .combine(new CombineSegment(left.getStartIndex(), right.getStopIndex(), left, getCombineType(ctx, rightContext), right))
+                    .orderBy(trailingOrderBy).build();
+            left = new SubquerySegment(left.getStartIndex(), right.getStopIndex(), result, ctx.start.getInputStream().getText(new Interval(left.getStartIndex(), right.getStopIndex())));
+        }
+        return result;
+    }
+    
+    private CombineType getCombineType(final CombineClauseContext ctx, final SelectClauseContext rightContext) {
+        ParseTree previous = ctx.getChild(ctx.children.indexOf(rightContext) - 1);
+        boolean isUnionAll = previous instanceof TerminalNode && FirebirdStatementParser.ALL == ((TerminalNode) previous).getSymbol().getType();
+        return isUnionAll ? CombineType.UNION_ALL : CombineType.UNION;
+    }
+    
+    private SubquerySegment createCombineRightSubquery(final SelectClauseContext rightContext, final SelectStatement rightSelect, final boolean excludeTrailingOrderBy) {
+        int stopIndex = excludeTrailingOrderBy ? getStopIndexBefore(rightContext, rightContext.orderByClause()) : rightContext.stop.getStopIndex();
+        return new SubquerySegment(rightContext.start.getStartIndex(), stopIndex, rightSelect,
+                rightContext.start.getInputStream().getText(new Interval(rightContext.start.getStartIndex(), stopIndex)));
+    }
+    
+    private int getStopIndexBefore(final ParserRuleContext parent, final ParserRuleContext child) {
+        ParseTree previous = parent.getChild(parent.children.indexOf(child) - 1);
+        return previous instanceof TerminalNode ? ((TerminalNode) previous).getSymbol().getStopIndex() : ((ParserRuleContext) previous).stop.getStopIndex();
     }
     
     @Override

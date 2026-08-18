@@ -20,7 +20,6 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,8 +71,8 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     }
     
     private Collection<String> getAllTableNames(final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
-        return database.getSchema(defaultSchemaName).getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
+        return database.findDefaultSchema().map(schema -> schema.getAllTables().stream().map(ShardingSphereTable::getName).collect(Collectors.toList()))
+                .orElseGet(Collections::emptyList);
     }
     
     private void checkTableExist(final Collection<String> allTables, final String tableName) {

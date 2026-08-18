@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.Savepoint;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,10 +43,13 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DriverDatabaseConnectionManagerTest {
@@ -167,5 +171,29 @@ class DriverDatabaseConnectionManagerTest {
     void assertBeginTransaction() throws SQLException {
         databaseConnectionManager.begin();
         assertTrue(databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction());
+    }
+    
+    @Test
+    void assertRollbackToSavepointClearsExceptionState() throws SQLException {
+        Connection physicalConnection = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        Savepoint physicalSavepoint = mock(Savepoint.class);
+        when(physicalConnection.setSavepoint("foo_savepoint")).thenReturn(physicalSavepoint);
+        Savepoint savepoint = databaseConnectionManager.setSavepoint("foo_savepoint");
+        databaseConnectionManager.getConnectionContext().getTransactionContext().setExceptionOccur(true);
+        databaseConnectionManager.rollback(savepoint);
+        assertFalse(databaseConnectionManager.getConnectionContext().getTransactionContext().isExceptionOccur());
+        verify(physicalConnection).rollback(physicalSavepoint);
+    }
+    
+    @Test
+    void assertRollbackToSavepointFailurePreservesExceptionState() throws SQLException {
+        Connection physicalConnection = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        Savepoint physicalSavepoint = mock(Savepoint.class);
+        when(physicalConnection.setSavepoint("foo_savepoint")).thenReturn(physicalSavepoint);
+        doThrow(SQLException.class).when(physicalConnection).rollback(physicalSavepoint);
+        Savepoint savepoint = databaseConnectionManager.setSavepoint("foo_savepoint");
+        databaseConnectionManager.getConnectionContext().getTransactionContext().setExceptionOccur(true);
+        assertThrows(SQLException.class, () -> databaseConnectionManager.rollback(savepoint));
+        assertTrue(databaseConnectionManager.getConnectionContext().getTransactionContext().isExceptionOccur());
     }
 }

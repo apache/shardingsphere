@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -30,11 +33,16 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,10 +53,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -231,7 +241,51 @@ class StatementAdapterTest {
         verify(statement).setQueryTimeout(10);
     }
     
+    @Test
+    void assertExecutionWhenTransactionFailed() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        ShardingSphereStatement actual = mockShardingSphereStatement(databaseType);
+        when(actual.getConnection().getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isExceptionOccur()).thenReturn(true);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockFailedTransactionOption()) {
+            SQLFeatureNotSupportedException actualException = assertThrows(SQLFeatureNotSupportedException.class,
+                    () -> actual.handleAutoCommitBeforeExecution(new SQLStatement(databaseType), actual.getConnection()));
+            assertThat(actualException.getMessage(), is("Current transaction is aborted, commands ignored until end of transaction block."));
+        }
+    }
+    
+    @Test
+    void assertCommitWhenTransactionFailed() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        ShardingSphereStatement actual = mockShardingSphereStatement(databaseType);
+        when(actual.getConnection().getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isExceptionOccur()).thenReturn(true);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockFailedTransactionOption()) {
+            assertDoesNotThrow(() -> actual.handleAutoCommitBeforeExecution(new CommitStatement(databaseType), actual.getConnection()));
+        }
+    }
+    
+    @Test
+    void assertRollbackWhenTransactionFailed() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        ShardingSphereStatement actual = mockShardingSphereStatement(databaseType);
+        when(actual.getConnection().getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isExceptionOccur()).thenReturn(true);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockFailedTransactionOption()) {
+            assertDoesNotThrow(() -> actual.handleAutoCommitBeforeExecution(new RollbackStatement(databaseType), actual.getConnection()));
+        }
+    }
+    
+    private MockedConstruction<DatabaseTypeRegistry> mockFailedTransactionOption() {
+        DialectTransactionOption transactionOption = mock(DialectTransactionOption.class);
+        when(transactionOption.isAllowCommitAndRollbackOnlyWhenTransactionFailed()).thenReturn(true);
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(transactionOption);
+        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+    }
+    
     private ShardingSphereStatement mockShardingSphereStatement(final Statement... statements) {
+        return mockShardingSphereStatement(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), statements);
+    }
+    
+    private ShardingSphereStatement mockShardingSphereStatement(final DatabaseType databaseType, final Statement... statements) {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(
                 new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyList()),
@@ -239,7 +293,6 @@ class StatementAdapterTest {
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connection.getCurrentDatabaseName()).thenReturn("db");
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
         ShardingSphereStatement result = new ShardingSphereStatement(connection);
         result.getRoutedStatements().addAll(Arrays.asList(statements));

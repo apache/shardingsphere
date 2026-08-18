@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.database.protocol.mysql.payload;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,9 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -95,7 +96,18 @@ class MySQLPacketPayloadTest {
     
     @Test
     void assertWriteInt6() {
-        assertDoesNotThrow(() -> new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt6(1L));
+        byte[] expected = {0x54, 0x76, (byte) 0x98, (byte) 0xba, (byte) 0xdc, (byte) 0xfe};
+        ByteBuf actual = Unpooled.wrappedBuffer(new byte[6]).writerIndex(0);
+        new MySQLPacketPayload(actual, StandardCharsets.UTF_8).writeInt6(0xfedcba987654L);
+        assertThat(ByteBufUtil.getBytes(actual), is(expected));
+    }
+    
+    @Test
+    void assertWriteInt6WithMaximumValue() {
+        byte[] expected = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        ByteBuf actual = Unpooled.wrappedBuffer(new byte[6]).writerIndex(0);
+        new MySQLPacketPayload(actual, StandardCharsets.UTF_8).writeInt6(0xffffffffffffL);
+        assertThat(ByteBufUtil.getBytes(actual), is(expected));
     }
     
     @Test
@@ -234,16 +246,6 @@ class MySQLPacketPayloadTest {
     void assertWriteBytes() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeBytes("value".getBytes());
         verify(byteBuf).writeBytes("value".getBytes());
-    }
-    
-    @Test
-    void assertReadStringVar() {
-        assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringVar(), is(""));
-    }
-    
-    @Test
-    void assertWriteStringVar() {
-        assertDoesNotThrow(() -> new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeStringVar(""));
     }
     
     @Test

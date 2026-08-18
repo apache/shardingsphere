@@ -26,13 +26,19 @@ import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowTablesS
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGenerateStrategiesStatement;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowRulesStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowShardingKeyGeneratorsStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowShardingKeyGenerateStrategiesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowStorageUnitsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowTablesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding.ShowShardingKeyGeneratorsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding.ShowShardingKeyGenerateStrategiesStatementTestCase;
 import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 
 /**
@@ -49,7 +55,13 @@ public final class RQLStatementAssert {
      * @param expected expected RQL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RQLStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof ShowDatabaseRulesStatement) {
+        if (actual instanceof ShowShardingKeyGeneratorsStatement || expected instanceof ShowShardingKeyGeneratorsStatementTestCase) {
+            ShowShardingKeyGeneratorsStatementAssert.assertIs(
+                    assertContext, (ShowShardingKeyGeneratorsStatement) actual, (ShowShardingKeyGeneratorsStatementTestCase) expected);
+        } else if (actual instanceof ShowShardingKeyGenerateStrategiesStatement || expected instanceof ShowShardingKeyGenerateStrategiesStatementTestCase) {
+            ShowShardingKeyGenerateStrategiesStatementAssert.assertIs(
+                    assertContext, (ShowShardingKeyGenerateStrategiesStatement) actual, (ShowShardingKeyGenerateStrategiesStatementTestCase) expected);
+        } else if (actual instanceof ShowDatabaseRulesStatement) {
             ShowRulesStatementAssert.assertIs(assertContext, (ShowDatabaseRulesStatement) actual, expected);
         } else if (actual instanceof ShowTablesStatement) {
             ShowTablesStatementAssert.assertIs(assertContext, (ShowTablesStatement) actual, expected);

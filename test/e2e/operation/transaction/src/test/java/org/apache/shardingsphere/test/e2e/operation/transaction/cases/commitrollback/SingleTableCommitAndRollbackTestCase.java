@@ -25,6 +25,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * Single table transaction commit and rollback integration test.
  */
@@ -42,26 +45,30 @@ public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionT
     }
     
     private void assertRollback() throws SQLException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 0);
-            Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1);");
+            assertThat(statement.executeUpdate("INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1);"), is(1));
             assertAccountRowCount(connection, 1);
             connection.rollback();
             assertAccountRowCount(connection, 0);
+            try (Connection queryConnection = getDataSource().getConnection()) {
+                assertAccountRowCount(queryConnection, 0);
+            }
         }
     }
     
     private void assertCommit() throws SQLException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 0);
-            Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1);");
+            assertThat(statement.executeUpdate("INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1);"), is(1));
             assertAccountRowCount(connection, 1);
             connection.commit();
             assertAccountRowCount(connection, 1);
+            try (Connection queryConnection = getDataSource().getConnection()) {
+                assertAccountRowCount(queryConnection, 1);
+            }
         }
     }
 }

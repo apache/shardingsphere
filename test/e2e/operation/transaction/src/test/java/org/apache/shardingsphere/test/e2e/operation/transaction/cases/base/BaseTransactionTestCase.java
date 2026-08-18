@@ -34,6 +34,8 @@ import java.sql.Statement;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Base transaction test case.
@@ -77,9 +79,11 @@ public abstract class BaseTransactionTestCase {
         connection.createStatement().execute(sql);
     }
     
-    protected static void executeUpdateWithLog(final Connection connection, final String sql) throws SQLException {
+    protected static int executeUpdateWithLog(final Connection connection, final String sql) throws SQLException {
         log.info("Connection execute update: {}.", sql);
-        connection.createStatement().executeUpdate(sql);
+        try (Statement statement = connection.createStatement()) {
+            return statement.executeUpdate(sql);
+        }
     }
     
     protected static ResultSet executeQueryWithLog(final Connection connection, final String sql) throws SQLException {
@@ -93,10 +97,10 @@ public abstract class BaseTransactionTestCase {
     
     protected static void assertTableRowCount(final Connection connection, final String tableName, final int rowNum) throws SQLException {
         try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(String.format("SELECT COUNT(*) FROM %s", tableName))) {
-            if (resultSet.next()) {
-                int rowCount = resultSet.getInt(1);
-                assertThat(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, rowCount), rowCount, is(rowNum));
-            }
+            assertTrue(resultSet.next());
+            int rowCount = resultSet.getInt(1);
+            assertThat(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, rowCount), rowCount, is(rowNum));
+            assertFalse(resultSet.next());
         }
     }
     

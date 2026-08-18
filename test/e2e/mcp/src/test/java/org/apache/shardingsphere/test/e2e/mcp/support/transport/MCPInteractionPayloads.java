@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.TypeRef;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -33,7 +34,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPInteractionPayloads {
     
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final McpJsonMapper JSON_MAPPER = MCPTransportJsonMapperFactory.create();
     
     /**
      * Parse one MCP HTTP or STDIO JSON payload.
@@ -44,7 +45,7 @@ public final class MCPInteractionPayloads {
      */
     public static Map<String, Object> parseJsonPayload(final String responseBody) {
         try {
-            return OBJECT_MAPPER.readValue(normalizeJsonBody(responseBody), new TypeReference<>() {
+            return JSON_MAPPER.readValue(normalizeJsonBody(responseBody), new TypeRef<Map<String, Object>>() {
             });
         } catch (final IOException ex) {
             throw new IllegalStateException("Failed to parse MCP response body.", ex);
@@ -201,7 +202,7 @@ public final class MCPInteractionPayloads {
     
     private static Map<String, Object> parseJsonText(final String value) {
         try {
-            return OBJECT_MAPPER.readValue(value, new TypeReference<>() {
+            return JSON_MAPPER.readValue(value, new TypeRef<Map<String, Object>>() {
             });
         } catch (final IOException ex) {
             throw new IllegalStateException("Failed to parse MCP JSON text payload.", ex);

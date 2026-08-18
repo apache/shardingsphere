@@ -53,6 +53,7 @@ import java.util.Properties;
 
 import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -164,6 +165,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
@@ -178,6 +180,24 @@ class StandaloneMetaDataManagerPersistServiceTest {
     }
     
     @Test
+    void assertAlterRuleConfigurationWithSingleRule() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        SingleRule singleRule = mock(SingleRule.class);
+        when(singleRule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.singleton("foo_ds.foo_tbl"), null));
+        when(singleRule.getAttributes()).thenReturn(new RuleAttributes());
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(singleRule)));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), null);
+        metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
+        verify(metaDataPersistFacade.getDatabaseRuleService()).persist("foo_db", Collections.singleton(ruleConfig));
+        verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistAlteredTables(eq("foo_db"), any(), eq(Collections.singletonList("bar_tbl")));
+    }
+    
+    @Test
     void assertRemoveNullRuleConfigurationItem() {
         metaDataManagerPersistService.removeRuleConfigurationItem(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())),
                 null);
@@ -189,6 +209,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
@@ -209,6 +230,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
@@ -220,7 +242,8 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(new MetaDataVersion(databaseRuleNodePath)));
         metaDataManagerPersistService.removeRuleConfigurationItem(database, ruleConfig);
         verify(metaDataPersistFacade.getDatabaseRuleService()).delete("foo_db", Collections.singleton(ruleConfig));
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistReloadDatabaseByUnloadSingleTable(eq("foo_db"), any(), eq(database));
+        verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistReloadDatabaseByUnloadSingleTable(
+                eq("foo_db"), argThat(each -> each.containsSchema("foo_default_schema")), eq(database));
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade(), never()).persistAlteredTables(eq("foo_db"), any(), any());
     }
     
@@ -229,6 +252,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
@@ -243,6 +267,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));

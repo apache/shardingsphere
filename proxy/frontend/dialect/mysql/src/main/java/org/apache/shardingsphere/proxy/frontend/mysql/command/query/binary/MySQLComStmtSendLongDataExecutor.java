@@ -39,7 +39,7 @@ public final class MySQLComStmtSendLongDataExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         MySQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
-        preparedStatement.getLongData().put(packet.getParamId(), packet.getData());
+        preparedStatement.appendLongData(packet.getParamId(), packet.getData());
         return Collections.emptyList();
     }
 }

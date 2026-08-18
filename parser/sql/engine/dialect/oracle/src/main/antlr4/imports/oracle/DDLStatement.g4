@@ -83,6 +83,14 @@ functionNameDef
     : identifier (DOT_ functionName)?
     ;
 
+createIndexType
+    : CREATE (OR REPLACE)? INDEXTYPE indexTypeName FOR indexTypeOperatorClause (COMMA_ indexTypeOperatorClause)* usingTypeClause withLocalClause
+    ;
+
+indexTypeOperatorClause
+    : operatorName LP_ parameterType (COMMA_ parameterType)* RP_
+    ;
+
 createType
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE plsqlTypeSource
     ;

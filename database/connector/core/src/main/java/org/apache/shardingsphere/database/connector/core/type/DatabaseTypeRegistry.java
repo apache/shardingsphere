@@ -20,6 +20,9 @@ package org.apache.shardingsphere.database.connector.core.type;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
@@ -30,6 +33,15 @@ import java.util.stream.Collectors;
  * Database type registry.
  */
 public final class DatabaseTypeRegistry {
+    
+    private static final IdentifierCasePolicy UPPER_CASE_SCHEMA_IDENTIFIER_POLICY =
+            IdentifierCasePolicyFactory.newUpperCasePolicySet().getPolicy(IdentifierScope.SCHEMA);
+    
+    private static final IdentifierCasePolicy LOWER_CASE_SCHEMA_IDENTIFIER_POLICY =
+            IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.SCHEMA);
+    
+    private static final IdentifierCasePolicy KEEP_ORIGIN_SCHEMA_IDENTIFIER_POLICY =
+            IdentifierCasePolicyFactory.newCasePreservingInsensitivePolicySet().getPolicy(IdentifierScope.SCHEMA);
     
     private final DatabaseType databaseType;
     
@@ -56,9 +68,24 @@ public final class DatabaseTypeRegistry {
      *
      * @param databaseName database name
      * @return default schema name
+     * @deprecated use {@link org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase#getDefaultSchemaName()} instead
      */
+    @Deprecated
     public String getDefaultSchemaName(final String databaseName) {
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse(null == databaseName ? null : formatIdentifierPattern(databaseName));
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()
+                .orElse(null == databaseName ? null : IdentifierNormalizeEngine.normalize(getSchemaIdentifierCasePolicy(), databaseName));
+    }
+    
+    private IdentifierCasePolicy getSchemaIdentifierCasePolicy() {
+        switch (dialectDatabaseMetaData.getIdentifierPatternType()) {
+            case UPPER_CASE:
+                return UPPER_CASE_SCHEMA_IDENTIFIER_POLICY;
+            case LOWER_CASE:
+                return LOWER_CASE_SCHEMA_IDENTIFIER_POLICY;
+            case KEEP_ORIGIN:
+            default:
+                return KEEP_ORIGIN_SCHEMA_IDENTIFIER_POLICY;
+        }
     }
     
     /**

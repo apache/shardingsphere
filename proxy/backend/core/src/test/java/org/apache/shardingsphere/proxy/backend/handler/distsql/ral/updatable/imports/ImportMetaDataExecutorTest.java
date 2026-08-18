@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.imports;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
@@ -114,7 +114,7 @@ class ImportMetaDataExecutorTest {
                 Arguments.of("import empty metadata", createImportMetaDataStatement(EMPTY_METADATA_FILE_PATH), mockContextManager(), EmptyStorageUnitException.class),
                 Arguments.of("import existed metadata", createImportMetaDataStatement(EMPTY_METADATA_FILE_PATH), createContextManagerWithExistedDatabase(), DatabaseCreateExistsException.class),
                 Arguments.of("import metadata from missing file", new ImportMetaDataStatement(null, NOT_EXIST_METADATA_FILE_PATH), mockContextManager(), FileIOException.class),
-                Arguments.of("import metadata with empty file path in file branch", createStatementWithEmptyFilePathInFileBranch(), mockContextManager(), JsonProcessingException.class));
+                Arguments.of("import metadata with empty file path in file branch", createStatementWithEmptyFilePathInFileBranch(), mockContextManager(), JsonException.class));
     }
     
     private static ImportMetaDataStatement createImportMetaDataStatement(final String filePath) {

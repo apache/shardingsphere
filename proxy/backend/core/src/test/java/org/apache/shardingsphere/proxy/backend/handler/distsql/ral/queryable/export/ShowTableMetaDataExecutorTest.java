@@ -41,6 +41,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -101,11 +102,20 @@ class ShowTableMetaDataExecutorTest {
         assertThat(actual.iterator().next().getCell(2), is("T_USER_UPPER"));
     }
     
+    @Test
+    void assertExecuteWithMissingDefaultSchema() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.findDefaultSchema()).thenReturn(Optional.empty());
+        ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
+        executor.setDatabase(database);
+        assertTrue(executor.getRows(createSqlStatement(), mock(ContextManager.class)).isEmpty());
+    }
+    
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(result.getName()).thenReturn("foo_db");
-        when(result.getSchema("foo_db")).thenReturn(new ShardingSphereSchema("foo_db", mock(DatabaseType.class), createTables(), Collections.emptyList()));
+        ShardingSphereSchema defaultSchema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), createTables(), Collections.emptyList());
+        when(result.findDefaultSchema()).thenReturn(Optional.of(defaultSchema));
         return result;
     }
     

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatMod
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.DockerRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport;
@@ -551,9 +552,7 @@ class LLMHttpE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         if (!proxyRuntimeFixtureSelected && null != mySQLRuntimeFixture) {
             return;
         }
-        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the LLM E2E test."));
-        }
+        DockerRuntimeTestSupport.requireAvailable("Docker is required for the LLM E2E test.");
         try {
             if (proxyRuntimeFixtureSelected) {
                 proxyRuntimeFixture = ProxyWorkflowRuntimeTestSupport.createFixture();
