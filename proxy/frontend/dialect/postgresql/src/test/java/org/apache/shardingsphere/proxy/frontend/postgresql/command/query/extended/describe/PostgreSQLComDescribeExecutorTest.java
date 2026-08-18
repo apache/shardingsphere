@@ -355,6 +355,11 @@ class PostgreSQLComDescribeExecutorTest {
         setBoundInfo(sqlStatement, 3, "t_order", "id");
         setBoundInfo(sqlStatement, 4, "t_order", "c");
         ContextManager contextManager = mockContextManager();
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+        ShardingSphereSchema defaultSchema = database.getSchema("public");
+        when(database.getDefaultSchemaName()).thenReturn("PUBLIC");
+        when(database.getSchema("PUBLIC")).thenReturn(defaultSchema);
+        when(database.getSchema("public")).thenReturn(null);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
@@ -694,7 +699,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(schema.getName()).thenReturn("public");
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
-        when(database.getDefaultSchemaName()).thenReturn("public");
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.containsSchema("public")).thenReturn(true);
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);

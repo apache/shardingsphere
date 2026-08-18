@@ -68,14 +68,14 @@ def categorize(path: str) -> str:
         return "release-notes"
     if "distribution" in path:
         return "distribution"
-    if "/src/main/java/" in path:
+    if path.startswith("src/main/java/") or "/src/main/java/" in path:
         return "production-java"
-    if "/src/test/" in path:
+    if path.startswith("src/test/") or "/src/test/" in path:
         return "tests"
-    if path.startswith("docs/") or path.endswith((".md", ".adoc")):
-        return "docs"
     if path.startswith(".github/") or path.endswith((".xml", ".properties", ".yml", ".yaml", ".toml", ".gradle")):
         return "build-config"
+    if path.startswith("docs/") or path.endswith((".md", ".adoc")):
+        return "docs"
     if "target/" in path or "/generated/" in path:
         return "generated"
     return "other"

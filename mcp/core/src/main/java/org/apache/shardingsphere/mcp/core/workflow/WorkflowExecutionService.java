@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecution
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
@@ -43,6 +42,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowGuidancePa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSecretReferenceUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 
@@ -60,11 +60,13 @@ public final class WorkflowExecutionService {
     
     private static final List<String> ALLOWED_APPROVAL_STEPS = List.of(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL);
     
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
+            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
+    
     /**
      * Apply workflow artifacts.
      *
      * @param workflowSessionContext workflow session context
-     * @param metadataQueryFacade metadata query facade
      * @param queryFacade query facade
      * @param executionFacade execution facade
      * @param workflowRuntimeHandler workflow runtime handler
@@ -75,7 +77,7 @@ public final class WorkflowExecutionService {
      * @param executionMode execution mode override
      * @return apply payload
      */
-    public Map<String, Object> apply(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
+    public Map<String, Object> apply(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
                                      final MCPFeatureExecutionFacade executionFacade, final MCPWorkflowRuntimeHandler workflowRuntimeHandler,
                                      final MCPWorkflowApplyArtifactValidator workflowApplyArtifactValidator, final String sessionId, final WorkflowContextSnapshot snapshot,
                                      final List<String> approvedSteps, final String executionMode) {
@@ -96,7 +98,7 @@ public final class WorkflowExecutionService {
         if (isManualOnly(actualExecutionMode)) {
             return applyManualOnly(workflowSessionContext, snapshot, applyOutcome);
         }
-        return applyAutomatically(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, workflowRuntimeHandler, sessionId, snapshot,
+        return applyAutomatically(workflowSessionContext, queryFacade, executionFacade, workflowRuntimeHandler, sessionId, snapshot,
                 actualExecutionMode, applyOutcome);
     }
     
@@ -223,8 +225,8 @@ public final class WorkflowExecutionService {
                 WorkflowLifecycle.EXECUTION_MODE_MANUAL_ONLY, createArtifactPayload(snapshot));
     }
     
-    private Map<String, Object> applyAutomatically(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
-                                                   final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade,
+    private Map<String, Object> applyAutomatically(final WorkflowSessionContext workflowSessionContext, final MCPFeatureQueryFacade queryFacade,
+                                                   final MCPFeatureExecutionFacade executionFacade,
                                                    final MCPWorkflowRuntimeHandler workflowRuntimeHandler,
                                                    final String sessionId, final WorkflowContextSnapshot snapshot, final String executionMode,
                                                    final WorkflowApplyOutcome applyOutcome) {
@@ -238,7 +240,7 @@ public final class WorkflowExecutionService {
                 executeArtifact(executionFacade, sessionId, snapshot, each);
                 applyOutcome.addExecutedArtifact(each);
             }
-            workflowRuntimeHandler.synchronize(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId);
+            workflowSynchronizationSupport.synchronize(() -> workflowRuntimeHandler.validate(snapshot, queryFacade));
             return completeApply(workflowSessionContext, snapshot, executionMode, applyOutcome);
         } catch (final WorkflowSynchronizationException ex) {
             return failApplySynchronization(workflowSessionContext, snapshot, executionMode, applyOutcome, ex);

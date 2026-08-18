@@ -1336,6 +1336,9 @@
     
     <create-view sql-case-id="create_view_select_with_read_only" view-definition="SELECT cust_last_name, nls_language, credit_limit FROM customers">
         <view name="customer_ro" start-index="12" stop-index="22" />
+        <column name="name" start-index="25" stop-index="28" />
+        <column name="language" start-index="31" stop-index="38" />
+        <column name="credit" start-index="41" stop-index="46" />
         <select>
             <projections start-index="59" stop-index="100">
                 <column-projection name="cust_last_name" start-index="59" stop-index="72" />
@@ -1427,6 +1430,9 @@
     
     <create-view sql-case-id="create_view_define_column_with_select" view-definition="SELECT employee_id, last_name, email FROM employees">
         <view name="emp_sal" start-index="12" stop-index="18" />
+        <column name="emp_id" start-index="21" stop-index="26" />
+        <column name="last_name" start-index="29" stop-index="37" />
+        <column name="email" start-index="40" stop-index="44" />
         <select>
             <projections start-index="151" stop-index="179">
                 <column-projection name="employee_id" start-index="151" stop-index="161" />
@@ -2849,6 +2855,32 @@
                         </binary-operation-expression>
                     </on-condition>
                 </join-table>
+            </from>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_with_schema_qualified_package_function_oracle" view-definition="SELECT SYS.UTL_I18N.RAW_TO_CHAR(PASSWORD, 'AL32UTF8') AS PASSWORD FROM T_USER">
+        <view name="V_USER" start-index="23" stop-index="28" />
+        <select>
+            <projections start-index="40" stop-index="97">
+                <expression-projection text="SYS.UTL_I18N.RAW_TO_CHAR(PASSWORD, 'AL32UTF8')" alias="PASSWORD" start-index="40" stop-index="97">
+                    <expr>
+                        <function function-name="RAW_TO_CHAR" text="SYS.UTL_I18N.RAW_TO_CHAR(PASSWORD, 'AL32UTF8')" start-index="40" stop-index="85">
+                            <owner name="UTL_I18N" start-index="44" stop-index="51">
+                                <owner name="SYS" start-index="40" stop-index="42" />
+                            </owner>
+                            <parameter>
+                                <column name="PASSWORD" start-index="65" stop-index="72" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="AL32UTF8" start-index="75" stop-index="84" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="T_USER" start-index="104" stop-index="109" />
             </from>
         </select>
     </create-view>

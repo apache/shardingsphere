@@ -68,7 +68,9 @@ public final class DatabaseTypeRegistry {
      *
      * @param databaseName database name
      * @return default schema name
+     * @deprecated use {@link org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase#getDefaultSchemaName()} instead
      */
+    @Deprecated
     public String getDefaultSchemaName(final String databaseName) {
         return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()
                 .orElse(null == databaseName ? null : IdentifierNormalizeEngine.normalize(getSchemaIdentifierCasePolicy(), databaseName));

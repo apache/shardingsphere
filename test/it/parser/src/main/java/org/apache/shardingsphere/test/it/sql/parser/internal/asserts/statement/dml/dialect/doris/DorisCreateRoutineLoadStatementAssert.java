@@ -38,6 +38,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
@@ -72,7 +73,7 @@ public final class DorisCreateRoutineLoadStatementAssert {
     
     private static void assertJobName(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
         if (actual.getJobName().isPresent()) {
-            MatcherAssert.assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), CoreMatchers.is(expected.getJobName()));
+            MatcherAssert.assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), is(expected.getJobName()));
             if (null != expected.getOwner()) {
                 OwnerAssert.assertIs(assertContext, actual.getJobName().get().getOwner().orElse(null), expected.getOwner());
             }
@@ -87,19 +88,19 @@ public final class DorisCreateRoutineLoadStatementAssert {
     
     private static void assertMergeType(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
         if (null != expected.getMergeType()) {
-            MatcherAssert.assertThat(assertContext.getText("Merge type does not match: "), actual.getMergeType().orElse(null), CoreMatchers.is(expected.getMergeType()));
+            MatcherAssert.assertThat(assertContext.getText("Merge type does not match: "), actual.getMergeType().orElse(null), is(expected.getMergeType()));
         }
     }
     
     private static void assertColumnSeparator(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
         if (null != expected.getColumnSeparator()) {
-            MatcherAssert.assertThat(assertContext.getText("Column separator does not match: "), actual.getColumnSeparator().orElse(null), CoreMatchers.is(expected.getColumnSeparator()));
+            MatcherAssert.assertThat(assertContext.getText("Column separator does not match: "), actual.getColumnSeparator().orElse(null), is(expected.getColumnSeparator()));
         }
     }
     
     private static void assertColumnMappings(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
         if (!expected.getColumnMappings().isEmpty()) {
-            MatcherAssert.assertThat(assertContext.getText("Column mappings size does not match: "), actual.getColumnMappings().size(), CoreMatchers.is(expected.getColumnMappings().size()));
+            MatcherAssert.assertThat(assertContext.getText("Column mappings size does not match: "), actual.getColumnMappings().size(), is(expected.getColumnMappings().size()));
             int count = 0;
             for (ColumnMappingSegment each : actual.getColumnMappings()) {
                 assertColumnMapping(assertContext, each, expected.getColumnMappings().get(count));
@@ -118,7 +119,7 @@ public final class DorisCreateRoutineLoadStatementAssert {
     
     private static void assertPartitions(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
         if (!expected.getPartitions().isEmpty()) {
-            MatcherAssert.assertThat(assertContext.getText("Partitions size does not match: "), actual.getPartitions().size(), CoreMatchers.is(expected.getPartitions().size()));
+            MatcherAssert.assertThat(assertContext.getText("Partitions size does not match: "), actual.getPartitions().size(), is(expected.getPartitions().size()));
             int count = 0;
             for (PartitionSegment each : actual.getPartitions()) {
                 PartitionAssert.assertIs(assertContext, each, expected.getPartitions().get(count));
@@ -164,7 +165,7 @@ public final class DorisCreateRoutineLoadStatementAssert {
     
     private static void assertDataSource(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
         if (null != expected.getDataSource()) {
-            MatcherAssert.assertThat(assertContext.getText("Data source does not match: "), actual.getDataSource().orElse(null), CoreMatchers.is(expected.getDataSource()));
+            MatcherAssert.assertThat(assertContext.getText("Data source does not match: "), actual.getDataSource().orElse(null), is(expected.getDataSource()));
         }
     }
     
@@ -180,14 +181,14 @@ public final class DorisCreateRoutineLoadStatementAssert {
     }
     
     private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final PropertyTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), CoreMatchers.is(expected.getKey()));
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), CoreMatchers.is(expected.getValue()));
+        MatcherAssert.assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        MatcherAssert.assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertComment(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
         if (null != expected.getComment()) {
-            MatcherAssert.assertThat(assertContext.getText("Comment does not match: "), actual.getComment().orElse(null), CoreMatchers.is(expected.getComment()));
+            MatcherAssert.assertThat(assertContext.getText("Comment does not match: "), actual.getComment().orElse(null), is(expected.getComment()));
         }
     }
 }

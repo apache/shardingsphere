@@ -73,6 +73,24 @@ public final class MaskAlgorithmPropertiesChecker {
         }
     }
     
+    /**
+     * check not negative integer.
+     *
+     * @param props properties to be checked
+     * @param propKey properties key to be checked
+     * @param algorithm mask algorithm
+     * @throws AlgorithmInitializationException algorithm initialization exception
+     */
+    public static void checkNotNegativeInteger(final Properties props, final String propKey, final MaskAlgorithm<?, ?> algorithm) {
+        checkRequired(props, propKey, algorithm);
+        try {
+            int integerValue = Integer.parseInt(props.getProperty(propKey));
+            ShardingSpherePreconditions.checkState(integerValue >= 0, () -> new AlgorithmInitializationException(algorithm, "%s must be a not negative integer.", propKey));
+        } catch (final NumberFormatException ex) {
+            throw new AlgorithmInitializationException(algorithm, "%s must be a valid integer number", propKey);
+        }
+    }
+    
     private static void checkRequired(final Properties props, final String requiredPropKey, final MaskAlgorithm<?, ?> algorithm) {
         ShardingSpherePreconditions.checkContainsKey(props, requiredPropKey, () -> new AlgorithmInitializationException(algorithm, "%s is required", requiredPropKey));
     }

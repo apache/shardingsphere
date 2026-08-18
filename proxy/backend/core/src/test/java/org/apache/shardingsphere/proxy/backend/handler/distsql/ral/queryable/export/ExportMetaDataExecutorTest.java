@@ -45,7 +45,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -334,7 +334,7 @@ class ExportMetaDataExecutorTest {
     }
     
     private ExportedClusterInfo convertToExportedClusterInfo(final String base64String) {
-        return JsonUtils.fromJsonString(new String(Base64.decodeBase64(base64String)), ExportedClusterInfo.class);
+        return JsonEngine.unmarshal(new String(Base64.decodeBase64(base64String)), ExportedClusterInfo.class);
     }
     
     private YamlProxyServerConfiguration convertToYamlProxyServerConfig(final String serverConfig) {

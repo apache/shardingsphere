@@ -21,20 +21,11 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
-import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.FirebirdAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
@@ -51,16 +42,7 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     
     @Override
     public void release(final ConnectionSession connectionSession) {
-        FirebirdStatementIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
-        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
-        FirebirdBlobIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
-        FirebirdBlobHandleGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
-        FirebirdBlobWriteCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
-        FirebirdBlobReadCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
-        FirebirdConnectionProtocolVersion.getInstance().unsetProtocolVersion(connectionSession.getConnectionId());
-        FirebirdBlobBinaryProtocolValue.unregisterConnection(connectionSession.getConnectionId());
-        FirebirdFetchStatementCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
-        FirebirdBatchRegistry.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        FirebirdConnectionResourceManager.getInstance().unregisterConnection(connectionSession.getConnectionId());
     }
     
     @Override

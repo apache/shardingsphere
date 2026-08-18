@@ -304,25 +304,6 @@ public final class MySQLPacketPayload implements PacketPayload {
     }
     
     /**
-     * Read variable length string from byte buffers.
-     *
-     * @return variable length string
-     */
-    public String readStringVar() {
-        // TODO
-        return "";
-    }
-    
-    /**
-     * Write fixed length string to byte buffers.
-     *
-     * @param value variable length string
-     */
-    public void writeStringVar(final String value) {
-        // TODO
-    }
-    
-    /**
      * Read null terminated string from byte buffers.
      *
      * @return null terminated string

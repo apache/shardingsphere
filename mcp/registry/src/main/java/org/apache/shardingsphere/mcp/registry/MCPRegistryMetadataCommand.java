@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mcp.registry;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.io.IOException;
 import java.net.URI;
@@ -39,8 +39,6 @@ import java.util.regex.Pattern;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPRegistryMetadataCommand {
-    
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     
     private static final String REGISTRY_SCHEMA_URL = "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json";
     
@@ -83,7 +81,7 @@ public final class MCPRegistryMetadataCommand {
      */
     public static void execute(final String... args) throws IOException {
         CommandOptions options = parseOptions(args);
-        Map<String, Object> server = JSON_MAPPER.readValue(options.path().toFile(), new TypeReference<>() {
+        Map<String, Object> server = JsonEngine.unmarshal(Files.readString(options.path()), new JsonTypeReference<Map<String, Object>>() {
         });
         if (!options.validateOnly()) {
             ShardingSpherePreconditions.checkState(!options.version().isBlank() && !options.identifier().isBlank(),
@@ -95,7 +93,7 @@ public final class MCPRegistryMetadataCommand {
             MCPDockerfileMetadataValidator.validate(Path.of(options.dockerfilePath()), String.valueOf(server.get("name")));
         }
         if (!options.validateOnly()) {
-            Files.writeString(options.path(), JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(server) + System.lineSeparator());
+            Files.writeString(options.path(), JsonEngine.marshalPretty(server) + System.lineSeparator());
         }
     }
     

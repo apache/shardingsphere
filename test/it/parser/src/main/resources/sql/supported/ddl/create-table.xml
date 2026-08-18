@@ -59,8 +59,11 @@
         column3 VARCHAR(10)
     )" db-types="MySQL,Oracle,SQLServer,Presto" />
     <sql-case id="create_table_with_back_quota" value="CREATE TABLE `t_order` (`order_id` INT, `user_id` INT, `status` VARCHAR(10), `column1` VARCHAR(10), `column2` VARCHAR(10), `column3` VARCHAR(10)) ENGINE=INNODB" db-types="MySQL" />
-    <sql-case id="create_temporary_table" value="CREATE TEMPORARY TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_temporary_table" value="CREATE TEMPORARY TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Doris" />
     <sql-case id="create_table_with_column_not_null" value="CREATE TABLE t_order (order_id INT NOT NULL, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_table_with_explicit_column_nullability_postgresql" value="CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NULL)" db-types="PostgreSQL" />
+    <sql-case id="create_table_with_explicit_column_nullability_opengauss" value="CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NULL)" db-types="openGauss" />
+    <sql-case id="create_table_with_explicit_column_nullability_sqlserver" value="CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NULL)" db-types="SQLServer" />
     <sql-case id="create_table_with_column_default" value="CREATE TABLE t_order (order_id INT DEFAULT 0, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
     <sql-case id="create_table_with_column_increment" value="CREATE TABLE t_order (order_id INT AUTO_INCREMENT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
     <sql-case id="create_table_with_column_generated" value="CREATE TABLE t_order (order_id INT GENERATED ALWAYS AS (user_id * 2), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
@@ -163,7 +166,9 @@
     <sql-case id="create_table_with_nested_table_mixed_column_properties_nested_first" value="CREATE TABLE t_nested_mix2 (doc XMLTYPE, phones_ntab phone_ntabtyp) NESTED TABLE phones_ntab STORE AS phone_store_ntab XMLTYPE COLUMN doc STORE AS CLOB;" db-types="Oracle" />
     <sql-case id="create_table_with_nested_table_mixed_column_properties_lob_first" value="CREATE TABLE t_nested_lob_mix (doc CLOB, phones_ntab phone_ntabtyp) LOB (doc) STORE AS doc_lob_seg NESTED TABLE phones_ntab STORE AS phone_store_ntab;" db-types="Oracle" />
     <sql-case id="create_table_with_nested_table_mixed_column_properties_nested_first_lob" value="CREATE TABLE t_nested_lob_mix2 (doc CLOB, phones_ntab phone_ntabtyp) NESTED TABLE phones_ntab STORE AS phone_store_ntab LOB (doc) STORE AS doc_lob_seg;" db-types="Oracle" />
-    <sql-case id="create_table_with_select" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Doris"/>
+    <sql-case id="create_table_with_select" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="MySQL,Doris,Hive"/>
+    <sql-case id="create_table_as_select_with_parameter_markers" value="CREATE TABLE t_projection AS SELECT id, name FROM source_table WHERE status = ? AND type IN (?, ?)" case-types="placeholder" db-types="MySQL" />
+    <sql-case id="create_table_as_select_with_window" value="CREATE TABLE t_window AS SELECT a.*, ROW_NUMBER() OVER(PARTITION BY a.user_id ORDER BY a.join_date DESC) rw FROM t_user a" db-types="MySQL" />
     <sql-case id="create_table_with_comment_doris" value="CREATE TABLE t_comment (id INT) ENGINE=olap COMMENT 'doris table comment'" db-types="Doris" />
     <sql-case id="create_table_with_unique_constraint_doris" value="CREATE TABLE t_unique (id INT, UNIQUE (id))" db-types="Doris" />
     <sql-case id="create_table_with_foreign_key_constraint_doris" value="CREATE TABLE t_fk (id INT, CONSTRAINT fk_order FOREIGN KEY (id) REFERENCES ref_table (id))" db-types="Doris" />
@@ -543,6 +548,8 @@
     <sql-case id="create_table_with_blob_segment_size" value="CREATE TABLE t_blob_segment (payload BLOB SUB_TYPE 0 SEGMENT SIZE 80)" db-types="Firebird" />
     <sql-case id="create_table_firebird_len" value="CREATE TABLE t_firebird_len (id INT PRIMARY KEY, amount DECIMAL(10,2), code CHAR(5))" db-types="Firebird" />
     <sql-case id="create_table_firebird_constraint" value="CREATE TABLE t_firebird_constraint (id INT, CONSTRAINT pk_t PRIMARY KEY (id), CONSTRAINT fk_t FOREIGN KEY (id) REFERENCES t_firebird_len(id))" db-types="Firebird" />
+    <sql-case id="create_table_with_column_not_null_firebird" value="CREATE TABLE t_order (order_id INT NOT NULL, user_id INT)" db-types="Firebird" />
     <sql-case id="create_table_with_ref_column_oracle" value="CREATE TABLE ref_table (ref_col REF person_t)" db-types="Oracle" />
     <sql-case id="create_table_with_varchar2_char_length_oracle" value="CREATE TABLE dt_len (c VARCHAR2(10 CHAR))" db-types="Oracle" />
+    <sql-case id="create_table_as_select_with_explicit_columns_oracle" value="CREATE TABLE t_order_new (order_id_new, user_id_new) AS SELECT order_id, user_id FROM t_order" db-types="Oracle" />
 </sql-cases>

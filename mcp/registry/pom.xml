@@ -32,10 +32,10 @@
             <artifactId>shardingsphere-infra-exception</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-util</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

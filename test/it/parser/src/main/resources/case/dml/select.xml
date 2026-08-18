@@ -17,6 +17,55 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_not_scalar_subquery_postgresql" where-expression-type="NotExpression">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t17" alias="ref_0" start-index="14" stop-index="25" />
+        </from>
+        <rewrite-table-name>t17</rewrite-table-name>
+        <rewrite-table-name>t23</rewrite-table-name>
+        <rewrite-table-name>t22</rewrite-table-name>
+    </select>
+
+    <select sql-case-id="select_values_derived_table_aliases_postgresql">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="65">
+            <subquery-table alias="t" start-index="14" stop-index="65">
+                <subquery start-index="14" stop-index="37">
+                    <select>
+                        <projections start-index="15" stop-index="36">
+                            <expression-projection text="k1" start-index="23" stop-index="26">
+                                <expr>
+                                    <literal-expression value="k1" start-index="23" stop-index="26" />
+                                </expr>
+                            </expression-projection>
+                            <expression-projection text="v1" start-index="29" stop-index="32">
+                                <expr>
+                                    <literal-expression value="v1" start-index="29" stop-index="32" />
+                                </expr>
+                            </expression-projection>
+                            <expression-projection text="1" start-index="35" stop-index="35">
+                                <expr>
+                                    <literal-expression value="1" start-index="35" stop-index="35" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+                <column-alias>pk</column-alias>
+                <column-alias>col_a</column-alias>
+                <column-alias>col_a_type</column-alias>
+            </subquery-table>
+        </from>
+    </select>
     <select sql-case-id="select_with_comment">
         <projections start-index="70" stop-index="70">
             <shorthand-projection start-index="70" stop-index="70" />
@@ -15099,6 +15148,65 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+    </select>
+
+    <select sql-case-id="select_unquoted_text_with_chinese_comma_from_dual">
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅" start-index="7" stop-index="47" alias="RESULT">
+                <expr>
+                    <literal-expression value="图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅" start-index="7" stop-index="37" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="54" stop-index="57" />
+        </from>
+    </select>
+    <select sql-case-id="select_unquoted_text_without_comma_from_dual">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="欢迎使用测试系统" start-index="7" stop-index="24" alias="RESULT">
+                <expr>
+                    <literal-expression value="欢迎使用测试系统" start-index="7" stop-index="14" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="31" stop-index="34" />
+        </from>
+    </select>
+    <select sql-case-id="select_dummy_with_alias_from_dual">
+        <projections start-index="7" stop-index="21">
+            <column-projection name="DUMMY" alias="RESULT" start-index="7" stop-index="21" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="28" stop-index="31" />
+        </from>
+    </select>
+    <select sql-case-id="select_quoted_chinese_column_from_dual">
+        <projections start-index="7" stop-index="22">
+            <column-projection name="中文列名" alias="RESULT" start-delimiter="&quot;" end-delimiter="&quot;" start-index="7" stop-index="22" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="29" stop-index="32" />
+        </from>
+    </select>
+    <select sql-case-id="select_chinese_columns_with_ascii_comma_from_dual">
+        <projections start-index="7" stop-index="26">
+            <column-projection name="中文列一" start-index="7" stop-index="10" />
+            <column-projection name="中文列二" alias="RESULT" start-index="13" stop-index="26" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="33" stop-index="36" />
+        </from>
+    </select>
+    <select sql-case-id="select_chinese_columns_from_table">
+        <projections start-index="7" stop-index="25">
+            <column-projection name="中文列一" start-index="7" stop-index="10" />
+            <column-projection name="中文列二" alias="RESULT" start-index="12" stop-index="25" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="32" stop-index="38" />
+        </from>
     </select>
 
 </sql-parser-test-cases>

@@ -13,3 +13,6 @@ Before committing this PR, I'm sure that I have checked the following options:
 - [ ] I have made corresponding changes to the documentation.
 - [ ] I have added corresponding unit tests for my changes.
 - [ ] I have updated the Release Notes of the current development version. For more details, see [Update Release Note](https://shardingsphere.apache.org/community/en/involved/contribute/contributor/)
+- [ ] I have disclosed the tool and affected files or scope for any material AI assistance, as required by the [AI-assisted contribution policy].
+
+[AI-assisted contribution policy]: https://github.com/apache/shardingsphere/blob/master/AI_POLICY.md

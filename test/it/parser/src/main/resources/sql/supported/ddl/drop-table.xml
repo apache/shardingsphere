@@ -28,7 +28,7 @@
         t_order    " />
     <sql-case id="drop_table_with_back_quota" value="DROP TABLE `t_order`" left-delimiter="`" right-delimiter="`" db-types="MySQL" />
     <sql-case id="drop_tables" value="DROP TABLE t_order_item, t_order" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="drop_temporary_table" value="DROP TEMPORARY TABLE t_order" db-types="MySQL" />
+    <sql-case id="drop_temporary_table" value="DROP TEMPORARY TABLE t_order" db-types="MySQL,Doris" />
     <sql-case id="drop_table_with_quota" value="DROP TABLE &quot;t_order&quot;" db-types="Oracle" />
     <sql-case id="drop_table_with_double_quota" value="DROP TABLE &quot;t_order&quot;" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_table_with_bracket" value="DROP TABLE [t_order]" db-types="SQLServer" />
