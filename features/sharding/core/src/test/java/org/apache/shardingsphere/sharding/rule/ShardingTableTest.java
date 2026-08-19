@@ -34,6 +34,7 @@ import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingTableTest {
@@ -52,6 +53,14 @@ class ShardingTableTest {
         assertTrue(actual.getGenerateKeyColumn().isPresent());
         assertThat(actual.getGenerateKeyColumn().get(), is("col_1"));
         assertThat(actual.getKeyGeneratorName(), is("increment"));
+    }
+    
+    @Test
+    void assertContainsDataNode() {
+        ShardingTable actual = createShardingTable();
+        assertTrue(actual.containsDataNode("ds0", "table_0"));
+        assertFalse(actual.containsDataNode("ds0", "table_9"));
+        assertFalse(actual.containsDataNode("ds9", "table_0"));
     }
     
     private ShardingTable createShardingTable() {
