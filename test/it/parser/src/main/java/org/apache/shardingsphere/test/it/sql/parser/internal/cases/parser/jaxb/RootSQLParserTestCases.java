@@ -61,6 +61,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTrashStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisRecoverStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTransactionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSwitchStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSyncStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisUnsetVariableStatementTestCase;
@@ -822,6 +824,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-trash")
     private final List<DorisShowTrashStatementTestCase> showTrashTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "recover")
+    private final List<DorisRecoverStatementTestCase> recoverTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-transaction")
+    private final List<DorisShowTransactionStatementTestCase> showTransactionTestCases = new LinkedList<>();
     
     @XmlElement(name = "admin-set-replica-status")
     private final List<DorisAdminSetReplicaStatusStatementTestCase> adminSetReplicaStatusTestCases = new LinkedList<>();
