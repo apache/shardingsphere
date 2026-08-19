@@ -20,4 +20,6 @@
     <sql-case id="analyze_table_doris" value="ANALYZE TABLE t_order" db-types="Doris" />
     <sql-case id="analyze_table_with_sample_percent" value="ANALYZE TABLE lineitem WITH SAMPLE PERCENT 10" db-types="Doris" />
     <sql-case id="analyze_table_with_sample_rows" value="ANALYZE TABLE lineitem WITH SAMPLE ROWS 100000" db-types="Doris" />
+    <sql-case id="analyze_table_with_sync" value="ANALYZE TABLE lineitem WITH SYNC" db-types="Doris" />
+    <sql-case id="analyze_table_with_columns_and_sample_percent" value="ANALYZE TABLE lineitem (l_orderkey, l_quantity) WITH SAMPLE PERCENT 10" db-types="Doris" />
 </sql-cases>
