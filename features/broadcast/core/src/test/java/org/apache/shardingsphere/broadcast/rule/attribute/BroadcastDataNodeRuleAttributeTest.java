@@ -26,6 +26,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -55,6 +56,18 @@ class BroadcastDataNodeRuleAttributeTest {
     void assertGetDataNodesByTableNameWithDifferentCase() {
         assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).getDataNodesByTableName("FOO_TBL"),
                 is(Arrays.asList(new DataNode("foo_ds.foo_tbl"), new DataNode("bar_ds.foo_tbl"))));
+    }
+    
+    @Test
+    void assertGetDataNodesByTableNameWithLocaleSensitiveCase() {
+        Locale originalLocale = Locale.getDefault();
+        Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+        try {
+            assertThat(new BroadcastDataNodeRuleAttribute(Collections.singleton("foo_ds"), Collections.singleton("ID")).getDataNodesByTableName("id"),
+                    is(Collections.singletonList(new DataNode("foo_ds.ID"))));
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
     }
     
     @Test
