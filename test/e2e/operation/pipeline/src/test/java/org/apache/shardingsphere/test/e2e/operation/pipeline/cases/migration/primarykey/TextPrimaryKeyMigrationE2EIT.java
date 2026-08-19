@@ -57,6 +57,7 @@ class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
                     containerComposer.getDatabaseType(), new QualifiedTable(null, getSourceTableName(containerComposer)));
             orderDAO.createTable();
             orderDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            orderDAO.insert("", 0, "emptyPrimaryKey");
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();
             addMigrationSourceResource(containerComposer);
