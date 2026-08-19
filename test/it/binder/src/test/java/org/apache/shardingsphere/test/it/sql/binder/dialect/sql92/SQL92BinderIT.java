@@ -15,24 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.sql92.metadata.database.option;
+package org.apache.shardingsphere.test.it.sql.binder.dialect.sql92;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
+import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
+import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-/**
- * Function option of SQL92.
- */
-public final class SQL92FunctionOption implements DialectFunctionOption {
-    
-    private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Arrays.asList(
-            "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "SESSION_USER", "USER"));
-    
-    @Override
-    public Collection<String> getUnparenthesizedFunctionNames() {
-        return UNPARENTHESIZED_FUNCTION_NAMES;
-    }
+@SQLBinderITSettings("SQL92")
+class SQL92BinderIT extends SQLBinderIT {
 }

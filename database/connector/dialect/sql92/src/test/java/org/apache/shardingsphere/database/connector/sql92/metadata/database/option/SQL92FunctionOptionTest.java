@@ -32,7 +32,6 @@ class SQL92FunctionOptionTest {
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_TIMESTAMP"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_USER"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SESSION_USER"));
-        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SYSTEM_USER"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("USER"));
     }
 }

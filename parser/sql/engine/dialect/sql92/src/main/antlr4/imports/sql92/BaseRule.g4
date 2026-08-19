@@ -80,7 +80,7 @@ unreservedWord
     | ORDER
     | PASCAL | PLI
     | REPEATABLE | RETURNED_LENGTH | RETURNED_OCTET_LENGTH | RETURNED_SQLSTATE | ROW_COUNT
-    | SCALE | SCHEMA_NAME | SERIALIZABLE | SERVER_NAME | SUBCLASS_ORIGIN | SYSTEM_USER
+    | SCALE | SCHEMA_NAME | SERIALIZABLE | SERVER_NAME | SUBCLASS_ORIGIN
     | TABLE_NAME | TYPE
     | UNCOMMITTED | UNNAMED
     ;
@@ -219,7 +219,11 @@ distinct
     ;
 
 specialFunction
-    : castFunction | convertFunction | positionFunction | substringFunction | extractFunction | trimFunction
+    : castFunction | convertFunction | positionFunction | substringFunction | extractFunction | trimFunction | systemUserFunction
+    ;
+
+systemUserFunction
+    : SYSTEM_USER
     ;
 
 castFunction
