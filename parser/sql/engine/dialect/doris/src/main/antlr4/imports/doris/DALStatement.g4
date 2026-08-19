@@ -475,6 +475,10 @@ adminCopyTablet
     : ADMIN COPY TABLET NUMBER_ propertiesClause?
     ;
 
+adminRebalanceDisk
+    : ADMIN REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
+    ;
+
 createSqlBlockRule
     : CREATE SQL_BLOCK_RULE ruleName propertiesClause
     ;

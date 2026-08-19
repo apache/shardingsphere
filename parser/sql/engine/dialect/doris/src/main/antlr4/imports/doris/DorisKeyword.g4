@@ -2194,6 +2194,10 @@ REAL
     : R E A L
     ;
 
+REBALANCE
+    : R E B A L A N C E
+    ;
+
 REBUILD
     : R E B U I L D
     ;
