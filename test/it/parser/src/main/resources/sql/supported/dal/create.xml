@@ -26,4 +26,6 @@
     <sql-case id="create_sql_block_rule_mixed_properties" value="CREATE SQL_BLOCK_RULE complex_rule PROPERTIES(&quot;sql&quot;=&quot;\\s*select\\s*\\*\\s*from order_\\w*\\s*&quot;,&quot;global&quot;=&quot;false&quot;,&quot;enable&quot;=&quot;true&quot;)" db-types="Doris" />
     <sql-case id="create_repository" value="CREATE REPOSITORY `s3_repo` WITH S3 ON LOCATION &quot;s3://s3-repo&quot; PROPERTIES(&quot;s3.endpoint&quot;=&quot;http://s3-REGION.amazonaws.com&quot;,&quot;s3.access_key&quot;=&quot;AWS_ACCESS_KEY&quot;,&quot;s3.secret_key&quot;=&quot;AWS_SECRET_KEY&quot;,&quot;s3.region&quot;=&quot;REGION&quot;)" db-types="Doris" />
     <sql-case id="create_repository_readonly" value="CREATE READ ONLY REPOSITORY backup_repo WITH HDFS ON LOCATION &quot;hdfs://hdfs-server:9000/backup&quot; PROPERTIES(&quot;hadoop.username&quot;=&quot;user&quot;)" db-types="Doris" />
+    <sql-case id="create_workload_group" value="CREATE WORKLOAD GROUP g1 PROPERTIES(&quot;max_cpu_percent&quot;=&quot;10%&quot;,&quot;max_memory_percent&quot;=&quot;30%&quot;)" db-types="Doris" />
+    <sql-case id="create_workload_group_if_not_exists" value="CREATE WORKLOAD GROUP IF NOT EXISTS g1 PROPERTIES(&quot;max_cpu_percent&quot;=&quot;10%&quot;,&quot;max_memory_percent&quot;=&quot;30%&quot;)" db-types="Doris" />
 </sql-cases>

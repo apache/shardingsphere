@@ -40,6 +40,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanAllProfileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateRepositoryStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateWorkloadGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDescFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropRepositoryStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
@@ -850,6 +851,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-sql-block-rule")
     private final List<DorisCreateSqlBlockRuleStatementTestCase> createSqlBlockRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-workload-group")
+    private final List<DorisCreateWorkloadGroupStatementTestCase> createWorkloadGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-default-role")
     private final List<MySQLSetDefaultRoleStatementTestCase> setDefaultRoleTestCases = new LinkedList<>();

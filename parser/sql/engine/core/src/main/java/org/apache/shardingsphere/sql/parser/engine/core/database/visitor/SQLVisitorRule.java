@@ -621,6 +621,8 @@ public enum SQLVisitorRule {
     
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
     
+    CREATE_WORKLOAD_GROUP("CreateWorkloadGroup", SQLStatementType.DAL),
+    
     DELIMITER("Delimiter", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),

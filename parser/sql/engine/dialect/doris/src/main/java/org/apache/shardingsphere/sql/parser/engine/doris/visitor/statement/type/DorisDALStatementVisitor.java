@@ -158,6 +158,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCo
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCheckTabletContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetPartitionVersionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSqlBlockRuleContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateWorkloadGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
@@ -257,6 +258,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupState
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateWorkloadGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSqlBlockRuleStatement;
@@ -1371,6 +1373,14 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitCreateSqlBlockRule(final CreateSqlBlockRuleContext ctx) {
         DorisCreateSqlBlockRuleStatement result = new DorisCreateSqlBlockRuleStatement(getDatabaseType());
         result.setRuleName(((IdentifierValue) visit(ctx.ruleName())).getValue());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateWorkloadGroup(final CreateWorkloadGroupContext ctx) {
+        DorisCreateWorkloadGroupStatement result = new DorisCreateWorkloadGroupStatement(getDatabaseType());
+        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
         return result;
     }

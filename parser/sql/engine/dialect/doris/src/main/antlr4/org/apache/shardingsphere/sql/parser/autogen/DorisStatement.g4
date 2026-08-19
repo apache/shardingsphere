@@ -55,6 +55,7 @@ execute
     | alterResourceGroup
     | alterResource
     | createResourceGroup
+    | createWorkloadGroup
     | dropResourceGroup
     | prepare
     | executeStmt

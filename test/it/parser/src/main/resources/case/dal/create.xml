@@ -61,4 +61,14 @@
         <repository-name name="backup_repo" start-index="28" stop-index="38" />
         <property key="hadoop.username" value="user" start-index="106" stop-index="129" />
     </create-repository>
+    <create-workload-group sql-case-id="create_workload_group">
+        <group-name start-index="22" stop-index="23">g1</group-name>
+        <property key="max_cpu_percent" value="10%" start-index="36" stop-index="58" />
+        <property key="max_memory_percent" value="30%" start-index="60" stop-index="85" />
+    </create-workload-group>
+    <create-workload-group sql-case-id="create_workload_group_if_not_exists">
+        <group-name start-index="36" stop-index="37">g1</group-name>
+        <property key="max_cpu_percent" value="10%" start-index="50" stop-index="72" />
+        <property key="max_memory_percent" value="30%" start-index="74" stop-index="99" />
+    </create-workload-group>
 </sql-parser-test-cases>

@@ -2010,6 +2010,10 @@ PAUSE
     : P A U S E
     ;
 
+PERCENT
+    : P E R C E N T
+    ;
+
 PERCENT_RANK
     : P E R C E N T UL_ R A N K
     ;
@@ -2484,6 +2488,10 @@ ROW_NUMBER
 
 RTREE
     : R T R E E
+    ;
+
+SAMPLE
+    : S A M P L E
     ;
 
 SAVEPOINT
@@ -3318,6 +3326,10 @@ WITHOUT
 
 WORK
     : W O R K
+    ;
+
+WORKLOAD
+    : W O R K L O A D
     ;
 
 WRAPPER
