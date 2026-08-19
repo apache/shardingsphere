@@ -1313,7 +1313,7 @@ shorthandRegularFunction
 
 completeRegularFunction
     // DORIS CHANGED BEGIN
-    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_) indexAlias?
+    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_) indexAlias? overClause?
     // DORIS CHANGED END
     ;
 

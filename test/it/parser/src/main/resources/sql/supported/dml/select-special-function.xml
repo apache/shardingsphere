@@ -304,7 +304,7 @@
     <sql-case id="select_last_value" value="SELECT LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE) from TEST" db-types="MySQL" />
     <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
-    <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />
+    <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL,Doris" />
     <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
     <sql-case id="select_localtime" value="SELECT LOCALTIME()" db-types="MySQL" />
     <sql-case id="select_localtimestamp" value="SELECT LOCALTIMESTAMP()" db-types="MySQL" />

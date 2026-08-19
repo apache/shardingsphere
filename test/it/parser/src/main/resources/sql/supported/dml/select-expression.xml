@@ -162,4 +162,5 @@
     <sql-case id="select_binary_prefix_oracle" value="SELECT BINARY col FROM dual" db-types="Oracle" />
     <sql-case id="select_interval_day_to_second_precision_oracle" value="SELECT (SYSTIMESTAMP - order_date) DAY(2) TO SECOND(3) FROM orders" db-types="Oracle" />
     <sql-case id="select_interval_year_to_month_precision_oracle" value="SELECT (hire_date - start_date) YEAR(3) TO MONTH FROM employees" db-types="Oracle" />
+    <sql-case id="select_window_funnel_doris" value="SELECT k, WINDOW_FUNNEL(300, 'default', v, k = 'login') AS level FROM t_order GROUP BY k" db-types="Doris" />
 </sql-cases>

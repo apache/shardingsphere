@@ -36,4 +36,5 @@
     <sql-case id="select_window_avg_partition_mysql" value="SELECT AVG(order_id) OVER (PARTITION BY user_id) AS avg_order_id FROM t_order" db-types="MySQL" />
     <sql-case id="select_window_min_partition_mysql" value="SELECT MIN(order_id) OVER (PARTITION BY user_id) AS min_order_id FROM t_order" db-types="MySQL" />
     <sql-case id="select_window_max_partition_mysql" value="SELECT MAX(order_id) OVER (PARTITION BY user_id) AS max_order_id FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_funnel_over_doris" value="SELECT WINDOW_FUNNEL(3600, 'default', v, k = 1) OVER (PARTITION BY k ORDER BY v) FROM t_order" db-types="Doris" />
 </sql-cases>
