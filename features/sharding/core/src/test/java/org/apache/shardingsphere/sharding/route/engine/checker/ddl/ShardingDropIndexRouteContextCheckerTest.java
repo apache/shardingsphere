@@ -112,7 +112,7 @@ class ShardingDropIndexRouteContextCheckerTest {
         when(queryContext.getSqlStatementContext()).thenReturn(new CommonSQLStatementContext(sqlStatement));
         assertThrows(ShardingDDLRouteException.class, () -> new ShardingDropIndexRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
-
+    
     @Test
     void assertCheckWithoutDefaultSchema() {
         DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType)
@@ -123,7 +123,7 @@ class ShardingDropIndexRouteContextCheckerTest {
         assertThrows(SchemaNotFoundException.class,
                 () -> new ShardingDropIndexRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
-
+    
     @Test
     void assertCheckWithMissingOwnerSchema() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_index")));
