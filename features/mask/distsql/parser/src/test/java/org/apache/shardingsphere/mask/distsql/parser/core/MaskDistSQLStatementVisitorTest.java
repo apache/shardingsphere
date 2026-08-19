@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.distsql.parser.core;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.mask.distsql.parser.facade.MaskDistSQLParserFacade;
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.mask.distsql.statement.CreateMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.engine.core.SQLParserFactory;
 import org.junit.jupiter.api.Test;
@@ -65,11 +63,9 @@ class MaskDistSQLStatementVisitorTest {
         assertThat(actualColumn.getAlgorithm().getName(), is("GENERIC_TABLE_RANDOM_REPLACE"));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private ASTNode parse(final String sql) {
         MaskDistSQLParserFacade facade = new MaskDistSQLParserFacade();
         ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, facade.getLexerClass(), facade.getParserClass()).parse();
-        SQLVisitor<ASTNode> visitor = facade.getVisitorClass().getDeclaredConstructor().newInstance();
-        return visitor.visit(parseASTNode.getRootNode());
+        return new MaskDistSQLStatementVisitor().visit(parseASTNode.getRootNode());
     }
 }
