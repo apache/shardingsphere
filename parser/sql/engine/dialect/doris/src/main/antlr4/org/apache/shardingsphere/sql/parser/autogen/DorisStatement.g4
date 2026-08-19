@@ -152,6 +152,8 @@ execute
     | adminSetReplicaStatus
     | adminSetReplicaVersion
     | adminCopyTablet
+    | adminCheckTablet
+    | adminSetPartitionVersion
     | adminCleanTrash
     | adminRebalanceDisk
     | createSqlBlockRule
