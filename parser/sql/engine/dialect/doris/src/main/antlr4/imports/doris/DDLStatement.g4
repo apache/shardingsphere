@@ -39,13 +39,13 @@ alterStatement
 
 createTable
     // DORIS CHANGED BEGIN
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? startTransaction? duplicatekeyClause? commentClause? distributedbyClause? propertiesClause? | createLikeClause)
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? duplicatekeyClause? commentClause? partitionClause? distributedbyClause? propertiesClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
     // DORIS CHANGED END
     ;
 
 // DORIS ADDED BEGIN
 duplicatekeyClause
-    : DUPLICATE KEY (LP_ columnName RP_)
+    : (DUPLICATE | UNIQUE | AGGREGATE) KEY LP_ columnNames RP_
     ;
 
 commentClause

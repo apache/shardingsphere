@@ -25,7 +25,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowAlterTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBuildIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminRebalanceDiskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCheckTabletStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetPartitionVersionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaVersionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
@@ -37,6 +40,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanAllProfileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateRepositoryStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateWorkloadGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDescFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropRepositoryStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
@@ -60,10 +64,13 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTrashStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisRecoverStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTransactionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSwitchStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSyncStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisUnsetVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.show.DorisShowQueryStatsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.show.DorisShowDataSkewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCreateLoadableFunctionTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLDelimiterStatementTestCase;
@@ -811,6 +818,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "admin-clean-trash")
     private final List<DorisAdminCleanTrashStatementTestCase> adminCleanTrashTestCases = new LinkedList<>();
     
+    @XmlElement(name = "admin-rebalance-disk")
+    private final List<DorisAdminRebalanceDiskStatementTestCase> adminRebalanceDiskTestCases = new LinkedList<>();
+    
     @XmlElement(name = "clean-all-profile")
     private final List<DorisCleanAllProfileStatementTestCase> cleanAllProfileTestCases = new LinkedList<>();
     
@@ -819,6 +829,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-trash")
     private final List<DorisShowTrashStatementTestCase> showTrashTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "recover")
+    private final List<DorisRecoverStatementTestCase> recoverTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-transaction")
+    private final List<DorisShowTransactionStatementTestCase> showTransactionTestCases = new LinkedList<>();
     
     @XmlElement(name = "admin-set-replica-status")
     private final List<DorisAdminSetReplicaStatusStatementTestCase> adminSetReplicaStatusTestCases = new LinkedList<>();
@@ -829,8 +845,17 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "admin-copy-tablet")
     private final List<DorisAdminCopyTabletStatementTestCase> adminCopyTabletTestCases = new LinkedList<>();
     
+    @XmlElement(name = "admin-check-tablet")
+    private final List<DorisAdminCheckTabletStatementTestCase> adminCheckTabletTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-set-partition-version")
+    private final List<DorisAdminSetPartitionVersionStatementTestCase> adminSetPartitionVersionTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-sql-block-rule")
     private final List<DorisCreateSqlBlockRuleStatementTestCase> createSqlBlockRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-workload-group")
+    private final List<DorisCreateWorkloadGroupStatementTestCase> createWorkloadGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-default-role")
     private final List<MySQLSetDefaultRoleStatementTestCase> setDefaultRoleTestCases = new LinkedList<>();
@@ -1566,6 +1591,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-query-stats")
     private final List<DorisShowQueryStatsStatementTestCase> showQueryStatsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-data-skew")
+    private final List<DorisShowDataSkewStatementTestCase> showDataSkewTestCases = new LinkedList<>();
     
     @XmlElement(name = "doris-show-functions")
     private final List<DorisShowFunctionsStatementTestCase> dorisShowFunctionsTestCases = new LinkedList<>();

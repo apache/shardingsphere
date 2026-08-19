@@ -551,6 +551,17 @@ class ShardingRuleTest {
         assertThat(shardingRule.getDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("ds_0", "ds_1", "resource0", "resource1"))));
     }
     
+    @Test
+    void assertFindShardingTableByDataSourceAndActualTable() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order_0", "ds_0.t_order"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order_1", "ds_1.t_order"));
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        assertThat(shardingRule.findShardingTableByDataSourceAndActualTable("ds_0", "t_order").get().getLogicTable(), is("t_order_0"));
+        assertThat(shardingRule.findShardingTableByDataSourceAndActualTable("ds_1", "t_order").get().getLogicTable(), is("t_order_1"));
+        assertFalse(shardingRule.findShardingTableByDataSourceAndActualTable("ds_0", "t_order_2").isPresent());
+    }
+    
     private ShardingRule createMaximumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
