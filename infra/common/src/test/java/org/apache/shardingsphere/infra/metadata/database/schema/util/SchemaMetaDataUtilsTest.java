@@ -141,17 +141,41 @@ class SchemaMetaDataUtilsTest {
     }
     
     @Test
-    void assertGetMetaDataLoaderMaterialsNormalizeActualTableNamesByTableScope() {
+    void assertGetMetaDataLoaderMaterialsPreservesActualTableNameFromDataNode() {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
         storageUnits.put("ds_0", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
         ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(
                 TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name())));
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
+                Collections.singleton(mockStorageLoadedDataNodeRule(Collections.singleton(new DataNode("ds_0.t_user")))), props, "foo_db",
+                DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, material));
+        assertThat(actual.size(), is(1));
+        assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("t_user")));
+    }
+    
+    @Test
+    void assertGetMetaDataLoaderMaterialsNormalizesConfiguredDataNodeTableName() {
+        Map<String, StorageUnit> storageUnits = Collections.singletonMap("ds_0", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
+        ConfigurationProperties props = createProperties(Boolean.TRUE, null);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
                 Collections.singleton(mockDataNodeRule(Collections.singleton(new DataNode("ds_0.t_user")))), props, "foo_db",
                 DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
         List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, material));
         assertThat(actual.size(), is(1));
         assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("T_USER")));
+    }
+    
+    @Test
+    void assertGetMetaDataLoaderMaterialsNormalizesFallbackTableName() {
+        Map<String, StorageUnit> storageUnits = Collections.singletonMap("ds_0", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
+        ConfigurationProperties props = createProperties(Boolean.TRUE, null);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
+                Collections.singleton(mockDataNodeRule(Collections.emptyList())), props, "foo_db",
+                DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, material));
+        assertThat(actual.size(), is(1));
+        assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("FOO_TBL")));
     }
     
     @Test
@@ -168,13 +192,13 @@ class SchemaMetaDataUtilsTest {
     }
     
     @Test
-    void assertGetMetaDataLoaderMaterialsNormalizeActualTableNamesByStorageTypeWithMixedStorageUnits() throws SQLException {
+    void assertGetMetaDataLoaderMaterialsPreservesActualTableNamesWithMixedStorageUnits() throws SQLException {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
         storageUnits.put("ds_mysql", mockStorageUnit(MYSQL_DATABASE_TYPE, mockMySQLDataSource(1)));
         storageUnits.put("ds_oracle", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
         ConfigurationProperties props = createProperties(Boolean.TRUE, null);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(
-                mockDataNodeRule(Arrays.asList(new DataNode("ds_mysql.t_order"), new DataNode("ds_oracle.t_user")))), props, "foo_db",
+                mockStorageLoadedDataNodeRule(Arrays.asList(new DataNode("ds_mysql.t_order"), new DataNode("ds_oracle.t_user")))), props, "foo_db",
                 DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
         List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, material));
         assertThat(actual.size(), is(2));
@@ -189,6 +213,12 @@ class SchemaMetaDataUtilsTest {
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.getDataNodesByTableName("foo_tbl")).thenReturn(dataNodes);
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        return result;
+    }
+    
+    private ShardingSphereRule mockStorageLoadedDataNodeRule(final Collection<DataNode> dataNodes) {
+        ShardingSphereRule result = mockDataNodeRule(dataNodes);
+        when(result.getAttributes().getAttribute(DataNodeRuleAttribute.class).isDataNodeTableNameLoadedFromStorage()).thenReturn(true);
         return result;
     }
     

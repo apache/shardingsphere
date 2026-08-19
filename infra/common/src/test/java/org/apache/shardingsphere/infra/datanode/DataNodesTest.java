@@ -34,6 +34,8 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -128,6 +130,16 @@ class DataNodesTest {
         assertThat(thirdDataNode.getTableName(), is("t_single"));
     }
     
+    @Test
+    void assertDataNodeTableNameLoadedFromStorage() {
+        assertTrue(new DataNodes(mockDataNodeRules()).isDataNodeTableNameLoadedFromStorage("t_single"));
+    }
+    
+    @Test
+    void assertDataNodeTableNameNotLoadedFromStorage() {
+        assertFalse(new DataNodes(mockDataNodeRules()).isDataNodeTableNameLoadedFromStorage("t_order"));
+    }
+    
     private Collection<ShardingSphereRule> mockShardingSphereRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         result.add(mockDataSourceMapperRule());
@@ -153,6 +165,7 @@ class DataNodesTest {
     private ShardingSphereRule mockSingleRule() {
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.getDataNodesByTableName("t_single")).thenReturn(Collections.singleton(new DataNode("readwrite_ds", (String) null, "t_single")));
+        when(ruleAttribute.isDataNodeTableNameLoadedFromStorage()).thenReturn(true);
         ShardingSphereRule result = mock(ShardingSphereRule.class);
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
