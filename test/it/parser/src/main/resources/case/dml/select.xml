@@ -239,6 +239,24 @@
         </from>
     </select>
 
+    <select sql-case-id="select_digit_leading_column_doris">
+        <projections start-index="7" stop-index="9">
+            <column-projection name="1GB" start-index="7" stop-index="9" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="16" stop-index="16" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_workload_keyword_column_doris">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="workload" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="21" stop-index="21" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_default_str">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
