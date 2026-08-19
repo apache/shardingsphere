@@ -1096,7 +1096,32 @@ externalTableClause
     ;
 
 externalTableDataProps
-    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec delimSpec)? | USING CLOB subquery))? (LOCATION LP_ (directoryName | (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+) RP_)?
+    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS (parenthesizedOpaqueFormatSpec | (opaqueFormatSpec delimSpec)? | USING CLOB subquery))? (LOCATION LP_ (directoryName | (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)*) RP_)?
+    ;
+
+parenthesizedOpaqueFormatSpec
+    : LP_ recordFormatInfo? fieldList RP_
+    ;
+
+recordFormatInfo
+    : RECORDS (FIXED INTEGER_ | DELIMITED BY STRING_)
+    ;
+
+fieldList
+    : FIELDS delimSpec? (LP_ fieldDefinition (COMMA_ fieldDefinition)* RP_)?
+    ;
+
+fieldDefinition
+    : columnName positionSpecification? dataType?
+    ;
+
+positionSpecification
+    : LP_ positionBound COLON_ positionBound RP_
+    ;
+
+positionBound
+    : ASTERISK_ (PLUS_ | MINUS_)? INTEGER_?
+    | (PLUS_ | MINUS_)? INTEGER_
     ;
 
 mappingTableClause

@@ -199,6 +199,12 @@ BIT
     : B I T
     ;
 
+// DORIS ADDED BEGIN
+BITMAP
+    : B I T M A P
+    ;
+// DORIS ADDED END
+
 BITMAP_UNION
     : B I T M A P UL_ U N I O N
     ;
@@ -551,6 +557,14 @@ DATE
 
 DATETIME
     : D A T E T I M E
+    ;
+
+DATETIMEV2
+    : D A T E T I M E V '2'
+    ;
+
+DATEV2
+    : D A T E V '2'
     ;
 
 DAY
@@ -1349,6 +1363,10 @@ LANGUAGE
     : L A N G U A G E
     ;
 
+LARGEINT
+    : L A R G E I N T
+    ;
+
 LAST
     : L A S T
     ;
@@ -2020,6 +2038,10 @@ PAUSE
     : P A U S E
     ;
 
+PERCENT
+    : P E R C E N T
+    ;
+
 PERCENT_RANK
     : P E R C E N T UL_ R A N K
     ;
@@ -2496,6 +2518,10 @@ RTREE
     : R T R E E
     ;
 
+SAMPLE
+    : S A M P L E
+    ;
+
 SAVEPOINT
     : S A V E P O I N T
     ;
@@ -2615,6 +2641,12 @@ SIMPLE
 SKIP_SYMBOL
     : S K I P
     ;
+
+// DORIS ADDED BEGIN
+SKEW
+    : S K E W
+    ;
+// DORIS ADDED END
 
 SLAVE
     : S L A V E
@@ -3329,6 +3361,12 @@ WITHOUT
 WORK
     : W O R K
     ;
+
+// DORIS ADDED BEGIN
+WORKLOAD
+    : W O R K L O A D
+    ;
+// DORIS ADDED END
 
 WRAPPER
     : W R A P P E R

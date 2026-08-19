@@ -16,10 +16,8 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <common sql-case-id="analyze_table_doris" />
-    <common sql-case-id="analyze_table_with_sample_percent" />
-    <common sql-case-id="analyze_table_with_sample_rows" />
-    <common sql-case-id="analyze_table_with_sync" />
-    <common sql-case-id="analyze_table_with_columns_and_sample_percent" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="alter_workload_group_max_cpu_percent" value="ALTER WORKLOAD GROUP g2 PROPERTIES(&quot;max_cpu_percent&quot; = &quot;10%&quot;)" db-types="Doris" />
+    <sql-case id="alter_workload_group_read_bytes_per_second" value="ALTER WORKLOAD GROUP g2 PROPERTIES(&quot;read_bytes_per_second&quot; = &quot;104857600&quot;)" db-types="Doris" />
+    <sql-case id="alter_workload_group_multiple_properties" value="ALTER WORKLOAD GROUP g3 PROPERTIES(&quot;cpu_share&quot; = &quot;1024&quot;, &quot;memory_limit&quot; = &quot;30%&quot;)" db-types="Doris" />
+</sql-cases>

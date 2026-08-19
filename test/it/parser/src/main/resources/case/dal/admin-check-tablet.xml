@@ -17,9 +17,9 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="analyze_table_doris" />
-    <common sql-case-id="analyze_table_with_sample_percent" />
-    <common sql-case-id="analyze_table_with_sample_rows" />
-    <common sql-case-id="analyze_table_with_sync" />
-    <common sql-case-id="analyze_table_with_columns_and_sample_percent" />
+    <admin-check-tablet sql-case-id="admin_check_tablet">
+        <tablet-id>10000</tablet-id>
+        <tablet-id>10001</tablet-id>
+        <property key="type" value="consistency" start-index="45" stop-index="66" />
+    </admin-check-tablet>
 </sql-parser-test-cases>

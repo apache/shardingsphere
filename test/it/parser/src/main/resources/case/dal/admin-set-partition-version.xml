@@ -17,9 +17,17 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="analyze_table_doris" />
-    <common sql-case-id="analyze_table_with_sample_percent" />
-    <common sql-case-id="analyze_table_with_sample_rows" />
-    <common sql-case-id="analyze_table_with_sync" />
-    <common sql-case-id="analyze_table_with_columns_and_sample_percent" />
+    <admin-set-partition-version sql-case-id="admin_set_partition_version">
+        <table name="tbl1" start-index="16" stop-index="19" />
+        <property key="partition_id" value="1769152" start-index="50" stop-index="75" />
+        <property key="visible_version" value="100" start-index="78" stop-index="102" />
+    </admin-set-partition-version>
+
+    <admin-set-partition-version sql-case-id="admin_set_partition_version_with_qualified_table">
+        <table name="audit_log" start-index="16" stop-index="42">
+            <owner name="__internal_schema" start-index="16" stop-index="32" />
+        </table>
+        <property key="partition_id" value="10075" start-index="73" stop-index="96" />
+        <property key="visible_version" value="100" start-index="99" stop-index="123" />
+    </admin-set-partition-version>
 </sql-parser-test-cases>

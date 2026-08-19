@@ -16,10 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <common sql-case-id="analyze_table_doris" />
-    <common sql-case-id="analyze_table_with_sample_percent" />
-    <common sql-case-id="analyze_table_with_sample_rows" />
-    <common sql-case-id="analyze_table_with_sync" />
-    <common sql-case-id="analyze_table_with_columns_and_sample_percent" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="admin_set_partition_version" value="ADMIN SET TABLE tbl1 PARTITION VERSION PROPERTIES(&quot;partition_id&quot; = &quot;1769152&quot;, &quot;visible_version&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="admin_set_partition_version_with_qualified_table" value="ADMIN SET TABLE __internal_schema.audit_log PARTITION VERSION PROPERTIES(&quot;partition_id&quot; = &quot;10075&quot;, &quot;visible_version&quot; = &quot;100&quot;)" db-types="Doris" />
+</sql-cases>

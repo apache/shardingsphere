@@ -599,6 +599,10 @@ public enum SQLVisitorRule {
     
     ADMIN_COPY_TABLET("AdminCopyTablet", SQLStatementType.DAL),
     
+    ADMIN_CHECK_TABLET("AdminCheckTablet", SQLStatementType.DAL),
+    
+    ADMIN_SET_PARTITION_VERSION("AdminSetPartitionVersion", SQLStatementType.DAL),
+    
     ADMIN_CLEAN_TRASH("AdminCleanTrash", SQLStatementType.DAL),
     
     ADMIN_REBALANCE_DISK("AdminRebalanceDisk", SQLStatementType.DAL),
@@ -616,6 +620,8 @@ public enum SQLVisitorRule {
     SHOW_TRANSACTION("ShowTransaction", SQLStatementType.DAL),
     
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
+    
+    CREATE_WORKLOAD_GROUP("CreateWorkloadGroup", SQLStatementType.DAL),
     
     DELIMITER("Delimiter", SQLStatementType.DAL),
     

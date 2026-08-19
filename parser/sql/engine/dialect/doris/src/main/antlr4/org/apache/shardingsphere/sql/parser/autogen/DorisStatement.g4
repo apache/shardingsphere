@@ -55,6 +55,7 @@ execute
     | alterResourceGroup
     | alterResource
     | createResourceGroup
+    | createWorkloadGroup
     | dropResourceGroup
     | prepare
     | executeStmt
@@ -152,6 +153,8 @@ execute
     | adminSetReplicaStatus
     | adminSetReplicaVersion
     | adminCopyTablet
+    | adminCheckTablet
+    | adminSetPartitionVersion
     | adminCleanTrash
     | adminRebalanceDisk
     | createSqlBlockRule

@@ -155,11 +155,15 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAl
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaVersionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCopyTabletContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCheckTabletContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetPartitionVersionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSqlBlockRuleContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateWorkloadGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataSkewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowProcContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataTypesContext;
@@ -246,6 +250,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplaye
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCheckTabletStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetPartitionVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRebalanceDiskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
@@ -253,6 +259,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupState
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateWorkloadGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSqlBlockRuleStatement;
@@ -287,6 +294,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.Repositor
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowDataSkewStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
@@ -1150,6 +1158,16 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitShowDataSkew(final ShowDataSkewContext ctx) {
+        SimpleTableSegment table = ((FromTableSegment) visit(ctx.fromTable())).getTable();
+        Collection<PartitionSegment> partitions = ctx.partitionName().isEmpty() ? Collections.emptyList()
+                : ctx.partitionName().stream().map(each -> (PartitionSegment) visit(each)).collect(Collectors.toList());
+        DorisShowDataSkewStatement result = new DorisShowDataSkewStatement(getDatabaseType(), table, partitions);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
     public ASTNode visitCreateLoadableFunction(final CreateLoadableFunctionContext ctx) {
         return new MySQLCreateLoadableFunctionStatement(getDatabaseType());
     }
@@ -1349,9 +1367,32 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitAdminCheckTablet(final AdminCheckTabletContext ctx) {
+        List<Long> tabletIds = ctx.NUMBER_().stream().map(each -> Long.parseLong(each.getText())).collect(Collectors.toList());
+        DorisAdminCheckTabletStatement result = new DorisAdminCheckTabletStatement(getDatabaseType(), tabletIds);
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminSetPartitionVersion(final AdminSetPartitionVersionContext ctx) {
+        DorisAdminSetPartitionVersionStatement result = new DorisAdminSetPartitionVersionStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
     public ASTNode visitCreateSqlBlockRule(final CreateSqlBlockRuleContext ctx) {
         DorisCreateSqlBlockRuleStatement result = new DorisCreateSqlBlockRuleStatement(getDatabaseType());
         result.setRuleName(((IdentifierValue) visit(ctx.ruleName())).getValue());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateWorkloadGroup(final CreateWorkloadGroupContext ctx) {
+        DorisCreateWorkloadGroupStatement result = new DorisCreateWorkloadGroupStatement(getDatabaseType());
+        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
         return result;
     }
