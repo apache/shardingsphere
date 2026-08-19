@@ -136,6 +136,26 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     }
     
     @Test
+    void assertCheckCreationWithIfNotExistsWhenActualDataSourcesUnchanged() {
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Collections.singleton(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "RANDOM"));
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
+        assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), currentRuleConfig, true));
+    }
+    
+    @Test
+    void assertCheckCreationWithIfNotExistsWhenNewSegmentDuplicatesExistedDataSource() {
+        ReadwriteSplittingRuleSegment existedSegment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
+        ReadwriteSplittingRuleSegment newSegment = new ReadwriteSplittingRuleSegment("foo_rule_1", "write_ds_0", Collections.singletonList("read_ds_2"), null, null);
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Collections.singleton(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "RANDOM"));
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
+        assertThrows(DuplicateReadwriteSplittingActualDataSourceException.class,
+                () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Arrays.asList(existedSegment, newSegment), currentRuleConfig, true));
+    }
+    
+    @Test
     void assertCheckCreationWithIfNotExistsWhenRuleNameExistsInOwnLogicDataSources() {
         RuleMetaData ruleMetaData = mockRuleMetaDataWithLogicDataSource(ReadwriteSplittingRule.class, "foo_rule_0");
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
