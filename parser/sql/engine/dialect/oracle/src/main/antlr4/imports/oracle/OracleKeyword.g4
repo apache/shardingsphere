@@ -1623,6 +1623,10 @@ FINISH
     : F I N I S H
     ;
 
+FIXED
+    : F I X E D
+    ;
+
 LOGICAL
     : L O G I C A L
     ;
@@ -2017,6 +2021,10 @@ LOCKED
 
 FETCH
     : F E T C H
+    ;
+
+FIELDS
+    : F I E L D S
     ;
 
 PERCENT
@@ -3100,6 +3108,10 @@ RECORD
     : R E C O R D
     ;
 
+RECORDS
+    : R E C O R D S
+    ;
+
 CONSTANT
     : C O N S T A N T
     ;
@@ -3758,6 +3770,10 @@ DELETE
 
 DELETEXML
     :D E L E T E X M L
+    ;
+
+DELIMITED
+    :D E L I M I T E D
     ;
 
 DENSE_RANKM
