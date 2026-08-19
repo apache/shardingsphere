@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_foreign_table" value="CREATE FOREIGN TABLE addr_nsp.genftable (a int) SERVER addr_fserv;" db-types="PostgreSQL" />
-    <sql-case id="create_foreign_table_server_options" value="CREATE FOREIGN TABLE fd_pt2_1 ( 	c1 integer NOT NULL, 	c2 text, 	c3 date ) SERVER s0 OPTIONS (delimiter &apos;,&apos;, quote &apos;&quot;&apos;, &quot;be quoted&quot; &apos;value&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_foreign_table_without_table_elements" value="CREATE FOREIGN TABLE tableam_fdw_heapx () SERVER fs_heap2;" db-types="PostgreSQL" />
+    <sql-case id="create_foreign_table" value="CREATE FOREIGN TABLE addr_nsp.genftable (a int) SERVER addr_fserv;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_foreign_table_server_options" value="CREATE FOREIGN TABLE fd_pt2_1 ( 	c1 integer NOT NULL, 	c2 text, 	c3 date ) SERVER s0 OPTIONS (delimiter &apos;,&apos;, quote &apos;&quot;&apos;, &quot;be quoted&quot; &apos;value&apos;);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_foreign_table_without_table_elements" value="CREATE FOREIGN TABLE tableam_fdw_heapx () SERVER fs_heap2;" db-types="PostgreSQL,openGauss" />
 </sql-cases>
