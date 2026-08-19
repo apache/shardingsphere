@@ -151,6 +151,11 @@
     <select sql-case-id="select_window_frame_doris">
         <projections start-index="7" stop-index="86">
             <aggregation-projection type="SUM" expression="SUM(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" start-index="7" stop-index="86">
+                <window-item start-index="14" stop-index="86">
+                    <order-by start-index="35" stop-index="44">
+                        <column-item name="v" order-direction="ASC" start-index="44" stop-index="44" />
+                    </order-by>
+                </window-item>
                 <parameter>
                     <column name="v" start-index="11" stop-index="11" />
                 </parameter>
