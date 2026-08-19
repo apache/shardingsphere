@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -140,12 +141,12 @@ class SchemaMetaDataUtilsTest {
         assertThat(new ArrayList<>(actual.get(1).getActualTableNames()), is(Collections.singletonList("foo_tbl_2")));
     }
     
-    @Test
-    void assertGetMetaDataLoaderMaterialsPreservesActualTableNameFromDataNode() {
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(booleans = {true, false})
+    void assertGetMetaDataLoaderMaterialsPreservesActualTableNameFromDataNode(final boolean checkMetaDataEnabled) {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
         storageUnits.put("ds_0", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
-        ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(
-                TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name())));
+        ConfigurationProperties props = createIdentifierCaseProperties(checkMetaDataEnabled);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
                 Collections.singleton(mockStorageLoadedDataNodeRule(Collections.singleton(new DataNode("ds_0.t_user")))), props, "foo_db",
                 DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
@@ -154,10 +155,11 @@ class SchemaMetaDataUtilsTest {
         assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("t_user")));
     }
     
-    @Test
-    void assertGetMetaDataLoaderMaterialsNormalizesConfiguredDataNodeTableName() {
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(booleans = {true, false})
+    void assertGetMetaDataLoaderMaterialsNormalizesConfiguredDataNodeTableName(final boolean checkMetaDataEnabled) {
         Map<String, StorageUnit> storageUnits = Collections.singletonMap("ds_0", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
-        ConfigurationProperties props = createProperties(Boolean.TRUE, null);
+        ConfigurationProperties props = createIdentifierCaseProperties(checkMetaDataEnabled);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
                 Collections.singleton(mockDataNodeRule(Collections.singleton(new DataNode("ds_0.t_user")))), props, "foo_db",
                 DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), storageUnits), props));
@@ -258,6 +260,12 @@ class SchemaMetaDataUtilsTest {
         return new ConfigurationProperties(PropertiesBuilder.build(
                 new Property(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), null == checkMetaDataEnabled ? null : checkMetaDataEnabled.toString()),
                 new Property(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE.getKey(), null == loadTableMetadataBatchSize ? null : loadTableMetadataBatchSize.toString())));
+    }
+    
+    private static ConfigurationProperties createIdentifierCaseProperties(final boolean checkMetaDataEnabled) {
+        return new ConfigurationProperties(PropertiesBuilder.build(
+                new Property(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.toString(checkMetaDataEnabled)),
+                new Property(TemporaryConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name())));
     }
     
     private static Map<String, StorageUnit> mockStorageUnits(final String... dataSourceNames) {
