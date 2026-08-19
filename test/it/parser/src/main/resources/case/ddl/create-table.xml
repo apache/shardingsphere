@@ -2395,6 +2395,19 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_bitmap_type_doris" db-types="Doris">
+        <table name="create_table_use_bitmap" start-index="13" stop-index="35" />
+        <column-definition type="INT" start-index="38" stop-index="43">
+            <column name="id" start-index="38" stop-index="39" />
+        </column-definition>
+        <column-definition type="BITMAP" start-index="46" stop-index="54">
+            <column name="v1" start-index="46" stop-index="47" />
+        </column-definition>
+        <column-definition type="BITMAP" agg-type="BITMAP_UNION" start-index="57" stop-index="78">
+            <column name="v2" start-index="57" stop-index="58" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_multi_range_partition_integer_doris" db-types="Doris">
         <table name="create_table_multi_partion_integer" start-index="13" stop-index="46" />
         <column-definition type="BIGINT" start-index="49" stop-index="57">

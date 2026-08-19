@@ -70,6 +70,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSyncStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisUnsetVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.show.DorisShowQueryStatsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.show.DorisShowDataSkewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCreateLoadableFunctionTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLDelimiterStatementTestCase;
@@ -1586,6 +1587,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-query-stats")
     private final List<DorisShowQueryStatsStatementTestCase> showQueryStatsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-data-skew")
+    private final List<DorisShowDataSkewStatementTestCase> showDataSkewTestCases = new LinkedList<>();
     
     @XmlElement(name = "doris-show-functions")
     private final List<DorisShowFunctionsStatementTestCase> dorisShowFunctionsTestCases = new LinkedList<>();

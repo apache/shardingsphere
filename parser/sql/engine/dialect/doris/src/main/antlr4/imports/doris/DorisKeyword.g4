@@ -189,6 +189,12 @@ BIT
     : B I T
     ;
 
+// DORIS ADDED BEGIN
+BITMAP
+    : B I T M A P
+    ;
+// DORIS ADDED END
+
 BITMAP_UNION
     : B I T M A P UL_ U N I O N
     ;
@@ -2613,6 +2619,12 @@ SIMPLE
 SKIP_SYMBOL
     : S K I P
     ;
+
+// DORIS ADDED BEGIN
+SKEW
+    : S K E W
+    ;
+// DORIS ADDED END
 
 SLAVE
     : S L A V E

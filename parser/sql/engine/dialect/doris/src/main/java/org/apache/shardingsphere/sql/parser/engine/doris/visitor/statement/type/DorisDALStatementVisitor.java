@@ -163,6 +163,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Propert
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataSkewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowProcContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataTypesContext;
@@ -293,6 +294,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.Repositor
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowDataSkewStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
@@ -1151,6 +1153,16 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         boolean all = null != ctx.ALL();
         boolean verbose = null != ctx.VERBOSE();
         DorisShowQueryStatsStatement result = new DorisShowQueryStatsStatement(getDatabaseType(), database, fromTable, all, verbose);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowDataSkew(final ShowDataSkewContext ctx) {
+        SimpleTableSegment table = ((FromTableSegment) visit(ctx.fromTable())).getTable();
+        Collection<PartitionSegment> partitions = ctx.partitionName().isEmpty() ? Collections.emptyList()
+                : ctx.partitionName().stream().map(each -> (PartitionSegment) visit(each)).collect(Collectors.toList());
+        DorisShowDataSkewStatement result = new DorisShowDataSkewStatement(getDatabaseType(), table, partitions);
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
