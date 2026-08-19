@@ -450,6 +450,12 @@ cleanAllProfile
 planReplayerPlay
     : PLAN REPLAYER PLAY DOUBLE_QUOTED_TEXT
     ;
+
+recover
+    : RECOVER DATABASE databaseName NUMBER_? (AS identifier)? #recoverDatabase
+    | RECOVER TABLE tableName NUMBER_? (AS identifier)? #recoverTable
+    | RECOVER PARTITION partitionName NUMBER_? (AS identifier)? FROM tableName (AS identifier)? #recoverPartition
+    ;
 // DORIS ADDED END
 
 dorisAlterSystem
@@ -511,6 +517,10 @@ showResourcesNameWhereCondition
 
 showResourcesResourceTypeWhereCondition
     : RESOURCETYPE EQ_ string_
+    ;
+
+showTransaction
+    : SHOW TRANSACTION fromDatabase? showWhereClause?
     ;
 // DORIS ADDED END
 
@@ -977,5 +987,6 @@ show
     | showTrash
     // DORIS ADDED BEGIN
     | showResources
+    | showTransaction
     // DORIS ADDED END
     ;

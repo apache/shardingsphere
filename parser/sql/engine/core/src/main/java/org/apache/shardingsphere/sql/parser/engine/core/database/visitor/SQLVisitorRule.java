@@ -607,6 +607,14 @@ public enum SQLVisitorRule {
     
     PLAN_REPLAYER_PLAY("PlanReplayerPlay", SQLStatementType.DAL),
     
+    RECOVER_DATABASE("RecoverDatabase", SQLStatementType.DAL),
+    
+    RECOVER_TABLE("RecoverTable", SQLStatementType.DAL),
+    
+    RECOVER_PARTITION("RecoverPartition", SQLStatementType.DAL),
+    
+    SHOW_TRANSACTION("ShowTransaction", SQLStatementType.DAL),
+    
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
     
     DELIMITER("Delimiter", SQLStatementType.DAL),
