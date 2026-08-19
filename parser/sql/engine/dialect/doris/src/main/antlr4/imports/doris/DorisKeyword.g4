@@ -549,6 +549,14 @@ DATETIME
     : D A T E T I M E
     ;
 
+DATETIMEV2
+    : D A T E T I M E V '2'
+    ;
+
+DATEV2
+    : D A T E V '2'
+    ;
+
 DAY
     : D A Y
     ;
@@ -1343,6 +1351,10 @@ LDAP
 
 LANGUAGE
     : L A N G U A G E
+    ;
+
+LARGEINT
+    : L A R G E I N T
     ;
 
 LAST

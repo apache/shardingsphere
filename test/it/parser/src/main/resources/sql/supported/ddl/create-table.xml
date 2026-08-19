@@ -397,6 +397,8 @@
         &quot;enable_persistent_index&quot; = &quot;false&quot;,
         &quot;compression&quot; = &quot;LZ4&quot;
             );" db-types="Doris"/>
+    <sql-case id="create_table_with_array_type_doris" value="CREATE TABLE t_array_type (k INT NOT NULL, array_column ARRAY&lt;VARCHAR(10)&gt;)" db-types="Doris"/>
+    <sql-case id="create_table_with_doris_types" value="CREATE TABLE t_doris_types (order_id LARGEINT, order_date DATEV2, order_time DATETIMEV2)" db-types="Doris"/>
     <sql-case id="create_table_with_column_default_system_user_function" value="CREATE TABLE t (c VARCHAR(288) DEFAULT (SYSTEM_USER()));" db-types="MySQL"/>
     <sql-case id="create_table_with_storage_and_lob" value="CREATE TABLE TEST (&quot;ID&quot; NUMBER) SEGMENT CREATION IMMEDIATE
     PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255
