@@ -71,4 +71,8 @@
         <property key="max_cpu_percent" value="10%" start-index="50" stop-index="72" />
         <property key="max_memory_percent" value="30%" start-index="74" stop-index="99" />
     </create-workload-group>
+    <create-workload-group sql-case-id="create_workload_group_with_keyword_group_name">
+        <group-name start-index="22" stop-index="27">sample</group-name>
+        <property key="max_cpu_percent" value="10%" start-index="40" stop-index="62" />
+    </create-workload-group>
 </sql-parser-test-cases>

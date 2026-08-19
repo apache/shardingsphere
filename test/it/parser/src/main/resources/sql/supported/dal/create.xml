@@ -28,4 +28,5 @@
     <sql-case id="create_repository_readonly" value="CREATE READ ONLY REPOSITORY backup_repo WITH HDFS ON LOCATION &quot;hdfs://hdfs-server:9000/backup&quot; PROPERTIES(&quot;hadoop.username&quot;=&quot;user&quot;)" db-types="Doris" />
     <sql-case id="create_workload_group" value="CREATE WORKLOAD GROUP g1 PROPERTIES(&quot;max_cpu_percent&quot;=&quot;10%&quot;,&quot;max_memory_percent&quot;=&quot;30%&quot;)" db-types="Doris" />
     <sql-case id="create_workload_group_if_not_exists" value="CREATE WORKLOAD GROUP IF NOT EXISTS g1 PROPERTIES(&quot;max_cpu_percent&quot;=&quot;10%&quot;,&quot;max_memory_percent&quot;=&quot;30%&quot;)" db-types="Doris" />
+    <sql-case id="create_workload_group_with_keyword_group_name" value="CREATE WORKLOAD GROUP sample PROPERTIES(&quot;max_cpu_percent&quot;=&quot;10%&quot;)" db-types="Doris" />
 </sql-cases>
