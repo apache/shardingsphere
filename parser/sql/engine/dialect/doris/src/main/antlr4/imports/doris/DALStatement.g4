@@ -303,6 +303,12 @@ showData
     : SHOW DATA (FROM tableName)? orderByClause?
     ;
 
+// DORIS ADDED BEGIN
+showDataSkew
+    : SHOW DATA SKEW fromTable (PARTITION LP_ partitionName (COMMA_ partitionName)* RP_)?
+    ;
+// DORIS ADDED END
+
 showTrash
     : SHOW TRASH (ON (LP_ string_ (COMMA_ string_)* RP_ | string_))?
     ;
@@ -1011,5 +1017,6 @@ show
     // DORIS ADDED BEGIN
     | showResources
     | showTransaction
+    | showDataSkew
     // DORIS ADDED END
     ;

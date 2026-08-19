@@ -154,6 +154,9 @@ identifierKeywordsUnambiguous
     | BEFORE
     | BINLOG
     | BIT
+    // DORIS ADDED BEGIN
+    | BITMAP
+    // DORIS ADDED END
     | BITMAP_UNION
     // DORIS ADDED BEGIN
     | BITXOR
@@ -499,6 +502,9 @@ identifierKeywordsUnambiguous
     | SERVER
     | SHARE
     | SIMPLE
+    // DORIS ADDED BEGIN
+    | SKEW
+    // DORIS ADDED END
     | SKIP_SYMBOL
     | SLOW
     | SNAPSHOT
@@ -1419,6 +1425,9 @@ dataType
     | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMCOLLECTION | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
     | dataTypeName = STRING
     | dataTypeName = ARRAY
+    // DORIS ADDED BEGIN
+    | dataTypeName = BITMAP
+    // DORIS ADDED END
     ;
 
 stringList
