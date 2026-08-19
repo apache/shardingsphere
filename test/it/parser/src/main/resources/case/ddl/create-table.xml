@@ -2356,6 +2356,29 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_array_type_doris" db-types="Doris">
+        <table name="t_array_type" start-index="13" stop-index="24" />
+        <column-definition type="INT" start-index="27" stop-index="40">
+            <column name="k" start-index="27" stop-index="27" />
+        </column-definition>
+        <column-definition type="ARRAY" start-index="43" stop-index="73">
+            <column name="array_column" start-index="43" stop-index="54" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_doris_types" db-types="Doris">
+        <table name="t_doris_types" start-index="13" stop-index="25" />
+        <column-definition type="LARGEINT" start-index="28" stop-index="44">
+            <column name="order_id" start-index="28" stop-index="35" />
+        </column-definition>
+        <column-definition type="DATEV2" start-index="47" stop-index="63">
+            <column name="order_date" start-index="47" stop-index="56" />
+        </column-definition>
+        <column-definition type="DATETIMEV2" start-index="66" stop-index="86">
+            <column name="order_time" start-index="66" stop-index="75" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_partition_with_storage_policy_doris" db-types="Doris">
         <table name="create_table_partion_use_created_policy" start-index="13" stop-index="51" />
         <column-definition type="DATE" start-index="54" stop-index="60">

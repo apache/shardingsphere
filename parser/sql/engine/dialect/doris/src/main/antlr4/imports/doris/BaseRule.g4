@@ -207,6 +207,10 @@ identifierKeywordsUnambiguous
     | DATA
     | DATETIME
     | DATE
+    // DORIS ADDED BEGIN
+    | DATETIMEV2
+    | DATEV2
+    // DORIS ADDED END
     | DAY
     | DAY_MINUTE
     | DEFAULT_AUTH
@@ -300,6 +304,9 @@ identifierKeywordsUnambiguous
     | KEY_BLOCK_SIZE
     | LABEL
     | LOAD_JOB_ID
+    // DORIS ADDED BEGIN
+    | LARGEINT
+    // DORIS ADDED END
     | LAST
     | LEAVES
     | LESS
@@ -1035,12 +1042,21 @@ simpleExpr
     | caseExpression
     | intervalExpression
     | arrayExpression
+    // DORIS ADDED BEGIN
+    | lambdaExpression
+    // DORIS ADDED END
     ;
 
 arrayExpression
     : LBT_ expr (COMMA_ expr)* RBT_
     | LBT_ RBT_
     ;
+
+// DORIS ADDED BEGIN
+lambdaExpression
+    : (identifier | LP_ identifier (COMMA_ identifier)* RP_) JSON_SEPARATOR expr
+    ;
+// DORIS ADDED END
 
 path
     : string_
@@ -1255,6 +1271,9 @@ castType
     | castTypeName = STRING
     | castTypeName = INT
     | castTypeName = BIGINT
+    | castTypeName = LARGEINT
+    | castTypeName = DATEV2
+    | castTypeName = DATETIMEV2 typeDatetimePrecision?
     // DORIS ADDED END
     ;
 
@@ -1425,6 +1444,12 @@ dataType
     | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMCOLLECTION | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
     | dataTypeName = STRING
     | dataTypeName = ARRAY
+    // DORIS ADDED BEGIN
+    | dataTypeName = ARRAY LT_ dataType GT_
+    | dataTypeName = LARGEINT
+    | dataTypeName = DATEV2
+    | dataTypeName = DATETIMEV2 typeDatetimePrecision?
+    // DORIS ADDED END
     // DORIS ADDED BEGIN
     | dataTypeName = BITMAP
     // DORIS ADDED END
