@@ -403,6 +403,9 @@ identifierKeywordsUnambiguous
     | PASSWORD_LOCK_TIME
     | PATH
     | PAUSE
+    // DORIS ADDED BEGIN
+    | PERCENT
+    // DORIS ADDED END
     | PHASE
     // DORIS ADDED BEGIN
     | PLAN
@@ -479,6 +482,9 @@ identifierKeywordsUnambiguous
     | ROW_COUNT
     | ROW_FORMAT
     | RTREE
+    // DORIS ADDED BEGIN
+    | SAMPLE
+    // DORIS ADDED END
     | SCHEDULE
     | SCHEMA_NAME
     | SECONDARY_ENGINE
@@ -579,6 +585,9 @@ identifierKeywordsUnambiguous
     | WEIGHT_STRING
     | WITHOUT
     | WORK
+    // DORIS ADDED BEGIN
+    | WORKLOAD
+    // DORIS ADDED END
     | WRAPPER
     | X509
     | XID

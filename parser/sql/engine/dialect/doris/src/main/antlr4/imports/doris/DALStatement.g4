@@ -380,9 +380,18 @@ uninstallPlugin
     : UNINSTALL PLUGIN pluginName
     ;
 
+// DORIS CHANGED BEGIN
 analyzeTable
-    : ANALYZE (NO_WRITE_TO_BINLOG | LOCAL)? tableOrTables tableList histogram?
+    : ANALYZE (NO_WRITE_TO_BINLOG | LOCAL)? tableOrTables tableList (LP_ columnNames RP_)? analyzeOption* histogram?
     ;
+// DORIS CHANGED END
+
+// DORIS ADDED BEGIN
+analyzeOption
+    : WITH SYNC
+    | WITH SAMPLE (PERCENT | ROWS) numberLiterals
+    ;
+// DORIS ADDED END
 
 histogram
     : UPDATE HISTOGRAM ON columnNames (WITH NUMBER_ BUCKETS | USING DATA string_)?
@@ -597,6 +606,12 @@ createResourceGroup
     : CREATE RESOURCE GROUP groupName TYPE EQ_ (SYSTEM | USER) (VCPU EQ_? vcpuSpec (COMMA_ vcpuSpec)*)?
     (THREAD_PRIORITY EQ_? numberLiterals)? (ENABLE | DISABLE)?
     ;
+
+// DORIS ADDED BEGIN
+createWorkloadGroup
+    : CREATE WORKLOAD GROUP ifNotExists? groupName propertiesClause
+    ;
+// DORIS ADDED END
 
 dropResourceGroup
     : DROP RESOURCE GROUP groupName FORCE?
