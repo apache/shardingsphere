@@ -36,8 +36,11 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingReq
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
@@ -51,6 +54,7 @@ import java.util.Properties;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -142,10 +146,33 @@ class AlterEncryptRuleExecutorTest {
         EncryptRuleConfiguration toBeAlteredRuleConfig = new EncryptRuleConfiguration(
                 Collections.singleton(new EncryptTableRuleConfiguration("T_ENCRYPT", Collections.singleton(alteredColumn))), Collections.emptyMap());
         EncryptRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
-        assertTrue(actual.getTables().isEmpty());
+        assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getTables().iterator().next().getName(), is("t_encrypt"));
         assertThat(actual.getEncryptors().size(), is(2));
         assertTrue(actual.getEncryptors().containsKey("foo_assisted"));
         assertTrue(actual.getEncryptors().containsKey("foo_like"));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertUpdatePathWhenAlteredTableNameCaseDiffers() {
+        EncryptRule rule = mock(EncryptRule.class);
+        EncryptRuleConfiguration currentRuleConfig = createCurrentRuleConfigurationWithGeneratedEncryptors();
+        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        AlterEncryptRuleExecutor executor = new AlterEncryptRuleExecutor();
+        executor.setRule(rule);
+        EncryptColumnRuleConfiguration alteredColumn = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "foo_cipher"));
+        EncryptTableRuleConfiguration toBeAlteredTable = new EncryptTableRuleConfiguration("T_ENCRYPT", Collections.singleton(alteredColumn));
+        EncryptRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(new EncryptRuleConfiguration(Collections.singleton(toBeAlteredTable), Collections.emptyMap()));
+        RuleItemConfigurationChangedProcessor<EncryptRuleConfiguration, EncryptTableRuleConfiguration> processor = TypedSPILoader.getService(
+                RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("encrypt", "tables"));
+        processor.changeRuleItemConfiguration("T_ENCRYPT", currentRuleConfig, toBeAlteredTable);
+        for (EncryptTableRuleConfiguration each : toBeDroppedRuleConfig.getTables()) {
+            processor.dropRuleItemConfiguration(each.getName(), currentRuleConfig);
+        }
+        assertThat(currentRuleConfig.getTables().size(), is(1));
+        assertThat(currentRuleConfig.getTables().iterator().next().getName(), is("T_ENCRYPT"));
+        assertFalse(currentRuleConfig.getTables().iterator().next().getColumns().iterator().next().getAssistedQuery().isPresent());
     }
     
     @Test

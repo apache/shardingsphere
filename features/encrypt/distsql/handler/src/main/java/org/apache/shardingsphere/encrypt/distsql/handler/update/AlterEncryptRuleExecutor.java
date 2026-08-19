@@ -37,7 +37,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -111,7 +110,13 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
         Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor(toBeCheckedRuleConfig);
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>(unusedEncryptor.size(), 1F);
         unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, rule.getConfiguration().getEncryptors().get(each)));
-        return new EncryptRuleConfiguration(Collections.emptyList(), toBeDroppedEncryptors);
+        return new EncryptRuleConfiguration(getToBeDroppedTables(toBeAlteredRuleConfig, toBeAlteredTableNames), toBeDroppedEncryptors);
+    }
+    
+    private Collection<EncryptTableRuleConfiguration> getToBeDroppedTables(final EncryptRuleConfiguration toBeAlteredRuleConfig, final Collection<String> toBeAlteredTableNames) {
+        Collection<String> toBeAlteredCaseSensitiveTableNames = toBeAlteredRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
+        return rule.getConfiguration().getTables().stream()
+                .filter(each -> toBeAlteredTableNames.contains(each.getName()) && !toBeAlteredCaseSensitiveTableNames.contains(each.getName())).collect(Collectors.toList());
     }
     
     @Override
