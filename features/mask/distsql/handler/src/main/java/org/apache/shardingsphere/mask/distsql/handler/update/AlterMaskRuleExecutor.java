@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -83,7 +82,13 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
                 toBeDroppedAlgorithms.put(each, rule.getConfiguration().getMaskAlgorithms().get(each));
             }
         }
-        return new MaskRuleConfiguration(Collections.emptyList(), toBeDroppedAlgorithms);
+        return new MaskRuleConfiguration(getToBeDroppedTables(toBeAlteredRuleConfig, toBeAlteredTableNames), toBeDroppedAlgorithms);
+    }
+    
+    private Collection<MaskTableRuleConfiguration> getToBeDroppedTables(final MaskRuleConfiguration toBeAlteredRuleConfig, final Collection<String> toBeAlteredTableNames) {
+        Collection<String> toBeAlteredCaseSensitiveTableNames = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toSet());
+        return rule.getConfiguration().getTables().stream()
+                .filter(each -> toBeAlteredTableNames.contains(each.getName()) && !toBeAlteredCaseSensitiveTableNames.contains(each.getName())).collect(Collectors.toList());
     }
     
     @Override
