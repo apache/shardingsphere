@@ -481,6 +481,14 @@ adminCopyTablet
     : ADMIN COPY TABLET NUMBER_ propertiesClause?
     ;
 
+adminCheckTablet
+    : ADMIN CHECK TABLET LP_ NUMBER_ (COMMA_ NUMBER_)* RP_ propertiesClause
+    ;
+
+adminSetPartitionVersion
+    : ADMIN SET TABLE tableName PARTITION VERSION propertiesClause
+    ;
+
 adminRebalanceDisk
     : ADMIN REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
     ;

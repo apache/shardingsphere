@@ -155,6 +155,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAl
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaVersionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCopyTabletContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCheckTabletContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetPartitionVersionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
@@ -246,6 +248,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplaye
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCheckTabletStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetPartitionVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRebalanceDiskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
@@ -1345,6 +1349,21 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.propertiesClause()) {
             result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminCheckTablet(final AdminCheckTabletContext ctx) {
+        List<Long> tabletIds = ctx.NUMBER_().stream().map(each -> Long.parseLong(each.getText())).collect(Collectors.toList());
+        DorisAdminCheckTabletStatement result = new DorisAdminCheckTabletStatement(getDatabaseType(), tabletIds);
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminSetPartitionVersion(final AdminSetPartitionVersionContext ctx) {
+        DorisAdminSetPartitionVersionStatement result = new DorisAdminSetPartitionVersionStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
         return result;
     }
     
