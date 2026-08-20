@@ -58,12 +58,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -327,6 +331,83 @@ class TableExtractorTest {
         assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
                 && QuoteCharacter.QUOTE == each.getTableName().getIdentifier().getQuoteCharacter()));
         assertTrue(actual.stream().anyMatch(each -> "Employee".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("delimitedAtSignPhysicalTargetWithAliasedTableVariableSourceArguments")
+    void assertExtractTablesFromUpdateWithDelimitedAtSignPhysicalTargetAndAliasedTableVariableSourceIncludesPhysicalTable(final String name, final QuoteCharacter quoteCharacter,
+                                                                                                                          final boolean schemaQualified) {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", quoteCharacter)));
+        if (schemaQualified) {
+            targetTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("dbo")));
+        }
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("x")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        SimpleTableSegment actualTable = actual.iterator().next();
+        assertThat(actualTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(actualTable.getTableName().getIdentifier().getQuoteCharacter(), is(quoteCharacter));
+        assertThat(actualTable.getOwner().isPresent(), is(schemaQualified));
+        if (schemaQualified) {
+            assertThat(actualTable.getOwner().get().getIdentifier().getValue(), is("dbo"));
+        }
+        assertFalse(actual.stream().anyMatch(each -> QuoteCharacter.NONE == each.getTableName().getIdentifier().getQuoteCharacter()
+                && "@MyTable".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("tableVariableTargetWithAliasedDelimitedAtSignPhysicalSourceArguments")
+    void assertExtractTablesFromUpdateWithTableVariableTargetAndAliasedDelimitedAtSignPhysicalSourceIncludesPhysicalTable(final String name, final QuoteCharacter quoteCharacter,
+                                                                                                                          final boolean schemaQualified, final String fromAlias) {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable", quoteCharacter)));
+        if (schemaQualified) {
+            fromTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("dbo")));
+        }
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue(fromAlias)));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable"))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        SimpleTableSegment actualTable = actual.iterator().next();
+        assertThat(actualTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(actualTable.getTableName().getIdentifier().getQuoteCharacter(), is(quoteCharacter));
+        assertThat(actualTable.getOwner().isPresent(), is(schemaQualified));
+        if (schemaQualified) {
+            assertThat(actualTable.getOwner().get().getIdentifier().getValue(), is("dbo"));
+        }
+        assertFalse(actual.stream().anyMatch(each -> QuoteCharacter.NONE == each.getTableName().getIdentifier().getQuoteCharacter()
+                && "@MyTable".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    private static Stream<Arguments> delimitedAtSignPhysicalTargetWithAliasedTableVariableSourceArguments() {
+        return Stream.of(
+                Arguments.of("bracket delimited physical target with aliased table variable source", QuoteCharacter.BRACKETS, false),
+                Arguments.of("quote delimited physical target with aliased table variable source", QuoteCharacter.QUOTE, false),
+                Arguments.of("schema qualified bracket delimited physical target with aliased table variable source", QuoteCharacter.BRACKETS, true),
+                Arguments.of("schema qualified quote delimited physical target with aliased table variable source", QuoteCharacter.QUOTE, true));
+    }
+    
+    private static Stream<Arguments> tableVariableTargetWithAliasedDelimitedAtSignPhysicalSourceArguments() {
+        return Stream.of(
+                Arguments.of("table variable target with aliased bracket delimited physical source", QuoteCharacter.BRACKETS, false, "src"),
+                Arguments.of("table variable target with aliased quote delimited physical source", QuoteCharacter.QUOTE, false, "x"),
+                Arguments.of("table variable target with schema qualified aliased bracket delimited physical source", QuoteCharacter.BRACKETS, true, "src"),
+                Arguments.of("table variable target with schema qualified aliased quote delimited physical source", QuoteCharacter.QUOTE, true, "src"));
     }
     
     @Test

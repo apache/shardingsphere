@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -31,11 +32,13 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardPa
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -69,8 +72,12 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
         for (ColumnAssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-            String columnName = each.getColumns().get(0).getIdentifier().getValue();
-            String tableName = each.getColumns().get(0).getColumnBoundInfo().getOriginalTable().getValue();
+            ColumnSegment assignedColumn = each.getColumns().get(0);
+            if (isTableVariableBoundColumn(assignedColumn, sqlStatementContext.getSqlStatement().getDatabaseType())) {
+                continue;
+            }
+            String columnName = assignedColumn.getIdentifier().getValue();
+            String tableName = assignedColumn.getColumnBoundInfo().getOriginalTable().getValue();
             if (!rule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(columnName)).orElse(false)) {
                 continue;
             }
@@ -92,6 +99,11 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
             return result.get();
         }
         return ((UpdateStatement) sqlStatement).getSetAssignment();
+    }
+    
+    private boolean isTableVariableBoundColumn(final ColumnSegment columnSegment, final DatabaseType databaseType) {
+        IdentifierValue originalTable = columnSegment.getColumnBoundInfo().getOriginalTable();
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isTableVariableIdentifier(originalTable.getValue(), originalTable.getQuoteCharacter());
     }
     
     private void encryptParameters(final StandardParameterBuilder paramBuilder, final String schemaName,

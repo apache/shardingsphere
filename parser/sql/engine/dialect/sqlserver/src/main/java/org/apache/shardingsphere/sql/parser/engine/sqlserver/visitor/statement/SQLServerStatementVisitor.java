@@ -25,7 +25,9 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
@@ -1788,6 +1790,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             SimpleTableSegment simpleTableSegment = (SimpleTableSegment) fromSegment;
             return simpleTableSegment.getAliasName().isPresent()
                     && targetTable.getTableName().getIdentifier().getValue().equalsIgnoreCase(simpleTableSegment.getTableName().getIdentifier().getValue())
+                    && isSameTableVariableIdentity(targetTable.getTableName().getIdentifier(), simpleTableSegment.getTableName().getIdentifier())
                     && isSameOwner(targetTable, simpleTableSegment);
         }
         if (fromSegment instanceof JoinTableSegment) {
@@ -1795,6 +1798,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                     || isTableNameWithAliasInFromClause(targetTable, ((JoinTableSegment) fromSegment).getRight());
         }
         return false;
+    }
+    
+    private boolean isSameTableVariableIdentity(final IdentifierValue targetIdentifier, final IdentifierValue fromIdentifier) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(targetIdentifier.getValue(), targetIdentifier.getQuoteCharacter()) == dialectDatabaseMetaData
+                .isTableVariableIdentifier(fromIdentifier.getValue(), fromIdentifier.getQuoteCharacter());
     }
     
     private boolean isSameOwner(final SimpleTableSegment targetTable, final SimpleTableSegment fromTable) {

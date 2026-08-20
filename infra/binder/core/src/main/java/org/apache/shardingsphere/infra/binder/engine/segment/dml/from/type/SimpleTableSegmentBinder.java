@@ -261,7 +261,7 @@ public final class SimpleTableSegmentBinder {
             return false;
         }
         return !segment.getOwner().isPresent() && tableBinderContexts.containsKey(CaseInsensitiveString.of(tableNameValue))
-                || tableBinderContexts.values().stream().anyMatch(each -> isSameUpdateTargetTableContext(segment, schemaName, tableNameValue, each));
+                || tableBinderContexts.values().stream().anyMatch(each -> isSameUpdateTargetTableContext(segment, binderContext, schemaName, tableNameValue, each));
     }
     
     private static SimpleTableSegment bindUpdateTargetTableAlias(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext,
@@ -270,7 +270,7 @@ public final class SimpleTableSegmentBinder {
         Collection<TableSegmentBinderContext> fromTableContexts = !segment.getOwner().isPresent() && tableBinderContexts.containsKey(CaseInsensitiveString.of(tableName.getValue()))
                 ? tableBinderContexts.get(CaseInsensitiveString.of(tableName.getValue()))
                 : tableBinderContexts.values().stream()
-                        .filter(each -> isSameUpdateTargetTableContext(segment, schemaName, tableName.getValue(), each)).collect(Collectors.toList());
+                        .filter(each -> isSameUpdateTargetTableContext(segment, binderContext, schemaName, tableName.getValue(), each)).collect(Collectors.toList());
         IdentifierValue originalTableName = fromTableContexts.stream()
                 .map(TableSegmentBinderContext::getOriginalTableName).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(tableName);
         Optional<OwnerSegment> fromTableOwner = fromTableContexts.stream()
@@ -287,10 +287,17 @@ public final class SimpleTableSegmentBinder {
         return result;
     }
     
-    private static boolean isSameUpdateTargetTableContext(final SimpleTableSegment targetTable, final Optional<IdentifierValue> schemaName, final String tableName,
-                                                          final TableSegmentBinderContext tableBinderContext) {
-        return tableBinderContext.getOriginalTableName().map(each -> each.getValue().equalsIgnoreCase(tableName)).orElse(false)
+    private static boolean isSameUpdateTargetTableContext(final SimpleTableSegment targetTable, final SQLStatementBinderContext binderContext, final Optional<IdentifierValue> schemaName,
+                                                          final String tableName, final TableSegmentBinderContext tableBinderContext) {
+        return tableBinderContext.getOriginalTableName()
+                .map(each -> each.getValue().equalsIgnoreCase(tableName) && isSameTableVariableIdentity(targetTable.getTableName().getIdentifier(), each, binderContext)).orElse(false)
                 && isSameUpdateTargetOwner(targetTable, schemaName, tableBinderContext);
+    }
+    
+    private static boolean isSameTableVariableIdentity(final IdentifierValue targetTableName, final IdentifierValue originalTableName, final SQLStatementBinderContext binderContext) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(targetTableName.getValue(), targetTableName.getQuoteCharacter()) == dialectDatabaseMetaData
+                .isTableVariableIdentifier(originalTableName.getValue(), originalTableName.getQuoteCharacter());
     }
     
     private static boolean isSameUpdateTargetOwner(final SimpleTableSegment targetTable, final Optional<IdentifierValue> schemaName,

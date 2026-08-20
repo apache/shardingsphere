@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -75,6 +76,9 @@ public final class EncryptAssignmentTokenGenerator {
         QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             ColumnSegment assignedColumn = getAssignedColumn(each);
+            if (isTableVariableBoundColumn(assignedColumn)) {
+                continue;
+            }
             findEncryptTable(assignedColumn).ifPresent(encryptTable -> {
                 String columnName = assignedColumn.getIdentifier().getValue();
                 if (encryptTable.isEncryptColumn(columnName)) {
@@ -146,6 +150,11 @@ public final class EncryptAssignmentTokenGenerator {
     
     private Optional<EncryptTable> findEncryptTable(final ColumnSegment columnSegment) {
         return rule.findEncryptTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
+    }
+    
+    private boolean isTableVariableBoundColumn(final ColumnSegment columnSegment) {
+        IdentifierValue originalTable = columnSegment.getColumnBoundInfo().getOriginalTable();
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isTableVariableIdentifier(originalTable.getValue(), originalTable.getQuoteCharacter());
     }
     
     private void appendEncryptColumnTokens(final ColumnSegment leftColumn, final EncryptColumn encryptColumn, final EncryptColumnConsumer consumer) {

@@ -259,4 +259,44 @@
         <input sql="UPDATE dbo.&quot;@MyTable&quot; SET Remark = ? FROM @MyTable" parameters="tool malfunction" />
         <output sql="UPDATE dbo.&quot;@MyTable&quot; SET [remark_cipher] = ? FROM @MyTable" parameters="encrypt_tool malfunction" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_at_sign_physical_target_with_aliased_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET Remark = 'x' FROM @MyTable AS x" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_aliased_bracket_delimited_at_sign_physical_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM [@MyTable] AS src" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM [@MyTable] AS src" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_aliased_quote_delimited_at_sign_physical_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM &quot;@MyTable&quot; AS x" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM &quot;@MyTable&quot; AS x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_at_sign_physical_target_with_aliased_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET Remark = 'x' FROM @MyTable AS x" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_schema_qualified_aliased_quote_delimited_at_sign_physical_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM dbo.&quot;@MyTable&quot; AS src" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM dbo.&quot;@MyTable&quot; AS src" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_bracket_delimited_at_sign_physical_target_with_aliased_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.[@MyTable] SET Remark = 'x' FROM @MyTable AS x" />
+        <output sql="UPDATE dbo.[@MyTable] SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_schema_qualified_aliased_bracket_delimited_at_sign_physical_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM dbo.[@MyTable] AS src" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM dbo.[@MyTable] AS src" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_quote_delimited_at_sign_physical_target_with_aliased_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.&quot;@MyTable&quot; SET Remark = 'x' FROM @MyTable AS x" />
+        <output sql="UPDATE dbo.&quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS x" />
+    </rewrite-assertion>
 </rewrite-assertions>
