@@ -70,7 +70,7 @@ class ShardingDALResultMergerTest {
         when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), isA(TransparentMergedResult.class));
     }
-
+    
     @Test
     void assertMergeWithDatabaseDefaultSchema() throws SQLException {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(DALStatement.class));
