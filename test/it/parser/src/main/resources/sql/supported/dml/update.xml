@@ -17,6 +17,9 @@
   -->
 
 <sql-cases>
+    <sql-case id="update_cast_assignment_hive" value="UPDATE t_product_detail SET description = cast(? AS STRING) WHERE detail_id = ?" case-types="placeholder" db-types="Hive" />
+    <sql-case id="update_case_when_assignment_hive" value="UPDATE t_user SET user_name = CASE WHEN user_id = ? THEN concat(user_name, ?) ELSE user_name END WHERE user_id IN (?, ?)" case-types="placeholder" db-types="Hive" />
+    <sql-case id="update_values_derived_table_aliases_postgresql" value="UPDATE t_order SET status = t.status FROM (VALUES (1, 'PAID')) AS t(order_id, status) WHERE t_order.order_id = t.order_id" db-types="PostgreSQL" />
     <sql-case id="update_without_alias" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" />
     <sql-case id="update_with_alias" value="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2,openGauss,Oracle,Doris" />
     <sql-case id="update_with_unicode_escape_alias" value="UPDATE t_order AS u SET status = ? WHERE u.order_id = ? AND u.user_id = ?" db-types="PostgreSQL,openGauss" />

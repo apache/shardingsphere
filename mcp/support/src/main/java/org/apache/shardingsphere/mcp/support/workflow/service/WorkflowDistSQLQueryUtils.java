@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCErrorCategory;
 import org.apache.shardingsphere.mcp.support.database.exception.MCPJDBCExceptionClassifier;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
@@ -33,30 +34,25 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowDistSQLQueryUtils {
     
-    /**
-     * Judge whether a query failed because the current backend cannot parse ShardingSphere DistSQL.
-     *
-     * @param ex query failure
-     * @return whether the backend does not support DistSQL syntax
-     */
-    public static boolean isUnsupportedDistSQLQueryFailure(final MCPQueryFailedException ex) {
+    private static boolean isUnsupportedDistSQLQueryFailure(final MCPQueryFailedException ex) {
         return MCPJDBCErrorCategory.SYNTAX == MCPJDBCExceptionClassifier.classify(ex);
     }
     
     /**
-     * Query DistSQL rule rows, returning an empty list when the current backend does not support the rule DistSQL syntax.
+     * Query DistSQL rule rows.
      *
      * @param queryFacade query facade
      * @param databaseName database name
      * @param sql DistSQL to execute
      * @return queried rows
+     * @throws MCPUnsupportedException when the configured runtime does not support rule inspection DistSQL
      */
     public static List<Map<String, Object>> queryRuleRows(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String sql) {
         try {
             return queryFacade.query(databaseName, sql);
         } catch (final MCPQueryFailedException ex) {
             if (isUnsupportedDistSQLQueryFailure(ex)) {
-                return List.of();
+                throw new MCPUnsupportedException("The configured runtime does not support rule inspection DistSQL.", ex);
             }
             throw ex;
         }

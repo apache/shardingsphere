@@ -62,8 +62,9 @@ class TableMetadataReviseEngineTest<T extends ShardingSphereRule> {
     void assertGetRevisedTableName() {
         TableNameReviser tableNameReviser = mock(TableNameReviser.class);
         TableMetaData originalMetaData = new TableMetaData("originalTableName", new LinkedList<>(), null, null);
+        originalMetaData.setStorageUnitName("ds_0");
         when(metaDataReviseEntry.getTableNameReviser()).thenReturn(Optional.of(tableNameReviser));
-        when(tableNameReviser.revise(anyString(), eq(rule))).thenReturn("revisedTableName");
+        when(tableNameReviser.revise(anyString(), eq(rule), eq("ds_0"))).thenReturn("revisedTableName");
         TableMetaData revisedMetaData = engine.revise(originalMetaData);
         assertThat(revisedMetaData.getName(), is("revisedTableName"));
     }

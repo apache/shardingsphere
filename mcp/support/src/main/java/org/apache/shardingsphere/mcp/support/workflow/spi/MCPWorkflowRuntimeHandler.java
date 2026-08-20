@@ -17,42 +17,24 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.spi;
 
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 
-import java.util.Map;
-
 /**
- * Workflow runtime handler for validation and apply synchronization.
+ * Workflow runtime handler for feature-specific validation of the state visible from ShardingSphere Proxy.
+ *
+ * <p>Implementations must be side-effect free and repeatable because core workflow execution may poll the report after applying artifacts.</p>
  */
+@FunctionalInterface
 public interface MCPWorkflowRuntimeHandler {
     
     /**
-     * Validate one workflow plan.
-     *
-     * @param workflowSessionContext workflow session context
-     * @param metadataQueryFacade metadata query facade
-     * @param queryFacade direct query facade
-     * @param executionFacade execution facade
-     * @param sessionId session id
-     * @param snapshot workflow snapshot
-     * @return validation payload
-     */
-    Map<String, Object> validate(WorkflowSessionContext workflowSessionContext, MCPMetadataQueryFacade metadataQueryFacade,
-                                 MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade, String sessionId, WorkflowContextSnapshot snapshot);
-    
-    /**
-     * Synchronize workflow state after apply execution.
+     * Validate the runtime state for one workflow plan.
      *
      * @param snapshot workflow snapshot
-     * @param metadataQueryFacade metadata query facade
      * @param queryFacade direct query facade
-     * @param executionFacade execution facade
-     * @param sessionId session id
+     * @return feature-specific validation report
      */
-    void synchronize(WorkflowContextSnapshot snapshot, MCPMetadataQueryFacade metadataQueryFacade,
-                     MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade, String sessionId);
+    ValidationReport validate(WorkflowContextSnapshot snapshot, MCPFeatureQueryFacade queryFacade);
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.core.workflow;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
 import org.apache.shardingsphere.mcp.support.diagnostic.MCPDiagnosticCategory;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
@@ -28,10 +27,12 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyReq
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.SecretReferenceValue;
+import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
@@ -48,7 +49,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -56,20 +56,7 @@ import static org.mockito.Mockito.when;
 
 class WorkflowExecutionServiceTest {
     
-    private static final MCPWorkflowRuntimeHandler NO_OP_RUNTIME_HANDLER = new MCPWorkflowRuntimeHandler() {
-        
-        @Override
-        public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
-                                            final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade,
-                                            final String sessionId, final WorkflowContextSnapshot snapshot) {
-            return Map.of();
-        }
-        
-        @Override
-        public void synchronize(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
-                                final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
-        }
-    };
+    private static final MCPWorkflowRuntimeHandler PASSED_RUNTIME_HANDLER = (snapshot, queryFacade) -> createValidationReport(WorkflowLifecycle.STATUS_PASSED);
     
     @Test
     void assertApplyMasksManualArtifactPackage() {
@@ -101,8 +88,8 @@ class WorkflowExecutionServiceTest {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionStore().getSessionContext("session-1");
         workflowSessionContext.save(createSnapshot());
         WorkflowExecutionService executionService = new WorkflowExecutionService();
-        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), NO_OP_RUNTIME_HANDLER, MCPWorkflowApplyArtifactValidator.NO_OP,
+        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPFeatureQueryFacade.class),
+                mock(MCPFeatureExecutionFacade.class), PASSED_RUNTIME_HANDLER, MCPWorkflowApplyArtifactValidator.NO_OP,
                 "session-2", workflowSessionContext.getRequired("plan-1"), List.of(), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualResponse.get("response_mode"), is("terminal"));
@@ -128,7 +115,7 @@ class WorkflowExecutionServiceTest {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> executionService.apply(new InMemoryWorkflowSessionStore().getSessionContext("session-1"),
-                        mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), NO_OP_RUNTIME_HANDLER,
+                        mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), PASSED_RUNTIME_HANDLER,
                         MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", createSnapshot(), List.of(), ""));
         assertThat(actual.getMessage(), is("database_gateway_apply_workflow execution_mode is required."));
     }
@@ -138,7 +125,7 @@ class WorkflowExecutionServiceTest {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> executionService.apply(new InMemoryWorkflowSessionStore().getSessionContext("session-1"),
-                        mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), NO_OP_RUNTIME_HANDLER,
+                        mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), PASSED_RUNTIME_HANDLER,
                         MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", createSnapshot(), List.of(), "auto-execute"));
         assertThat(actual.getMessage(), is("database_gateway_apply_workflow execution_mode must be one of [preview, review-then-execute, manual-only]."));
     }
@@ -148,7 +135,7 @@ class WorkflowExecutionServiceTest {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> executionService.apply(new InMemoryWorkflowSessionStore().getSessionContext("session-1"),
-                        mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), NO_OP_RUNTIME_HANDLER,
+                        mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), PASSED_RUNTIME_HANDLER,
                         MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", createSnapshot(), List.of("review"), "review-then-execute"));
         assertThat(actual.getMessage(), is("approved_steps must contain only [rule_distsql]."));
     }
@@ -160,7 +147,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
-        Map<String, Object> actualResponse = apply(snapshot, executionFacade, NO_OP_RUNTIME_HANDLER, List.of(), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, PASSED_RUNTIME_HANDLER, List.of(), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         verify(executionFacade, never()).execute(any());
@@ -171,7 +158,7 @@ class WorkflowExecutionServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actualResponse = apply(snapshot, executionFacade, NO_OP_RUNTIME_HANDLER, List.of("rule_distsql"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, PASSED_RUNTIME_HANDLER, List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
         verify(executionFacade, never()).execute(any());
@@ -182,7 +169,7 @@ class WorkflowExecutionServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("previewed");
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actualResponse = apply(snapshot, executionFacade, NO_OP_RUNTIME_HANDLER,
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, PASSED_RUNTIME_HANDLER,
                 List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
@@ -223,7 +210,7 @@ class WorkflowExecutionServiceTest {
         assertThat(((Map<?, ?>) actualResponse.get("argument_provenance")).get("execution_mode"), is("server_defaulted"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("previewed"));
         verify(executionFacade, never()).execute(any());
-        verify(workflowRuntimeHandler, never()).synchronize(any(), any(), any(), any(), any());
+        verify(workflowRuntimeHandler, never()).validate(any(), any());
     }
     
     @Test
@@ -255,8 +242,8 @@ class WorkflowExecutionServiceTest {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionStore().getSessionContext("session-1");
         workflowSessionContext.save(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actualResponse = new WorkflowExecutionService().apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, NO_OP_RUNTIME_HANDLER,
+        Map<String, Object> actualResponse = new WorkflowExecutionService().apply(workflowSessionContext, mock(MCPFeatureQueryFacade.class),
+                executionFacade, PASSED_RUNTIME_HANDLER,
                 (workflowSnapshot, artifacts) -> List.of(new WorkflowIssue(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "error", "review",
                         "Generated workflow artifact is invalid.", "Regenerate the workflow artifact before approval.", true,
                         Map.of("sql", artifacts.iterator().next().displaySql())).toMap()),
@@ -295,7 +282,7 @@ class WorkflowExecutionServiceTest {
         WorkflowSessionContext workflowSessionContext = createWorkflowSessionContext(snapshot);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
-        Map<String, Object> actualResponse = apply(workflowSessionContext, snapshot, executionFacade, NO_OP_RUNTIME_HANDLER,
+        Map<String, Object> actualResponse = apply(workflowSessionContext, snapshot, executionFacade, PASSED_RUNTIME_HANDLER,
                 List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(actualResponse.get("response_mode"), is("executed"));
@@ -314,7 +301,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
-        Map<String, Object> actualResponse = apply(snapshot, executionFacade, NO_OP_RUNTIME_HANDLER, List.of("rule_distsql"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, PASSED_RUNTIME_HANDLER, List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("step_results")).getFirst()).get("sql"),
                 is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
@@ -326,7 +313,7 @@ class WorkflowExecutionServiceTest {
     void assertApplyRequiresManualExecutionForSecretReference() {
         WorkflowContextSnapshot snapshot = createSecretReferenceSnapshot();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actualResponse = apply(snapshot, executionFacade, NO_OP_RUNTIME_HANDLER, List.of("rule_distsql"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, PASSED_RUNTIME_HANDLER, List.of("rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualResponse.get("response_mode"), is("recovery"));
         assertThat(actualResponse.get("category"), is(MCPDiagnosticCategory.SECRET_REFERENCE_MANUAL_EXECUTION_REQUIRED));
@@ -349,8 +336,8 @@ class WorkflowExecutionServiceTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResult.class));
         MCPWorkflowRuntimeHandler workflowRuntimeHandler = mock(MCPWorkflowRuntimeHandler.class);
-        doThrow(new WorkflowSynchronizationException(WorkflowIssueCode.RULE_STATE_MISMATCH, "Mask rule is missing.",
-                List.of(Map.of("code", WorkflowIssueCode.RULE_STATE_MISMATCH)))).when(workflowRuntimeHandler).synchronize(any(), any(), any(), any(), any());
+        when(workflowRuntimeHandler.validate(any(), any())).thenThrow(new WorkflowSynchronizationException(
+                WorkflowIssueCode.RULE_STATE_MISMATCH, "Mask rule is missing.", List.of(Map.of("code", WorkflowIssueCode.RULE_STATE_MISMATCH))));
         Map<String, Object> actualResponse = apply(workflowSessionContext, snapshot, executionFacade, workflowRuntimeHandler,
                 List.of("rule_distsql"), "review-then-execute");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
@@ -368,7 +355,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("Failed to execute CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
-        Map<String, Object> actualResponse = apply(snapshot, executionFacade, NO_OP_RUNTIME_HANDLER, List.of("rule_distsql"), "review-then-execute");
+        Map<String, Object> actualResponse = apply(snapshot, executionFacade, PASSED_RUNTIME_HANDLER, List.of("rule_distsql"), "review-then-execute");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).getFirst();
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_EXECUTION_FAILED));
@@ -377,7 +364,7 @@ class WorkflowExecutionServiceTest {
     }
     
     private Map<String, Object> apply(final WorkflowContextSnapshot snapshot, final List<String> approvedSteps, final String executionMode) {
-        return apply(createWorkflowSessionContext(snapshot), snapshot, mock(MCPFeatureExecutionFacade.class), NO_OP_RUNTIME_HANDLER, approvedSteps, executionMode);
+        return apply(createWorkflowSessionContext(snapshot), snapshot, mock(MCPFeatureExecutionFacade.class), PASSED_RUNTIME_HANDLER, approvedSteps, executionMode);
     }
     
     private Map<String, Object> apply(final WorkflowContextSnapshot snapshot, final MCPFeatureExecutionFacade executionFacade,
@@ -390,8 +377,14 @@ class WorkflowExecutionServiceTest {
                                       final MCPFeatureExecutionFacade executionFacade,
                                       final MCPWorkflowRuntimeHandler workflowRuntimeHandler, final List<String> approvedSteps,
                                       final String executionMode) {
-        return new WorkflowExecutionService().apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+        return new WorkflowExecutionService().apply(workflowSessionContext, mock(MCPFeatureQueryFacade.class),
                 executionFacade, workflowRuntimeHandler, MCPWorkflowApplyArtifactValidator.NO_OP, "session-1", snapshot, approvedSteps, executionMode);
+    }
+    
+    private static ValidationReport createValidationReport(final String status) {
+        ValidationReport result = new ValidationReport();
+        result.setOverallStatus(status);
+        return result;
     }
     
     private WorkflowSessionContext createWorkflowSessionContext(final WorkflowContextSnapshot snapshot) {

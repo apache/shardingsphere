@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SingleDataNodeRuleAttributeTest {
     
@@ -50,6 +51,11 @@ class SingleDataNodeRuleAttributeTest {
     @MethodSource("getDataNodesByTableNameArguments")
     void assertGetDataNodesByTableName(final String name, final String tableName, final Collection<DataNode> expectedDataNodes) {
         assertThat(ruleAttribute.getDataNodesByTableName(tableName), is(expectedDataNodes));
+    }
+    
+    @Test
+    void assertIsDataNodeTableNameLoadedFromStorage() {
+        assertTrue(ruleAttribute.isDataNodeTableNameLoadedFromStorage());
     }
     
     @Test

@@ -24,7 +24,7 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
@@ -116,7 +116,7 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
         assertThat(actualPayload.get("status"), is("failed"));
         assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("database"));
         assertFalse(((Map<?, ?>) actualPayload.get("recovery")).containsKey("next_actions"));
-        assertThat(((TextContent) actual.content().getFirst()).text(), is(JsonUtils.toJsonString(actualPayload)));
+        assertThat(((TextContent) actual.content().getFirst()).text(), is(JsonEngine.marshal(actualPayload)));
     }
     
     @Test

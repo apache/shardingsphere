@@ -55,6 +55,7 @@ execute
     | alterResourceGroup
     | alterResource
     | createResourceGroup
+    | createWorkloadGroup
     | dropResourceGroup
     | prepare
     | executeStmt
@@ -152,7 +153,10 @@ execute
     | adminSetReplicaStatus
     | adminSetReplicaVersion
     | adminCopyTablet
+    | adminCheckTablet
+    | adminSetPartitionVersion
     | adminCleanTrash
+    | adminRebalanceDisk
     | createSqlBlockRule
     | alterSqlBlockRule
     | dropSqlBlockRule
@@ -174,6 +178,7 @@ execute
     | cancelLoadStatement
     | cleanAllProfile
     | planReplayerPlay
+    | recover
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

@@ -19,16 +19,11 @@ package org.apache.shardingsphere.mcp.feature.broadcast.tool.service;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.broadcast.BroadcastFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.broadcast.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.broadcast.tool.model.BroadcastWorkflowRequest;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +37,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class BroadcastWorkflowValidationServiceTest {
@@ -63,57 +57,34 @@ class BroadcastWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateRejectsDifferentSession() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
-        workflowSessionContext.save(createSnapshot("plan-1", "session-1", "executed", "create"));
-        Map<String, Object> actual = service.validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), "session-2", workflowSessionContext.getRequired("plan-1"));
-        assertThat(actual.get("status"), is("failed"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
-    }
-    
-    @Test
     void assertValidateHappyPath() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        workflowSessionContext.save(snapshot);
         BroadcastRuleInspectionService ruleInspectionService = getRuleInspectionService();
         when(ruleInspectionService.queryBroadcastRules(any(), any())).thenReturn(List.of(Map.of("broadcast_table", "t_order")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.isSameIdentifier("logic_db", IdentifierScope.TABLE, "t_order", "t_order")).thenReturn(true);
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
-        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = service.validate(snapshot, queryFacade).toMap();
         assertThat(actual.get("overall_status"), is("passed"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
-        verifyNoInteractions(metadataQueryFacade);
-        verifyNoInteractions(executionFacade);
     }
     
     @Test
     void assertValidateDropWorkflowAfterRuleRemoval() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
-        workflowSessionContext.save(snapshot);
         BroadcastRuleInspectionService ruleInspectionService = getRuleInspectionService();
         when(ruleInspectionService.queryBroadcastRules(any(), any())).thenReturn(List.of());
-        Map<String, Object> actual = service.validate(
-                workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("validated"));
+        Map<String, Object> actual = service.validate(snapshot, createQueryFacade()).toMap();
+        assertThat(actual.get("overall_status"), is("passed"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("passed"));
     }
     
     @Test
     void assertValidateWhenRuleMismatch() {
-        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        workflowSessionContext.save(snapshot);
         BroadcastRuleInspectionService ruleInspectionService = getRuleInspectionService();
         when(ruleInspectionService.queryBroadcastRules(any(), any())).thenReturn(List.of());
-        Map<String, Object> actual = service.validate(
-                workflowSessionContext, mock(MCPMetadataQueryFacade.class), createQueryFacade(), mock(MCPFeatureExecutionFacade.class), "session-1", snapshot);
-        assertThat(actual.get("status"), is("failed"));
+        Map<String, Object> actual = service.validate(snapshot, createQueryFacade()).toMap();
+        assertThat(actual.get("overall_status"), is("failed"));
         assertThat(getValidationSection(actual, "rule").get("status"), is("failed"));
     }
     

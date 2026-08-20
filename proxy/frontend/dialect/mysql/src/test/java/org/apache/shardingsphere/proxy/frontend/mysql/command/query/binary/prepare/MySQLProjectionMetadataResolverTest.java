@@ -81,8 +81,7 @@ class MySQLProjectionMetadataResolverTest {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         int expectedCharacterSet = MySQLCharacterSets.UTF8MB4_UNICODE_CI.getId();
-        Collection<MySQLPacket> actual = MySQLProjectionMetadataResolver.resolveProjectionPackets(
-                connectionSession, serverPreparedStatement, selectStatementContext, expectedCharacterSet);
+        Collection<MySQLPacket> actual = MySQLProjectionMetadataResolver.resolveProjectionPackets(connectionSession, serverPreparedStatement, selectStatementContext, expectedCharacterSet);
         assertThat(actual.size(), is(1));
         MySQLPacketPayload payload = createPayload((MySQLColumnDefinition41Packet) actual.iterator().next());
         skipColumnDefinitionStrings(payload);

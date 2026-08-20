@@ -54,6 +54,11 @@ public final class SingleDataNodeRuleAttribute implements DataNodeRuleAttribute 
     }
     
     @Override
+    public boolean isDataNodeTableNameLoadedFromStorage() {
+        return true;
+    }
+    
+    @Override
     public Optional<String> findFirstActualTable(final String logicTable) {
         return Optional.empty();
     }

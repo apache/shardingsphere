@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.packages.ExpectedPackage;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Alter package statement test case.
  */
+@Getter
+@Setter
 public final class AlterPackageStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "package")
+    private ExpectedPackage packageName;
 }

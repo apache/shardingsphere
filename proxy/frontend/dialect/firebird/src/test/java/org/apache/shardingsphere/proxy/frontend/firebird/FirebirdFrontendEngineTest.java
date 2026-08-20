@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
-import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -29,11 +28,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.FirebirdAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -54,8 +49,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxyContext.class, FirebirdStatementIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdBlobIdGenerator.class, FirebirdBlobWriteCache.class,
-        FirebirdConnectionProtocolVersion.class, FirebirdFetchStatementCache.class})
+@StaticMockSettings({ProxyContext.class, FirebirdConnectionResourceManager.class})
 class FirebirdFrontendEngineTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
@@ -64,6 +58,9 @@ class FirebirdFrontendEngineTest {
     
     @Mock
     private ConnectionSession connectionSession;
+    
+    @Mock
+    private FirebirdConnectionResourceManager connectionResourceManager;
     
     @Test
     void assertGetAuthenticationEngine() {
@@ -84,13 +81,9 @@ class FirebirdFrontendEngineTest {
     void assertRelease() {
         int connectionId = 1;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(FirebirdConnectionResourceManager.getInstance()).thenReturn(connectionResourceManager);
         engine.release(connectionSession);
-        verify(FirebirdStatementIdGenerator.getInstance()).unregisterConnection(connectionId);
-        verify(FirebirdTransactionIdGenerator.getInstance()).unregisterConnection(connectionId);
-        verify(FirebirdBlobIdGenerator.getInstance()).unregisterConnection(connectionId);
-        verify(FirebirdBlobWriteCache.getInstance()).unregisterConnection(connectionId);
-        verify(FirebirdConnectionProtocolVersion.getInstance()).unsetProtocolVersion(connectionId);
-        verify(FirebirdFetchStatementCache.getInstance()).unregisterConnection(connectionId);
+        verify(connectionResourceManager).unregisterConnection(connectionId);
     }
     
     @ParameterizedTest(name = "{0}")

@@ -21,7 +21,10 @@ import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
+import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 import org.junit.jupiter.api.Test;
@@ -34,6 +37,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,14 +53,31 @@ class WorkflowValidationToolHandlerTest {
     @Test
     void assertHandle() {
         MCPWorkflowRuntimeHandler workflowRuntimeHandler = mock(MCPWorkflowRuntimeHandler.class);
-        when(workflowRuntimeHandler.validate(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "validated"));
+        ValidationReport validationReport = new ValidationReport();
+        validationReport.setOverallStatus(WorkflowLifecycle.STATUS_PASSED);
+        when(workflowRuntimeHandler.validate(any(), any())).thenReturn(validationReport);
         WorkflowContextSnapshot snapshot = WorkflowHandlerTestFixture.createSnapshot();
+        snapshot.setStatus(WorkflowLifecycle.STATUS_EXECUTED);
         WorkflowHandlerTestFixture.Context fixture = WorkflowHandlerTestFixture.createContext(snapshot);
         WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
                 WorkflowHandlerTestFixture.createDefinition("encrypt.rule", workflowRuntimeHandler, MCPWorkflowApplyArtifactValidator.NO_OP))));
         MCPSuccessPayload actual = handler.handle(fixture.requestContext(), Map.of("plan_id", "plan-1"));
-        verify(workflowRuntimeHandler).validate(eq(fixture.workflowSessionContext()), eq(fixture.metadataQueryFacade()),
-                eq(fixture.queryFacade()), eq(fixture.executionFacade()), eq("session-1"), eq(snapshot));
+        verify(workflowRuntimeHandler).validate(eq(snapshot), eq(fixture.queryFacade()));
         assertThat(actual.toPayload().get("status"), is("validated"));
+    }
+    
+    @Test
+    void assertHandleRejectsDifferentSession() {
+        MCPWorkflowRuntimeHandler workflowRuntimeHandler = mock(MCPWorkflowRuntimeHandler.class);
+        WorkflowContextSnapshot snapshot = WorkflowHandlerTestFixture.createSnapshot();
+        snapshot.setSessionId("session-2");
+        snapshot.setStatus(WorkflowLifecycle.STATUS_EXECUTED);
+        WorkflowHandlerTestFixture.Context fixture = WorkflowHandlerTestFixture.createContext(snapshot);
+        WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
+                WorkflowHandlerTestFixture.createDefinition("encrypt.rule", workflowRuntimeHandler, MCPWorkflowApplyArtifactValidator.NO_OP))));
+        MCPSuccessPayload actual = handler.handle(fixture.requestContext(), Map.of("plan_id", "plan-1"));
+        assertThat(actual.toPayload().get("status"), is(WorkflowLifecycle.STATUS_FAILED));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("issues")).getFirst()).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
+        verify(workflowRuntimeHandler, never()).validate(any(), any());
     }
 }

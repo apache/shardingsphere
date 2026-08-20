@@ -23,6 +23,9 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.fixture.ShardingRouteEngineFixtureBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
@@ -31,7 +34,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,6 +69,25 @@ class ShardingComplexRouteEngineTest {
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+    }
+    
+    @Test
+    void assertRoutingForMultipleShardingTables() {
+        ShardingCondition shardingCondition = new ShardingCondition();
+        shardingCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_order", Collections.singleton(1L)));
+        shardingCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_user", Collections.singleton(1L)));
+        ShardingConditions shardingConditions = new ShardingConditions(
+                Collections.singletonList(shardingCondition), mock(SQLStatementContext.class), mock(ShardingRule.class));
+        ShardingComplexRouteEngine routeEngine = new ShardingComplexRouteEngine(shardingConditions,
+                mock(SQLStatementContext.class), new HintValueContext(), new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_user"));
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createAllShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeUnits.size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        Map<String, String> actualTableNames = routeUnits.get(0).getTableMappers().stream().collect(Collectors.toMap(each -> each.getLogicName(), each -> each.getActualName()));
+        assertThat(actualTableNames.size(), is(2));
+        assertThat(actualTableNames.get("t_order"), is("t_order_1"));
+        assertThat(actualTableNames.get("t_user"), is("t_user_1"));
     }
     
     @Test

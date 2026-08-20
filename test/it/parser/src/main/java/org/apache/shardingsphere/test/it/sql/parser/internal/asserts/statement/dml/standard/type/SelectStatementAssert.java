@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
@@ -45,7 +47,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.whe
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.window.WindowClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.transform.ExpectedTransformSegment;
 
+import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -83,6 +87,9 @@ public final class SelectStatementAssert {
         assertIntoClause(assertContext, actual, expected);
         assertOutfileClause(assertContext, actual, expected);
         assertSubqueryType(assertContext, actual, expected);
+        assertVariableNames(assertContext, actual, expected);
+        assertTransformSegments(assertContext, actual, expected);
+        assertRewriteTableNames(assertContext, actual, expected);
     }
     
     private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
@@ -121,6 +128,11 @@ public final class SelectStatementAssert {
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (null != expected.getWhereExpressionType()) {
+            assertTrue(actual.getWhere().isPresent(), assertContext.getText("Actual where segment should exist."));
+            assertThat(assertContext.getText("Where expression type assertion error: "), actual.getWhere().get().getExpr().getClass().getSimpleName(), is(expected.getWhereExpressionType()));
+            return;
+        }
         if (null == expected.getWhereClause()) {
             assertFalse(actual.getWhere().isPresent(), assertContext.getText("Actual where segment should not exist."));
         } else {
@@ -238,5 +250,36 @@ public final class SelectStatementAssert {
         }
         assertTrue(actual.getSubqueryType().isPresent(), assertContext.getText("Actual subquery type should exist."));
         assertThat(assertContext.getText("Subquery type assertion error: "), actual.getSubqueryType().get().name(), is(expected.getSubqueryType()));
+    }
+    
+    private static void assertVariableNames(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        for (String each : expected.getVariableNames()) {
+            assertTrue(actual.getVariableNames().contains(each), assertContext.getText("Variable name should exist: " + each));
+        }
+    }
+    
+    private static void assertTransformSegments(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (expected.getTransformSegments().isEmpty()) {
+            return;
+        }
+        assertThat(assertContext.getText("Transform segments size assertion error: "), actual.getTransformSegments().size(), is(expected.getTransformSegments().size()));
+        Iterator<FunctionSegment> actualIterator = actual.getTransformSegments().iterator();
+        for (ExpectedTransformSegment each : expected.getTransformSegments()) {
+            FunctionSegment actualSegment = actualIterator.next();
+            assertThat(assertContext.getText("Transform function name assertion error: "), actualSegment.getFunctionName(), is(each.getFunctionName()));
+            assertThat(assertContext.getText("Transform parameters size assertion error: "), actualSegment.getParameters().size(), is(each.getParameterCount()));
+        }
+    }
+    
+    private static void assertRewriteTableNames(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (expected.getRewriteTableNames().isEmpty()) {
+            return;
+        }
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromSelect(actual);
+        for (String each : expected.getRewriteTableNames()) {
+            assertTrue(tableExtractor.getRewriteTables().stream().anyMatch(table -> each.equals(table.getTableName().getIdentifier().getValue())),
+                    assertContext.getText("Rewrite table should exist: " + each));
+        }
     }
 }

@@ -300,11 +300,15 @@
     <sql-case id="select_cosine_distance_from_table" value="SELECT COSINE_DISTANCE([1, 2], [2, 3]) FROM t_order" db-types="Doris" />
     <sql-case id="select_cosine_distance_empty_array" value="SELECT COSINE_DISTANCE([], [])" db-types="Doris" />
     <sql-case id="select_cosine_distance_single_element" value="SELECT COSINE_DISTANCE([1], [2])" db-types="Doris" />
+    <sql-case id="select_array_first" value="SELECT array_first(x -> x >= 3, [1.1, 2.2, 3.3, 4.4, 5.5])" db-types="Doris" />
+    <sql-case id="select_array_first_with_multiple_parameters" value="SELECT array_first((x, y) -> x > y, [1, 2, 3, 4, 5], [1.1, 2.2, 3.3, 4.4, 5.5])" db-types="Doris" />
+    <sql-case id="select_array_first_with_empty_array" value="SELECT array_first(x -> x > 0, [])" db-types="Doris" />
+    <sql-case id="select_cast_to_doris_types" value="SELECT CAST(1 AS LARGEINT), CAST('2024-01-01' AS DATETIMEV2(3))" db-types="Doris" />
     <sql-case id="select_last_insert_id" value="SELECT LAST_INSERT_ID()" db-types="MySQL" />
     <sql-case id="select_last_value" value="SELECT LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE) from TEST" db-types="MySQL" />
     <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
-    <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />
+    <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL,Doris" />
     <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
     <sql-case id="select_localtime" value="SELECT LOCALTIME()" db-types="MySQL" />
     <sql-case id="select_localtimestamp" value="SELECT LOCALTIMESTAMP()" db-types="MySQL" />

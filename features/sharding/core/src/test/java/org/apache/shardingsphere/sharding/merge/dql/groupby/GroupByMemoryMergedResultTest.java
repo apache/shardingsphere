@@ -57,6 +57,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -209,7 +210,7 @@ class GroupByMemoryMergedResultTest {
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getSchema("foo_db")).thenReturn(schema);
+        when(database.findDefaultSchema()).thenReturn(Optional.of(schema));
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         ShardingDQLResultMerger merger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(database), database, mock(ConnectionContext.class));

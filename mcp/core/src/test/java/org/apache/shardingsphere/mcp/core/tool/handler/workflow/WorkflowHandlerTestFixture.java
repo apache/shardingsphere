@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -42,16 +41,14 @@ final class WorkflowHandlerTestFixture {
     static Context createContext(final WorkflowContextSnapshot snapshot) {
         MCPFeatureRequestContext result = mock(MCPFeatureRequestContext.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
-        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(result.getSessionIdentity()).thenReturn(new MCPSessionIdentity("session-1", "", "", Map.of()));
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(result.getQueryFacade()).thenReturn(queryFacade);
         when(result.getExecutionFacade()).thenReturn(executionFacade);
         when(workflowSessionContext.getRequired("plan-1")).thenReturn(snapshot);
-        return new Context(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
+        return new Context(result, workflowSessionContext, queryFacade, executionFacade);
     }
     
     static WorkflowContextSnapshot createSnapshot() {
@@ -77,6 +74,6 @@ final class WorkflowHandlerTestFixture {
     }
     
     record Context(MCPFeatureRequestContext requestContext, WorkflowSessionContext workflowSessionContext,
-                   MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
+                   MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade) {
     }
 }

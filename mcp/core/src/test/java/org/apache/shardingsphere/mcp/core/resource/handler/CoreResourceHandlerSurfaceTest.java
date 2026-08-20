@@ -34,10 +34,10 @@ import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCa
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.MetadataResourceHandler;
-import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.support.database.payload.MCPDatabaseCapabilityPayload;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPItemsPayload;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplate;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -147,7 +147,7 @@ class CoreResourceHandlerSurfaceTest {
     }
     
     private MCPResourceURIVariables parseUriVariables(final String uriTemplate, final String resourceUri) {
-        return new MCPUriPattern(uriTemplate).parse(resourceUri).orElseThrow();
+        return new MCPUriTemplate(uriTemplate).parse(resourceUri).orElseThrow();
     }
     
     private <T extends MCPRequestContext> MCPSuccessPayload handle(final MCPResourceHandler<T> handler,

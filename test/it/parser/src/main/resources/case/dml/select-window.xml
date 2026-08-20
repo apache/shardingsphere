@@ -17,6 +17,27 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_catalog_window_aggregation">
+        <projections start-index="7" stop-index="93">
+            <aggregation-projection type="MAX" expression="pg_catalog.max(ref_0.c36) over (partition by ref_0.c39 order by ref_0.vkey desc)" alias="c_5" start-index="7" stop-index="86">
+                <window-item start-index="38" stop-index="86">
+                    <partition-by>
+                        <column name="c39" start-index="52" stop-index="60">
+                            <owner name="ref_0" start-index="52" stop-index="56" />
+                        </column>
+                    </partition-by>
+                    <order-by start-index="62" stop-index="85">
+                        <column-item name="vkey" order-direction="DESC" start-index="71" stop-index="80">
+                            <owner name="ref_0" start-index="71" stop-index="75" />
+                        </column-item>
+                    </order-by>
+                </window-item>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t24" alias="ref_0" start-index="100" stop-index="111" />
+        </from>
+    </select>
     <select sql-case-id="select_window" parameters="1">
         <projections start-index="7" stop-index="112">
             <column-projection name="user_id" start-index="7" stop-index="13" />
@@ -376,6 +397,40 @@
         </projections>
         <from>
             <simple-table name="t_order" start-index="70" stop-index="76" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_funnel_over_doris">
+        <projections start-index="7" stop-index="79">
+            <expression-projection text="WINDOW_FUNNEL(3600, 'default', v, k = 1) OVER (PARTITION BY k ORDER BY v)" start-index="7" stop-index="79">
+                <expr>
+                    <function function-name="WINDOW_FUNNEL" start-index="7" stop-index="79" text="WINDOW_FUNNEL(3600, 'default', v, k = 1) OVER (PARTITION BY k ORDER BY v)">
+                        <parameter>
+                            <literal-expression start-index="21" stop-index="24" value="3600" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="27" stop-index="35" value="default" />
+                        </parameter>
+                        <parameter>
+                            <column name="v" start-index="38" stop-index="38" />
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="41" stop-index="45">
+                                <left>
+                                    <column name="k" start-index="41" stop-index="41" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression start-index="45" stop-index="45" value="1" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="86" stop-index="92" />
         </from>
     </select>
 

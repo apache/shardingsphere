@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,6 +39,9 @@ import java.util.List;
 @Getter
 @Setter
 public final class CreateTableStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute
+    private Boolean temporary;
     
     @XmlElement
     private ExpectedSimpleTable table;

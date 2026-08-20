@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.TypeRef;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
@@ -52,7 +53,7 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     
     private static final String INITIALIZE_REQUEST_ID = "init-1";
     
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final McpJsonMapper JSON_MAPPER = MCPTransportJsonMapperFactory.create();
     
     private final List<String> stdErrorMessages = new CopyOnWriteArrayList<>();
     
@@ -153,7 +154,7 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     }
     
     private void writeJsonRpcMessage(final Map<String, Object> payload) throws IOException {
-        writer.write(OBJECT_MAPPER.writeValueAsString(payload));
+        writer.write(JSON_MAPPER.writeValueAsString(payload));
         writer.newLine();
         writer.flush();
     }
@@ -165,7 +166,7 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
             if (line.isBlank()) {
                 continue;
             }
-            Map<String, Object> result = OBJECT_MAPPER.readValue(line, new TypeReference<>() {
+            Map<String, Object> result = JSON_MAPPER.readValue(line, new TypeRef<>() {
             });
             if (requestId.equals(String.valueOf(result.get("id")))) {
                 return result;

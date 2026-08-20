@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.outfile.ExpectedOutfileClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.transform.ExpectedTransformSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.union.ExpectedCombine;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.where.ExpectedWhereClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.window.ExpectedWindowClause;
@@ -36,6 +37,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Select statement test case.
@@ -49,6 +52,9 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute(name = "subquery-type")
     private String subqueryType;
+    
+    @XmlAttribute(name = "where-expression-type")
+    private String whereExpressionType;
     
     @XmlElement
     private final ExpectedProjections projections = new ExpectedProjections();
@@ -91,4 +97,13 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "outfile")
     private ExpectedOutfileClause outfileClause;
+    
+    @XmlElement(name = "variable-name")
+    private final List<String> variableNames = new LinkedList<>();
+    
+    @XmlElement(name = "transform")
+    private final List<ExpectedTransformSegment> transformSegments = new LinkedList<>();
+    
+    @XmlElement(name = "rewrite-table-name")
+    private final List<String> rewriteTableNames = new LinkedList<>();
 }

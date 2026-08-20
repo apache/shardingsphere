@@ -32,17 +32,20 @@ alterStatement
     | alterCatalog
     | alterStoragePolicy
     | alterColocateGroup
+    // DORIS ADDED BEGIN
+    | alterWorkloadGroup
+    // DORIS ADDED END
     ;
 
 createTable
     // DORIS CHANGED BEGIN
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? startTransaction? duplicatekeyClause? commentClause? distributedbyClause? propertiesClause? | createLikeClause)
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? duplicatekeyClause? commentClause? partitionClause? distributedbyClause? propertiesClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
     // DORIS CHANGED END
     ;
 
 // DORIS ADDED BEGIN
 duplicatekeyClause
-    : DUPLICATE KEY (LP_ columnName RP_)
+    : (DUPLICATE | UNIQUE | AGGREGATE) KEY LP_ columnNames RP_
     ;
 
 commentClause
@@ -172,6 +175,12 @@ alterStoragePolicy
 alterColocateGroup
     : ALTER COLOCATE GROUP (databaseName DOT_)? identifier SET LP_ properties RP_
     ;
+
+// DORIS ADDED BEGIN
+alterWorkloadGroup
+    : ALTER WORKLOAD GROUP identifier propertiesClause
+    ;
+// DORIS ADDED END
 
 tableConstraintDef
     : keyOrIndex indexName? indexTypeClause? keyListWithExpression indexOption*
@@ -317,9 +326,18 @@ createDatabase
 alterDatabase
     : ALTER (DATABASE | SCHEMA) databaseName? alterDatabaseSpecification_*
     | ALTER (DATABASE | SCHEMA) databaseName RENAME identifier
-    | ALTER (DATABASE | SCHEMA) databaseName SET (DATA | REPLICA | TRANSACTION) QUOTA NUMBER_
+    // DORIS CHANGED BEGIN
+    | ALTER (DATABASE | SCHEMA) databaseName SET DATA QUOTA dataQuotaValue
+    | ALTER (DATABASE | SCHEMA) databaseName SET (REPLICA | TRANSACTION) QUOTA NUMBER_
+    // DORIS CHANGED END
     | ALTER (DATABASE | SCHEMA) databaseName SET PROPERTIES LP_ properties RP_
     ;
+
+// DORIS ADDED BEGIN
+dataQuotaValue
+    : FILESIZE_LITERAL | NUMBER_ | IDENTIFIER_
+    ;
+// DORIS ADDED END
 
 createDatabaseSpecification_
     : defaultCharset

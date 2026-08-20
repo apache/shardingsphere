@@ -27,9 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -247,16 +246,6 @@ class MySQLPacketPayloadTest {
     void assertWriteBytes() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeBytes("value".getBytes());
         verify(byteBuf).writeBytes("value".getBytes());
-    }
-    
-    @Test
-    void assertReadStringVar() {
-        assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringVar(), is(""));
-    }
-    
-    @Test
-    void assertWriteStringVar() {
-        assertDoesNotThrow(() -> new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeStringVar(""));
     }
     
     @Test

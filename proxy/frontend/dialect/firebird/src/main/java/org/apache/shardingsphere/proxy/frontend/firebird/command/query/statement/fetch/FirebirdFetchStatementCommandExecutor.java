@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch;
 
-import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdBinaryRowBuilder;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Firebird fetch statement command executor.
@@ -77,7 +72,7 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
         fetchCount--;
         if (0 <= fetchCount) {
             if (proxyBackendHandler.next()) {
-                BinaryRow row = createBinaryRow(proxyBackendHandler.getRowData());
+                BinaryRow row = FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData());
                 return FirebirdFetchResponsePacket.getFetchRowPacket(row);
             } else {
                 connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
@@ -88,11 +83,4 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
         return FirebirdFetchResponsePacket.getFetchEndPacket();
     }
     
-    private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
-        List<BinaryCell> result = new ArrayList<>(queryResponseRow.getCells().size());
-        for (QueryResponseCell each : queryResponseRow.getCells()) {
-            result.add(new BinaryCell(FirebirdBinaryColumnType.valueOfJDBCType(each.getJdbcType()), each.getData()));
-        }
-        return new BinaryRow(result);
-    }
 }
