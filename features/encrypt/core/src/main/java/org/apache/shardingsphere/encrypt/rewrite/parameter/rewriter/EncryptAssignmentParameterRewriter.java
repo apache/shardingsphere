@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -69,11 +69,12 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
+        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType());
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> databaseTypeRegistry.getDefaultSchemaName(databaseName));
+        DialectDatabaseMetaData dialectDatabaseMetaData = databaseTypeRegistry.getDialectDatabaseMetaData();
         for (ColumnAssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             ColumnSegment assignedColumn = each.getColumns().get(0);
-            if (isTableVariableBoundColumn(assignedColumn, sqlStatementContext.getSqlStatement().getDatabaseType())) {
+            if (isTableVariableBoundColumn(assignedColumn, dialectDatabaseMetaData)) {
                 continue;
             }
             String columnName = assignedColumn.getIdentifier().getValue();
@@ -101,9 +102,9 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         return ((UpdateStatement) sqlStatement).getSetAssignment();
     }
     
-    private boolean isTableVariableBoundColumn(final ColumnSegment columnSegment, final DatabaseType databaseType) {
+    private boolean isTableVariableBoundColumn(final ColumnSegment columnSegment, final DialectDatabaseMetaData dialectDatabaseMetaData) {
         IdentifierValue originalTable = columnSegment.getColumnBoundInfo().getOriginalTable();
-        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isTableVariableIdentifier(originalTable.getValue(), originalTable.getQuoteCharacter());
+        return dialectDatabaseMetaData.isTableVariableIdentifier(originalTable.getValue(), originalTable.getQuoteCharacter());
     }
     
     private void encryptParameters(final StandardParameterBuilder paramBuilder, final String schemaName,

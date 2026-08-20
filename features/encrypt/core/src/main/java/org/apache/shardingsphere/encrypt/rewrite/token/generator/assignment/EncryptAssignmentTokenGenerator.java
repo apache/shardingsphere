@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.assignment;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.enums.EncryptDerivedColumnSuffix;
@@ -73,10 +74,11 @@ public final class EncryptAssignmentTokenGenerator {
         Collection<SQLToken> result = new LinkedList<>();
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
         String schemaName = tablesContext.getSchemaName().orElseGet(() -> databaseTypeRegistry.getDefaultSchemaName(database.getName()));
-        QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
+        DialectDatabaseMetaData dialectDatabaseMetaData = databaseTypeRegistry.getDialectDatabaseMetaData();
+        QuoteCharacter quoteCharacter = dialectDatabaseMetaData.getQuoteCharacter();
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             ColumnSegment assignedColumn = getAssignedColumn(each);
-            if (isTableVariableBoundColumn(assignedColumn)) {
+            if (isTableVariableBoundColumn(assignedColumn, dialectDatabaseMetaData)) {
                 continue;
             }
             findEncryptTable(assignedColumn).ifPresent(encryptTable -> {
@@ -152,9 +154,9 @@ public final class EncryptAssignmentTokenGenerator {
         return rule.findEncryptTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
     }
     
-    private boolean isTableVariableBoundColumn(final ColumnSegment columnSegment) {
+    private boolean isTableVariableBoundColumn(final ColumnSegment columnSegment, final DialectDatabaseMetaData dialectDatabaseMetaData) {
         IdentifierValue originalTable = columnSegment.getColumnBoundInfo().getOriginalTable();
-        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isTableVariableIdentifier(originalTable.getValue(), originalTable.getQuoteCharacter());
+        return dialectDatabaseMetaData.isTableVariableIdentifier(originalTable.getValue(), originalTable.getQuoteCharacter());
     }
     
     private void appendEncryptColumnTokens(final ColumnSegment leftColumn, final EncryptColumn encryptColumn, final EncryptColumnConsumer consumer) {
