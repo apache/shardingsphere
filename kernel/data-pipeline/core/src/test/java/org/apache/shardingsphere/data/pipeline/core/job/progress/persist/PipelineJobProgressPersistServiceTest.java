@@ -55,7 +55,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({PipelineJobRegistry.class, ThreadLocalRandom.class})
+@StaticMockSettings(PipelineJobRegistry.class)
 class PipelineJobProgressPersistServiceTest {
     
     @SuppressWarnings("unchecked")
@@ -114,7 +114,6 @@ class PipelineJobProgressPersistServiceTest {
         when(jobOption.getYamlJobItemProgressSwapper()).thenReturn(null);
         when(jobType.getOption()).thenReturn(jobOption);
         when(jobType.getType()).thenReturn("TEST");
-        mockThreadLocalRandom(0);
         try (
                 MockedStatic<PipelineJobIdUtils> jobIdUtilsMock = mockStatic(PipelineJobIdUtils.class);
                 MockedStatic<TypedSPILoader> typedSpiLoaderStatic = mockStatic(TypedSPILoader.class);
@@ -138,8 +137,8 @@ class PipelineJobProgressPersistServiceTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    void assertPersistNowUpdatesProgressWhenJobItemContextPresentWithoutLogging() {
-        String jobId = "foo_id_success_no_log";
+    void assertPersistNowUpdatesProgressWhenJobItemContextPresent() {
+        String jobId = "foo_id_success";
         int shardingItem = 1;
         PipelineJobProgressPersistService.add(jobId, shardingItem);
         PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
@@ -150,35 +149,6 @@ class PipelineJobProgressPersistServiceTest {
         when(jobOption.getYamlJobItemProgressSwapper()).thenReturn(null);
         when(jobType.getOption()).thenReturn(jobOption);
         when(jobType.getType()).thenReturn("TEST");
-        mockThreadLocalRandom(0);
-        try (
-                MockedStatic<PipelineJobIdUtils> jobIdUtilsMock = mockStatic(PipelineJobIdUtils.class);
-                MockedStatic<TypedSPILoader> typedSpiLoaderStatic = mockStatic(TypedSPILoader.class);
-                MockedConstruction<PipelineJobItemManager> mockedConstruction = mockConstruction(PipelineJobItemManager.class,
-                        (mock, context) -> doNothing().when(mock).updateProgress(jobItemContext))) {
-            jobIdUtilsMock.when(() -> PipelineJobIdUtils.parseJobType(jobId)).thenReturn(jobType);
-            typedSpiLoaderStatic.when(() -> TypedSPILoader.getService(PipelineJobType.class, "TEST")).thenReturn(jobType);
-            PipelineJobProgressPersistService.persistNow(jobId, shardingItem);
-            assertThat(getJobProgressPersistMap().get(jobId).get(shardingItem).getUnhandledEventCount().get(), is(0L));
-            verify(mockedConstruction.constructed().get(0)).updateProgress(jobItemContext);
-        }
-    }
-    
-    @SuppressWarnings("rawtypes")
-    @Test
-    void assertPersistNowUpdatesProgressWhenLoggingEnabled() {
-        String jobId = "foo_id_success_log";
-        int shardingItem = 1;
-        PipelineJobProgressPersistService.add(jobId, shardingItem);
-        PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
-        PipelineJobItemContext jobItemContext = mock(PipelineJobItemContext.class);
-        when(PipelineJobRegistry.getItemContext(jobId, shardingItem)).thenReturn(Optional.of(jobItemContext));
-        PipelineJobType<?> jobType = mock(PipelineJobType.class);
-        PipelineJobOption jobOption = mock(PipelineJobOption.class);
-        when(jobOption.getYamlJobItemProgressSwapper()).thenReturn(null);
-        when(jobType.getOption()).thenReturn(jobOption);
-        when(jobType.getType()).thenReturn("TEST");
-        mockThreadLocalRandom(6);
         try (
                 MockedStatic<PipelineJobIdUtils> jobIdUtilsMock = mockStatic(PipelineJobIdUtils.class);
                 MockedStatic<TypedSPILoader> typedSpiLoaderStatic = mockStatic(TypedSPILoader.class);
@@ -211,19 +181,15 @@ class PipelineJobProgressPersistServiceTest {
         PipelineJobProgressPersistContext persistContext = getJobProgressPersistMap().get(jobId).get(shardingItem);
         persistContext.getUnhandledEventCount().set(-1L);
         when(PipelineJobRegistry.getItemContext(jobId, shardingItem)).thenReturn(Optional.empty());
-        ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
-        when(ThreadLocalRandom.current()).thenReturn(randomMock);
-        when(randomMock.nextInt(60)).thenReturn(5, 4);
         assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
-        assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
-        assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
-        verify(randomMock, times(2)).nextInt(60);
         assertTrue(persistContext.getFirstExceptionLogged().get());
-    }
-    
-    private void mockThreadLocalRandom(final int nextIntValue) {
-        ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
-        when(ThreadLocalRandom.current()).thenReturn(randomMock);
-        when(randomMock.nextInt(100)).thenReturn(nextIntValue);
+        try (MockedStatic<ThreadLocalRandom> ignored = mockStatic(ThreadLocalRandom.class)) {
+            ThreadLocalRandom randomMock = mock(ThreadLocalRandom.class);
+            when(ThreadLocalRandom.current()).thenReturn(randomMock);
+            when(randomMock.nextInt(60)).thenReturn(5, 4);
+            assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
+            assertDoesNotThrow(() -> PipelineJobProgressPersistService.persistNow(jobId, shardingItem));
+            verify(randomMock, times(2)).nextInt(60);
+        }
     }
 }
