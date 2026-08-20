@@ -160,7 +160,7 @@ class InsertClauseShardingConditionEngineTest {
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
         assertFalse(shardingConditions.get(0).getValues().isEmpty());
     }
-
+    
     @Test
     void assertCreateShardingConditionsWithoutDefaultSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
