@@ -31,10 +31,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -148,6 +152,17 @@ class ConditionValueCompareOperatorGeneratorTest {
     }
     
     @SuppressWarnings("unchecked")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("rightColumnComparisonArguments")
+    void assertGenerateConditionValueWithRightColumn(final String name, final String operator, final Range<Integer> expectedRange) {
+        BinaryOperationExpression predicate = new BinaryOperationExpression(
+                0, 0, new LiteralExpressionSegment(0, 0, 1), mock(ColumnSegment.class), operator, null);
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class));
+        assertTrue(actual.isPresent());
+        assertThat(((RangeShardingConditionValue<Integer>) actual.get()).getValueRange(), is(expectedRange));
+    }
+    
+    @SuppressWarnings("unchecked")
     @Test
     void assertGenerateConditionValueWithGreaterThanOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), ">", null);
@@ -222,5 +237,13 @@ class ConditionValueCompareOperatorGeneratorTest {
         BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, right, "=", "order_id = ?");
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class));
         assertFalse(actual.isPresent());
+    }
+    
+    private static Stream<Arguments> rightColumnComparisonArguments() {
+        return Stream.of(
+                Arguments.of("less than", "<", Range.greaterThan(1)),
+                Arguments.of("at most", "<=", Range.atLeast(1)),
+                Arguments.of("greater than", ">", Range.lessThan(1)),
+                Arguments.of("at least", ">=", Range.atMost(1)));
     }
 }

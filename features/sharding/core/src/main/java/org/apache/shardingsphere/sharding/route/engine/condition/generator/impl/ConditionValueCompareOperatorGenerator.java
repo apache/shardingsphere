@@ -74,6 +74,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             right = unwrapBinaryOperator(right);
         }
         ExpressionSegment valueExpression = left instanceof ColumnSegment ? right : left;
+        operator = !(left instanceof ColumnSegment) && right instanceof ColumnSegment ? reverseOperator(operator) : operator;
         ConditionValue conditionValue = new ConditionValue(valueExpression, params);
         if (conditionValue.isNull()) {
             return generate(null, column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
@@ -114,6 +115,21 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     
     private boolean isSupportedOperator(final String operator) {
         return OPERATORS.contains(operator);
+    }
+    
+    private String reverseOperator(final String operator) {
+        switch (operator) {
+            case GREATER_THAN:
+                return LESS_THAN;
+            case LESS_THAN:
+                return GREATER_THAN;
+            case AT_MOST:
+                return AT_LEAST;
+            case AT_LEAST:
+                return AT_MOST;
+            default:
+                return operator;
+        }
     }
     
     private ExpressionSegment unwrapBinaryOperator(final ExpressionSegment segment) {
