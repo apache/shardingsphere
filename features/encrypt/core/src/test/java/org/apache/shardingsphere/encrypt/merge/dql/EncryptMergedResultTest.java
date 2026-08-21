@@ -125,6 +125,24 @@ class EncryptMergedResultTest {
     }
     
     @Test
+    void assertGetValueWithEncryptColumnAndDatabaseDefaultSchema() throws SQLException {
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(
+                new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"),
+                TableSourceType.PHYSICAL_TABLE);
+        when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
+        when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
+        when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_default_schema", "foo_tbl", "foo_col")))).thenReturn("foo_decrypted_value");
+        EncryptRule rule = mockRule(encryptAlgorithm);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(mergedResult.getValue(1, Object.class)).thenReturn("foo_value");
+        assertThat(new EncryptMergedResult(database, mock(ShardingSphereMetaData.class), selectStatementContext, mergedResult).getValue(1, String.class), is("foo_decrypted_value"));
+    }
+    
+    @Test
     void assertGetValueFailed() throws SQLException {
         ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(
                 new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")), new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"),
