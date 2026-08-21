@@ -80,6 +80,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Tr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -218,7 +219,12 @@ class ProxySQLExecutorTest {
     @Test
     void assertConstructorUseDefaultSchemaWhenSchemaMissing() {
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
-        assertNotNull(createProxySQLExecutor("foo_schema", false).getSqlFederationEngine());
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        try (
+                MockedConstruction<SQLFederationEngine> ignored = mockConstruction(SQLFederationEngine.class,
+                        (mock, context) -> assertThat(context.arguments().get(1), is("foo_default_schema")))) {
+            assertNotNull(createProxySQLExecutor("foo_schema", false).getSqlFederationEngine());
+        }
     }
     
     @ParameterizedTest(name = "{0}")
