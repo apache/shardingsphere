@@ -55,6 +55,11 @@ class OracleProjectionIdentifierExtractorTest {
     }
     
     @Test
+    void assertGetColumnNameFromNullTextExpression() {
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, null)), is(""));
+    }
+    
+    @Test
     void assertGetColumnNameFromStringLiteralExpression() {
         assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 7, "EXTMSG", new LiteralExpressionSegment(0, 7, "EXTMSG"))), is("'EXTMSG'"));
     }
