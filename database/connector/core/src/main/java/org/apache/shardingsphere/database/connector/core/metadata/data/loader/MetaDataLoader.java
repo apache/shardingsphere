@@ -25,15 +25,23 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.loader.ty
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -77,6 +85,7 @@ public final class MetaDataLoader {
             }
             throw new SQLException(ex);
         }
+        checkMissingTables(materials, result);
         return result;
     }
     
@@ -87,7 +96,7 @@ public final class MetaDataLoader {
             try {
                 result = dialectLoader.get().load(material);
             } catch (final SQLException ex) {
-                log.debug("{} Dialect load schema meta data error, load by default.", material.getStorageType(), ex);
+                log.warn("{} Dialect load schema meta data error, load by default.", material.getStorageType(), ex);
                 result = loadByDefault(material);
             }
         } else {
@@ -114,5 +123,60 @@ public final class MetaDataLoader {
             SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedList<>()));
             schemaMetaData.getTables().addAll(each.getTables());
         }
+    }
+    
+    private static void checkMissingTables(final Collection<MetaDataLoaderMaterial> materials, final Map<String, SchemaMetaData> result) {
+        Map<String, Set<String>> expectedByStorageUnit = new LinkedHashMap<>(materials.size(), 1F);
+        Map<String, Map<String, String>> normalizedToOriginalByStorageUnit = new LinkedHashMap<>(materials.size(), 1F);
+        Map<String, IdentifierCasePolicy> policyByStorageUnit = new LinkedHashMap<>(materials.size(), 1F);
+        for (MetaDataLoaderMaterial each : materials) {
+            Set<String> normalizedNames = expectedByStorageUnit.computeIfAbsent(each.getStorageUnitName(), key -> new HashSet<>());
+            Map<String, String> normalizedToOriginal = normalizedToOriginalByStorageUnit.computeIfAbsent(each.getStorageUnitName(), key -> new LinkedHashMap<>());
+            if (!policyByStorageUnit.containsKey(each.getStorageUnitName())) {
+                policyByStorageUnit.put(each.getStorageUnitName(), getTableIdentifierPolicy(each));
+            }
+            IdentifierCasePolicy policy = policyByStorageUnit.get(each.getStorageUnitName());
+            for (String tableName : each.getActualTableNames()) {
+                String normalized = policy.normalizeForLookup(tableName);
+                normalizedNames.add(normalized);
+                normalizedToOriginal.putIfAbsent(normalized, tableName);
+            }
+        }
+        Map<String, Set<String>> loadedByStorageUnit = new LinkedHashMap<>(result.size(), 1F);
+        for (SchemaMetaData each : result.values()) {
+            for (TableMetaData table : each.getTables()) {
+                String storageUnitName = table.getStorageUnitName();
+                IdentifierCasePolicy policy = policyByStorageUnit.getOrDefault(storageUnitName, getDefaultIdentifierPolicy());
+                loadedByStorageUnit.computeIfAbsent(storageUnitName, key -> new HashSet<>()).add(policy.normalizeForLookup(table.getName()));
+            }
+        }
+        List<String> missingTableIdentities = new LinkedList<>();
+        for (Map.Entry<String, Set<String>> entry : expectedByStorageUnit.entrySet()) {
+            String storageUnitName = entry.getKey();
+            Set<String> expectedNormalizedNames = entry.getValue();
+            Set<String> loadedNormalizedNames = loadedByStorageUnit.getOrDefault(storageUnitName, Collections.emptySet());
+            Map<String, String> normalizedToOriginal = normalizedToOriginalByStorageUnit.get(storageUnitName);
+            for (String each : expectedNormalizedNames) {
+                if (!loadedNormalizedNames.contains(each)) {
+                    String originalName = null != normalizedToOriginal ? normalizedToOriginal.getOrDefault(each, each) : each;
+                    missingTableIdentities.add(storageUnitName + "." + originalName);
+                }
+            }
+        }
+        if (!missingTableIdentities.isEmpty()) {
+            log.warn("The following tables are missing from loaded metadata: {}", missingTableIdentities);
+        }
+    }
+    
+    private static IdentifierCasePolicy getTableIdentifierPolicy(final MetaDataLoaderMaterial material) {
+        Optional<IdentifierCasePolicyProvider> provider = DatabaseTypedSPILoader.findService(IdentifierCasePolicyProvider.class, material.getStorageType());
+        if (provider.isPresent()) {
+            return provider.get().provide(new IdentifierCasePolicyProviderContext(material.getStorageType(), material.getDataSource())).getPolicy(IdentifierScope.TABLE);
+        }
+        return getDefaultIdentifierPolicy();
+    }
+    
+    private static IdentifierCasePolicy getDefaultIdentifierPolicy() {
+        return IdentifierCasePolicyFactory.newInsensitivePolicySet().getPolicy(IdentifierScope.TABLE);
     }
 }
