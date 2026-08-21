@@ -280,6 +280,7 @@
                                     <executable>docker</executable>
                                     <arguments>
                                         <argument>build</argument>
+                                        <argument>--pull</argument>
                                         <argument>--build-arg</argument>
                                         <argument>APP_NAME=${project.build.finalName}</argument>
                                         <argument>.</argument>
