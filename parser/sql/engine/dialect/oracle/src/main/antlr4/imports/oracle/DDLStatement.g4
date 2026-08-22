@@ -1570,6 +1570,7 @@ alterTablePartitioning
     | dropTablePartition
     | renamePartitionSubpart
     | alterIntervalPartitioning
+    | exchangePartitionTable
     ;
 
 modifyTableDefaultAttrs
@@ -1752,6 +1753,10 @@ renamePartitionSubpart
 
 alterIntervalPartitioning
     : SET INTERVAL LP_ expr? RP_ | SET STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_
+    ;
+
+exchangePartitionTable
+    : EXCHANGE (partitionExtendedName | subpartitionExtendedName) WITH TABLE tableName ((INCLUDING | EXCLUDING) INDEXES)? ((WITH | WITHOUT) VALIDATION)? (updateIndexClauses parallelClause?)?
     ;
 
 partitionExtendedNames
