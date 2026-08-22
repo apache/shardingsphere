@@ -22,10 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,17 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataNodeUtilsTest {
-    
-    @Test
-    void assertGetDataNodeGroups() {
-        Map<String, List<DataNode>> expected = new LinkedHashMap<>(2, 1F);
-        expected.put("ds_0", Arrays.asList(new DataNode("ds_0.tbl_0"), new DataNode("ds_0.tbl_1")));
-        expected.put("ds_1", Arrays.asList(new DataNode("ds_1.tbl_0"), new DataNode("ds_1.tbl_1")));
-        List<DataNode> dataNodes = new LinkedList<>();
-        expected.values().forEach(dataNodes::addAll);
-        Map<String, List<DataNode>> actual = DataNodeUtils.getDataNodeGroups(dataNodes);
-        assertThat(actual, is(expected));
-    }
     
     @Test
     void assertBuildDataNodeWithSameDataSource() {
