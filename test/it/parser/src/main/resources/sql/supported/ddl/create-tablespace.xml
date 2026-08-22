@@ -43,6 +43,7 @@
     <sql-case id="create_tablespace_with_datafile_logging" value="CREATE TABLESPACE tbs_03 DATAFILE 'tbs_f03.dbf' SIZE 20M LOGGING;" db-types="Oracle" />
     <sql-case id="create_tablespace_with_datafile_extent_management" value="CREATE TABLESPACE tbs_04 DATAFILE 'file_1.dbf' SIZE 10M EXTENT MANAGEMENT LOCAL UNIFORM SIZE 128K;" db-types="Oracle" />
     <sql-case id="create_tablespace_with_datafile_logging_extent_management" value="CREATE TABLESPACE tbs_05 DATAFILE 'tbs_f05.dbf' SIZE 5M LOGGING EXTENT MANAGEMENT LOCAL;" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_datafile_extent_segment_online" value="CREATE TABLESPACE sysaux DATAFILE 'sysaux01.dbf' SIZE 500M REUSE EXTENT MANAGEMENT LOCAL SEGMENT SPACE MANAGEMENT AUTO ONLINE;" db-types="Oracle" />
     <sql-case id="create_tablespace_with_minimum_extend_k" value="CREATE TABLESPACE test_space MINIMUM EXTEND 1K" db-types="Oracle" />
     <sql-case id="create_tablespace_with_minimum_extend_m" value="CREATE TABLESPACE test_space MINIMUM EXTEND 12M" db-types="Oracle" />
     <sql-case id="create_tablespace_with_minimum_extend_g" value="CREATE TABLESPACE test_space MINIMUM EXTEND 31G" db-types="Oracle" />
@@ -55,6 +56,7 @@
     <sql-case id="create_tablespace_with_filesystem_like_logging" value="CREATE TABLESPACE test_space FILESYSTEM_LIKE_LOGGING" db-types="Oracle" />
     <sql-case id="create_tablespace_with_force_logging" value="CREATE TABLESPACE test_space FORCE LOGGING" db-types="Oracle" />
     <sql-case id="create_tablespace_with_encrypt" value="CREATE TABLESPACE test_space ENCRYPTION USING 'encrypt_algorithm'" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_datafile_encryption_storage_encrypt" value="CREATE TABLESPACE securespace DATAFILE '/u01/app/oracle/oradata/orcl/secure01.dbf' SIZE 100M ENCRYPTION DEFAULT STORAGE (ENCRYPT);" db-types="Oracle" />
     <sql-case id="create_tablespace_with_compress" value="CREATE TABLESPACE test_space DEFAULT COMPRESS" db-types="Oracle" />
     <sql-case id="create_tablespace_with_nocompress" value="CREATE TABLESPACE test_space DEFAULT NOCOMPRESS" db-types="Oracle" />
     <sql-case id="create_tablespace_with_compress_basic" value="CREATE TABLESPACE test_space DEFAULT COMPRESS BASIC" db-types="Oracle" />
