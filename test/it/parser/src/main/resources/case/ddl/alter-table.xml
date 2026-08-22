@@ -249,6 +249,10 @@
             </column-definition>
         </add-column>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_virtual_column">
+        <table name="emp2" start-index="12" stop-index="15" />
+    </alter-table>
     
     <alter-table sql-case-id="alter_table_if_exists_only">
         <table name="t_log" start-index="27" stop-index="31" />
