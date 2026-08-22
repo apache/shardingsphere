@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
@@ -35,7 +37,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -102,10 +103,20 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     
     @Override
     public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor(rule.getConfiguration());
+        Collection<String> toBeAlteredTableNames = new CaseInsensitiveSet<>(toBeAlteredRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList()));
+        Collection<EncryptTableRuleConfiguration> tables = rule.getConfiguration().getTables().stream().filter(each -> !toBeAlteredTableNames.contains(each.getName())).collect(Collectors.toList());
+        tables.addAll(toBeAlteredRuleConfig.getTables());
+        EncryptRuleConfiguration toBeCheckedRuleConfig = new EncryptRuleConfiguration(tables, rule.getConfiguration().getEncryptors());
+        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor(toBeCheckedRuleConfig);
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>(unusedEncryptor.size(), 1F);
         unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, rule.getConfiguration().getEncryptors().get(each)));
-        return new EncryptRuleConfiguration(Collections.emptyList(), toBeDroppedEncryptors);
+        return new EncryptRuleConfiguration(getToBeDroppedTables(toBeAlteredRuleConfig, toBeAlteredTableNames), toBeDroppedEncryptors);
+    }
+    
+    private Collection<EncryptTableRuleConfiguration> getToBeDroppedTables(final EncryptRuleConfiguration toBeAlteredRuleConfig, final Collection<String> toBeAlteredTableNames) {
+        Collection<String> toBeAlteredCaseSensitiveTableNames = toBeAlteredRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
+        return rule.getConfiguration().getTables().stream()
+                .filter(each -> toBeAlteredTableNames.contains(each.getName()) && !toBeAlteredCaseSensitiveTableNames.contains(each.getName())).collect(Collectors.toList());
     }
     
     @Override

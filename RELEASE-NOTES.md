@@ -74,6 +74,7 @@
 1. Sharding: Fix incorrect AVG(DISTINCT) merge result across shards - [#39429](https://github.com/apache/shardingsphere/pull/39429)
 1. Readwrite-splitting: Evaluate inline expressions in data source names of rule configuration checker - [#39374](https://github.com/apache/shardingsphere/pull/39374)
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
+1. Encrypt: Fix stale encryptors leaking when altering an encrypt rule - [#39209](https://github.com/apache/shardingsphere/pull/39209)
 
 ### Enhancements
 
