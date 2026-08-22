@@ -61,4 +61,30 @@
         </pseudo-column>
     </create-trigger>
     <create-trigger sql-case-id="create_trigger_with_explicit_state_visitor_oracle" disable-clause-start-index="-1" />
+    <create-trigger sql-case-id="create_trigger_with_instead_of_nested_table" sql-statement-count="2">
+        <trigger-name name="Library_trigger" start-index="26" stop-index="40" />
+        <table name="Library_view" start-index="63" stop-index="74" />
+        <pseudo-column name="Section" start-index="164" stop-index="175">
+            <owner name="NEW" start-index="165" stop-index="167" />
+        </pseudo-column>
+        <pseudo-column name="Booklist" start-index="191" stop-index="203">
+            <owner name="NEW" start-index="192" stop-index="194" />
+        </pseudo-column>
+        <pseudo-column name="Booklist" start-index="227" stop-index="242">
+            <owner name="NEW" start-index="228" stop-index="230" />
+        </pseudo-column>
+        <pseudo-column name="Section" start-index="338" stop-index="349">
+            <owner name="NEW" start-index="339" stop-index="341" />
+        </pseudo-column>
+    </create-trigger>
+    <create-trigger sql-case-id="create_trigger_with_pseudorecord_collection_index" sql-statement-count="1">
+        <trigger-name name="trg_pseudorecord_data" start-index="26" stop-index="46" />
+        <table name="t_pseudorecord_source" start-index="64" stop-index="84" />
+        <pseudo-column name="coll" start-index="129" stop-index="140">
+            <owner name="NEW" start-index="130" stop-index="132" />
+        </pseudo-column>
+        <pseudo-column name="coll" start-index="185" stop-index="196">
+            <owner name="NEW" start-index="186" stop-index="188" />
+        </pseudo-column>
+    </create-trigger>
 </sql-parser-test-cases>

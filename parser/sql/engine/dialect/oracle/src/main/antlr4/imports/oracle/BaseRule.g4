@@ -495,7 +495,7 @@ functionCall
     ;
 
 pseudorecord
-    : COLON_ (NEW | OLD | PARENT) DOT_ identifier
+    : COLON_ (NEW | OLD | PARENT) DOT_ identifier (LP_ expr RP_)*
     ;
 
 aggregationFunction
