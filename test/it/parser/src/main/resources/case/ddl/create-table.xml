@@ -3065,6 +3065,90 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_external_with_access_parameters" >
+        <table name="dept_external" start-index="13" stop-index="25" />
+        <column-definition type="NUMBER" start-index="28" stop-index="43">
+            <column name="deptno" start-index="28" stop-index="33"/>
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="46" stop-index="63">
+            <column name="dname" start-index="46" stop-index="50"/>
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="66" stop-index="81">
+            <column name="loc" start-index="66" stop-index="68"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_external_oracle_datapump" >
+        <table name="dept_xt" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="32">
+            <column name="dept_no" start-index="22" stop-index="28"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="35" stop-index="52">
+            <column name="dept_name" start-index="35" stop-index="43"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="55" stop-index="71">
+            <column name="location" start-index="55" stop-index="62"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_dotted_inline_constraint" >
+        <table name="emp" start-index="13" stop-index="15" />
+        <column-definition type="NUMBER" primary-key="true" start-index="18" stop-index="62">
+            <column name="empno" start-index="18" stop-index="22"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="65" stop-index="80">
+            <column name="deptno" start-index="65" stop-index="70"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_foreign_key_and_untyped_column" >
+        <table name="dept_20" start-index="13" stop-index="19" />
+        <column-definition type="NUMBER" start-index="22" stop-index="42">
+            <column name="employee_id" start-index="22" stop-index="32"/>
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="45" stop-index="66">
+            <column name="last_name" start-index="45" stop-index="53"/>
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="69" stop-index="86">
+            <column name="job_id" start-index="69" stop-index="74"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="108">
+            <column name="manager_id" start-index="89" stop-index="98"/>
+        </column-definition>
+        <column-definition type="DATE" start-index="111" stop-index="124">
+            <column name="hire_date" start-index="111" stop-index="119"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="127" stop-index="144">
+            <column name="salary" start-index="127" stop-index="132"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="147" stop-index="172">
+            <column name="commission_pct" start-index="147" stop-index="160"/>
+        </column-definition>
+        <column-definition start-index="175" stop-index="187">
+            <column name="department_id" start-index="175" stop-index="187"/>
+        </column-definition>
+        <constraint-definition constraint-name="fk_deptno" start-index="190" stop-index="275">
+            <referenced-table name="departments" start-index="250" stop-index="260" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_external_with_encrypt_and_as_subquery" >
+        <table name="emp_ext" start-index="13" stop-index="19" />
+        <column name="first_name" start-index="22" stop-index="31" />
+        <column name="last_name" start-index="34" stop-index="42" />
+        <column name="empID" start-index="45" stop-index="49" />
+        <column name="salary" start-index="52" stop-index="57" />
+        <column name="ssn" start-index="60" stop-index="62" />
+        <select>
+            <projections start-index="227" stop-index="227">
+                <shorthand-projection start-index="227" stop-index="227" />
+            </projections>
+            <from>
+                <simple-table name="EMPLOYEE" start-index="234" stop-index="241" />
+            </from>
+        </select>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_builtin_function">
         <table name="tab" start-index="13" stop-index="15"/>
         <select>

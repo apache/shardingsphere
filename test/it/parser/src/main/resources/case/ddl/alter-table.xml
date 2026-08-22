@@ -196,6 +196,13 @@
             <referenced-table start-index="285" stop-index="293" name="employees" />
         </add-constraint>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_constraint_with_dotted_name">
+        <table name="emp" start-index="12" stop-index="14" />
+        <add-constraint constraint-name="emp.pk" start-index="20" stop-index="56">
+            <primary-key-column name="empno" start-index="51" stop-index="55" />
+        </add-constraint>
+    </alter-table>
     
     <alter-table sql-case-id="alter_table_no_flashback_archive">
         <table name="employee" start-index="12" stop-index="19" />

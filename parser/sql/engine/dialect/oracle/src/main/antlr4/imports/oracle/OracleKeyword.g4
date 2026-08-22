@@ -3776,6 +3776,10 @@ DELIMITED
     :D E L I M I T E D
     ;
 
+NEWLINE
+    : N E W L I N E
+    ;
+
 DENSE_RANKM
     :D E N S E UL_ R A N K M
     ;
