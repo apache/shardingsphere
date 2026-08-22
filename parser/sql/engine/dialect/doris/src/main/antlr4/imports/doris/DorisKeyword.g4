@@ -1089,6 +1089,10 @@ HIGH_PRIORITY
     : H I G H UL_ P R I O R I T Y
     ;
 
+HLL
+    : H L L
+    ;
+
 HLL_UNION
     : H L L UL_ U N I O N
     ;

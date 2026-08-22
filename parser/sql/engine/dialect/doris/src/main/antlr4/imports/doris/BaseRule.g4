@@ -1456,6 +1456,9 @@ dataType
     // DORIS ADDED BEGIN
     | dataTypeName = BITMAP
     // DORIS ADDED END
+    // DORIS ADDED BEGIN
+    | dataTypeName = HLL
+    // DORIS ADDED END
     ;
 
 stringList

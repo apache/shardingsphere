@@ -53,7 +53,7 @@ commentClause
     ;
 
 distributedbyClause
-    : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
+    : DISTRIBUTED BY (HASH LP_ columnNames RP_ | RANDOM) (BUCKETS (NUMBER_ | AUTO))?
     ;
 
 rollupClause
@@ -89,7 +89,9 @@ partitionClause
 partitionTypeDef
     : LINEAR? KEY partitionKeyAlgorithm? LP_ columnNames? RP_
     | LINEAR? HASH LP_ bitExpr RP_
-    | (RANGE | LIST) (LP_ bitExpr RP_ | COLUMNS LP_ columnNames RP_ )
+    // DORIS CHANGED BEGIN
+    | (RANGE | LIST) (LP_ bitExpr (COMMA_ bitExpr)* RP_ | COLUMNS LP_ columnNames RP_ )
+    // DORIS CHANGED END
     ;
 
 subPartitions
@@ -165,7 +167,7 @@ alterOrderList
     ;
 
 rollupItem
-    : rollupName=identifier LP_ columnNames RP_ (FROM fromIndexName=indexName)? propertiesClause?
+    : rollupName=identifier LP_ rollupColumns=columnNames RP_ (DUPLICATE KEY LP_ duplicateKeyColumns=columnNames RP_)? (FROM fromIndexName=indexName)? propertiesClause?
     ;
 
 rollupNameItem
@@ -316,7 +318,7 @@ truncateTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression (indexTypeClause | dorisIndexTypeClause)? propertiesClause? commentClause? algorithmOptionAndLockOption?
+    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression (dorisIndexTypeClause | indexTypeClause)? propertiesClause? commentClause? algorithmOptionAndLockOption?
     ;
 
 dorisIndexTypeClause
@@ -676,7 +678,9 @@ referenceOption
     ;
 
 indexType
-    : BTREE | RTREE | HASH
+    // DORIS CHANGED BEGIN
+    : BTREE | RTREE | HASH | INVERTED
+    // DORIS CHANGED END
     ;
 
 indexTypeClause
