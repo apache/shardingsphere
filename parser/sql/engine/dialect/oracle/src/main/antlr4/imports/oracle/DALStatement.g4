@@ -147,7 +147,11 @@ showOptions
     ;
 
 show
-    : (SHO | SHOW) showOptions
+    : (SHO | SHOW) showOptions forDbUniqueName?
+    ;
+
+forDbUniqueName
+    : FOR DB_UNIQUE_NAME identifier
     ;
 
 fileExt
@@ -168,7 +172,9 @@ set
 
 setParameter
     : systemVariable setVariableValue?
-    | EXTPROC_DLLS EQ_ setVariableValue
+    | EXTPROC_DLLS EQ_ setVariableValue?
+    | DBID EQ_? numberLiterals
+    | DECRYPTION IDENTIFIED BY setVariableValue
     ;
 
 setVariableValue
@@ -177,8 +183,23 @@ setVariableValue
     | stringLiterals
     | DOUBLE_QUOTED_TEXT
     | filePath
+    | dllPath (COLON_ dllPath)*
     ;
 
 filePath
     : SLASH_ identifier (SLASH_ identifier)*
+    ;
+
+dllPath
+    : identifier
+    | filePath
+    ;
+
+list
+    : LIST DB_UNIQUE_NAME OF DATABASE
+    | LIST ARCHIVELOG ALL forDbUniqueName?
+    ;
+
+report
+    : REPORT SCHEMA forDbUniqueName?
     ;

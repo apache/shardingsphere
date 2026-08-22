@@ -881,6 +881,10 @@ public enum SQLVisitorRule {
     
     SPOOL("Spool", SQLStatementType.DAL),
     
+    LIST("List", SQLStatementType.DAL),
+    
+    REPORT("Report", SQLStatementType.DAL),
+    
     START_REPLICA("StartReplica", SQLStatementType.DAL),
     
     REFRESH("Refresh", SQLStatementType.DAL),

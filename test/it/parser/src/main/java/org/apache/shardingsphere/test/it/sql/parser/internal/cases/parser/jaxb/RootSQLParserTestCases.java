@@ -123,6 +123,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLChecksumTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLOptimizeTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLRepairTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleListStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleReportStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleSpoolStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.postgresql.PostgreSQLResetParameterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.standard.EmptyStatementTestCase;
@@ -2111,6 +2113,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "spool")
     private final List<OracleSpoolStatementTestCase> oracleSpoolStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "list")
+    private final List<OracleListStatementTestCase> oracleListStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "report")
+    private final List<OracleReportStatementTestCase> oracleReportStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-loadable-function")
     private final List<MySQLCreateLoadableFunctionTestCase> createLoadableFunctionTestCases = new LinkedList<>();
