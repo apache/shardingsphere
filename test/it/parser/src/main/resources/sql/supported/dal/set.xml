@@ -56,4 +56,9 @@
     <sql-case id="set_persist_only_system_variable_doris" value="SET PERSIST_ONLY time_zone = '+08:00'" db-types="Doris" />
     <sql-case id="set_mysql_version_comment" value="/*! SET GLOBAL max_connections=123 */" db-types="MySQL" />
     <sql-case id="set_mysql_version_comment_with_version" value="/*!80029 SET GLOBAL max_connections=456 */" db-types="MySQL" />
+    <sql-case id="set_extproc_dlls_oracle" value="SET EXTPROC_DLLS=ANY" db-types="Oracle" />
+    <sql-case id="set_linesize_oracle" value="SET LINESIZE 130" db-types="Oracle" />
+    <sql-case id="set_pagesize_oracle" value="SET PAGESIZE 0" db-types="Oracle" />
+    <sql-case id="set_logsource_quoted_oracle" value="SET LOGSOURCE &quot;/tmp&quot;" db-types="Oracle" />
+    <sql-case id="set_logsource_unquoted_oracle" value="SET LOGSOURCE /tmp" db-types="Oracle" />
 </sql-cases>

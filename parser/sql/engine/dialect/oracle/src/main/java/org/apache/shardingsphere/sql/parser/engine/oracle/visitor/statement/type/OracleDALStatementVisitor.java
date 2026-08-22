@@ -23,15 +23,21 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterResourceCostContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExecuteContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExplainContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetParameterContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ShowContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SpoolContext;
 import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleAlterResourceCostStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleSpoolStatement;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -83,5 +89,18 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitSpool(final SpoolContext ctx) {
         return new OracleSpoolStatement(getDatabaseType(), null == ctx.spoolFileName() ? null : ctx.spoolFileName().getText());
+    }
+    
+    @Override
+    public ASTNode visitSet(final SetContext ctx) {
+        return new SetStatement(getDatabaseType(), Collections.singletonList((VariableAssignSegment) visit(ctx.setParameter())));
+    }
+    
+    @Override
+    public ASTNode visitSetParameter(final SetParameterContext ctx) {
+        VariableSegment variable = null == ctx.EXTPROC_DLLS()
+                ? new VariableSegment(ctx.systemVariable().start.getStartIndex(), ctx.systemVariable().stop.getStopIndex(), ctx.systemVariable().getText())
+                : new VariableSegment(ctx.EXTPROC_DLLS().getSymbol().getStartIndex(), ctx.EXTPROC_DLLS().getSymbol().getStopIndex(), ctx.EXTPROC_DLLS().getText());
+        return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, null == ctx.setVariableValue() ? null : ctx.setVariableValue().getText());
     }
 }
