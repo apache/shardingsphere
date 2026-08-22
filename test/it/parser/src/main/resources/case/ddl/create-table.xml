@@ -3521,6 +3521,165 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_organization_index_overflow_with_list_partitions">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="19" stop-index="35">
+            <column name="acct_no" start-index="19" stop-index="25" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="58" stop-index="75">
+            <column name="acct_name" start-index="58" stop-index="66" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="98" stop-index="121">
+            <column name="amount_of_sale" start-index="98" stop-index="111" />
+        </column-definition>
+        <column-definition type="INTEGER" start-index="144" stop-index="158">
+            <column name="week_no" start-index="144" stop-index="150" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="180" stop-index="206">
+            <column name="sale_details" start-index="180" stop-index="191" />
+        </column-definition>
+        <constraint-definition start-index="222" stop-index="262">
+            <primary-key-column name="acct_no" start-index="235" stop-index="241" />
+            <primary-key-column name="acct_name" start-index="244" stop-index="252" />
+            <primary-key-column name="week_no" start-index="255" stop-index="261" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_subpartition_by_list_as_select">
+        <table name="sales_par_range_list" start-index="13" stop-index="32" />
+        <column name="calendar_year" start-index="36" stop-index="48" />
+        <column name="calendar_month_number" start-index="51" stop-index="71" />
+        <column name="day_number_in_month" start-index="74" stop-index="92" />
+        <column name="country_name" start-index="97" stop-index="108" />
+        <column name="prod_id" start-index="111" stop-index="117" />
+        <column name="prod_name" start-index="120" stop-index="128" />
+        <column name="quantity_sold" start-index="131" stop-index="143" />
+        <column name="amount_sold" start-index="146" stop-index="156" />
+        <select>
+            <projections start-index="1188" stop-index="1223">
+                <column-projection name="calendar_year" start-index="1188" stop-index="1200" />
+                <column-projection name="calendar_month_number" start-index="1203" stop-index="1223" />
+            </projections>
+            <from>
+                <simple-table name="times" start-index="1230" stop-index="1234" />
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_list_as_select_with_to_date">
+        <table name="sales_par_list" start-index="13" stop-index="26" />
+        <column name="calendar_year" start-index="29" stop-index="41" />
+        <column name="calendar_month_number" start-index="44" stop-index="64" />
+        <column name="day_number_in_month" start-index="67" stop-index="85" />
+        <column name="country_name" start-index="89" stop-index="100" />
+        <column name="prod_id" start-index="103" stop-index="109" />
+        <column name="quantity_sold" start-index="112" stop-index="124" />
+        <column name="amount_sold" start-index="127" stop-index="137" />
+        <select>
+            <projections start-index="376" stop-index="409">
+                <column-projection name="calendar_year" start-index="376" stop-index="388" />
+                <column-projection name="day_number_in_month" start-index="391" stop-index="409" />
+            </projections>
+            <from>
+                <simple-table name="times" start-index="416" stop-index="420" />
+            </from>
+            <where start-index="422" stop-index="473">
+                <expr>
+                    <binary-operation-expression start-index="428" stop-index="473">
+                        <left>
+                            <column name="time_id" start-index="428" stop-index="434" />
+                        </left>
+                        <operator>&lt;</operator>
+                        <right>
+                            <function start-index="438" stop-index="473" text="TO_DATE('01-APR-1998','dd-mon-yyyy')" function-name="TO_DATE">
+                                <parameter>
+                                    <literal-expression value="'01-APR-1998'" start-index="446" stop-index="458" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'dd-mon-yyyy'" start-index="460" stop-index="472" />
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_tablespace_nologging_compress_parallel_as_select">
+        <table name="sales_q1_1998_out" start-index="13" stop-index="29" />
+        <select>
+            <projections start-index="99" stop-index="99">
+                <shorthand-projection start-index="99" stop-index="99" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="106" stop-index="110" />
+            </from>
+            <where start-index="112" stop-index="218">
+                <expr>
+                    <binary-operation-expression start-index="118" stop-index="218">
+                        <left>
+                            <binary-operation-expression start-index="118" stop-index="165">
+                                <left>
+                                    <column name="time_id" start-index="118" stop-index="124" />
+                                </left>
+                                <operator>&gt;=</operator>
+                                <right>
+                                    <function start-index="130" stop-index="165" text="TO_DATE('01-JAN-1998','dd-mon-yyyy')" function-name="TO_DATE">
+                                        <parameter>
+                                            <literal-expression value="'01-JAN-1998'" start-index="138" stop-index="150" />
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="'dd-mon-yyyy'" start-index="152" stop-index="164" />
+                                        </parameter>
+                                    </function>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="173" stop-index="218">
+                                <left>
+                                    <column name="time_id" start-index="173" stop-index="179" />
+                                </left>
+                                <operator>&lt;</operator>
+                                <right>
+                                    <function start-index="183" stop-index="218" text="TO_DATE('01-APR-1998','dd-mon-yyyy')" function-name="TO_DATE">
+                                        <parameter>
+                                            <literal-expression value="'01-APR-1998'" start-index="191" stop-index="203" />
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="'dd-mon-yyyy'" start-index="205" stop-index="217" />
+                                        </parameter>
+                                    </function>
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_tablespace_partition_by_range_subpartition_by_list">
+        <table name="quarterly_regional_sales" start-index="13" stop-index="36" />
+        <column-definition type="number" start-index="45" stop-index="57">
+            <column name="deptno" start-index="45" stop-index="50" />
+        </column-definition>
+        <column-definition type="varchar2" start-index="60" stop-index="79">
+            <column name="item_no" start-index="60" stop-index="66" />
+        </column-definition>
+        <column-definition type="date" start-index="89" stop-index="101">
+            <column name="txn_date" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="number" start-index="104" stop-index="120">
+            <column name="txn_amount" start-index="104" stop-index="113" />
+        </column-definition>
+        <column-definition type="varchar2" start-index="123" stop-index="139">
+            <column name="state" start-index="123" stop-index="127" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_external_oracle_datapump" >
         <table name="dept_xt" start-index="13" stop-index="19" />
         <column-definition type="INT" start-index="22" stop-index="32">
