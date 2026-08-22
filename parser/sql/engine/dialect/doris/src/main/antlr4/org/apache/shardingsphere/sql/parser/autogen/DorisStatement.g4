@@ -54,6 +54,7 @@ execute
     | dropTrigger
     | alterResourceGroup
     | alterResource
+    | createResource
     | createResourceGroup
     | createWorkloadGroup
     | dropResourceGroup
