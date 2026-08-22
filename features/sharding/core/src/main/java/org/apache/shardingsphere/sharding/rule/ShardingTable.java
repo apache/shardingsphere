@@ -211,15 +211,6 @@ public final class ShardingTable {
     }
     
     /**
-     * Get data node groups.
-     *
-     * @return data node groups, key is data source name, values are data nodes belong to this data source
-     */
-    public Map<String, List<DataNode>> getDataNodeGroups() {
-        return DataNodeUtils.getDataNodeGroups(actualDataNodes);
-    }
-    
-    /**
      * Get actual table names via target data source name.
      *
      * @param targetDataSource target data source name
