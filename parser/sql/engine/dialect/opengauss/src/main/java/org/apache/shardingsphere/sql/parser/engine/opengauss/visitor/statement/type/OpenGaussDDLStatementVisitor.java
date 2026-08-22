@@ -71,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDomainContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateExtensionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateForeignTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateLanguageContext;
@@ -97,6 +98,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDomainContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropExtensionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropForeignTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropLanguageContext;
@@ -237,6 +239,8 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.extension.P
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.extension.PostgreSQLCreateExtensionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.extension.PostgreSQLDropExtensionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.foreigntable.PostgreSQLAlterForeignTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.foreigntable.PostgreSQLCreateForeignTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.foreigntable.PostgreSQLDropForeignTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.group.PostgreSQLAlterGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.language.PostgreSQLAlterLanguageStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.language.PostgreSQLCreateLanguageStatement;
@@ -670,8 +674,18 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     }
     
     @Override
+    public ASTNode visitCreateForeignTable(final CreateForeignTableContext ctx) {
+        return new PostgreSQLCreateForeignTableStatement(getDatabaseType());
+    }
+    
+    @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
         return new DropFunctionStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropForeignTable(final DropForeignTableContext ctx) {
+        return new PostgreSQLDropForeignTableStatement(getDatabaseType());
     }
     
     @SuppressWarnings("unchecked")
