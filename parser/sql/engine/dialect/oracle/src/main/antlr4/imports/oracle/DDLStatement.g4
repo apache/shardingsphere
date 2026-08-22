@@ -382,11 +382,11 @@ identityOption
     ;
 
 encryptionSpecification
-    : (USING STRING_)? (IDENTIFIED BY (STRING_ | IDENTIFIER_))? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)
+    : (USING STRING_)? (IDENTIFIED BY (STRING_ | IDENTIFIER_ | DOUBLE_QUOTED_TEXT))? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)
     ;
 
 inlineConstraint
-    : (CONSTRAINT ignoredIdentifier)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState?
+    : (CONSTRAINT constraintName)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState?
     ;
 
 referencesClause
@@ -1100,11 +1100,39 @@ externalTableDataProps
     ;
 
 parenthesizedOpaqueFormatSpec
-    : LP_ recordFormatInfo? fieldList RP_
+    : LP_ recordFormatInfo? fieldList? RP_
     ;
 
 recordFormatInfo
-    : RECORDS (FIXED INTEGER_ | DELIMITED BY STRING_)
+    : recordFormatOption+
+    ;
+
+recordFormatOption
+    : recordsSpec | badfileSpec | discardfileSpec | logfileSpec | skipSpec
+    ;
+
+recordsSpec
+    : RECORDS (FIXED INTEGER_ | DELIMITED BY (STRING_ | DOUBLE_QUOTED_TEXT | NEWLINE | WHITESPACE))
+    ;
+
+badfileSpec
+    : BADFILE externalFileName
+    ;
+
+discardfileSpec
+    : DISCARDFILE externalFileName
+    ;
+
+logfileSpec
+    : LOGFILE externalFileName
+    ;
+
+skipSpec
+    : SKIP_SYMBOL (EQ_)? INTEGER_
+    ;
+
+externalFileName
+    : (identifier COLON_)? (identifier | STRING_ | DOUBLE_QUOTED_TEXT)
     ;
 
 fieldList
@@ -1112,7 +1140,11 @@ fieldList
     ;
 
 fieldDefinition
-    : columnName positionSpecification? dataType?
+    : columnName positionSpecification? fieldDataType?
+    ;
+
+fieldDataType
+    : dataType | INTEGER EXTERNAL dataTypeLength?
     ;
 
 positionSpecification

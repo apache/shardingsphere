@@ -579,7 +579,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitConstraintName(final ConstraintNameContext ctx) {
-        return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        IdentifierValue constraintName = 1 == ctx.identifier().size() ? (IdentifierValue) visit(ctx.identifier(0)) : new IdentifierValue(ctx.getText());
+        return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), constraintName);
     }
     
     @Override
