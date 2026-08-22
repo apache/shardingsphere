@@ -34,6 +34,11 @@ class DataNodeUtilsTest {
     }
     
     @Test
+    void assertParseWithSchemaForConsecutiveDelimiters() {
+        assertThrows(InvalidDataNodeFormatException.class, () -> DataNodeUtils.parseWithSchema("ds_0..tbl_0"));
+    }
+    
+    @Test
     void assertParseWithSchema() {
         DataNode actual = DataNodeUtils.parseWithSchema("ds_0.public.tbl_0");
         assertThat(actual.getDataSourceName(), is("ds_0"));
