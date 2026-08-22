@@ -30,6 +30,8 @@ import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +45,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -95,18 +98,43 @@ class AlterMaskRuleExecutorTest {
     
     @Test
     void assertBuildToBeDroppedRuleConfiguration() {
-        Map<String, AlgorithmConfiguration> currentAlgorithms = new LinkedHashMap<>(3, 1F);
-        currentAlgorithms.put("order_mask", new AlgorithmConfiguration("MD5", new Properties()));
-        currentAlgorithms.put("user_mask", new AlgorithmConfiguration("MD5", new Properties()));
-        currentAlgorithms.put("unused_mask", new AlgorithmConfiguration("SM3", new Properties()));
-        executor.setRule(createRule(new MaskRuleConfiguration(Arrays.asList(
-                new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "order_mask"))),
-                new MaskTableRuleConfiguration("t_user", Collections.singleton(new MaskColumnRuleConfiguration("user_id", "user_mask")))), currentAlgorithms)));
+        executor.setRule(createRule(createCurrentRuleConfigurationWithAlgorithms()));
         MaskTableRuleConfiguration toBeAlteredTable = new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "order_mask")));
         MaskRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new MaskRuleConfiguration(Collections.singleton(toBeAlteredTable), Collections.emptyMap()));
         assertTrue(actual.getTables().isEmpty());
         assertThat(actual.getMaskAlgorithms().size(), is(1));
         assertTrue(actual.getMaskAlgorithms().containsKey("unused_mask"));
+    }
+    
+    @Test
+    void assertBuildToBeDroppedRuleConfigurationWithDifferentTableNameCase() {
+        executor.setRule(createRule(createCurrentRuleConfigurationWithAlgorithms()));
+        MaskTableRuleConfiguration toBeAlteredTable = new MaskTableRuleConfiguration("T_ORDER", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "t_order_order_id_sm3")));
+        MaskRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new MaskRuleConfiguration(Collections.singleton(toBeAlteredTable), Collections.emptyMap()));
+        assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getTables().iterator().next().getName(), is("t_order"));
+        assertThat(actual.getMaskAlgorithms().size(), is(2));
+        assertTrue(actual.getMaskAlgorithms().containsKey("order_mask"));
+        assertTrue(actual.getMaskAlgorithms().containsKey("unused_mask"));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertUpdatePathWithDifferentTableNameCase() {
+        MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfigurationWithAlgorithms();
+        executor.setRule(createRule(currentRuleConfig));
+        MaskTableRuleConfiguration toBeAlteredTable = new MaskTableRuleConfiguration("T_ORDER", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "t_order_order_id_sm3")));
+        MaskRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(new MaskRuleConfiguration(Collections.singleton(toBeAlteredTable), Collections.emptyMap()));
+        RuleItemConfigurationChangedProcessor<MaskRuleConfiguration, MaskTableRuleConfiguration> processor = TypedSPILoader.getService(
+                RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("mask", "tables"));
+        processor.changeRuleItemConfiguration("T_ORDER", currentRuleConfig, toBeAlteredTable);
+        for (MaskTableRuleConfiguration each : toBeDroppedRuleConfig.getTables()) {
+            processor.dropRuleItemConfiguration(each.getName(), currentRuleConfig);
+        }
+        Collection<MaskTableRuleConfiguration> actual = currentRuleConfig.getTables().stream().filter(each -> "t_order".equalsIgnoreCase(each.getName())).collect(Collectors.toList());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getName(), is("T_ORDER"));
+        assertThat(actual.iterator().next().getColumns().iterator().next().getMaskAlgorithm(), is("t_order_order_id_sm3"));
     }
     
     @Test
@@ -122,7 +150,9 @@ class AlterMaskRuleExecutorTest {
                         createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class),
                 Arguments.of("one table exists and one missing",
                         new AlterMaskRuleStatement(Arrays.asList(createRuleSegment("t_order", "order_id", "MD5"), createRuleSegment("t_missing", "user_id", "AES"))),
-                        createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class));
+                        createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class),
+                Arguments.of("existing table in different case", new AlterMaskRuleStatement(Collections.singleton(createRuleSegment("T_ORDER", "order_id", "MD5"))),
+                        createCurrentRuleConfiguration(Collections.singleton("t_order")), null));
     }
     
     private static MaskRuleSegment createRuleSegment(final String tableName, final String columnName, final String algorithmType) {
@@ -132,6 +162,16 @@ class AlterMaskRuleExecutorTest {
     private static MaskRuleConfiguration createCurrentRuleConfiguration(final Collection<String> tableNames) {
         Collection<MaskTableRuleConfiguration> tableRuleConfigs = tableNames.stream().map(each -> new MaskTableRuleConfiguration(each, Collections.emptyList())).collect(Collectors.toList());
         return new MaskRuleConfiguration(tableRuleConfigs, Collections.emptyMap());
+    }
+    
+    private static MaskRuleConfiguration createCurrentRuleConfigurationWithAlgorithms() {
+        Map<String, AlgorithmConfiguration> algorithmConfigs = new LinkedHashMap<>(3, 1F);
+        algorithmConfigs.put("order_mask", new AlgorithmConfiguration("MD5", new Properties()));
+        algorithmConfigs.put("user_mask", new AlgorithmConfiguration("MD5", new Properties()));
+        algorithmConfigs.put("unused_mask", new AlgorithmConfiguration("SM3", new Properties()));
+        return new MaskRuleConfiguration(new LinkedList<>(Arrays.asList(
+                new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "order_mask"))),
+                new MaskTableRuleConfiguration("t_user", Collections.singleton(new MaskColumnRuleConfiguration("user_id", "user_mask"))))), algorithmConfigs);
     }
     
     private MaskRule createRule(final MaskRuleConfiguration ruleConfig) {
