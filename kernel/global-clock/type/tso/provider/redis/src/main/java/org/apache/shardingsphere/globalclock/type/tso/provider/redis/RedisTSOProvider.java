@@ -22,8 +22,10 @@ import org.apache.shardingsphere.globalclock.type.tso.provider.TSOProvider;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.params.SetParams;
 
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -33,11 +35,17 @@ public final class RedisTSOProvider implements TSOProvider {
     
     private static final String CSN_KEY = "csn";
     
+    private static final String CSN_LOCK_KEY = "csn_lock";
+    
     private static final long ERROR_CSN = 0L;
     
     private static final long INIT_CSN = Integer.MAX_VALUE;
     
+    private static final long LOCK_EXPIRE_MILLIS = 10_000L;
+    
     private final AtomicBoolean initialized = new AtomicBoolean(false);
+    
+    private String lockValue;
     
     private JedisPool jedisPool;
     
@@ -47,6 +55,7 @@ public final class RedisTSOProvider implements TSOProvider {
             createJedisPool(props);
             checkJedisPool();
             initCSN();
+            lockValue = UUID.randomUUID().toString();
         }
     }
     
@@ -80,7 +89,6 @@ public final class RedisTSOProvider implements TSOProvider {
     @Override
     public long getCurrentTimestamp() {
         try (Jedis jedis = jedisPool.getResource()) {
-            // TODO use redis lock to instead of reg center's lock. lock here #35041
             return Long.parseLong(jedis.get(CSN_KEY));
         }
     }
@@ -89,7 +97,24 @@ public final class RedisTSOProvider implements TSOProvider {
     public long getNextTimestamp() {
         try (Jedis jedis = jedisPool.getResource()) {
             return jedis.incr(CSN_KEY);
-            // TODO use redis lock to instead of reg center's lock. unlock here #35041
+        }
+    }
+    
+    @Override
+    public boolean tryLock() {
+        try (Jedis jedis = jedisPool.getResource()) {
+            String result = jedis.set(CSN_LOCK_KEY, lockValue, SetParams.setParams().nx().px(LOCK_EXPIRE_MILLIS));
+            return "OK".equals(result);
+        }
+    }
+    
+    @Override
+    public void unlock() {
+        try (Jedis jedis = jedisPool.getResource()) {
+            String value = jedis.get(CSN_LOCK_KEY);
+            if (java.util.Objects.equals(lockValue, value)) {
+                jedis.del(CSN_LOCK_KEY);
+            }
         }
     }
     

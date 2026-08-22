@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
-import org.apache.shardingsphere.mode.exclusive.callback.ExclusiveOperationVoidCallback;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
@@ -71,9 +69,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -106,9 +102,6 @@ class ProxyBackendTransactionManagerTest {
     
     @Mock
     private ConnectionContext connectionContext;
-    
-    @Mock
-    private ExclusiveOperatorEngine exclusiveOperatorEngine;
     
     @BeforeEach
     void setUp() {
@@ -192,39 +185,25 @@ class ProxyBackendTransactionManagerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideCommitScenarios")
-    void assertCommitScenarios(final String name, final TransactionType transactionType, final boolean needLock, final boolean hasDistributedManager,
+    void assertCommitScenarios(final String name, final TransactionType transactionType, final boolean hasDistributedManager,
                                final boolean exceptionOccurred, final boolean hasHook, final boolean expectDistributedCommit) throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true);
         transactionContext.setExceptionOccur(exceptionOccurred);
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
         TransactionHook transactionHook = hasHook ? mock(TransactionHook.class) : null;
-        if (hasHook) {
-            when(transactionHook.isNeedLockWhenCommit(any())).thenReturn(needLock);
-        }
         Map<ShardingSphereRule, TransactionHook> transactionHooks = hasHook ? Collections.singletonMap(mock(ShardingSphereRule.class), transactionHook) : Collections.emptyMap();
         ShardingSphereTransactionManagerEngine transactionManagerEngine = hasDistributedManager ? mock(ShardingSphereTransactionManagerEngine.class) : null;
         if (hasDistributedManager) {
             when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(distributedTransactionManager);
         }
-        if (needLock) {
-            doAnswer(invocation -> {
-                ExclusiveOperationVoidCallback callback = invocation.getArgument(2);
-                callback.execute();
-                return null;
-            }).when(exclusiveOperatorEngine).operate(any(), anyLong(), any());
-        }
         mockProxyContext(transactionType, transactionManagerEngine, transactionHooks);
         ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
         setLocalTransactionManager(transactionManager);
         transactionManager.commit();
-        if (needLock) {
-            verify(exclusiveOperatorEngine).operate(any(), anyLong(), any());
-        } else {
-            verify(exclusiveOperatorEngine, never()).operate(any(), anyLong(), any());
-        }
         if (hasHook) {
             verify(transactionHook).beforeCommit(any(), any(DatabaseType.class), anyCollection(), eq(transactionContext));
+            verify(transactionHook).afterCommit(any(), any(DatabaseType.class), anyCollection(), eq(transactionContext));
         }
         if (expectDistributedCommit) {
             verify(distributedTransactionManager).commit(exceptionOccurred);
@@ -380,7 +359,6 @@ class ProxyBackendTransactionManagerTest {
         when(transactionRule.getResource()).thenReturn(engine);
         ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(transactionRule)));
-        when(contextManager.getExclusiveOperatorEngine()).thenReturn(exclusiveOperatorEngine);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(OrderedSPILoader.getServices(eq(TransactionHook.class), ArgumentMatchers.<Collection<ShardingSphereRule>>any())).thenReturn(transactionHooks);
     }
@@ -399,9 +377,9 @@ class ProxyBackendTransactionManagerTest {
     
     private static Stream<Arguments> provideCommitScenarios() {
         return Stream.of(
-                Arguments.of("Local commit without lock", TransactionType.LOCAL, false, false, false, true, false),
-                Arguments.of("Distributed commit with lock", TransactionType.XA, true, true, true, true, true),
-                Arguments.of("XA fallback commit uses local manager", TransactionType.XA, false, false, false, false, false));
+                Arguments.of("Local commit without distributed manager", TransactionType.LOCAL, false, false, true, false),
+                Arguments.of("Distributed commit", TransactionType.XA, true, true, true, true),
+                Arguments.of("XA fallback commit uses local manager", TransactionType.XA, false, false, false, false));
     }
     
     private static Stream<Arguments> provideRollbackScenarios() {

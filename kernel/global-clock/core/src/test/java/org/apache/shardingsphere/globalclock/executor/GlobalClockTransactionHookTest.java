@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
@@ -148,15 +149,29 @@ class GlobalClockTransactionHookTest {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         when(globalClockProvider.getCurrentTimestamp()).thenReturn(10L);
+        when(globalClockProvider.tryLock()).thenReturn(true);
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
         transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext);
+        verify(globalClockProvider).tryLock();
         verify(globalClockTransactionExecutor).sendCommitTimestamp(Collections.emptyList(), 10L);
+    }
+    
+    @Test
+    void assertBeforeCommitWhenLockFails() {
+        when(rule.getConfiguration().isEnabled()).thenReturn(true);
+        when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
+        when(globalClockProvider.tryLock()).thenReturn(false);
+        when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
+        assertThrows(SQLException.class, () -> transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext));
+        verify(globalClockProvider).tryLock();
+        verify(globalClockTransactionExecutor, never()).sendCommitTimestamp(any(), anyLong());
     }
     
     @Test
     void assertAfterCommitWhenGlobalClockProviderAbsent() {
         transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext);
         verify(globalClockProvider, never()).getNextTimestamp();
+        verify(globalClockProvider, never()).unlock();
     }
     
     @Test
@@ -165,6 +180,7 @@ class GlobalClockTransactionHookTest {
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext);
         verify(globalClockProvider).getNextTimestamp();
+        verify(globalClockProvider).unlock();
     }
     
     @Test
