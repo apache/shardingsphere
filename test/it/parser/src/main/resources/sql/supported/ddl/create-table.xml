@@ -455,6 +455,102 @@ ORGANIZATION external (TYPE oracle_loader
       UNIT_COST, UNIT_PRICE))
   location ('sh_sales.gz')
 )REJECT LIMIT UNLIMITED" db-types="Oracle" />
+    <sql-case id="create_table_organization_index_overflow_with_list_partitions" value="CREATE TABLE sales(acct_no NUMBER(5), 
+                   acct_name CHAR(30), 
+                   amount_of_sale NUMBER(6), 
+                   week_no INTEGER,
+                   sale_details VARCHAR2(1000),
+             PRIMARY KEY (acct_no, acct_name, week_no)) 
+     ORGANIZATION INDEX 
+             INCLUDING week_no
+             OVERFLOW TABLESPACE example
+     PARTITION BY LIST (week_no)
+            (PARTITION VALUES (1, 2, 3, 4) 
+                   TABLESPACE example,
+             PARTITION VALUES (5, 6, 7, 8) 
+                   TABLESPACE example OVERFLOW TABLESPACE example,
+             PARTITION VALUES (DEFAULT) 
+                   TABLESPACE example)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartition_by_list_as_select" value="CREATE TABLE sales_par_range_list
+ (calendar_year, calendar_month_number, day_number_in_month,
+  country_name, prod_id, prod_name, quantity_sold, amount_sold)
+PARTITION BY RANGE (calendar_month_number)
+SUBPARTITION BY LIST (country_name)
+ (PARTITION q1 VALUES LESS THAN (4)
+ (SUBPARTITION q1_America VALUES
+ ('United States of America', 'Argentina'),
+   SUBPARTITION q1_Asia VALUES ('Japan', 'India'),
+   SUBPARTITION q1_Europe VALUES ('France', 'Spain', 'Ireland')),
+   PARTITION q2 VALUES LESS THAN (7)
+  (SUBPARTITION q2_America VALUES
+   ('United States of America', 'Argentina'),
+   SUBPARTITION q2_Asia VALUES ('Japan', 'India'),
+   SUBPARTITION q2_Europe VALUES ('France', 'Spain', 'Ireland')),
+     PARTITION q3 VALUES LESS THAN (10)
+  (SUBPARTITION q3_America VALUES
+   ('United States of America', 'Argentina'),
+   SUBPARTITION q3_Asia VALUES ('Japan', 'India'),
+   SUBPARTITION q3_Europe VALUES ('France', 'Spain', 'Ireland')),
+     PARTITION q4 VALUES LESS THAN (13)
+  (SUBPARTITION q4_America VALUES
+   ('United States of America', 'Argentina'),
+   SUBPARTITION q4_Asia VALUES ('Japan', 'India'),
+   SUBPARTITION q4_Europe VALUES ('France', 'Spain', 'Ireland')))
+  AS SELECT calendar_year, calendar_month_number FROM times" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_as_select_with_to_date" value="CREATE TABLE sales_par_list
+(calendar_year, calendar_month_number, day_number_in_month,
+ country_name, prod_id, quantity_sold, amount_sold)
+ PARTITION BY LIST (country_name)
+ (PARTITION America
+      VALUES ('United States of America', 'Argentina'),
+  PARTITION Asia
+      VALUES ('Japan', 'India'),
+  PARTITION Europe
+      VALUES ('France', 'Spain', 'Ireland'))
+  AS SELECT calendar_year, day_number_in_month FROM times WHERE time_id &lt; TO_DATE('01-APR-1998','dd-mon-yyyy')" db-types="Oracle" />
+    <sql-case id="create_table_tablespace_nologging_compress_parallel_as_select" value="CREATE TABLE sales_q1_1998_out TABLESPACE archive_q1_1998 
+NOLOGGING COMPRESS PARALLEL 4 AS SELECT * FROM sales
+WHERE time_id &gt;=  TO_DATE('01-JAN-1998','dd-mon-yyyy')
+  AND time_id &lt; TO_DATE('01-APR-1998','dd-mon-yyyy')" db-types="Oracle" />
+    <sql-case id="create_table_tablespace_partition_by_range_subpartition_by_list" value="CREATE TABLE quarterly_regional_sales
+      (deptno number, item_no varchar2(20),
+       txn_date date, txn_amount number, state varchar2(2))
+  TABLESPACE ts4
+  PARTITION BY RANGE (txn_date)
+    SUBPARTITION BY LIST (state)
+      (PARTITION q1_1999 VALUES LESS THAN (TO_DATE('1-APR-1999','DD-MON-YYYY'))
+         (SUBPARTITION q1_1999_northwest VALUES ('OR', 'WA'),
+          SUBPARTITION q1_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+          SUBPARTITION q1_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+          SUBPARTITION q1_1999_southeast VALUES ('FL', 'GA'),
+          SUBPARTITION q1_1999_northcentral VALUES ('SD', 'WI'),
+          SUBPARTITION q1_1999_southcentral VALUES ('OK', 'TX')
+         ),
+       PARTITION q2_1999 VALUES LESS THAN ( TO_DATE('1-JUL-1999','DD-MON-YYYY'))
+         (SUBPARTITION q2_1999_northwest VALUES ('OR', 'WA'),
+          SUBPARTITION q2_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+          SUBPARTITION q2_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+          SUBPARTITION q2_1999_southeast VALUES ('FL', 'GA'),
+          SUBPARTITION q2_1999_northcentral VALUES ('SD', 'WI'),
+          SUBPARTITION q2_1999_southcentral VALUES ('OK', 'TX')
+         ),
+       PARTITION q3_1999 VALUES LESS THAN (TO_DATE('1-OCT-1999','DD-MON-YYYY'))
+         (SUBPARTITION q3_1999_northwest VALUES ('OR', 'WA'),
+          SUBPARTITION q3_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+          SUBPARTITION q3_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+          SUBPARTITION q3_1999_southeast VALUES ('FL', 'GA'),
+          SUBPARTITION q3_1999_northcentral VALUES ('SD', 'WI'),
+          SUBPARTITION q3_1999_southcentral VALUES ('OK', 'TX')
+         ),
+       PARTITION q4_1999 VALUES LESS THAN ( TO_DATE('1-JAN-2000','DD-MON-YYYY'))
+         (SUBPARTITION q4_1999_northwest VALUES ('OR', 'WA'),
+          SUBPARTITION q4_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+          SUBPARTITION q4_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+          SUBPARTITION q4_1999_southeast VALUES ('FL', 'GA'),
+          SUBPARTITION q4_1999_northcentral VALUES ('SD', 'WI'),
+          SUBPARTITION q4_1999_southcentral VALUES ('OK', 'TX')
+         )
+      )" db-types="Oracle" />
     <sql-case id="create_table_organization_external" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir LOCATION ('info.dat'));" db-types="Oracle"/>
     <sql-case id="create_table_with_fields_terminated_by" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth INT) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (FIELDS TERMINATED BY &quot;|&quot;) LOCATION ('info.dat'));" db-types="Oracle"/>
     <sql-case id="create_table_with_records_variable_fields_terminated" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (RECORDS VARIABLE 2 FIELDS TERMINATED BY ',' (first_name CHAR(7), last_name CHAR(8), year_of_birth CHAR(4))) LOCATION ('info.dat'));" db-types="Oracle"/>
