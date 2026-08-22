@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerL
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadXmlStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowItemContext;
@@ -593,6 +594,20 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.identifier()) {
             result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitOverClause(final OverClauseContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.identifier()) {
+            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
+            return result;
+        }
+        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+        result.setFrameClause(windowItemSegment.getFrameClause());
         return result;
     }
     

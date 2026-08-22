@@ -7287,7 +7287,11 @@
 
     <select sql-case-id="select_window_named_partition_doris">
         <projections start-index="7" stop-index="38" literal-start-index="7" literal-stop-index="38">
-            <aggregation-projection type="SUM" expression="SUM(sales) OVER w" alias="total_sales" start-index="7" stop-index="23" literal-start-index="7" literal-stop-index="23" />
+            <aggregation-projection type="SUM" expression="SUM(sales) OVER w" alias="total_sales" start-index="7" stop-index="23" literal-start-index="7" literal-stop-index="23">
+                <window-item start-index="18" stop-index="23">
+                    <window-name>w</window-name>
+                </window-item>
+            </aggregation-projection>
         </projections>
         <from>
             <simple-table name="orders" start-index="45" stop-index="50" literal-start-index="45" literal-stop-index="50" />
