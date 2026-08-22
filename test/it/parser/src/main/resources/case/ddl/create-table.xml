@@ -2583,6 +2583,131 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_partition_by_range_interval_subpartition_by_range_template" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="45">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="48" stop-index="70">
+            <column name="cust_id" start-index="48" stop-index="54" />
+        </column-definition>
+        <column-definition type="DATE" start-index="73" stop-index="93">
+            <column name="time_id" start-index="73" stop-index="79" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="96" stop-index="122">
+            <column name="channel_id" start-index="96" stop-index="105" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="125" stop-index="151">
+            <column name="promo_id" start-index="125" stop-index="132" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="154" stop-index="185">
+            <column name="quantity_sold" start-index="154" stop-index="166" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="188" stop-index="220">
+            <column name="amount_sold" start-index="188" stop-index="198" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_subpartition_by_hash_subpartitions_store_in" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_interval_subpartition_by_hash_with_template" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_interval_daily_subpartition_by_range_template" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_interval_subpartition_by_hash_subpartitions" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_partition_by_list_as_select" db-types="Oracle">
         <table name="product_par_list" start-index="13" stop-index="28" />
         <column name="prod_id" start-index="31" stop-index="37" />
