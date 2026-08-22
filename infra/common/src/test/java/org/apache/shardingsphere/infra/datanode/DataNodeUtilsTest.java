@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,12 +48,10 @@ class DataNodeUtilsTest {
     
     @Test
     void assertBuildDataNodeWithSameDataSource() {
-        DataNode dataNode = new DataNode("readwrite_ds.t_order");
-        Collection<DataNode> dataNodes = DataNodeUtils.buildDataNode(dataNode, Collections.singletonMap("readwrite_ds", Arrays.asList("ds_0", "shadow_ds_0")));
-        assertThat(dataNodes.size(), is(2));
-        Iterator<DataNode> iterator = dataNodes.iterator();
-        assertThat(iterator.next().getDataSourceName(), is("ds_0"));
-        assertThat(iterator.next().getDataSourceName(), is("shadow_ds_0"));
+        DataNode dataNode = new DataNode("readwrite_ds", "foo_schema", "t_order");
+        List<DataNode> expectedDataNodes = Arrays.asList(new DataNode("ds_0", "foo_schema", "t_order"), new DataNode("shadow_ds_0", "foo_schema", "t_order"));
+        Collection<DataNode> actualDataNodes = DataNodeUtils.buildDataNode(dataNode, Collections.singletonMap("readwrite_ds", Arrays.asList("ds_0", "shadow_ds_0")));
+        assertThat(actualDataNodes, is(expectedDataNodes));
     }
     
     @Test
