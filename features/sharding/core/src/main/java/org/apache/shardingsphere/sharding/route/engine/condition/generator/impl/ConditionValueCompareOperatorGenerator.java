@@ -69,11 +69,15 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         ExpressionSegment right = predicate.getRight();
         // MySQL evaluates BINARY range comparisons byte-wise, and range routing prunes partitions on converted endpoints,
         // so unwrapping BINARY is semantics-preserving only for equality predicates; range predicates keep broadcast routing.
+        if (isRangeOperator(operator) && (isBinaryOperator(left) || isBinaryOperator(right))) {
+            return Optional.empty();
+        }
         if (EQUAL.equals(operator)) {
             left = unwrapBinaryOperator(left);
             right = unwrapBinaryOperator(right);
         }
         ExpressionSegment valueExpression = left instanceof ColumnSegment ? right : left;
+        operator = !(left instanceof ColumnSegment) && right instanceof ColumnSegment ? reverseOperator(operator) : operator;
         ConditionValue conditionValue = new ConditionValue(valueExpression, params);
         if (conditionValue.isNull()) {
             return generate(null, column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
@@ -116,10 +120,33 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         return OPERATORS.contains(operator);
     }
     
+    private boolean isRangeOperator(final String operator) {
+        return GREATER_THAN.equals(operator) || LESS_THAN.equals(operator) || AT_MOST.equals(operator) || AT_LEAST.equals(operator);
+    }
+    
+    private String reverseOperator(final String operator) {
+        switch (operator) {
+            case GREATER_THAN:
+                return LESS_THAN;
+            case LESS_THAN:
+                return GREATER_THAN;
+            case AT_MOST:
+                return AT_LEAST;
+            case AT_LEAST:
+                return AT_MOST;
+            default:
+                return operator;
+        }
+    }
+    
     private ExpressionSegment unwrapBinaryOperator(final ExpressionSegment segment) {
+        return isBinaryOperator(segment)
+                ? ((UnaryOperationExpression) segment).getExpression()
+                : segment;
+    }
+    
+    private boolean isBinaryOperator(final ExpressionSegment segment) {
         return segment instanceof UnaryOperationExpression
-                && "BINARY".equalsIgnoreCase(((UnaryOperationExpression) segment).getOperator())
-                        ? ((UnaryOperationExpression) segment).getExpression()
-                        : segment;
+                && "BINARY".equalsIgnoreCase(((UnaryOperationExpression) segment).getOperator());
     }
 }
