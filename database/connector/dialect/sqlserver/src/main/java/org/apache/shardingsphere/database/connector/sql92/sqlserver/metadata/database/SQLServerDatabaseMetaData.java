@@ -40,6 +40,8 @@ import java.util.Optional;
  */
 public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData {
     
+    private static final String TABLE_VARIABLE_IDENTIFIER_PREFIX = "@";
+    
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BRACKETS;
@@ -79,6 +81,12 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     @Override
     public Optional<DialectAlterTableOption> getAlterTableOption() {
         return Optional.of(new DialectAlterTableOption(false, false, false, new DialectAddColumnOption("")));
+    }
+    
+    @Override
+    public boolean isTableVariableIdentifier(final String value, final QuoteCharacter quoteCharacter) {
+        return QuoteCharacter.NONE == quoteCharacter && value.startsWith(TABLE_VARIABLE_IDENTIFIER_PREFIX)
+                && value.length() > TABLE_VARIABLE_IDENTIFIER_PREFIX.length();
     }
     
     @Override

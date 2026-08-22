@@ -55,6 +55,20 @@ class UpdateStatementConverterTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
+    private final DatabaseType sqlServerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    
+    @Test
+    void assertConvertWithTableVariableTarget() {
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(tableSegment)
+                .setAssignment(createSetAssignmentSegment())
+                .build();
+        SqlUpdate actual = (SqlUpdate) new UpdateStatementConverter().convert(updateStatement);
+        assertThat(((SqlIdentifier) actual.getTargetTable()).getSimple(), is("@MyTableVar"));
+    }
+    
     @Test
     void assertConvertWithLimitAndAlias() {
         LimitSegment limit = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), new ParameterMarkerLimitValueSegment(0, 0, 0));

@@ -106,4 +106,13 @@ class SQLServerDatabaseMetaDataTest {
     void assertGetFunctionOption() {
         assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(SQLServerFunctionOption.class));
     }
+    
+    @Test
+    void assertIsTableVariableIdentifier() {
+        assertTrue(dialectDatabaseMetaData.isTableVariableIdentifier("@MyTableVar", QuoteCharacter.NONE));
+        assertFalse(dialectDatabaseMetaData.isTableVariableIdentifier("@MyTable", QuoteCharacter.BRACKETS));
+        assertFalse(dialectDatabaseMetaData.isTableVariableIdentifier("@MyTable", QuoteCharacter.QUOTE));
+        assertFalse(dialectDatabaseMetaData.isTableVariableIdentifier("MyTable", QuoteCharacter.NONE));
+        assertFalse(dialectDatabaseMetaData.isTableVariableIdentifier("@", QuoteCharacter.NONE));
+    }
 }

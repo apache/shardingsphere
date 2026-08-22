@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -69,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.De
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -313,7 +316,7 @@ public final class TableExtractor {
      * @param updateStatement update statement.
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
-        if (!updateStatement.isTargetTableIsFromAlias()) {
+        if (!isFromAliasTarget(updateStatement) && !isVariableTableTarget(updateStatement)) {
             extractTablesFromTableSegment(updateStatement.getTable());
         }
         updateStatement.getFrom().ifPresent(this::extractTablesFromTableSegment);
@@ -321,6 +324,82 @@ public final class TableExtractor {
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }
+        excludeUnquotedTableVariables(updateStatement);
+    }
+    
+    private void excludeUnquotedTableVariables(final UpdateStatement updateStatement) {
+        rewriteTables.removeIf(each -> isVariableTable(updateStatement, each));
+    }
+    
+    private boolean isVariableTableTarget(final UpdateStatement updateStatement) {
+        if (!(updateStatement.getTable() instanceof SimpleTableSegment)) {
+            return false;
+        }
+        return isVariableTable(updateStatement, (SimpleTableSegment) updateStatement.getTable());
+    }
+    
+    private boolean isVariableTable(final UpdateStatement updateStatement, final SimpleTableSegment tableSegment) {
+        if (tableSegment.getOwner().isPresent()) {
+            return false;
+        }
+        IdentifierValue tableName = tableSegment.getTableName().getIdentifier();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(updateStatement.getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(tableName.getValue(), tableName.getQuoteCharacter());
+    }
+    
+    private boolean isFromAliasTarget(final UpdateStatement updateStatement) {
+        if (!updateStatement.isTargetTableIsFromAlias()) {
+            return false;
+        }
+        if (!(updateStatement.getTable() instanceof SimpleTableSegment) || !updateStatement.getFrom().isPresent()) {
+            return true;
+        }
+        return isTargetMatchedInFrom((SimpleTableSegment) updateStatement.getTable(), updateStatement.getFrom().get(), updateStatement);
+    }
+    
+    private boolean isTargetMatchedInFrom(final SimpleTableSegment targetTable, final TableSegment fromSegment, final UpdateStatement updateStatement) {
+        if (fromSegment instanceof SimpleTableSegment) {
+            return matchesFromAlias(targetTable, (SimpleTableSegment) fromSegment) || matchesFromTableNameWithAlias(targetTable, (SimpleTableSegment) fromSegment, updateStatement);
+        }
+        if (fromSegment instanceof JoinTableSegment) {
+            return isTargetMatchedInFrom(targetTable, ((JoinTableSegment) fromSegment).getLeft(), updateStatement)
+                    || isTargetMatchedInFrom(targetTable, ((JoinTableSegment) fromSegment).getRight(), updateStatement);
+        }
+        return false;
+    }
+    
+    private boolean matchesFromAlias(final SimpleTableSegment targetTable, final SimpleTableSegment fromTable) {
+        return !targetTable.getOwner().isPresent()
+                && fromTable.getAliasName().map(each -> each.equalsIgnoreCase(targetTable.getTableName().getIdentifier().getValue())).orElse(false);
+    }
+    
+    private boolean matchesFromTableNameWithAlias(final SimpleTableSegment targetTable, final SimpleTableSegment fromTable, final UpdateStatement updateStatement) {
+        return fromTable.getAliasName().isPresent()
+                && targetTable.getTableName().getIdentifier().getValue().equalsIgnoreCase(fromTable.getTableName().getIdentifier().getValue())
+                && isSameTableVariableIdentity(targetTable.getTableName().getIdentifier(), fromTable.getTableName().getIdentifier(), updateStatement)
+                && isSameOwner(targetTable, fromTable);
+    }
+    
+    private boolean isSameTableVariableIdentity(final IdentifierValue targetIdentifier, final IdentifierValue fromIdentifier, final UpdateStatement updateStatement) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(updateStatement.getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(targetIdentifier.getValue(), targetIdentifier.getQuoteCharacter()) == dialectDatabaseMetaData
+                .isTableVariableIdentifier(fromIdentifier.getValue(), fromIdentifier.getQuoteCharacter());
+    }
+    
+    private boolean isSameOwner(final SimpleTableSegment targetTable, final SimpleTableSegment fromTable) {
+        if (!targetTable.getOwner().isPresent() && !fromTable.getOwner().isPresent()) {
+            return true;
+        }
+        if (!targetTable.getOwner().isPresent() || !fromTable.getOwner().isPresent()) {
+            return false;
+        }
+        return isSameOwner(targetTable.getOwner().get(), fromTable.getOwner().get());
+    }
+    
+    private boolean isSameOwner(final OwnerSegment targetOwner, final OwnerSegment fromOwner) {
+        return targetOwner.getIdentifier().getValue().equalsIgnoreCase(fromOwner.getIdentifier().getValue())
+                && targetOwner.getOwner().isPresent() == fromOwner.getOwner().isPresent()
+                && (!targetOwner.getOwner().isPresent() || isSameOwner(targetOwner.getOwner().get(), fromOwner.getOwner().get()));
     }
     
     /**

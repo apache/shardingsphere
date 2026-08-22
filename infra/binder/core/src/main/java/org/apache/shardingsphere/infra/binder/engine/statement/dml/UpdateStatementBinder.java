@@ -20,9 +20,12 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.assign.AssignmentSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.order.OrderBySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmentBinder;
@@ -33,8 +36,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+
+import java.util.Map.Entry;
 
 /**
  * Update statement binder.
@@ -55,12 +62,46 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
             boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, outerTableBinderContexts);
             boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         }
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> targetTableVariableBinderContexts = findTargetTableVariableBinderContexts(binderContext, boundTable, tableBinderContexts);
+        boolean bindTableVariableTargetColumn = !targetTableVariableBinderContexts.isEmpty();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentColumnBinderContexts = bindTableVariableTargetColumn ? targetTableVariableBinderContexts : tableBinderContexts;
         SetAssignmentSegment boundSetAssignment = sqlStatement.getAssignment()
-                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, assignmentColumnBinderContexts, tableBinderContexts, outerTableBinderContexts,
+                        bindTableVariableTargetColumn))
+                .orElse(null);
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
                 .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         return copy(sqlStatement, boundWith, boundTable, boundFrom, boundSetAssignment, boundWhere, boundOrderBy);
+    }
+    
+    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> findTargetTableVariableBinderContexts(final SQLStatementBinderContext binderContext, final TableSegment boundTable,
+                                                                                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
+        if (!(boundTable instanceof SimpleTableSegment) || !isTableVariableTarget(binderContext, (SimpleTableSegment) boundTable)) {
+            return result;
+        }
+        IdentifierValue targetTableName = ((SimpleTableSegment) boundTable).getTableName().getIdentifier();
+        for (Entry<CaseInsensitiveString, TableSegmentBinderContext> entry : tableBinderContexts.entries()) {
+            if (isTargetTableVariableBinderContext(targetTableName, entry.getValue())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private boolean isTableVariableTarget(final SQLStatementBinderContext binderContext, final SimpleTableSegment targetTable) {
+        if (targetTable.getOwner().isPresent()) {
+            return false;
+        }
+        IdentifierValue targetTableName = targetTable.getTableName().getIdentifier();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(targetTableName.getValue(), targetTableName.getQuoteCharacter());
+    }
+    
+    private boolean isTargetTableVariableBinderContext(final IdentifierValue targetTableName, final TableSegmentBinderContext tableBinderContext) {
+        return tableBinderContext instanceof SimpleTableSegmentBinderContext && ((SimpleTableSegmentBinderContext) tableBinderContext).isContainsTableVariable()
+                && tableBinderContext.getOriginalTableName().map(each -> each.getValue().equalsIgnoreCase(targetTableName.getValue())).orElse(false);
     }
     
     private UpdateStatement copy(final UpdateStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final TableSegment boundFrom,

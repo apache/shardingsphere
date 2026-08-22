@@ -209,4 +209,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     default DialectFunctionOption getFunctionOption() {
         return new DefaultFunctionOption();
     }
+    
+    /**
+     * Judge whether an identifier represents a table variable.
+     *
+     * @param value identifier value
+     * @param quoteCharacter quote character
+     * @return whether the identifier represents a table variable
+     */
+    default boolean isTableVariableIdentifier(final String value, final QuoteCharacter quoteCharacter) {
+        return false;
+    }
 }

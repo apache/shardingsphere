@@ -261,7 +261,7 @@ public final class SimpleTableSegmentBinder {
             return false;
         }
         return !segment.getOwner().isPresent() && tableBinderContexts.containsKey(CaseInsensitiveString.of(tableNameValue))
-                || tableBinderContexts.values().stream().anyMatch(each -> isSameUpdateTargetTableContext(segment, schemaName, tableNameValue, each));
+                || tableBinderContexts.values().stream().anyMatch(each -> isSameUpdateTargetTableContext(segment, binderContext, schemaName, tableNameValue, each));
     }
     
     private static SimpleTableSegment bindUpdateTargetTableAlias(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext,
@@ -270,7 +270,7 @@ public final class SimpleTableSegmentBinder {
         Collection<TableSegmentBinderContext> fromTableContexts = !segment.getOwner().isPresent() && tableBinderContexts.containsKey(CaseInsensitiveString.of(tableName.getValue()))
                 ? tableBinderContexts.get(CaseInsensitiveString.of(tableName.getValue()))
                 : tableBinderContexts.values().stream()
-                        .filter(each -> isSameUpdateTargetTableContext(segment, schemaName, tableName.getValue(), each)).collect(Collectors.toList());
+                        .filter(each -> isSameUpdateTargetTableContext(segment, binderContext, schemaName, tableName.getValue(), each)).collect(Collectors.toList());
         IdentifierValue originalTableName = fromTableContexts.stream()
                 .map(TableSegmentBinderContext::getOriginalTableName).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(tableName);
         Optional<OwnerSegment> fromTableOwner = fromTableContexts.stream()
@@ -287,10 +287,17 @@ public final class SimpleTableSegmentBinder {
         return result;
     }
     
-    private static boolean isSameUpdateTargetTableContext(final SimpleTableSegment targetTable, final Optional<IdentifierValue> schemaName, final String tableName,
-                                                          final TableSegmentBinderContext tableBinderContext) {
-        return tableBinderContext.getOriginalTableName().map(each -> each.getValue().equalsIgnoreCase(tableName)).orElse(false)
+    private static boolean isSameUpdateTargetTableContext(final SimpleTableSegment targetTable, final SQLStatementBinderContext binderContext, final Optional<IdentifierValue> schemaName,
+                                                          final String tableName, final TableSegmentBinderContext tableBinderContext) {
+        return tableBinderContext.getOriginalTableName()
+                .map(each -> each.getValue().equalsIgnoreCase(tableName) && isSameTableVariableIdentity(targetTable.getTableName().getIdentifier(), each, binderContext)).orElse(false)
                 && isSameUpdateTargetOwner(targetTable, schemaName, tableBinderContext);
+    }
+    
+    private static boolean isSameTableVariableIdentity(final IdentifierValue targetTableName, final IdentifierValue originalTableName, final SQLStatementBinderContext binderContext) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(targetTableName.getValue(), targetTableName.getQuoteCharacter()) == dialectDatabaseMetaData
+                .isTableVariableIdentifier(originalTableName.getValue(), originalTableName.getQuoteCharacter());
     }
     
     private static boolean isSameUpdateTargetOwner(final SimpleTableSegment targetTable, final Optional<IdentifierValue> schemaName,
@@ -361,6 +368,9 @@ public final class SimpleTableSegmentBinder {
         if (segment.getDbLink().isPresent()) {
             return;
         }
+        if (isVariableTable(binderContext, segment)) {
+            return;
+        }
         if (binderContext.getExternalTableBinderContexts().containsKey(CaseInsensitiveString.of(tableNameValue))) {
             return;
         }
@@ -368,6 +378,18 @@ public final class SimpleTableSegmentBinder {
             return;
         }
         ShardingSpherePreconditions.checkState(null != schema && schema.containsTable(tableName), () -> new TableNotFoundException(tableNameValue));
+    }
+    
+    private static boolean isVariableTable(final SQLStatementBinderContext binderContext, final SimpleTableSegment segment) {
+        if (!(binderContext.getSqlStatement() instanceof UpdateStatement)) {
+            return false;
+        }
+        if (segment.getOwner().isPresent()) {
+            return false;
+        }
+        IdentifierValue tableName = segment.getTableName().getIdentifier();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isTableVariableIdentifier(tableName.getValue(), tableName.getQuoteCharacter());
     }
     
     private static boolean isCreateTable(final SimpleTableSegment simpleTableSegment, final String tableName) {
@@ -422,6 +444,11 @@ public final class SimpleTableSegmentBinder {
     private static Optional<SimpleTableSegmentBinderContext> createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
                                                                                             final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
+        if (isVariableTable(binderContext, segment)) {
+            SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE, tableName);
+            result.setContainsTableVariable(true);
+            return Optional.of(result);
+        }
         Optional<SimpleTableSegmentBinderContext> externalTableBinderContext = createExternalTableBinderContext(segment, tableName, binderContext);
         if (externalTableBinderContext.isPresent()) {
             return externalTableBinderContext;

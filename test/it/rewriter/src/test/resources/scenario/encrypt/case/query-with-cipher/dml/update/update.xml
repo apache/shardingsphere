@@ -134,4 +134,169 @@
         <input sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + (SELECT SUM(so.SubTotal) FROM dbo.SalesOrderHeader AS so WHERE so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader AS so2 WHERE so2.SalesPersonID = so.SalesPersonID) AND dbo.SalesPerson.BusinessEntityID = so.SalesPersonID GROUP BY so.SalesPersonID), Bonus = 3000.00" />
         <output sql="UPDATE dbo.SalesPerson SET SalesYTD = SalesYTD + (SELECT SUM(so.SubTotal) FROM dbo.SalesOrderHeader AS so WHERE so.OrderDate = (SELECT MAX(OrderDate) FROM dbo.SalesOrderHeader AS so2 WHERE so2.SalesPersonID = so.SalesPersonID) AND dbo.SalesPerson.BusinessEntityID = so.SalesPersonID GROUP BY so.SalesPersonID), [bonus_cipher] = 'encrypt_3000.00'" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTableVar SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE @MyTableVar SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_colliding_set_column_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTableVar SET VacationNote = 'annual leave' FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE @MyTableVar SET VacationNote = 'annual leave' FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_colliding_set_column_from_employee_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE @MyTableVar SET VacationNote = ? FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.VacationNote = ?" parameters="annual leave, annual leave" />
+        <output sql="UPDATE @MyTableVar SET VacationNote = ? FROM HumanResources.Employee AS e WHERE e.BusinessEntityID = EmpID AND e.[vacation_note_cipher] = ?" parameters="annual leave, encrypt_annual leave" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_physical_target_with_table_variable_source_colliding_set_column_for_literals" db-types="SQLServer">
+        <input sql="UPDATE HumanResources.Employee SET VacationNote = 'x' FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" />
+        <output sql="UPDATE HumanResources.Employee SET [vacation_note_cipher] = 'encrypt_x' FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_physical_target_with_table_variable_source_colliding_set_column_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE HumanResources.Employee SET VacationNote = ? FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" parameters="x" />
+        <output sql="UPDATE HumanResources.Employee SET [vacation_note_cipher] = ? FROM HumanResources.Employee AS e JOIN @MyTableVar ON e.BusinessEntityID = EmpID" parameters="encrypt_x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE target SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE target SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_colliding_set_column_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE target SET VacationNote = 'annual leave' FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE target SET VacationNote = 'annual leave' FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_colliding_set_column_from_employee_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE target SET VacationNote = ? FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = ?" parameters="annual leave, annual leave" />
+        <output sql="UPDATE target SET VacationNote = ? FROM @MyTableVar AS target JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = ?" parameters="annual leave, encrypt_annual leave" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_among_multiple_table_variables_colliding_set_column_for_literals" db-types="SQLServer">
+        <input sql="UPDATE target SET VacationNote = 'annual leave' FROM @OtherVar AS o JOIN @MyTableVar AS target ON o.EmpID = EmpID JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE target SET VacationNote = 'annual leave' FROM @OtherVar AS o JOIN @MyTableVar AS target ON o.EmpID = EmpID JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_among_multiple_table_variables_colliding_set_column_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE target SET VacationNote = ? FROM @OtherVar AS o JOIN @MyTableVar AS target ON o.EmpID = EmpID JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.VacationNote = ?" parameters="annual leave, annual leave" />
+        <output sql="UPDATE target SET VacationNote = ? FROM @OtherVar AS o JOIN @MyTableVar AS target ON o.EmpID = EmpID JOIN HumanResources.Employee AS e ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = ?" parameters="annual leave, encrypt_annual leave" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_aliased_table_variable_physical_table_before_variable_for_literals" db-types="SQLServer">
+        <input sql="UPDATE target SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM HumanResources.Employee AS e JOIN @MyTableVar AS target ON e.BusinessEntityID = EmpID WHERE e.VacationNote = 'annual leave'" />
+        <output sql="UPDATE target SET NewVacationHours = e.VacationHours + 20, NewVacationNote = 'annual leave' FROM HumanResources.Employee AS e JOIN @MyTableVar AS target ON e.BusinessEntityID = EmpID WHERE e.[vacation_note_cipher] = 'encrypt_annual leave'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_at_sign_table_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET Remark = 'tool malfunction' FROM HumanResources.Employee AS e" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = 'encrypt_tool malfunction' FROM HumanResources.Employee AS e" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_at_sign_table_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET Remark = 'tool malfunction' FROM HumanResources.Employee AS e" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_tool malfunction' FROM HumanResources.Employee AS e" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_bracket_delimited_at_sign_table_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.[@MyTable] SET Remark = 'tool malfunction' FROM HumanResources.Employee AS e" />
+        <output sql="UPDATE dbo.[@MyTable] SET [remark_cipher] = 'encrypt_tool malfunction' FROM HumanResources.Employee AS e" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_quote_delimited_at_sign_table_from_employee_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.&quot;@MyTable&quot; SET Remark = 'tool malfunction' FROM HumanResources.Employee AS e" />
+        <output sql="UPDATE dbo.&quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_tool malfunction' FROM HumanResources.Employee AS e" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_at_sign_table_from_same_table_for_literals" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET src.Remark = 'tool malfunction' FROM [@MyTable] AS src" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = 'encrypt_tool malfunction' FROM [@MyTable] AS src" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_at_sign_table_from_same_table_for_literals" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET src.Remark = 'tool malfunction' FROM &quot;@MyTable&quot; AS src" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_tool malfunction' FROM &quot;@MyTable&quot; AS src" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET Remark = 'tool malfunction' FROM @MyTable" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = 'encrypt_tool malfunction' FROM @MyTable" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET Remark = ? FROM @MyTable" parameters="tool malfunction" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = ? FROM @MyTable" parameters="encrypt_tool malfunction" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET Remark = 'tool malfunction' FROM @MyTable" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_tool malfunction' FROM @MyTable" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET Remark = ? FROM @MyTable" parameters="tool malfunction" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = ? FROM @MyTable" parameters="encrypt_tool malfunction" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_bracket_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.[@MyTable] SET Remark = 'tool malfunction' FROM @MyTable" />
+        <output sql="UPDATE dbo.[@MyTable] SET [remark_cipher] = 'encrypt_tool malfunction' FROM @MyTable" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_bracket_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE dbo.[@MyTable] SET Remark = ? FROM @MyTable" parameters="tool malfunction" />
+        <output sql="UPDATE dbo.[@MyTable] SET [remark_cipher] = ? FROM @MyTable" parameters="encrypt_tool malfunction" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_quote_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.&quot;@MyTable&quot; SET Remark = 'tool malfunction' FROM @MyTable" />
+        <output sql="UPDATE dbo.&quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_tool malfunction' FROM @MyTable" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_quote_delimited_at_sign_physical_target_with_unquoted_table_variable_source_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE dbo.&quot;@MyTable&quot; SET Remark = ? FROM @MyTable" parameters="tool malfunction" />
+        <output sql="UPDATE dbo.&quot;@MyTable&quot; SET [remark_cipher] = ? FROM @MyTable" parameters="encrypt_tool malfunction" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_at_sign_physical_target_with_aliased_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET Remark = 'x' FROM @MyTable AS x" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_aliased_bracket_delimited_at_sign_physical_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM [@MyTable] AS src" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM [@MyTable] AS src" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_aliased_quote_delimited_at_sign_physical_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM &quot;@MyTable&quot; AS x" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM &quot;@MyTable&quot; AS x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_at_sign_physical_target_with_aliased_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET Remark = 'x' FROM @MyTable AS x" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_schema_qualified_aliased_quote_delimited_at_sign_physical_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM dbo.&quot;@MyTable&quot; AS src" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM dbo.&quot;@MyTable&quot; AS src" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_bracket_delimited_at_sign_physical_target_with_aliased_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.[@MyTable] SET Remark = 'x' FROM @MyTable AS x" />
+        <output sql="UPDATE dbo.[@MyTable] SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_schema_qualified_aliased_bracket_delimited_at_sign_physical_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM dbo.[@MyTable] AS src" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM dbo.[@MyTable] AS src" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_schema_qualified_quote_delimited_at_sign_physical_target_with_aliased_unquoted_table_variable_source_for_literals" db-types="SQLServer">
+        <input sql="UPDATE dbo.&quot;@MyTable&quot; SET Remark = 'x' FROM @MyTable AS x" />
+        <output sql="UPDATE dbo.&quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS x" />
+    </rewrite-assertion>
 </rewrite-assertions>
