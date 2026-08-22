@@ -277,6 +277,7 @@ identifierKeywordsUnambiguous
     | GROUPS
     | HASH
     | HDFS
+    | HLL
     | HLL_UNION
     | HISTOGRAM
     | HISTORY

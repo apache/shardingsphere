@@ -2701,6 +2701,13 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_hll_as_identifier_doris" db-types="Doris">
+        <table name="hll" start-index="13" stop-index="15" />
+        <column-definition type="INT" start-index="18" stop-index="24">
+            <column name="hll" start-index="18" stop-index="20" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_select_without_query" db-types="Oracle">
         <table name="t_order_new" start-index="13" stop-index="23"/>
         <select>
