@@ -277,6 +277,7 @@ identifierKeywordsUnambiguous
     | GROUPS
     | HASH
     | HDFS
+    | HLL
     | HLL_UNION
     | HISTOGRAM
     | HISTORY
@@ -1455,6 +1456,9 @@ dataType
     // DORIS ADDED END
     // DORIS ADDED BEGIN
     | dataTypeName = BITMAP
+    // DORIS ADDED END
+    // DORIS ADDED BEGIN
+    | dataTypeName = HLL
     // DORIS ADDED END
     ;
 

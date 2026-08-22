@@ -2601,6 +2601,113 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_unique_key_with_multi_columns_hash_doris" db-types="Doris">
+        <table name="table_hash" start-index="13" stop-index="33">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="BIGINT" start-index="36" stop-index="44">
+            <column name="k1" start-index="36" stop-index="37" />
+        </column-definition>
+        <column-definition type="LARGEINT" start-index="47" stop-index="57">
+            <column name="k2" start-index="47" stop-index="48" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="60" stop-index="75">
+            <column name="v1" start-index="60" stop-index="61" />
+        </column-definition>
+        <column-definition type="SMALLINT" start-index="78" stop-index="101">
+            <column name="v2" start-index="78" stop-index="79" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_range_partition_multi_columns_doris" db-types="Doris">
+        <table name="table_range" start-index="13" stop-index="23" />
+        <column-definition type="DATE" start-index="26" stop-index="32">
+            <column name="k1" start-index="26" stop-index="27" />
+        </column-definition>
+        <column-definition type="INT" start-index="35" stop-index="40">
+            <column name="k2" start-index="35" stop-index="36" />
+        </column-definition>
+        <column-definition type="SMALLINT" start-index="43" stop-index="53">
+            <column name="k3" start-index="43" stop-index="44" />
+        </column-definition>
+        <column-definition type="VARCHAR" agg-type="REPLACE" start-index="56" stop-index="79">
+            <column name="v1" start-index="56" stop-index="57" />
+        </column-definition>
+        <column-definition type="INT" agg-type="SUM" start-index="82" stop-index="103">
+            <column name="v2" start-index="82" stop-index="83" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_hll_and_bitmap_type_doris" db-types="Doris">
+        <table name="example_table" start-index="13" stop-index="36">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="TINYINT" start-index="39" stop-index="48">
+            <column name="k1" start-index="39" stop-index="40" />
+        </column-definition>
+        <column-definition type="DECIMAL" start-index="51" stop-index="82">
+            <column name="k2" start-index="51" stop-index="52" />
+        </column-definition>
+        <column-definition type="HLL" agg-type="HLL_UNION" start-index="85" stop-index="100">
+            <column name="v1" start-index="85" stop-index="86" />
+        </column-definition>
+        <column-definition type="BITMAP" agg-type="BITMAP_UNION" start-index="103" stop-index="124">
+            <column name="v2" start-index="103" stop-index="104" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_inverted_index_doris" db-types="Doris">
+        <table name="table_hash" start-index="13" stop-index="33">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="TINYINT" start-index="36" stop-index="45">
+            <column name="k1" start-index="36" stop-index="37" />
+        </column-definition>
+        <column-definition type="DECIMAL" start-index="48" stop-index="79">
+            <column name="k2" start-index="48" stop-index="49" />
+        </column-definition>
+        <column-definition type="CHAR" agg-type="REPLACE" start-index="82" stop-index="100">
+            <column name="v1" start-index="82" stop-index="83" />
+        </column-definition>
+        <column-definition type="INT" agg-type="SUM" start-index="103" stop-index="112">
+            <column name="v2" start-index="103" stop-index="104" />
+        </column-definition>
+        <constraint-definition index-name="k1_idx" start-index="115" stop-index="171">
+            <index-column name="k1" start-index="129" stop-index="130" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_random_distributed_auto_buckets_doris" db-types="Doris">
+        <table name="t_auto" start-index="13" stop-index="18" />
+        <column-definition type="INT" start-index="21" stop-index="26">
+            <column name="k1" start-index="21" stop-index="22" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_hash_buckets_auto_doris" db-types="Doris">
+        <table name="t_auto2" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="27">
+            <column name="k1" start-index="22" stop-index="23" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_rollup_with_duplicate_key_doris" db-types="Doris">
+        <table name="t_r" start-index="13" stop-index="15" />
+        <column-definition type="INT" start-index="18" stop-index="23">
+            <column name="k1" start-index="18" stop-index="19" />
+        </column-definition>
+        <column-definition type="INT" agg-type="SUM" start-index="26" stop-index="35">
+            <column name="v1" start-index="26" stop-index="27" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_hll_as_identifier_doris" db-types="Doris">
+        <table name="hll" start-index="13" stop-index="15" />
+        <column-definition type="INT" start-index="18" stop-index="24">
+            <column name="hll" start-index="18" stop-index="20" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_select_without_query" db-types="Oracle">
         <table name="t_order_new" start-index="13" stop-index="23"/>
         <select>

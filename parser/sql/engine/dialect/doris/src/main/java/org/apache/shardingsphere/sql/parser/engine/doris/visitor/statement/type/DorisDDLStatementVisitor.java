@@ -837,11 +837,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDistributedbyClause(final DistributedbyClauseContext ctx) {
         ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.columnName()) {
-            result.getColumns().add((ColumnSegment) visit(ctx.columnName()));
+        if (null != ctx.columnNames()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                result.getColumns().add((ColumnSegment) visit(each));
+            }
         }
         if (null != ctx.NUMBER_()) {
             result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.AUTO()) {
+            result.setAutoBuckets(true);
         }
         return result;
     }
@@ -1423,7 +1428,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         for (RollupItemContext each : ctx.rollupItem()) {
             RollupSegment rollupSegment = new RollupSegment(each.rollupName.getStart().getStartIndex(), each.rollupName.getStop().getStopIndex(), (IdentifierValue) visit(each.rollupName));
             AddRollupDefinitionSegment addRollupDefinitionSegment = new AddRollupDefinitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), rollupSegment);
-            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(each.columnNames());
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(each.rollupColumns);
             addRollupDefinitionSegment.getColumns().addAll(columns.getValue());
             if (null != each.fromIndexName) {
                 addRollupDefinitionSegment.setFromIndex((IndexSegment) visit(each.fromIndexName));
@@ -1500,8 +1505,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.distributedbyClause()) {
             DistributedbyClauseContext distCtx = ctx.distributedbyClause();
-            result.setDistributedColumn((ColumnSegment) visit(distCtx.columnName()));
-            result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+            if (null != distCtx.columnNames()) {
+                CollectionValue<ColumnSegment> distributedColumns = (CollectionValue<ColumnSegment>) visit(distCtx.columnNames());
+                result.setDistributedColumn(distributedColumns.getValue().iterator().next());
+            }
+            if (null != distCtx.NUMBER_()) {
+                result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+            }
         }
         return result;
     }
