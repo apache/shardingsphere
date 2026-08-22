@@ -1111,6 +1111,7 @@ recordFormatOption
     : recordsSpec
     | dataEndianSpec
     | characterSetSpec
+    | preprocessSpec
     | badfileSpec
     | discardfileSpec
     | logfileSpec
@@ -1127,6 +1128,10 @@ dataEndianSpec
 
 characterSetSpec
     : CHARACTERSET identifier
+    ;
+
+preprocessSpec
+    : PREPROCESSOR externalFileName
     ;
 
 badfileSpec
@@ -1154,7 +1159,7 @@ fieldList
     ;
 
 fieldDefinition
-    : columnName positionSpecification? fieldDataType?
+    : columnName positionSpecification? fieldDataType? (STRING_ | DOUBLE_QUOTED_TEXT)?
     ;
 
 fieldDataType
@@ -1320,7 +1325,7 @@ hashPartitions
     ;
 
 hashPartitionsByQuantity
-    : PARTITIONS INTEGER_ (STORE IN (tablespaceName (COMMA_ tablespaceName)*))? (tableCompression | indexCompression)? (OVERFLOW STORE IN (tablespaceName (COMMA_ tablespaceName)*))?
+    : PARTITIONS INTEGER_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)? (tableCompression | indexCompression)? (OVERFLOW STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?
     ;
 
 indexCompression

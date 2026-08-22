@@ -3800,6 +3800,14 @@ CHARACTERSET
     : C H A R A C T E R S E T
     ;
 
+PREPROCESSOR
+    : P R E P R O C E S S O R
+    ;
+
+LDRTRIM
+    : L D R T R I M
+    ;
+
 DENSE_RANKM
     :D E N S E UL_ R A N K M
     ;
