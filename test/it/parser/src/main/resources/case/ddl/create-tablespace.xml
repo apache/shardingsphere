@@ -35,6 +35,7 @@
     <create-tablespace sql-case-id="create_tablespace_with_datafile_extent_management" />
     <create-tablespace sql-case-id="create_tablespace_with_datafile_logging_extent_management" />
     <create-tablespace sql-case-id="create_tablespace_with_datafile_extent_segment_online" />
+    <create-tablespace sql-case-id="create_tablespace_with_datafile_autoextend_off" />
     <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_k" />
     <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_m" />
     <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_g" />
@@ -48,6 +49,7 @@
     <create-tablespace sql-case-id="create_tablespace_with_force_logging" />
     <create-tablespace sql-case-id="create_tablespace_with_encrypt" />
     <create-tablespace sql-case-id="create_tablespace_with_datafile_encryption_storage_encrypt" />
+    <create-tablespace sql-case-id="create_tablespace_with_encryption_using_storage_encrypt" />
     <create-tablespace sql-case-id="create_tablespace_with_compress" />
     <create-tablespace sql-case-id="create_tablespace_with_nocompress" />
     <create-tablespace sql-case-id="create_tablespace_with_compress_basic" />
