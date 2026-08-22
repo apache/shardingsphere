@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.Table
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.datanode.DataNodeUtils;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
@@ -112,7 +111,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
             for (TableCheckRangePosition each : progressContext.getTableCheckRangePositions()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(each, tableChecker, dataSourceManager);
                 log.info("checkResult: {}, table: {}, checkRangePosition: {}", checkResult, each.getSourceDataNode(), each);
-                DataNode dataNode = DataNodeUtils.parseWithSchema(each.getSourceDataNode());
+                DataNode dataNode = new DataNode(each.getSourceDataNode());
                 QualifiedTable sourceTable = new QualifiedTable(dataNode.getSchemaName(), dataNode.getTableName());
                 checkResultMap.put(sourceTable, checkResult);
                 if (checkResult.isIgnored()) {
@@ -165,7 +164,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableCheckRangePosition checkRangePosition,
                                                                           final TableDataConsistencyChecker tableChecker, final PipelineDataSourceManager dataSourceManager) {
         log.info("checkSingleTableInventoryData, jobId: {}, checkRangePosition: {}", jobConfig.getJobId(), checkRangePosition);
-        DataNode dataNode = DataNodeUtils.parseWithSchema(checkRangePosition.getSourceDataNode());
+        DataNode dataNode = new DataNode(checkRangePosition.getSourceDataNode());
         QualifiedTable sourceTable = new QualifiedTable(dataNode.getSchemaName(), dataNode.getTableName());
         PipelineDataSource sourceDataSource = dataSourceManager.getDataSource(jobConfig.getSources().get(dataNode.getDataSourceName()));
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
