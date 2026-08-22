@@ -2596,7 +2596,29 @@
             <column name="unit_price" start-index="82" stop-index="91" />
         </column-definition>
     </create-table>
-    
+
+    <create-table sql-case-id="create_table_partition_by_reference">
+        <table name="order_items" start-index="13" stop-index="23" />
+        <column-definition type="NUMBER" start-index="31" stop-index="68">
+            <column name="order_id" start-index="31" stop-index="38" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="77" stop-index="114">
+            <column name="line_item_id" start-index="77" stop-index="88" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="123" stop-index="160">
+            <column name="product_id" start-index="123" stop-index="132" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="169" stop-index="198">
+            <column name="unit_price" start-index="169" stop-index="178" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="207" stop-index="234">
+            <column name="quantity" start-index="207" stop-index="214" />
+        </column-definition>
+        <constraint-definition constraint-name="order_items_fk" start-index="243" stop-index="323">
+            <referenced-table name="orders" start-index="308" stop-index="313" />
+        </constraint-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_default_user">
         <table name="audit_trail" start-index="13" stop-index="23"  />
         <column-definition type="NUMBER" start-index="26" stop-index="38">

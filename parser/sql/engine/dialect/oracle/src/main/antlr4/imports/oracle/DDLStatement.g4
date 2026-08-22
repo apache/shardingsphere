@@ -1418,7 +1418,7 @@ compositeHashPartitions
     ;
 
 referencePartitioning
-    :PARTITION BY REFERENCE LP_ constraint RP_ (LP_? referencePartitionDesc (COMMA_ referencePartitionDesc)* RP_?)?
+    : PARTITION BY REFERENCE LP_ constraintName RP_ (LP_? referencePartitionDesc (COMMA_ referencePartitionDesc)* RP_?)?
     ;
 
 referencePartitionDesc
