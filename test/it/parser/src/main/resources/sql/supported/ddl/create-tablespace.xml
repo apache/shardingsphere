@@ -27,18 +27,22 @@
     <sql-case id="create_permanent_tablespace_offline" value="CREATE TABLESPACE test_space OFFLINE" db-types="Oracle" />
     <sql-case id="create_permanent_tablespace_bigfile" value="CREATE BIGFILE TABLESPACE test_space ONLINE" db-types="Oracle" />
     <sql-case id="create_permanent_tablespace_smallfile" value="CREATE SMALLFILE TABLESPACE test_space ONLINE" db-types="Oracle" />
-    <sql-case id="create_tablespace_with_multi_filespecification" value="CREATE
+    <sql-case id="create_tablespace_with_multi_filespecification" value="CREATE TABLESPACE test_space
         DATAFILE 'disk1:df1.dbf' AUTOEXTEND ON,
         'disk2:df2.dbf' AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
-        TABLESPACE test_space ONLINE" db-types="Oracle" />
-    <sql-case id="create_tablespace_with_filespecification_next" value="CREATE
+        ONLINE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_filespecification_next" value="CREATE TABLESPACE test_space
          DATAFILE '/u01/app/oracle/oradata/newcdb/system01.dbf'
          SIZE 700M REUSE AUTOEXTEND ON NEXT 10240K MAXSIZE UNLIMITED
-         TABLESPACE test_space ONLINE" db-types="Oracle" />
-    <sql-case id="create_tablespace_with_filespecification" value="CREATE
+         ONLINE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_filespecification" value="CREATE TABLESPACE test_space
          DATAFILE '/u01/app/oracle/oradata/pdbseed/usertbs01.dbf'
          SIZE 200M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
-         TABLESPACE test_space ONLINE" db-types="Oracle" />
+         ONLINE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_datafile_online" value="CREATE TABLESPACE tbs_01 DATAFILE 'tbs_f2.dbf' SIZE 40M ONLINE;" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_datafile_logging" value="CREATE TABLESPACE tbs_03 DATAFILE 'tbs_f03.dbf' SIZE 20M LOGGING;" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_datafile_extent_management" value="CREATE TABLESPACE tbs_04 DATAFILE 'file_1.dbf' SIZE 10M EXTENT MANAGEMENT LOCAL UNIFORM SIZE 128K;" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_datafile_logging_extent_management" value="CREATE TABLESPACE tbs_05 DATAFILE 'tbs_f05.dbf' SIZE 5M LOGGING EXTENT MANAGEMENT LOCAL;" db-types="Oracle" />
     <sql-case id="create_tablespace_with_minimum_extend_k" value="CREATE TABLESPACE test_space MINIMUM EXTEND 1K" db-types="Oracle" />
     <sql-case id="create_tablespace_with_minimum_extend_m" value="CREATE TABLESPACE test_space MINIMUM EXTEND 12M" db-types="Oracle" />
     <sql-case id="create_tablespace_with_minimum_extend_g" value="CREATE TABLESPACE test_space MINIMUM EXTEND 31G" db-types="Oracle" />

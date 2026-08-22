@@ -30,6 +30,10 @@
     <create-tablespace sql-case-id="create_tablespace_with_multi_filespecification" />
     <create-tablespace sql-case-id="create_tablespace_with_filespecification_next" />
     <create-tablespace sql-case-id="create_tablespace_with_filespecification" />
+    <create-tablespace sql-case-id="create_tablespace_with_datafile_online" />
+    <create-tablespace sql-case-id="create_tablespace_with_datafile_logging" />
+    <create-tablespace sql-case-id="create_tablespace_with_datafile_extent_management" />
+    <create-tablespace sql-case-id="create_tablespace_with_datafile_logging_extent_management" />
     <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_k" />
     <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_m" />
     <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_g" />
