@@ -433,6 +433,12 @@ alterResource
     : ALTER RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
     ;
 
+// DORIS ADDED BEGIN
+createResource
+    : CREATE EXTERNAL? RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
+    ;
+// DORIS ADDED END
+
 resourceName
     : identifier | string_
     ;

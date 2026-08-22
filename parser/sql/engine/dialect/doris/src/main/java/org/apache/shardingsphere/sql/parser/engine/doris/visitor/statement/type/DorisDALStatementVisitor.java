@@ -138,6 +138,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Uninsta
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UnsetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateResourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResourceNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyKeyContext;
@@ -254,6 +255,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCheckT
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetPartitionVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRebalanceDiskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelBackupStatement;
@@ -1240,6 +1242,18 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             properties.setProperty(key, value);
         }
         return new DorisAlterResourceStatement(getDatabaseType(), resourceName, properties);
+    }
+    
+    @Override
+    public ASTNode visitCreateResource(final CreateResourceContext ctx) {
+        String resourceName = getResourceName(ctx.resourceName());
+        Properties properties = new Properties();
+        for (PropertyAssignmentContext each : ctx.propertyAssignments().propertyAssignment()) {
+            String key = getPropertyKey(each.propertyKey());
+            String value = getPropertyValue(each.propertyValue());
+            properties.setProperty(key, value);
+        }
+        return new DorisCreateResourceStatement(getDatabaseType(), resourceName, properties);
     }
     
     private String getResourceName(final ResourceNameContext ctx) {

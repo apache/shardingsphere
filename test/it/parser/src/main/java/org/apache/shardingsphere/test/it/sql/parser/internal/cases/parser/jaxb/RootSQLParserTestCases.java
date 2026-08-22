@@ -32,6 +32,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaVersionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateResourceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisBackupStatementTestCase;
@@ -916,6 +917,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-resource")
     private final List<DorisAlterResourceStatementTestCase> alterResourceTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-resource")
+    private final List<DorisCreateResourceStatementTestCase> createResourceTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-resource-group")
     private final List<MySQLCreateResourceGroupStatementTestCase> createResourceGroupTestCases = new LinkedList<>();

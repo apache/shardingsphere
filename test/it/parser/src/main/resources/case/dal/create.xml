@@ -75,4 +75,46 @@
         <group-name start-index="22" stop-index="27">sample</group-name>
         <property key="max_cpu_percent" value="10%" start-index="40" stop-index="62" />
     </create-workload-group>
+    <create-resource sql-case-id="create_resource_with_double_quoted_name">
+        <resource-name start-index="16" stop-index="26">remote_s3</resource-name>
+        <property key="type" value="s3" />
+        <property key="s3.endpoint" value="bj.s3.com" />
+        <property key="s3.region" value="bj" />
+        <property key="s3.access_key" value="bbb" />
+        <property key="s3.secret_key" value="aaaa" />
+    </create-resource>
+    <create-resource sql-case-id="create_resource_with_unquoted_name">
+        <resource-name start-index="16" stop-index="29">mysql_resource</resource-name>
+        <property key="type" value="jdbc" />
+        <property key="user" value="root" />
+        <property key="password" value="123456" />
+        <property key="jdbc_url" value="jdbc:mysql://127.0.0.1:3316/doris_test?useSSL=false" />
+        <property key="driver_class" value="com.mysql.cj.jdbc.Driver" />
+    </create-resource>
+    <create-resource sql-case-id="create_resource_with_multiple_properties">
+        <resource-name start-index="16" stop-index="28">hdfs_resource</resource-name>
+        <property key="type" value="hdfs" />
+        <property key="username" value="user" />
+        <property key="password" value="passwd" />
+        <property key="dfs.nameservices" value="my_ha" />
+        <property key="dfs.ha.namenodes.my_ha" value="my_namenode1, my_namenode2" />
+    </create-resource>
+    <create-resource sql-case-id="create_resource_with_single_quoted_properties">
+        <resource-name start-index="16" stop-index="27">hms_resource</resource-name>
+        <property key="type" value="hms" />
+        <property key="hive.metastore.uris" value="thrift://127.0.0.1:7004" />
+        <property key="dfs.nameservices" value="HANN" />
+    </create-resource>
+    <create-resource sql-case-id="create_resource_with_boolean_property">
+        <resource-name start-index="16" stop-index="26">es_resource</resource-name>
+        <property key="type" value="es" />
+        <property key="hosts" value="http://127.0.0.1:29200" />
+        <property key="nodes_discovery" value="false" />
+        <property key="enable_keyword_sniff" value="true" />
+    </create-resource>
+    <create-resource sql-case-id="create_resource_with_back_quoted_name_and_external">
+        <resource-name start-index="25" stop-index="35">remote_s3</resource-name>
+        <property key="type" value="s3" />
+        <property key="s3.endpoint" value="bj.s3.com" />
+    </create-resource>
 </sql-parser-test-cases>
