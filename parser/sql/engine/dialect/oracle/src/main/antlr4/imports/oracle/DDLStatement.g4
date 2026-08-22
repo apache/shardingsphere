@@ -4204,11 +4204,11 @@ undoTablespaceClause
     ;
 
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? (permanentTablespaceClause | temporaryTablespaceClause | undoTablespaceClause)
+    : CREATE (BIGFILE|SMALLFILE)? (permanentTablespaceClause | temporaryTablespaceClause | undoTablespaceClause)
     ;
 
 permanentTablespaceClause
-    : TABLESPACE tablespaceName (
+    : TABLESPACE tablespaceName (DATAFILE fileSpecifications)? (
     (MINIMUM EXTEND sizeClause)
     | (BLOCKSIZE INTEGER_ capacityUnit?)
     | loggingClause
@@ -4219,7 +4219,7 @@ permanentTablespaceClause
     | extentManagementClause
     | segmentManagementClause
     | flashbackModeClause
-    )
+    )*
     ;
 
 alterTablespace
