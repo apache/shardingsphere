@@ -207,7 +207,11 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static boolean isValidDataNode(final String dataNodeStr) {
-        return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
+        if (!dataNodeStr.contains(DELIMITER)) {
+            return false;
+        }
+        int segmentsSize = Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
+        return 2 == segmentsSize || 3 == segmentsSize;
     }
     
     private static Map<String, ShardingTable> createShardingTables(final ShardingRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
