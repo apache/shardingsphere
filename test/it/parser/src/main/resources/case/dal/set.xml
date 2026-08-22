@@ -240,4 +240,39 @@
             <parameter name="LOGSOURCE" />
         </parameter-assign>
     </set-parameter>
+    <set-parameter sql-case-id="set_dbid_oracle">
+        <parameter-assign value="1625818158">
+            <parameter name="DBID" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_dbid_with_equal_oracle">
+        <parameter-assign value="1625818158">
+            <parameter name="DBID" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_decryption_oracle">
+        <parameter-assign value="password">
+            <parameter name="DECRYPTION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_decryption_single_quoted_oracle">
+        <parameter-assign value="'my_bkup_pwd'">
+            <parameter name="DECRYPTION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_decryption_double_quoted_oracle">
+        <parameter-assign value="&quot;N0Way!&quot;">
+            <parameter name="DECRYPTION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_extproc_dlls_empty_oracle">
+        <parameter-assign>
+            <parameter name="EXTPROC_DLLS" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_extproc_dlls_list_oracle">
+        <parameter-assign value="DLL1:DLL2">
+            <parameter name="EXTPROC_DLLS" />
+        </parameter-assign>
+    </set-parameter>
 </sql-parser-test-cases>

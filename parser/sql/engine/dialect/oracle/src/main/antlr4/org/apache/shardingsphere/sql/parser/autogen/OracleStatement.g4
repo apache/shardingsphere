@@ -164,6 +164,8 @@ execute
     | show
     | spool
     | set
+    | list
+    | report
     | createOperator
     | createIndexType
     | createOutline

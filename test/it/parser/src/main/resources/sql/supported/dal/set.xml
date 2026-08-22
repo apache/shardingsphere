@@ -61,4 +61,11 @@
     <sql-case id="set_pagesize_oracle" value="SET PAGESIZE 0" db-types="Oracle" />
     <sql-case id="set_logsource_quoted_oracle" value="SET LOGSOURCE &quot;/tmp&quot;" db-types="Oracle" />
     <sql-case id="set_logsource_unquoted_oracle" value="SET LOGSOURCE /tmp" db-types="Oracle" />
+    <sql-case id="set_dbid_oracle" value="SET DBID 1625818158" db-types="Oracle" />
+    <sql-case id="set_dbid_with_equal_oracle" value="SET DBID=1625818158" db-types="Oracle" />
+    <sql-case id="set_decryption_oracle" value="SET DECRYPTION IDENTIFIED BY password" db-types="Oracle" />
+    <sql-case id="set_decryption_single_quoted_oracle" value="SET DECRYPTION IDENTIFIED BY 'my_bkup_pwd'" db-types="Oracle" />
+    <sql-case id="set_decryption_double_quoted_oracle" value="SET DECRYPTION IDENTIFIED BY &quot;N0Way!&quot;" db-types="Oracle" />
+    <sql-case id="set_extproc_dlls_empty_oracle" value="SET EXTPROC_DLLS=" db-types="Oracle" />
+    <sql-case id="set_extproc_dlls_list_oracle" value="SET EXTPROC_DLLS=DLL1:DLL2" db-types="Oracle" />
 </sql-cases>
