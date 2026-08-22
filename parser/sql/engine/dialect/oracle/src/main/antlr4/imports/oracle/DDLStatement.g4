@@ -4213,7 +4213,7 @@ permanentTablespaceClause
     | (BLOCKSIZE INTEGER_ capacityUnit?)
     | loggingClause
     | (FORCE LOGGING)
-    | ENCRYPTION tablespaceEncryptionSpec
+    | ENCRYPTION tablespaceEncryptionSpec?
     | DEFAULT tableCompressionTableSpace? storageClause?
     | (ONLINE|OFFLINE)
     | extentManagementClause
