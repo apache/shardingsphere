@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datanode;
 
-import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
-
-import java.util.List;
 
 /**
  * Data node utility class.
@@ -40,8 +36,6 @@ public final class DataNodeUtils {
      * @throws InvalidDataNodeFormatException invalid data nodes format exception
      */
     public static DataNode parseWithSchema(final String text) {
-        List<String> segments = Splitter.on(".").splitToList(text);
-        ShardingSpherePreconditions.checkState(2 == segments.size() || 3 == segments.size(), () -> new InvalidDataNodeFormatException(text));
-        return 3 == segments.size() ? new DataNode(segments.get(0), segments.get(1), segments.get(2)) : new DataNode(segments.get(0), (String) null, segments.get(segments.size() - 1));
+        return new DataNode(text);
     }
 }
