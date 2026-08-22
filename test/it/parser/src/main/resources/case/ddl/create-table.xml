@@ -1359,6 +1359,15 @@
             <column name="column3" />
         </column-definition>
     </create-table>
+    <create-table sql-case-id="create_table_partition_by_hash_with_store_in">
+        <table name="scubagear" start-index="13" stop-index="21" />
+        <column-definition type="NUMBER" start-index="29" stop-index="37">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="46" stop-index="63">
+            <column name="name" />
+        </column-definition>
+    </create-table>
     
     <create-table sql-case-id="create_table_with_xmltype_table_oracle">
         <table name="xwarehouses" start-index="13" stop-index="23" />
@@ -2922,6 +2931,29 @@
             <primary-key-column name="doc_id" start-index="183" stop-index="188" />
         </constraint-definition>
     </create-table>
+    <create-table sql-case-id="create_table_organization_index_overflow_with_hash_partitions_store_in">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="19" stop-index="35">
+            <column name="acct_no" start-index="19" stop-index="25" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="57" stop-index="74">
+            <column name="acct_name" start-index="57" stop-index="65" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="96" stop-index="119">
+            <column name="amount_of_sale" start-index="96" stop-index="109" />
+        </column-definition>
+        <column-definition type="INTEGER" start-index="141" stop-index="155">
+            <column name="week_no" start-index="141" stop-index="147" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="177" stop-index="203">
+            <column name="sale_details" start-index="177" stop-index="188" />
+        </column-definition>
+        <constraint-definition start-index="219" stop-index="259">
+            <primary-key-column name="acct_no" start-index="232" stop-index="238" />
+            <primary-key-column name="acct_name" start-index="241" stop-index="249" />
+            <primary-key-column name="week_no" start-index="252" stop-index="258" />
+        </constraint-definition>
+    </create-table>
     
     <create-table sql-case-id="create_table_ref_type1">
         <table name="departments_t" start-index="13" stop-index="25" />
@@ -3301,6 +3333,66 @@
         </column-definition>
         <column-definition type="VARCHAR2" start-index="66" stop-index="81">
             <column name="loc" start-index="66" stop-index="68"/>
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_external_with_preprocessor_and_ldrtrim" >
+        <table name="sales_transactions_ext" start-index="13" stop-index="34" />
+        <column-definition type="NUMBER" start-index="37" stop-index="50">
+            <column name="PROD_ID" start-index="37" stop-index="43"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="54" stop-index="67">
+            <column name="CUST_ID" start-index="54" stop-index="60"/>
+        </column-definition>
+        <column-definition type="DATE" start-index="71" stop-index="82">
+            <column name="TIME_ID" start-index="71" stop-index="77"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="86" stop-index="100">
+            <column name="CHANNEL_ID" start-index="86" stop-index="95"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="104" stop-index="118">
+            <column name="PROMO_ID" start-index="104" stop-index="111"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="122" stop-index="141">
+            <column name="QUANTITY_SOLD" start-index="122" stop-index="134"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="145" stop-index="168">
+            <column name="AMOUNT_SOLD" start-index="145" stop-index="155"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="172" stop-index="193">
+            <column name="UNIT_COST" start-index="172" stop-index="180"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="197" stop-index="219">
+            <column name="UNIT_PRICE" start-index="197" stop-index="206"/>
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_external_with_field_date_format" >
+        <table name="sales_transactions_ext" start-index="13" stop-index="34" />
+        <column-definition type="NUMBER" start-index="37" stop-index="50">
+            <column name="PROD_ID" start-index="37" stop-index="43"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="53" stop-index="66">
+            <column name="CUST_ID" start-index="53" stop-index="59"/>
+        </column-definition>
+        <column-definition type="DATE" start-index="70" stop-index="81">
+            <column name="TIME_ID" start-index="70" stop-index="76"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="84" stop-index="100">
+            <column name="CHANNEL_ID" start-index="84" stop-index="93"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="104" stop-index="118">
+            <column name="PROMO_ID" start-index="104" stop-index="111"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="121" stop-index="140">
+            <column name="QUANTITY_SOLD" start-index="121" stop-index="133"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="144" stop-index="167">
+            <column name="AMOUNT_SOLD" start-index="144" stop-index="154"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="170" stop-index="191">
+            <column name="UNIT_COST" start-index="170" stop-index="178"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="195" stop-index="217">
+            <column name="UNIT_PRICE" start-index="195" stop-index="204"/>
         </column-definition>
     </create-table>
 

@@ -109,6 +109,12 @@
     <sql-case id="create_local_temporary_table" value="CREATE LOCAL TEMPORARY TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_table_with_range_partition" value="CREATE TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY RANGE (order_id)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_table_with_partition_oracle" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_hash_with_store_in" value="CREATE TABLE scubagear
+     (id NUMBER,
+      name VARCHAR2 (60))
+   PARTITION BY HASH (id)
+   PARTITIONS 4
+   STORE IN (gear1, gear2, gear3, gear4)" db-types="Oracle" />
     <sql-case id="create_table_with_xmltype_table_oracle" value="CREATE TABLE xwarehouses OF XMLTYPE XMLSCHEMA &quot;http://www.example.com/xwarehouses.xsd&quot; ELEMENT &quot;Warehouse&quot; ;" db-types="Oracle" />
     <sql-case id="create_table_with_xmltype_column_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS CLOB;" db-types="Oracle" />
     <sql-case id="create_table_with_xmltype_column_clob_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS SECUREFILE CLOB;" db-types="Oracle" />
@@ -325,6 +331,19 @@
     TABLESPACE admin_tbs
     PCTTHRESHOLD 20
     OVERFLOW TABLESPACE admin_tbs2" db-types="Oracle" />
+    <sql-case id="create_table_organization_index_overflow_with_hash_partitions_store_in" value="CREATE TABLE sales(acct_no NUMBER(5),
+                   acct_name CHAR(30),
+                   amount_of_sale NUMBER(6),
+                   week_no INTEGER,
+                   sale_details VARCHAR2(1000),
+             PRIMARY KEY (acct_no, acct_name, week_no))
+     ORGANIZATION INDEX
+             INCLUDING week_no
+     OVERFLOW
+          PARTITION BY HASH (week_no)
+             PARTITIONS 16
+             STORE IN (ts1, ts2, ts3, ts4)
+             OVERFLOW STORE IN (ts3, ts6, ts9)" db-types="Oracle" />
     <sql-case id="create_table_ref_type1" value="CREATE TABLE departments_t (d_no NUMBER, mgr_ref REF employees_typ SCOPE IS employees_obj_t)" db-types="Oracle" />
     <sql-case id="create_table_ref_type2" value="CREATE TABLE departments_t (d_no NUMBER, mgr_ref REF employees_typ CONSTRAINT mgr_in_emp REFERENCES employees_obj_t)" db-types="Oracle" />
     <sql-case id="create_table_partition_by_range_subpartitions" value="CREATE TABLE customers_part
@@ -381,6 +400,56 @@
     <sql-case id="create_table_with_fields_varcharc_varrawc" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), resume CHAR(2000), picture RAW (2000)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (FIELDS (first_name VARCHARC(5,12), last_name VARCHARC(2,20), resume VARCHARC(4,10000), picture VARRAWC(4,100000))) LOCATION ('info.dat'))" db-types="Oracle"/>
     <sql-case id="create_table_external_with_access_parameters" value="CREATE TABLE dept_external (deptno NUMBER(6), dname VARCHAR2(20), loc VARCHAR2(25)) ORGANIZATION EXTERNAL (TYPE oracle_loader DEFAULT DIRECTORY admin ACCESS PARAMETERS (RECORDS DELIMITED BY newline BADFILE 'ulcase1.bad' DISCARDFILE 'ulcase1.dis' LOGFILE 'ulcase1.log' SKIP 20 FIELDS TERMINATED BY &quot;,&quot; OPTIONALLY ENCLOSED BY '&quot;' (deptno INTEGER EXTERNAL(6), dname CHAR(20), loc CHAR(25))) LOCATION ('ulcase1.ctl')) REJECT LIMIT UNLIMITED" db-types="Oracle"/>
     <sql-case id="create_table_external_oracle_datapump" value="CREATE TABLE dept_xt (dept_no INT, dept_name CHAR(20), location CHAR(20)) ORGANIZATION EXTERNAL (TYPE ORACLE_DATAPUMP DEFAULT DIRECTORY load_dir ACCESS PARAMETERS (LOGFILE log_dir:deptxt) LOCATION ('dept_dmp'))" db-types="Oracle"/>
+    <sql-case id="create_table_external_with_preprocessor_and_ldrtrim" value="CREATE TABLE sales_transactions_ext
+(PROD_ID NUMBER,
+ CUST_ID NUMBER,
+ TIME_ID DATE,
+ CHANNEL_ID CHAR,
+ PROMO_ID NUMBER,
+ QUANTITY_SOLD NUMBER,
+ AMOUNT_SOLD NUMBER(10,2),
+ UNIT_COST NUMBER(10,2),
+ UNIT_PRICE NUMBER(10,2))
+ORGANIZATION external
+(TYPE oracle_loader
+ DEFAULT DIRECTORY data_file_dir
+ ACCESS PARAMETERS
+  (RECORDS DELIMITED BY NEWLINE
+   CHARACTERSET AL32UTF8
+   PREPROCESSOR exec_file_dir:'zcat'
+   BADFILE log_file_dir:'sh_sales.bad_xt'
+   LOGFILE log_file_dir:'sh_sales.log_xt'
+   FIELDS TERMINATED BY &quot;|&quot; LDRTRIM
+  ( PROD_ID,
+    CUST_ID,
+    TIME_ID,
+    CHANNEL_ID,
+    PROMO_ID,
+    QUANTITY_SOLD,
+    AMOUNT_SOLD,
+    UNIT_COST,
+    UNIT_PRICE))
+ location ('sh_sales.dat.gz')
+)REJECT LIMIT UNLIMITED" db-types="Oracle" />
+    <sql-case id="create_table_external_with_field_date_format" value="CREATE TABLE sales_transactions_ext
+(PROD_ID NUMBER, CUST_ID NUMBER,
+ TIME_ID DATE, CHANNEL_ID NUMBER,
+ PROMO_ID NUMBER, QUANTITY_SOLD NUMBER,
+ AMOUNT_SOLD NUMBER(10,2), UNIT_COST NUMBER(10,2),
+ UNIT_PRICE NUMBER(10,2))
+ORGANIZATION external (TYPE oracle_loader
+  DEFAULT DIRECTORY data_file_dir ACCESS PARAMETERS
+  (RECORDS DELIMITED BY NEWLINE CHARACTERSET US7ASCII
+    PREPROCESSOR EXECDIR:'zcat'
+    BADFILE log_file_dir:'sh_sales.bad_xt'
+    LOGFILE log_file_dir:'sh_sales.log_xt'
+    FIELDS TERMINATED BY &quot;|&quot; LDRTRIM
+    ( PROD_ID, CUST_ID,
+      TIME_ID         DATE(10) &quot;YYYY-MM-DD&quot;,
+      CHANNEL_ID, PROMO_ID, QUANTITY_SOLD, AMOUNT_SOLD,
+      UNIT_COST, UNIT_PRICE))
+  location ('sh_sales.gz')
+)REJECT LIMIT UNLIMITED" db-types="Oracle" />
     <sql-case id="create_table_organization_external" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir LOCATION ('info.dat'));" db-types="Oracle"/>
     <sql-case id="create_table_with_fields_terminated_by" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth INT) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (FIELDS TERMINATED BY &quot;|&quot;) LOCATION ('info.dat'));" db-types="Oracle"/>
     <sql-case id="create_table_with_records_variable_fields_terminated" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (RECORDS VARIABLE 2 FIELDS TERMINATED BY ',' (first_name CHAR(7), last_name CHAR(8), year_of_birth CHAR(4))) LOCATION ('info.dat'));" db-types="Oracle"/>
