@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ArrayExpressionContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ArrayLastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentValuesContext;
@@ -86,7 +85,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JoinedT
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JsonFunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JsonTableFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LambdaExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LimitOffsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LimitRowCountContext;
@@ -102,6 +100,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OnDupli
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OutfilePropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PositionFunctionContext;
@@ -160,6 +159,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewNam
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
@@ -1119,6 +1119,38 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     }
     
     @Override
+    public ASTNode visitWindowSpecification(final WindowSpecificationContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.PARTITION()) {
+            result.setPartitionListSegments(getExpressions(ctx.expr()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.frameClause()) {
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), getOriginalText(ctx.frameClause())));
+        }
+        if (null != ctx.identifier()) {
+            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitOverClause(final OverClauseContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.identifier()) {
+            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
+            return result;
+        }
+        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+        result.setFrameClause(windowItemSegment.getFrameClause());
+        return result;
+    }
+    
+    @Override
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
         if (null != ctx.groupConcatFunction()) {
             return visit(ctx.groupConcatFunction());
@@ -1129,9 +1161,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         // DORIS ADDED BEGIN
         if (null != ctx.bitwiseFunction()) {
             return visit(ctx.bitwiseFunction());
-        }
-        if (null != ctx.arrayLastFunction()) {
-            return visit(ctx.arrayLastFunction());
         }
         // DORIS ADDED END
         if (null != ctx.castFunction()) {
@@ -1204,18 +1233,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     @Override
     public final ASTNode visitBitwiseFunction(final BitwiseFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.bitwiseBinaryFunctionName().getText(), getOriginalText(ctx));
-        for (ExprContext each : ctx.expr()) {
-            result.getParameters().add(new LiteralExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), each.getText()));
-        }
-        return result;
-    }
-    
-    @Override
-    public final ASTNode visitArrayLastFunction(final ArrayLastFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.ARRAY_LAST().getText(), getOriginalText(ctx));
-        LambdaExpressionContext lambdaExpression = ctx.lambdaExpression();
-        result.getParameters().add(new LiteralExpressionSegment(lambdaExpression.getStart().getStartIndex(), lambdaExpression.getStop().getStopIndex(), getOriginalText(lambdaExpression)));
-        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
     

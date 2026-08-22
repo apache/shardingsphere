@@ -1104,10 +1104,6 @@ aggregationFunction
 bitwiseFunction
     : bitwiseBinaryFunctionName LP_ expr COMMA_ expr RP_
     ;
-
-arrayLastFunction
-    : ARRAY_LAST LP_ lambdaExpression COMMA_ expr RP_
-    ;
 // DORIS ADDED END
 
 jsonFunction
@@ -1188,7 +1184,6 @@ specialFunction
     | convertFunction
     // DORIS ADDED BEGIN
     | bitwiseFunction
-    | arrayLastFunction
     // DORIS ADDED END
     | currentUserFunction
     | charFunction

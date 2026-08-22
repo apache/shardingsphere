@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -39,4 +40,7 @@ public final class ExpectedWindowItem extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "order-by")
     private ExpectedOrderByClause orderByClause;
+    
+    @XmlElement(name = "frame")
+    private ExpectedExpression frameClause;
 }

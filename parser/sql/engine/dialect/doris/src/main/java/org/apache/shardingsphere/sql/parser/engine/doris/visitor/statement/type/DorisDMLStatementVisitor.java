@@ -55,11 +55,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerL
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadXmlStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowItemContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.BrokerLoadDataDescSegment;
@@ -76,7 +74,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
@@ -572,38 +569,6 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitWindowItem(final WindowItemContext ctx) {
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
-        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
-        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
-        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
-        result.setFrameClause(windowItemSegment.getFrameClause());
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitWindowSpecification(final WindowSpecificationContext ctx) {
-        WindowItemSegment result = new WindowItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.PARTITION()) {
-            result.setPartitionListSegments(getExpressions(ctx.expr()));
-        }
-        if (null != ctx.orderByClause()) {
-            result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
-        }
-        if (null != ctx.frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
-        }
-        if (null != ctx.identifier()) {
-            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitOverClause(final OverClauseContext ctx) {
-        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        if (null != ctx.identifier()) {
-            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
-            return result;
-        }
         WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
         result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
         result.setOrderBySegment(windowItemSegment.getOrderBySegment());
