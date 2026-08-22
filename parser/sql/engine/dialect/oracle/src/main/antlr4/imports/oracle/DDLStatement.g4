@@ -248,7 +248,7 @@ createDefinitionClause
 
 createXMLTypeTableClause
     : OF? XMLTYPE
-      (LP_ (objectProperties) RP_)?
+      (LP_ objectProperties (COMMA_ objectProperties)* RP_)?
       (XMLTYPE xmlTypeStorageClause)?
       (xmlSchemaSpecClause)?
       (xmlTypeVirtualColumnsClause)?
@@ -273,7 +273,7 @@ xmlSchemaSpecClause
     ;
 
 xmlTypeVirtualColumnsClause
-    : VIRTUAL COLUMNS LP_ (columnName AS LP_ expr RP_ (COMMA_ columnName AS LP_ expr RP_)+) RP_
+    : VIRTUAL COLUMNS LP_ (columnName AS LP_ expr RP_ (COMMA_ columnName AS LP_ expr RP_)*) RP_
     ;
 
 xmlTypeViewClause
@@ -303,7 +303,7 @@ createParentClause
 
 createObjectTableClause
     : OF objectName objectTableSubstitution?
-    (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    (LP_ objectProperties (COMMA_ objectProperties)* RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     oidClause? oidIndexClause? physicalProperties? tableProperties?
     ;
 

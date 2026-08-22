@@ -45,6 +45,7 @@
     <sql-case id="create_table_without_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) NO MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
     <sql-case id="create_table_with_parent" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) PARENT t_log_parent" db-types="Oracle" />
     <sql-case id="create_object_table" value="CREATE TABLE t_log OF t_log_type" db-types="Oracle" />
+    <sql-case id="create_object_table_with_properties" value="CREATE TABLE persons OF person (homeaddress NOT NULL, UNIQUE (homeaddress.phone), CHECK (homeaddress.zip IS NOT NULL), CHECK (homeaddress.city &lt;&gt; 'San Francisco'))" db-types="Oracle" />
     <sql-case id="create_table_with_char_varing" value="CREATE TABLE t_log(id char varying (20))" db-types="Oracle" />
     <sql-case id="create_table_with_any_type" value="CREATE TABLE t_log(a_anydata SYS.AnyData, a_anytype SYS.AnyType, a_anydataset SYS.AnyDataSet)" db-types="Oracle" />
     <sql-case id="create_local_temp_table" value="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" db-types="PostgreSQL,openGauss" />
@@ -118,6 +119,7 @@
     <sql-case id="create_table_with_xmltype_table_oracle" value="CREATE TABLE xwarehouses OF XMLTYPE XMLSCHEMA &quot;http://www.example.com/xwarehouses.xsd&quot; ELEMENT &quot;Warehouse&quot; ;" db-types="Oracle" />
     <sql-case id="create_table_with_xmltype_column_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS CLOB;" db-types="Oracle" />
     <sql-case id="create_table_with_xmltype_column_clob_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS SECUREFILE CLOB;" db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_binary_xml_virtual_columns_partition" value="CREATE TABLE po_binaryxml OF XMLType XMLTYPE STORE AS BINARY XML VIRTUAL COLUMNS (DATE_COL AS (XMLCast(XMLQuery('/PurchaseOrder/@orderDate' PASSING OBJECT_VALUE RETURNING CONTENT) AS DATE))) PARTITION BY RANGE (DATE_COL) (PARTITION orders2001 VALUES LESS THAN (to_date('01-JAN-2002')), PARTITION orders2002 VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
     <!--    TODO support create table with like and inherits on PostgreSQL,openGauss-->
     <sql-case id="create_table_with_bracket" value="CREATE TABLE [t_order] ([order_id] INT, [user_id] INT, [status] VARCHAR(10), [column1] VARCHAR(10), [column2] VARCHAR(10), [column3] VARCHAR(10))" db-types="SQLServer" />
     <sql-case id="create_table_with_identity" value="CREATE TABLE t_order (order_id INT IDENTITY, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
@@ -167,6 +169,7 @@
     <sql-case id="create_table_with_partition_less_than" value="CREATE TABLE t_sales (order_id INTEGER NOT NULL, goods_name CHAR(20) NOT NULL, sales_date DATE NOT NULL, sales_volume INTEGER, sales_store CHAR(20), PRIMARY KEY ( order_id )) PARTITION BY RANGE (sales_date) (PARTITION season1 VALUES LESS THAN('2023-04-01 00:00:00'),PARTITION season2 VALUES LESS THAN('2023-07-01 00:00:00'),PARTITION season3 VALUES LESS THAN('2023-10-01 00:00:00'),PARTITION season4 VALUES LESS THAN(MAXVALUE))" db-types="openGauss"/>
     <sql-case id="create_table_with_negative_data_type" value="CREATE TABLE T(COL1 NUMBER, COL2 NUMBER(3), COL3 NUMBER(3,2), COL4 NUMBER(6,-2))" db-types="Oracle" />
     <sql-case id="create_table_with_ref_data_type" value="CREATE TABLE location_table (location_number NUMBER, building REF warehouse_typ SCOPE IS warehouse_table);" db-types="Oracle" />
+    <sql-case id="create_table_with_object_type_column" value="CREATE TABLE projecttab(deptno NUMBER, project HR.PROJECT_T)" db-types="Oracle" />
     <sql-case id="create_table_with_nested_table_store_as" value="CREATE TABLE oe.people_reltab ( id NUMBER(4) CONSTRAINT pk_people_reltab PRIMARY KEY, first_name VARCHAR2(20), last_name VARCHAR2(20), phones_ntab oe.phone_ntabtyp) NESTED TABLE phones_ntab STORE AS phone_store_ntab ((PRIMARY KEY (NESTED_TABLE_ID, location)));" db-types="Oracle" />
     <sql-case id="create_table_with_nested_table_mixed_column_properties_xmltype_first" value="CREATE TABLE t_nested_mix (doc XMLTYPE, phones_ntab phone_ntabtyp) XMLTYPE COLUMN doc STORE AS CLOB NESTED TABLE phones_ntab STORE AS phone_store_ntab;" db-types="Oracle" />
     <sql-case id="create_table_with_nested_table_mixed_column_properties_nested_first" value="CREATE TABLE t_nested_mix2 (doc XMLTYPE, phones_ntab phone_ntabtyp) NESTED TABLE phones_ntab STORE AS phone_store_ntab XMLTYPE COLUMN doc STORE AS CLOB;" db-types="Oracle" />
@@ -188,6 +191,7 @@
     <sql-case id="create_table_as_select_with_duplicate_key_multi_columns_doris" value="CREATE TABLE t_dup_user (dt DATE, id INT) ENGINE=OLAP DUPLICATE KEY(dt, id) DISTRIBUTED BY HASH(id) BUCKETS 1 AS SELECT cast('2020-05-20' as date) as dt, 1 as id" db-types="Doris" />
     <sql-case id="create_table_with_select_without_query" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Oracle"/>
     <sql-case id="create_table_as_select_with_pivot" value="CREATE TABLE pivot_table AS SELECT * FROM (SELECT EXTRACT(YEAR FROM order_date) year, order_mode, order_total FROM orders) PIVOT (SUM(order_total) FOR order_mode IN ('direct' AS Store, 'online' AS Internet));" db-types="Oracle"/>
+    <sql-case id="create_table_as_select_with_pivot_and_aggregate_alias" value="CREATE TABLE pivot_alias_table AS SELECT * FROM (SELECT quarter, quantity_sold FROM sales_view) PIVOT (SUM(quantity_sold) AS sumq FOR quarter IN ('01' AS Q1, '02' AS Q2))" db-types="Oracle" />
     <sql-case id="create_table_organization_index_parallel_with_select" value="CREATE TABLE admin_iot3(i PRIMARY KEY, j, k, l) ORGANIZATION INDEX PARALLEL AS SELECT * FROM hr.jobs" db-types="Oracle" />
     <sql-case id="create_table_partition_by_range" value="CREATE TABLE costs_demo (prod_id NUMBER(6), time_id DATE, unit_cost NUMBER(10,2), unit_price NUMBER(10,2))
     PARTITION BY RANGE (time_id) (PARTITION costs_old VALUES LESS THAN (TO_DATE('01-JAN-2003', 'DD-MON-YYYY')) COMPRESS,
