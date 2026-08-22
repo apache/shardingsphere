@@ -39,7 +39,7 @@ alterStatement
 
 createTable
     // DORIS CHANGED BEGIN
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? duplicatekeyClause? commentClause? partitionClause? distributedbyClause? rollupClause? propertiesClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? duplicatekeyClause? commentClause? partitionClause? distributedbyClause? propertiesClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
     // DORIS CHANGED END
     ;
 
@@ -54,10 +54,6 @@ commentClause
 
 distributedbyClause
     : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
-    ;
-
-rollupClause
-    : ROLLUP LP_ rollupItem (COMMA_ rollupItem)* RP_
     ;
 
 modifyDistributionClause
@@ -779,7 +775,7 @@ place
 
 partitionDefinitions
     // DORIS CHANGED BEGIN
-    : LP_ (partitionDefinitionItem (COMMA_ partitionDefinitionItem)*)? RP_
+    : LP_ partitionDefinitionItem (COMMA_ partitionDefinitionItem)* RP_
     // DORIS CHANGED END
     ;
 
