@@ -128,8 +128,7 @@ public final class ProxySQLExecutor {
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
-        return sqlStatementContext.getTablesContext().getSchemaName().orElse(defaultSchemaName);
+        return sqlStatementContext.getTablesContext().getSchemaName().orElseGet(database::getDefaultSchemaName);
     }
     
     /**
