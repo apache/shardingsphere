@@ -2274,6 +2274,19 @@
         </select>
     </insert>
 
+    <insert sql-case-id="insert_into_table_with_dblink">
+        <table name="remote_table" start-index="12" stop-index="28" />
+        <columns start-index="29" stop-index="29" />
+        <select>
+            <from>
+                <simple-table name="local_table" start-index="44" stop-index="54" />
+            </from>
+            <projections start-index="37" stop-index="37">
+                <shorthand-projection start-index="37" stop-index="37" />
+            </projections>
+        </select>
+    </insert>
+
     <insert sql-case-id="insert_with_multitable_element">
         <multi-table-insert-type value="ALL" />
         <multi-table-insert-into start-index="11" stop-index="231">

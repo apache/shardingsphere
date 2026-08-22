@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ExchangePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.PartitionValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
@@ -78,6 +79,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddPartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyPartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedExchangePartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedDropRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedOrderByColumnDefinition;
@@ -135,6 +137,7 @@ public final class AlterTableStatementAssert {
         assertRenamePartitionDefinitions(assertContext, actual, expected);
         assertAddPartitionDefinitions(assertContext, actual, expected);
         assertModifyPartitionDefinitions(assertContext, actual, expected);
+        assertExchangePartitionDefinitions(assertContext, actual, expected);
         assertAddPartitionsSegments(assertContext, actual, expected);
         assertConvertTable(assertContext, actual, expected);
         assertModifyCollectionRetrievalDefinitions(assertContext, actual, expected);
@@ -460,6 +463,23 @@ public final class AlterTableStatementAssert {
             PartitionAssert.assertIs(assertContext, each.getPartitionSegment(), expectedRenamePartitionDefinition.getOldPartition());
             PartitionAssert.assertIs(assertContext, each.getRenamePartitionSegment(), expectedRenamePartitionDefinition.getNewPartition());
             SQLSegmentAssert.assertIs(assertContext, each, expectedRenamePartitionDefinition);
+            count++;
+        }
+    }
+    
+    private static void assertExchangePartitionDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Exchange partition definitions size assertion error: "), actual.getExchangePartitionDefinitions().size(), is(expected.getExchangePartitions().size()));
+        int count = 0;
+        for (ExchangePartitionDefinitionSegment each : actual.getExchangePartitionDefinitions()) {
+            ExpectedExchangePartitionDefinition expectedExchangePartition = expected.getExchangePartitions().get(count);
+            if (null != each.getPartition()) {
+                assertNotNull(expectedExchangePartition.getPartition(), assertContext.getText("Expected partition should exist."));
+                PartitionAssert.assertIs(assertContext, each.getPartition(), expectedExchangePartition.getPartition());
+            } else {
+                assertNull(expectedExchangePartition.getPartition(), assertContext.getText("Expected partition should not exist."));
+            }
+            TableAssert.assertIs(assertContext, each.getExchangeTable(), expectedExchangePartition.getExchangeTable());
+            SQLSegmentAssert.assertIs(assertContext, each, expectedExchangePartition);
             count++;
         }
     }

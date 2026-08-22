@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ExchangePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
@@ -146,6 +147,8 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions;
     
+    private final Collection<ExchangePartitionDefinitionSegment> exchangePartitionDefinitions;
+    
     private final SQLStatementAttributes attributes;
     
     @Builder
@@ -178,7 +181,8 @@ public final class AlterTableStatement extends DDLStatement {
                                 @Singular("renamePartitionDefinition") final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions,
                                 @Singular("addPartitionDefinition") final Collection<AddPartitionDefinitionSegment> addPartitionDefinitions,
                                 @Singular("addPartitionsSegment") final Collection<AddPartitionsSegment> addPartitionsSegments,
-                                @Singular("modifyPartitionDefinition") final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions) {
+                                @Singular("modifyPartitionDefinition") final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions,
+                                @Singular("exchangePartitionDefinition") final Collection<ExchangePartitionDefinitionSegment> exchangePartitionDefinitions) {
         super(databaseType);
         this.table = table;
         this.renameTable = renameTable;
@@ -215,6 +219,7 @@ public final class AlterTableStatement extends DDLStatement {
         this.addPartitionDefinitions = addPartitionDefinitions;
         this.addPartitionsSegments = addPartitionsSegments;
         this.modifyPartitionDefinitions = modifyPartitionDefinitions;
+        this.exchangePartitionDefinitions = exchangePartitionDefinitions;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new AlterTableConstraintSQLStatementAttribute(), new AlterTableIndexSQLStatementAttribute());
     }
     

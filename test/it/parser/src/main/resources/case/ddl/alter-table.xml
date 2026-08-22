@@ -2124,6 +2124,29 @@
         <table name="target_table" start-index="12" stop-index="23" />
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_exchange_partition_oracle">
+        <table name="orders" start-index="12" stop-index="17" />
+        <exchange-partition start-index="19" stop-index="72">
+            <partition name="orders_q1" start-index="38" stop-index="46" />
+            <exchange-table name="orders_q1_copy" start-index="59" stop-index="72" />
+        </exchange-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_exchange_partition_for_oracle">
+        <table name="sales" start-index="12" stop-index="16" />
+        <exchange-partition start-index="18" stop-index="136">
+            <exchange-table name="sales_old" start-index="91" stop-index="99" />
+        </exchange-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_exchange_partition_excluding_index_oracle">
+        <table name="orders" start-index="12" stop-index="17" />
+        <exchange-partition start-index="19" stop-index="106">
+            <partition name="orders_q2" start-index="38" stop-index="46" />
+            <exchange-table name="orders_q2_copy" start-index="59" stop-index="72" />
+        </exchange-partition>
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_set_partition_retention_basic">
         <table name="log_data" start-index="12" stop-index="19" />
     </alter-table>

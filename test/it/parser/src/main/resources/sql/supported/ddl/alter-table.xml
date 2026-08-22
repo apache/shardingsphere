@@ -316,6 +316,9 @@
     <sql-case id="alter_table_rename_partition_basic" value="ALTER TABLE sales PARTITION (dt='2025-07-01') RENAME TO PARTITION (dt='20250701')" db-types="Hive" />
     <sql-case id="alter_table_exchange_partition_basic" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25') WITH TABLE source_table" db-types="Hive" />
     <sql-case id="alter_table_exchange_partition_multiple" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25', region='asia') WITH TABLE source_table" db-types="Hive" />
+    <sql-case id="alter_table_exchange_partition_oracle" value="ALTER TABLE orders EXCHANGE PARTITION orders_q1 WITH TABLE orders_q1_copy" db-types="Oracle" />
+    <sql-case id="alter_table_exchange_partition_for_oracle" value="ALTER TABLE sales EXCHANGE PARTITION FOR (TO_DATE('01-JAN-2020','dd-MON-yyyy')) WITH TABLE sales_old INCLUDING INDEXES WITHOUT VALIDATION" db-types="Oracle" />
+    <sql-case id="alter_table_exchange_partition_excluding_index_oracle" value="ALTER TABLE orders EXCHANGE PARTITION orders_q2 WITH TABLE orders_q2_copy EXCLUDING INDEXES WITH VALIDATION" db-types="Oracle" />
     <sql-case id="alter_table_set_partition_retention_basic" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='30d')" db-types="Hive" />
     <sql-case id="alter_table_set_partition_retention_with_discover" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='7d', 'discover.partitions'='true')" db-types="Hive" />
     <sql-case id="msck_check_table" value="MSCK TABLE sales" db-types="Hive" />
