@@ -283,6 +283,10 @@
         <table name="t_log" start-index="13" stop-index="17" />
     </create-table>
 
+    <create-table sql-case-id="create_object_table_with_properties" db-types="Oracle">
+        <table name="persons" start-index="13" stop-index="19" />
+    </create-table>
+
     <create-table sql-case-id="create_table_with_char_varing">
         <table name="t_log" start-index="13" stop-index="17" />
         <column-definition type="char" start-index="19" stop-index="38">
@@ -1373,6 +1377,10 @@
         <table name="xwarehouses" start-index="13" stop-index="23" />
     </create-table>
 
+    <create-table sql-case-id="create_table_with_xmltype_binary_xml_virtual_columns_partition" db-types="Oracle">
+        <table name="po_binaryxml" start-index="13" stop-index="24" />
+    </create-table>
+
     <create-table sql-case-id="create_table_with_xmltype_column_oracle">
         <table name="xwarehouses" start-index="13" stop-index="23" />
         <column-definition type="NUMBER" start-index="26" stop-index="44">
@@ -2175,6 +2183,16 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_object_type_column" db-types="Oracle">
+        <table name="projecttab" start-index="13" stop-index="22" />
+        <column-definition type="NUMBER" start-index="24" stop-index="36">
+            <column name="deptno" />
+        </column-definition>
+        <column-definition type="HR.PROJECT_T" start-index="39" stop-index="58">
+            <column name="project" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_nested_table_store_as" db-types="Oracle">
         <table name="people_reltab" start-index="13" stop-index="28">
             <owner name="oe" start-index="13" stop-index="14" />
@@ -2767,6 +2785,42 @@
                         <in-columns>
                             <column name="Store" start-index="166" stop-index="182" />
                             <column name="Internet" start-index="185" stop-index="204" />
+                        </in-columns>
+                    </pivot>
+                </subquery-table>
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_as_select_with_pivot_and_aggregate_alias" db-types="Oracle">
+        <table name="pivot_alias_table" start-index="13" stop-index="29" />
+        <select>
+            <projections start-index="41" stop-index="41">
+                <shorthand-projection start-index="41" stop-index="41" />
+            </projections>
+            <from>
+                <subquery-table start-index="48" stop-index="94">
+                    <subquery>
+                        <select>
+                            <projections start-index="56" stop-index="77">
+                                <column-projection name="quarter" start-index="56" stop-index="62" />
+                                <column-projection name="quantity_sold" start-index="65" stop-index="77" />
+                            </projections>
+                            <from>
+                                <simple-table name="sales_view" start-index="84" stop-index="93" />
+                            </from>
+                        </select>
+                    </subquery>
+                    <pivot start-index="96" stop-index="169">
+                        <aggregation-columns>
+                            <column name="quantity_sold" start-index="107" stop-index="119" />
+                        </aggregation-columns>
+                        <for-columns>
+                            <column name="quarter" start-index="134" stop-index="140" />
+                        </for-columns>
+                        <in-columns>
+                            <column name="Q1" start-index="146" stop-index="155" />
+                            <column name="Q2" start-index="158" stop-index="167" />
                         </in-columns>
                     </pivot>
                 </subquery-table>
