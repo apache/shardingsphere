@@ -161,3 +161,24 @@ spoolFileName
 spool
     : (SPOOL | SPO) (spoolFileName (CRE | CREATE | REP | REPLACE | APP | APPEND)?) | OFF | OUT
     ;
+
+set
+    : SET setParameter
+    ;
+
+setParameter
+    : systemVariable setVariableValue?
+    | EXTPROC_DLLS EQ_ setVariableValue
+    ;
+
+setVariableValue
+    : unreservedWord
+    | numberLiterals
+    | stringLiterals
+    | DOUBLE_QUOTED_TEXT
+    | filePath
+    ;
+
+filePath
+    : SLASH_ identifier (SLASH_ identifier)*
+    ;

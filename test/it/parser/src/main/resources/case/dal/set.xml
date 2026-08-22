@@ -215,4 +215,29 @@
         </parameter-assign>
         <comment start-index="0" stop-index="41" text="/*!80029 SET GLOBAL max_connections=456 */" />
     </set-parameter>
+    <set-parameter sql-case-id="set_extproc_dlls_oracle">
+        <parameter-assign value="ANY">
+            <parameter name="EXTPROC_DLLS" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_linesize_oracle">
+        <parameter-assign value="130">
+            <parameter name="LINESIZE" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_pagesize_oracle">
+        <parameter-assign value="0">
+            <parameter name="PAGESIZE" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_logsource_quoted_oracle">
+        <parameter-assign value="&quot;/tmp&quot;">
+            <parameter name="LOGSOURCE" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_logsource_unquoted_oracle">
+        <parameter-assign value="/tmp">
+            <parameter name="LOGSOURCE" />
+        </parameter-assign>
+    </set-parameter>
 </sql-parser-test-cases>

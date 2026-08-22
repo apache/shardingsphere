@@ -1100,6 +1100,10 @@ EXITCOMMIT
     : E X I T C O M M I T
     ;
 
+EXTPROC_DLLS
+    : E X T P R O C UL_ D L L S
+    ;
+
 OMMIT
     : O M M I T
     ;

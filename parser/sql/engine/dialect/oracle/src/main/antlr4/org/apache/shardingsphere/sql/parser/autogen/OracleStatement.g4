@@ -163,6 +163,7 @@ execute
     | createTrigger
     | show
     | spool
+    | set
     | createOperator
     | createIndexType
     | createOutline
