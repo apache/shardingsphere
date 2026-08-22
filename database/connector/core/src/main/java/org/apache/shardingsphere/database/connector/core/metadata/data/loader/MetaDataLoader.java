@@ -30,10 +30,12 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -77,6 +79,7 @@ public final class MetaDataLoader {
             }
             throw new SQLException(ex);
         }
+        checkMissingTables(materials, result);
         return result;
     }
     
@@ -87,7 +90,7 @@ public final class MetaDataLoader {
             try {
                 result = dialectLoader.get().load(material);
             } catch (final SQLException ex) {
-                log.debug("{} Dialect load schema meta data error, load by default.", material.getStorageType(), ex);
+                log.warn("{} Dialect load schema meta data error, load by default.", material.getStorageType(), ex);
                 result = loadByDefault(material);
             }
         } else {
@@ -113,6 +116,23 @@ public final class MetaDataLoader {
         for (SchemaMetaData each : addedSchemaMetaDataList) {
             SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedList<>()));
             schemaMetaData.getTables().addAll(each.getTables());
+        }
+    }
+    
+    private static void checkMissingTables(final Collection<MetaDataLoaderMaterial> materials, final Map<String, SchemaMetaData> result) {
+        Set<String> expectedTableNames = new HashSet<>();
+        for (MetaDataLoaderMaterial each : materials) {
+            expectedTableNames.addAll(each.getActualTableNames());
+        }
+        Set<String> loadedTableNames = new HashSet<>();
+        for (SchemaMetaData each : result.values()) {
+            for (TableMetaData table : each.getTables()) {
+                loadedTableNames.add(table.getName());
+            }
+        }
+        expectedTableNames.removeAll(loadedTableNames);
+        if (!expectedTableNames.isEmpty()) {
+            log.warn("The following tables are missing from loaded metadata: {}", expectedTableNames);
         }
     }
 }
