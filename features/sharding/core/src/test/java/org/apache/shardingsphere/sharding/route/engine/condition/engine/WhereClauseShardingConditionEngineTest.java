@@ -127,4 +127,15 @@ class WhereClauseShardingConditionEngineTest {
         List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertTrue(actual.isEmpty());
     }
+    
+    @Test
+    void assertCreateEmptyShardingConditionsForRightBinaryOperatorRangeStatement() {
+        ColumnSegment right = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
+        ExpressionSegment binaryColumn = new UnaryOperationExpression(0, 0, right, "BINARY", "BINARY foo_sharding_col");
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, "100"), binaryColumn, "<", null);
+        when(whereSegment.getExpr()).thenReturn(expression);
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
+        assertTrue(actual.isEmpty());
+    }
 }
