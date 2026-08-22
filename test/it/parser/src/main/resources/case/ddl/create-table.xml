@@ -2522,6 +2522,79 @@
         </select>
     </create-table>
 
+    <create-table sql-case-id="create_table_partition_by_range_with_storage_as_select" db-types="Oracle">
+        <table name="part_sales_by_time" start-index="13" stop-index="30" />
+        <column name="time_id" start-index="33" stop-index="39" />
+        <column name="prod_id" start-index="42" stop-index="48" />
+        <column name="amount_sold" start-index="51" stop-index="61" />
+        <column name="quantity_sold" start-index="64" stop-index="76" />
+        <select>
+            <projections start-index="733" stop-index="784">
+                <column-projection name="time_id" start-index="733" stop-index="741">
+                    <owner name="s" start-index="733" stop-index="733" />
+                </column-projection>
+                <column-projection name="prod_id" start-index="744" stop-index="752">
+                    <owner name="s" start-index="744" stop-index="744" />
+                </column-projection>
+                <column-projection name="amount_sold" start-index="755" stop-index="767">
+                    <owner name="s" start-index="755" stop-index="755" />
+                </column-projection>
+                <column-projection name="quantity_sold" start-index="770" stop-index="784">
+                    <owner name="s" start-index="770" stop-index="770" />
+                </column-projection>
+            </projections>
+            <from>
+                <simple-table name="sales" alias="s" start-index="791" stop-index="797" />
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_interval_subpartition_by_hash_with_compress" db-types="Oracle">
+        <table name="page_history" start-index="13" stop-index="24" />
+        <column-definition type="NUMBER" start-index="27" stop-index="44">
+            <column name="id" start-index="27" stop-index="28" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="47" stop-index="72">
+            <column name="url" start-index="47" stop-index="49" />
+        </column-definition>
+        <column-definition type="DATE" start-index="75" stop-index="97">
+            <column name="view_date" start-index="75" stop-index="83" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="100" stop-index="130">
+            <column name="client_ip" start-index="100" stop-index="108" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="133" stop-index="154">
+            <column name="from_url" start-index="133" stop-index="140" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="157" stop-index="176">
+            <column name="to_url" start-index="157" stop-index="162" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="179" stop-index="202">
+            <column name="timing_in_seconds" start-index="179" stop-index="195" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_list_as_select" db-types="Oracle">
+        <table name="product_par_list" start-index="13" stop-index="28" />
+        <column name="prod_id" start-index="31" stop-index="37" />
+        <column name="prod_name" start-index="40" stop-index="48" />
+        <column name="prod_category" start-index="51" stop-index="63" />
+        <column name="prod_subcategory" start-index="66" stop-index="81" />
+        <column name="prod_list_price" start-index="84" stop-index="98" />
+        <select>
+            <projections start-index="237" stop-index="304">
+                <column-projection name="prod_id" start-index="237" stop-index="243" />
+                <column-projection name="prod_name" start-index="246" stop-index="254" />
+                <column-projection name="prod_category" start-index="257" stop-index="269" />
+                <column-projection name="prod_subcategory" start-index="272" stop-index="287" />
+                <column-projection name="prod_list_price" start-index="290" stop-index="304" />
+            </projections>
+            <from>
+                <simple-table name="products" start-index="311" stop-index="318" />
+            </from>
+        </select>
+    </create-table>
+
     <create-table sql-case-id="create_table_as_select_with_pivot" db-types="Oracle">
         <table name="pivot_table" start-index="13" stop-index="23"/>
         <select>
