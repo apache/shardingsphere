@@ -647,4 +647,5 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         }
         return result;
     }
+
 }

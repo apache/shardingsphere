@@ -1105,6 +1105,8 @@ aggregationFunctionName
 // DORIS ADDED BEGIN
 bitwiseBinaryFunctionName
     : BITXOR
+    | BITOR
+    | BITAND
     ;
 // DORIS ADDED END
 

@@ -147,6 +147,12 @@ ALIAS
 BITXOR
     : B I T X O R
     ;
+BITOR
+    : B I T O R
+    ;
+BITAND
+    : B I T A N D
+    ;
 // DORIS ADDED END
 
 BIT_XOR

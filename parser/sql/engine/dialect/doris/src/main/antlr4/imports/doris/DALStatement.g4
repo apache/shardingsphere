@@ -472,7 +472,7 @@ adminSetReplicaVersion
     ;
 
 adminCopyTablet
-    : ADMIN COPY TABLET NUMBER_ propertiesClause?
+    : ADMIN COPY TABLET (NUMBER_ | identifier) propertiesClause?
     ;
 
 createSqlBlockRule
@@ -564,7 +564,7 @@ properties
     ;
 
 property
-    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
+    : STRING_ ((EQ_ | COLON_) (STRING_ | NUMBER_ | IDENTIFIER_))?
     ;
 
 vcpuSpec
