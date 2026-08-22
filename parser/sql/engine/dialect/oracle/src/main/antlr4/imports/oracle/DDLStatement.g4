@@ -1108,11 +1108,25 @@ recordFormatInfo
     ;
 
 recordFormatOption
-    : recordsSpec | badfileSpec | discardfileSpec | logfileSpec | skipSpec
+    : recordsSpec
+    | dataEndianSpec
+    | characterSetSpec
+    | badfileSpec
+    | discardfileSpec
+    | logfileSpec
+    | skipSpec
     ;
 
 recordsSpec
-    : RECORDS (FIXED INTEGER_ | DELIMITED BY (STRING_ | DOUBLE_QUOTED_TEXT | NEWLINE | WHITESPACE))
+    : RECORDS (FIXED INTEGER_ | VARIABLE INTEGER_ | DELIMITED BY (STRING_ | DOUBLE_QUOTED_TEXT | NEWLINE | WHITESPACE))
+    ;
+
+dataEndianSpec
+    : DATA IS (BIG | LITTLE) ENDIAN
+    ;
+
+characterSetSpec
+    : CHARACTERSET identifier
     ;
 
 badfileSpec
@@ -1382,7 +1396,8 @@ hashSubpartitionQuantity
 
 rangePartitionDesc
     : PARTITION partitionName? rangeValuesClause tablePartitionDescription (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)*
-    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_ | hashSubpartitionQuantity)?
+    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_ | hashSubpartitionQuantity
+    | STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?
     ;
 
 compositeListPartitions
@@ -1394,7 +1409,8 @@ compositeListPartitions
 
 listPartitionDesc
     : PARTITION partitionName? listValuesClause tablePartitionDescription (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)*
-    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_ | hashSubpartsByQuantity)?
+    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_ | hashSubpartsByQuantity
+    | STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?
     ;
 
 compositeHashPartitions

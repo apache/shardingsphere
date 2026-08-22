@@ -3780,6 +3780,26 @@ NEWLINE
     : N E W L I N E
     ;
 
+VARIABLE
+    : V A R I A B L E
+    ;
+
+BIG
+    : B I G
+    ;
+
+LITTLE
+    : L I T T L E
+    ;
+
+ENDIAN
+    : E N D I A N
+    ;
+
+CHARACTERSET
+    : C H A R A C T E R S E T
+    ;
+
 DENSE_RANKM
     :D E N S E UL_ R A N K M
     ;
