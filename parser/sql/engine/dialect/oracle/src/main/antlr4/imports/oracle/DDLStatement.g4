@@ -4213,8 +4213,9 @@ createTablespace
     ;
 
 permanentTablespaceClause
-    : TABLESPACE tablespaceName (DATAFILE fileSpecifications)? (
-    (MINIMUM EXTEND sizeClause)
+    : TABLESPACE tablespaceName (
+    DATAFILE fileSpecifications
+    | (MINIMUM EXTEND sizeClause)
     | (BLOCKSIZE INTEGER_ capacityUnit?)
     | loggingClause
     | (FORCE LOGGING)

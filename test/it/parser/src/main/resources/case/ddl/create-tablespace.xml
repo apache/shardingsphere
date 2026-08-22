@@ -111,4 +111,5 @@
     <create-tablespace sql-case-id="create_tablespace_with_autoextend_size"/>
     <create-tablespace sql-case-id="create_tablespace_with_engine_attribute"/>
     <create-tablespace sql-case-id="create_tablespace_with_extent_size"/>
+    <create-tablespace sql-case-id="create_tablespace_with_logging_before_datafile"/>
 </sql-parser-test-cases>

@@ -120,4 +120,5 @@
     <sql-case id="create_tablespace_with_extent_size" value="CREATE TABLESPACE TS1 ADD DATAFILE 'data1.dat' EXTENT_SIZE 8M INITIAL_SIZE 2G ENGINE NDBCLUSTER" db-types="MySQL"/>
     <sql-case id="create_tablespace_with_engine_attribute" value="CREATE TABLESPACE ts1 ENGINE_ATTRIBUTE='{&quot;key&quot;:&quot;value&quot;}'" db-types="MySQL"/>
     <sql-case id="create_tablespace_with_autoextend_size" value="CREATE TABLESPACE ts1 AUTOEXTEND_SIZE = 4M" db-types="MySQL"/>
+    <sql-case id="create_tablespace_with_logging_before_datafile" value="CREATE TABLESPACE apps_tbs LOGGING DATAFILE '/u01/app/oracle/oradata/mynewdb/apps01.dbf' SIZE 500M REUSE AUTOEXTEND ON NEXT 1280K MAXSIZE UNLIMITED EXTENT MANAGEMENT LOCAL" db-types="Oracle"/>
 </sql-cases>

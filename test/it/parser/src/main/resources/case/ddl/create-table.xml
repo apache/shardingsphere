@@ -3038,6 +3038,57 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_partition_by_range_with_storage_and_row_movement">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_list_with_null_and_default">
+        <table name="sales_by_region" start-index="13" stop-index="27" />
+        <column-definition type="INTEGER" start-index="30" stop-index="42">
+            <column name="item#" start-index="30" stop-index="34" />
+        </column-definition>
+        <column-definition type="INTEGER" start-index="45" stop-index="55">
+            <column name="qty" start-index="45" stop-index="47" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="58" stop-index="79">
+            <column name="store_name" start-index="58" stop-index="67" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="82" stop-index="102">
+            <column name="state_code" start-index="82" stop-index="91" />
+        </column-definition>
+        <column-definition type="DATE" start-index="105" stop-index="118">
+            <column name="sale_date" start-index="105" stop-index="113" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_lob_securefile_cache">
+        <table name="t1" start-index="13" stop-index="14" />
+        <column-definition type="CLOB" start-index="17" stop-index="48">
+            <column name="a" start-index="17" stop-index="17" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_partition_by_range_subpartition_by_hash">
         <table name="composite_sales" start-index="13" stop-index="27"  />
         <column-definition type="NUMBER" start-index="35" stop-index="51">
@@ -5333,5 +5384,31 @@
                 <simple-table name="t_order" start-index="86" stop-index="92" />
             </from>
         </select>
+    </create-table>
+    <create-table sql-case-id="create_table_with_interval_day_to_second_precision">
+        <table name="time_table" start-index="13" stop-index="22" />
+        <column-definition type="TIMESTAMP" start-index="25" stop-index="44">
+            <column name="start_time" />
+            <dataType value="TIMESTAMP" start-index="36" stop-index="44" />
+        </column-definition>
+        <column-definition type="INTERVAL DAY TO SECOND" start-index="47" stop-index="87">
+            <column name="duration_1" />
+            <dataType value="INTERVAL DAY TO SECOND" start-index="58" stop-index="87">
+                <dataLength precision="6" scale="5" />
+            </dataType>
+        </column-definition>
+        <column-definition type="INTERVAL YEAR TO MONTH" start-index="90" stop-index="122">
+            <column name="duration_2" />
+            <dataType value="INTERVAL YEAR TO MONTH" start-index="101" stop-index="122" />
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_with_interval_year_to_month_precision">
+        <table name="t_interval" start-index="13" stop-index="22" />
+        <column-definition type="INTERVAL YEAR TO MONTH" start-index="25" stop-index="59">
+            <column name="duration" />
+            <dataType value="INTERVAL YEAR TO MONTH" start-index="34" stop-index="59">
+                <dataLength precision="2" />
+            </dataType>
+        </column-definition>
     </create-table>
 </sql-parser-test-cases>
