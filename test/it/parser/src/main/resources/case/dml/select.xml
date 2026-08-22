@@ -9224,6 +9224,16 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_system_user_sql92">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="SYSTEM_USER" start-index="7" stop-index="17">
+                <expr>
+                    <function function-name="SYSTEM_USER" start-index="7" stop-index="17" text="SYSTEM_USER" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_unreserved_column">
         <from>
             <simple-table name="servers" start-index="38" stop-index="48">
