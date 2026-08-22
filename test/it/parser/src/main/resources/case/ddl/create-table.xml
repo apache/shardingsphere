@@ -2510,6 +2510,18 @@
         </select>
     </create-table>
 
+    <create-table sql-case-id="create_table_partition_by_range_as_select">
+        <table name="emp_range" start-index="13" stop-index="21" />
+        <select>
+            <projections start-index="429" stop-index="429">
+                <shorthand-projection start-index="429" stop-index="429" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="436" stop-index="444" />
+            </from>
+        </select>
+    </create-table>
+
     <create-table sql-case-id="create_table_as_select_with_pivot" db-types="Oracle">
         <table name="pivot_table" start-index="13" stop-index="23"/>
         <select>
@@ -2739,6 +2751,19 @@
         </column-definition>
         <column-definition type="NUMBER" start-index="54" stop-index="65">
             <column name="grade" start-index="54" stop-index="58" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_subpartition_by_hash_with_template">
+        <table name="emp_sub_template" start-index="13" stop-index="28" />
+        <column-definition type="NUMBER" start-index="31" stop-index="43">
+            <column name="deptno" start-index="31" stop-index="36" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="46" stop-index="64">
+            <column name="empname" start-index="46" stop-index="52" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="67" stop-index="78">
+            <column name="grade" start-index="67" stop-index="71" />
         </column-definition>
     </create-table>
 
@@ -3151,6 +3176,45 @@
         </column-definition>
         <column-definition type="RAW" start-index="83" stop-index="100">
             <column name="picture" start-index="83" stop-index="89"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_organization_external">
+        <table name="emp_load" start-index="13" stop-index="20" />
+        <column-definition type="CHAR" start-index="23" stop-index="41">
+            <column name="first_name" start-index="23" stop-index="32" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="44" stop-index="61">
+            <column name="last_name" start-index="44" stop-index="52" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="64" stop-index="84">
+            <column name="year_of_birth" start-index="64" stop-index="76" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_fields_terminated_by">
+        <table name="emp_load" start-index="13" stop-index="20" />
+        <column-definition type="CHAR" start-index="23" stop-index="41">
+            <column name="first_name" start-index="23" stop-index="32" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="44" stop-index="61">
+            <column name="last_name" start-index="44" stop-index="52" />
+        </column-definition>
+        <column-definition type="INT" start-index="64" stop-index="80">
+            <column name="year_of_birth" start-index="64" stop-index="76" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_records_variable_fields_terminated">
+        <table name="emp_load" start-index="13" stop-index="20" />
+        <column-definition type="CHAR" start-index="23" stop-index="41">
+            <column name="first_name" start-index="23" stop-index="32" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="44" stop-index="61">
+            <column name="last_name" start-index="44" stop-index="52" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="64" stop-index="84">
+            <column name="year_of_birth" start-index="64" stop-index="76" />
         </column-definition>
     </create-table>
 
