@@ -202,7 +202,7 @@ public final class ShardingTable {
                 throw new DataNodeGenerateException(each);
             }
             result.add(dataNode);
-            dataNodeIndexMap.put(dataNode, index);
+            dataNodeIndexMap.put(new DataNode(dataNode.getDataSourceName(), (String) null, dataNode.getTableName()), index);
             actualDataSourceNames.add(dataNode.getDataSourceName());
             addActualTable(dataNode.getDataSourceName(), dataNode.getTableName());
             index++;
