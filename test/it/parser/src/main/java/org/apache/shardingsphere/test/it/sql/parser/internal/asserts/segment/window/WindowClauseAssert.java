@@ -72,6 +72,7 @@ public final class WindowClauseAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        assertWindowName(assertContext, actual, expected);
         assertPartitionBy(assertContext, actual, expected);
         assertFrame(assertContext, actual, expected);
         ExpectedOrderByClause expectedOrderByClause = expected.getOrderByClause();
@@ -83,6 +84,15 @@ public final class WindowClauseAssert {
         OrderByClauseAssert.assertIs(assertContext, actualOrderBySegment, expectedOrderByClause);
     }
     
+    private static void assertWindowName(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
+        if (null == expected.getWindowName()) {
+            assertNull(actual.getWindowName(), assertContext.getText("Actual window item name should not exist."));
+            return;
+        }
+        assertNotNull(actual.getWindowName(), assertContext.getText("Actual window item name should exist."));
+        assertThat(assertContext.getText("Window item name assertion error: "), actual.getWindowName().getValue(), is(expected.getWindowName()));
+    }
+
     private static void assertPartitionBy(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
         Collection<ExpectedColumn> expectedPartitionByColumns = expected.getPartitionByColumns();
         if (expectedPartitionByColumns.isEmpty()) {
