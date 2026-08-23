@@ -2969,6 +2969,17 @@
         </from>
     </select>
 
+    <select sql-case-id="select_cluster_set_function">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="CLUSTER_SET(km_sh_clus_sample, 2, 0.1 USING *)" start-index="7" stop-index="52">
+                <function function-name="CLUSTER_SET" text="CLUSTER_SET(km_sh_clus_sample, 2, 0.1 USING *)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="mining_data_apply_v" start-index="59" stop-index="77" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_multiset_except_expression">
         <from>
             <simple-table name="customers_demo" start-index="103" stop-index="116" />
