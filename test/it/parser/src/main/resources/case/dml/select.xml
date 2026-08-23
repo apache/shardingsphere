@@ -6522,6 +6522,28 @@
         </where>
     </select>
 
+    <select sql-case-id="select_xmlforest_function_without_as">
+        <projections start-index="7" stop-index="58">
+            <expression-projection text="XMLFOREST(e.employee_id &quot;ID&quot;, e.last_name, e.salary)" start-index="7" stop-index="58" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="65" stop-index="75" alias="e" />
+        </from>
+        <where start-index="77" stop-index="99">
+            <expr>
+                <binary-operation-expression start-index="83" stop-index="99">
+                    <left>
+                        <column name="employee_id" start-index="83" stop-index="93" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="204" start-index="97" stop-index="99" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_xmlparse_function">
         <projections start-index="7" stop-index="53">
             <expression-projection text="XMLPARSE(DOCUMENT 'DEPTXML' WELLFORMED)" alias="dept" start-index="7" stop-index="53" />

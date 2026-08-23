@@ -751,7 +751,7 @@ referencingItem
     ;
 
 triggerEditionClause
-    : (FORWARD | REVERSE) CROSSEDITION
+    : (FORWARD | REVERSE)? CROSSEDITION
     ;
 
 triggerOrderingClause

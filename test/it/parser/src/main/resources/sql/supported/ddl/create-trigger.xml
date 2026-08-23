@@ -103,6 +103,37 @@
     <sql-case id="create_trigger_with_explicit_state_visitor_oracle" value="CREATE OR REPLACE TRIGGER trg_proc_trigger_data AFTER INSERT ON t_proc_trigger_source FOR EACH ROW DISABLE BEGIN NULL; END;" db-types="Oracle" />
     <sql-case id="create_trigger_with_instead_of_nested_table" value="CREATE OR REPLACE TRIGGER Library_trigger INSTEAD OF INSERT ON Library_view FOR EACH ROW DECLARE Bookvar Book_t; i INTEGER; BEGIN INSERT INTO Library_table VALUES (:NEW.Section); FOR i IN 1..:NEW.Booklist.COUNT LOOP Bookvar := :NEW.Booklist(i); INSERT INTO Book_table (Booknum, Section, Title, Author, Available) VALUES (Bookvar.booknum, :NEW.Section, Bookvar.Title, Bookvar.Author, bookvar.Available); END LOOP; END;" db-types="Oracle" />
     <sql-case id="create_trigger_with_pseudorecord_collection_index" value="CREATE OR REPLACE TRIGGER trg_pseudorecord_data AFTER INSERT ON t_pseudorecord_source FOR EACH ROW DECLARE v INTEGER; BEGIN v := :NEW.coll(i); INSERT INTO t_pseudorecord_target VALUES (:NEW.coll(i)); END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_instead_of_create" value="CREATE OR REPLACE TRIGGER t
+  INSTEAD OF CREATE ON SCHEMA
+  BEGIN
+    EXECUTE IMMEDIATE 'CREATE TABLE T (n NUMBER, m NUMBER)';
+  END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_cross_edition" value="CREATE OR REPLACE TRIGGER trigger1
+  BEFORE INSERT OR UPDATE ON table1
+  FOR EACH ROW
+  CROSSEDITION
+DECLARE
+  row_already_present  EXCEPTION;
+  PRAGMA EXCEPTION_INIT(row_already_present, -38911);
+BEGIN
+  IF APPLYING_CROSSEDITION_TRIGGER THEN
+    /* Trigger is running because of serendipitous change.&#x000A;       Insert new row into table2 unless it is already there. */
+    INSERT /*+ IGNORE_ROW_ON_DUPKEY_INDEX(table2(key)) */
+    INTO table2
+    VALUES(:new.key, :new.value, to_date('1900-01-01', 'YYYY-MM-DD'));
+  ELSE
+    /* Trigger is running because you are applying transform.&#x000A;       If tranform has not yet inserted new row in table2, insert new row;&#x000A;       otherwise, update new row. */
+    BEGIN
+      INSERT /*+ CHANGE_DUPKEY_ERROR_INDEX(table2(key)) */
+      INTO table2
+      VALUES(:new.key, :new.value, SYSTIMESTAMP);
+    EXCEPTION WHEN row_already_present THEN
+      UPDATE table2
+      SET value = :new.value, last_updated = SYSTIMESTAMP
+      WHERE key = :new.key;
+    END;
+  END IF;
+END;" db-types="Oracle" />
     <sql-case id="create_trigger_pg_after_insert" value="CREATE TRIGGER t_merge_trigger AFTER INSERT ON t_merge_target FOR EACH ROW EXECUTE FUNCTION merge_notify()" db-types="PostgreSQL" />
     <sql-case id="create_trigger_pg_multi_events_when" value="CREATE TRIGGER check_update BEFORE INSERT OR DELETE ON t_merge_target FOR EACH ROW WHEN (order_id = 1) EXECUTE PROCEDURE process_order_audit()" db-types="PostgreSQL" />
     <sql-case id="create_trigger_pg_constraint" value="CREATE CONSTRAINT TRIGGER FROM t_merge_target DEFERRABLE FOR EACH ROW WHEN (order_id = 1) EXECUTE FUNCTION merge_notify()" db-types="PostgreSQL" />
