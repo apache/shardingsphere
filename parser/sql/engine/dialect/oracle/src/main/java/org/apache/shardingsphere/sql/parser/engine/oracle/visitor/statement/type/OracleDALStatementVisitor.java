@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterResourceCostContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ChangeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExecuteContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ListContext;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Ex
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleAlterResourceCostStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleChangeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleListStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleReportStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleSpoolStatement;
@@ -117,5 +119,10 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitReport(final ReportContext ctx) {
         return new OracleReportStatement(getDatabaseType(), null == ctx.forDbUniqueName() ? null : ctx.forDbUniqueName().identifier().getText());
+    }
+    
+    @Override
+    public ASTNode visitChange(final ChangeContext ctx) {
+        return new OracleChangeStatement(getDatabaseType());
     }
 }

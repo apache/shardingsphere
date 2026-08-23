@@ -1599,6 +1599,14 @@ DATAFILE
     : D A T A F I L E
     ;
 
+DATAFILECOPY
+    : D A T A F I L E C O P Y
+    ;
+
+BACKUPSET
+    : B A C K U P S E T
+    ;
+
 MANAGED
     : M A N A G E D
     ;
@@ -1677,6 +1685,18 @@ NOARCHIVELOG
 
 AVAILABILITY
     : A V A I L A B I L I T Y
+    ;
+
+AVAILABLE
+    : A V A I L A B L E
+    ;
+
+UNAVAILABLE
+    : U N A V A I L A B L E
+    ;
+
+TAG
+    : T A G
     ;
 
 PERFORMANCE

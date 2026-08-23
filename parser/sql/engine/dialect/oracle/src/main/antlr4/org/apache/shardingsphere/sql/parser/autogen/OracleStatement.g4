@@ -166,6 +166,7 @@ execute
     | set
     | list
     | report
+    | change
     | createOperator
     | createIndexType
     | createSchema

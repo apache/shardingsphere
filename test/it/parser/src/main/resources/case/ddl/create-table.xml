@@ -2172,6 +2172,16 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_binary_float_and_binary_double">
+        <table name="t_binary_float_double" start-index="13" stop-index="33" />
+        <column-definition type="BINARY_FLOAT" start-index="36" stop-index="52">
+            <column name="rate" />
+        </column-definition>
+        <column-definition type="BINARY_DOUBLE" start-index="55" stop-index="73">
+            <column name="total" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_ref_data_type">
         <table name="location_table" start-index="13" stop-index="26"  />
         <column-definition type="NUMBER" start-index="29" stop-index="50">
