@@ -168,6 +168,7 @@ execute
     | report
     | createOperator
     | createIndexType
+    | createSchema
     | createOutline
     ) SEMI_? SLASH_? EOF
     ;
