@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sqlfederation.resultset;
 
+import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.avatica.SqlType;
+import org.apache.calcite.linq4j.tree.Primitive;
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeFactoryImpl.JavaType;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Table;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
 
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.sql.ResultSetMetaData;
 import java.util.List;
@@ -44,7 +46,7 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
     
     private final Schema sqlFederationSchema;
     
-    private final RelDataTypeFactory typeFactory;
+    private final JavaTypeFactory typeFactory;
     
     private final List<Projection> expandProjections;
     
@@ -59,7 +61,7 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
     public SQLFederationResultSetMetaData(final Schema sqlFederationSchema, final List<Projection> expandProjections, final DatabaseType databaseType, final RelDataType resultColumnType,
                                           final Map<Integer, String> indexAndColumnLabels, final DialectSQLFederationColumnTypeConverter columnTypeConverter) {
         this.sqlFederationSchema = sqlFederationSchema;
-        typeFactory = SQLFederationDataTypeFactory.getInstance();
+        typeFactory = (JavaTypeFactory) SQLFederationDataTypeFactory.getInstance();
         this.expandProjections = expandProjections;
         this.databaseType = databaseType;
         this.resultColumnType = resultColumnType;
@@ -180,7 +182,15 @@ public final class SQLFederationResultSetMetaData extends SQLFederationWrapperAd
     
     @Override
     public String getColumnClassName(final int column) {
-        return resultColumnType.getFieldList().get(column - 1).getType().getSqlTypeName().getClass().getName();
+        RelDataType relDataType = resultColumnType.getFieldList().get(column - 1).getType();
+        Optional<Class<?>> convertedClass = null == columnTypeConverter
+                ? Optional.empty()
+                : columnTypeConverter.convertColumnValueClass(relDataType.getSqlTypeName());
+        if (convertedClass.isPresent()) {
+            return convertedClass.get().getName();
+        }
+        Type javaType = Primitive.box(typeFactory.getJavaClass(relDataType));
+        return javaType instanceof Class ? ((Class<?>) javaType).getName() : Object.class.getName();
     }
     
     private Optional<String> findTableName(final int column) {
