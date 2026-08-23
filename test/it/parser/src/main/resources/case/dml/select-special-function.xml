@@ -6692,4 +6692,21 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_bitor_doris" db-types="Doris">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="BITOR(3,5)">
+                <expr>
+                    <function function-name="BITOR" text="BITOR(3,5)" start-index="7" stop-index="16">
+                        <parameter>
+                            <literal-expression value="3" start-index="13" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="5" start-index="15" stop-index="15" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

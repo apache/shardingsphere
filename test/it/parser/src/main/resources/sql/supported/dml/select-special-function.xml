@@ -364,4 +364,5 @@
     <sql-case id="select_bitcount_doris" value="SELECT BITCOUNT(7)" db-types="Doris" />
     <sql-case id="select_bitnot_doris" value="SELECT BITNOT(1)" db-types="Doris" />
     <sql-case id="select_bitmap_or_count_doris" value="SELECT BITMAP_OR_COUNT(BITMAP_FROM_STRING('1,2,3'), BITMAP_EMPTY())" db-types="Doris" />
+    <sql-case id="select_bitor_doris" value="SELECT BITOR(3,5)" db-types="Doris" />
 </sql-cases>

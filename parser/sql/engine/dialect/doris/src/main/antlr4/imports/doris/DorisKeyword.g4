@@ -144,6 +144,12 @@ ALIAS
     ;
 
 // DORIS ADDED BEGIN
+BITOR
+    : B I T O R
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
 BITXOR
     : B I T X O R
     ;
