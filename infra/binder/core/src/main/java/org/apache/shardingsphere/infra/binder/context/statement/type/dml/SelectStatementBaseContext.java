@@ -73,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -356,12 +357,40 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     }
     
     /**
-     * Judge group by and order by sequence is same or not.
+     * Judge whether group by items and order by items refer to the same select items in the same sequence, ignoring order direction.
      *
-     * @return group by and order by sequence is same or not
+     * <p>Either order direction keeps rows of the same group by keys adjacent in the merged result, so the direction-insensitive judgment
+     * keeps pagination rewrite and group by stream merge available when the order by keys are exactly the group by keys.</p>
+     *
+     * @return group by and order by items are the same or not
      */
     public boolean isSameGroupByAndOrderByItems() {
-        return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderByContext.getItems());
+        if (groupByContext.getItems().isEmpty() || groupByContext.getItems().size() != orderByContext.getItems().size()) {
+            return false;
+        }
+        Iterator<OrderByItem> groupByItems = groupByContext.getItems().iterator();
+        Iterator<OrderByItem> orderByItems = orderByContext.getItems().iterator();
+        while (groupByItems.hasNext()) {
+            if (!isSameGroupByAndOrderByItem(groupByItems.next(), orderByItems.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isSameGroupByAndOrderByItem(final OrderByItem groupByItem, final OrderByItem orderByItem) {
+        // Resolved indexes are 1-based and point to select items; index 0 means the index has not been resolved yet.
+        if (0 != groupByItem.getIndex() && groupByItem.getIndex() == orderByItem.getIndex()) {
+            return true;
+        }
+        OrderByItemSegment groupBySegment = groupByItem.getSegment();
+        OrderByItemSegment orderBySegment = orderByItem.getSegment();
+        if (groupBySegment instanceof IndexOrderByItemSegment && orderBySegment instanceof IndexOrderByItemSegment) {
+            return ((IndexOrderByItemSegment) groupBySegment).getColumnIndex() == ((IndexOrderByItemSegment) orderBySegment).getColumnIndex();
+        }
+        return groupBySegment instanceof TextOrderByItemSegment && orderBySegment instanceof TextOrderByItemSegment
+                && SQLUtils.getExactlyValue(((TextOrderByItemSegment) groupBySegment).getText())
+                        .equalsIgnoreCase(SQLUtils.getExactlyValue(((TextOrderByItemSegment) orderBySegment).getText()));
     }
     
     /**
