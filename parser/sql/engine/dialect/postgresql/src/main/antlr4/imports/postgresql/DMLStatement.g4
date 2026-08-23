@@ -116,7 +116,7 @@ mergeWhenClause
     ;
 
 mergeMatchedThenClause
-    : DO UPDATE SET setClauseList whereClause?
+    : UPDATE SET setClauseList
     | DELETE
     | DO NOTHING
     ;

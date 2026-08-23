@@ -1029,16 +1029,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             mergeWhenAndThen.setDelete(DeleteStatement.builder().databaseType(databaseType).build());
         }
         if (null != ctx.setClauseList()) {
-            mergeWhenAndThen.setUpdate(createMergeUpdateStatement(ctx));
+            mergeWhenAndThen.setUpdate(UpdateStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setClauseList())).build());
         }
-    }
-    
-    private UpdateStatement createMergeUpdateStatement(final MergeMatchedThenClauseContext ctx) {
-        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
-        if (null != ctx.whereClause()) {
-            result.where((WhereSegment) visit(ctx.whereClause()));
-        }
-        return result.build();
     }
     
     @Override

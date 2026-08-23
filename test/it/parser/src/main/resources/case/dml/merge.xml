@@ -891,7 +891,7 @@
         </merge-items>
     </merge>
 
-    <merge sql-case-id="merge_pg_when_matched_do_update">
+    <merge sql-case-id="merge_pg_when_matched_then_update">
         <target>
             <simple-table name="t_merge_target" alias="t" start-index="11" stop-index="26" />
         </target>
@@ -913,14 +913,14 @@
                 </right>
             </binary-operation-expression>
         </expr>
-        <merge-items text="WHEN MATCHED THEN DO UPDATE SET status = s.status" start-index="78" stop-index="126">
+        <merge-items text="WHEN MATCHED THEN UPDATE SET status = s.status" start-index="78" stop-index="123">
             <update>
-                <set start-index="106" stop-index="126">
-                    <assignment start-index="110" stop-index="126">
-                        <column name="status" start-index="110" stop-index="115" />
+                <set start-index="103" stop-index="123">
+                    <assignment start-index="107" stop-index="123">
+                        <column name="status" start-index="107" stop-index="112" />
                         <assignment-value>
-<column name="status" start-index="119" stop-index="126">
-                        <owner name="s" start-index="119" stop-index="119" />
+<column name="status" start-index="116" stop-index="123">
+                        <owner name="s" start-index="116" stop-index="116" />
                     </column>
                         </assignment-value>
                     </assignment>
@@ -1045,7 +1045,7 @@
                 </right>
             </binary-operation-expression>
         </expr>
-        <merge-items text="WHEN MATCHED AND t_merge_target.status = t_merge_source.status THEN DO UPDATE SET status = t_merge_source.status WHERE t_merge_target.remark = t_merge_source.remark" start-index="100" stop-index="263">
+        <merge-items text="WHEN MATCHED AND t_merge_target.status = t_merge_source.status THEN UPDATE SET status = t_merge_source.status" start-index="100" stop-index="208">
             <expr>
                 <binary-operation-expression start-index="117" stop-index="161">
                     <left>
@@ -1062,36 +1062,19 @@
                 </binary-operation-expression>
             </expr>
             <update>
-                <set start-index="178" stop-index="211">
-                    <assignment start-index="182" stop-index="211">
-                        <column name="status" start-index="182" stop-index="187" />
+                <set start-index="175" stop-index="208">
+                    <assignment start-index="179" stop-index="208">
+                        <column name="status" start-index="179" stop-index="184" />
                         <assignment-value>
-<column name="status" start-index="191" stop-index="211">
-                        <owner name="t_merge_source" start-index="191" stop-index="204" />
+<column name="status" start-index="188" stop-index="208">
+                        <owner name="t_merge_source" start-index="188" stop-index="201" />
                     </column>
                         </assignment-value>
                     </assignment>
                 </set>
-                <where start-index="213" stop-index="263">
-                    <expr>
-                        <binary-operation-expression start-index="219" stop-index="263">
-                            <left>
-<column name="remark" start-index="219" stop-index="239">
-                                    <owner name="t_merge_target" start-index="219" stop-index="232" />
-                                </column>
-                            </left>
-                            <operator>=</operator>
-                            <right>
-<column name="remark" start-index="243" stop-index="263">
-                                    <owner name="t_merge_source" start-index="243" stop-index="256" />
-                                </column>
-                            </right>
-                        </binary-operation-expression>
-                    </expr>
-                </where>
             </update>
         </merge-items>
-        <merge-items text="WHEN NOT MATCHED THEN DO NOTHING" start-index="265" stop-index="296" />
+        <merge-items text="WHEN NOT MATCHED THEN DO NOTHING" start-index="210" stop-index="241" />
     </merge>
 
     <merge sql-case-id="merge_pg_with_returning">
@@ -1116,14 +1099,14 @@
                 </right>
             </binary-operation-expression>
         </expr>
-        <merge-items text="WHEN MATCHED THEN DO UPDATE SET status = t_merge_source.status" start-index="100" stop-index="161">
+        <merge-items text="WHEN MATCHED THEN UPDATE SET status = t_merge_source.status" start-index="100" stop-index="158">
             <update>
-                <set start-index="128" stop-index="161">
-                    <assignment start-index="132" stop-index="161">
-                        <column name="status" start-index="132" stop-index="137" />
+                <set start-index="125" stop-index="158">
+                    <assignment start-index="129" stop-index="158">
+                        <column name="status" start-index="129" stop-index="134" />
                         <assignment-value>
-<column name="status" start-index="141" stop-index="161">
-                        <owner name="t_merge_source" start-index="141" stop-index="154" />
+<column name="status" start-index="138" stop-index="158">
+                        <owner name="t_merge_source" start-index="138" stop-index="151" />
                     </column>
                         </assignment-value>
                     </assignment>
@@ -1131,9 +1114,9 @@
             </update>
         </merge-items>
         <returning>
-            <projections start-index="173" stop-index="195">
-                <column-projection name="order_id" start-index="173" stop-index="195">
-                    <owner name="t_merge_target" start-index="173" stop-index="186" />
+            <projections start-index="170" stop-index="192">
+                <column-projection name="order_id" start-index="170" stop-index="192">
+                    <owner name="t_merge_target" start-index="170" stop-index="183" />
                 </column-projection>
             </projections>
         </returning>
