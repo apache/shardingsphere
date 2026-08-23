@@ -192,7 +192,7 @@ class SelectStatementContextTest {
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
     }
-
+    
     @Test
     void assertIsSameGroupByAndOrderByItemsWithGeneratedOrderBy() {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
@@ -202,7 +202,7 @@ class SelectStatementContextTest {
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
     }
-
+    
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenResolvedExpressionIndexesCollide() {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
@@ -216,7 +216,7 @@ class SelectStatementContextTest {
         selectStatementContext.getOrderByContext().getItems().iterator().next().setIndex(1);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
-
+    
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenExpressionsContainDifferentParameterMarkers() {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
@@ -228,7 +228,7 @@ class SelectStatementContextTest {
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
-
+    
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenQuotedColumnCaseDiffers() {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
@@ -240,7 +240,7 @@ class SelectStatementContextTest {
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
-
+    
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenColumnMatchesDifferentProjectionAliasIgnoringCase() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);

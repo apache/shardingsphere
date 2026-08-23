@@ -402,7 +402,7 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
         }
         return false;
     }
-
+    
     private boolean isSameColumn(final ColumnSegment groupByColumn, final ColumnSegment orderByColumn) {
         ColumnSegmentBoundInfo groupByBoundInfo = groupByColumn.getColumnBoundInfo();
         ColumnSegmentBoundInfo orderByBoundInfo = orderByColumn.getColumnBoundInfo();
@@ -414,7 +414,7 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
                         : null != orderByOtherUsingBoundInfo && isSameColumnBoundInfo(groupByOtherUsingBoundInfo, orderByOtherUsingBoundInfo))
                 && !isAmbiguousProjectionReference(groupByColumn);
     }
-
+    
     private boolean isAmbiguousProjectionReference(final ColumnSegment column) {
         if (null != column.getNestedObjectAttributes() && !column.getNestedObjectAttributes().isEmpty()) {
             return true;
@@ -434,7 +434,7 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
         }
         return false;
     }
-
+    
     private boolean isSameColumnBoundInfo(final ColumnSegmentBoundInfo left, final ColumnSegmentBoundInfo right) {
         return null != left && null != right && left.getTableSourceType() == right.getTableSourceType()
                 && Objects.equals(left.getOriginalDatabase(), right.getOriginalDatabase()) && Objects.equals(left.getOriginalSchema(), right.getOriginalSchema())
