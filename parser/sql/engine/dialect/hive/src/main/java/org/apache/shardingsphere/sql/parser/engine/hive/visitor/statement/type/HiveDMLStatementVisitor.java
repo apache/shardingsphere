@@ -1426,6 +1426,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 UpdateStatement upd = UpdateStatement.builder().databaseType(getDatabaseType()).setAssignment((SetAssignmentSegment) visit(each.setAssignmentsClause())).build();
                 seg.setUpdate(upd);
             }
+            if (null != each.DELETE()) {
+                seg.setDelete(DeleteStatement.builder().databaseType(getDatabaseType()).build());
+            }
             if (null != each.INSERT()) {
                 Collection<InsertValuesSegment> values = new LinkedList<>();
                 if (null != each.insertValuesClause().assignmentValues()) {

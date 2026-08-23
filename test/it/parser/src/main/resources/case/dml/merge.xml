@@ -890,4 +890,290 @@
             </insert>
         </merge-items>
     </merge>
+
+    <merge sql-case-id="merge_pg_when_matched_do_update">
+        <target>
+            <simple-table name="t_merge_target" alias="t" start-index="11" stop-index="26" />
+        </target>
+        <source>
+            <simple-table name="t_merge_source" alias="s" start-index="34" stop-index="49" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="54" stop-index="76">
+                <left>
+                    <column name="order_id" start-index="54" stop-index="63">
+                        <owner name="t" start-index="54" stop-index="54" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="order_id" start-index="67" stop-index="76">
+                        <owner name="s" start-index="67" stop-index="67" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED THEN DO UPDATE SET status = s.status" start-index="78" stop-index="126">
+            <update>
+                <set start-index="106" stop-index="126">
+                    <assignment start-index="110" stop-index="126">
+                        <column name="status" start-index="110" stop-index="115" />
+                        <assignment-value>
+<column name="status" start-index="119" stop-index="126">
+                        <owner name="s" start-index="119" stop-index="119" />
+                    </column>
+                        </assignment-value>
+                    </assignment>
+                </set>
+            </update>
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_pg_when_matched_then_delete">
+        <target>
+            <simple-table name="t_merge_target" start-index="11" stop-index="24" />
+        </target>
+        <source>
+            <simple-table name="t_merge_source" start-index="32" stop-index="45" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="50" stop-index="98">
+                <left>
+                    <column name="order_id" start-index="50" stop-index="72">
+                        <owner name="t_merge_target" start-index="50" stop-index="63" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="order_id" start-index="76" stop-index="98">
+                        <owner name="t_merge_source" start-index="76" stop-index="89" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED THEN DELETE" start-index="100" stop-index="123">
+            <delete />
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_pg_when_matched_do_nothing">
+        <target>
+            <simple-table name="t_merge_target" start-index="11" stop-index="24" />
+        </target>
+        <source>
+            <simple-table name="t_merge_source" start-index="32" stop-index="45" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="50" stop-index="98">
+                <left>
+                    <column name="order_id" start-index="50" stop-index="72">
+                        <owner name="t_merge_target" start-index="50" stop-index="63" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="order_id" start-index="76" stop-index="98">
+                        <owner name="t_merge_source" start-index="76" stop-index="89" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED THEN DO NOTHING" start-index="100" stop-index="127" />
+    </merge>
+
+    <merge sql-case-id="merge_pg_when_not_matched_then_insert">
+        <target>
+            <simple-table name="t_merge_target" start-index="11" stop-index="24" />
+        </target>
+        <source>
+            <simple-table name="t_merge_source" start-index="32" stop-index="45" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="50" stop-index="98">
+                <left>
+                    <column name="order_id" start-index="50" stop-index="72">
+                        <owner name="t_merge_target" start-index="50" stop-index="63" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="order_id" start-index="76" stop-index="98">
+                        <owner name="t_merge_source" start-index="76" stop-index="89" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN NOT MATCHED THEN INSERT (order_id, status) VALUES (1, 2)" start-index="100" stop-index="160">
+            <insert>
+                <columns start-index="129" stop-index="146">
+                    <column name="order_id" start-index="130" stop-index="137" />
+                    <column name="status" start-index="140" stop-index="145" />
+                </columns>
+                <values>
+                    <value start-index="155" stop-index="160">
+                        <assignment-value>
+                            <literal-expression value="1" start-index="156" stop-index="156" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="159" stop-index="159" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert>
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_pg_with_condition_and_multiple_whens">
+        <target>
+            <simple-table name="t_merge_target" start-index="11" stop-index="24" />
+        </target>
+        <source>
+            <simple-table name="t_merge_source" start-index="32" stop-index="45" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="50" stop-index="98">
+                <left>
+                    <column name="order_id" start-index="50" stop-index="72">
+                        <owner name="t_merge_target" start-index="50" stop-index="63" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="order_id" start-index="76" stop-index="98">
+                        <owner name="t_merge_source" start-index="76" stop-index="89" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED AND t_merge_target.status = t_merge_source.status THEN DO UPDATE SET status = t_merge_source.status WHERE t_merge_target.remark = t_merge_source.remark" start-index="100" stop-index="263">
+            <expr>
+                <binary-operation-expression start-index="117" stop-index="161">
+                    <left>
+                        <column name="status" start-index="117" stop-index="137">
+                        <owner name="t_merge_target" start-index="117" stop-index="130" />
+                    </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="status" start-index="141" stop-index="161">
+                        <owner name="t_merge_source" start-index="141" stop-index="154" />
+                    </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+            <update>
+                <set start-index="178" stop-index="211">
+                    <assignment start-index="182" stop-index="211">
+                        <column name="status" start-index="182" stop-index="187" />
+                        <assignment-value>
+<column name="status" start-index="191" stop-index="211">
+                        <owner name="t_merge_source" start-index="191" stop-index="204" />
+                    </column>
+                        </assignment-value>
+                    </assignment>
+                </set>
+                <where start-index="213" stop-index="263">
+                    <expr>
+                        <binary-operation-expression start-index="219" stop-index="263">
+                            <left>
+<column name="remark" start-index="219" stop-index="239">
+                                    <owner name="t_merge_target" start-index="219" stop-index="232" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+<column name="remark" start-index="243" stop-index="263">
+                                    <owner name="t_merge_source" start-index="243" stop-index="256" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </expr>
+                </where>
+            </update>
+        </merge-items>
+        <merge-items text="WHEN NOT MATCHED THEN DO NOTHING" start-index="265" stop-index="296" />
+    </merge>
+
+    <merge sql-case-id="merge_pg_with_returning">
+        <target>
+            <simple-table name="t_merge_target" start-index="11" stop-index="24" />
+        </target>
+        <source>
+            <simple-table name="t_merge_source" start-index="32" stop-index="45" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="50" stop-index="98">
+                <left>
+                    <column name="order_id" start-index="50" stop-index="72">
+                        <owner name="t_merge_target" start-index="50" stop-index="63" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="order_id" start-index="76" stop-index="98">
+                        <owner name="t_merge_source" start-index="76" stop-index="89" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED THEN DO UPDATE SET status = t_merge_source.status" start-index="100" stop-index="161">
+            <update>
+                <set start-index="128" stop-index="161">
+                    <assignment start-index="132" stop-index="161">
+                        <column name="status" start-index="132" stop-index="137" />
+                        <assignment-value>
+<column name="status" start-index="141" stop-index="161">
+                        <owner name="t_merge_source" start-index="141" stop-index="154" />
+                    </column>
+                        </assignment-value>
+                    </assignment>
+                </set>
+            </update>
+        </merge-items>
+        <returning>
+            <projections start-index="173" stop-index="195">
+                <column-projection name="order_id" start-index="173" stop-index="195">
+                    <owner name="t_merge_target" start-index="173" stop-index="186" />
+                </column-projection>
+            </projections>
+        </returning>
+    </merge>
+
+    <merge sql-case-id="merge_pg_using_subquery">
+        <target>
+            <simple-table name="t_merge_target" start-index="11" stop-index="24" />
+        </target>
+        <source>
+            <subquery-table alias="src" start-index="32" stop-index="75">
+                <subquery>
+                    <select>
+                        <projections start-index="40" stop-index="47">
+                            <column-projection name="order_id" start-index="40" stop-index="47" />
+                        </projections>
+                        <from>
+                            <simple-table name="t_merge_source" start-index="54" stop-index="67" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="80" stop-index="117">
+                <left>
+                    <column name="order_id" start-index="80" stop-index="102">
+                        <owner name="t_merge_target" start-index="80" stop-index="93" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="order_id" start-index="106" stop-index="117">
+                        <owner name="src" start-index="106" stop-index="108" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED THEN DELETE" start-index="119" stop-index="142">
+            <delete />
+        </merge-items>
+    </merge>
 </sql-parser-test-cases>

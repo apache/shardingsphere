@@ -87,4 +87,15 @@
             <owner name="NEW" start-index="186" stop-index="188" />
         </pseudo-column>
     </create-trigger>
+    <create-trigger sql-case-id="create_trigger_pg_after_insert">
+        <trigger-name name="t_merge_trigger" />
+        <table name="t_merge_target" start-index="47" stop-index="60" />
+    </create-trigger>
+    <create-trigger sql-case-id="create_trigger_pg_multi_events_when">
+        <trigger-name name="check_update" />
+        <table name="t_merge_target" start-index="55" stop-index="68" />
+    </create-trigger>
+    <create-trigger sql-case-id="create_trigger_pg_constraint">
+        <table name="t_merge_target" start-index="31" stop-index="44" />
+    </create-trigger>
 </sql-parser-test-cases>

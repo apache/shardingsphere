@@ -97,6 +97,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTextSearchContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTypeContext;
@@ -198,6 +199,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Cu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -250,6 +252,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.CreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.AlterTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.type.AlterTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.type.CreateTypeStatement;
@@ -358,13 +361,19 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                 }
             }
         }
-        return CreateTableStatement.builder()
+        SelectStatement selectStatement = null == ctx.select() ? null : (SelectStatement) visit(ctx.select());
+        CreateTableStatement result = CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .ifNotExists(null != ctx.ifNotExists())
+                .selectStatement(selectStatement)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
+        if (null != selectStatement) {
+            result.addParameterMarkers(selectStatement.getParameterMarkers());
+        }
+        return result;
     }
     
     @Override
@@ -809,6 +818,18 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
         return new CreateProcedureStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
+        CreateTriggerStatement result = new CreateTriggerStatement(getDatabaseType());
+        if (null != ctx.name()) {
+            result.setTriggerName(new FunctionNameSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), new IdentifierValue(ctx.name().getText())));
+        }
+        if (null != ctx.qualifiedName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
+        }
+        return result;
     }
     
     @Override

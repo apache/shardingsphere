@@ -75,6 +75,9 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MergeMatchedThenClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MergeWhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NaturalJoinTypeContext;
@@ -143,6 +146,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
@@ -163,6 +167,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -196,6 +201,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
@@ -980,6 +986,59 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitWhereOrCurrentClause(final WhereOrCurrentClauseContext ctx) {
         return visit(ctx.whereClause());
+    }
+    
+    @Override
+    public ASTNode visitMerge(final MergeContext ctx) {
+        MergeStatement.MergeStatementBuilder result = MergeStatement.builder().databaseType(databaseType).target((TableSegment) visit(ctx.relationExprOptAlias()));
+        if (null != ctx.withClause()) {
+            result.with((WithSegment) visit(ctx.withClause()));
+        }
+        result.source((TableSegment) visit(ctx.mergeUsingClause().tableReference()));
+        result.expression(new ExpressionWithParamsSegment(ctx.mergeUsingClause().aExpr().start.getStartIndex(), ctx.mergeUsingClause().aExpr().stop.getStopIndex(),
+                (ExpressionSegment) visit(ctx.mergeUsingClause().aExpr())));
+        Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
+        for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
+            whenAndThens.add((MergeWhenAndThenSegment) visit(each));
+        }
+        result.whenAndThens(whenAndThens);
+        if (null != ctx.returningClause()) {
+            result.returning((ReturningSegment) visit(ctx.returningClause()));
+        }
+        return result.build();
+    }
+    
+    @Override
+    public ASTNode visitMergeWhenClause(final MergeWhenClauseContext ctx) {
+        MergeWhenAndThenSegment result = new MergeWhenAndThenSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
+        if (null != ctx.aExpr()) {
+            result.setAndExpr((ExpressionSegment) visit(ctx.aExpr()));
+        }
+        if (null != ctx.mergeMatchedThenClause()) {
+            fillMatchedThenClause(result, ctx.mergeMatchedThenClause());
+        }
+        if (null != ctx.mergeNotMatchedThenClause() && null != ctx.mergeNotMatchedThenClause().insertRest()) {
+            InsertRestContext insertRest = ctx.mergeNotMatchedThenClause().insertRest();
+            result.setInsert(null == insertRest.select() ? InsertStatement.builder().databaseType(databaseType).build() : (InsertStatement) visit(insertRest));
+        }
+        return result;
+    }
+    
+    private void fillMatchedThenClause(final MergeWhenAndThenSegment mergeWhenAndThen, final MergeMatchedThenClauseContext ctx) {
+        if (null != ctx.DELETE()) {
+            mergeWhenAndThen.setDelete(DeleteStatement.builder().databaseType(databaseType).build());
+        }
+        if (null != ctx.setClauseList()) {
+            mergeWhenAndThen.setUpdate(createMergeUpdateStatement(ctx));
+        }
+    }
+    
+    private UpdateStatement createMergeUpdateStatement(final MergeMatchedThenClauseContext ctx) {
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
+        if (null != ctx.whereClause()) {
+            result.where((WhereSegment) visit(ctx.whereClause()));
+        }
+        return result.build();
     }
     
     @Override

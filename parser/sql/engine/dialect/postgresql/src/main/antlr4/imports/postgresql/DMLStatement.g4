@@ -102,6 +102,30 @@ usingClause
     : USING fromList
     ;
 
+merge
+    : withClause? MERGE INTO? relationExprOptAlias mergeUsingClause mergeWhenClause+ returningClause?
+    ;
+
+mergeUsingClause
+    : USING tableReference ON aExpr
+    ;
+
+mergeWhenClause
+    : WHEN MATCHED (AND aExpr)? THEN mergeMatchedThenClause
+    | WHEN NOT MATCHED (AND aExpr)? THEN mergeNotMatchedThenClause
+    ;
+
+mergeMatchedThenClause
+    : DO UPDATE SET setClauseList whereClause?
+    | DELETE
+    | DO NOTHING
+    ;
+
+mergeNotMatchedThenClause
+    : DO NOTHING
+    | INSERT insertRest
+    ;
+
 select
     : selectNoParens | selectWithParens
     ;

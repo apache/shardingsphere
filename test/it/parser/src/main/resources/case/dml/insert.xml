@@ -4274,6 +4274,7 @@
                                </binary-operation-expression>
                            </expr>
                            <merge-items start-index="407" stop-index="466" text="WHEN MATCHED AND pi.Quantity - src.OrderQty &lt;= 0 THEN DELETE">
+                               <delete />
                                <expr>
                                    <binary-operation-expression start-index="424" stop-index="454">
                                        <left>
