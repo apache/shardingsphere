@@ -2672,6 +2672,16 @@
         </create-table-option>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_varying_alias_with_length_doris" db-types="Doris">
+        <table name="t_varying" start-index="13" stop-index="21" />
+        <column-definition type="CHAR VARYING" start-index="24" stop-index="42">
+            <column name="c1" start-index="24" stop-index="25" />
+        </column-definition>
+        <column-definition type="CHARACTER VARYING" start-index="45" stop-index="68">
+            <column name="c2" start-index="45" stop-index="46" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_inverted_index_doris" db-types="Doris">
         <table name="table_hash" start-index="13" stop-index="33">
             <owner name="example_db" start-index="13" stop-index="22" />
