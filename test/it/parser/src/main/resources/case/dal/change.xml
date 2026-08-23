@@ -17,6 +17,7 @@
   -->
 
 <sql-parser-test-cases>
+    <change sql-case-id="change_db_unique_name_oracle" />
     <change sql-case-id="change_backupset_nokeep_oracle" />
     <change sql-case-id="change_backupset_unavailable_oracle" />
     <change sql-case-id="change_backupset_available_oracle" />

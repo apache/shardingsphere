@@ -205,7 +205,8 @@ report
     ;
 
 change
-    : CHANGE BACKUPSET numberLiterals changeOption?
+    : CHANGE DB_UNIQUE_NAME FROM identifier TO identifier
+    | CHANGE BACKUPSET numberLiterals changeOption?
     | CHANGE DATAFILECOPY (stringLiterals | numberLiterals) changeOption?
     | CHANGE COPY OF ARCHIVELOG SEQUENCE BETWEEN numberLiterals AND numberLiterals changeOption?
     | CHANGE BACKUP OF SPFILE TAG (stringLiterals | DOUBLE_QUOTED_TEXT) changeOption?

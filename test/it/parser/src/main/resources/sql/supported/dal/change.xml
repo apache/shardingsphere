@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="change_db_unique_name_oracle" value="CHANGE DB_UNIQUE_NAME FROM BOSTON_A TO BOSTON_B" db-types="Oracle" />
     <sql-case id="change_backupset_nokeep_oracle" value="CHANGE BACKUPSET 231 NOKEEP" db-types="Oracle" />
     <sql-case id="change_backupset_unavailable_oracle" value="CHANGE BACKUPSET 12 UNAVAILABLE" db-types="Oracle" />
     <sql-case id="change_backupset_available_oracle" value="CHANGE BACKUPSET 12 AVAILABLE" db-types="Oracle" />
