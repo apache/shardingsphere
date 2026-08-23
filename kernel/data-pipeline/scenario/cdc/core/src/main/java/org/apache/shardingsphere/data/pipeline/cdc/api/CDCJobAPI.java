@@ -64,6 +64,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTas
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -148,9 +149,14 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     
     private void checkDataSources(final CDCJobConfiguration jobConfig) {
         Map<String, Map<String, Object>> dataSources = jobConfig.getDataSourceConfig().getRootConfig().getDataSources();
-        jobConfig.getJobShardingDataNodes().stream().flatMap(each -> each.getEntries().stream()).flatMap(each -> each.getDataNodes().stream())
-                .forEach(each -> ShardingSpherePreconditions.checkContainsKey(dataSources, each.getDataSourceName(),
-                        () -> new PipelineInvalidParameterException("Data source `" + each.getDataSourceName() + "` of data node does not exist in job data source configuration.")));
+        for (DataNode each : getDataNodes(jobConfig)) {
+            ShardingSpherePreconditions.checkContainsKey(dataSources, each.getDataSourceName(),
+                    () -> new PipelineInvalidParameterException(String.format("Data source `%s` does not exist in job data source configuration.", each.getDataSourceName())));
+        }
+    }
+    
+    private Collection<DataNode> getDataNodes(final CDCJobConfiguration jobConfig) {
+        return jobConfig.getJobShardingDataNodes().stream().flatMap(each -> each.getEntries().stream()).flatMap(dataNodeEntry -> dataNodeEntry.getDataNodes().stream()).collect(Collectors.toList());
     }
     
     private YamlCDCJobConfiguration getYamlCDCJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
