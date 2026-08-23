@@ -76,8 +76,13 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             return Optional.empty();
         }
         boolean isLeftColumn = left instanceof ColumnSegment;
+        if (!isLeftColumn) {
+            if (!(right instanceof ColumnSegment)) {
+                return Optional.empty();
+            }
+            operator = reverseOperator(operator);
+        }
         ExpressionSegment valueExpression = isLeftColumn ? right : left;
-        operator = !isLeftColumn && right instanceof ColumnSegment ? reverseOperator(operator) : operator;
         ConditionValue conditionValue = new ConditionValue(valueExpression, params);
         if (conditionValue.isNull()) {
             return generate(null, column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
