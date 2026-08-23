@@ -97,6 +97,20 @@
         </from>
     </select>
 
+    <select sql-case-id="select_window_rank_doris">
+        <projections start-index="7" stop-index="45">
+            <expression-projection text="RANK() OVER (PARTITION BY k ORDER BY v)" start-index="7" stop-index="45">
+                <expr>
+                    <function function-name="RANK" start-index="7" stop-index="45" text="RANK() OVER (PARTITION BY k ORDER BY v)">
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="52" stop-index="58" />
+        </from>
+    </select>
+
     <select sql-case-id="select_window_lead_lag_doris">
         <projections start-index="7" stop-index="46">
             <expression-projection text="LEAD(v) OVER (PARTITION BY k ORDER BY v)" start-index="7" stop-index="46">

@@ -159,6 +159,8 @@ execute
     | adminSetPartitionVersion
     | adminCleanTrash
     | adminRebalanceDisk
+    | adminRepair
+    | adminCancelRepair
     | createSqlBlockRule
     | alterSqlBlockRule
     | dropSqlBlockRule
