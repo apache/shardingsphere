@@ -80,6 +80,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateS
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RefreshMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSyncJobContext;
@@ -291,6 +292,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseJobSta
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisRefreshMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
@@ -2035,6 +2037,19 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
         return new CreateMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitRefreshMaterializedView(final RefreshMaterializedViewContext ctx) {
+        boolean auto = null != ctx.refreshMethod() && null != ctx.refreshMethod().AUTO();
+        boolean complete = null != ctx.refreshMethod() && null != ctx.refreshMethod().COMPLETE();
+        List<String> partitionNames = new LinkedList<>();
+        if (null != ctx.partitionSpec()) {
+            for (IdentifierContext each : ctx.partitionSpec().identifierList().identifier()) {
+                partitionNames.add(((IdentifierValue) visit(each)).getValue());
+            }
+        }
+        return new DorisRefreshMaterializedViewStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.name().identifier())).getValue(), auto, complete, partitionNames);
     }
     
     @Override

@@ -165,6 +165,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateStreamingJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisRefreshMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseJobStatementTestCase;
@@ -650,6 +651,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-streaming-job")
     private final List<DorisCreateStreamingJobStatementTestCase> createStreamingJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-refresh-materialized-view")
+    private final List<DorisRefreshMaterializedViewStatementTestCase> dorisRefreshMaterializedViewTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-catalog")
     private final List<AlterCatalogStatementTestCase> alterCatalogTestCases = new LinkedList<>();
