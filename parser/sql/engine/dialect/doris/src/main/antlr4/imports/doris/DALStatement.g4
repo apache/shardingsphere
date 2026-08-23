@@ -514,6 +514,14 @@ adminRebalanceDisk
     : ADMIN REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
     ;
 
+adminRepair
+    : ADMIN REPAIR TABLE tableName (PARTITION LP_ partitionName (COMMA_ partitionName)* RP_)?
+    ;
+
+adminCancelRepair
+    : ADMIN CANCEL REPAIR TABLE tableName (PARTITION LP_ partitionName (COMMA_ partitionName)* RP_)?
+    ;
+
 createSqlBlockRule
     : CREATE SQL_BLOCK_RULE ruleName propertiesClause
     ;

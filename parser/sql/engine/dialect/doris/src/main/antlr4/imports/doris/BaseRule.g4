@@ -1049,6 +1049,9 @@ simpleExpr
     // DORIS ADDED BEGIN
     | lambdaExpression
     // DORIS ADDED END
+    // DORIS ADDED BEGIN
+    | columnRef LBT_ expr RBT_
+    // DORIS ADDED END
     ;
 
 arrayExpression
