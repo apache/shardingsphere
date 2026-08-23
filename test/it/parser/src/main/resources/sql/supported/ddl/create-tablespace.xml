@@ -27,6 +27,7 @@
     <sql-case id="create_permanent_tablespace_offline" value="CREATE TABLESPACE test_space OFFLINE" db-types="Oracle" />
     <sql-case id="create_permanent_tablespace_bigfile" value="CREATE BIGFILE TABLESPACE test_space ONLINE" db-types="Oracle" />
     <sql-case id="create_permanent_tablespace_smallfile" value="CREATE SMALLFILE TABLESPACE test_space ONLINE" db-types="Oracle" />
+    <sql-case id="create_bigfile_tablespace_with_datafile" value="CREATE BIGFILE TABLESPACE bigtbs_01 DATAFILE 'bigtbs_f1.dbf' SIZE 20M AUTOEXTEND ON;" db-types="Oracle" />
     <sql-case id="create_tablespace_with_multi_filespecification" value="CREATE TABLESPACE test_space
         DATAFILE 'disk1:df1.dbf' AUTOEXTEND ON,
         'disk2:df2.dbf' AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
