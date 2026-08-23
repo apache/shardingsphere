@@ -2780,6 +2780,32 @@
         </select>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_pq_distribute_hint_partition_by_hash_as_select" db-types="Oracle">
+        <table name="lineitem" start-index="55" stop-index="62" />
+        <select>
+            <projections start-index="142" stop-index="142">
+                <shorthand-projection start-index="142" stop-index="142" />
+            </projections>
+            <from>
+                <simple-table name="lineitemxt" start-index="149" stop-index="158" />
+            </from>
+        </select>
+        <comment text="/*+ PQ_DISTRIBUTE(lineitem, PARTITION) */" start-index="7" stop-index="47"/>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_pq_distribute_hint_partition_by_hash_as_select_from_source_table" db-types="Oracle">
+        <table name="target_table" start-index="59" stop-index="70" />
+        <select>
+            <projections start-index="150" stop-index="150">
+                <shorthand-projection start-index="150" stop-index="150" />
+            </projections>
+            <from>
+                <simple-table name="source_table" start-index="157" stop-index="168" />
+            </from>
+        </select>
+        <comment text="/*+ PQ_DISTRIBUTE(target_table, PARTITION) */" start-index="7" stop-index="51"/>
+    </create-table>
+
     <create-table sql-case-id="create_table_partition_by_range_with_storage_as_select" db-types="Oracle">
         <table name="part_sales_by_time" start-index="13" stop-index="30" />
         <column name="time_id" start-index="33" stop-index="39" />

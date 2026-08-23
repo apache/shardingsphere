@@ -1204,7 +1204,7 @@ clusterRelatedClause
     ;
 
 tableProperties
-    : columnProperties? readOnlyClause? indexingClause? tablePartitioningClauses? attributeClusteringClause? (CACHE | NOCACHE)? parallelClause? tableCompression?
+    : columnProperties? readOnlyClause? indexingClause? parallelClause? tablePartitioningClauses? attributeClusteringClause? (CACHE | NOCACHE)? parallelClause? tableCompression?
     ( RESULT_CACHE (LP_ MODE (DEFAULT | FORCE) RP_))? (ROWDEPENDENCIES | NOROWDEPENDENCIES)? enableDisableClause* rowMovementClause? parallelClause? loggingClause? logicalReplicationClause? flashbackArchiveClause?
     ( ROW ARCHIVAL)? (AS selectSubquery | FOR EXCHANGE WITH TABLE tableName)?
     ;
