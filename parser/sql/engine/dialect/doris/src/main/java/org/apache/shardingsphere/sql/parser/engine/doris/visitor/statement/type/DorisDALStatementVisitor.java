@@ -161,6 +161,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSe
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCopyTabletContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCheckTabletContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetPartitionVersionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateWorkloadGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
@@ -256,6 +257,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetRep
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCheckTabletStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetPartitionVersionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRebalanceDiskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCancelRebalanceDiskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRepairStatement;
@@ -1421,6 +1423,15 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
         return result;
     }
+    
+    // DORIS ADDED BEGIN
+    @Override
+    public ASTNode visitAdminSetTableStatus(final AdminSetTableStatusContext ctx) {
+        DorisAdminSetTableStatusStatement result = new DorisAdminSetTableStatusStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    // DORIS ADDED END
     
     @Override
     public ASTNode visitCreateSqlBlockRule(final CreateSqlBlockRuleContext ctx) {
