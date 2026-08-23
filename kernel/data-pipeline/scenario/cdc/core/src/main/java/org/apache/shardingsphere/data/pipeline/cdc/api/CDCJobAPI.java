@@ -40,6 +40,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.swapper.Yaml
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
@@ -63,6 +64,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTas
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -133,6 +135,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         if (governanceFacade.getJobFacade().getConfiguration().isExisted(jobConfig.getJobId())) {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
+            checkDataSources(jobConfig);
             governanceFacade.getJobFacade().getJob().create(jobConfig.getJobId(), jobType.getOption().getJobClass());
             JobConfigurationPOJO jobConfigPOJO = jobConfigManager.convertToJobConfigurationPOJO(jobConfig);
             jobConfigPOJO.setDisabled(true);
@@ -142,6 +145,18 @@ public final class CDCJobAPI implements TransmissionJobAPI {
             }
         }
         return jobConfig.getJobId();
+    }
+    
+    private void checkDataSources(final CDCJobConfiguration jobConfig) {
+        Map<String, Map<String, Object>> dataSources = jobConfig.getDataSourceConfig().getRootConfig().getDataSources();
+        for (DataNode each : getDataNodes(jobConfig)) {
+            ShardingSpherePreconditions.checkContainsKey(dataSources, each.getDataSourceName(),
+                    () -> new PipelineInvalidParameterException(String.format("Data source `%s` does not exist in job data source configuration.", each.getDataSourceName())));
+        }
+    }
+    
+    private Collection<DataNode> getDataNodes(final CDCJobConfiguration jobConfig) {
+        return jobConfig.getJobShardingDataNodes().stream().flatMap(each -> each.getEntries().stream()).flatMap(dataNodeEntry -> dataNodeEntry.getDataNodes().stream()).collect(Collectors.toList());
     }
     
     private YamlCDCJobConfiguration getYamlCDCJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
