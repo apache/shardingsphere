@@ -116,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTriggerContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTypeBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorDefinitionContext;
@@ -375,6 +376,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.Oracle
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.OracleCreateLockdownProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.OracleDropLockdownProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleAlterOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTypeBodyStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleCreateOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleDropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
@@ -947,6 +949,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
         result.getCursorForLoopStatements().addAll(getCursorForLoopStatementSegments());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateTypeBody(final CreateTypeBodyContext ctx) {
+        return new OracleCreateTypeBodyStatement(getDatabaseType(), ctx.plsqlTypeBodySource().typeName(0).getText());
     }
     
     private PackageSegment createPackageEndNameSegment(final List<PackageNameContext> packageNames) {
