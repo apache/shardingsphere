@@ -159,6 +159,7 @@ identifierKeywordsUnambiguous
     // DORIS ADDED END
     | BITMAP_UNION
     // DORIS ADDED BEGIN
+    | BITOR
     | BITXOR
     // DORIS ADDED END
     | BLOCK
@@ -1142,7 +1143,7 @@ aggregationFunctionName
 
 // DORIS ADDED BEGIN
 bitwiseBinaryFunctionName
-    : BITXOR
+    : BITXOR | BITOR
     ;
 // DORIS ADDED END
 
