@@ -352,4 +352,7 @@
     <sql-case id="select_split_by_string_with_column" value="SELECT SPLIT_BY_STRING(order_notes, '::') FROM t_order" db-types="Doris" />
     <sql-case id="select_split_by_string_with_placeholder" value="SELECT SPLIT_BY_STRING(?, ?) FROM t_order" case-types="placeholder" db-types="Doris" />
     <sql-case id="select_split_by_string_with_nested_function" value="SELECT SPLIT_BY_STRING(CONCAT(order_notes, '-'), '::') FROM t_order" db-types="Doris" />
+    <sql-case id="select_array_cum_sum" value="SELECT ARRAY_CUM_SUM([1, 2, 3])" db-types="Doris" />
+    <sql-case id="select_array_cum_sum_empty_array" value="SELECT ARRAY_CUM_SUM([])" db-types="Doris" />
+    <sql-case id="select_array_cum_sum_from_table" value="SELECT ARRAY_CUM_SUM([1, 2, 3]) FROM t_order" db-types="Doris" />
 </sql-cases>

@@ -6371,4 +6371,69 @@
             <simple-table name="t_order" start-index="60" stop-index="66" />
         </from>
     </select>
+
+    <select sql-case-id="select_array_cum_sum" db-types="Doris">
+        <projections start-index="7" stop-index="30">
+            <expression-projection start-index="7" stop-index="30" text="ARRAY_CUM_SUM([1, 2, 3])">
+                <expr>
+                    <function function-name="ARRAY_CUM_SUM" text="ARRAY_CUM_SUM([1, 2, 3])" start-index="7" stop-index="30">
+                        <parameter>
+                            <list-expression start-index="21" stop-index="29">
+                                <items>
+                                    <literal-expression value="1" start-index="22" stop-index="22" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="25" stop-index="25" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="28" stop-index="28" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_array_cum_sum_empty_array" db-types="Doris">
+        <projections start-index="7" stop-index="23">
+            <expression-projection start-index="7" stop-index="23" text="ARRAY_CUM_SUM([])">
+                <expr>
+                    <function function-name="ARRAY_CUM_SUM" text="ARRAY_CUM_SUM([])" start-index="7" stop-index="23">
+                        <parameter>
+                            <list-expression start-index="21" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_array_cum_sum_from_table" db-types="Doris">
+        <projections start-index="7" stop-index="30">
+            <expression-projection start-index="7" stop-index="30" text="ARRAY_CUM_SUM([1, 2, 3])">
+                <expr>
+                    <function function-name="ARRAY_CUM_SUM" text="ARRAY_CUM_SUM([1, 2, 3])" start-index="7" stop-index="30">
+                        <parameter>
+                            <list-expression start-index="21" stop-index="29">
+                                <items>
+                                    <literal-expression value="1" start-index="22" stop-index="22" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="25" stop-index="25" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="28" stop-index="28" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="37" stop-index="43" />
+        </from>
+    </select>
 </sql-parser-test-cases>
