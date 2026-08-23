@@ -605,6 +605,8 @@ public enum SQLVisitorRule {
     
     ADMIN_SET_PARTITION_VERSION("AdminSetPartitionVersion", SQLStatementType.DAL),
     
+    ADMIN_SET_TABLE_STATUS("AdminSetTableStatus", SQLStatementType.DAL),
+    
     ADMIN_CLEAN_TRASH("AdminCleanTrash", SQLStatementType.DAL),
     
     ADMIN_REBALANCE_DISK("AdminRebalanceDisk", SQLStatementType.DAL),

@@ -510,6 +510,12 @@ adminSetPartitionVersion
     : ADMIN SET TABLE tableName PARTITION VERSION propertiesClause
     ;
 
+// DORIS ADDED BEGIN
+adminSetTableStatus
+    : ADMIN SET TABLE tableName STATUS propertiesClause
+    ;
+// DORIS ADDED END
+
 adminRebalanceDisk
     : ADMIN REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
     ;

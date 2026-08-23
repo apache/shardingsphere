@@ -157,6 +157,7 @@ execute
     | adminCopyTablet
     | adminCheckTablet
     | adminSetPartitionVersion
+    | adminSetTableStatus
     | adminCleanTrash
     | adminRebalanceDisk
     | adminCancelRebalanceDisk
