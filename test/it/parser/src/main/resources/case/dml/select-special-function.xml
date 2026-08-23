@@ -6643,4 +6643,53 @@
             <column-item name="tag" order-direction="ASC" start-index="195" stop-index="197" />
         </group-by>
     </select>
+
+    <select sql-case-id="select_bitcount_doris" db-types="Doris">
+        <projections start-index="7" stop-index="17">
+            <expression-projection start-index="7" stop-index="17" text="BITCOUNT(7)">
+                <expr>
+                    <function function-name="BITCOUNT" text="BITCOUNT(7)" start-index="7" stop-index="17">
+                        <parameter>
+                            <literal-expression value="7" start-index="16" stop-index="16" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bitnot_doris" db-types="Doris">
+        <projections start-index="7" stop-index="15">
+            <expression-projection start-index="7" stop-index="15" text="BITNOT(1)">
+                <expr>
+                    <function function-name="BITNOT" text="BITNOT(1)" start-index="7" stop-index="15">
+                        <parameter>
+                            <literal-expression value="1" start-index="14" stop-index="14" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bitmap_or_count_doris" db-types="Doris">
+        <projections start-index="7" stop-index="66">
+            <expression-projection start-index="7" stop-index="66" text="BITMAP_OR_COUNT(BITMAP_FROM_STRING('1,2,3'), BITMAP_EMPTY())">
+                <expr>
+                    <function function-name="BITMAP_OR_COUNT" text="BITMAP_OR_COUNT(BITMAP_FROM_STRING('1,2,3'), BITMAP_EMPTY())" start-index="7" stop-index="66">
+                        <parameter>
+                            <function function-name="BITMAP_FROM_STRING" text="BITMAP_FROM_STRING('1,2,3')" start-index="23" stop-index="49">
+                                <parameter>
+                                    <literal-expression value="1,2,3" start-index="42" stop-index="48" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <function function-name="BITMAP_EMPTY" text="BITMAP_EMPTY()" start-index="52" stop-index="65" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
