@@ -478,7 +478,9 @@ createView
       (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ columnNames RP_)?
+      // DORIS CHANGED BEGIN
+      VIEW ifNotExists? viewName (LP_ (columnNames | viewColumnDefinitions) RP_)? commentClause?
+      // DORIS CHANGED END
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
