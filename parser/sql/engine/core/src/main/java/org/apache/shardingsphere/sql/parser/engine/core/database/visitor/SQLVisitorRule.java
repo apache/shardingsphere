@@ -609,6 +609,8 @@ public enum SQLVisitorRule {
     
     ADMIN_REBALANCE_DISK("AdminRebalanceDisk", SQLStatementType.DAL),
     
+    ADMIN_CANCEL_REBALANCE_DISK("AdminCancelRebalanceDisk", SQLStatementType.DAL),
+    
     ADMIN_REPAIR("AdminRepair", SQLStatementType.DAL),
     
     ADMIN_CANCEL_REPAIR("AdminCancelRepair", SQLStatementType.DAL),
