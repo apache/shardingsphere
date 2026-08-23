@@ -31,9 +31,11 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingTableTest {
@@ -52,6 +54,22 @@ class ShardingTableTest {
         assertTrue(actual.getGenerateKeyColumn().isPresent());
         assertThat(actual.getGenerateKeyColumn().get(), is("col_1"));
         assertThat(actual.getKeyGeneratorName(), is("increment"));
+    }
+    
+    @Test
+    void assertContainsDataNode() {
+        ShardingTable actual = createShardingTable();
+        assertTrue(actual.containsDataNode("ds0", "table_0"));
+        assertFalse(actual.containsDataNode("ds0", "table_9"));
+        assertFalse(actual.containsDataNode("ds9", "table_0"));
+    }
+    
+    @Test
+    void assertFindActualTableIndex() {
+        ShardingTableRuleConfiguration config = new ShardingTableRuleConfiguration("foo_order", "foo_ds.public.foo_order_0");
+        ShardingTable actual = new ShardingTable(config, Collections.singleton("foo_ds"), null);
+        assertThat(actual.getActualDataNodes().get(0), is(new DataNode("foo_ds", "public", "foo_order_0")));
+        assertThat(actual.findActualTableIndex("foo_ds", "foo_order_0"), is(0));
     }
     
     private ShardingTable createShardingTable() {

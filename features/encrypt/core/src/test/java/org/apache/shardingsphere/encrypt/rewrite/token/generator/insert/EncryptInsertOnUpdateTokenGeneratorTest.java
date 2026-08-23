@@ -146,6 +146,26 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
         assertFalse(actual.hasNext());
     }
     
+    @Test
+    void assertGenerateSQLTokensWithDatabaseDefaultSchema() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        EncryptRule rule = mockEncryptRule();
+        when(rule.getEncryptTable("t_user").getEncryptColumn("mobile").getCipher()
+                .encrypt("foo_db", "foo_default_schema", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("defaultEncryptValue"));
+        generator = new EncryptInsertOnUpdateTokenGenerator(rule, database);
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(insertStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        InsertStatement insertStatement = mock(InsertStatement.class, RETURNS_DEEP_STUBS);
+        when(insertStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))));
+        ColumnAssignmentSegment assignmentSegment = new ColumnAssignmentSegment(
+                0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("mobile"))), new LiteralExpressionSegment(0, 0, 0));
+        when(insertStatement.getOnDuplicateKeyColumns()).thenReturn(Optional.of(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment))));
+        when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
+        assertThat(generator.generateSQLTokens(insertStatementContext).iterator().next().toString(), is("cipher_mobile = 'defaultEncryptValue'"));
+    }
+    
     private Collection<ColumnAssignmentSegment> buildAssignmentSegment() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
         List<ColumnSegment> columnSegments = Collections.singletonList(columnSegment);

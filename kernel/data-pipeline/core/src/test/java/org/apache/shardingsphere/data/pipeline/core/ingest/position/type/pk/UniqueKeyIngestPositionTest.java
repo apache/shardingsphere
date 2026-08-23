@@ -59,6 +59,11 @@ class UniqueKeyIngestPositionTest {
     }
     
     @Test
+    void assertEncodeStringWithEmptyValue() {
+        assertThat(UniqueKeyIngestPosition.ofString(Range.closed("", "foo_uuid")).encode(), is("s,,foo_uuid"));
+    }
+    
+    @Test
     void assertEncodeStringWithNullValue() {
         assertThat(UniqueKeyIngestPosition.ofString(Range.closed(null, null)).encode(), is("s,,"));
     }
@@ -90,6 +95,15 @@ class UniqueKeyIngestPositionTest {
         assertThat(actual.getType(), is('s'));
         assertThat(actual.getLowerBound(), is("a"));
         assertThat(actual.getUpperBound(), is("b"));
+    }
+    
+    @Test
+    void assertDecodeStringPositionWithEmptyValue() {
+        UniqueKeyIngestPosition<?> actual = UniqueKeyIngestPosition.decode("s,,foo_uuid");
+        assertThat(actual, isA(UniqueKeyIngestPosition.class));
+        assertThat(actual.getType(), is('s'));
+        assertThat(actual.getLowerBound(), is(""));
+        assertThat(actual.getUpperBound(), is("foo_uuid"));
     }
     
     @Test

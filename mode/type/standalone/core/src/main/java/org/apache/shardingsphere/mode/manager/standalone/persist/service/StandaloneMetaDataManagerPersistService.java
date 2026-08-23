@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.standalone.persist.service;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
@@ -342,8 +341,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     private ShardingSphereDatabase rebuildDatabaseSchemaIndex(final String databaseName, final MetaDataContexts metaDataContexts) {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getProps(), new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName), database.getIdentifierContext(),
-                database.getAllSchemas());
+                metaDataContexts.getMetaData().getProps(), database.getDefaultSchemaName(), database.getIdentifierContext(), database.getAllSchemas());
         Collection<ShardingSphereSchema> schemas = new LinkedList<>(GenericSchemaBuilder.build(database.getProtocolType(), material).values());
         return new ShardingSphereDatabase(database.getName(),
                 database.getProtocolType(), database.getResourceMetaData(), database.getRuleMetaData(), schemas, metaDataContexts.getMetaData().getProps());

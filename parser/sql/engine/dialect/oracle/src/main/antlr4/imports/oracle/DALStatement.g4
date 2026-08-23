@@ -147,7 +147,11 @@ showOptions
     ;
 
 show
-    : (SHO | SHOW) showOptions
+    : (SHO | SHOW) showOptions forDbUniqueName?
+    ;
+
+forDbUniqueName
+    : FOR DB_UNIQUE_NAME identifier
     ;
 
 fileExt
@@ -160,4 +164,55 @@ spoolFileName
 
 spool
     : (SPOOL | SPO) (spoolFileName (CRE | CREATE | REP | REPLACE | APP | APPEND)?) | OFF | OUT
+    ;
+
+set
+    : SET setParameter
+    ;
+
+setParameter
+    : systemVariable setVariableValue?
+    | EXTPROC_DLLS EQ_ setVariableValue?
+    | DBID EQ_? numberLiterals
+    | DECRYPTION IDENTIFIED BY setVariableValue
+    ;
+
+setVariableValue
+    : unreservedWord
+    | numberLiterals
+    | stringLiterals
+    | DOUBLE_QUOTED_TEXT
+    | filePath
+    | dllPath (COLON_ dllPath)*
+    ;
+
+filePath
+    : SLASH_ identifier (SLASH_ identifier)*
+    ;
+
+dllPath
+    : identifier
+    | filePath
+    ;
+
+list
+    : LIST DB_UNIQUE_NAME OF DATABASE
+    | LIST ARCHIVELOG ALL forDbUniqueName?
+    ;
+
+report
+    : REPORT SCHEMA forDbUniqueName?
+    ;
+
+change
+    : CHANGE BACKUPSET numberLiterals changeOption?
+    | CHANGE DATAFILECOPY (stringLiterals | numberLiterals) changeOption?
+    | CHANGE COPY OF ARCHIVELOG SEQUENCE BETWEEN numberLiterals AND numberLiterals changeOption?
+    | CHANGE BACKUP OF SPFILE TAG (stringLiterals | DOUBLE_QUOTED_TEXT) changeOption?
+    ;
+
+changeOption
+    : AVAILABLE
+    | UNAVAILABLE
+    | NOKEEP
     ;

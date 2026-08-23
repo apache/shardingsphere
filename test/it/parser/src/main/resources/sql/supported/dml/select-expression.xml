@@ -123,6 +123,7 @@
     <sql-case id="select_interval_day_to_second_expression" value="SELECT (SYSTIMESTAMP - order_date) DAY(9) TO SECOND FROM orders" db-types="Oracle" />
     <sql-case id="select_feature_function" value="SELECT FEATURE_VALUE(nmf_sh_sample, 3 USING *) FROM nmf_sh_sample_apply_prepared" db-types="Oracle" />
     <sql-case id="select_cluster_function" value="SELECT CLUSTER_PROBABILITY(km_sh_clus_sample, 2 USING *) FROM mining_data_apply_v" db-types="Oracle" />
+    <sql-case id="select_cluster_set_function" value="SELECT CLUSTER_SET(km_sh_clus_sample, 2, 0.1 USING *) FROM mining_data_apply_v" db-types="Oracle" />
     <sql-case id="select_with_multiset_except_expression" value="SELECT customer_id, cust_address_ntab MULTISET EXCEPT DISTINCT cust_address2_ntab multiset_except FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
     <sql-case id="select_with_multiset_intersect_expression" value="SELECT customer_id, cust_address_ntab MULTISET INTERSECT DISTINCT cust_address2_ntab multiset_intersect FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
     <sql-case id="select_with_multiset_union_expression" value="SELECT customer_id, cust_address_ntab MULTISET UNION cust_address2_ntab multiset_union FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
@@ -162,4 +163,5 @@
     <sql-case id="select_binary_prefix_oracle" value="SELECT BINARY col FROM dual" db-types="Oracle" />
     <sql-case id="select_interval_day_to_second_precision_oracle" value="SELECT (SYSTIMESTAMP - order_date) DAY(2) TO SECOND(3) FROM orders" db-types="Oracle" />
     <sql-case id="select_interval_year_to_month_precision_oracle" value="SELECT (hire_date - start_date) YEAR(3) TO MONTH FROM employees" db-types="Oracle" />
+    <sql-case id="select_window_funnel_doris" value="SELECT k, WINDOW_FUNNEL(300, 'default', v, k = 'login') AS level FROM t_order GROUP BY k" db-types="Doris" />
 </sql-cases>

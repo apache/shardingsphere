@@ -39,6 +39,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedReplaceTableDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddPartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedExchangePartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyPartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedEnableFeatureDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyEngineDefinition;
@@ -115,6 +116,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "modify-partition")
     private final List<ExpectedModifyPartitionDefinition> modifyPartitions = new LinkedList<>();
+    
+    @XmlElement(name = "exchange-partition")
+    private final List<ExpectedExchangePartitionDefinition> exchangePartitions = new LinkedList<>();
     
     @XmlElement(name = "drop-column")
     private final List<ExpectedColumn> dropColumns = new LinkedList<>();

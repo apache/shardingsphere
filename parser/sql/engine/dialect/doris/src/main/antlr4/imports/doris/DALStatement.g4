@@ -303,6 +303,12 @@ showData
     : SHOW DATA (FROM tableName)? orderByClause?
     ;
 
+// DORIS ADDED BEGIN
+showDataSkew
+    : SHOW DATA SKEW fromTable (PARTITION LP_ partitionName (COMMA_ partitionName)* RP_)?
+    ;
+// DORIS ADDED END
+
 showTrash
     : SHOW TRASH (ON (LP_ string_ (COMMA_ string_)* RP_ | string_))?
     ;
@@ -380,9 +386,18 @@ uninstallPlugin
     : UNINSTALL PLUGIN pluginName
     ;
 
+// DORIS CHANGED BEGIN
 analyzeTable
-    : ANALYZE (NO_WRITE_TO_BINLOG | LOCAL)? tableOrTables tableList histogram?
+    : ANALYZE (NO_WRITE_TO_BINLOG | LOCAL)? tableOrTables tableList (LP_ columnNames RP_)? analyzeOption* histogram?
     ;
+// DORIS CHANGED END
+
+// DORIS ADDED BEGIN
+analyzeOption
+    : WITH SYNC
+    | WITH SAMPLE (PERCENT | ROWS) numberLiterals
+    ;
+// DORIS ADDED END
 
 histogram
     : UPDATE HISTOGRAM ON columnNames (WITH NUMBER_ BUCKETS | USING DATA string_)?
@@ -418,6 +433,12 @@ alterResource
     : ALTER RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
     ;
 
+// DORIS ADDED BEGIN
+createResource
+    : CREATE EXTERNAL? RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
+    ;
+// DORIS ADDED END
+
 resourceName
     : identifier | string_
     ;
@@ -450,6 +471,12 @@ cleanAllProfile
 planReplayerPlay
     : PLAN REPLAYER PLAY DOUBLE_QUOTED_TEXT
     ;
+
+recover
+    : RECOVER DATABASE databaseName databaseId? (AS newDatabaseName=identifier)? #recoverDatabase
+    | RECOVER TABLE tableName tableId? (AS newTableName=identifier)? #recoverTable
+    | RECOVER PARTITION partitionName partitionId? (AS newPartitionName=identifier)? FROM tableName (AS newPartitionNameAfterFrom=identifier)? #recoverPartition
+    ;
 // DORIS ADDED END
 
 dorisAlterSystem
@@ -473,6 +500,18 @@ adminSetReplicaVersion
 
 adminCopyTablet
     : ADMIN COPY TABLET NUMBER_ propertiesClause?
+    ;
+
+adminCheckTablet
+    : ADMIN CHECK TABLET LP_ NUMBER_ (COMMA_ NUMBER_)* RP_ propertiesClause
+    ;
+
+adminSetPartitionVersion
+    : ADMIN SET TABLE tableName PARTITION VERSION propertiesClause
+    ;
+
+adminRebalanceDisk
+    : ADMIN REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
     ;
 
 createSqlBlockRule
@@ -507,6 +546,10 @@ showResourcesNameWhereCondition
 
 showResourcesResourceTypeWhereCondition
     : RESOURCETYPE EQ_ string_
+    ;
+
+showTransaction
+    : SHOW TRANSACTION fromDatabase? showWhereClause?
     ;
 // DORIS ADDED END
 
@@ -575,6 +618,12 @@ createResourceGroup
     : CREATE RESOURCE GROUP groupName TYPE EQ_ (SYSTEM | USER) (VCPU EQ_? vcpuSpec (COMMA_ vcpuSpec)*)?
     (THREAD_PRIORITY EQ_? numberLiterals)? (ENABLE | DISABLE)?
     ;
+
+// DORIS ADDED BEGIN
+createWorkloadGroup
+    : CREATE WORKLOAD GROUP ifNotExists? groupName propertiesClause
+    ;
+// DORIS ADDED END
 
 dropResourceGroup
     : DROP RESOURCE GROUP groupName FORCE?
@@ -666,18 +715,6 @@ resetOption
 
 resetPersist
     : RESET PERSIST (ifExists? identifier)?
-    ;
-
-recoverDatabase
-    : RECOVER DATABASE databaseName databaseId? (AS newDatabaseName=identifier)?
-    ;
-
-recoverTable
-    : RECOVER TABLE tableName tableId? (AS newTableName=identifier)?
-    ;
-
-recoverPartition
-    : RECOVER PARTITION partitionName partitionId? (AS newPartitionName=identifier)? FROM tableName
     ;
 
 restart
@@ -985,5 +1022,7 @@ show
     | showTrash
     // DORIS ADDED BEGIN
     | showResources
+    | showTransaction
+    | showDataSkew
     // DORIS ADDED END
     ;

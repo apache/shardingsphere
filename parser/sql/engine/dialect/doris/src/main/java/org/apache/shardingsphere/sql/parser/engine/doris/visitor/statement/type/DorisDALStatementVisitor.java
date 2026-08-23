@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateL
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateRepositoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DelimiterContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DatabaseIdContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DescFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRepositoryContext;
@@ -62,12 +63,13 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OptionT
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OptionValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OptionValueListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OptionValueNoOptionTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionIdContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepairTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverPartitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepairTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepositoryNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResetOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResetPersistContext;
@@ -138,6 +140,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Uninsta
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UnsetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateResourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResourceNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyKeyContext;
@@ -148,22 +151,29 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCleanTrashContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminRebalanceDiskContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CleanAllProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlanReplayerPlayContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaVersionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCopyTabletContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCheckTabletContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetPartitionVersionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSqlBlockRuleContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateWorkloadGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataSkewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowProcContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataTypesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTrashContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTransactionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableIdContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEncryptKeysContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterSqlBlockRuleContext;
@@ -224,7 +234,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Datab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableIdSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
@@ -248,12 +257,17 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplaye
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCheckTabletStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetPartitionVersionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRebalanceDiskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateWorkloadGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSqlBlockRuleStatement;
@@ -279,16 +293,16 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadSta
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadWarningsStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowResourcesStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowStreamLoadStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverPartitionStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesNameConditionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowResourcesResourceTypeConditionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RepositoryNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowDataSkewStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
@@ -1152,6 +1166,16 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitShowDataSkew(final ShowDataSkewContext ctx) {
+        SimpleTableSegment table = ((FromTableSegment) visit(ctx.fromTable())).getTable();
+        Collection<PartitionSegment> partitions = ctx.partitionName().isEmpty() ? Collections.emptyList()
+                : ctx.partitionName().stream().map(each -> (PartitionSegment) visit(each)).collect(Collectors.toList());
+        DorisShowDataSkewStatement result = new DorisShowDataSkewStatement(getDatabaseType(), table, partitions);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
     public ASTNode visitCreateLoadableFunction(final CreateLoadableFunctionContext ctx) {
         return new MySQLCreateLoadableFunctionStatement(getDatabaseType());
     }
@@ -1169,53 +1193,6 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitRestart(final RestartContext ctx) {
         return new MySQLRestartStatement(getDatabaseType());
-    }
-    
-    @Override
-    public ASTNode visitRecoverDatabase(final RecoverDatabaseContext ctx) {
-        DorisRecoverDatabaseStatement result = new DorisRecoverDatabaseStatement(getDatabaseType());
-        result.setDatabaseName((DatabaseSegment) visit(ctx.databaseName()));
-        if (null != ctx.databaseId()) {
-            result.setDatabaseId(new DatabaseIdSegment(ctx.databaseId().start.getStartIndex(), ctx.databaseId().stop.getStopIndex(),
-                    new IdentifierValue(ctx.databaseId().getText())));
-        }
-        if (null != ctx.newDatabaseName) {
-            result.setNewDatabaseName(new DatabaseSegment(ctx.newDatabaseName.start.getStartIndex(), ctx.newDatabaseName.stop.getStopIndex(),
-                    new IdentifierValue(ctx.newDatabaseName.getText())));
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitRecoverTable(final RecoverTableContext ctx) {
-        DorisRecoverTableStatement result = new DorisRecoverTableStatement(getDatabaseType());
-        result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
-        if (null != ctx.tableId()) {
-            result.setTableId(new TableIdSegment(ctx.tableId().start.getStartIndex(), ctx.tableId().stop.getStopIndex(),
-                    new IdentifierValue(ctx.tableId().getText())));
-        }
-        if (null != ctx.newTableName) {
-            result.setNewTableName(new SimpleTableSegment(new TableNameSegment(ctx.newTableName.start.getStartIndex(), ctx.newTableName.stop.getStopIndex(),
-                    new IdentifierValue(ctx.newTableName.getText()))));
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitRecoverPartition(final RecoverPartitionContext ctx) {
-        DorisRecoverPartitionStatement result = new DorisRecoverPartitionStatement(getDatabaseType());
-        result.setPartitionName(new PartitionSegment(ctx.partitionName().start.getStartIndex(), ctx.partitionName().stop.getStopIndex(),
-                new IdentifierValue(ctx.partitionName().getText())));
-        if (null != ctx.partitionId()) {
-            result.setPartitionId(new PartitionIdSegment(ctx.partitionId().start.getStartIndex(), ctx.partitionId().stop.getStopIndex(),
-                    new IdentifierValue(ctx.partitionId().getText())));
-        }
-        if (null != ctx.newPartitionName) {
-            result.setNewPartitionName(new PartitionSegment(ctx.newPartitionName.start.getStartIndex(), ctx.newPartitionName.stop.getStopIndex(),
-                    new IdentifierValue(ctx.newPartitionName.getText())));
-        }
-        result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
     }
     
     @Override
@@ -1273,6 +1250,18 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         return new DorisAlterResourceStatement(getDatabaseType(), resourceName, properties);
     }
     
+    @Override
+    public ASTNode visitCreateResource(final CreateResourceContext ctx) {
+        String resourceName = getResourceName(ctx.resourceName());
+        Properties properties = new Properties();
+        for (PropertyAssignmentContext each : ctx.propertyAssignments().propertyAssignment()) {
+            String key = getPropertyKey(each.propertyKey());
+            String value = getPropertyValue(each.propertyValue());
+            properties.setProperty(key, value);
+        }
+        return new DorisCreateResourceStatement(getDatabaseType(), resourceName, properties);
+    }
+    
     private String getResourceName(final ResourceNameContext ctx) {
         if (null != ctx.identifier()) {
             return ((IdentifierValue) visit(ctx.identifier())).getValue();
@@ -1326,6 +1315,15 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitAdminCleanTrash(final AdminCleanTrashContext ctx) {
         DorisAdminCleanTrashStatement result = new DorisAdminCleanTrashStatement(getDatabaseType());
+        if (null != ctx.string_()) {
+            ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminRebalanceDisk(final AdminRebalanceDiskContext ctx) {
+        DorisAdminRebalanceDiskStatement result = new DorisAdminRebalanceDiskStatement(getDatabaseType());
         if (null != ctx.string_()) {
             ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
         }
@@ -1389,9 +1387,32 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitAdminCheckTablet(final AdminCheckTabletContext ctx) {
+        List<Long> tabletIds = ctx.NUMBER_().stream().map(each -> Long.parseLong(each.getText())).collect(Collectors.toList());
+        DorisAdminCheckTabletStatement result = new DorisAdminCheckTabletStatement(getDatabaseType(), tabletIds);
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminSetPartitionVersion(final AdminSetPartitionVersionContext ctx) {
+        DorisAdminSetPartitionVersionStatement result = new DorisAdminSetPartitionVersionStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
     public ASTNode visitCreateSqlBlockRule(final CreateSqlBlockRuleContext ctx) {
         DorisCreateSqlBlockRuleStatement result = new DorisCreateSqlBlockRuleStatement(getDatabaseType());
         result.setRuleName(((IdentifierValue) visit(ctx.ruleName())).getValue());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateWorkloadGroup(final CreateWorkloadGroupContext ctx) {
+        DorisCreateWorkloadGroupStatement result = new DorisCreateWorkloadGroupStatement(getDatabaseType());
+        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
         return result;
     }
@@ -1797,5 +1818,86 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             result.setConditionValue(SQLUtils.getExactlyValue(condCtx.string_().getText()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowTransaction(final ShowTransactionContext ctx) {
+        DorisShowTransactionStatement result = new DorisShowTransactionStatement(getDatabaseType());
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase(((FromDatabaseSegment) visit(ctx.fromDatabase())).getDatabase());
+        }
+        if (null != ctx.showWhereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRecoverDatabase(final RecoverDatabaseContext ctx) {
+        DorisRecoverStatement result = new DorisRecoverStatement(getDatabaseType());
+        result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        setDatabaseId(result, ctx.databaseId());
+        if (null != ctx.newDatabaseName) {
+            result.setNewName(((IdentifierValue) visit(ctx.newDatabaseName)).getValue());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRecoverTable(final RecoverTableContext ctx) {
+        DorisRecoverStatement result = new DorisRecoverStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        setTableId(result, ctx.tableId());
+        if (null != ctx.newTableName) {
+            result.setNewName(((IdentifierValue) visit(ctx.newTableName)).getValue());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRecoverPartition(final RecoverPartitionContext ctx) {
+        DorisRecoverStatement result = new DorisRecoverStatement(getDatabaseType());
+        result.setPartitionName(((IdentifierValue) visit(ctx.partitionName().identifier())).getValue());
+        setPartitionId(result, ctx.partitionId());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.newPartitionName) {
+            result.setNewName(((IdentifierValue) visit(ctx.newPartitionName)).getValue());
+        } else if (null != ctx.newPartitionNameAfterFrom) {
+            result.setNewName(((IdentifierValue) visit(ctx.newPartitionNameAfterFrom)).getValue());
+        }
+        return result;
+    }
+    
+    private void setDatabaseId(final DorisRecoverStatement statement, final DatabaseIdContext context) {
+        if (null == context) {
+            return;
+        }
+        if (null != context.NUMBER_()) {
+            statement.setObjectId(Long.valueOf(context.NUMBER_().getText()));
+        } else {
+            statement.setDatabaseId(new DatabaseIdSegment(context.start.getStartIndex(), context.stop.getStopIndex(), new IdentifierValue(context.getText())));
+        }
+    }
+    
+    private void setTableId(final DorisRecoverStatement statement, final TableIdContext context) {
+        if (null == context) {
+            return;
+        }
+        if (null != context.NUMBER_()) {
+            statement.setObjectId(Long.valueOf(context.NUMBER_().getText()));
+        } else {
+            statement.setTableId(new TableIdSegment(context.start.getStartIndex(), context.stop.getStopIndex(), new IdentifierValue(context.getText())));
+        }
+    }
+    
+    private void setPartitionId(final DorisRecoverStatement statement, final PartitionIdContext context) {
+        if (null == context) {
+            return;
+        }
+        if (null != context.NUMBER_()) {
+            statement.setObjectId(Long.valueOf(context.NUMBER_().getText()));
+        } else {
+            statement.setPartitionId(new PartitionIdSegment(context.start.getStartIndex(), context.stop.getStopIndex(), new IdentifierValue(context.getText())));
+        }
     }
 }

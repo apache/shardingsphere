@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sho
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -109,6 +110,8 @@ public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor
     }
     
     private LocalDataQueryResultRow getQueryResultRow(final ShardingSphereTable table) {
-        return sqlStatement.isContainsFull() ? new LocalDataQueryResultRow(table.getName(), table.getType()) : new LocalDataQueryResultRow(table.getName());
+        return sqlStatement.isContainsFull()
+                ? new LocalDataQueryResultRow(table.getName(), TableType.VIEW == table.getType() ? "VIEW" : "BASE TABLE")
+                : new LocalDataQueryResultRow(table.getName());
     }
 }

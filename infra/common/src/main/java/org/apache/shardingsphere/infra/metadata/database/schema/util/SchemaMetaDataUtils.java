@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.UnsupportedActualDataNodeStructureException;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import javax.sql.DataSource;
@@ -68,10 +67,11 @@ public final class SchemaMetaDataUtils {
         boolean checkMetaDataEnable = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
         for (String each : tableNames) {
             checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(unsupportedThreeTierStorageStructureDatabaseTypes, dataNodes, each);
+            boolean tableNameLoadedFromStorage = dataNodes.isDataNodeTableNameLoadedFromStorage(each);
             if (checkMetaDataEnable) {
-                addAllActualTableDataNode(material, dataSourceTableGroups, dataNodes, each);
+                addAllActualTableDataNode(material, dataSourceTableGroups, dataNodes, each, protocolType, tableNameLoadedFromStorage);
             } else {
-                addOneActualTableDataNode(material, dataSourceTableGroups, dataNodes, each);
+                addOneActualTableDataNode(material, dataSourceTableGroups, dataNodes, each, protocolType, tableNameLoadedFromStorage);
             }
         }
         Collection<MetaDataLoaderMaterial> result = new LinkedList<>();
@@ -79,25 +79,20 @@ public final class SchemaMetaDataUtils {
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageUnits().get(entry.getKey()).getStorageType();
             String defaultSchemaName = new DatabaseTypeRegistry(storageType).getDefaultSchemaName(material.getDefaultSchemaName());
-            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), protocolType, storageType, defaultSchemaName, loadTableMetadataBatchSize));
+            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize));
         }
         return result;
     }
     
     private static Collection<MetaDataLoaderMaterial> buildMaterials(final GenericSchemaBuilderMaterial material, final String dataSourceName, final Collection<String> actualTableNames,
-                                                                     final DatabaseType protocolType, final DatabaseType storageType, final String defaultSchemaName,
+                                                                     final DatabaseType storageType, final String defaultSchemaName,
                                                                      final int loadTableMetadataBatchSize) {
         Collection<MetaDataLoaderMaterial> result = new LinkedList<>();
         DataSource dataSource = getDataSource(material, dataSourceName);
         for (List<String> each : Lists.partition(new ArrayList<>(actualTableNames), loadTableMetadataBatchSize)) {
-            Collection<String> tableNames = protocolType.equals(storageType) ? each : normalize(each, material.getIdentifierContext());
-            result.add(new MetaDataLoaderMaterial(tableNames, dataSourceName, dataSource, storageType, defaultSchemaName));
+            result.add(new MetaDataLoaderMaterial(each, dataSourceName, dataSource, storageType, defaultSchemaName));
         }
         return result;
-    }
-    
-    private static Collection<String> normalize(final Collection<String> tableNames, final DatabaseIdentifierContext identifierContext) {
-        return tableNames.stream().map(each -> identifierContext.normalizeStorage(IdentifierScope.TABLE, new IdentifierValue(each))).collect(Collectors.toList());
     }
     
     private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {
@@ -123,13 +118,15 @@ public final class SchemaMetaDataUtils {
     }
     
     private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterial material,
-                                                  final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
+                                                  final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table,
+                                                  final DatabaseType protocolType, final boolean tableNameLoadedFromStorage) {
         Optional<DataNode> dataNode = dataNodes.getDataNodes(table).stream().filter(each -> isSameDataSourceNameSchemaName(material, each)).findFirst();
         if (!dataNode.isPresent() && !material.getStorageUnits().keySet().iterator().hasNext()) {
             return;
         }
         String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> material.getStorageUnits().keySet().iterator().next());
-        String tableName = dataNode.map(DataNode::getTableName).orElse(table);
+        String tableName = dataNode.map(optional -> getTableName(material, protocolType, optional, tableNameLoadedFromStorage))
+                .orElseGet(() -> normalizeTableName(material, protocolType, dataSourceName, table));
         addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
     }
     
@@ -139,13 +136,25 @@ public final class SchemaMetaDataUtils {
     }
     
     private static void addAllActualTableDataNode(final GenericSchemaBuilderMaterial material,
-                                                  final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
+                                                  final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table,
+                                                  final DatabaseType protocolType, final boolean tableNameLoadedFromStorage) {
         Collection<DataNode> tableDataNodes = dataNodes.getDataNodes(table);
         if (tableDataNodes.isEmpty() && !material.getStorageUnits().isEmpty()) {
-            addDataSourceTableGroups(material.getStorageUnits().keySet().iterator().next(), table, dataSourceTableGroups);
+            String dataSourceName = material.getStorageUnits().keySet().iterator().next();
+            addDataSourceTableGroups(dataSourceName, normalizeTableName(material, protocolType, dataSourceName, table), dataSourceTableGroups);
         } else {
-            tableDataNodes.forEach(each -> addDataSourceTableGroups(each.getDataSourceName(), each.getTableName(), dataSourceTableGroups));
+            tableDataNodes.forEach(each -> addDataSourceTableGroups(each.getDataSourceName(), getTableName(material, protocolType, each, tableNameLoadedFromStorage), dataSourceTableGroups));
         }
+    }
+    
+    private static String getTableName(final GenericSchemaBuilderMaterial material, final DatabaseType protocolType, final DataNode dataNode,
+                                       final boolean tableNameLoadedFromStorage) {
+        return tableNameLoadedFromStorage ? dataNode.getTableName() : normalizeTableName(material, protocolType, dataNode.getDataSourceName(), dataNode.getTableName());
+    }
+    
+    private static String normalizeTableName(final GenericSchemaBuilderMaterial material, final DatabaseType protocolType, final String dataSourceName, final String tableName) {
+        DatabaseType storageType = material.getStorageUnits().get(dataSourceName).getStorageType();
+        return protocolType.equals(storageType) ? tableName : material.getIdentifierContext().normalizeStorage(IdentifierScope.TABLE, new IdentifierValue(tableName));
     }
     
     private static void addDataSourceTableGroups(final String dataSourceName, final String tableName, final Map<String, Collection<String>> dataSourceTableGroups) {

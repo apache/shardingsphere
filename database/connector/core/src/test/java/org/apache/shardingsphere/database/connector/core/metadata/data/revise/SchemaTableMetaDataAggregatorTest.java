@@ -60,8 +60,25 @@ class SchemaTableMetaDataAggregatorTest {
         assertTrue(actual.getMessage().contains("foo_tbl_b"));
     }
     
+    @Test
+    void assertAggregateWithSameStructureDifferentStorageUnitNames() {
+        SchemaTableMetaDataAggregator aggregator = new SchemaTableMetaDataAggregator(true);
+        TableMetaData firstTableMetaData = createTableMetaData("foo_tbl", "foo_col", "ds_0");
+        TableMetaData secondTableMetaData = createTableMetaData("foo_tbl", "foo_col", "ds_1");
+        Map<String, Collection<TableMetaData>> input = Collections.singletonMap("foo_tbl", Arrays.asList(firstTableMetaData, secondTableMetaData));
+        Collection<TableMetaData> actual = aggregator.aggregate(input);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getName(), is("foo_tbl"));
+    }
+    
     private TableMetaData createTableMetaData(final String tableName, final String columnName) {
+        return createTableMetaData(tableName, columnName, null);
+    }
+    
+    private TableMetaData createTableMetaData(final String tableName, final String columnName, final String storageUnitName) {
         ColumnMetaData columnMetaData = new ColumnMetaData(columnName, Types.INTEGER, true, false, true, true, false, false);
-        return new TableMetaData(tableName, Collections.singleton(columnMetaData), Collections.emptyList(), Collections.emptyList());
+        TableMetaData result = new TableMetaData(tableName, Collections.singleton(columnMetaData), Collections.emptyList(), Collections.emptyList());
+        result.setStorageUnitName(storageUnitName);
+        return result;
     }
 }

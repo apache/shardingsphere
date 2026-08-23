@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.exp
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.output.OutputClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.returning.ReturningClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
@@ -67,6 +69,7 @@ public final class MergeStatementAssert {
         assertWithClause(assertContext, actual, expected);
         assertWithTableHintClause(assertContext, actual, expected);
         assertOutputClause(assertContext, actual, expected);
+        assertReturningClause(assertContext, actual, expected);
         assertWhenAndThenSegments(assertContext, actual, expected);
         assertIndexes(assertContext, actual, expected);
     }
@@ -101,6 +104,16 @@ public final class MergeStatementAssert {
         }
     }
     
+    private static void assertReturningClause(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
+        Optional<ReturningSegment> returningSegment = actual.getReturning();
+        if (null == expected.getReturningClause()) {
+            assertFalse(returningSegment.isPresent(), assertContext.getText("Actual returning segment should not exist."));
+        } else {
+            assertTrue(returningSegment.isPresent(), assertContext.getText("Actual returning segment should exist."));
+            ReturningClauseAssert.assertIs(assertContext, returningSegment.get(), expected.getReturningClause());
+        }
+    }
+    
     private static void assertWhenAndThenSegments(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         Collection<MergeWhenAndThenSegment> mergeWhenAndThenSegments = actual.getWhenAndThens();
         assertThat(assertContext.getText("merge when and then segment assertion error: "), mergeWhenAndThenSegments.size(), is(expected.getMergeWhenAndThenSegments().size()));
@@ -126,6 +139,11 @@ public final class MergeStatementAssert {
             assertNull(actual.getInsert(), assertContext.getText("Actual insert statement should not exist."));
         } else {
             InsertStatementAssert.assertIs(assertContext, actual.getInsert(), expected.getInsertClause());
+        }
+        if (null == expected.getDeleteClause()) {
+            assertNull(actual.getDelete(), assertContext.getText("Actual delete statement should not exist."));
+        } else {
+            DeleteStatementAssert.assertIs(assertContext, actual.getDelete(), expected.getDeleteClause());
         }
     }
     

@@ -40,6 +40,7 @@
     <sql-case id="alter_table_modify11" value="ALTER TABLE product_information MODIFY (min_price DEFAULT NULL)" db-types="Oracle" />
     <sql-case id="alter_table_modify12" value="ALTER TABLE product_information MODIFY (min_price DEFAULT 10)" db-types="Oracle" />
     <sql-case id="alter_table_add_constraint" value="ALTER TABLE employees ADD (CONSTRAINT emp_emp_id_pk PRIMARY KEY (employee_id), CONSTRAINT emp_dept_fk FOREIGN KEY (department_id) REFERENCES departments, CONSTRAINT emp_job_fk FOREIGN KEY (job_id) REFERENCES jobs (job_id), CONSTRAINT emp_manager_fk FOREIGN KEY (manager_id) REFERENCES employees)" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_with_dotted_name" value="ALTER TABLE emp ADD CONSTRAINT emp.pk PRIMARY KEY (empno)" db-types="Oracle" />
     <sql-case id="alter_table_no_flashback_archive" value="ALTER TABLE employee NO FLASHBACK ARCHIVE" db-types="Oracle" />
     <sql-case id="alter_table_move_tablespace_overflow_tablespace" value="ALTER TABLE admin_docindex MOVE TABLESPACE admin_tbs2 OVERFLOW TABLESPACE admin_tbs3" db-types="Oracle" />
     <sql-case id="alter_table_move_nocompress" value="ALTER TABLE admin_iot5 MOVE NOCOMPRESS" db-types="Oracle" />
@@ -48,6 +49,7 @@
     <sql-case id="alter_table_shrink_space_cascade" value="ALTER TABLE SYSTEM.AUD$ SHRINK SPACE CASCADE" db-types="Oracle" />
     <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" db-types="MySQL, PostgreSQL,openGauss" />
     <sql-case id="alter_table_oracle" value="ALTER TABLE t_log ADD (name varchar(10))" db-types="Oracle" />
+    <sql-case id="alter_table_add_virtual_column" value="ALTER TABLE emp2 ADD (income AS (salary + (salary*commission_pct)))" db-types="Oracle" />
     <sql-case id="alter_table_not_null" value="alter table t1 add c2 real  not null" db-types="MySQL" />
     <sql-case id="alter_table_not_null_first" value="alter table t1 add c2 real  not null first" db-types="MySQL" />
     <sql-case id="alter_table_not_null_after" value="alter table t1 add c4 real  not null after c2" db-types="MySQL" />
@@ -314,6 +316,9 @@
     <sql-case id="alter_table_rename_partition_basic" value="ALTER TABLE sales PARTITION (dt='2025-07-01') RENAME TO PARTITION (dt='20250701')" db-types="Hive" />
     <sql-case id="alter_table_exchange_partition_basic" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25') WITH TABLE source_table" db-types="Hive" />
     <sql-case id="alter_table_exchange_partition_multiple" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25', region='asia') WITH TABLE source_table" db-types="Hive" />
+    <sql-case id="alter_table_exchange_partition_oracle" value="ALTER TABLE orders EXCHANGE PARTITION orders_q1 WITH TABLE orders_q1_copy" db-types="Oracle" />
+    <sql-case id="alter_table_exchange_partition_for_oracle" value="ALTER TABLE sales EXCHANGE PARTITION FOR (TO_DATE('01-JAN-2020','dd-MON-yyyy')) WITH TABLE sales_old INCLUDING INDEXES WITHOUT VALIDATION" db-types="Oracle" />
+    <sql-case id="alter_table_exchange_partition_excluding_index_oracle" value="ALTER TABLE orders EXCHANGE PARTITION orders_q2 WITH TABLE orders_q2_copy EXCLUDING INDEXES WITH VALIDATION" db-types="Oracle" />
     <sql-case id="alter_table_set_partition_retention_basic" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='30d')" db-types="Hive" />
     <sql-case id="alter_table_set_partition_retention_with_discover" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='7d', 'discover.partitions'='true')" db-types="Hive" />
     <sql-case id="msck_check_table" value="MSCK TABLE sales" db-types="Hive" />

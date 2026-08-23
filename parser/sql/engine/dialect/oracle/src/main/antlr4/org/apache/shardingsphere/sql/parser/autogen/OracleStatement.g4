@@ -163,8 +163,13 @@ execute
     | createTrigger
     | show
     | spool
+    | set
+    | list
+    | report
+    | change
     | createOperator
     | createIndexType
+    | createSchema
     | createOutline
     ) SEMI_? SLASH_? EOF
     ;

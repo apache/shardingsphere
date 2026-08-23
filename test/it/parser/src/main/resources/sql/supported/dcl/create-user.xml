@@ -80,6 +80,8 @@
     <sql-case id="create_user_with_password" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1" db-types="H2,MySQL" />
     <sql-case id="create_user_with_tablespace" value="CREATE USER user1 IDENTIFIED BY password DEFAULT TABLESPACE tablespace1" db-types="Oracle" />
     <sql-case id="create_user_with_quota_option" value="CREATE USER user1 IDENTIFIED BY password QUOTA 1M ON tablespace1" db-types="Oracle" />
+    <sql-case id="create_user_with_temporary_tablespace" value="CREATE USER jfee IDENTIFIED BY password DEFAULT TABLESPACE users TEMPORARY TABLESPACE temp_ts QUOTA 500K ON users PROFILE clerk" db-types="Oracle" />
+    <sql-case id="create_user_with_temporary_tablespace_unlimited_quota" value="CREATE USER dcranney IDENTIFIED BY password DEFAULT TABLESPACE users TEMPORARY TABLESPACE temp_ts QUOTA unlimited ON users" db-types="Oracle" />
     <sql-case id="create_user_with_password_expire_lock" value="CREATE USER user1 IDENTIFIED BY RANDOM password default role role1 PASSWORD EXPIRE ACCOUNT LOCK" db-types="H2,MySQL" />
     <sql-case id="create_user_only_with_name" value="CREATE USER user1" db-types="PostgreSQL,openGauss,SQLServer" />
     <sql-case id="create_user_with_password_postgresql" value="CREATE USER user1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL,openGauss" />

@@ -17,75 +17,77 @@
   -->
 
 <sql-parser-test-cases>
-    <recover-database sql-case-id="recover_database">
+    <recover sql-case-id="recover_database">
         <database name="example_db" start-index="17" stop-index="26" />
-    </recover-database>
+    </recover>
 
-    <recover-database sql-case-id="recover_database_with_id" database-id="example_db_id">
+    <recover sql-case-id="recover_database_with_id" object-id="10000">
         <database name="example_db" start-index="17" stop-index="26" />
-    </recover-database>
+    </recover>
 
-    <recover-database sql-case-id="recover_database_with_id_and_new_name" database-id="example_db_id">
+    <recover sql-case-id="recover_database_with_id_and_new_name" object-id="10000" new-name="new_example_db">
         <database name="example_db" start-index="17" stop-index="26" />
-        <new-database name="new_example_db" start-index="45" stop-index="58" />
-    </recover-database>
+    </recover>
 
-    <recover-table sql-case-id="recover_table">
-        <table>
-            <simple-table name="example_tbl" start-index="14" stop-index="35">
-                <owner name="example_db" start-index="14" stop-index="23" />
-            </simple-table>
+    <recover sql-case-id="recover_table">
+        <table name="example_tbl" start-index="14" stop-index="35">
+            <owner name="example_db" start-index="14" stop-index="23" />
         </table>
-    </recover-table>
+    </recover>
 
-    <recover-table sql-case-id="recover_table_with_id" table-id="example_tbl_id">
-        <table>
-            <simple-table name="example_tbl" start-index="14" stop-index="35">
-                <owner name="example_db" start-index="14" stop-index="23" />
-            </simple-table>
+    <recover sql-case-id="recover_table_with_id" object-id="20000">
+        <table name="example_tbl" start-index="14" stop-index="35">
+            <owner name="example_db" start-index="14" stop-index="23" />
         </table>
-    </recover-table>
+    </recover>
 
-    <recover-table sql-case-id="recover_table_with_new_name">
-        <table>
-            <simple-table name="example_tbl" start-index="14" stop-index="35">
-                <owner name="example_db" start-index="14" stop-index="23" />
-            </simple-table>
+    <recover sql-case-id="recover_table_with_new_name" new-name="new_example_tbl">
+        <table name="example_tbl" start-index="14" stop-index="35">
+            <owner name="example_db" start-index="14" stop-index="23" />
         </table>
-        <new-table>
-            <simple-table name="new_example_tbl" start-index="40" stop-index="54" />
-        </new-table>
-    </recover-table>
+    </recover>
 
-    <recover-partition sql-case-id="recover_partition">
-        <partition name="p1" start-index="18" stop-index="19" />
-        <table>
-            <simple-table name="example_tbl" start-index="26" stop-index="36" />
-        </table>
-    </recover-partition>
+    <recover sql-case-id="recover_partition" partition-name="p1">
+        <table name="example_tbl" start-index="26" stop-index="36" />
+    </recover>
 
-    <recover-partition sql-case-id="recover_partition_with_id" partition-id="p1_id">
-        <partition name="p1" start-index="18" stop-index="19" />
-        <table>
-            <simple-table name="example_tbl" start-index="32" stop-index="42" />
-        </table>
-    </recover-partition>
+    <recover sql-case-id="recover_partition_with_id" partition-name="p1" object-id="300">
+        <table name="example_tbl" start-index="30" stop-index="40" />
+    </recover>
 
-    <recover-partition sql-case-id="recover_partition_with_id_and_new_name" partition-id="p1_id">
-        <partition name="p1" start-index="18" stop-index="19" />
-        <new-partition name="new_p1" start-index="30" stop-index="35" />
-        <table>
-            <simple-table name="example_tbl" start-index="42" stop-index="52" />
-        </table>
-    </recover-partition>
+    <recover sql-case-id="recover_partition_with_id_and_new_name" partition-name="p1" object-id="300" new-name="new_p1">
+        <table name="example_tbl" start-index="40" stop-index="50" />
+    </recover>
 
-    <recover-partition sql-case-id="recover_partition_with_db_table" partition-id="p1_id">
-        <partition name="p1" start-index="18" stop-index="19" />
-        <new-partition name="new_p1" start-index="30" stop-index="35" />
-        <table>
-            <simple-table name="example_tbl" start-index="42" stop-index="63">
-                <owner name="example_db" start-index="42" stop-index="51" />
-            </simple-table>
+    <recover sql-case-id="recover_partition_with_new_name_after_from" partition-name="p1" object-id="300" new-name="new_p1">
+        <table name="example_tbl" start-index="30" stop-index="40" />
+    </recover>
+
+    <recover sql-case-id="recover_database_with_string_id" database-id="example_db_id">
+        <database name="example_db" start-index="17" stop-index="26" />
+    </recover>
+
+    <recover sql-case-id="recover_database_with_string_id_and_new_name" database-id="example_db_id" new-name="new_example_db">
+        <database name="example_db" start-index="17" stop-index="26" />
+    </recover>
+
+    <recover sql-case-id="recover_table_with_string_id" table-id="example_tbl_id">
+        <table name="example_tbl" start-index="14" stop-index="35">
+            <owner name="example_db" start-index="14" stop-index="23" />
         </table>
-    </recover-partition>
+    </recover>
+
+    <recover sql-case-id="recover_partition_with_string_id" partition-name="p1" partition-id="p1_id">
+        <table name="example_tbl" start-index="32" stop-index="42" />
+    </recover>
+
+    <recover sql-case-id="recover_partition_with_string_id_and_new_name" partition-name="p1" partition-id="p1_id" new-name="new_p1">
+        <table name="example_tbl" start-index="42" stop-index="52" />
+    </recover>
+
+    <recover sql-case-id="recover_partition_with_string_id_and_db_table" partition-name="p1" partition-id="p1_id" new-name="new_p1">
+        <table name="example_tbl" start-index="42" stop-index="63">
+            <owner name="example_db" start-index="42" stop-index="51" />
+        </table>
+    </recover>
 </sql-parser-test-cases>

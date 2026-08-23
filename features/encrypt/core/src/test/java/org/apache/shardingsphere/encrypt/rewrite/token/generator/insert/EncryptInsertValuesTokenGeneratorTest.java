@@ -50,6 +50,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EncryptInsertValuesTokenGeneratorTest {
@@ -58,12 +60,14 @@ class EncryptInsertValuesTokenGeneratorTest {
     
     private EncryptInsertValuesTokenGenerator generator;
     
+    private ShardingSphereDatabase database;
+    
     @BeforeEach
     void setup() {
         SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
         when(sqlRewriteContext.getSql()).thenReturn("");
-        generator = new EncryptInsertValuesTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule(),
-                new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())), sqlRewriteContext);
+        database = spy(EncryptGeneratorFixtureBuilder.createDatabase());
+        generator = new EncryptInsertValuesTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule(), database, sqlRewriteContext);
     }
     
     @Test
@@ -75,12 +79,14 @@ class EncryptInsertValuesTokenGeneratorTest {
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setPreviousSQLTokens(Collections.emptyList());
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
+        verify(database).getDefaultSchemaName();
     }
     
     @Test
     void assertGenerateSQLTokenFromPreviousSQLTokens() {
         generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
+        verify(database).getDefaultSchemaName();
     }
     
     @Test

@@ -154,6 +154,9 @@ identifierKeywordsUnambiguous
     | BEFORE
     | BINLOG
     | BIT
+    // DORIS ADDED BEGIN
+    | BITMAP
+    // DORIS ADDED END
     | BITMAP_UNION
     // DORIS ADDED BEGIN
     | BITXOR
@@ -204,6 +207,10 @@ identifierKeywordsUnambiguous
     | DATA
     | DATETIME
     | DATE
+    // DORIS ADDED BEGIN
+    | DATETIMEV2
+    | DATEV2
+    // DORIS ADDED END
     | DAY
     | DAY_MINUTE
     | DEFAULT_AUTH
@@ -243,6 +250,9 @@ identifierKeywordsUnambiguous
     | EXTENDED
     | EXTENT_SIZE
     // DORIS ADDED BEGIN
+    | EXTERNAL
+    // DORIS ADDED END
+    // DORIS ADDED BEGIN
     | EXTRACT_URL_PARAMETER
     // DORIS ADDED END
     | FAILED_LOGIN_ATTEMPTS
@@ -267,6 +277,7 @@ identifierKeywordsUnambiguous
     | GROUPS
     | HASH
     | HDFS
+    | HLL
     | HLL_UNION
     | HISTOGRAM
     | HISTORY
@@ -297,6 +308,9 @@ identifierKeywordsUnambiguous
     | KEY_BLOCK_SIZE
     | LABEL
     | LOAD_JOB_ID
+    // DORIS ADDED BEGIN
+    | LARGEINT
+    // DORIS ADDED END
     | LAST
     | LEAVES
     | LESS
@@ -403,6 +417,9 @@ identifierKeywordsUnambiguous
     | PASSWORD_LOCK_TIME
     | PATH
     | PAUSE
+    // DORIS ADDED BEGIN
+    | PERCENT
+    // DORIS ADDED END
     | PHASE
     // DORIS ADDED BEGIN
     | PLAN
@@ -479,6 +496,9 @@ identifierKeywordsUnambiguous
     | ROW_COUNT
     | ROW_FORMAT
     | RTREE
+    // DORIS ADDED BEGIN
+    | SAMPLE
+    // DORIS ADDED END
     | SCHEDULE
     | SCHEMA_NAME
     | SECONDARY_ENGINE
@@ -493,6 +513,9 @@ identifierKeywordsUnambiguous
     | SERVER
     | SHARE
     | SIMPLE
+    // DORIS ADDED BEGIN
+    | SKEW
+    // DORIS ADDED END
     | SKIP_SYMBOL
     | SLOW
     | SNAPSHOT
@@ -579,6 +602,9 @@ identifierKeywordsUnambiguous
     | WEIGHT_STRING
     | WITHOUT
     | WORK
+    // DORIS ADDED BEGIN
+    | WORKLOAD
+    // DORIS ADDED END
     | WRAPPER
     | X509
     | XID
@@ -1032,12 +1058,21 @@ simpleExpr
     | caseExpression
     | intervalExpression
     | arrayExpression
+    // DORIS ADDED BEGIN
+    | lambdaExpression
+    // DORIS ADDED END
     ;
 
 arrayExpression
     : LBT_ expr (COMMA_ expr)* RBT_
     | LBT_ RBT_
     ;
+
+// DORIS ADDED BEGIN
+lambdaExpression
+    : (identifier | LP_ identifier (COMMA_ identifier)* RP_) JSON_SEPARATOR expr
+    ;
+// DORIS ADDED END
 
 path
     : string_
@@ -1252,6 +1287,9 @@ castType
     | castTypeName = STRING
     | castTypeName = INT
     | castTypeName = BIGINT
+    | castTypeName = LARGEINT
+    | castTypeName = DATEV2
+    | castTypeName = DATETIMEV2 typeDatetimePrecision?
     // DORIS ADDED END
     ;
 
@@ -1310,7 +1348,7 @@ shorthandRegularFunction
 
 completeRegularFunction
     // DORIS CHANGED BEGIN
-    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_) indexAlias?
+    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_) indexAlias? overClause?
     // DORIS CHANGED END
     ;
 
@@ -1399,7 +1437,10 @@ dataType
     | (dataTypeName = NCHAR | dataTypeName = NATIONAL_CHAR) fieldLength? BINARY?
     | dataTypeName = (SIGNED | SIGNED_INT | SIGNED_INTEGER)
     | dataTypeName = BINARY fieldLength?
-    | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
+    // DORIS CHANGED BEGIN
+    | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING) fieldLength charsetWithOptBinary?
+    | dataTypeName = VARCHAR fieldLength? charsetWithOptBinary?
+    // DORIS CHANGED END
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL_CHAR_VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
     | dataTypeName = VARBINARY fieldLength?
     | dataTypeName = YEAR fieldLength? fieldOptions?
@@ -1422,6 +1463,18 @@ dataType
     | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMCOLLECTION | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
     | dataTypeName = STRING
     | dataTypeName = ARRAY
+    // DORIS ADDED BEGIN
+    | dataTypeName = ARRAY LT_ dataType GT_
+    | dataTypeName = LARGEINT
+    | dataTypeName = DATEV2
+    | dataTypeName = DATETIMEV2 typeDatetimePrecision?
+    // DORIS ADDED END
+    // DORIS ADDED BEGIN
+    | dataTypeName = BITMAP
+    // DORIS ADDED END
+    // DORIS ADDED BEGIN
+    | dataTypeName = HLL
+    // DORIS ADDED END
     ;
 
 stringList

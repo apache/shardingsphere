@@ -34,6 +34,7 @@
 1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
 1. Metadata: Fix MySQL metadata loading fallback when JDBC catalog is null for named tables - [#38855](https://github.com/apache/shardingsphere/pull/38855)
 1. Metadata: Fix Oracle metadata version comparison skipping identity and collation columns on 18c and later - [#39104](https://github.com/apache/shardingsphere/pull/39104)
+1. Metadata: Fix wrong logic table metadata when config same actual table name in different storage unit - [#39157](https://github.com/apache/shardingsphere/pull/39157)
 1. DistSQL: Fix case-sensitive storage unit matching in `SHOW RULES USED STORAGE UNIT` - [#38848](https://github.com/apache/shardingsphere/pull/38848)
 1. DistSQL: Use case-insensitive table name matching in broadcast create and drop executors - [#39200](https://github.com/apache/shardingsphere/pull/39200)
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
@@ -56,6 +57,7 @@
 1. Proxy: Fix incorrect openGauss composite column type OIDs in simple and extended query row descriptions - [#39253](https://github.com/apache/shardingsphere/pull/39253)
 1. Proxy: Fix MySQL CLOB and NCLOB result set handling - [#39338](https://github.com/apache/shardingsphere/pull/39338)
 1. Proxy: Fix MySQL BLOB result set handling in text and binary protocols - [#39340](https://github.com/apache/shardingsphere/pull/39340)
+1. Proxy: Fix silently dropped backslashes and rejected NULL elements in PostgreSQL text array binary parameters - [#39395](https://github.com/apache/shardingsphere/pull/39395)
 1. Proxy: Fix MySQL COM_QUERY binary string literal corruption - [#39433](https://github.com/apache/shardingsphere/pull/39433)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
@@ -69,8 +71,11 @@
 1. Sharding: Fix generated actual index names exceeding database identifier length limits while preserving legacy generated index name compatibility - [#38449](https://github.com/apache/shardingsphere/pull/38449)
 1. Sharding: Fix AUTO_INTERVAL sharding failure under JVM default locales that use comma decimal separators - [#38806](https://github.com/apache/shardingsphere/pull/38806)
 1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
+1. Sharding: Fix order-dependent data source intersection in Cartesian routing - [#39407](https://github.com/apache/shardingsphere/pull/39407)
+1. Sharding: Fix incorrect AVG(DISTINCT) merge result across shards - [#39429](https://github.com/apache/shardingsphere/pull/39429)
 1. Readwrite-splitting: Evaluate inline expressions in data source names of rule configuration checker - [#39374](https://github.com/apache/shardingsphere/pull/39374)
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
+1. Broadcast: Fix case-sensitive table name lookup in broadcast data node rule attribute - [#39153](https://github.com/apache/shardingsphere/pull/39153)
 
 ### Enhancements
 
@@ -102,6 +107,7 @@
 1. SQL Parser: Support function table alias column parsing for PostgreSQL and openGauss - [#39268](https://github.com/apache/shardingsphere/pull/39268)
 1. SQL Parser: Support MySQL and Oracle CTAS parsing and binding enhancements, and Doris TABLE statement segment extraction - [#39332](https://github.com/apache/shardingsphere/pull/39332)
 1. SQL Parser: Support Oracle full width SQL symbols parsing - [#39349](https://github.com/apache/shardingsphere/pull/39349)
+1. SQL Parser: Support Oracle pseudo-record collection index parsing - [#39566](https://github.com/apache/shardingsphere/pull/39566)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. SQL Binder: Support PostgreSQL whole-row projection binding - [#39276](https://github.com/apache/shardingsphere/pull/39276)
@@ -123,6 +129,7 @@
 1. Encrypt: Support SqlServer update statement for Specifying a view as the target object when use encrypt feature - [#38896](https://github.com/apache/shardingsphere/pull/38896)
 1. Encrypt: Support SqlServer for Using the UPDATE statement with information from another table  when use encrypt feature - [#38926](https://github.com/apache/shardingsphere/pull/38926)
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
+1. SQL Parser: Support parsing SYSTEM_USER in SQL92 dialect and bind it as a niladic function instead of a column - [#39102](https://github.com/apache/shardingsphere/pull/39102)
 
 ## Release 5.5.3
 

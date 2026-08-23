@@ -189,6 +189,12 @@ BIT
     : B I T
     ;
 
+// DORIS ADDED BEGIN
+BITMAP
+    : B I T M A P
+    ;
+// DORIS ADDED END
+
 BITMAP_UNION
     : B I T M A P UL_ U N I O N
     ;
@@ -543,6 +549,14 @@ DATETIME
     : D A T E T I M E
     ;
 
+DATETIMEV2
+    : D A T E T I M E V '2'
+    ;
+
+DATEV2
+    : D A T E V '2'
+    ;
+
 DAY
     : D A Y
     ;
@@ -845,6 +859,10 @@ EXTENDED
     :  E X T E N D E D
     ;
 
+EXTERNAL
+    : E X T E R N A L
+    ;
+
 // DORIS ADDED BEGIN
 EXTRACT_URL_PARAMETER
     : E X T R A C T UL_ U R L UL_ P A R A M E T E R
@@ -1069,6 +1087,10 @@ HELP
 
 HIGH_PRIORITY
     : H I G H UL_ P R I O R I T Y
+    ;
+
+HLL
+    : H L L
     ;
 
 HLL_UNION
@@ -1337,6 +1359,10 @@ LDAP
 
 LANGUAGE
     : L A N G U A G E
+    ;
+
+LARGEINT
+    : L A R G E I N T
     ;
 
 LAST
@@ -2010,6 +2036,10 @@ PAUSE
     : P A U S E
     ;
 
+PERCENT
+    : P E R C E N T
+    ;
+
 PERCENT_RANK
     : P E R C E N T UL_ R A N K
     ;
@@ -2192,6 +2222,10 @@ READ_WRITE
 
 REAL
     : R E A L
+    ;
+
+REBALANCE
+    : R E B A L A N C E
     ;
 
 REBUILD
@@ -2482,6 +2516,10 @@ RTREE
     : R T R E E
     ;
 
+SAMPLE
+    : S A M P L E
+    ;
+
 SAVEPOINT
     : S A V E P O I N T
     ;
@@ -2601,6 +2639,12 @@ SIMPLE
 SKIP_SYMBOL
     : S K I P
     ;
+
+// DORIS ADDED BEGIN
+SKEW
+    : S K E W
+    ;
+// DORIS ADDED END
 
 SLAVE
     : S L A V E
@@ -3315,6 +3359,12 @@ WITHOUT
 WORK
     : W O R K
     ;
+
+// DORIS ADDED BEGIN
+WORKLOAD
+    : W O R K L O A D
+    ;
+// DORIS ADDED END
 
 WRAPPER
     : W R A P P E R

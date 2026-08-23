@@ -196,6 +196,13 @@
             <referenced-table start-index="285" stop-index="293" name="employees" />
         </add-constraint>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_constraint_with_dotted_name">
+        <table name="emp" start-index="12" stop-index="14" />
+        <add-constraint constraint-name="emp.pk" start-index="20" stop-index="56">
+            <primary-key-column name="empno" start-index="51" stop-index="55" />
+        </add-constraint>
+    </alter-table>
     
     <alter-table sql-case-id="alter_table_no_flashback_archive">
         <table name="employee" start-index="12" stop-index="19" />
@@ -241,6 +248,10 @@
                 <column name="name" />
             </column-definition>
         </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_virtual_column">
+        <table name="emp2" start-index="12" stop-index="15" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_if_exists_only">
@@ -2111,6 +2122,29 @@
 
     <alter-table sql-case-id="alter_table_exchange_partition_multiple">
         <table name="target_table" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_exchange_partition_oracle">
+        <table name="orders" start-index="12" stop-index="17" />
+        <exchange-partition start-index="19" stop-index="72">
+            <partition name="orders_q1" start-index="38" stop-index="46" />
+            <exchange-table name="orders_q1_copy" start-index="59" stop-index="72" />
+        </exchange-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_exchange_partition_for_oracle">
+        <table name="sales" start-index="12" stop-index="16" />
+        <exchange-partition start-index="18" stop-index="136">
+            <exchange-table name="sales_old" start-index="91" stop-index="99" />
+        </exchange-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_exchange_partition_excluding_index_oracle">
+        <table name="orders" start-index="12" stop-index="17" />
+        <exchange-partition start-index="19" stop-index="106">
+            <partition name="orders_q2" start-index="38" stop-index="46" />
+            <exchange-table name="orders_q2_copy" start-index="59" stop-index="72" />
+        </exchange-partition>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_set_partition_retention_basic">
