@@ -109,9 +109,6 @@ public final class WindowClauseAssert {
     }
     
     private static void assertFrame(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
-        if (null == expected.getFrameClause()) {
-            return;
-        }
         ExpressionAssert.assertExpression(assertContext, actual.getFrameClause(), expected.getFrameClause());
     }
 }

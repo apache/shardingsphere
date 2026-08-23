@@ -1092,16 +1092,9 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.separatorName()) {
             separator = new StringLiteralValue(ctx.separatorName().string_().getText()).getValue();
         }
-        if (null != ctx.distinct()) {
-            AggregationDistinctProjectionSegment result =
-                    new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), getDistinctExpression(ctx), separator);
-            result.getParameters().addAll(getExpressions(ctx.aggregationExpression().expr()));
-            if (null != ctx.overClause()) {
-                result.setWindow((WindowItemSegment) visit(ctx.overClause()));
-            }
-            return result;
-        }
-        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), separator);
+        AggregationProjectionSegment result = null == ctx.distinct()
+                ? new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), separator)
+                : new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), getDistinctExpression(ctx), separator);
         result.getParameters().addAll(getExpressions(ctx.aggregationExpression().expr()));
         if (null != ctx.overClause()) {
             result.setWindow((WindowItemSegment) visit(ctx.overClause()));
@@ -1150,6 +1143,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             return result;
         }
         WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+        result.setWindowName(windowItemSegment.getWindowName());
         result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
         result.setOrderBySegment(windowItemSegment.getOrderBySegment());
         result.setFrameClause(windowItemSegment.getFrameClause());
