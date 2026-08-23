@@ -2656,6 +2656,22 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_varchar_without_length_doris" db-types="Doris">
+        <table name="tags" start-index="13" stop-index="16" />
+        <column-definition type="VARCHAR" start-index="19" stop-index="29">
+            <column name="tag" start-index="19" stop-index="21" />
+        </column-definition>
+        <column-definition type="DATETIME" start-index="32" stop-index="44">
+            <column name="date" start-index="32" stop-index="35" />
+        </column-definition>
+        <column-definition type="BITMAP" agg-type="BITMAP_UNION" start-index="47" stop-index="73">
+            <column name="user_id" start-index="47" stop-index="53" />
+        </column-definition>
+        <create-table-option start-index="76" stop-index="86">
+            <engine name="OLAP" start-index="83" stop-index="86" />
+        </create-table-option>
+    </create-table>
+
     <create-table sql-case-id="create_table_inverted_index_doris" db-types="Doris">
         <table name="table_hash" start-index="13" stop-index="33">
             <owner name="example_db" start-index="13" stop-index="22" />

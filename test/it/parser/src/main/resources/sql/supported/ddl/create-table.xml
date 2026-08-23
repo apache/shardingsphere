@@ -202,6 +202,7 @@
     <sql-case id="create_table_hash_buckets_auto_doris" value="CREATE TABLE t_auto2 (k1 INT) DISTRIBUTED BY HASH(k1) BUCKETS AUTO" db-types="Doris" />
     <sql-case id="create_table_rollup_with_duplicate_key_doris" value="CREATE TABLE t_r (k1 INT, v1 INT SUM) AGGREGATE KEY(k1) DISTRIBUTED BY HASH(k1) BUCKETS 1 ROLLUP (r1(k1, v1) DUPLICATE KEY(k1) PROPERTIES(&quot;replication_num&quot; = &quot;1&quot;))" db-types="Doris" />
     <sql-case id="create_table_with_hll_as_identifier_doris" value="CREATE TABLE hll (hll INT) DISTRIBUTED BY HASH(hll) BUCKETS 1" db-types="Doris" />
+    <sql-case id="create_table_with_varchar_without_length_doris" value="CREATE TABLE tags (tag VARCHAR, date DATETIME, user_id BITMAP BITMAP_UNION) ENGINE=OLAP AGGREGATE KEY(tag, date) DISTRIBUTED BY HASH(tag) BUCKETS 8" db-types="Doris" />
     <sql-case id="create_table_with_select_without_query" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Oracle"/>
     <sql-case id="create_table_as_select_with_pivot" value="CREATE TABLE pivot_table AS SELECT * FROM (SELECT EXTRACT(YEAR FROM order_date) year, order_mode, order_total FROM orders) PIVOT (SUM(order_total) FOR order_mode IN ('direct' AS Store, 'online' AS Internet));" db-types="Oracle"/>
     <sql-case id="create_table_as_select_with_pivot_and_aggregate_alias" value="CREATE TABLE pivot_alias_table AS SELECT * FROM (SELECT quarter, quantity_sold FROM sales_view) PIVOT (SUM(quantity_sold) AS sumq FOR quarter IN ('01' AS Q1, '02' AS Q2))" db-types="Oracle" />
