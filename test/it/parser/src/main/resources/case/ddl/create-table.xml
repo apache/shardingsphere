@@ -5655,4 +5655,46 @@
             </from>
         </select>
     </create-table>
+    <create-table sql-case-id="create_table_mv_capabilities_with_line_comments" db-types="Oracle">
+        <comment start-index="69" stop-index="114" text="-- Client-supplied unique statement identifier&#x000A;" />
+        <comment start-index="150" stop-index="187" text="-- NULL for SELECT based EXPLAIN_MVIEW&#x000A;" />
+        <comment start-index="223" stop-index="260" text="-- NULL for SELECT based EXPLAIN_MVIEW&#x000A;" />
+        <comment start-index="296" stop-index="334" text="-- A descriptive name of the capability&#x000A;" />
+        <comment start-index="370" stop-index="398" text="-- T = capability is possible&#x000A;" />
+        <comment start-index="434" stop-index="477" text="-- Owner.table.column, alias name, and so on&#x000A;" />
+        <comment start-index="513" stop-index="566" text="-- When there is a numeric value associated with a row&#x000A;" />
+        <comment start-index="602" stop-index="657" text="-- When available, QSM message # explaining why disabled&#x000A;" />
+        <comment start-index="693" stop-index="722" text="-- Text associated with MSGNO.&#x000A;" />
+        <table name="MV_CAPABILITIES_TABLE" start-index="13" stop-index="33" />
+        <column-definition type="VARCHAR" start-index="36" stop-index="64">
+            <column name="STATEMENT_ID" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="117" stop-index="145">
+            <column name="MVOWNER" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="190" stop-index="218">
+            <column name="MVNAME" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="263" stop-index="291">
+            <column name="CAPABILITY_NAME" />
+        </column-definition>
+        <column-definition type="CHARACTER" start-index="337" stop-index="366">
+            <column name="POSSIBLE" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="401" stop-index="431">
+            <column name="RELATED_TEXT" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="480" stop-index="503">
+            <column name="RELATED_NUM" />
+        </column-definition>
+        <column-definition type="INTEGER" start-index="569" stop-index="593">
+            <column name="MSGNO" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="660" stop-index="690">
+            <column name="MSGTXT" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="725" stop-index="748">
+            <column name="SEQ" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

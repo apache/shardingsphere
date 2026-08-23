@@ -960,6 +960,14 @@ createSynonym
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? (PUBLIC)? SYNONYM (schemaName DOT_)? synonymName (SHARING EQ_ (METADATA | NONE))? FOR objectName (AT_ dbLink)?
     ;
 
+createSchema
+    : CREATE SCHEMA AUTHORIZATION schemaName createSchemaElement*
+    ;
+
+createSchemaElement
+    : createTable | createView | grant
+    ;
+
 commitClause
     : (ON COMMIT (DROP | PRESERVE) DEFINITION)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
