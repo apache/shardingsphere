@@ -90,7 +90,7 @@
     <sql-case id="select_bin" value="SELECT BIN(12)" db-types="MySQL" />
     <sql-case id="select_bin_uuid" value="SELECT BIN_TO_UUID(UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db'))" db-types="MySQL" />
     <sql-case id="select_bit_length" value="SELECT BIT_LENGTH(1)" db-types="MySQL" />
-    <sql-case id="select_bit_count" value="SELECT BIT_COUNT(1)" db-types="MySQL" />
+    <sql-case id="select_bit_count" value="SELECT BIT_COUNT(1)" db-types="MySQL,Doris" />
     <sql-case id="select_ceil" value="SELECT CEIL(1.1)" db-types="MySQL" />
     <sql-case id="select_ceiling" value="SELECT CEILING(1.1)" db-types="MySQL" />
     <sql-case id="select_with_uuid_function" value="SELECT UUID();" db-types="MySQL"/>
@@ -128,7 +128,7 @@
     <sql-case id="select_coercibility" value="SELECT COERCIBILITY('str')" db-types="MySQL" />
     <sql-case id="select_collation" value="SELECT COLLATION('str')" db-types="MySQL" />
     <sql-case id="select_compress" value="SELECT COMPRESS('str')" db-types="MySQL" />
-    <sql-case id="select_concat" value="SELECT CONCAT('My', 'S', 'QL')" db-types="MySQL" />
+    <sql-case id="select_concat" value="SELECT CONCAT('My', 'S', 'QL')" db-types="MySQL,Doris" />
     <sql-case id="select_concat_ws" value="SELECT CONCAT_WS(',', 'First name', 'Second name', 'Last Name')" db-types="MySQL" />
     <sql-case id="select_connection_id" value="SELECT CONNECTION_ID()" db-types="MySQL" />
     <sql-case id="select_conv" value="SELECT CONV('a',16,2)" db-types="MySQL" />
@@ -156,7 +156,7 @@
     <sql-case id="select_default_function" value="SELECT DEFAULT(val) FROM numbers" db-types="MySQL" />
     <sql-case id="select_degrees_function" value="SELECT DEGREES(PI())" db-types="MySQL" />
     <sql-case id="select_window_with_dense_rank_function" value="SELECT val, DENSE_RANK() OVER() FROM numbers" db-types="MySQL" />
-    <sql-case id="select_elt" value="SELECT ELT(1, 'Aa', 'Bb')" db-types="MySQL" />
+    <sql-case id="select_elt" value="SELECT ELT(1, 'Aa', 'Bb')" db-types="MySQL,Doris" />
     <sql-case id="select_exp" value="SELECT EXP(2)" db-types="MySQL" />
     <sql-case id="select_export_set" value="SELECT EXPORT_SET(5,'Y','N',',',4)" db-types="MySQL" />
     <sql-case id="select_extractvalue" value="SELECT ExtractValue('&lt;a&gt;&lt;b/&gt;&lt;/a&gt;', '/a/b')" db-types="MySQL" />
@@ -309,7 +309,7 @@
     <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
     <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL,Doris" />
-    <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
+    <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL,Doris" />
     <sql-case id="select_localtime" value="SELECT LOCALTIME()" db-types="MySQL" />
     <sql-case id="select_localtimestamp" value="SELECT LOCALTIMESTAMP()" db-types="MySQL" />
     <sql-case id="select_lpad" value="SELECT LPAD('hi',4,'??')" db-types="MySQL" />
@@ -361,4 +361,7 @@
     <sql-case id="select_conv_with_string" value="SELECT CONV('ff', 16, 10)" db-types="MySQL,Doris" />
     <sql-case id="select_bitmap_intersect_doris" value="SELECT tag, BITMAP_INTERSECT(user_id) FROM (SELECT tag, date, BITMAP_UNION(user_id) user_id FROM table WHERE date IN ('2020-05-18', '2020-05-19') GROUP BY tag, date) a GROUP BY tag" db-types="Doris" />
     <sql-case id="select_bitmap_to_string_with_bitmap_intersect_doris" value="SELECT tag, BITMAP_TO_STRING(BITMAP_INTERSECT(user_id)) FROM (SELECT tag, date, BITMAP_UNION(user_id) user_id FROM table WHERE date IN ('2020-05-18', '2020-05-19') GROUP BY tag, date) a GROUP BY tag" db-types="Doris" />
+    <sql-case id="select_bitcount_doris" value="SELECT BITCOUNT(7)" db-types="Doris" />
+    <sql-case id="select_bitnot_doris" value="SELECT BITNOT(1)" db-types="Doris" />
+    <sql-case id="select_bitmap_or_count_doris" value="SELECT BITMAP_OR_COUNT(BITMAP_FROM_STRING('1,2,3'), BITMAP_EMPTY())" db-types="Doris" />
 </sql-cases>
