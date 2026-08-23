@@ -1426,7 +1426,8 @@ dataType
     | dataTypeName = (SIGNED | SIGNED_INT | SIGNED_INTEGER)
     | dataTypeName = BINARY fieldLength?
     // DORIS CHANGED BEGIN
-    | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING | dataTypeName = VARCHAR) fieldLength? charsetWithOptBinary?
+    | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING) fieldLength charsetWithOptBinary?
+    | dataTypeName = VARCHAR fieldLength? charsetWithOptBinary?
     // DORIS CHANGED END
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL_CHAR_VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
     | dataTypeName = VARBINARY fieldLength?
