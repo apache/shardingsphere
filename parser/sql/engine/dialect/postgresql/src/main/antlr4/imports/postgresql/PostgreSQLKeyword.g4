@@ -1101,6 +1101,14 @@ METHOD
     : M E T H O D
     ;
 
+MERGE
+    : M E R G E
+    ;
+
+MATCHED
+    : M A T C H E D
+    ;
+
 LOAD
     : L O A D
     ;
