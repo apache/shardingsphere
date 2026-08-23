@@ -142,6 +142,7 @@ execute
     | delimiter
     | startReplica
     | createMaterializedView
+    | refreshMaterializedView
     | resumeJob
     | pauseJob
     | dropJob

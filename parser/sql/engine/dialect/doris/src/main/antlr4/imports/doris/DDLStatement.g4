@@ -515,6 +515,18 @@ refreshSchedule
     ;
 // DORIS ADDED END
 
+// DORIS ADDED BEGIN
+refreshMaterializedView
+    : REFRESH MATERIALIZED VIEW name (partitionSpec | refreshMethod)
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+partitionSpec
+    : PARTITIONS LP_ identifierList RP_
+    ;
+// DORIS ADDED END
+
 alterView
     : ALTER (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
