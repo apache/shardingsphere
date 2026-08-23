@@ -153,6 +153,7 @@ execute
     | dropCluster
     | systemAction
     | alterType
+    | createTypeBody
     | createType
     | createCluster
     | createJava

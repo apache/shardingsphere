@@ -186,6 +186,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAuditStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleCreatePackageStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleCreateTypeBodyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleDropPackageStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleNoAuditStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OraclePurgeStatementTestCase;
@@ -1060,6 +1061,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-package")
     private final List<OracleCreatePackageStatementTestCase> createPackageTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-type-body")
+    private final List<OracleCreateTypeBodyStatementTestCase> createTypeBodyTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-dimension")
     private final List<OracleCreateDimensionStatementTestCase> createDimensionTestCases = new LinkedList<>();

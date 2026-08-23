@@ -695,6 +695,8 @@ public enum SQLVisitorRule {
     
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     
+    CREATE_TYPE_BODY("CreateTypeBody", SQLStatementType.DDL),
+    
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
     
     ALTER_DOMAIN("AlterDomain", SQLStatementType.DDL),

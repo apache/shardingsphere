@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSess
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAnalyzeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAuditStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTypeBodyStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePurgeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackTableStatement;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleAssociateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleAuditStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleCreatePackageStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleCreateTypeBodyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleDisassociateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleFlashbackTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleNoAuditStatementAssert;
@@ -48,6 +50,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAuditStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleCreatePackageStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleCreateTypeBodyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleNoAuditStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OraclePurgeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.flashback.OracleFlashbackTableStatementTestCase;
@@ -83,6 +86,8 @@ public final class OracleDDLStatementAssert {
             OracleAuditStatementAssert.assertIs(assertContext, (OracleAuditStatement) actual, (OracleAuditStatementTestCase) expected);
         } else if (actual instanceof OracleCreatePackageStatement) {
             OracleCreatePackageStatementAssert.assertIs(assertContext, (OracleCreatePackageStatement) actual, (OracleCreatePackageStatementTestCase) expected);
+        } else if (actual instanceof OracleCreateTypeBodyStatement) {
+            OracleCreateTypeBodyStatementAssert.assertIs(assertContext, (OracleCreateTypeBodyStatement) actual, (OracleCreateTypeBodyStatementTestCase) expected);
         } else if (actual instanceof OracleNoAuditStatement) {
             OracleNoAuditStatementAssert.assertIs(assertContext, (OracleNoAuditStatement) actual, (OracleNoAuditStatementTestCase) expected);
         } else if (actual instanceof OracleFlashbackTableStatement) {
