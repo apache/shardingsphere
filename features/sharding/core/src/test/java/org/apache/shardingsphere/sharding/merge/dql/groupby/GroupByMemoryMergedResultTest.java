@@ -57,6 +57,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -126,7 +127,8 @@ class GroupByMemoryMergedResultTest {
                 .databaseType(databaseType)
                 .projections(projectionsSegment)
                 .groupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))))
-                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST))))
+                .orderBy(new OrderBySegment(0, 0, Arrays.asList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST),
+                        new IndexOrderByItemSegment(0, 0, 4, OrderDirection.ASC, NullsOrderType.FIRST))))
                 .build();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
@@ -209,7 +211,7 @@ class GroupByMemoryMergedResultTest {
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getSchema("foo_db")).thenReturn(schema);
+        when(database.findDefaultSchema()).thenReturn(Optional.of(schema));
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         ShardingDQLResultMerger merger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(database), database, mock(ConnectionContext.class));

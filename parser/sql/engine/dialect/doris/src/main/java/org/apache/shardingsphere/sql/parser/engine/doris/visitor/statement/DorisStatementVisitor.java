@@ -666,6 +666,12 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             ExpressionSegment expr = null == ctx.simpleExpr() ? null : (ExpressionSegment) visit(ctx.simpleExpr(0));
             return new CollateExpression(startIndex, stopIndex, (SimpleExpressionSegment) visit(ctx.collateClause()), expr);
         }
+        if (null != ctx.columnRef() && null != ctx.LBT_()) {
+            ColumnSegment column = (ColumnSegment) visit(ctx.columnRef());
+            ColumnSegment result = new ColumnSegment(startIndex, stopIndex, column.getIdentifier());
+            result.setOwner(column.getOwner().orElse(null));
+            return result;
+        }
         if (null != ctx.columnRef()) {
             return visit(ctx.columnRef());
         }

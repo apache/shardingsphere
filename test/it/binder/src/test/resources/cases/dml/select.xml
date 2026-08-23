@@ -17,6 +17,39 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_bare_system_user_sql92">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="SYSTEM_USER" start-index="7" stop-index="17">
+                <expr>
+                    <function function-name="SYSTEM_USER" start-index="7" stop-index="17" text="SYSTEM_USER" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_quoted_system_user_column_sql92">
+        <from>
+            <simple-table name="t_system_user" alias="t" start-index="28" stop-index="42">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                </table-bound>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="21">
+            <column-projection name="SYSTEM_USER" start-index="7" stop-index="21" start-delimiter="&quot;" end-delimiter="&quot;">
+                <owner name="t" start-index="7" stop-index="7" />
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_system_user" />
+                    <original-column name="SYSTEM_USER" start-delimiter="&quot;" end-delimiter="&quot;" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-projection>
+        </projections>
+    </select>
+    
     <select sql-case-id="select_with_shorthand_projection">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7">

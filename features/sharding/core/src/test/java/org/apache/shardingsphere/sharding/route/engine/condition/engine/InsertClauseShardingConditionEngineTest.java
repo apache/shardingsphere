@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -60,8 +62,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -97,7 +102,8 @@ class InsertClauseShardingConditionEngineTest {
         when(schema.containsTable(fooTable)).thenReturn(true);
         when(schema.getTable("foo_tbl").findColumnNamesIfNotExistedFrom(new LinkedHashSet<>(Arrays.asList("foo_col_1", "foo_col_3")))).thenReturn(Collections.singleton("foo_col_2"));
         when(schema.getTable(fooTable).findColumnNamesIfNotExistedFrom(new LinkedHashSet<>(Arrays.asList("foo_col_1", "foo_col_3")))).thenReturn(Collections.singleton("foo_col_2"));
-        when(result.getSchema("foo_db")).thenReturn(schema);
+        when(result.findDefaultSchema()).thenReturn(Optional.of(schema));
+        when(result.getDefaultSchemaName()).thenReturn("foo_default_schema");
         return result;
     }
     
@@ -156,6 +162,15 @@ class InsertClauseShardingConditionEngineTest {
     }
     
     @Test
+    void assertCreateShardingConditionsWithoutDefaultSchema() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        InsertClauseShardingConditionEngine engine = new InsertClauseShardingConditionEngine(
+                database, rule, new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties())));
+        assertThrows(SchemaNotFoundException.class, () -> engine.createShardingConditions(insertStatementContext, Collections.emptyList()));
+    }
+    
+    @Test
     void assertCreateShardingConditionsInsertStatementWithGeneratedKeyContext() {
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(mock(GeneratedKeyContext.class)));
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
@@ -174,6 +189,7 @@ class InsertClauseShardingConditionEngineTest {
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
         assertFalse(shardingConditions.get(0).getValues().isEmpty());
+        verify(rule).generateKeys(argThat((AlgorithmSQLContext each) -> "foo_default_schema".equals(each.getSchemaName())), anyInt());
     }
     
     @Test

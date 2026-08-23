@@ -254,6 +254,9 @@ identifierKeywordsUnambiguous
     | EXTENDED
     | EXTENT_SIZE
     // DORIS ADDED BEGIN
+    | EXTERNAL
+    // DORIS ADDED END
+    // DORIS ADDED BEGIN
     | EXTRACT_URL_PARAMETER
     // DORIS ADDED END
     | FAILED_LOGIN_ATTEMPTS
@@ -278,6 +281,7 @@ identifierKeywordsUnambiguous
     | GROUPS
     | HASH
     | HDFS
+    | HLL
     | HLL_UNION
     | HISTOGRAM
     | HISTORY
@@ -1049,6 +1053,9 @@ simpleExpr
     // DORIS ADDED BEGIN
     | lambdaExpression
     // DORIS ADDED END
+    // DORIS ADDED BEGIN
+    | columnRef LBT_ expr RBT_
+    // DORIS ADDED END
     ;
 
 arrayExpression
@@ -1433,7 +1440,10 @@ dataType
     | (dataTypeName = NCHAR | dataTypeName = NATIONAL_CHAR) fieldLength? BINARY?
     | dataTypeName = (SIGNED | SIGNED_INT | SIGNED_INTEGER)
     | dataTypeName = BINARY fieldLength?
-    | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
+    // DORIS CHANGED BEGIN
+    | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING) fieldLength charsetWithOptBinary?
+    | dataTypeName = VARCHAR fieldLength? charsetWithOptBinary?
+    // DORIS CHANGED END
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL_CHAR_VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
     | dataTypeName = VARBINARY fieldLength?
     | dataTypeName = YEAR fieldLength? fieldOptions?
@@ -1464,6 +1474,9 @@ dataType
     // DORIS ADDED END
     // DORIS ADDED BEGIN
     | dataTypeName = BITMAP
+    // DORIS ADDED END
+    // DORIS ADDED BEGIN
+    | dataTypeName = HLL
     // DORIS ADDED END
     ;
 

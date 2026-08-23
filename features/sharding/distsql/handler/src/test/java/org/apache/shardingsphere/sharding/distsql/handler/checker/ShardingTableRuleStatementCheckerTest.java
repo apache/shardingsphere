@@ -311,6 +311,13 @@ class ShardingTableRuleStatementCheckerTest {
         assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
+    @Test
+    void assertCheckCreationWithSchemaQualifiedDataNodes() {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product_1", Collections.singleton("ds_${0..1}.foo_schema.t_order_0"), null, null);
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("none", null, null));
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(tableRuleSegment), false, shardingRuleConfig));
+    }
+    
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order${0..1}");

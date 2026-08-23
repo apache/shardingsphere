@@ -99,6 +99,7 @@ class EncryptAssignmentTokenGeneratorTest {
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         EncryptTable encryptTable = mock(EncryptTable.class);
+        when(encryptTable.getTable()).thenReturn("table");
         when(encryptTable.isEncryptColumn("columns")).thenReturn(true);
         when(encryptTable.getEncryptColumn("columns")).thenReturn(mock(EncryptColumn.class, RETURNS_DEEP_STUBS));
         when(result.findEncryptTable("table")).thenReturn(Optional.of(encryptTable));
@@ -116,9 +117,17 @@ class EncryptAssignmentTokenGeneratorTest {
     void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
-        tokenGenerator = new EncryptAssignmentTokenGenerator(mockEncryptRule(), database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
-        assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).size(), is(1));
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        EncryptRule rule = mockEncryptRule();
+        EncryptColumn encryptColumn = rule.findEncryptTable("table").get().getEncryptColumn("columns");
+        when(encryptColumn.getName()).thenReturn("columns");
+        when(encryptColumn.getCipher().getName()).thenReturn("cipher_columns");
+        when(encryptColumn.getCipher().encrypt("foo_db", "foo_default_schema", "table", "columns", Collections.singletonList("foo_value")))
+                .thenReturn(Collections.singletonList("encrypted_value"));
+        tokenGenerator = new EncryptAssignmentTokenGenerator(rule, database, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
+        when(assignmentSegment.getValue()).thenReturn(new LiteralExpressionSegment(0, 0, "foo_value"));
+        assertThat(tokenGenerator.generateSQLTokens(tablesContext, setAssignmentSegment).iterator().next().toString(), is("cipher_columns = 'encrypted_value'"));
     }
     
     @Test

@@ -283,6 +283,10 @@
         <table name="t_log" start-index="13" stop-index="17" />
     </create-table>
 
+    <create-table sql-case-id="create_object_table_with_properties" db-types="Oracle">
+        <table name="persons" start-index="13" stop-index="19" />
+    </create-table>
+
     <create-table sql-case-id="create_table_with_char_varing">
         <table name="t_log" start-index="13" stop-index="17" />
         <column-definition type="char" start-index="19" stop-index="38">
@@ -1359,9 +1363,22 @@
             <column name="column3" />
         </column-definition>
     </create-table>
+    <create-table sql-case-id="create_table_partition_by_hash_with_store_in">
+        <table name="scubagear" start-index="13" stop-index="21" />
+        <column-definition type="NUMBER" start-index="29" stop-index="37">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="46" stop-index="63">
+            <column name="name" />
+        </column-definition>
+    </create-table>
     
     <create-table sql-case-id="create_table_with_xmltype_table_oracle">
         <table name="xwarehouses" start-index="13" stop-index="23" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_xmltype_binary_xml_virtual_columns_partition" db-types="Oracle">
+        <table name="po_binaryxml" start-index="13" stop-index="24" />
     </create-table>
 
     <create-table sql-case-id="create_table_with_xmltype_column_oracle">
@@ -2155,6 +2172,16 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_binary_float_and_binary_double">
+        <table name="t_binary_float_double" start-index="13" stop-index="33" />
+        <column-definition type="BINARY_FLOAT" start-index="36" stop-index="52">
+            <column name="rate" />
+        </column-definition>
+        <column-definition type="BINARY_DOUBLE" start-index="55" stop-index="73">
+            <column name="total" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_ref_data_type">
         <table name="location_table" start-index="13" stop-index="26"  />
         <column-definition type="NUMBER" start-index="29" stop-index="50">
@@ -2163,6 +2190,16 @@
         <column-definition type="warehouse_typ" start-index="53" stop-index="103">
             <column name="building" />
             <referenced-table name="warehouse_table" start-index="89" stop-index="103" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_object_type_column" db-types="Oracle">
+        <table name="projecttab" start-index="13" stop-index="22" />
+        <column-definition type="NUMBER" start-index="24" stop-index="36">
+            <column name="deptno" />
+        </column-definition>
+        <column-definition type="HR.PROJECT_T" start-index="39" stop-index="58">
+            <column name="project" />
         </column-definition>
     </create-table>
 
@@ -2486,6 +2523,227 @@
         </select>
     </create-table>
 
+    <create-table sql-case-id="create_table_duplicate_key_with_dynamic_partition_doris" db-types="Doris">
+        <table name="dynamic_partition" start-index="13" stop-index="40">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="DATE" start-index="43" stop-index="49">
+            <column name="k1" start-index="43" stop-index="44" />
+        </column-definition>
+        <column-definition type="INT" start-index="52" stop-index="57">
+            <column name="k2" start-index="52" stop-index="53" />
+        </column-definition>
+        <column-definition type="SMALLINT" start-index="60" stop-index="70">
+            <column name="k3" start-index="60" stop-index="61" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="73" stop-index="88">
+            <column name="v1" start-index="73" stop-index="74" />
+        </column-definition>
+        <column-definition type="DATETIME" start-index="91" stop-index="131">
+            <column name="v2" start-index="91" stop-index="92" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_aggregate_key_with_rollup_doris" db-types="Doris">
+        <table name="rolup_index_table" start-index="13" stop-index="40">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="DATE" start-index="43" stop-index="56">
+            <column name="event_day" start-index="43" stop-index="51" />
+        </column-definition>
+        <column-definition type="INT" start-index="59" stop-index="81">
+            <column name="siteid" start-index="59" stop-index="64" />
+        </column-definition>
+        <column-definition type="SMALLINT" start-index="84" stop-index="100">
+            <column name="citycode" start-index="84" stop-index="91" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="103" stop-index="133">
+            <column name="username" start-index="103" stop-index="110" />
+        </column-definition>
+        <column-definition type="BIGINT" agg-type="SUM" start-index="136" stop-index="160">
+            <column name="pv" start-index="136" stop-index="137" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_hash_distributed_with_replication_allocation_doris" db-types="Doris">
+        <table name="table_hash" start-index="13" stop-index="33">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="TINYINT" start-index="36" stop-index="45">
+            <column name="k1" start-index="36" stop-index="37" />
+        </column-definition>
+        <column-definition type="DECIMAL" start-index="48" stop-index="79">
+            <column name="k2" start-index="48" stop-index="49" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_dynamic_partition_with_empty_partition_list_doris" db-types="Doris">
+        <table name="dynamic_partition" start-index="13" stop-index="40">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="DATE" start-index="43" stop-index="49">
+            <column name="k1" start-index="43" stop-index="44" />
+        </column-definition>
+        <column-definition type="INT" start-index="52" stop-index="57">
+            <column name="k2" start-index="52" stop-index="53" />
+        </column-definition>
+        <column-definition type="SMALLINT" start-index="60" stop-index="70">
+            <column name="k3" start-index="60" stop-index="61" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="73" stop-index="88">
+            <column name="v1" start-index="73" stop-index="74" />
+        </column-definition>
+        <column-definition type="DATETIME" start-index="91" stop-index="131">
+            <column name="v2" start-index="91" stop-index="92" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_unique_key_with_storage_policy_doris" db-types="Doris">
+        <table name="create_table_use_created_policy" if-not-exists="true" start-index="27" stop-index="57" />
+        <column-definition type="BIGINT" start-index="60" stop-index="68">
+            <column name="k1" start-index="60" stop-index="61" />
+        </column-definition>
+        <column-definition type="LARGEINT" start-index="71" stop-index="81">
+            <column name="k2" start-index="71" stop-index="72" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="84" stop-index="99">
+            <column name="v1" start-index="84" stop-index="85" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_unique_key_with_multi_columns_hash_doris" db-types="Doris">
+        <table name="table_hash" start-index="13" stop-index="33">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="BIGINT" start-index="36" stop-index="44">
+            <column name="k1" start-index="36" stop-index="37" />
+        </column-definition>
+        <column-definition type="LARGEINT" start-index="47" stop-index="57">
+            <column name="k2" start-index="47" stop-index="48" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="60" stop-index="75">
+            <column name="v1" start-index="60" stop-index="61" />
+        </column-definition>
+        <column-definition type="SMALLINT" start-index="78" stop-index="101">
+            <column name="v2" start-index="78" stop-index="79" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_range_partition_multi_columns_doris" db-types="Doris">
+        <table name="table_range" start-index="13" stop-index="23" />
+        <column-definition type="DATE" start-index="26" stop-index="32">
+            <column name="k1" start-index="26" stop-index="27" />
+        </column-definition>
+        <column-definition type="INT" start-index="35" stop-index="40">
+            <column name="k2" start-index="35" stop-index="36" />
+        </column-definition>
+        <column-definition type="SMALLINT" start-index="43" stop-index="53">
+            <column name="k3" start-index="43" stop-index="44" />
+        </column-definition>
+        <column-definition type="VARCHAR" agg-type="REPLACE" start-index="56" stop-index="79">
+            <column name="v1" start-index="56" stop-index="57" />
+        </column-definition>
+        <column-definition type="INT" agg-type="SUM" start-index="82" stop-index="103">
+            <column name="v2" start-index="82" stop-index="83" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_hll_and_bitmap_type_doris" db-types="Doris">
+        <table name="example_table" start-index="13" stop-index="36">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="TINYINT" start-index="39" stop-index="48">
+            <column name="k1" start-index="39" stop-index="40" />
+        </column-definition>
+        <column-definition type="DECIMAL" start-index="51" stop-index="82">
+            <column name="k2" start-index="51" stop-index="52" />
+        </column-definition>
+        <column-definition type="HLL" agg-type="HLL_UNION" start-index="85" stop-index="100">
+            <column name="v1" start-index="85" stop-index="86" />
+        </column-definition>
+        <column-definition type="BITMAP" agg-type="BITMAP_UNION" start-index="103" stop-index="124">
+            <column name="v2" start-index="103" stop-index="104" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_varchar_without_length_doris" db-types="Doris">
+        <table name="tags" start-index="13" stop-index="16" />
+        <column-definition type="VARCHAR" start-index="19" stop-index="29">
+            <column name="tag" start-index="19" stop-index="21" />
+        </column-definition>
+        <column-definition type="DATETIME" start-index="32" stop-index="44">
+            <column name="date" start-index="32" stop-index="35" />
+        </column-definition>
+        <column-definition type="BITMAP" agg-type="BITMAP_UNION" start-index="47" stop-index="73">
+            <column name="user_id" start-index="47" stop-index="53" />
+        </column-definition>
+        <create-table-option start-index="76" stop-index="86">
+            <engine name="OLAP" start-index="83" stop-index="86" />
+        </create-table-option>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_varying_alias_with_length_doris" db-types="Doris">
+        <table name="t_varying" start-index="13" stop-index="21" />
+        <column-definition type="CHAR VARYING" start-index="24" stop-index="42">
+            <column name="c1" start-index="24" stop-index="25" />
+        </column-definition>
+        <column-definition type="CHARACTER VARYING" start-index="45" stop-index="68">
+            <column name="c2" start-index="45" stop-index="46" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_inverted_index_doris" db-types="Doris">
+        <table name="table_hash" start-index="13" stop-index="33">
+            <owner name="example_db" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="TINYINT" start-index="36" stop-index="45">
+            <column name="k1" start-index="36" stop-index="37" />
+        </column-definition>
+        <column-definition type="DECIMAL" start-index="48" stop-index="79">
+            <column name="k2" start-index="48" stop-index="49" />
+        </column-definition>
+        <column-definition type="CHAR" agg-type="REPLACE" start-index="82" stop-index="100">
+            <column name="v1" start-index="82" stop-index="83" />
+        </column-definition>
+        <column-definition type="INT" agg-type="SUM" start-index="103" stop-index="112">
+            <column name="v2" start-index="103" stop-index="104" />
+        </column-definition>
+        <constraint-definition index-name="k1_idx" start-index="115" stop-index="171">
+            <index-column name="k1" start-index="129" stop-index="130" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_random_distributed_auto_buckets_doris" db-types="Doris">
+        <table name="t_auto" start-index="13" stop-index="18" />
+        <column-definition type="INT" start-index="21" stop-index="26">
+            <column name="k1" start-index="21" stop-index="22" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_hash_buckets_auto_doris" db-types="Doris">
+        <table name="t_auto2" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="27">
+            <column name="k1" start-index="22" stop-index="23" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_rollup_with_duplicate_key_doris" db-types="Doris">
+        <table name="t_r" start-index="13" stop-index="15" />
+        <column-definition type="INT" start-index="18" stop-index="23">
+            <column name="k1" start-index="18" stop-index="19" />
+        </column-definition>
+        <column-definition type="INT" agg-type="SUM" start-index="26" stop-index="35">
+            <column name="v1" start-index="26" stop-index="27" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_hll_as_identifier_doris" db-types="Doris">
+        <table name="hll" start-index="13" stop-index="15" />
+        <column-definition type="INT" start-index="18" stop-index="24">
+            <column name="hll" start-index="18" stop-index="20" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_select_without_query" db-types="Oracle">
         <table name="t_order_new" start-index="13" stop-index="23"/>
         <select>
@@ -2494,6 +2752,254 @@
             </projections>
             <from>
                 <simple-table name="t_order" start-index="42" stop-index="48" />
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_hash_parallel_as_select">
+        <table name="dept_hash" start-index="13" stop-index="21" />
+        <select>
+            <projections start-index="90" stop-index="90">
+                <shorthand-projection start-index="90" stop-index="90" />
+            </projections>
+            <from>
+                <simple-table name="departments" start-index="97" stop-index="107" />
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_as_select">
+        <table name="emp_range" start-index="13" stop-index="21" />
+        <select>
+            <projections start-index="429" stop-index="429">
+                <shorthand-projection start-index="429" stop-index="429" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="436" stop-index="444" />
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_pq_distribute_hint_partition_by_hash_as_select" db-types="Oracle">
+        <table name="lineitem" start-index="55" stop-index="62" />
+        <select>
+            <projections start-index="142" stop-index="142">
+                <shorthand-projection start-index="142" stop-index="142" />
+            </projections>
+            <from>
+                <simple-table name="lineitemxt" start-index="149" stop-index="158" />
+            </from>
+        </select>
+        <comment text="/*+ PQ_DISTRIBUTE(lineitem, PARTITION) */" start-index="7" stop-index="47"/>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_pq_distribute_hint_partition_by_hash_as_select_from_source_table" db-types="Oracle">
+        <table name="target_table" start-index="59" stop-index="70" />
+        <select>
+            <projections start-index="150" stop-index="150">
+                <shorthand-projection start-index="150" stop-index="150" />
+            </projections>
+            <from>
+                <simple-table name="source_table" start-index="157" stop-index="168" />
+            </from>
+        </select>
+        <comment text="/*+ PQ_DISTRIBUTE(target_table, PARTITION) */" start-index="7" stop-index="51"/>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_with_storage_as_select" db-types="Oracle">
+        <table name="part_sales_by_time" start-index="13" stop-index="30" />
+        <column name="time_id" start-index="33" stop-index="39" />
+        <column name="prod_id" start-index="42" stop-index="48" />
+        <column name="amount_sold" start-index="51" stop-index="61" />
+        <column name="quantity_sold" start-index="64" stop-index="76" />
+        <select>
+            <projections start-index="733" stop-index="784">
+                <column-projection name="time_id" start-index="733" stop-index="741">
+                    <owner name="s" start-index="733" stop-index="733" />
+                </column-projection>
+                <column-projection name="prod_id" start-index="744" stop-index="752">
+                    <owner name="s" start-index="744" stop-index="744" />
+                </column-projection>
+                <column-projection name="amount_sold" start-index="755" stop-index="767">
+                    <owner name="s" start-index="755" stop-index="755" />
+                </column-projection>
+                <column-projection name="quantity_sold" start-index="770" stop-index="784">
+                    <owner name="s" start-index="770" stop-index="770" />
+                </column-projection>
+            </projections>
+            <from>
+                <simple-table name="sales" alias="s" start-index="791" stop-index="797" />
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_interval_subpartition_by_hash_with_compress" db-types="Oracle">
+        <table name="page_history" start-index="13" stop-index="24" />
+        <column-definition type="NUMBER" start-index="27" stop-index="44">
+            <column name="id" start-index="27" stop-index="28" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="47" stop-index="72">
+            <column name="url" start-index="47" stop-index="49" />
+        </column-definition>
+        <column-definition type="DATE" start-index="75" stop-index="97">
+            <column name="view_date" start-index="75" stop-index="83" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="100" stop-index="130">
+            <column name="client_ip" start-index="100" stop-index="108" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="133" stop-index="154">
+            <column name="from_url" start-index="133" stop-index="140" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="157" stop-index="176">
+            <column name="to_url" start-index="157" stop-index="162" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="179" stop-index="202">
+            <column name="timing_in_seconds" start-index="179" stop-index="195" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_interval_subpartition_by_range_template" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="45">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="48" stop-index="70">
+            <column name="cust_id" start-index="48" stop-index="54" />
+        </column-definition>
+        <column-definition type="DATE" start-index="73" stop-index="93">
+            <column name="time_id" start-index="73" stop-index="79" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="96" stop-index="122">
+            <column name="channel_id" start-index="96" stop-index="105" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="125" stop-index="151">
+            <column name="promo_id" start-index="125" stop-index="132" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="154" stop-index="185">
+            <column name="quantity_sold" start-index="154" stop-index="166" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="188" stop-index="220">
+            <column name="amount_sold" start-index="188" stop-index="198" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_subpartition_by_hash_subpartitions_store_in" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_interval_subpartition_by_hash_with_template" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_interval_daily_subpartition_by_range_template" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_interval_subpartition_by_hash_subpartitions" db-types="Oracle">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_list_as_select" db-types="Oracle">
+        <table name="product_par_list" start-index="13" stop-index="28" />
+        <column name="prod_id" start-index="31" stop-index="37" />
+        <column name="prod_name" start-index="40" stop-index="48" />
+        <column name="prod_category" start-index="51" stop-index="63" />
+        <column name="prod_subcategory" start-index="66" stop-index="81" />
+        <column name="prod_list_price" start-index="84" stop-index="98" />
+        <select>
+            <projections start-index="237" stop-index="304">
+                <column-projection name="prod_id" start-index="237" stop-index="243" />
+                <column-projection name="prod_name" start-index="246" stop-index="254" />
+                <column-projection name="prod_category" start-index="257" stop-index="269" />
+                <column-projection name="prod_subcategory" start-index="272" stop-index="287" />
+                <column-projection name="prod_list_price" start-index="290" stop-index="304" />
+            </projections>
+            <from>
+                <simple-table name="products" start-index="311" stop-index="318" />
             </from>
         </select>
     </create-table>
@@ -2543,6 +3049,42 @@
         </select>
     </create-table>
 
+    <create-table sql-case-id="create_table_as_select_with_pivot_and_aggregate_alias" db-types="Oracle">
+        <table name="pivot_alias_table" start-index="13" stop-index="29" />
+        <select>
+            <projections start-index="41" stop-index="41">
+                <shorthand-projection start-index="41" stop-index="41" />
+            </projections>
+            <from>
+                <subquery-table start-index="48" stop-index="94">
+                    <subquery>
+                        <select>
+                            <projections start-index="56" stop-index="77">
+                                <column-projection name="quarter" start-index="56" stop-index="62" />
+                                <column-projection name="quantity_sold" start-index="65" stop-index="77" />
+                            </projections>
+                            <from>
+                                <simple-table name="sales_view" start-index="84" stop-index="93" />
+                            </from>
+                        </select>
+                    </subquery>
+                    <pivot start-index="96" stop-index="169">
+                        <aggregation-columns>
+                            <column name="quantity_sold" start-index="107" stop-index="119" />
+                        </aggregation-columns>
+                        <for-columns>
+                            <column name="quarter" start-index="134" stop-index="140" />
+                        </for-columns>
+                        <in-columns>
+                            <column name="Q1" start-index="146" stop-index="155" />
+                            <column name="Q2" start-index="158" stop-index="167" />
+                        </in-columns>
+                    </pivot>
+                </subquery-table>
+            </from>
+        </select>
+    </create-table>
+
     <create-table sql-case-id="create_table_organization_index_parallel_with_select">
         <table name="admin_iot3" start-index="13" stop-index="22"  />
         <column-definition start-index="24" stop-index="36" primary-key="true">
@@ -2584,7 +3126,29 @@
             <column name="unit_price" start-index="82" stop-index="91" />
         </column-definition>
     </create-table>
-    
+
+    <create-table sql-case-id="create_table_partition_by_reference">
+        <table name="order_items" start-index="13" stop-index="23" />
+        <column-definition type="NUMBER" start-index="31" stop-index="68">
+            <column name="order_id" start-index="31" stop-index="38" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="77" stop-index="114">
+            <column name="line_item_id" start-index="77" stop-index="88" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="123" stop-index="160">
+            <column name="product_id" start-index="123" stop-index="132" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="169" stop-index="198">
+            <column name="unit_price" start-index="169" stop-index="178" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="207" stop-index="234">
+            <column name="quantity" start-index="207" stop-index="214" />
+        </column-definition>
+        <constraint-definition constraint-name="order_items_fk" start-index="243" stop-index="323">
+            <referenced-table name="orders" start-index="308" stop-index="313" />
+        </constraint-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_default_user">
         <table name="audit_trail" start-index="13" stop-index="23"  />
         <column-definition type="NUMBER" start-index="26" stop-index="38">
@@ -2695,6 +3259,93 @@
         </column-definition>
     </create-table>
     
+    <create-table sql-case-id="create_table_partition_by_range_subpartition_by_hash_with_store_in">
+        <table name="emp" start-index="13" stop-index="15" />
+        <column-definition type="NUMBER" start-index="18" stop-index="30">
+            <column name="deptno" start-index="18" stop-index="23" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="33" stop-index="51">
+            <column name="empname" start-index="33" stop-index="39" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="54" stop-index="65">
+            <column name="grade" start-index="54" stop-index="58" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_subpartition_by_hash_with_template">
+        <table name="emp_sub_template" start-index="13" stop-index="28" />
+        <column-definition type="NUMBER" start-index="31" stop-index="43">
+            <column name="deptno" start-index="31" stop-index="36" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="46" stop-index="64">
+            <column name="empname" start-index="46" stop-index="52" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="67" stop-index="78">
+            <column name="grade" start-index="67" stop-index="71" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_list_subpartition_by_hash_with_store_in">
+        <table name="sales_by_region" start-index="13" stop-index="27" />
+        <column-definition type="NUMBER" start-index="30" stop-index="50">
+            <column name="salesperson_id" start-index="30" stop-index="43" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="53" stop-index="76">
+            <column name="region_name" start-index="53" stop-index="63" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_with_storage_and_row_movement">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="20" stop-index="36">
+            <column name="prod_id" start-index="20" stop-index="26" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="39" stop-index="52">
+            <column name="cust_id" start-index="39" stop-index="45" />
+        </column-definition>
+        <column-definition type="DATE" start-index="55" stop-index="66">
+            <column name="time_id" start-index="55" stop-index="61" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="69" stop-index="86">
+            <column name="channel_id" start-index="69" stop-index="78" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="106">
+            <column name="promo_id" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="109" stop-index="131">
+            <column name="quantity_sold" start-index="109" stop-index="121" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="134" stop-index="157">
+            <column name="amount_sold" start-index="134" stop-index="144" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_list_with_null_and_default">
+        <table name="sales_by_region" start-index="13" stop-index="27" />
+        <column-definition type="INTEGER" start-index="30" stop-index="42">
+            <column name="item#" start-index="30" stop-index="34" />
+        </column-definition>
+        <column-definition type="INTEGER" start-index="45" stop-index="55">
+            <column name="qty" start-index="45" stop-index="47" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="58" stop-index="79">
+            <column name="store_name" start-index="58" stop-index="67" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="82" stop-index="102">
+            <column name="state_code" start-index="82" stop-index="91" />
+        </column-definition>
+        <column-definition type="DATE" start-index="105" stop-index="118">
+            <column name="sale_date" start-index="105" stop-index="113" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_lob_securefile_cache">
+        <table name="t1" start-index="13" stop-index="14" />
+        <column-definition type="CLOB" start-index="17" stop-index="48">
+            <column name="a" start-index="17" stop-index="17" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_partition_by_range_subpartition_by_hash">
         <table name="composite_sales" start-index="13" stop-index="27"  />
         <column-definition type="NUMBER" start-index="35" stop-index="51">
@@ -2765,6 +3416,29 @@
         <constraint-definition constraint-name="pk_admin_docindex" start-index="134" stop-index="189">
             <primary-key-column name="token" start-index="176" stop-index="180" />
             <primary-key-column name="doc_id" start-index="183" stop-index="188" />
+        </constraint-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_organization_index_overflow_with_hash_partitions_store_in">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="19" stop-index="35">
+            <column name="acct_no" start-index="19" stop-index="25" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="57" stop-index="74">
+            <column name="acct_name" start-index="57" stop-index="65" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="96" stop-index="119">
+            <column name="amount_of_sale" start-index="96" stop-index="109" />
+        </column-definition>
+        <column-definition type="INTEGER" start-index="141" stop-index="155">
+            <column name="week_no" start-index="141" stop-index="147" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="177" stop-index="203">
+            <column name="sale_details" start-index="177" stop-index="188" />
+        </column-definition>
+        <constraint-definition start-index="219" stop-index="259">
+            <primary-key-column name="acct_no" start-index="232" stop-index="238" />
+            <primary-key-column name="acct_name" start-index="241" stop-index="249" />
+            <primary-key-column name="week_no" start-index="252" stop-index="258" />
         </constraint-definition>
     </create-table>
     
@@ -3063,6 +3737,380 @@
         <column-definition type="CHAR" start-index="64" stop-index="84">
             <column name="year_of_birth" start-index="64" stop-index="76"/>
         </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_records_variable" >
+        <table name="emp_load" start-index="13" stop-index="20" />
+        <column-definition type="CHAR" start-index="23" stop-index="41">
+            <column name="first_name" start-index="23" stop-index="32"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="44" stop-index="61">
+            <column name="last_name" start-index="44" stop-index="52"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="64" stop-index="80">
+            <column name="resume" start-index="64" stop-index="69"/>
+        </column-definition>
+        <column-definition type="RAW" start-index="83" stop-index="99">
+            <column name="picture" start-index="83" stop-index="89"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_fields_varcharc_varrawc" >
+        <table name="emp_load" start-index="13" stop-index="20" />
+        <column-definition type="CHAR" start-index="23" stop-index="41">
+            <column name="first_name" start-index="23" stop-index="32"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="44" stop-index="61">
+            <column name="last_name" start-index="44" stop-index="52"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="64" stop-index="80">
+            <column name="resume" start-index="64" stop-index="69"/>
+        </column-definition>
+        <column-definition type="RAW" start-index="83" stop-index="100">
+            <column name="picture" start-index="83" stop-index="89"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_organization_external">
+        <table name="emp_load" start-index="13" stop-index="20" />
+        <column-definition type="CHAR" start-index="23" stop-index="41">
+            <column name="first_name" start-index="23" stop-index="32" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="44" stop-index="61">
+            <column name="last_name" start-index="44" stop-index="52" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="64" stop-index="84">
+            <column name="year_of_birth" start-index="64" stop-index="76" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_fields_terminated_by">
+        <table name="emp_load" start-index="13" stop-index="20" />
+        <column-definition type="CHAR" start-index="23" stop-index="41">
+            <column name="first_name" start-index="23" stop-index="32" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="44" stop-index="61">
+            <column name="last_name" start-index="44" stop-index="52" />
+        </column-definition>
+        <column-definition type="INT" start-index="64" stop-index="80">
+            <column name="year_of_birth" start-index="64" stop-index="76" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_records_variable_fields_terminated">
+        <table name="emp_load" start-index="13" stop-index="20" />
+        <column-definition type="CHAR" start-index="23" stop-index="41">
+            <column name="first_name" start-index="23" stop-index="32" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="44" stop-index="61">
+            <column name="last_name" start-index="44" stop-index="52" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="64" stop-index="84">
+            <column name="year_of_birth" start-index="64" stop-index="76" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_external_with_access_parameters" >
+        <table name="dept_external" start-index="13" stop-index="25" />
+        <column-definition type="NUMBER" start-index="28" stop-index="43">
+            <column name="deptno" start-index="28" stop-index="33"/>
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="46" stop-index="63">
+            <column name="dname" start-index="46" stop-index="50"/>
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="66" stop-index="81">
+            <column name="loc" start-index="66" stop-index="68"/>
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_external_with_preprocessor_and_ldrtrim" >
+        <table name="sales_transactions_ext" start-index="13" stop-index="34" />
+        <column-definition type="NUMBER" start-index="37" stop-index="50">
+            <column name="PROD_ID" start-index="37" stop-index="43"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="54" stop-index="67">
+            <column name="CUST_ID" start-index="54" stop-index="60"/>
+        </column-definition>
+        <column-definition type="DATE" start-index="71" stop-index="82">
+            <column name="TIME_ID" start-index="71" stop-index="77"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="86" stop-index="100">
+            <column name="CHANNEL_ID" start-index="86" stop-index="95"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="104" stop-index="118">
+            <column name="PROMO_ID" start-index="104" stop-index="111"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="122" stop-index="141">
+            <column name="QUANTITY_SOLD" start-index="122" stop-index="134"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="145" stop-index="168">
+            <column name="AMOUNT_SOLD" start-index="145" stop-index="155"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="172" stop-index="193">
+            <column name="UNIT_COST" start-index="172" stop-index="180"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="197" stop-index="219">
+            <column name="UNIT_PRICE" start-index="197" stop-index="206"/>
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_external_with_field_date_format" >
+        <table name="sales_transactions_ext" start-index="13" stop-index="34" />
+        <column-definition type="NUMBER" start-index="37" stop-index="50">
+            <column name="PROD_ID" start-index="37" stop-index="43"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="53" stop-index="66">
+            <column name="CUST_ID" start-index="53" stop-index="59"/>
+        </column-definition>
+        <column-definition type="DATE" start-index="70" stop-index="81">
+            <column name="TIME_ID" start-index="70" stop-index="76"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="84" stop-index="100">
+            <column name="CHANNEL_ID" start-index="84" stop-index="93"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="104" stop-index="118">
+            <column name="PROMO_ID" start-index="104" stop-index="111"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="121" stop-index="140">
+            <column name="QUANTITY_SOLD" start-index="121" stop-index="133"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="144" stop-index="167">
+            <column name="AMOUNT_SOLD" start-index="144" stop-index="154"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="170" stop-index="191">
+            <column name="UNIT_COST" start-index="170" stop-index="178"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="195" stop-index="217">
+            <column name="UNIT_PRICE" start-index="195" stop-index="204"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_organization_index_overflow_with_list_partitions">
+        <table name="sales" start-index="13" stop-index="17" />
+        <column-definition type="NUMBER" start-index="19" stop-index="35">
+            <column name="acct_no" start-index="19" stop-index="25" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="58" stop-index="75">
+            <column name="acct_name" start-index="58" stop-index="66" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="98" stop-index="121">
+            <column name="amount_of_sale" start-index="98" stop-index="111" />
+        </column-definition>
+        <column-definition type="INTEGER" start-index="144" stop-index="158">
+            <column name="week_no" start-index="144" stop-index="150" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="180" stop-index="206">
+            <column name="sale_details" start-index="180" stop-index="191" />
+        </column-definition>
+        <constraint-definition start-index="222" stop-index="262">
+            <primary-key-column name="acct_no" start-index="235" stop-index="241" />
+            <primary-key-column name="acct_name" start-index="244" stop-index="252" />
+            <primary-key-column name="week_no" start-index="255" stop-index="261" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_range_subpartition_by_list_as_select">
+        <table name="sales_par_range_list" start-index="13" stop-index="32" />
+        <column name="calendar_year" start-index="36" stop-index="48" />
+        <column name="calendar_month_number" start-index="51" stop-index="71" />
+        <column name="day_number_in_month" start-index="74" stop-index="92" />
+        <column name="country_name" start-index="97" stop-index="108" />
+        <column name="prod_id" start-index="111" stop-index="117" />
+        <column name="prod_name" start-index="120" stop-index="128" />
+        <column name="quantity_sold" start-index="131" stop-index="143" />
+        <column name="amount_sold" start-index="146" stop-index="156" />
+        <select>
+            <projections start-index="1188" stop-index="1223">
+                <column-projection name="calendar_year" start-index="1188" stop-index="1200" />
+                <column-projection name="calendar_month_number" start-index="1203" stop-index="1223" />
+            </projections>
+            <from>
+                <simple-table name="times" start-index="1230" stop-index="1234" />
+            </from>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_partition_by_list_as_select_with_to_date">
+        <table name="sales_par_list" start-index="13" stop-index="26" />
+        <column name="calendar_year" start-index="29" stop-index="41" />
+        <column name="calendar_month_number" start-index="44" stop-index="64" />
+        <column name="day_number_in_month" start-index="67" stop-index="85" />
+        <column name="country_name" start-index="89" stop-index="100" />
+        <column name="prod_id" start-index="103" stop-index="109" />
+        <column name="quantity_sold" start-index="112" stop-index="124" />
+        <column name="amount_sold" start-index="127" stop-index="137" />
+        <select>
+            <projections start-index="376" stop-index="409">
+                <column-projection name="calendar_year" start-index="376" stop-index="388" />
+                <column-projection name="day_number_in_month" start-index="391" stop-index="409" />
+            </projections>
+            <from>
+                <simple-table name="times" start-index="416" stop-index="420" />
+            </from>
+            <where start-index="422" stop-index="473">
+                <expr>
+                    <binary-operation-expression start-index="428" stop-index="473">
+                        <left>
+                            <column name="time_id" start-index="428" stop-index="434" />
+                        </left>
+                        <operator>&lt;</operator>
+                        <right>
+                            <function start-index="438" stop-index="473" text="TO_DATE('01-APR-1998','dd-mon-yyyy')" function-name="TO_DATE">
+                                <parameter>
+                                    <literal-expression value="'01-APR-1998'" start-index="446" stop-index="458" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'dd-mon-yyyy'" start-index="460" stop-index="472" />
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_tablespace_nologging_compress_parallel_as_select">
+        <table name="sales_q1_1998_out" start-index="13" stop-index="29" />
+        <select>
+            <projections start-index="99" stop-index="99">
+                <shorthand-projection start-index="99" stop-index="99" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="106" stop-index="110" />
+            </from>
+            <where start-index="112" stop-index="218">
+                <expr>
+                    <binary-operation-expression start-index="118" stop-index="218">
+                        <left>
+                            <binary-operation-expression start-index="118" stop-index="165">
+                                <left>
+                                    <column name="time_id" start-index="118" stop-index="124" />
+                                </left>
+                                <operator>&gt;=</operator>
+                                <right>
+                                    <function start-index="130" stop-index="165" text="TO_DATE('01-JAN-1998','dd-mon-yyyy')" function-name="TO_DATE">
+                                        <parameter>
+                                            <literal-expression value="'01-JAN-1998'" start-index="138" stop-index="150" />
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="'dd-mon-yyyy'" start-index="152" stop-index="164" />
+                                        </parameter>
+                                    </function>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="173" stop-index="218">
+                                <left>
+                                    <column name="time_id" start-index="173" stop-index="179" />
+                                </left>
+                                <operator>&lt;</operator>
+                                <right>
+                                    <function start-index="183" stop-index="218" text="TO_DATE('01-APR-1998','dd-mon-yyyy')" function-name="TO_DATE">
+                                        <parameter>
+                                            <literal-expression value="'01-APR-1998'" start-index="191" stop-index="203" />
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="'dd-mon-yyyy'" start-index="205" stop-index="217" />
+                                        </parameter>
+                                    </function>
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_tablespace_partition_by_range_subpartition_by_list">
+        <table name="quarterly_regional_sales" start-index="13" stop-index="36" />
+        <column-definition type="number" start-index="45" stop-index="57">
+            <column name="deptno" start-index="45" stop-index="50" />
+        </column-definition>
+        <column-definition type="varchar2" start-index="60" stop-index="79">
+            <column name="item_no" start-index="60" stop-index="66" />
+        </column-definition>
+        <column-definition type="date" start-index="89" stop-index="101">
+            <column name="txn_date" start-index="89" stop-index="96" />
+        </column-definition>
+        <column-definition type="number" start-index="104" stop-index="120">
+            <column name="txn_amount" start-index="104" stop-index="113" />
+        </column-definition>
+        <column-definition type="varchar2" start-index="123" stop-index="139">
+            <column name="state" start-index="123" stop-index="127" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_external_oracle_datapump" >
+        <table name="dept_xt" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="32">
+            <column name="dept_no" start-index="22" stop-index="28"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="35" stop-index="52">
+            <column name="dept_name" start-index="35" stop-index="43"/>
+        </column-definition>
+        <column-definition type="CHAR" start-index="55" stop-index="71">
+            <column name="location" start-index="55" stop-index="62"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_dotted_inline_constraint" >
+        <table name="emp" start-index="13" stop-index="15" />
+        <column-definition type="NUMBER" primary-key="true" start-index="18" stop-index="62">
+            <column name="empno" start-index="18" stop-index="22"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="65" stop-index="80">
+            <column name="deptno" start-index="65" stop-index="70"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_foreign_key_and_untyped_column" >
+        <table name="dept_20" start-index="13" stop-index="19" />
+        <column-definition type="NUMBER" start-index="22" stop-index="42">
+            <column name="employee_id" start-index="22" stop-index="32"/>
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="45" stop-index="66">
+            <column name="last_name" start-index="45" stop-index="53"/>
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="69" stop-index="86">
+            <column name="job_id" start-index="69" stop-index="74"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="89" stop-index="108">
+            <column name="manager_id" start-index="89" stop-index="98"/>
+        </column-definition>
+        <column-definition type="DATE" start-index="111" stop-index="124">
+            <column name="hire_date" start-index="111" stop-index="119"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="127" stop-index="144">
+            <column name="salary" start-index="127" stop-index="132"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="147" stop-index="172">
+            <column name="commission_pct" start-index="147" stop-index="160"/>
+        </column-definition>
+        <column-definition start-index="175" stop-index="187">
+            <column name="department_id" start-index="175" stop-index="187"/>
+        </column-definition>
+        <constraint-definition constraint-name="fk_deptno" start-index="190" stop-index="275">
+            <referenced-table name="departments" start-index="250" stop-index="260" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_external_with_encrypt_and_as_subquery" >
+        <table name="emp_ext" start-index="13" stop-index="19" />
+        <column name="first_name" start-index="22" stop-index="31" />
+        <column name="last_name" start-index="34" stop-index="42" />
+        <column name="empID" start-index="45" stop-index="49" />
+        <column name="salary" start-index="52" stop-index="57" />
+        <column name="ssn" start-index="60" stop-index="62" />
+        <select>
+            <projections start-index="227" stop-index="227">
+                <shorthand-projection start-index="227" stop-index="227" />
+            </projections>
+            <from>
+                <simple-table name="EMPLOYEE" start-index="234" stop-index="241" />
+            </from>
+        </select>
     </create-table>
 
     <create-table sql-case-id="create_table_with_builtin_function">
@@ -4593,5 +5641,96 @@
                 <simple-table name="t_order" start-index="86" stop-index="92" />
             </from>
         </select>
+    </create-table>
+    <create-table sql-case-id="create_table_with_interval_day_to_second_precision">
+        <table name="time_table" start-index="13" stop-index="22" />
+        <column-definition type="TIMESTAMP" start-index="25" stop-index="44">
+            <column name="start_time" />
+            <dataType value="TIMESTAMP" start-index="36" stop-index="44" />
+        </column-definition>
+        <column-definition type="INTERVAL DAY TO SECOND" start-index="47" stop-index="87">
+            <column name="duration_1" />
+            <dataType value="INTERVAL DAY TO SECOND" start-index="58" stop-index="87">
+                <dataLength precision="6" scale="5" />
+            </dataType>
+        </column-definition>
+        <column-definition type="INTERVAL YEAR TO MONTH" start-index="90" stop-index="122">
+            <column name="duration_2" />
+            <dataType value="INTERVAL YEAR TO MONTH" start-index="101" stop-index="122" />
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_with_interval_year_to_month_precision">
+        <table name="t_interval" start-index="13" stop-index="22" />
+        <column-definition type="INTERVAL YEAR TO MONTH" start-index="25" stop-index="59">
+            <column name="duration" />
+            <dataType value="INTERVAL YEAR TO MONTH" start-index="34" stop-index="59">
+                <dataLength precision="2" />
+            </dataType>
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_pg_as_select" db-types="PostgreSQL">
+        <table name="t_order_new" start-index="13" stop-index="23" />
+        <select>
+            <projections start-index="35" stop-index="35">
+                <shorthand-projection start-index="35" stop-index="35" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="42" stop-index="48" />
+            </from>
+        </select>
+    </create-table>
+    <create-table sql-case-id="create_table_pg_temp_as_select_with_no_data" db-types="PostgreSQL">
+        <table name="t_order_tmp" start-index="23" stop-index="33" />
+        <select>
+            <projections start-index="45" stop-index="60">
+                <column-projection name="order_id" start-index="45" stop-index="52" />
+                <column-projection name="status" start-index="55" stop-index="60" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="67" stop-index="73" />
+            </from>
+        </select>
+    </create-table>
+    <create-table sql-case-id="create_table_mv_capabilities_with_line_comments" db-types="Oracle">
+        <comment start-index="69" stop-index="114" text="-- Client-supplied unique statement identifier&#x000A;" />
+        <comment start-index="150" stop-index="187" text="-- NULL for SELECT based EXPLAIN_MVIEW&#x000A;" />
+        <comment start-index="223" stop-index="260" text="-- NULL for SELECT based EXPLAIN_MVIEW&#x000A;" />
+        <comment start-index="296" stop-index="334" text="-- A descriptive name of the capability&#x000A;" />
+        <comment start-index="370" stop-index="398" text="-- T = capability is possible&#x000A;" />
+        <comment start-index="434" stop-index="477" text="-- Owner.table.column, alias name, and so on&#x000A;" />
+        <comment start-index="513" stop-index="566" text="-- When there is a numeric value associated with a row&#x000A;" />
+        <comment start-index="602" stop-index="657" text="-- When available, QSM message # explaining why disabled&#x000A;" />
+        <comment start-index="693" stop-index="722" text="-- Text associated with MSGNO.&#x000A;" />
+        <table name="MV_CAPABILITIES_TABLE" start-index="13" stop-index="33" />
+        <column-definition type="VARCHAR" start-index="36" stop-index="64">
+            <column name="STATEMENT_ID" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="117" stop-index="145">
+            <column name="MVOWNER" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="190" stop-index="218">
+            <column name="MVNAME" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="263" stop-index="291">
+            <column name="CAPABILITY_NAME" />
+        </column-definition>
+        <column-definition type="CHARACTER" start-index="337" stop-index="366">
+            <column name="POSSIBLE" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="401" stop-index="431">
+            <column name="RELATED_TEXT" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="480" stop-index="503">
+            <column name="RELATED_NUM" />
+        </column-definition>
+        <column-definition type="INTEGER" start-index="569" stop-index="593">
+            <column name="MSGNO" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="660" stop-index="690">
+            <column name="MSGTXT" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="725" stop-index="748">
+            <column name="SEQ" />
+        </column-definition>
     </create-table>
 </sql-parser-test-cases>

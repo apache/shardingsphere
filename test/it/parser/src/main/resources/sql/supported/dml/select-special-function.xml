@@ -90,7 +90,7 @@
     <sql-case id="select_bin" value="SELECT BIN(12)" db-types="MySQL" />
     <sql-case id="select_bin_uuid" value="SELECT BIN_TO_UUID(UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db'))" db-types="MySQL" />
     <sql-case id="select_bit_length" value="SELECT BIT_LENGTH(1)" db-types="MySQL" />
-    <sql-case id="select_bit_count" value="SELECT BIT_COUNT(1)" db-types="MySQL" />
+    <sql-case id="select_bit_count" value="SELECT BIT_COUNT(1)" db-types="MySQL,Doris" />
     <sql-case id="select_ceil" value="SELECT CEIL(1.1)" db-types="MySQL" />
     <sql-case id="select_ceiling" value="SELECT CEILING(1.1)" db-types="MySQL" />
     <sql-case id="select_with_uuid_function" value="SELECT UUID();" db-types="MySQL"/>
@@ -108,11 +108,11 @@
     <sql-case id="select_with_weekofyear_function" value="SELECT WEEKOFYEAR('2019-02-20');" db-types="MySQL"/>
     <sql-case id="select_with_xor_function" value="SELECT 1 XOR NULL;" db-types="MySQL,Doris"/>
     <sql-case id="select_with_year_function" value="SELECT YEAR('1999-09-09');" db-types="MySQL"/>
-    <sql-case id="select_with_yearweek_function" value="SELECT YEARWEEK('1988-08-08');" db-types="MySQL"/>
+    <sql-case id="select_with_yearweek_function" value="SELECT YEARWEEK('1988-08-08');" db-types="MySQL,Doris"/>
     <sql-case id="select_with_weight_string_function" value="SELECT HEX(WEIGHT_STRING('MySQL'));" db-types="MySQL,Doris,Hive"/>
     <sql-case id="select_row_number" value="SELECT ROW_NUMBER() OVER w FROM t_order" db-types="MySQL" />
     <sql-case id="select_rpad" value="SELECT RPAD('Hello', 10, '*')" db-types="MySQL" />
-    <sql-case id="select_rtrim" value="SELECT RTRIM('  Hello  ')" db-types="MySQL" />
+    <sql-case id="select_rtrim" value="SELECT RTRIM('  Hello  ')" db-types="MySQL,Doris" />
     <sql-case id="select_schema" value="SELECT SCHEMA()" db-types="MySQL" />
     <sql-case id="select_sec_to_time" value="SELECT SEC_TO_TIME(3600)" db-types="MySQL" />
     <sql-case id="select_second" value="SELECT SECOND('2020-06-10 12:34:56')" db-types="MySQL" />
@@ -128,7 +128,7 @@
     <sql-case id="select_coercibility" value="SELECT COERCIBILITY('str')" db-types="MySQL" />
     <sql-case id="select_collation" value="SELECT COLLATION('str')" db-types="MySQL" />
     <sql-case id="select_compress" value="SELECT COMPRESS('str')" db-types="MySQL" />
-    <sql-case id="select_concat" value="SELECT CONCAT('My', 'S', 'QL')" db-types="MySQL" />
+    <sql-case id="select_concat" value="SELECT CONCAT('My', 'S', 'QL')" db-types="MySQL,Doris" />
     <sql-case id="select_concat_ws" value="SELECT CONCAT_WS(',', 'First name', 'Second name', 'Last Name')" db-types="MySQL" />
     <sql-case id="select_connection_id" value="SELECT CONNECTION_ID()" db-types="MySQL" />
     <sql-case id="select_conv" value="SELECT CONV('a',16,2)" db-types="MySQL" />
@@ -156,7 +156,7 @@
     <sql-case id="select_default_function" value="SELECT DEFAULT(val) FROM numbers" db-types="MySQL" />
     <sql-case id="select_degrees_function" value="SELECT DEGREES(PI())" db-types="MySQL" />
     <sql-case id="select_window_with_dense_rank_function" value="SELECT val, DENSE_RANK() OVER() FROM numbers" db-types="MySQL" />
-    <sql-case id="select_elt" value="SELECT ELT(1, 'Aa', 'Bb')" db-types="MySQL" />
+    <sql-case id="select_elt" value="SELECT ELT(1, 'Aa', 'Bb')" db-types="MySQL,Doris" />
     <sql-case id="select_exp" value="SELECT EXP(2)" db-types="MySQL" />
     <sql-case id="select_export_set" value="SELECT EXPORT_SET(5,'Y','N',',',4)" db-types="MySQL" />
     <sql-case id="select_extractvalue" value="SELECT ExtractValue('&lt;a&gt;&lt;b/&gt;&lt;/a&gt;', '/a/b')" db-types="MySQL" />
@@ -361,4 +361,17 @@
     <sql-case id="select_split_by_string_with_column" value="SELECT SPLIT_BY_STRING(order_notes, '::') FROM t_order" db-types="Doris" />
     <sql-case id="select_split_by_string_with_placeholder" value="SELECT SPLIT_BY_STRING(?, ?) FROM t_order" case-types="placeholder" db-types="Doris" />
     <sql-case id="select_split_by_string_with_nested_function" value="SELECT SPLIT_BY_STRING(CONCAT(order_notes, '-'), '::') FROM t_order" db-types="Doris" />
+    <sql-case id="select_array_cum_sum" value="SELECT ARRAY_CUM_SUM([1, 2, 3])" db-types="Doris" />
+    <sql-case id="select_array_cum_sum_empty_array" value="SELECT ARRAY_CUM_SUM([])" db-types="Doris" />
+    <sql-case id="select_array_cum_sum_from_table" value="SELECT ARRAY_CUM_SUM([1, 2, 3]) FROM t_order" db-types="Doris" />
+    <sql-case id="select_ucase" value="SELECT UCASE('hello')" db-types="MySQL,Doris" />
+    <sql-case id="select_starts_with_doris" value="SELECT STARTS_WITH(&quot;hello world&quot;, &quot;hello&quot;)" db-types="Doris" />
+    <sql-case id="select_conv_with_number" value="SELECT CONV(15, 10, 2)" db-types="MySQL,Doris" />
+    <sql-case id="select_conv_with_string" value="SELECT CONV('ff', 16, 10)" db-types="MySQL,Doris" />
+    <sql-case id="select_bitmap_intersect_doris" value="SELECT tag, BITMAP_INTERSECT(user_id) FROM (SELECT tag, date, BITMAP_UNION(user_id) user_id FROM table WHERE date IN ('2020-05-18', '2020-05-19') GROUP BY tag, date) a GROUP BY tag" db-types="Doris" />
+    <sql-case id="select_bitmap_to_string_with_bitmap_intersect_doris" value="SELECT tag, BITMAP_TO_STRING(BITMAP_INTERSECT(user_id)) FROM (SELECT tag, date, BITMAP_UNION(user_id) user_id FROM table WHERE date IN ('2020-05-18', '2020-05-19') GROUP BY tag, date) a GROUP BY tag" db-types="Doris" />
+    <sql-case id="select_bitcount_doris" value="SELECT BITCOUNT(7)" db-types="Doris" />
+    <sql-case id="select_bitnot_doris" value="SELECT BITNOT(1)" db-types="Doris" />
+    <sql-case id="select_bitmap_or_count_doris" value="SELECT BITMAP_OR_COUNT(BITMAP_FROM_STRING('1,2,3'), BITMAP_EMPTY())" db-types="Doris" />
+    <sql-case id="select_bitor_doris" value="SELECT BITOR(3,5)" db-types="Doris" />
 </sql-cases>

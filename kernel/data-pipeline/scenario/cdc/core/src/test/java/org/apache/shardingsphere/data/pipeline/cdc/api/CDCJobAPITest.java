@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -98,6 +99,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -114,6 +116,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -192,11 +195,28 @@ class CDCJobAPITest {
     }
     
     @Test
-    void assertCreateSkipsExistingJob() throws ReflectiveOperationException {
+    void assertCreateSkipsExistingJob() {
         putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
-        CDCJobConfiguration jobConfig = createJobConfiguration(1);
+        CDCJobConfiguration jobConfig = createJobConfiguration(Collections.singletonList("foo_readwrite_ds"), true);
         PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
         when(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job")).thenReturn(true);
+        when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
+        try (
+                MockedConstruction<YamlCDCJobConfigurationSwapper> ignored = mockConstruction(YamlCDCJobConfigurationSwapper.class,
+                        (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig))) {
+            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(Collections.singletonList("foo_schema.foo_tbl")), true,
+                    Collections.singletonMap("foo_schema.foo_tbl", Collections.singletonList(new DataNode("foo_readwrite_ds.foo_tbl"))), false);
+            assertThat(jobAPI.create(param, CDCSinkType.SOCKET, new Properties()), is("foo_job"));
+            verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
+            verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
+        }
+    }
+    
+    @Test
+    void assertCreateThrowsWhenDataSourceDoesNotExist() throws ReflectiveOperationException {
+        putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
+        CDCJobConfiguration jobConfig = createJobConfiguration(Arrays.asList("bar_ds", "foo_readwrite_ds"), true);
+        PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
         when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
         PipelineJobConfigurationManager jobConfigManager = mock(PipelineJobConfigurationManager.class);
         when(jobConfigManager.convertToJobConfigurationPOJO(jobConfig)).thenReturn(createJobConfigurationPOJO());
@@ -205,8 +225,11 @@ class CDCJobAPITest {
                 MockedConstruction<YamlCDCJobConfigurationSwapper> ignored = mockConstruction(YamlCDCJobConfigurationSwapper.class,
                         (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig))) {
             StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(Collections.singletonList("foo_schema.foo_tbl")), true,
-                    Collections.singletonMap("foo_schema.foo_tbl", Collections.singletonList(new DataNode("foo_ds" + ".foo_tbl"))), false);
-            assertThat(jobAPI.create(param, CDCSinkType.SOCKET, new Properties()), is("foo_job"));
+                    Collections.singletonMap("foo_schema.foo_tbl", Arrays.asList(new DataNode("bar_ds.foo_tbl"), new DataNode("foo_readwrite_ds.foo_tbl"))), false);
+            PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
+            assertThat(actual.getMessage(), containsString("foo_readwrite_ds"));
+            verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
+            verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
         }
     }
     
@@ -414,14 +437,18 @@ class CDCJobAPITest {
     }
     
     private CDCJobConfiguration createJobConfiguration(final int shardingCount) {
+        return createJobConfiguration(IntStream.range(0, shardingCount).mapToObj(i -> 0 == i ? "foo_ds" : "bar_ds").collect(Collectors.toList()), false);
+    }
+    
+    private CDCJobConfiguration createJobConfiguration(final List<String> dataSourceNames, final boolean full) {
         Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(2, 1F);
         dataSources.put("foo_ds", createStandardDataSourceProperties());
         dataSources.put("bar_ds", createStandardDataSourceProperties());
         ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(buildYamlRootConfiguration(dataSources));
-        List<JobDataNodeLine> jobDataNodeLines = IntStream.range(0, shardingCount).mapToObj(
-                i -> new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("foo_tbl", Collections.singletonList(new DataNode((0 == i ? "foo_ds" : "bar_ds") + ".foo_tbl"))))))
+        List<JobDataNodeLine> jobDataNodeLines = dataSourceNames.stream().map(
+                each -> new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("foo_tbl", Collections.singletonList(new DataNode(each + ".foo_tbl"))))))
                 .collect(Collectors.toList());
-        return new CDCJobConfiguration("foo_job", "foo_db", Collections.singletonList("foo_schema.foo_tbl"), false, mock(),
+        return new CDCJobConfiguration("foo_job", "foo_db", Collections.singletonList("foo_schema.foo_tbl"), full, mock(),
                 dataSourceConfig, jobDataNodeLines.get(0), jobDataNodeLines, false, new CDCJobConfiguration.SinkConfiguration(CDCSinkType.SOCKET, new Properties()), 1, 0);
     }
     

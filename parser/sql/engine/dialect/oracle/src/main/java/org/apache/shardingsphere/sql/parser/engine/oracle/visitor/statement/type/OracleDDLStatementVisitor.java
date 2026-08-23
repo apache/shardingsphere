@@ -110,11 +110,13 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRestorePointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRollbackSegmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSPFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTriggerContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTypeBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorDefinitionContext;
@@ -162,6 +164,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTy
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DynamicSqlStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExceptionHandlerContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExchangePartitionTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FlashbackTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForLoopStatementContext;
@@ -191,6 +194,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfL
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PackageNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterDeclarationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PartitionExtendedNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlFunctionSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlPackageSourceContext;
@@ -228,6 +232,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Variab
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VarrayTypeSpecContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexTypeContext;
 import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
@@ -244,6 +249,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ExchangePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
@@ -285,6 +291,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.AlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.CreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.DropSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.AlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.CreateSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.DropSynonymStatement;
@@ -369,6 +376,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.Oracle
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.OracleCreateLockdownProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.OracleDropLockdownProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleAlterOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTypeBodyStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleCreateOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleDropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
@@ -667,6 +675,8 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     result.dropConstraintDefinition((DropConstraintDefinitionSegment) each);
                 } else if (each instanceof ModifyCollectionRetrievalSegment) {
                     result.modifyCollectionRetrieval((ModifyCollectionRetrievalSegment) each);
+                } else if (each instanceof ExchangePartitionDefinitionSegment) {
+                    result.exchangePartitionDefinition((ExchangePartitionDefinitionSegment) each);
                 }
             }
         }
@@ -694,8 +704,25 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.constraintClauses()) {
             result.getValue().addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(ctx.constraintClauses())).getValue());
         }
+        if (null != ctx.alterTablePartitioning() && null != ctx.alterTablePartitioning().exchangePartitionTable()) {
+            result.getValue().add((AlterDefinitionSegment) visit(ctx.alterTablePartitioning().exchangePartitionTable()));
+        }
         // TODO More alter definition parse
         return result;
+    }
+    
+    @Override
+    public ASTNode visitExchangePartitionTable(final ExchangePartitionTableContext ctx) {
+        PartitionSegment partition = null;
+        if (null != ctx.partitionExtendedName() && null != ctx.partitionExtendedName().partitionName()) {
+            partition = (PartitionSegment) visit(ctx.partitionExtendedName());
+        }
+        return new ExchangePartitionDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), partition, (SimpleTableSegment) visit(ctx.tableName()));
+    }
+    
+    @Override
+    public ASTNode visitPartitionExtendedName(final PartitionExtendedNameContext ctx) {
+        return new PartitionSegment(ctx.partitionName().getStart().getStartIndex(), ctx.partitionName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.partitionName()));
     }
     
     @SuppressWarnings("unchecked")
@@ -924,6 +951,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         return result;
     }
     
+    @Override
+    public ASTNode visitCreateTypeBody(final CreateTypeBodyContext ctx) {
+        return new OracleCreateTypeBodyStatement(getDatabaseType(), ctx.plsqlTypeBodySource().typeName(0).getText());
+    }
+    
     private PackageSegment createPackageEndNameSegment(final List<PackageNameContext> packageNames) {
         return packageNames.size() < 2 ? null : (PackageSegment) visit(packageNames.get(packageNames.size() - 1));
     }
@@ -1028,6 +1060,13 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitCreateSynonym(final CreateSynonymContext ctx) {
         return new CreateSynonymStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
+        CreateSchemaStatement result = new CreateSchemaStatement(getDatabaseType());
+        result.setUsername(new IdentifierValue(ctx.schemaName().getText()));
+        return result;
     }
     
     @Override

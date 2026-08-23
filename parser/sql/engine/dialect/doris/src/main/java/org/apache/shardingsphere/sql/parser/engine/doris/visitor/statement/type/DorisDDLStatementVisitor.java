@@ -80,6 +80,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateS
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RefreshMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSyncJobContext;
@@ -291,6 +292,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseJobSta
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisRefreshMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
@@ -320,6 +322,18 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         CreateViewStatement result = new CreateViewStatement(getDatabaseType());
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        // DORIS CHANGED BEGIN
+        if (null != ctx.columnNames()) {
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
+            for (ColumnSegment each : columns.getValue()) {
+                result.getColumns().add(new ViewColumnSegment(each.getStartIndex(), each.getStopIndex(), each, null));
+            }
+        }
+        if (null != ctx.viewColumnDefinitions()) {
+            CollectionValue<ViewColumnSegment> columns = (CollectionValue<ViewColumnSegment>) visit(ctx.viewColumnDefinitions());
+            result.getColumns().addAll(columns.getValue());
+        }
+        // DORIS CHANGED END
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
@@ -837,11 +851,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDistributedbyClause(final DistributedbyClauseContext ctx) {
         ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.columnName()) {
-            result.getColumns().add((ColumnSegment) visit(ctx.columnName()));
+        if (null != ctx.columnNames()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                result.getColumns().add((ColumnSegment) visit(each));
+            }
         }
         if (null != ctx.NUMBER_()) {
             result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.AUTO()) {
+            result.setAutoBuckets(true);
         }
         return result;
     }
@@ -1423,7 +1442,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         for (RollupItemContext each : ctx.rollupItem()) {
             RollupSegment rollupSegment = new RollupSegment(each.rollupName.getStart().getStartIndex(), each.rollupName.getStop().getStopIndex(), (IdentifierValue) visit(each.rollupName));
             AddRollupDefinitionSegment addRollupDefinitionSegment = new AddRollupDefinitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), rollupSegment);
-            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(each.columnNames());
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(each.rollupColumns);
             addRollupDefinitionSegment.getColumns().addAll(columns.getValue());
             if (null != each.fromIndexName) {
                 addRollupDefinitionSegment.setFromIndex((IndexSegment) visit(each.fromIndexName));
@@ -1500,8 +1519,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.distributedbyClause()) {
             DistributedbyClauseContext distCtx = ctx.distributedbyClause();
-            result.setDistributedColumn((ColumnSegment) visit(distCtx.columnName()));
-            result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+            if (null != distCtx.columnNames()) {
+                CollectionValue<ColumnSegment> distributedColumns = (CollectionValue<ColumnSegment>) visit(distCtx.columnNames());
+                result.setDistributedColumn(distributedColumns.getValue().iterator().next());
+            }
+            if (null != distCtx.NUMBER_()) {
+                result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+            }
         }
         return result;
     }
@@ -2013,6 +2037,19 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
         return new CreateMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitRefreshMaterializedView(final RefreshMaterializedViewContext ctx) {
+        boolean auto = null != ctx.refreshMethod() && null != ctx.refreshMethod().AUTO();
+        boolean complete = null != ctx.refreshMethod() && null != ctx.refreshMethod().COMPLETE();
+        List<String> partitionNames = new LinkedList<>();
+        if (null != ctx.partitionSpec()) {
+            for (IdentifierContext each : ctx.partitionSpec().identifierList().identifier()) {
+                partitionNames.add(((IdentifierValue) visit(each)).getValue());
+            }
+        }
+        return new DorisRefreshMaterializedViewStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.name().identifier())).getValue(), auto, complete, partitionNames);
     }
     
     @Override

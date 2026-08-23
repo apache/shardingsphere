@@ -61,4 +61,48 @@
         </pseudo-column>
     </create-trigger>
     <create-trigger sql-case-id="create_trigger_with_explicit_state_visitor_oracle" disable-clause-start-index="-1" />
+    <create-trigger sql-case-id="create_trigger_with_instead_of_nested_table" sql-statement-count="2">
+        <trigger-name name="Library_trigger" start-index="26" stop-index="40" />
+        <table name="Library_view" start-index="63" stop-index="74" />
+        <pseudo-column name="Section" start-index="164" stop-index="175">
+            <owner name="NEW" start-index="165" stop-index="167" />
+        </pseudo-column>
+        <pseudo-column name="Booklist" start-index="191" stop-index="203">
+            <owner name="NEW" start-index="192" stop-index="194" />
+        </pseudo-column>
+        <pseudo-column name="Booklist" start-index="227" stop-index="242">
+            <owner name="NEW" start-index="228" stop-index="230" />
+        </pseudo-column>
+        <pseudo-column name="Section" start-index="338" stop-index="349">
+            <owner name="NEW" start-index="339" stop-index="341" />
+        </pseudo-column>
+    </create-trigger>
+    <create-trigger sql-case-id="create_trigger_with_pseudorecord_collection_index" sql-statement-count="1">
+        <trigger-name name="trg_pseudorecord_data" start-index="26" stop-index="46" />
+        <table name="t_pseudorecord_source" start-index="64" stop-index="84" />
+        <pseudo-column name="coll" start-index="129" stop-index="140">
+            <owner name="NEW" start-index="130" stop-index="132" />
+        </pseudo-column>
+        <pseudo-column name="coll" start-index="185" stop-index="196">
+            <owner name="NEW" start-index="186" stop-index="188" />
+        </pseudo-column>
+    </create-trigger>
+    <create-trigger sql-case-id="create_trigger_with_instead_of_create" />
+    <create-trigger sql-case-id="create_trigger_with_cross_edition">
+        <comment start-index="247" stop-index="365" text="/* Trigger is running because of serendipitous change.&#x000A;       Insert new row into table2 unless it is already there. */" />
+        <comment start-index="378" stop-index="423" text="/*+ IGNORE_ROW_ON_DUPKEY_INDEX(table2(key)) */" />
+        <comment start-index="523" stop-index="691" text="/* Trigger is running because you are applying transform.&#x000A;       If tranform has not yet inserted new row in table2, insert new row;&#x000A;       otherwise, update new row. */" />
+        <comment start-index="716" stop-index="760" text="/*+ CHANGE_DUPKEY_ERROR_INDEX(table2(key)) */" />
+    </create-trigger>
+    <create-trigger sql-case-id="create_trigger_pg_after_insert">
+        <trigger-name name="t_merge_trigger" />
+        <table name="t_merge_target" start-index="47" stop-index="60" />
+    </create-trigger>
+    <create-trigger sql-case-id="create_trigger_pg_multi_events_when">
+        <trigger-name name="check_update" />
+        <table name="t_merge_target" start-index="55" stop-index="68" />
+    </create-trigger>
+    <create-trigger sql-case-id="create_trigger_pg_constraint">
+        <table name="t_merge_target" start-index="31" stop-index="44" />
+    </create-trigger>
 </sql-parser-test-cases>

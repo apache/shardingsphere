@@ -45,6 +45,7 @@
     <sql-case id="create_table_without_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) NO MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
     <sql-case id="create_table_with_parent" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) PARENT t_log_parent" db-types="Oracle" />
     <sql-case id="create_object_table" value="CREATE TABLE t_log OF t_log_type" db-types="Oracle" />
+    <sql-case id="create_object_table_with_properties" value="CREATE TABLE persons OF person (homeaddress NOT NULL, UNIQUE (homeaddress.phone), CHECK (homeaddress.zip IS NOT NULL), CHECK (homeaddress.city &lt;&gt; 'San Francisco'))" db-types="Oracle" />
     <sql-case id="create_table_with_char_varing" value="CREATE TABLE t_log(id char varying (20))" db-types="Oracle" />
     <sql-case id="create_table_with_any_type" value="CREATE TABLE t_log(a_anydata SYS.AnyData, a_anytype SYS.AnyType, a_anydataset SYS.AnyDataSet)" db-types="Oracle" />
     <sql-case id="create_local_temp_table" value="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" db-types="PostgreSQL,openGauss" />
@@ -109,9 +110,16 @@
     <sql-case id="create_local_temporary_table" value="CREATE LOCAL TEMPORARY TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_table_with_range_partition" value="CREATE TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY RANGE (order_id)" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_table_with_partition_oracle" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_hash_with_store_in" value="CREATE TABLE scubagear
+     (id NUMBER,
+      name VARCHAR2 (60))
+   PARTITION BY HASH (id)
+   PARTITIONS 4
+   STORE IN (gear1, gear2, gear3, gear4)" db-types="Oracle" />
     <sql-case id="create_table_with_xmltype_table_oracle" value="CREATE TABLE xwarehouses OF XMLTYPE XMLSCHEMA &quot;http://www.example.com/xwarehouses.xsd&quot; ELEMENT &quot;Warehouse&quot; ;" db-types="Oracle" />
     <sql-case id="create_table_with_xmltype_column_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS CLOB;" db-types="Oracle" />
     <sql-case id="create_table_with_xmltype_column_clob_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS SECUREFILE CLOB;" db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_binary_xml_virtual_columns_partition" value="CREATE TABLE po_binaryxml OF XMLType XMLTYPE STORE AS BINARY XML VIRTUAL COLUMNS (DATE_COL AS (XMLCast(XMLQuery('/PurchaseOrder/@orderDate' PASSING OBJECT_VALUE RETURNING CONTENT) AS DATE))) PARTITION BY RANGE (DATE_COL) (PARTITION orders2001 VALUES LESS THAN (to_date('01-JAN-2002')), PARTITION orders2002 VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
     <!--    TODO support create table with like and inherits on PostgreSQL,openGauss-->
     <sql-case id="create_table_with_bracket" value="CREATE TABLE [t_order] ([order_id] INT, [user_id] INT, [status] VARCHAR(10), [column1] VARCHAR(10), [column2] VARCHAR(10), [column3] VARCHAR(10))" db-types="SQLServer" />
     <sql-case id="create_table_with_identity" value="CREATE TABLE t_order (order_id INT IDENTITY, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
@@ -160,7 +168,9 @@
     <sql-case id="create_table_with_unsigned_int" value="CREATE TABLE t_order (order_id INT, user_id INT, status UNSIGNED INT)" db-types="MySQL" />
     <sql-case id="create_table_with_partition_less_than" value="CREATE TABLE t_sales (order_id INTEGER NOT NULL, goods_name CHAR(20) NOT NULL, sales_date DATE NOT NULL, sales_volume INTEGER, sales_store CHAR(20), PRIMARY KEY ( order_id )) PARTITION BY RANGE (sales_date) (PARTITION season1 VALUES LESS THAN('2023-04-01 00:00:00'),PARTITION season2 VALUES LESS THAN('2023-07-01 00:00:00'),PARTITION season3 VALUES LESS THAN('2023-10-01 00:00:00'),PARTITION season4 VALUES LESS THAN(MAXVALUE))" db-types="openGauss"/>
     <sql-case id="create_table_with_negative_data_type" value="CREATE TABLE T(COL1 NUMBER, COL2 NUMBER(3), COL3 NUMBER(3,2), COL4 NUMBER(6,-2))" db-types="Oracle" />
+    <sql-case id="create_table_with_binary_float_and_binary_double" value="CREATE TABLE t_binary_float_double (rate BINARY_FLOAT, total BINARY_DOUBLE)" db-types="Oracle" />
     <sql-case id="create_table_with_ref_data_type" value="CREATE TABLE location_table (location_number NUMBER, building REF warehouse_typ SCOPE IS warehouse_table);" db-types="Oracle" />
+    <sql-case id="create_table_with_object_type_column" value="CREATE TABLE projecttab(deptno NUMBER, project HR.PROJECT_T)" db-types="Oracle" />
     <sql-case id="create_table_with_nested_table_store_as" value="CREATE TABLE oe.people_reltab ( id NUMBER(4) CONSTRAINT pk_people_reltab PRIMARY KEY, first_name VARCHAR2(20), last_name VARCHAR2(20), phones_ntab oe.phone_ntabtyp) NESTED TABLE phones_ntab STORE AS phone_store_ntab ((PRIMARY KEY (NESTED_TABLE_ID, location)));" db-types="Oracle" />
     <sql-case id="create_table_with_nested_table_mixed_column_properties_xmltype_first" value="CREATE TABLE t_nested_mix (doc XMLTYPE, phones_ntab phone_ntabtyp) XMLTYPE COLUMN doc STORE AS CLOB NESTED TABLE phones_ntab STORE AS phone_store_ntab;" db-types="Oracle" />
     <sql-case id="create_table_with_nested_table_mixed_column_properties_nested_first" value="CREATE TABLE t_nested_mix2 (doc XMLTYPE, phones_ntab phone_ntabtyp) NESTED TABLE phones_ntab STORE AS phone_store_ntab XMLTYPE COLUMN doc STORE AS CLOB;" db-types="Oracle" />
@@ -180,14 +190,40 @@
     <sql-case id="create_table_multi_range_partition_integer_doris" value="CREATE TABLE create_table_multi_partion_integer (k1 BIGINT, k2 INT, V1 VARCHAR(20)) PARTITION BY RANGE (k1) (FROM (1) TO (100) INTERVAL 10) DISTRIBUTED BY HASH(k2) BUCKETS 1 PROPERTIES('replication_num' = '1')" db-types="Doris" />
     <sql-case id="create_table_as_select_with_key_partition_distribution_properties_doris" value="CREATE TABLE t_user (dt DATE, id INT, name VARCHAR(20)) ENGINE=OLAP UNIQUE KEY(dt, id) COMMENT &quot;OLAP&quot; PARTITION BY RANGE(dt) (FROM (&quot;2020-01-01&quot;) TO (&quot;2021-12-31&quot;) INTERVAL 1 YEAR) DISTRIBUTED BY HASH(id) BUCKETS 1 PROPERTIES(&quot;replication_num&quot;=&quot;1&quot;) AS SELECT cast('2020-05-20' as date) as dt, 1 as id, 'Tom' as name" db-types="Doris" />
     <sql-case id="create_table_as_select_with_duplicate_key_multi_columns_doris" value="CREATE TABLE t_dup_user (dt DATE, id INT) ENGINE=OLAP DUPLICATE KEY(dt, id) DISTRIBUTED BY HASH(id) BUCKETS 1 AS SELECT cast('2020-05-20' as date) as dt, 1 as id" db-types="Doris" />
+    <sql-case id="create_table_duplicate_key_with_dynamic_partition_doris" value="CREATE TABLE example_db.dynamic_partition (k1 DATE, k2 INT, k3 SMALLINT, v1 VARCHAR(2048), v2 DATETIME DEFAULT &quot;2014-02-04 15:36:00&quot;) DUPLICATE KEY(k1, k2, k3) PARTITION BY RANGE (k1) () DISTRIBUTED BY HASH(k2) BUCKETS 32 PROPERTIES(&quot;dynamic_partition.time_unit&quot; = &quot;DAY&quot;, &quot;dynamic_partition.start&quot; = &quot;-3&quot;, &quot;dynamic_partition.end&quot; = &quot;3&quot;, &quot;dynamic_partition.prefix&quot; = &quot;p&quot;, &quot;dynamic_partition.buckets&quot; = &quot;32&quot;)" db-types="Doris" />
+    <sql-case id="create_table_aggregate_key_with_rollup_doris" value="CREATE TABLE example_db.rolup_index_table (event_day DATE, siteid INT DEFAULT '10', citycode SMALLINT, username VARCHAR(32) DEFAULT '', pv BIGINT SUM DEFAULT '0') AGGREGATE KEY(event_day, siteid, citycode, username) DISTRIBUTED BY HASH(siteid) BUCKETS 10 ROLLUP (r1(event_day, siteid), r2(event_day, citycode), r3(event_day)) PROPERTIES(&quot;replication_num&quot; = &quot;3&quot;)" db-types="Doris" />
+    <sql-case id="create_table_hash_distributed_with_replication_allocation_doris" value="CREATE TABLE example_db.table_hash (k1 TINYINT, k2 DECIMAL(10, 2) DEFAULT &quot;10.5&quot;) DISTRIBUTED BY HASH(k1) BUCKETS 32 PROPERTIES(&quot;replication_allocation&quot; = &quot;tag.location.group_a:1, tag.location.group_b:2&quot;)" db-types="Doris" />
+    <sql-case id="create_table_dynamic_partition_with_empty_partition_list_doris" value="CREATE TABLE example_db.dynamic_partition (k1 DATE, k2 INT, k3 SMALLINT, v1 VARCHAR(2048), v2 DATETIME DEFAULT &quot;2014-02-04 15:36:00&quot;) PARTITION BY RANGE (k1) () DISTRIBUTED BY HASH(k2) BUCKETS 32 PROPERTIES(&quot;dynamic_partition.time_unit&quot; = &quot;DAY&quot;, &quot;dynamic_partition.replication_allocation&quot; = &quot;tag.location.group_a:3&quot;)" db-types="Doris" />
+    <sql-case id="create_table_unique_key_with_storage_policy_doris" value="CREATE TABLE IF NOT EXISTS create_table_use_created_policy (k1 BIGINT, k2 LARGEINT, v1 VARCHAR(2048)) UNIQUE KEY(k1) DISTRIBUTED BY HASH (k1) BUCKETS 3 PROPERTIES(&quot;storage_policy&quot; = &quot;test_create_table_use_policy&quot;, &quot;replication_num&quot; = &quot;1&quot;)" db-types="Doris" />
+    <sql-case id="create_table_unique_key_with_multi_columns_hash_doris" value="CREATE TABLE example_db.table_hash (k1 BIGINT, k2 LARGEINT, v1 VARCHAR(2048), v2 SMALLINT DEFAULT &quot;10&quot;) UNIQUE KEY(k1, k2) DISTRIBUTED BY HASH (k1, k2) BUCKETS 32 PROPERTIES(&quot;storage_medium&quot; = &quot;SSD&quot;, &quot;storage_cooldown_time&quot; = &quot;2015-06-04 00:00:00&quot;)" db-types="Doris" />
+    <sql-case id="create_table_range_partition_multi_columns_doris" value="CREATE TABLE table_range (k1 DATE, k2 INT, k3 SMALLINT, v1 VARCHAR(2048) REPLACE, v2 INT SUM DEFAULT &quot;1&quot;) AGGREGATE KEY(k1, k2, k3) PARTITION BY RANGE (k1, k2, k3) (PARTITION p1 VALUES [(&quot;2014-01-01&quot;, &quot;10&quot;, &quot;200&quot;), (&quot;2014-01-01&quot;, &quot;20&quot;, &quot;300&quot;)), PARTITION p2 VALUES [(&quot;2014-06-01&quot;, &quot;100&quot;, &quot;200&quot;), (&quot;2014-07-01&quot;, &quot;100&quot;, &quot;300&quot;))) DISTRIBUTED BY HASH(k2) BUCKETS 32" db-types="Doris" />
+    <sql-case id="create_table_with_hll_and_bitmap_type_doris" value="CREATE TABLE example_db.example_table (k1 TINYINT, k2 DECIMAL(10, 2) DEFAULT &quot;10.5&quot;, v1 HLL HLL_UNION, v2 BITMAP BITMAP_UNION) AGGREGATE KEY(k1, k2) DISTRIBUTED BY HASH(k1) BUCKETS 32" db-types="Doris" />
+    <sql-case id="create_table_inverted_index_doris" value="CREATE TABLE example_db.table_hash (k1 TINYINT, k2 DECIMAL(10, 2) DEFAULT &quot;10.5&quot;, v1 CHAR(10) REPLACE, v2 INT SUM, INDEX k1_idx (k1) USING INVERTED COMMENT 'my first index') AGGREGATE KEY(k1, k2) DISTRIBUTED BY HASH(k1) BUCKETS 32 PROPERTIES (&quot;bloom_filter_columns&quot; = &quot;k2&quot;)" db-types="Doris" />
+    <sql-case id="create_table_random_distributed_auto_buckets_doris" value="CREATE TABLE t_auto (k1 INT) DISTRIBUTED BY RANDOM BUCKETS AUTO PROPERTIES(&quot;replication_num&quot; = &quot;1&quot;)" db-types="Doris" />
+    <sql-case id="create_table_hash_buckets_auto_doris" value="CREATE TABLE t_auto2 (k1 INT) DISTRIBUTED BY HASH(k1) BUCKETS AUTO" db-types="Doris" />
+    <sql-case id="create_table_rollup_with_duplicate_key_doris" value="CREATE TABLE t_r (k1 INT, v1 INT SUM) AGGREGATE KEY(k1) DISTRIBUTED BY HASH(k1) BUCKETS 1 ROLLUP (r1(k1, v1) DUPLICATE KEY(k1) PROPERTIES(&quot;replication_num&quot; = &quot;1&quot;))" db-types="Doris" />
+    <sql-case id="create_table_with_hll_as_identifier_doris" value="CREATE TABLE hll (hll INT) DISTRIBUTED BY HASH(hll) BUCKETS 1" db-types="Doris" />
+    <sql-case id="create_table_with_varchar_without_length_doris" value="CREATE TABLE tags (tag VARCHAR, date DATETIME, user_id BITMAP BITMAP_UNION) ENGINE=OLAP AGGREGATE KEY(tag, date) DISTRIBUTED BY HASH(tag) BUCKETS 8" db-types="Doris" />
+    <sql-case id="create_table_with_varying_alias_with_length_doris" value="CREATE TABLE t_varying (c1 CHAR VARYING(10), c2 CHARACTER VARYING(20))" db-types="Doris" />
     <sql-case id="create_table_with_select_without_query" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Oracle"/>
     <sql-case id="create_table_as_select_with_pivot" value="CREATE TABLE pivot_table AS SELECT * FROM (SELECT EXTRACT(YEAR FROM order_date) year, order_mode, order_total FROM orders) PIVOT (SUM(order_total) FOR order_mode IN ('direct' AS Store, 'online' AS Internet));" db-types="Oracle"/>
+    <sql-case id="create_table_as_select_with_pivot_and_aggregate_alias" value="CREATE TABLE pivot_alias_table AS SELECT * FROM (SELECT quarter, quantity_sold FROM sales_view) PIVOT (SUM(quantity_sold) AS sumq FOR quarter IN ('01' AS Q1, '02' AS Q2))" db-types="Oracle" />
     <sql-case id="create_table_organization_index_parallel_with_select" value="CREATE TABLE admin_iot3(i PRIMARY KEY, j, k, l) ORGANIZATION INDEX PARALLEL AS SELECT * FROM hr.jobs" db-types="Oracle" />
     <sql-case id="create_table_partition_by_range" value="CREATE TABLE costs_demo (prod_id NUMBER(6), time_id DATE, unit_cost NUMBER(10,2), unit_price NUMBER(10,2))
     PARTITION BY RANGE (time_id) (PARTITION costs_old VALUES LESS THAN (TO_DATE('01-JAN-2003', 'DD-MON-YYYY')) COMPRESS,
     PARTITION costs_q1_2003 VALUES LESS THAN (TO_DATE('01-APR-2003', 'DD-MON-YYYY')),
     PARTITION costs_q2_2003 VALUES LESS THAN (TO_DATE('01-JUN-2003', 'DD-MON-YYYY')),
     PARTITION costs_recent VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_reference" value="CREATE TABLE order_items
+    ( order_id           NUMBER(12) NOT NULL,
+      line_item_id       NUMBER(3)  NOT NULL,
+      product_id         NUMBER(6)  NOT NULL,
+      unit_price         NUMBER(8,2),
+      quantity           NUMBER(8),
+      CONSTRAINT order_items_fk
+      FOREIGN KEY(order_id) REFERENCES orders(order_id)
+    )
+    PARTITION BY REFERENCE(order_items_fk)" db-types="Oracle" />
     <sql-case id="create_table_default_user" value="CREATE TABLE audit_trail (value1 NUMBER, value2 VARCHAR2(32), inserter VARCHAR2(30) DEFAULT USER)" db-types="Oracle" />
     <sql-case id="create_table_partition_by_list_subpartition_by_hash1" value="CREATE TABLE car_rentals
     (id NUMBER NOT NULL,
@@ -220,6 +256,12 @@
     (PARTITION emea VALUES ('EU','ME','AF'),
     PARTITION amer VALUES ('NA','LA'),
     PARTITION apac VALUES ('SA','AU','NZ','IN','CH')) PARALLEL" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartition_by_hash_with_store_in" value="CREATE TABLE emp (deptno NUMBER, empname VARCHAR(32), grade NUMBER) PARTITION BY RANGE(deptno) SUBPARTITION BY HASH(empname) SUBPARTITIONS 8 STORE IN (ts1, ts3, ts5, ts7) (PARTITION p1 VALUES LESS THAN (1000), PARTITION p2 VALUES LESS THAN (2000) STORE IN (ts2, ts4, ts6, ts8), PARTITION p3 VALUES LESS THAN (MAXVALUE) (SUBPARTITION p3_s1 TABLESPACE ts4, SUBPARTITION p3_s2 TABLESPACE ts5))" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_subpartition_by_hash_with_template" value="CREATE TABLE emp_sub_template (deptno NUMBER, empname VARCHAR(32), grade NUMBER) PARTITION BY RANGE(deptno) SUBPARTITION BY HASH(empname) SUBPARTITION TEMPLATE (SUBPARTITION a TABLESPACE ts1, SUBPARTITION b TABLESPACE ts2, SUBPARTITION c TABLESPACE ts3, SUBPARTITION d TABLESPACE ts4) (PARTITION p1 VALUES LESS THAN (1000), PARTITION p2 VALUES LESS THAN (2000), PARTITION p3 VALUES LESS THAN (MAXVALUE));" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_list_subpartition_by_hash_with_store_in" value="CREATE TABLE sales_by_region (salesperson_id NUMBER, region_name VARCHAR2(20)) PARTITION BY LIST (region_name) SUBPARTITION BY HASH (salesperson_id) (PARTITION p_west VALUES ('CA', 'OR') STORE IN (ts1, ts3), PARTITION p_east VALUES ('NY', 'MA'))" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_with_storage_and_row_movement" value="CREATE TABLE sales (prod_id NUMBER(6), cust_id NUMBER, time_id DATE, channel_id CHAR(1), promo_id NUMBER(6), quantity_sold NUMBER(3), amount_sold NUMBER(10,2)) STORAGE (INITIAL 100K NEXT 50K) LOGGING PARTITION BY RANGE (time_id) (PARTITION sales_q1_2006 VALUES LESS THAN (TO_DATE('01-APR-2006','dd-MON-yyyy')) TABLESPACE tsa STORAGE (INITIAL 20K NEXT 10K), PARTITION sales_q2_2006 VALUES LESS THAN (TO_DATE('01-JUL-2006','dd-MON-yyyy')) TABLESPACE tsb, PARTITION sales_q3_2006 VALUES LESS THAN (TO_DATE('01-OCT-2006','dd-MON-yyyy')) TABLESPACE tsc, PARTITION sales_q4_2006 VALUES LESS THAN (TO_DATE('01-JAN-2007','dd-MON-yyyy')) TABLESPACE tsd) ENABLE ROW MOVEMENT;" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_list_with_null_and_default" value="CREATE TABLE sales_by_region (item# INTEGER, qty INTEGER, store_name VARCHAR(30), state_code VARCHAR(2), sale_date DATE) STORAGE(INITIAL 10K NEXT 20K) TABLESPACE tbs5 PARTITION BY LIST (state_code) (PARTITION region_east VALUES ('MA','NY','CT','NH','ME','MD','VA','PA','NJ') STORAGE (INITIAL 8M) TABLESPACE tbs8, PARTITION region_west VALUES ('CA','AZ','NM','OR','WA','UT','NV','CO') NOLOGGING, PARTITION region_south VALUES ('TX','KY','TN','LA','MS','AR','AL','GA'), PARTITION region_central VALUES ('OH','ND','SD','MO','IL','MI','IA'), PARTITION region_null VALUES (NULL), PARTITION region_unknown VALUES (DEFAULT));" db-types="Oracle"/>
+    <sql-case id="create_table_with_lob_securefile_cache" value="CREATE TABLE t1 (a CLOB ENCRYPT IDENTIFIED BY foo) LOB(a) STORE AS SECUREFILE (CACHE);" db-types="Oracle"/>
     <sql-case id="create_table_subpartition_by_range_subpartition_template" value="CREATE TABLE account_balance_history
     (id NUMBER NOT NULL,
      account_number NUMBER NOT NULL,
@@ -312,6 +354,19 @@
     TABLESPACE admin_tbs
     PCTTHRESHOLD 20
     OVERFLOW TABLESPACE admin_tbs2" db-types="Oracle" />
+    <sql-case id="create_table_organization_index_overflow_with_hash_partitions_store_in" value="CREATE TABLE sales(acct_no NUMBER(5),
+                   acct_name CHAR(30),
+                   amount_of_sale NUMBER(6),
+                   week_no INTEGER,
+                   sale_details VARCHAR2(1000),
+             PRIMARY KEY (acct_no, acct_name, week_no))
+     ORGANIZATION INDEX
+             INCLUDING week_no
+     OVERFLOW
+          PARTITION BY HASH (week_no)
+             PARTITIONS 16
+             STORE IN (ts1, ts2, ts3, ts4)
+             OVERFLOW STORE IN (ts3, ts6, ts9)" db-types="Oracle" />
     <sql-case id="create_table_ref_type1" value="CREATE TABLE departments_t (d_no NUMBER, mgr_ref REF employees_typ SCOPE IS employees_obj_t)" db-types="Oracle" />
     <sql-case id="create_table_ref_type2" value="CREATE TABLE departments_t (d_no NUMBER, mgr_ref REF employees_typ CONSTRAINT mgr_in_emp REFERENCES employees_obj_t)" db-types="Oracle" />
     <sql-case id="create_table_partition_by_range_subpartitions" value="CREATE TABLE customers_part
@@ -351,6 +406,18 @@
     <sql-case id="create_table_with_ref_type_column_department_typ" value="CREATE TABLE employees_obj( e_name   VARCHAR2(100), e_number NUMBER, e_dept   REF department_typ SCOPE IS departments_obj_t );" db-types="Oracle"/>
     <sql-case id="create_table_with_result_cache_annotations" value="CREATE TABLE foo (a NUMBER, b VARCHAR2(20)) RESULT_CACHE (MODE FORCE);" db-types="Oracle"/>
     <sql-case id="create_table_with_as_sub_query" value="CREATE TABLE employees_temp AS SELECT * FROM EMPLOYEES;" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_hash_parallel_as_select" value="CREATE TABLE dept_hash PARTITION BY HASH(department_id) PARTITIONS 3 PARALLEL 2 AS SELECT * FROM departments" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_as_select" value="CREATE TABLE emp_range PARTITION BY RANGE(hire_date) (PARTITION emp_p1 VALUES LESS THAN (TO_DATE('1-JAN-1992','DD-MON-YYYY')), PARTITION emp_p2 VALUES LESS THAN (TO_DATE('1-JAN-1994','DD-MON-YYYY')), PARTITION emp_p3 VALUES LESS THAN (TO_DATE('1-JAN-1996','DD-MON-YYYY')), PARTITION emp_p4 VALUES LESS THAN (TO_DATE('1-JAN-1998','DD-MON-YYYY')), PARTITION emp_p5 VALUES LESS THAN (TO_DATE('1-JAN-2001','DD-MON-YYYY'))) AS SELECT * FROM employees;" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_with_storage_as_select" value="CREATE TABLE part_sales_by_time (time_id, prod_id, amount_sold, quantity_sold) PARTITION BY RANGE (time_id) (PARTITION old_data VALUES LESS THAN (TO_DATE('01-01-1999', 'DD-MM-YYYY')) PCTFREE 0 STORAGE (INITIAL 8M), PARTITION quarter1 VALUES LESS THAN (TO_DATE('01-04-1999', 'DD-MM-YYYY')) PCTFREE 0 STORAGE (INITIAL 8M), PARTITION quarter2 VALUES LESS THAN (TO_DATE('01-07-1999', 'DD-MM-YYYY')) PCTFREE 0 STORAGE (INITIAL 8M), PARTITION quarter3 VALUES LESS THAN (TO_DATE('01-10-1999', 'DD-MM-YYYY')) PCTFREE 0 STORAGE (INITIAL 8M), PARTITION quarter4 VALUES LESS THAN (TO_DATE('01-01-2000', 'DD-MM-YYYY')) PCTFREE 0 STORAGE (INITIAL 8M), PARTITION max_partition VALUES LESS THAN (MAXVALUE) PCTFREE 0 STORAGE (INITIAL 8M)) AS SELECT s.time_id, s.prod_id, s.amount_sold, s.quantity_sold FROM sales s" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_interval_subpartition_by_hash_with_compress" value="CREATE TABLE page_history (id NUMBER NOT NULL, url VARCHAR2(300) NOT NULL, view_date DATE NOT NULL, client_ip VARCHAR2(23) NOT NULL, from_url VARCHAR2(300), to_url VARCHAR2(300), timing_in_seconds NUMBER) PARTITION BY RANGE(view_date) INTERVAL (NUMTODSINTERVAL(1,'DAY')) SUBPARTITION BY HASH(client_ip) SUBPARTITIONS 32 (PARTITION p0 VALUES LESS THAN (TO_DATE('01-JAN-2006','dd-MON-yyyy'))) PARALLEL 32 COMPRESS" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_interval_subpartition_by_range_template" value="CREATE TABLE sales (prod_id NUMBER(6) NOT NULL, cust_id NUMBER NOT NULL, time_id DATE NOT NULL, channel_id CHAR(1) NOT NULL, promo_id NUMBER(6) NOT NULL, quantity_sold NUMBER(3) NOT NULL, amount_sold NUMBER(10,2) NOT NULL, total_amount AS (quantity_sold * amount_sold)) PARTITION BY RANGE (time_id) INTERVAL (NUMTOYMINTERVAL(1,'MONTH')) SUBPARTITION BY RANGE(total_amount) SUBPARTITION TEMPLATE (SUBPARTITION p_small VALUES LESS THAN (1000), SUBPARTITION p_medium VALUES LESS THAN (5000), SUBPARTITION p_large VALUES LESS THAN (10000), SUBPARTITION p_extreme VALUES LESS THAN (MAXVALUE)) (PARTITION sales_before_2007 VALUES LESS THAN (TO_DATE('01-JAN-2007','dd-MON-yyyy'))) ENABLE ROW MOVEMENT PARALLEL NOLOGGING" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_subpartition_by_hash_subpartitions_store_in" value="CREATE TABLE sales (prod_id NUMBER(6), cust_id NUMBER, time_id DATE, channel_id CHAR(1), promo_id NUMBER(6), quantity_sold NUMBER(3), amount_sold NUMBER(10,2)) PARTITION BY RANGE (time_id) SUBPARTITION BY HASH (cust_id) SUBPARTITIONS 8 STORE IN (ts1, ts2, ts3, ts4) (PARTITION sales_q1_2006 VALUES LESS THAN (TO_DATE('01-APR-2006','dd-MON-yyyy')), PARTITION sales_q2_2006 VALUES LESS THAN (TO_DATE('01-JUL-2006','dd-MON-yyyy')), PARTITION sales_q3_2006 VALUES LESS THAN (TO_DATE('01-OCT-2006','dd-MON-yyyy')), PARTITION sales_q4_2006 VALUES LESS THAN (TO_DATE('01-JAN-2007','dd-MON-yyyy')))" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_interval_subpartition_by_hash_with_template" value="CREATE TABLE sales (prod_id NUMBER(6), cust_id NUMBER, time_id DATE, channel_id CHAR(1), promo_id NUMBER(6), quantity_sold NUMBER(3), amount_sold NUMBER(10,2)) PARTITION BY RANGE (time_id) INTERVAL (NUMTOYMINTERVAL(1,'MONTH')) SUBPARTITION BY hash(cust_id) SUBPARTITION template (SUBPARTITION p1 TABLESPACE ts1, SUBPARTITION p2 TABLESPACE ts2, SUBPARTITION p3 TABLESPACE ts3, SUBPARTITION P4 TABLESPACE ts4) (PARTITION before_2000 VALUES LESS THAN (TO_DATE('01-JAN-2000','dd-MON-yyyy'))) PARALLEL" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_interval_daily_subpartition_by_range_template" value="CREATE TABLE sales (prod_id NUMBER(6), cust_id NUMBER, time_id DATE, channel_id CHAR(1), promo_id NUMBER(6), quantity_sold NUMBER(3), amount_sold NUMBER(10,2)) PARTITION BY RANGE (time_id) INTERVAL (NUMTODSINTERVAL(1,'DAY')) SUBPARTITION BY RANGE(amount_sold) SUBPARTITION TEMPLATE (SUBPARTITION p_low VALUES LESS THAN (1000), SUBPARTITION p_medium VALUES LESS THAN (4000), SUBPARTITION p_high VALUES LESS THAN (8000), SUBPARTITION p_ultimate VALUES LESS THAN (maxvalue)) (PARTITION before_2000 VALUES LESS THAN (TO_DATE('01-JAN-2000','dd-MON-yyyy'))) PARALLEL" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_range_interval_subpartition_by_hash_subpartitions" value="CREATE TABLE sales (prod_id NUMBER(6), cust_id NUMBER, time_id DATE, channel_id CHAR(1), promo_id NUMBER(6), quantity_sold NUMBER(3), amount_sold NUMBER(10,2)) PARTITION BY RANGE (time_id) INTERVAL (NUMTOYMINTERVAL(1,'MONTH')) SUBPARTITION BY HASH (cust_id) SUBPARTITIONS 4 (PARTITION before_2000 VALUES LESS THAN (TO_DATE('01-JAN-2000','dd-MON-yyyy'))) PARALLEL" db-types="Oracle"/>
+    <sql-case id="create_table_with_pq_distribute_hint_partition_by_hash_as_select" value="CREATE /*+ PQ_DISTRIBUTE(lineitem, PARTITION) */ TABLE lineitem NOLOGGING PARALLEL 16 PARTITION BY HASH (l_orderkey) PARTITIONS 512 AS SELECT * FROM lineitemxt;" db-types="Oracle"/>
+    <sql-case id="create_table_with_pq_distribute_hint_partition_by_hash_as_select_from_source_table" value="CREATE /*+ PQ_DISTRIBUTE(target_table, PARTITION) */ TABLE target_table NOLOGGING PARALLEL 16 PARTITION BY HASH (l_orderkey) PARTITIONS 512 AS SELECT * FROM source_table;" db-types="Oracle"/>
+    <sql-case id="create_table_partition_by_list_as_select" value="CREATE TABLE product_par_list (prod_id, prod_name, prod_category, prod_subcategory, prod_list_price) PARTITION BY LIST (prod_category) (PARTITION prod_cat1 VALUES ('Boys', 'Men'), PARTITION prod_cat2 VALUES ('Girls', 'Women')) AS SELECT prod_id, prod_name, prod_category, prod_subcategory, prod_list_price FROM products" db-types="Oracle"/>
     <sql-case id="create_table_parallel_with_as_sub_query" value="CREATE TABLE hr.admin_emp_dept PARALLEL COMPRESS AS SELECT * FROM hr.employees WHERE department_id = 10;" db-types="Oracle"/>
     <sql-case id="create_table_with_edge_constraint" value="CREATE TABLE bought ( PurchaseCount INT ,CONSTRAINT EC_BOUGHT CONNECTION (Customer TO Product) ON DELETE NO ACTION );" db-types="SQLServer"/>
     <sql-case id="create_table_with_enclosed" value="CREATE TABLE emp_load(first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '(' and ')'LRTRIM LOCATION (info.dat));" db-types="Oracle"/>
@@ -359,6 +426,162 @@
     <sql-case id="create_table_with_fields_ltrim" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (FIELDS LTRIM) LOCATION ('info.dat'))" db-types="Oracle"/>
     <sql-case id="create_table_with_records_delimited_by" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (RECORDS DELIMITED BY '|' FIELDS TERMINATED BY ',' (first_name CHAR(7), last_name CHAR(8), year_of_birth CHAR(4))) LOCATION ('info.dat'))" db-types="Oracle"/>
     <sql-case id="create_table_with_records_fixed" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (RECORDS FIXED 20 FIELDS (first_name CHAR(7), last_name CHAR(8), year_of_birth CHAR(4))) LOCATION ('info.dat'))" db-types="Oracle"/>
+    <sql-case id="create_table_with_records_variable" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), resume CHAR(2000), picture RAW(2000)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (RECORDS VARIABLE 2 DATA IS BIG ENDIAN CHARACTERSET US7ASCII FIELDS (first_name VARCHAR(2,12), last_name VARCHAR(2,20), resume VARCHAR(4,10000), picture VARRAW(4,100000))) LOCATION ('info.dat'))" db-types="Oracle"/>
+    <sql-case id="create_table_with_fields_varcharc_varrawc" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), resume CHAR(2000), picture RAW (2000)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (FIELDS (first_name VARCHARC(5,12), last_name VARCHARC(2,20), resume VARCHARC(4,10000), picture VARRAWC(4,100000))) LOCATION ('info.dat'))" db-types="Oracle"/>
+    <sql-case id="create_table_external_with_access_parameters" value="CREATE TABLE dept_external (deptno NUMBER(6), dname VARCHAR2(20), loc VARCHAR2(25)) ORGANIZATION EXTERNAL (TYPE oracle_loader DEFAULT DIRECTORY admin ACCESS PARAMETERS (RECORDS DELIMITED BY newline BADFILE 'ulcase1.bad' DISCARDFILE 'ulcase1.dis' LOGFILE 'ulcase1.log' SKIP 20 FIELDS TERMINATED BY &quot;,&quot; OPTIONALLY ENCLOSED BY '&quot;' (deptno INTEGER EXTERNAL(6), dname CHAR(20), loc CHAR(25))) LOCATION ('ulcase1.ctl')) REJECT LIMIT UNLIMITED" db-types="Oracle"/>
+    <sql-case id="create_table_external_oracle_datapump" value="CREATE TABLE dept_xt (dept_no INT, dept_name CHAR(20), location CHAR(20)) ORGANIZATION EXTERNAL (TYPE ORACLE_DATAPUMP DEFAULT DIRECTORY load_dir ACCESS PARAMETERS (LOGFILE log_dir:deptxt) LOCATION ('dept_dmp'))" db-types="Oracle"/>
+    <sql-case id="create_table_external_with_preprocessor_and_ldrtrim" value="CREATE TABLE sales_transactions_ext
+(PROD_ID NUMBER,
+ CUST_ID NUMBER,
+ TIME_ID DATE,
+ CHANNEL_ID CHAR,
+ PROMO_ID NUMBER,
+ QUANTITY_SOLD NUMBER,
+ AMOUNT_SOLD NUMBER(10,2),
+ UNIT_COST NUMBER(10,2),
+ UNIT_PRICE NUMBER(10,2))
+ORGANIZATION external
+(TYPE oracle_loader
+ DEFAULT DIRECTORY data_file_dir
+ ACCESS PARAMETERS
+  (RECORDS DELIMITED BY NEWLINE
+   CHARACTERSET AL32UTF8
+   PREPROCESSOR exec_file_dir:'zcat'
+   BADFILE log_file_dir:'sh_sales.bad_xt'
+   LOGFILE log_file_dir:'sh_sales.log_xt'
+   FIELDS TERMINATED BY &quot;|&quot; LDRTRIM
+  ( PROD_ID,
+    CUST_ID,
+    TIME_ID,
+    CHANNEL_ID,
+    PROMO_ID,
+    QUANTITY_SOLD,
+    AMOUNT_SOLD,
+    UNIT_COST,
+    UNIT_PRICE))
+ location ('sh_sales.dat.gz')
+)REJECT LIMIT UNLIMITED" db-types="Oracle" />
+    <sql-case id="create_table_external_with_field_date_format" value="CREATE TABLE sales_transactions_ext
+(PROD_ID NUMBER, CUST_ID NUMBER,
+ TIME_ID DATE, CHANNEL_ID NUMBER,
+ PROMO_ID NUMBER, QUANTITY_SOLD NUMBER,
+ AMOUNT_SOLD NUMBER(10,2), UNIT_COST NUMBER(10,2),
+ UNIT_PRICE NUMBER(10,2))
+ORGANIZATION external (TYPE oracle_loader
+  DEFAULT DIRECTORY data_file_dir ACCESS PARAMETERS
+  (RECORDS DELIMITED BY NEWLINE CHARACTERSET US7ASCII
+    PREPROCESSOR EXECDIR:'zcat'
+    BADFILE log_file_dir:'sh_sales.bad_xt'
+    LOGFILE log_file_dir:'sh_sales.log_xt'
+    FIELDS TERMINATED BY &quot;|&quot; LDRTRIM
+    ( PROD_ID, CUST_ID,
+      TIME_ID         DATE(10) &quot;YYYY-MM-DD&quot;,
+      CHANNEL_ID, PROMO_ID, QUANTITY_SOLD, AMOUNT_SOLD,
+      UNIT_COST, UNIT_PRICE))
+  location ('sh_sales.gz')
+)REJECT LIMIT UNLIMITED" db-types="Oracle" />
+    <sql-case id="create_table_organization_index_overflow_with_list_partitions" value="CREATE TABLE sales(acct_no NUMBER(5), 
+                   acct_name CHAR(30), 
+                   amount_of_sale NUMBER(6), 
+                   week_no INTEGER,
+                   sale_details VARCHAR2(1000),
+             PRIMARY KEY (acct_no, acct_name, week_no)) 
+     ORGANIZATION INDEX 
+             INCLUDING week_no
+             OVERFLOW TABLESPACE example
+     PARTITION BY LIST (week_no)
+            (PARTITION VALUES (1, 2, 3, 4) 
+                   TABLESPACE example,
+             PARTITION VALUES (5, 6, 7, 8) 
+                   TABLESPACE example OVERFLOW TABLESPACE example,
+             PARTITION VALUES (DEFAULT) 
+                   TABLESPACE example)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartition_by_list_as_select" value="CREATE TABLE sales_par_range_list
+ (calendar_year, calendar_month_number, day_number_in_month,
+  country_name, prod_id, prod_name, quantity_sold, amount_sold)
+PARTITION BY RANGE (calendar_month_number)
+SUBPARTITION BY LIST (country_name)
+ (PARTITION q1 VALUES LESS THAN (4)
+ (SUBPARTITION q1_America VALUES
+ ('United States of America', 'Argentina'),
+   SUBPARTITION q1_Asia VALUES ('Japan', 'India'),
+   SUBPARTITION q1_Europe VALUES ('France', 'Spain', 'Ireland')),
+   PARTITION q2 VALUES LESS THAN (7)
+  (SUBPARTITION q2_America VALUES
+   ('United States of America', 'Argentina'),
+   SUBPARTITION q2_Asia VALUES ('Japan', 'India'),
+   SUBPARTITION q2_Europe VALUES ('France', 'Spain', 'Ireland')),
+     PARTITION q3 VALUES LESS THAN (10)
+  (SUBPARTITION q3_America VALUES
+   ('United States of America', 'Argentina'),
+   SUBPARTITION q3_Asia VALUES ('Japan', 'India'),
+   SUBPARTITION q3_Europe VALUES ('France', 'Spain', 'Ireland')),
+     PARTITION q4 VALUES LESS THAN (13)
+  (SUBPARTITION q4_America VALUES
+   ('United States of America', 'Argentina'),
+   SUBPARTITION q4_Asia VALUES ('Japan', 'India'),
+   SUBPARTITION q4_Europe VALUES ('France', 'Spain', 'Ireland')))
+  AS SELECT calendar_year, calendar_month_number FROM times" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_as_select_with_to_date" value="CREATE TABLE sales_par_list
+(calendar_year, calendar_month_number, day_number_in_month,
+ country_name, prod_id, quantity_sold, amount_sold)
+ PARTITION BY LIST (country_name)
+ (PARTITION America
+      VALUES ('United States of America', 'Argentina'),
+  PARTITION Asia
+      VALUES ('Japan', 'India'),
+  PARTITION Europe
+      VALUES ('France', 'Spain', 'Ireland'))
+  AS SELECT calendar_year, day_number_in_month FROM times WHERE time_id &lt; TO_DATE('01-APR-1998','dd-mon-yyyy')" db-types="Oracle" />
+    <sql-case id="create_table_tablespace_nologging_compress_parallel_as_select" value="CREATE TABLE sales_q1_1998_out TABLESPACE archive_q1_1998 
+NOLOGGING COMPRESS PARALLEL 4 AS SELECT * FROM sales
+WHERE time_id &gt;=  TO_DATE('01-JAN-1998','dd-mon-yyyy')
+  AND time_id &lt; TO_DATE('01-APR-1998','dd-mon-yyyy')" db-types="Oracle" />
+    <sql-case id="create_table_tablespace_partition_by_range_subpartition_by_list" value="CREATE TABLE quarterly_regional_sales
+      (deptno number, item_no varchar2(20),
+       txn_date date, txn_amount number, state varchar2(2))
+  TABLESPACE ts4
+  PARTITION BY RANGE (txn_date)
+    SUBPARTITION BY LIST (state)
+      (PARTITION q1_1999 VALUES LESS THAN (TO_DATE('1-APR-1999','DD-MON-YYYY'))
+         (SUBPARTITION q1_1999_northwest VALUES ('OR', 'WA'),
+          SUBPARTITION q1_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+          SUBPARTITION q1_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+          SUBPARTITION q1_1999_southeast VALUES ('FL', 'GA'),
+          SUBPARTITION q1_1999_northcentral VALUES ('SD', 'WI'),
+          SUBPARTITION q1_1999_southcentral VALUES ('OK', 'TX')
+         ),
+       PARTITION q2_1999 VALUES LESS THAN ( TO_DATE('1-JUL-1999','DD-MON-YYYY'))
+         (SUBPARTITION q2_1999_northwest VALUES ('OR', 'WA'),
+          SUBPARTITION q2_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+          SUBPARTITION q2_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+          SUBPARTITION q2_1999_southeast VALUES ('FL', 'GA'),
+          SUBPARTITION q2_1999_northcentral VALUES ('SD', 'WI'),
+          SUBPARTITION q2_1999_southcentral VALUES ('OK', 'TX')
+         ),
+       PARTITION q3_1999 VALUES LESS THAN (TO_DATE('1-OCT-1999','DD-MON-YYYY'))
+         (SUBPARTITION q3_1999_northwest VALUES ('OR', 'WA'),
+          SUBPARTITION q3_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+          SUBPARTITION q3_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+          SUBPARTITION q3_1999_southeast VALUES ('FL', 'GA'),
+          SUBPARTITION q3_1999_northcentral VALUES ('SD', 'WI'),
+          SUBPARTITION q3_1999_southcentral VALUES ('OK', 'TX')
+         ),
+       PARTITION q4_1999 VALUES LESS THAN ( TO_DATE('1-JAN-2000','DD-MON-YYYY'))
+         (SUBPARTITION q4_1999_northwest VALUES ('OR', 'WA'),
+          SUBPARTITION q4_1999_southwest VALUES ('AZ', 'UT', 'NM'),
+          SUBPARTITION q4_1999_northeast VALUES ('NY', 'VM', 'NJ'),
+          SUBPARTITION q4_1999_southeast VALUES ('FL', 'GA'),
+          SUBPARTITION q4_1999_northcentral VALUES ('SD', 'WI'),
+          SUBPARTITION q4_1999_southcentral VALUES ('OK', 'TX')
+         )
+      )" db-types="Oracle" />
+    <sql-case id="create_table_organization_external" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir LOCATION ('info.dat'));" db-types="Oracle"/>
+    <sql-case id="create_table_with_fields_terminated_by" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth INT) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (FIELDS TERMINATED BY &quot;|&quot;) LOCATION ('info.dat'));" db-types="Oracle"/>
+    <sql-case id="create_table_with_records_variable_fields_terminated" value="CREATE TABLE emp_load (first_name CHAR(15), last_name CHAR(20), year_of_birth CHAR(4)) ORGANIZATION EXTERNAL (TYPE ORACLE_LOADER DEFAULT DIRECTORY ext_tab_dir ACCESS PARAMETERS (RECORDS VARIABLE 2 FIELDS TERMINATED BY ',' (first_name CHAR(7), last_name CHAR(8), year_of_birth CHAR(4))) LOCATION ('info.dat'));" db-types="Oracle"/>
+    <sql-case id="create_table_with_dotted_inline_constraint" value="CREATE TABLE emp (empno NUMBER(5) CONSTRAINT emp.pk PRIMARY KEY, deptno NUMBER(3))" db-types="Oracle"/>
+    <sql-case id="create_table_with_foreign_key_and_untyped_column" value="CREATE TABLE dept_20 (employee_id NUMBER(4), last_name VARCHAR2(10), job_id VARCHAR2(9), manager_id NUMBER(4), hire_date DATE, salary NUMBER(7,2), commission_pct NUMBER(7,2), department_id, CONSTRAINT fk_deptno FOREIGN KEY (department_id) REFERENCES departments(department_id))" db-types="Oracle"/>
+    <sql-case id="create_table_external_with_encrypt_and_as_subquery" value="CREATE TABLE emp_ext (first_name, last_name, empID, salary, ssn ENCRYPT IDENTIFIED BY &quot;xIcf3T9u&quot;) ORGANIZATION EXTERNAL (TYPE ORACLE_DATAPUMP DEFAULT DIRECTORY &quot;D_DIR&quot; LOCATION ('emp_ext.dat')) REJECT LIMIT UNLIMITED AS SELECT * FROM EMPLOYEE" db-types="Oracle"/>
     <sql-case id="create_table_with_builtin_function" value="CREATE TABLE tab AS SELECT DBMS_LOB.GETLENGTH@dbs2(clob_col) len FROM tab@dbs2;" db-types="Oracle"/>
     <sql-case id="create_table_with_autoextend_size" value="CREATE TABLE t1 (c1 INT) AUTOEXTEND_SIZE = 4M" db-types="MySQL"/>
     <sql-case id="create_table_with_cast_function1" value="create table test_schema.tb_ods_bs_class_all as
@@ -562,4 +785,9 @@
     <sql-case id="create_table_with_ref_column_oracle" value="CREATE TABLE ref_table (ref_col REF person_t)" db-types="Oracle" />
     <sql-case id="create_table_with_varchar2_char_length_oracle" value="CREATE TABLE dt_len (c VARCHAR2(10 CHAR))" db-types="Oracle" />
     <sql-case id="create_table_as_select_with_explicit_columns_oracle" value="CREATE TABLE t_order_new (order_id_new, user_id_new) AS SELECT order_id, user_id FROM t_order" db-types="Oracle" />
+    <sql-case id="create_table_with_interval_day_to_second_precision" value="CREATE TABLE time_table (start_time TIMESTAMP, duration_1 INTERVAL DAY (6) TO SECOND (5), duration_2 INTERVAL YEAR TO MONTH)" db-types="Oracle" />
+    <sql-case id="create_table_with_interval_year_to_month_precision" value="CREATE TABLE t_interval (duration INTERVAL YEAR (2) TO MONTH)" db-types="Oracle" />
+    <sql-case id="create_table_pg_as_select" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="create_table_pg_temp_as_select_with_no_data" value="CREATE TEMPORARY TABLE t_order_tmp AS SELECT order_id, status FROM t_order WITH NO DATA" db-types="PostgreSQL" />
+    <sql-case id="create_table_mv_capabilities_with_line_comments" value="CREATE TABLE MV_CAPABILITIES_TABLE (STATEMENT_ID      VARCHAR(30),   -- Client-supplied unique statement identifier&#x000A; MVOWNER           VARCHAR(30),   -- NULL for SELECT based EXPLAIN_MVIEW&#x000A; MVNAME            VARCHAR(30),   -- NULL for SELECT based EXPLAIN_MVIEW&#x000A; CAPABILITY_NAME   VARCHAR(30),   -- A descriptive name of the capability&#x000A; POSSIBLE          CHARACTER(1),  -- T = capability is possible&#x000A; RELATED_TEXT      VARCHAR(2000), -- Owner.table.column, alias name, and so on&#x000A; RELATED_NUM       NUMBER,        -- When there is a numeric value associated with a row&#x000A; MSGNO             INTEGER,       -- When available, QSM message # explaining why disabled&#x000A; MSGTXT            VARCHAR(2000), -- Text associated with MSGNO.&#x000A; SEQ               NUMBER)" db-types="Oracle" />
 </sql-cases>
