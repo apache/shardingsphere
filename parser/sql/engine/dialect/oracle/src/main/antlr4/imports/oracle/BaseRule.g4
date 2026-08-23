@@ -1783,7 +1783,7 @@ xmlElementFunction
     ;
 
 exprWithAlias
-    : expr (AS alias)?
+    : expr (AS? alias)?
     ;
 
 xmlAttributes
@@ -1803,7 +1803,7 @@ xmlColattvalFunction
     ;
 
 xmlAsAliasOrEvalnameExpr
-    :AS (alias | EVALNAME expr)
+    : AS? (alias | EVALNAME expr)
     ;
 
 xmlExistsFunction

@@ -87,6 +87,13 @@
             <owner name="NEW" start-index="186" stop-index="188" />
         </pseudo-column>
     </create-trigger>
+    <create-trigger sql-case-id="create_trigger_with_instead_of_create" />
+    <create-trigger sql-case-id="create_trigger_with_cross_edition">
+        <comment start-index="247" stop-index="365" text="/* Trigger is running because of serendipitous change.&#x000A;       Insert new row into table2 unless it is already there. */" />
+        <comment start-index="378" stop-index="423" text="/*+ IGNORE_ROW_ON_DUPKEY_INDEX(table2(key)) */" />
+        <comment start-index="523" stop-index="691" text="/* Trigger is running because you are applying transform.&#x000A;       If tranform has not yet inserted new row in table2, insert new row;&#x000A;       otherwise, update new row. */" />
+        <comment start-index="716" stop-index="760" text="/*+ CHANGE_DUPKEY_ERROR_INDEX(table2(key)) */" />
+    </create-trigger>
     <create-trigger sql-case-id="create_trigger_pg_after_insert">
         <trigger-name name="t_merge_trigger" />
         <table name="t_merge_target" start-index="47" stop-index="60" />
