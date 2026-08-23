@@ -514,6 +514,10 @@ adminRebalanceDisk
     : ADMIN REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
     ;
 
+adminCancelRebalanceDisk
+    : ADMIN CANCEL REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
+    ;
+
 adminRepair
     : ADMIN REPAIR TABLE tableName (PARTITION LP_ partitionName (COMMA_ partitionName)* RP_)?
     ;
