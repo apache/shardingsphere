@@ -69,15 +69,15 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         ExpressionSegment right = predicate.getRight();
         // MySQL evaluates BINARY range comparisons byte-wise, and range routing prunes partitions on converted endpoints,
         // so unwrapping BINARY is semantics-preserving only for equality predicates; range predicates keep broadcast routing.
-        if (isRangeOperator(operator) && (isBinaryOperator(left) || isBinaryOperator(right))) {
-            return Optional.empty();
-        }
         if (EQUAL.equals(operator)) {
             left = unwrapBinaryOperator(left);
             right = unwrapBinaryOperator(right);
+        } else if (isRangeOperator(operator) && (isBinaryOperator(left) || isBinaryOperator(right))) {
+            return Optional.empty();
         }
-        ExpressionSegment valueExpression = left instanceof ColumnSegment ? right : left;
-        operator = !(left instanceof ColumnSegment) && right instanceof ColumnSegment ? reverseOperator(operator) : operator;
+        boolean isLeftColumn = left instanceof ColumnSegment;
+        ExpressionSegment valueExpression = isLeftColumn ? right : left;
+        operator = !isLeftColumn && right instanceof ColumnSegment ? reverseOperator(operator) : operator;
         ConditionValue conditionValue = new ConditionValue(valueExpression, params);
         if (conditionValue.isNull()) {
             return generate(null, column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
