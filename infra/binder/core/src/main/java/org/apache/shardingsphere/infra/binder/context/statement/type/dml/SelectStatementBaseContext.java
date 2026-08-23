@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.eng
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine.ProjectionsContextEngine;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.ProjectionIdentifierExtractEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
@@ -77,6 +78,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -357,7 +359,7 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     }
     
     /**
-     * Judge whether group by items and order by items refer to the same select items in the same sequence, ignoring order direction.
+     * Judge whether group by items and order by items can be proven to refer to the same select items in the same sequence, ignoring order direction.
      *
      * <p>Either order direction keeps rows of the same group by keys adjacent in the merged result, so the direction-insensitive judgment
      * keeps pagination rewrite and group by stream merge available when the order by keys are exactly the group by keys.</p>
@@ -367,6 +369,9 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     public boolean isSameGroupByAndOrderByItems() {
         if (groupByContext.getItems().isEmpty() || groupByContext.getItems().size() != orderByContext.getItems().size()) {
             return false;
+        }
+        if (orderByContext.isGenerated()) {
+            return true;
         }
         Iterator<OrderByItem> groupByItems = groupByContext.getItems().iterator();
         Iterator<OrderByItem> orderByItems = orderByContext.getItems().iterator();
@@ -379,18 +384,61 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     }
     
     private boolean isSameGroupByAndOrderByItem(final OrderByItem groupByItem, final OrderByItem orderByItem) {
-        // Resolved indexes are 1-based and point to select items; index 0 means the index has not been resolved yet.
-        if (0 != groupByItem.getIndex() && groupByItem.getIndex() == orderByItem.getIndex()) {
-            return true;
+        if (0 != groupByItem.getIndex() && 0 != orderByItem.getIndex() && groupByItem.getIndex() != orderByItem.getIndex()) {
+            return false;
         }
         OrderByItemSegment groupBySegment = groupByItem.getSegment();
         OrderByItemSegment orderBySegment = orderByItem.getSegment();
-        if (groupBySegment instanceof IndexOrderByItemSegment && orderBySegment instanceof IndexOrderByItemSegment) {
+        if (groupBySegment.getClass() != orderBySegment.getClass()) {
+            return false;
+        }
+        if (groupBySegment instanceof IndexOrderByItemSegment) {
             return ((IndexOrderByItemSegment) groupBySegment).getColumnIndex() == ((IndexOrderByItemSegment) orderBySegment).getColumnIndex();
         }
-        return groupBySegment instanceof TextOrderByItemSegment && orderBySegment instanceof TextOrderByItemSegment
-                && SQLUtils.getExactlyValue(((TextOrderByItemSegment) groupBySegment).getText())
-                        .equalsIgnoreCase(SQLUtils.getExactlyValue(((TextOrderByItemSegment) orderBySegment).getText()));
+        if (groupBySegment instanceof ColumnOrderByItemSegment) {
+            ColumnSegment groupByColumn = ((ColumnOrderByItemSegment) groupBySegment).getColumn();
+            ColumnSegment orderByColumn = ((ColumnOrderByItemSegment) orderBySegment).getColumn();
+            return isSameColumn(groupByColumn, orderByColumn);
+        }
+        return false;
+    }
+
+    private boolean isSameColumn(final ColumnSegment groupByColumn, final ColumnSegment orderByColumn) {
+        ColumnSegmentBoundInfo groupByBoundInfo = groupByColumn.getColumnBoundInfo();
+        ColumnSegmentBoundInfo orderByBoundInfo = orderByColumn.getColumnBoundInfo();
+        ColumnSegmentBoundInfo groupByOtherUsingBoundInfo = groupByColumn.getOtherUsingColumnBoundInfo();
+        ColumnSegmentBoundInfo orderByOtherUsingBoundInfo = orderByColumn.getOtherUsingColumnBoundInfo();
+        return groupByColumn.getQualifiedName().equals(orderByColumn.getQualifiedName()) && null != groupByBoundInfo && null != orderByBoundInfo
+                && isSameColumnBoundInfo(groupByBoundInfo, orderByBoundInfo)
+                && (null == groupByOtherUsingBoundInfo ? null == orderByOtherUsingBoundInfo
+                        : null != orderByOtherUsingBoundInfo && isSameColumnBoundInfo(groupByOtherUsingBoundInfo, orderByOtherUsingBoundInfo))
+                && !isAmbiguousProjectionReference(groupByColumn);
+    }
+
+    private boolean isAmbiguousProjectionReference(final ColumnSegment column) {
+        if (null != column.getNestedObjectAttributes() && !column.getNestedObjectAttributes().isEmpty()) {
+            return true;
+        }
+        if (column.getOwner().isPresent()) {
+            return false;
+        }
+        String identifier = new ProjectionIdentifierExtractEngine(sqlStatement.getDatabaseType()).getIdentifierValue(column.getIdentifier());
+        for (Projection each : projectionsContext.getExpandProjections()) {
+            if (!identifier.equalsIgnoreCase(each.getColumnLabel())) {
+                continue;
+            }
+            if (each.getAlias().isPresent() || !(each instanceof ColumnProjection) || null == ((ColumnProjection) each).getColumnBoundInfo()
+                    || !isSameColumnBoundInfo(column.getColumnBoundInfo(), ((ColumnProjection) each).getColumnBoundInfo())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isSameColumnBoundInfo(final ColumnSegmentBoundInfo left, final ColumnSegmentBoundInfo right) {
+        return null != left && null != right && left.getTableSourceType() == right.getTableSourceType()
+                && Objects.equals(left.getOriginalDatabase(), right.getOriginalDatabase()) && Objects.equals(left.getOriginalSchema(), right.getOriginalSchema())
+                && Objects.equals(left.getOriginalTable(), right.getOriginalTable()) && Objects.equals(left.getOriginalColumn(), right.getOriginalColumn());
     }
     
     /**
