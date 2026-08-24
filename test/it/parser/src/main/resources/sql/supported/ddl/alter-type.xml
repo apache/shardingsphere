@@ -30,6 +30,9 @@
     <sql-case id="alter_type_debug" value="ALTER TYPE type_name COMPILE DEBUG REUSE SETTINGS" db-types="Oracle" />
     <sql-case id="alter_type_spec" value="ALTER TYPE type_name COMPILE SPECIFICATION REUSE SETTINGS" db-types="Oracle" />
     <sql-case id="alter_type_body" value="ALTER TYPE type_name COMPILE BODY REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_spec_without_reuse_settings" value="ALTER TYPE type_name COMPILE SPECIFICATION" db-types="Oracle" />
+    <sql-case id="alter_type_body_without_reuse_settings" value="ALTER TYPE type_name COMPILE BODY" db-types="Oracle" />
+    <sql-case id="alter_type_compile_without_reuse_settings" value="ALTER TYPE type_name COMPILE" db-types="Oracle" />
     <sql-case id="alter_type_compile_bool" value="ALTER TYPE type_name COMPILE bool_variable = TRUE REUSE SETTINGS" db-types="Oracle" />
     <sql-case id="alter_type_compile_bool_false" value="ALTER TYPE type_name COMPILE bool_variable = FALSE REUSE SETTINGS" db-types="Oracle" />
     <sql-case id="alter_type_compile_string" value="ALTER TYPE type_name COMPILE string_variable = 'String Value' REUSE SETTINGS" db-types="Oracle" />
