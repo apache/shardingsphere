@@ -990,8 +990,8 @@ decision = "proceed"
 required_actions = ["inspect_local", "run_pre_handoff_review"]
 allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output", "run_pre_handoff_review"]
 forbidden_actions = ["edit_code", "edit_non_code", "change_public_contract", "remove_superseded_model", "retain_superseded_model", "fix_review_findings", "propose_commit_message", "expand_frozen_boundary", "mutate_git", "mutate_remote"]
-required_reasons = ["direct_reference_absence_insufficient", "pre_handoff_review_required"]
-required_summary_terms = ["unused/removal audit", "test references do not establish production use", "single-model convergence"]
+required_reasons = ["direct_reference_absence_insufficient", "last_production_consumer_audit_required", "test_only_consumer_not_production_use", "pre_handoff_review_required"]
+required_summary_terms = ["single-model convergence"]
 critical = true
 
 [[cases]]
