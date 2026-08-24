@@ -84,6 +84,8 @@ ACTIONS = [
 REASONS = [
     "read_only_request",
     "direct_reference_absence_insufficient",
+    "last_production_consumer_audit_required",
+    "test_only_consumer_not_production_use",
     "prior_failure_requires_resolution",
     "same_boundary_removal_evidence_complete",
     "local_code_authorized",
