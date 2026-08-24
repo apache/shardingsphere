@@ -4300,7 +4300,7 @@ dropFunction
     ;
 
 compileTypeClause
-    : COMPILE DEBUG? (SPECIFICATION|BODY)? compilerParametersClause? REUSE SETTINGS
+    : COMPILE DEBUG? (SPECIFICATION|BODY)? compilerParametersClause? (REUSE SETTINGS)?
     ;
 
 inheritanceClauses
