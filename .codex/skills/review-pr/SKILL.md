@@ -88,8 +88,21 @@ unchanged basis.
    Consolidate findings by independent fix boundary and return the complete
    current-head set once. Only an explicit request for status, narrow review, or
    early high-risk blockers authorizes a partial result.
-8. Follow `AGENTS.md` for repository authority, command execution, local
-   verification, sensitive data, and completion-loop rules.
+8. Follow `AGENTS.md` for repository authority, evidence, scope, safety, and sensitive data, and follow the applicable canonical references below for implementation, testing, contract, non-regression, and verification criteria.
+
+## Repository Code Policy References
+
+Standalone review is read-only and must not invoke `code-implementation` or activate its write workflow.
+Read each applicable canonical reference directly through EOF before judging the effective candidate:
+
+- Read [implementation rules](../code-implementation/references/rules/implementation.md) for every production, test, script, or other implementation artifact, including build logic, generated source, and behavior-affecting configuration.
+- Read [testing rules](../code-implementation/references/rules/testing.md) when the candidate changes tests or the assessment depends on test validity or coverage.
+- Read [contract and removal rules](../code-implementation/references/rules/contracts-and-removal.md) when the assessment involves a public or externally visible contract, compatibility, removal, replacement, or an unused conclusion.
+- Read [non-regression rules](../code-implementation/references/rules/non-regression.md) for functional or performance regression assessment of any changed code candidate.
+- Read [verification rules](../code-implementation/references/verification.md) before choosing, running, or assessing local verification.
+
+Local Candidate Preflight invoked from an active implementation task may reuse an applicable reference only when the outer workflow already read that exact file through EOF.
+This Skill does not call `code-implementation` back, acquire write authority, or create a circular workflow.
 
 ## Scope and Evidence
 
@@ -184,8 +197,7 @@ baselines, also read
 Apply this workflow to the canonical review basis without using output mode or
 a previous result to influence the assessment:
 
-1. Establish the authoritative effective-candidate scope and applicable
-   requirements.
+1. Complete `Repository Code Policy References`, then establish the authoritative effective-candidate scope and applicable requirements.
 2. Confirm the selected review focus and admissible evidence.
 3. Build behavior clusters and complete the mandatory risk triage.
 4. Discover candidates across the complete scope before classifying the
@@ -275,9 +287,7 @@ unclear.
   Result: Incomplete`, confirmed findings to `Local Preflight Result: Changes
   Required`, and a complete assessment with neither to `Local Preflight Result:
   Pass`.
-- Keep this Skill review-only. The active implementation loop fixes safe
-  in-scope findings and reruns preflight; scope expansion, architecture choices,
-  and high-risk actions return to their existing authorization gates.
+- Keep this Skill review-only. The outer active implementation loop fixes safe in-scope findings and reruns preflight; scope expansion, architecture choices, and high-risk actions return to their existing authorization gates. This Skill never activates that loop.
 
 ## Multi-Round and Challenged Findings
 

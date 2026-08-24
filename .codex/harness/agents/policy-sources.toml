@@ -1,0 +1,205 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+version = 1
+root_max_bytes = 26000
+
+[profiles]
+root = ["agents"]
+code-write = ["agents", "code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
+test-write = ["agents", "code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "non-regression", "code-verification", "change-completion"]
+code-review = ["agents", "code-of-conduct", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression"]
+code-design = ["agents", "implementation-rules", "testing-rules", "contracts-and-removal", "cross-cutting-skills"]
+runtime-diagnosis = ["agents", "runtime-triage"]
+command-execution = ["agents", "token-efficiency"]
+cross-cutting = ["agents", "cross-cutting-skills"]
+gen-ut = ["agents", "code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
+review-pr = ["agents", "code-of-conduct", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
+policy-maintenance = ["agents", "policy-maintenance", "policy-source-manifest"]
+
+[[sources]]
+id = "agents"
+path = "AGENTS.md"
+kind = "instructions"
+semantic = true
+references = ["CODE_OF_CONDUCT.md", ".codex/context/token-efficiency.md", ".codex/context/cross-cutting-skills.md", ".codex/context/runtime-triage.md", ".codex/context/change-completion.md", ".codex/harness/agents/policy-maintenance.md", ".codex/harness/agents/policy-sources.toml", ".codex/skills/code-implementation/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+
+[[sources]]
+id = "code-of-conduct"
+path = "CODE_OF_CONDUCT.md"
+kind = "instructions"
+semantic = true
+references = []
+
+[[sources]]
+id = "token-efficiency"
+path = ".codex/context/token-efficiency.md"
+kind = "context"
+semantic = true
+references = []
+
+[[sources]]
+id = "cross-cutting-skills"
+path = ".codex/context/cross-cutting-skills.md"
+kind = "context"
+semantic = true
+references = ["AGENTS.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md"]
+
+[[sources]]
+id = "runtime-triage"
+path = ".codex/context/runtime-triage.md"
+kind = "context"
+semantic = true
+references = []
+
+[[sources]]
+id = "change-completion"
+path = ".codex/context/change-completion.md"
+kind = "context"
+semantic = true
+references = ["AGENTS.md", ".codex/context/cross-cutting-skills.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/review-pr/SKILL.md"]
+
+[[sources]]
+id = "policy-maintenance"
+path = ".codex/harness/agents/policy-maintenance.md"
+kind = "maintenance"
+semantic = true
+references = ["AGENTS.md", ".codex/harness/agents/run.py", ".codex/harness/agents/cases.toml", ".codex/harness/agents/policy-sources.toml", ".codex/context/change-completion.md"]
+
+[[sources]]
+id = "harness-runner"
+path = ".codex/harness/agents/run.py"
+kind = "harness"
+semantic = false
+references = []
+
+[[sources]]
+id = "harness-tests"
+path = ".codex/harness/agents/test_run.py"
+kind = "harness"
+semantic = false
+references = []
+
+[[sources]]
+id = "harness-cases"
+path = ".codex/harness/agents/cases.toml"
+kind = "harness"
+semantic = false
+references = []
+
+[[sources]]
+id = "policy-source-manifest"
+path = ".codex/harness/agents/policy-sources.toml"
+kind = "harness"
+semantic = true
+references = []
+
+[[sources]]
+id = "code-implementation"
+path = ".codex/skills/code-implementation/SKILL.md"
+kind = "skill"
+semantic = true
+references = ["AGENTS.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+
+[[sources]]
+id = "code-implementation-metadata"
+path = ".codex/skills/code-implementation/agents/openai.yaml"
+kind = "metadata"
+semantic = false
+references = []
+
+[[sources]]
+id = "implementation-rules"
+path = ".codex/skills/code-implementation/references/rules/implementation.md"
+kind = "rules"
+semantic = true
+references = ["CODE_OF_CONDUCT.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md"]
+
+[[sources]]
+id = "testing-rules"
+path = ".codex/skills/code-implementation/references/rules/testing.md"
+kind = "rules"
+semantic = true
+references = ["CODE_OF_CONDUCT.md"]
+
+[[sources]]
+id = "contracts-and-removal"
+path = ".codex/skills/code-implementation/references/rules/contracts-and-removal.md"
+kind = "rules"
+semantic = true
+references = [".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/non-regression.md"]
+
+[[sources]]
+id = "non-regression"
+path = ".codex/skills/code-implementation/references/rules/non-regression.md"
+kind = "rules"
+semantic = true
+references = [".codex/skills/code-implementation/references/rules/testing.md"]
+
+[[sources]]
+id = "code-verification"
+path = ".codex/skills/code-implementation/references/verification.md"
+kind = "verification"
+semantic = true
+references = [".codex/context/token-efficiency.md"]
+
+[[sources]]
+id = "gen-ut"
+path = ".codex/skills/gen-ut/SKILL.md"
+kind = "skill"
+semantic = true
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/gen-ut/references/verification.md", ".codex/skills/code-implementation/SKILL.md"]
+
+[[sources]]
+id = "gen-ut-verification"
+path = ".codex/skills/gen-ut/references/verification.md"
+kind = "verification"
+semantic = true
+references = [".codex/context/token-efficiency.md", ".codex/skills/code-implementation/references/verification.md"]
+
+[[sources]]
+id = "review-pr"
+path = ".codex/skills/review-pr/SKILL.md"
+kind = "skill"
+semantic = true
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/review-pr/references/evidence-access.md", ".codex/skills/review-pr/references/high-risk-review.md", ".codex/skills/review-pr/references/sql-parser-review.md", ".codex/skills/review-pr/references/review-corrections.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+
+[[sources]]
+id = "review-pr-evidence"
+path = ".codex/skills/review-pr/references/evidence-access.md"
+kind = "reference"
+semantic = true
+references = ["AGENTS.md"]
+
+[[sources]]
+id = "review-pr-high-risk"
+path = ".codex/skills/review-pr/references/high-risk-review.md"
+kind = "reference"
+semantic = true
+references = []
+
+[[sources]]
+id = "review-pr-sql-parser"
+path = ".codex/skills/review-pr/references/sql-parser-review.md"
+kind = "reference"
+semantic = true
+references = []
+
+[[sources]]
+id = "review-pr-corrections"
+path = ".codex/skills/review-pr/references/review-corrections.md"
+kind = "reference"
+semantic = true
+references = []
