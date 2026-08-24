@@ -69,6 +69,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -83,12 +84,14 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -136,6 +139,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
             checkDataSources(jobConfig);
+            checkSchemaTableNames(jobConfig.getSchemaTableNames());
             governanceFacade.getJobFacade().getJob().create(jobConfig.getJobId(), jobType.getOption().getJobClass());
             JobConfigurationPOJO jobConfigPOJO = jobConfigManager.convertToJobConfigurationPOJO(jobConfig);
             jobConfigPOJO.setDisabled(true);
@@ -157,6 +161,15 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     
     private Collection<DataNode> getDataNodes(final CDCJobConfiguration jobConfig) {
         return jobConfig.getJobShardingDataNodes().stream().flatMap(each -> each.getEntries().stream()).flatMap(dataNodeEntry -> dataNodeEntry.getDataNodes().stream()).collect(Collectors.toList());
+    }
+    
+    private void checkSchemaTableNames(final Collection<String> schemaTableNames) {
+        Set<ShardingSphereIdentifier> tableNames = new HashSet<>(schemaTableNames.size(), 1F);
+        for (String each : schemaTableNames) {
+            String tableName = each.substring(each.lastIndexOf('.') + 1);
+            ShardingSpherePreconditions.checkState(tableNames.add(new ShardingSphereIdentifier(tableName)),
+                    () -> new PipelineInvalidParameterException(String.format("More than one schema table has the same table name `%s`.", tableName)));
+        }
     }
     
     private YamlCDCJobConfiguration getYamlCDCJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
