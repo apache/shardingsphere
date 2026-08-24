@@ -47,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @PipelineE2ESettings(database = {
@@ -56,6 +57,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
     private static final String SOURCE_TABLE_NAME = "t_order";
+    
+    private static final long CROSS_SCHEMA_SENTINEL_ORDER_ID = 20000L;
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -68,6 +71,8 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(containerComposer.getSourceDataSource(),
                     containerComposer.getDatabaseType(), containerComposer.createQualifiedTableWithSchema(SOURCE_TABLE_NAME).format());
             orderDAO.createTable();
+            IntPkLargeOrderDAO publicOrderDAO = new IntPkLargeOrderDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), "public." + SOURCE_TABLE_NAME);
+            publicOrderDAO.createTable();
             IntPkOrderItemDAO orderItemDAO = new IntPkOrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), PipelineContainerComposer.SCHEMA_NAME);
             orderItemDAO.createTable();
             containerComposer.createSourceTableIndexList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
@@ -85,6 +90,8 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.getJobIdByTableName("ds_0.test." + SOURCE_TABLE_NAME);
             distSQLFacade.waitJobPreparingStageFinished(jobId);
+            distSQLFacade.waitJobIncrementalStageStarted(jobId);
+            publicOrderDAO.insert(CROSS_SCHEMA_SENTINEL_ORDER_ID, 1, "OK");
             String qualifiedTableName = String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
             containerComposer.startIncrementTask(new E2EIncrementalTask(containerComposer.getSourceDataSource(), qualifiedTableName, new SnowflakeKeyGenerateAlgorithm(),
                     containerComposer.getDatabaseType(), 20));
@@ -93,6 +100,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             // TODO Insert new record in t_order_item
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertRecordExists(jdbcDataSource, qualifiedTableName, 10000);
+            assertRecordAbsent(jdbcDataSource, qualifiedTableName, CROSS_SCHEMA_SENTINEL_ORDER_ID);
             checkOrderMigration(distSQLFacade, jobId);
             startMigrationWithSchema(containerComposer, "t_order_item", "t_order_item");
             checkOrderItemMigration(distSQLFacade);
@@ -103,6 +111,15 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             containerComposer.assertGreaterThanOrderTableInitRows(jdbcDataSource, PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1, PipelineContainerComposer.SCHEMA_NAME);
             assertThat("Replication slots count doesn't match, it might be not cleaned, run `SELECT * FROM pg_replication_slots;` in PostgreSQL to verify",
                     getReplicationSlotsCount(containerComposer), is(replicationSlotsCount));
+        }
+    }
+    
+    private void assertRecordAbsent(final DataSource dataSource, final String tableName, final long orderId) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(String.format("SELECT 1 FROM %s WHERE order_id = %d", tableName, orderId))) {
+            assertFalse(resultSet.next(), "Cross-schema sentinel must not be migrated");
         }
     }
     

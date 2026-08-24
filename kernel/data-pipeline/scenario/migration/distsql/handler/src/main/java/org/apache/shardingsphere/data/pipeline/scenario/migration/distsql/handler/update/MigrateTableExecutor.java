@@ -28,6 +28,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJ
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationSourceTargetEntry;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.MigrateTableStatement;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
@@ -68,19 +70,26 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
     private Collection<MigrationSourceTargetEntry> getMigrationSourceTargetEntries(final PipelineContextKey contextKey, final MigrateTableStatement sqlStatement) {
         Collection<MigrationSourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
-            String schemaName = null == each.getSourceSchemaName() ? getDefaultSchemaName(contextKey, each.getSourceDatabaseName()).orElse(null) : each.getSourceSchemaName();
+            String schemaName = getSchemaName(contextKey, each.getSourceDatabaseName(), each.getSourceSchemaName()).orElse(null);
             result.add(new MigrationSourceTargetEntry(new DataNode(each.getSourceDatabaseName(), schemaName, each.getSourceTableName()), each.getTargetTableName()));
         }
         return result;
     }
     
-    private Optional<String> getDefaultSchemaName(final PipelineContextKey contextKey, final String sourceDatabaseName) {
-        if (new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
-            Map<String, DataSourcePoolProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(contextKey, "MIGRATION");
-            Map<String, Object> sourceDataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToMap(metaDataDataSource.get(sourceDatabaseName));
-            return Optional.of(PipelineSchemaUtils.getDefaultSchema(new StandardPipelineDataSourceConfiguration(sourceDataSourcePoolProps)));
+    private Optional<String> getSchemaName(final PipelineContextKey contextKey, final String sourceDatabaseName, final String sourceSchemaName) {
+        Map<String, DataSourcePoolProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(contextKey, "MIGRATION");
+        DataSourcePoolProperties sourceDataSourcePoolProps = metaDataDataSource.get(sourceDatabaseName);
+        if (null == sourceDataSourcePoolProps) {
+            return Optional.ofNullable(sourceSchemaName);
         }
-        return Optional.empty();
+        Map<String, Object> sourceDataSourceProps = new YamlDataSourceConfigurationSwapper().swapToMap(sourceDataSourcePoolProps);
+        StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
+        if (!new DatabaseTypeRegistry(sourceDataSourceConfig.getDatabaseType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
+            return Optional.ofNullable(sourceSchemaName);
+        }
+        return Optional.ofNullable(null == sourceSchemaName
+                ? PipelineSchemaUtils.getDefaultSchema(sourceDataSourceConfig)
+                : IdentifierNormalizeEngine.normalize(IdentifierNormalizeEngine.resolvePolicy(sourceDataSourceConfig.getDatabaseType(), null, IdentifierScope.SCHEMA), sourceSchemaName));
     }
     
     @Override

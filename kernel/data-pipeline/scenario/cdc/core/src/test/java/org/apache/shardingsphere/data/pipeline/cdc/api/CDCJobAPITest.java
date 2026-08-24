@@ -197,14 +197,15 @@ class CDCJobAPITest {
     @Test
     void assertCreateSkipsExistingJob() {
         putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
-        CDCJobConfiguration jobConfig = createJobConfiguration(Collections.singletonList("foo_readwrite_ds"), true);
+        List<String> schemaTableNames = Arrays.asList("foo_schema.foo_tbl", "bar_schema.FOO_TBL");
+        CDCJobConfiguration jobConfig = createJobConfiguration(Collections.singletonList("foo_readwrite_ds"), true, schemaTableNames);
         PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
         when(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job")).thenReturn(true);
         when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
         try (
                 MockedConstruction<YamlCDCJobConfigurationSwapper> ignored = mockConstruction(YamlCDCJobConfigurationSwapper.class,
                         (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig))) {
-            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(Collections.singletonList("foo_schema.foo_tbl")), true,
+            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(schemaTableNames), true,
                     Collections.singletonMap("foo_schema.foo_tbl", Collections.singletonList(new DataNode("foo_readwrite_ds.foo_tbl"))), false);
             assertThat(jobAPI.create(param, CDCSinkType.SOCKET, new Properties()), is("foo_job"));
             verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
@@ -215,7 +216,8 @@ class CDCJobAPITest {
     @Test
     void assertCreateThrowsWhenDataSourceDoesNotExist() throws ReflectiveOperationException {
         putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
-        CDCJobConfiguration jobConfig = createJobConfiguration(Arrays.asList("bar_ds", "foo_readwrite_ds"), true);
+        List<String> schemaTableNames = Arrays.asList("foo_schema.foo_tbl", "bar_schema.FOO_TBL");
+        CDCJobConfiguration jobConfig = createJobConfiguration(Arrays.asList("bar_ds", "foo_readwrite_ds"), true, schemaTableNames);
         PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
         when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
         PipelineJobConfigurationManager jobConfigManager = mock(PipelineJobConfigurationManager.class);
@@ -224,10 +226,29 @@ class CDCJobAPITest {
         try (
                 MockedConstruction<YamlCDCJobConfigurationSwapper> ignored = mockConstruction(YamlCDCJobConfigurationSwapper.class,
                         (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig))) {
-            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(Collections.singletonList("foo_schema.foo_tbl")), true,
+            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(schemaTableNames), true,
                     Collections.singletonMap("foo_schema.foo_tbl", Arrays.asList(new DataNode("bar_ds.foo_tbl"), new DataNode("foo_readwrite_ds.foo_tbl"))), false);
             PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
             assertThat(actual.getMessage(), containsString("foo_readwrite_ds"));
+            verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
+            verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
+        }
+    }
+    
+    @Test
+    void assertCreateThrowsWhenSchemaTableNamesHaveDuplicateBareTable() {
+        putContext(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
+        List<String> schemaTableNames = Arrays.asList("schema_a.t", "schema_b.T");
+        CDCJobConfiguration jobConfig = createJobConfiguration(Collections.singletonList("foo_ds"), true, schemaTableNames);
+        PipelineGovernanceFacade governanceFacade = mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS);
+        when(PipelineAPIFactory.getPipelineGovernanceFacade(any())).thenReturn(governanceFacade);
+        try (
+                MockedConstruction<YamlCDCJobConfigurationSwapper> ignored = mockConstruction(YamlCDCJobConfigurationSwapper.class,
+                        (mock, context) -> when(mock.swapToObject(any(YamlCDCJobConfiguration.class))).thenReturn(jobConfig))) {
+            StreamDataParameter param = new StreamDataParameter("foo_db", new LinkedList<>(schemaTableNames), true,
+                    Collections.singletonMap("t", Collections.singletonList(new DataNode("foo_ds.t"))), false);
+            PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.create(param, CDCSinkType.SOCKET, new Properties()));
+            assertThat(actual.getMessage(), is("There is invalid parameter value. More than one schema table has the same table name `T`."));
             verify(governanceFacade.getJobFacade().getJob(), never()).create(anyString(), any());
             verify(governanceFacade.getJobFacade().getConfiguration(), never()).persist(anyString(), any());
         }
@@ -441,6 +462,10 @@ class CDCJobAPITest {
     }
     
     private CDCJobConfiguration createJobConfiguration(final List<String> dataSourceNames, final boolean full) {
+        return createJobConfiguration(dataSourceNames, full, Collections.singletonList("foo_schema.foo_tbl"));
+    }
+    
+    private CDCJobConfiguration createJobConfiguration(final List<String> dataSourceNames, final boolean full, final List<String> schemaTableNames) {
         Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(2, 1F);
         dataSources.put("foo_ds", createStandardDataSourceProperties());
         dataSources.put("bar_ds", createStandardDataSourceProperties());
@@ -448,7 +473,7 @@ class CDCJobAPITest {
         List<JobDataNodeLine> jobDataNodeLines = dataSourceNames.stream().map(
                 each -> new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("foo_tbl", Collections.singletonList(new DataNode(each + ".foo_tbl"))))))
                 .collect(Collectors.toList());
-        return new CDCJobConfiguration("foo_job", "foo_db", Collections.singletonList("foo_schema.foo_tbl"), full, mock(),
+        return new CDCJobConfiguration("foo_job", "foo_db", schemaTableNames, full, mock(),
                 dataSourceConfig, jobDataNodeLines.get(0), jobDataNodeLines, false, new CDCJobConfiguration.SinkConfiguration(CDCSinkType.SOCKET, new Properties()), 1, 0);
     }
     
