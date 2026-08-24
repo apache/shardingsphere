@@ -36,11 +36,11 @@ public final class ExpectedWindowItem extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "window-name")
     private String windowName;
-
+    
     @XmlElementWrapper(name = "partition-by")
     @XmlElement(name = "column")
     private final Collection<ExpectedColumn> partitionByColumns = new LinkedList<>();
-
+    
     @XmlElement(name = "order-by")
     private ExpectedOrderByClause orderByClause;
     

@@ -5240,6 +5240,9 @@
     <select sql-case-id="select_window_max_distinct_doris" db-types="Doris">
         <projections start-index="7" stop-index="72">
             <aggregation-distinct-projection type="MAX" expression="MAX(DISTINCT order_id) OVER (PARTITION BY user_id)" distinct-inner-expression="order_id" alias="max_order_id" start-index="7" stop-index="56">
+                <parameters>
+                    <column name="order_id" start-index="20" stop-index="27" />
+                </parameters>
                 <window-item start-index="30" stop-index="56">
                     <partition-by>
                         <column name="user_id" start-index="49" stop-index="55" />
@@ -5254,6 +5257,9 @@
     <select sql-case-id="select_window_max_all_doris" db-types="Doris">
         <projections start-index="7" stop-index="67">
             <aggregation-projection type="MAX" expression="MAX(ALL order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="51" alias="max_order_id">
+                <parameters>
+                    <column name="order_id" start-index="15" stop-index="22" />
+                </parameters>
                 <window-item start-index="25" stop-index="51">
                     <partition-by>
                         <column name="user_id" start-index="44" stop-index="50" />

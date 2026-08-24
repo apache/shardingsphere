@@ -1105,9 +1105,16 @@
         <projections start-index="7" stop-index="98">
             <aggregation-projection type="SUM" expression="(amount) OVER (PARTITION BY user_id ORDER BY id ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)" start-index="7" stop-index="98">
                 <window-item start-index="24" stop-index="98">
+                    <partition-by>
+                        <column name="user_id" start-index="38" stop-index="44" />
+                    </partition-by>
                     <order-by start-index="46" stop-index="56">
                         <column-item name="id" order-direction="ASC" start-index="55" stop-index="56" />
                     </order-by>
+                    <!-- HiveDMLStatementVisitor#visitWindowSpecification uses frameClause().getText(), which strips whitespace between tokens -->
+                    <frame>
+                        <common-expression text="ROWSBETWEEN1PRECEDINGANDCURRENTROW" start-index="58" stop-index="97" />
+                    </frame>
                 </window-item>
                 <parameter>
                     <column name="amount" start-index="11" stop-index="16" />
@@ -1607,6 +1614,9 @@
                     <order-by start-index="49" stop-index="64">
                         <column-item name="item_id" order-direction="ASC" start-index="58" stop-index="64" />
                     </order-by>
+                    <frame>
+                        <common-expression text="ROWSBETWEEN1PRECEDINGANDCURRENTROW" start-index="66" stop-index="105" />
+                    </frame>
                 </window-item>
             </aggregation-projection>
         </projections>

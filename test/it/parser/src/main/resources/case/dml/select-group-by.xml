@@ -508,7 +508,12 @@
             </expr>
         </having>
         <window start-index="102" stop-index="135">
-            <window-item start-index="109" stop-index="135"/>
+            <window-item start-index="109" stop-index="135">
+                <window-name>w</window-name>
+                <partition-by>
+                    <column name="user_id" start-index="128" stop-index="134" />
+                </partition-by>
+            </window-item>
         </window>
     </select>
 

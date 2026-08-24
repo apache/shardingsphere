@@ -92,7 +92,7 @@ public final class WindowClauseAssert {
         assertNotNull(actual.getWindowName(), assertContext.getText("Actual window item name should exist."));
         assertThat(assertContext.getText("Window item name assertion error: "), actual.getWindowName().getValue(), is(expected.getWindowName()));
     }
-
+    
     private static void assertPartitionBy(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
         Collection<ExpectedColumn> expectedPartitionByColumns = expected.getPartitionByColumns();
         if (expectedPartitionByColumns.isEmpty()) {
