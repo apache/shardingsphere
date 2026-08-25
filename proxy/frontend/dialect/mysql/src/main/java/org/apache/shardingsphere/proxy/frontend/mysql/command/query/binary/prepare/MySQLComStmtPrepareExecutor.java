@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
@@ -228,7 +227,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getCurrentDatabaseName);
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
         return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema)
-                .orElseGet(() -> database.getSchema(new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName())));
+                .orElseGet(() -> database.findDefaultSchema().orElse(null));
     }
     
     private int calculateColumnDefinitionFlag(final ShardingSphereColumn column) {
