@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
@@ -48,6 +47,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -238,8 +238,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void processReturnValues(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                      final Collection<FirebirdSQLInfoPacketType> requestedItems) {
         String databaseName = connectionSession.getCurrentDatabaseName();
-        String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName);
-        ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        ShardingSphereSchema schema = database.findDefaultSchema().orElse(null);
         Collection<Projection> projections = getProjections(sqlStatementContext, schema);
         int columnCount = 0;
         for (Projection each : projections) {
@@ -327,10 +327,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Collection<ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
         int parametersCount = sqlStatementContext.getSqlStatement().getParameterMarkers().size();
         String databaseName = connectionSession.getCurrentDatabaseName();
-        String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName);
+        ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).findDefaultSchema().orElse(null);
         int columnCount = 0;
         for (ColumnSegment columnSegment : affectedColumns) {
-            ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
+            ShardingSphereTable table = schema.getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
             ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
             processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
         }
@@ -347,10 +347,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             affectedColumns.addAll(processInsertValueContext(sqlStatementContext, context));
         }
         String databaseName = connectionSession.getCurrentDatabaseName();
-        String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName);
+        ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).findDefaultSchema().orElse(null);
         int columnCount = 0;
         for (String tableName : tableNames) {
-            ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName);
+            ShardingSphereTable table = schema.getTable(tableName);
             for (String columnName : affectedColumns) {
                 ShardingSphereColumn column = table.getColumn(columnName);
                 processColumn(describeColumns, requestedItems, table, column, null, null, ++columnCount);

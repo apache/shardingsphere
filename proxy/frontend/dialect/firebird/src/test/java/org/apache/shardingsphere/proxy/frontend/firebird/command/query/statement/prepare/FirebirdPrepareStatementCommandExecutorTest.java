@@ -71,6 +71,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -78,7 +79,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -121,7 +124,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(packet.getStatementId()).thenReturn(1);
         when(packet.nextItem()).thenReturn(true, false);
         when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts()).thenReturn(createMetaDataContexts());
+        MetaDataContexts metaDataContexts = createMetaDataContexts();
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
     }
     
     @AfterEach
@@ -138,9 +142,11 @@ class FirebirdPrepareStatementCommandExecutorTest {
         ShardingSphereColumn blobColumn = new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column, blobColumn), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase(
+        ShardingSphereDatabase database = spy(new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
-                new ConfigurationProperties(new Properties()));
+                new ConfigurationProperties(new Properties())));
+        doReturn(Optional.of(schema)).when(database).findDefaultSchema();
+        doReturn(null).when(database).getSchema("FOO_DB");
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), globalRuleMetaData, new ConfigurationProperties(new Properties()));
         return new MetaDataContexts(metaData, new ShardingSphereStatistics());
