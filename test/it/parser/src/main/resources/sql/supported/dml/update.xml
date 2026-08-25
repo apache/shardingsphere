@@ -84,4 +84,12 @@
     <sql-case id="update_with_where_sql92" value="UPDATE t_order SET status = 'x' WHERE order_id = 1" db-types="SQL92" />
     <sql-case id="update_set_default_oracle" value="UPDATE employees SET status = DEFAULT WHERE employee_id = 1" db-types="Oracle" />
     <sql-case id="update_table_collection_oracle" value="UPDATE TABLE(SELECT nested_col FROM t_nested) SET nested_col = DEFAULT" db-types="Oracle" />
+    <sql-case id="update_table_variable_join_bracket_delimited_same_text_alias" value="UPDATE @MyTable SET Remark = 'x' FROM t_user AS u JOIN [@MyTable] AS [@MyTable] ON u.user_id = [@MyTable].id" db-types="SQLServer" />
+    <sql-case id="update_table_variable_join_quote_delimited_same_text_alias" value="UPDATE @MyTable SET Remark = ? FROM t_user AS u JOIN &quot;@MyTable&quot; AS &quot;@MyTable&quot; ON u.user_id = &quot;@MyTable&quot;.id" db-types="SQLServer" />
+    <sql-case id="update_table_variable_from_bracket_delimited_same_text_alias" value="UPDATE @MyTable SET Remark = 'x' FROM [@MyTable] AS [@MyTable]" db-types="SQLServer" />
+    <sql-case id="update_bracket_delimited_from_table_variable_same_text_alias" value="UPDATE [@MyTable] SET Remark = 'x' FROM @MyTable AS [@MyTable]" db-types="SQLServer" />
+    <sql-case id="update_table_variable_from_quote_delimited_same_text_alias" value="UPDATE @MyTable SET Remark = 'x' FROM &quot;@MyTable&quot; AS &quot;@MyTable&quot;" db-types="SQLServer" />
+    <sql-case id="update_quote_delimited_from_table_variable_same_text_alias" value="UPDATE &quot;@MyTable&quot; SET Remark = 'x' FROM @MyTable AS &quot;@MyTable&quot;" db-types="SQLServer" />
+    <sql-case id="update_table_variable_from_physical_table_bracket_delimited_same_text_alias" value="UPDATE @MyTable SET Remark = 'x' FROM t_user AS [@MyTable]" db-types="SQLServer" />
+    <sql-case id="update_table_variable_from_physical_table_quote_delimited_same_text_alias" value="UPDATE @MyTable SET Remark = 'x' FROM t_user AS &quot;@MyTable&quot;" db-types="SQLServer" />
 </sql-cases>

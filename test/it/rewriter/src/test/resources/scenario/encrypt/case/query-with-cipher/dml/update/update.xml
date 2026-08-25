@@ -299,4 +299,74 @@
         <input sql="UPDATE dbo.&quot;@MyTable&quot; SET Remark = 'x' FROM @MyTable AS x" />
         <output sql="UPDATE dbo.&quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS x" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_bracket_delimited_same_text_alias_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM [@MyTable] AS [@MyTable]" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM [@MyTable] AS [@MyTable]" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_bracket_delimited_same_text_alias_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = ? FROM [@MyTable] AS [@MyTable]" parameters="x" />
+        <output sql="UPDATE @MyTable SET Remark = ? FROM [@MyTable] AS [@MyTable]" parameters="x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_physical_target_with_table_variable_source_and_bracket_delimited_same_text_alias_for_literals" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET Remark = 'x' FROM @MyTable AS [@MyTable]" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS [@MyTable]" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_bracket_delimited_physical_target_with_table_variable_source_and_bracket_delimited_same_text_alias_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE [@MyTable] SET Remark = ? FROM @MyTable AS [@MyTable]" parameters="x" />
+        <output sql="UPDATE [@MyTable] SET [remark_cipher] = ? FROM @MyTable AS [@MyTable]" parameters="encrypt_x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_quote_delimited_same_text_alias_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM &quot;@MyTable&quot; AS &quot;@MyTable&quot;" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM &quot;@MyTable&quot; AS &quot;@MyTable&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_quote_delimited_same_text_alias_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = ? FROM &quot;@MyTable&quot; AS &quot;@MyTable&quot;" parameters="x" />
+        <output sql="UPDATE @MyTable SET Remark = ? FROM &quot;@MyTable&quot; AS &quot;@MyTable&quot;" parameters="x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_physical_target_with_table_variable_source_and_quote_delimited_same_text_alias_for_literals" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET Remark = 'x' FROM @MyTable AS &quot;@MyTable&quot;" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = 'encrypt_x' FROM @MyTable AS &quot;@MyTable&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_quote_delimited_physical_target_with_table_variable_source_and_quote_delimited_same_text_alias_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE &quot;@MyTable&quot; SET Remark = ? FROM @MyTable AS &quot;@MyTable&quot;" parameters="x" />
+        <output sql="UPDATE &quot;@MyTable&quot; SET [remark_cipher] = ? FROM @MyTable AS &quot;@MyTable&quot;" parameters="encrypt_x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_join_and_bracket_delimited_same_text_alias_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM t_user AS u JOIN [@MyTable] AS [@MyTable] ON u.user_id = [@MyTable].id" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM t_user AS u JOIN [@MyTable] AS [@MyTable] ON u.user_id = [@MyTable].id" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_join_and_quote_delimited_same_text_alias_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = ? FROM t_user AS u JOIN &quot;@MyTable&quot; AS &quot;@MyTable&quot; ON u.user_id = &quot;@MyTable&quot;.id" parameters="x" />
+        <output sql="UPDATE @MyTable SET Remark = ? FROM t_user AS u JOIN &quot;@MyTable&quot; AS &quot;@MyTable&quot; ON u.user_id = &quot;@MyTable&quot;.id" parameters="x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_physical_source_and_bracket_delimited_same_text_alias_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM ScrapReason AS [@MyTable]" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM ScrapReason AS [@MyTable]" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_physical_source_and_bracket_delimited_same_text_alias_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = ? FROM ScrapReason AS [@MyTable]" parameters="x" />
+        <output sql="UPDATE @MyTable SET Remark = ? FROM ScrapReason AS [@MyTable]" parameters="x" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_physical_source_and_quote_delimited_same_text_alias_for_literals" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = 'x' FROM ScrapReason AS &quot;@MyTable&quot;" />
+        <output sql="UPDATE @MyTable SET Remark = 'x' FROM ScrapReason AS &quot;@MyTable&quot;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_table_variable_target_with_physical_source_and_quote_delimited_same_text_alias_for_parameters" db-types="SQLServer">
+        <input sql="UPDATE @MyTable SET Remark = ? FROM ScrapReason AS &quot;@MyTable&quot;" parameters="x" />
+        <output sql="UPDATE @MyTable SET Remark = ? FROM ScrapReason AS &quot;@MyTable&quot;" parameters="x" />
+    </rewrite-assertion>
 </rewrite-assertions>

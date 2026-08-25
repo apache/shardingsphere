@@ -1776,7 +1776,10 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return false;
         }
         if (fromSegment instanceof SimpleTableSegment) {
-            return targetName.equalsIgnoreCase(fromSegment.getAliasName().orElse(null));
+            IdentifierValue targetIdentifier = targetTable.getTableName().getIdentifier();
+            IdentifierValue fromTableName = ((SimpleTableSegment) fromSegment).getTableName().getIdentifier();
+            return fromSegment.getAlias().filter(alias -> targetName.equalsIgnoreCase(alias.getValue()) && isSameTableVariableIdentity(targetIdentifier, alias)).isPresent()
+                    && (!targetName.equalsIgnoreCase(fromTableName.getValue()) || isSameTableVariableIdentity(targetIdentifier, fromTableName));
         }
         if (fromSegment instanceof JoinTableSegment) {
             return isAliasInFromClause(targetTable, targetName, ((JoinTableSegment) fromSegment).getLeft())

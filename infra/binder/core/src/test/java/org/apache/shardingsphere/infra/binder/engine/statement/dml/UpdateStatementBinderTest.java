@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -798,6 +799,145 @@ class UpdateStatementBinderTest {
                 Arguments.of("table variable target with schema qualified aliased quote delimited physical source", QuoteCharacter.QUOTE, true, "src"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("sameTextDelimitedAliasArguments")
+    void assertBindSameTextDelimitedAliasDoesNotConflateTableVariableAndPhysicalTable(final String name, final boolean variableTarget, final QuoteCharacter quoteCharacter) {
+        IdentifierValue delimitedName = new IdentifierValue("@MyTable", quoteCharacter);
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, variableTarget ? delimitedName : new IdentifierValue("@MyTable")));
+        fromTable.setAlias(new AliasSegment(0, 0, delimitedName));
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, variableTarget ? new IdentifierValue("@MyTable") : delimitedName));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Remark"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, "x")))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(variableTarget ? QuoteCharacter.NONE : quoteCharacter));
+        SimpleTableSegment boundFrom = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(boundFrom.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundFrom.getTableName().getIdentifier().getQuoteCharacter(), is(variableTarget ? quoteCharacter : QuoteCharacter.NONE));
+        assertThat(boundFrom.getAlias().get().getValue(), is("@MyTable"));
+        assertThat(boundFrom.getAlias().get().getQuoteCharacter(), is(quoteCharacter));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getQuoteCharacter(), is(variableTarget ? QuoteCharacter.NONE : quoteCharacter));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Remark"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getTableSourceType(), is(variableTarget ? TableSourceType.TEMPORARY_TABLE : TableSourceType.PHYSICAL_TABLE));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("@MyTable")));
+        if (variableTarget) {
+            assertThat(((SimpleTableSegment) updateStatementContext.getSqlStatement().getTable()).getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.NONE));
+        }
+    }
+    
+    private static Stream<Arguments> sameTextDelimitedAliasArguments() {
+        return Stream.of(
+                Arguments.of("table variable target with bracket delimited same-text alias", true, QuoteCharacter.BRACKETS),
+                Arguments.of("table variable target with quote delimited same-text alias", true, QuoteCharacter.QUOTE),
+                Arguments.of("bracket delimited physical target with table variable source and bracket delimited same-text alias", false, QuoteCharacter.BRACKETS),
+                Arguments.of("quote delimited physical target with table variable source and quote delimited same-text alias", false, QuoteCharacter.QUOTE));
+    }
+    
+    @Test
+    void assertBindTableVariableTargetWithJoinAndBracketDelimitedSameTextAliasKeepsVariableTarget() {
+        UpdateStatement actual = bindTableVariableTargetWithJoinAndDelimitedSameTextAlias(QuoteCharacter.BRACKETS, new LiteralExpressionSegment(0, 0, "x"));
+        assertTableVariableTargetWithJoinAndDelimitedSameTextAlias(actual, QuoteCharacter.BRACKETS);
+    }
+    
+    @Test
+    void assertBindTableVariableTargetWithJoinAndQuoteDelimitedSameTextAliasKeepsVariableTargetForParameter() {
+        UpdateStatement actual = bindTableVariableTargetWithJoinAndDelimitedSameTextAlias(QuoteCharacter.QUOTE, new ParameterMarkerExpressionSegment(0, 0, 0));
+        assertTableVariableTargetWithJoinAndDelimitedSameTextAlias(actual, QuoteCharacter.QUOTE);
+    }
+    
+    private UpdateStatement bindTableVariableTargetWithJoinAndDelimitedSameTextAlias(final QuoteCharacter quoteCharacter, final ExpressionSegment setValue) {
+        IdentifierValue delimitedName = new IdentifierValue("@MyTable", quoteCharacter);
+        SimpleTableSegment userTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")));
+        userTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("u")));
+        SimpleTableSegment physicalTable = new SimpleTableSegment(new TableNameSegment(0, 0, delimitedName));
+        physicalTable.setAlias(new AliasSegment(0, 0, delimitedName));
+        ColumnSegment userIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        userIdColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("u")));
+        ColumnSegment physicalIdColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        physicalIdColumn.setOwner(new OwnerSegment(0, 0, delimitedName));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(userTable);
+        fromJoin.setRight(physicalTable);
+        fromJoin.setJoinType("JOIN");
+        fromJoin.setCondition(new BinaryOperationExpression(0, 0, userIdColumn, physicalIdColumn, "=", "u.user_id = id"));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Remark"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), setValue))))
+                .targetTableIsFromAlias(true)
+                .build();
+        return new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+    }
+    
+    private void assertTableVariableTargetWithJoinAndDelimitedSameTextAlias(final UpdateStatement actual, final QuoteCharacter quoteCharacter) {
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.NONE));
+        JoinTableSegment boundFrom = (JoinTableSegment) actual.getFrom().get();
+        SimpleTableSegment boundPhysicalTable = (SimpleTableSegment) boundFrom.getRight();
+        assertThat(boundPhysicalTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundPhysicalTable.getTableName().getIdentifier().getQuoteCharacter(), is(quoteCharacter));
+        assertThat(boundPhysicalTable.getAlias().get().getValue(), is("@MyTable"));
+        assertThat(boundPhysicalTable.getAlias().get().getQuoteCharacter(), is(quoteCharacter));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getQuoteCharacter(), is(QuoteCharacter.NONE));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("Remark"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("t_user", "@MyTable"))));
+        assertThat(((SimpleTableSegment) updateStatementContext.getSqlStatement().getTable()).getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.NONE));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("delimitedSameTextAliasOverPhysicalSourceArguments")
+    void assertBindTableVariableTargetWithDelimitedSameTextAliasOverPhysicalSourceKeepsVariableTarget(final String name, final QuoteCharacter quoteCharacter) {
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")));
+        fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("@MyTable", quoteCharacter)));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("Remark"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable"))))
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, "x")))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaDataWithDelimitedAtSignPhysicalTable(), "foo_db", new HintValueContext(), updateStatement));
+        SimpleTableSegment boundTable = (SimpleTableSegment) actual.getTable();
+        assertThat(boundTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(boundTable.getTableName().getIdentifier().getQuoteCharacter(), is(QuoteCharacter.NONE));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTable"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getQuoteCharacter(), is(QuoteCharacter.NONE));
+        assertThat(actualSetColumn.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+        UpdateStatementContext updateStatementContext = new UpdateStatementContext(actual);
+        assertThat(updateStatementContext.getTablesContext().getTableNames(), is(Collections.singleton("t_user")));
+    }
+    
+    private static Stream<Arguments> delimitedSameTextAliasOverPhysicalSourceArguments() {
+        return Stream.of(
+                Arguments.of("table variable target with bracket delimited same-text alias over physical source", QuoteCharacter.BRACKETS),
+                Arguments.of("table variable target with quote delimited same-text alias over physical source", QuoteCharacter.QUOTE));
+    }
+    
     @Test
     void assertBindAliasedTableVariableTarget() {
         UpdateStatement updateStatement = createAliasedTableVariableTargetUpdateStatement();
@@ -957,13 +1097,23 @@ class UpdateStatementBinderTest {
         when(dboSchema.containsTable("@MyTable")).thenReturn(true);
         when(dboSchema.getTable(bracketAtSignTable).getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("Status", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)));
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)));
         when(dboSchema.getTable(quoteAtSignTable).getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("Status", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)));
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)));
         when(dboSchema.getTable("@MyTable").getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("Status", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)));
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)));
+        IdentifierValue tUser = new IdentifierValue("t_user");
+        when(dboSchema.containsTable(tUser)).thenReturn(true);
+        when(dboSchema.containsTable("t_user")).thenReturn(true);
+        when(dboSchema.getTable(tUser).getAllColumns()).thenReturn(Collections.singletonList(
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false)));
+        when(dboSchema.getTable("t_user").getAllColumns()).thenReturn(Collections.singletonList(
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false)));
         when(humanResourcesSchema.getName()).thenReturn("HumanResources");
         when(humanResourcesSchema.containsTable(employee)).thenReturn(true);
         when(humanResourcesSchema.containsTable("Employee")).thenReturn(true);

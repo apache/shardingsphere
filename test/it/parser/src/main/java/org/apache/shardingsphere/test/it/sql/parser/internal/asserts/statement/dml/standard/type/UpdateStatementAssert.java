@@ -56,6 +56,7 @@ public final class UpdateStatementAssert {
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
+        assertTargetTableIsFromAlias(assertContext, actual, expected);
         assertTable(assertContext, actual, expected);
         assertSetClause(assertContext, actual, expected);
         assertFromClause(assertContext, actual, expected);
@@ -64,6 +65,12 @@ public final class UpdateStatementAssert {
         assertLimitClause(assertContext, actual, expected);
         assertOptionHint(assertContext, actual, expected);
         assertOutputClause(assertContext, actual, expected);
+    }
+    
+    private static void assertTargetTableIsFromAlias(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
+        if (null != expected.getTargetTableIsFromAlias()) {
+            assertThat(assertContext.getText("Target table is from alias assertion error: "), actual.isTargetTableIsFromAlias(), is(expected.getTargetTableIsFromAlias()));
+        }
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {

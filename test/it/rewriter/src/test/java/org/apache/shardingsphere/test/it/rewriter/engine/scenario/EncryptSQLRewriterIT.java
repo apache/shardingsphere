@@ -100,7 +100,8 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("OrderDate", Types.DATE, false, false, false, true, false, false),
                 new ShardingSphereColumn("SubTotal", Types.DECIMAL, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("@MyTable", Arrays.asList(
-                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("Remark", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         Collection<ShardingSphereSchema> result = new LinkedList<>();
         result.add(new ShardingSphereSchema(schemaName, mock(DatabaseType.class), tables, Collections.emptyList()));
         Collection<ShardingSphereTable> salesSchemaTables = new LinkedList<>();

@@ -359,7 +359,7 @@ public final class TableExtractor {
     
     private boolean isTargetMatchedInFrom(final SimpleTableSegment targetTable, final TableSegment fromSegment, final UpdateStatement updateStatement) {
         if (fromSegment instanceof SimpleTableSegment) {
-            return matchesFromAlias(targetTable, (SimpleTableSegment) fromSegment) || matchesFromTableNameWithAlias(targetTable, (SimpleTableSegment) fromSegment, updateStatement);
+            return matchesFromAlias(targetTable, (SimpleTableSegment) fromSegment, updateStatement) || matchesFromTableNameWithAlias(targetTable, (SimpleTableSegment) fromSegment, updateStatement);
         }
         if (fromSegment instanceof JoinTableSegment) {
             return isTargetMatchedInFrom(targetTable, ((JoinTableSegment) fromSegment).getLeft(), updateStatement)
@@ -368,9 +368,13 @@ public final class TableExtractor {
         return false;
     }
     
-    private boolean matchesFromAlias(final SimpleTableSegment targetTable, final SimpleTableSegment fromTable) {
+    private boolean matchesFromAlias(final SimpleTableSegment targetTable, final SimpleTableSegment fromTable, final UpdateStatement updateStatement) {
+        IdentifierValue targetIdentifier = targetTable.getTableName().getIdentifier();
         return !targetTable.getOwner().isPresent()
-                && fromTable.getAliasName().map(each -> each.equalsIgnoreCase(targetTable.getTableName().getIdentifier().getValue())).orElse(false);
+                && fromTable.getAlias().filter(alias -> alias.getValue().equalsIgnoreCase(targetIdentifier.getValue())
+                        && isSameTableVariableIdentity(targetIdentifier, alias, updateStatement)).isPresent()
+                && (!targetIdentifier.getValue().equalsIgnoreCase(fromTable.getTableName().getIdentifier().getValue())
+                        || isSameTableVariableIdentity(targetIdentifier, fromTable.getTableName().getIdentifier(), updateStatement));
     }
     
     private boolean matchesFromTableNameWithAlias(final SimpleTableSegment targetTable, final SimpleTableSegment fromTable, final UpdateStatement updateStatement) {

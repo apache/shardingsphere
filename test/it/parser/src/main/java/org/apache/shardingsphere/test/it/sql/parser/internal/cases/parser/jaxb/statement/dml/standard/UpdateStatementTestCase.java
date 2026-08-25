@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.where.ExpectedWhereClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedWithClause;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -37,6 +38,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class UpdateStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "target-table-is-from-alias")
+    private Boolean targetTableIsFromAlias;
     
     @XmlElement(name = "with")
     private ExpectedWithClause withClause;

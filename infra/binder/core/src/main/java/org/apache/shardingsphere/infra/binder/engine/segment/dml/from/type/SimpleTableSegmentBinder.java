@@ -58,8 +58,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
@@ -260,17 +262,27 @@ public final class SimpleTableSegmentBinder {
         if (segment.getAliasName().isPresent()) {
             return false;
         }
-        return !segment.getOwner().isPresent() && tableBinderContexts.containsKey(CaseInsensitiveString.of(tableNameValue))
-                || tableBinderContexts.values().stream().anyMatch(each -> isSameUpdateTargetTableContext(segment, binderContext, schemaName, tableNameValue, each));
+        return !findUpdateTargetFromTableContexts(segment, binderContext, tableBinderContexts, schemaName, tableNameValue).isEmpty();
+    }
+    
+    private static boolean isTargetTableMatchedFromAlias(final SimpleTableSegment targetTable, final TableSegment fromSegment, final SQLStatementBinderContext binderContext) {
+        if (fromSegment instanceof SimpleTableSegment) {
+            return fromSegment.getAlias()
+                    .filter(alias -> alias.getValue().equalsIgnoreCase(targetTable.getTableName().getIdentifier().getValue())
+                            && isSameTableVariableIdentity(targetTable.getTableName().getIdentifier(), alias, binderContext))
+                    .isPresent();
+        }
+        if (fromSegment instanceof JoinTableSegment) {
+            return isTargetTableMatchedFromAlias(targetTable, ((JoinTableSegment) fromSegment).getLeft(), binderContext)
+                    || isTargetTableMatchedFromAlias(targetTable, ((JoinTableSegment) fromSegment).getRight(), binderContext);
+        }
+        return false;
     }
     
     private static SimpleTableSegment bindUpdateTargetTableAlias(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext,
                                                                  final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts, final IdentifierValue databaseName,
                                                                  final Optional<IdentifierValue> schemaName, final IdentifierValue tableName) {
-        Collection<TableSegmentBinderContext> fromTableContexts = !segment.getOwner().isPresent() && tableBinderContexts.containsKey(CaseInsensitiveString.of(tableName.getValue()))
-                ? tableBinderContexts.get(CaseInsensitiveString.of(tableName.getValue()))
-                : tableBinderContexts.values().stream()
-                        .filter(each -> isSameUpdateTargetTableContext(segment, binderContext, schemaName, tableName.getValue(), each)).collect(Collectors.toList());
+        Collection<TableSegmentBinderContext> fromTableContexts = findUpdateTargetFromTableContexts(segment, binderContext, tableBinderContexts, schemaName, tableName.getValue());
         IdentifierValue originalTableName = fromTableContexts.stream()
                 .map(TableSegmentBinderContext::getOriginalTableName).filter(Optional::isPresent).map(Optional::get).findFirst().orElse(tableName);
         Optional<OwnerSegment> fromTableOwner = fromTableContexts.stream()
@@ -285,6 +297,24 @@ public final class SimpleTableSegmentBinder {
         segment.getTableSampleExpression().map(optional -> ExpressionSegmentBinder.bind(optional, SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create()))
                 .ifPresent(result::setTableSampleExpression);
         return result;
+    }
+    
+    private static Collection<TableSegmentBinderContext> findUpdateTargetFromTableContexts(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext,
+                                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                                           final Optional<IdentifierValue> schemaName, final String tableNameValue) {
+        TableSegment fromSegment = ((UpdateStatement) binderContext.getSqlStatement()).getFrom().orElse(null);
+        if (!segment.getOwner().isPresent() && null != fromSegment && isTargetTableMatchedFromAlias(segment, fromSegment, binderContext)) {
+            Collection<TableSegmentBinderContext> aliasMatchedContexts = tableBinderContexts.get(CaseInsensitiveString.of(tableNameValue)).stream()
+                    .filter(each -> each.getOriginalTableName()
+                            .map(originalTableName -> !tableNameValue.equalsIgnoreCase(originalTableName.getValue())
+                                    || isSameTableVariableIdentity(segment.getTableName().getIdentifier(), originalTableName, binderContext))
+                            .orElse(true))
+                    .collect(Collectors.toList());
+            if (!aliasMatchedContexts.isEmpty()) {
+                return aliasMatchedContexts;
+            }
+        }
+        return tableBinderContexts.values().stream().filter(each -> isSameUpdateTargetTableContext(segment, binderContext, schemaName, tableNameValue, each)).collect(Collectors.toList());
     }
     
     private static boolean isSameUpdateTargetTableContext(final SimpleTableSegment targetTable, final SQLStatementBinderContext binderContext, final Optional<IdentifierValue> schemaName,

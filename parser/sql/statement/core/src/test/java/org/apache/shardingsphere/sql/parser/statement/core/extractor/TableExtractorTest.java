@@ -410,6 +410,81 @@ class TableExtractorTest {
                 Arguments.of("table variable target with schema qualified aliased quote delimited physical source", QuoteCharacter.QUOTE, true, "src"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("sameTextDelimitedAliasArguments")
+    void assertExtractTablesFromUpdateWithSameTextDelimitedAliasKeepsPhysicalTable(final String name, final boolean variableTarget, final QuoteCharacter quoteCharacter) {
+        IdentifierValue delimitedName = new IdentifierValue("@MyTable", quoteCharacter);
+        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, variableTarget ? delimitedName : new IdentifierValue("@MyTable")));
+        fromTable.setAlias(new AliasSegment(0, 0, delimitedName));
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, variableTarget ? new IdentifierValue("@MyTable") : delimitedName));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+        tableExtractor.extractTablesFromUpdate(updateStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(1));
+        SimpleTableSegment actualTable = actual.iterator().next();
+        assertThat(actualTable.getTableName().getIdentifier().getValue(), is("@MyTable"));
+        assertThat(actualTable.getTableName().getIdentifier().getQuoteCharacter(), is(quoteCharacter));
+        assertFalse(actual.stream().anyMatch(each -> QuoteCharacter.NONE == each.getTableName().getIdentifier().getQuoteCharacter()
+                && "@MyTable".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    private static Stream<Arguments> sameTextDelimitedAliasArguments() {
+        return Stream.of(
+                Arguments.of("table variable target with bracket delimited same-text alias", true, QuoteCharacter.BRACKETS),
+                Arguments.of("table variable target with quote delimited same-text alias", true, QuoteCharacter.QUOTE),
+                Arguments.of("bracket delimited physical target with table variable source and bracket delimited same-text alias", false, QuoteCharacter.BRACKETS),
+                Arguments.of("quote delimited physical target with table variable source and quote delimited same-text alias", false, QuoteCharacter.QUOTE));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithJoinAndBracketDelimitedSameTextAliasIncludesPhysicalTables() {
+        tableExtractor.extractTablesFromUpdate(createTableVariableTargetJoinWithDelimitedSameTextAlias(QuoteCharacter.BRACKETS));
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.stream().anyMatch(each -> "t_user".equals(each.getTableName().getIdentifier().getValue())));
+        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.BRACKETS == each.getTableName().getIdentifier().getQuoteCharacter()));
+        assertFalse(actual.stream().anyMatch(each -> QuoteCharacter.NONE == each.getTableName().getIdentifier().getQuoteCharacter()
+                && "@MyTable".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithJoinAndQuoteDelimitedSameTextAliasIncludesPhysicalTables() {
+        tableExtractor.extractTablesFromUpdate(createTableVariableTargetJoinWithDelimitedSameTextAlias(QuoteCharacter.QUOTE));
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.stream().anyMatch(each -> "t_user".equals(each.getTableName().getIdentifier().getValue())));
+        assertTrue(actual.stream().anyMatch(each -> "@MyTable".equals(each.getTableName().getIdentifier().getValue())
+                && QuoteCharacter.QUOTE == each.getTableName().getIdentifier().getQuoteCharacter()));
+        assertFalse(actual.stream().anyMatch(each -> QuoteCharacter.NONE == each.getTableName().getIdentifier().getQuoteCharacter()
+                && "@MyTable".equals(each.getTableName().getIdentifier().getValue())));
+    }
+    
+    private UpdateStatement createTableVariableTargetJoinWithDelimitedSameTextAlias(final QuoteCharacter quoteCharacter) {
+        IdentifierValue delimitedName = new IdentifierValue("@MyTable", quoteCharacter);
+        SimpleTableSegment userTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")));
+        userTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("u")));
+        SimpleTableSegment physicalTable = new SimpleTableSegment(new TableNameSegment(0, 0, delimitedName));
+        physicalTable.setAlias(new AliasSegment(0, 0, delimitedName));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(userTable);
+        fromJoin.setRight(physicalTable);
+        fromJoin.setJoinType("JOIN");
+        return UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTable"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .targetTableIsFromAlias(true)
+                .build();
+    }
+    
     @Test
     void assertExtractTablesFromUpdateWithAliasedTableVariableTargetExcludesVariableTable() {
         SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
