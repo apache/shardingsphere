@@ -37,7 +37,7 @@ If target classes or modules cannot be resolved, return `R10-INPUT_BLOCKED`.
 
 ### R1: Repository authority
 
-Before any test write, read `AGENTS.md` and [code-implementation/SKILL.md](../code-implementation/SKILL.md) through EOF, then read every reference selected by that base Skill for this task through EOF, including its implementation, testing, non-regression, and verification references.
+Before any test write, read `AGENTS.md` and [code-implementation/SKILL.md](../code-implementation/SKILL.md) through EOF, then read every reference selected by that base Skill for this task through EOF, including its implementation, testing, contract, impact, removal, non-regression, and verification rules.
 Follow the applicable `CODE_OF_CONDUCT.md` sections.
 The base Skill owns universal implementation, testing, non-regression, verification, and completion requirements; this Skill adds target resolution, coverage, branch-map, parameterization, and scanner requirements for systematic unit-test generation.
 Reading either Skill does not expand the user-authorized scope, file types, Git authority, or other permissions.

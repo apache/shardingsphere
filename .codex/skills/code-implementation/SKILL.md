@@ -11,9 +11,8 @@ description: "Implement, fix, refactor, or remove repository code under required
 
 Read every selected reference through EOF before relying on it. Do not substitute catalog metadata, a summary, another Skill, or ordinary coding judgment for a required repository source.
 
-- For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md` and `.codex/skills/code-implementation/references/rules/non-regression.md`.
+- For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`, `.codex/skills/code-implementation/references/rules/contracts-and-removal.md`, and `.codex/skills/code-implementation/references/rules/non-regression.md`. Apply each contract, impact, or removal rule only when its own trigger matches.
 - Before deciding whether tests or test support are required, and before creating or changing them, read `.codex/skills/code-implementation/references/rules/testing.md`.
-- Before changing or evaluating a public or externally visible contract, compatibility surface, removal, replacement, or unused conclusion, read `.codex/skills/code-implementation/references/rules/contracts-and-removal.md`.
 - Before choosing or running verification and before handoff, read `.codex/skills/code-implementation/references/verification.md`.
 
 Specialized repository Skills compose with this Skill when they write code. Their narrower rules add to these rules and do not replace them.

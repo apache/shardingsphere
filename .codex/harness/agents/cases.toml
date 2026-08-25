@@ -1324,3 +1324,37 @@ required_reasons = ["code_policy_required", "meaningful_test_required", "functio
 policy_binding_profile = "code-write"
 policy_assertions = [{source = "code-implementation", statements = ["Before deciding whether tests or test support are required, and before creating or changing them, read `.codex/skills/code-implementation/references/rules/testing.md`."]}, {source = "testing-rules", statements = ["Test behavior owned by the production class: computation, decisions, validation, transformation, state transitions, error handling, or external contracts.", "Each test must fail for a realistic regression that matters."]}]
 critical = true
+
+[[cases]]
+id = "read_only_verification_loads_rules"
+group = "policy routing"
+description = "Loads the canonical verification and output-capture rules before a read-only diagnosis chooses and runs a repository check."
+phase = "read-only diagnosis verification"
+ordinary_loop = false
+profile = "command-execution"
+prompt = "Diagnose FooService without changing files. The next evidence step is a focused Maven test in its owning module. At this decision point, inspect the owner, choose and run that repository verification under the exact verification and output-capture rules, and do not edit files or start the completion review."
+decision = "proceed"
+required_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
+allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request", "output_capture_required"]
+policy_binding_profile = "command-execution"
+policy_assertions = [{source = "agents", statements = ["Before choosing, running, or assessing repository verification in any task, read `.codex/skills/code-implementation/references/verification.md` through EOF."]}, {source = "code-verification", statements = ["Run the narrowest meaningful checks first.", "Derive explicit Maven modules from changed owners, affected tests, and consuming runtime modules."]}, {source = "token-efficiency", statements = ["Maven build, test, package, install, verification, and plugin goals are usually `Must Wrap`."]}]
+critical = true
+
+[[cases]]
+id = "internal_test_change_loads_impact_rules"
+group = "policy routing"
+description = "Loads the general impact rules for an internal test-support candidate without requiring a public contract or removal decision."
+phase = "post-write impact verification"
+ordinary_loop = true
+profile = "test-write"
+prompt = "An authorized internal test-support change has been implemented. It alters a maintained golden file, and the changed test path matches a GitHub Actions path filter whose practical local equivalent is a Maven check. At this decision point, inspect the affected surfaces and run only the existing-project artifact check and local workflow equivalent required by the impact rules; do not edit further or start the pre-handoff review yet."
+decision = "proceed"
+required_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
+allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "mutate_git", "mutate_remote"]
+required_reasons = ["code_policy_required", "output_capture_required"]
+policy_binding_profile = "test-write"
+policy_assertions = [{source = "code-implementation", statements = ["For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`, `.codex/skills/code-implementation/references/rules/contracts-and-removal.md`, and `.codex/skills/code-implementation/references/rules/non-regression.md`.", "Apply each contract, impact, or removal rule only when its own trigger matches."]}, {source = "contracts-and-removal", statements = ["Regenerate or verify affected snapshots, golden files, fingerprints, SQL cases, descriptors, schemas, and agent-visible metadata with the existing project tool.", "Determine affected GitHub Actions from changed-file path filters and job commands.", "Run the local equivalent when practical; otherwise record the narrower check and residual risk."]}, {source = "code-verification", statements = ["Run the narrowest meaningful checks first."]}]
+critical = true

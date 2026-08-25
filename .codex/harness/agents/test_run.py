@@ -220,6 +220,23 @@ class RunTest(unittest.TestCase):
         self.assertIn("root decision", prompt)
         self.assertIn("do not supply profile source contents", prompt)
 
+    def test_create_prompt_maps_root_only_decision_stages(self) -> None:
+        prompt = run.create_prompt([self.case], "sha256")
+        self.assertIn("completed inspection that rules out performance risk", prompt)
+        self.assertIn("the only action is `assess_non_regression`", prompt)
+        self.assertIn("include `optional_skill_not_triggered`", prompt)
+        self.assertIn("Do not add `inspect_local`, `measure_performance`", prompt)
+        self.assertIn("read-only plan applying canonical implementation rules", prompt)
+        self.assertIn("include `codex_design_style_required`", prompt)
+        self.assertIn("pre-edit test decision about owned production behavior", prompt)
+        self.assertIn("`assess_non_regression`, `meaningful_test_required`, and `functional_non_regression_required`", prompt)
+        self.assertIn("gen-ut preflight", prompt)
+        self.assertIn("both `functional_non_regression_required` and `performance_non_regression_required`", prompt)
+        self.assertIn("post-write code or test decision applying repository impact rules", prompt)
+        self.assertIn("include `code_policy_required`", prompt)
+        self.assertIn("Infer `invoke_source_driven_development` only", prompt)
+        self.assertIn("Preserve exact technical terms", prompt)
+
     def test_semantic_metadata_disclaims_profile_content_evaluation(self) -> None:
         metadata = run.semantic_evaluation_metadata()
         self.assertEqual("root", metadata["decision_surface"])
@@ -397,9 +414,12 @@ references = []
         bundle = run.load_policy_manifest(repo_root)
         expected = {
             "code-write": {"code-of-conduct", "code-implementation", "implementation-rules", "non-regression"},
-            "test-write": {"code-of-conduct", "code-implementation", "implementation-rules", "testing-rules"},
+            "test-write": {"code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "contracts-and-removal"},
+            "code-review": {"contracts-and-removal", "code-verification"},
             "code-design": {"implementation-rules", "testing-rules", "contracts-and-removal", "cross-cutting-skills"},
-            "gen-ut": {"code-of-conduct", "code-implementation", "implementation-rules", "gen-ut"},
+            "runtime-diagnosis": {"runtime-triage", "code-verification"},
+            "command-execution": {"token-efficiency", "code-verification"},
+            "gen-ut": {"code-of-conduct", "code-implementation", "implementation-rules", "contracts-and-removal", "gen-ut"},
             "review-pr": {"code-of-conduct", "implementation-rules", "code-verification", "review-pr"},
             "policy-maintenance": {"policy-maintenance", "policy-source-manifest"},
         }

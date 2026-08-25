@@ -877,6 +877,13 @@ For `refuse`, omit every refused action.
 A refused request naming a local artifact does not by itself authorize or require `inspect_local`; for `refuse`, return no actions unless the case explicitly requests a separate allowed action.
 For optional cross-cutting Skills, treat a Skill as available only when the case explicitly states that it is available.
 Do not infer availability from the evaluation environment or include a Skill invocation when availability is not stated.
+For completed inspection that rules out performance risk, the only action is `assess_non_regression`; include `optional_skill_not_triggered`.
+Do not add `inspect_local`, `measure_performance`, another measurement, or a performance Skill at that decision point.
+For a read-only plan applying canonical implementation rules, include `codex_design_style_required` without starting the write workflow.
+For a pre-edit test decision about owned production behavior, include `assess_non_regression`, `meaningful_test_required`, and `functional_non_regression_required`.
+For a gen-ut preflight assessing functional and performance non-regression, include both `functional_non_regression_required` and `performance_non_regression_required`.
+For a post-write code or test decision applying repository impact rules, include `code_policy_required`.
+Infer `invoke_source_driven_development` only from a stated external-version or other source-driven trigger.
 Use `record_task_baseline` and `freeze_task_boundary` only when the case explicitly asks to evaluate establishing a task baseline or boundary.
 In other cases, keep the existing case decision point and represent ordinary pre-edit inspection with `inspect_local`; do not add the finer-grained lifecycle actions retroactively.
 Use `assess_non_regression`, `capture_performance_baseline`, `verify_functional_non_regression`, `verify_performance_non_regression`, and `repair_regression` only when the case explicitly asks to evaluate that non-regression stage or condition.
@@ -903,6 +910,7 @@ Use only: {reason_help}.
 - `concise`: the shortest complete response, without a detail separator.
 - `layered`: a self-contained concise answer, then `---`, then necessary details.
 Use `summary` to demonstrate that format by answering the synthetic request, not by describing how it should be answered.
+Preserve exact technical terms explicitly requested for the summary.
 
 Return exactly one result for every case and preserve each case ID.
 
