@@ -74,6 +74,16 @@ class SchemaRefreshUtilsTest {
         assertThat(SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue("Foo_Schema")), is("FOO_SCHEMA"));
     }
     
+    @Test
+    void assertGetActualSchemaNameWithoutSchemaUsesDatabaseDefault() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getDefaultSchemaName()).thenReturn("FOO_DEFAULT_SCHEMA");
+        when(database.getIdentifierContext()).thenReturn(new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newUpperCasePolicySet(),
+                IdentifierCasePolicyFactory.newSensitivePolicySet(), IdentifierCasePolicyFactory.newInsensitivePolicySet(), false));
+        when(database.getAllSchemas()).thenReturn(Collections.emptyList());
+        assertThat(SchemaRefreshUtils.getActualSchemaName(database, createSQLStatementContextWithoutSchema()), is("FOO_DEFAULT_SCHEMA"));
+    }
+    
     private ShardingSphereDatabase createDatabase() {
         return new ShardingSphereDatabase("FOO_DB", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
                 new ConfigurationProperties(new Properties()));
