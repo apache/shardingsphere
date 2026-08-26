@@ -186,10 +186,26 @@ class IndexMetaDataUtilsTest {
         assertThat(actual.iterator().next().getTableName(), is("foo_tbl"));
     }
     
+    @Test
+    void assertGetTableNamesWithDatabaseDefaultSchema() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        when(database.getSchema("foo_default_schema")).thenReturn(buildSchema("foo_default_schema"));
+        IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx")));
+        Collection<QualifiedTable> actual = IndexMetaDataUtils.getTableNames(database, Collections.singleton(indexSegment));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getSchemaName(), is("foo_default_schema"));
+        assertThat(actual.iterator().next().getTableName(), is("foo_tbl"));
+    }
+    
     private ShardingSphereDatabase buildDatabase() {
+        Collection<ShardingSphereSchema> schemas = Collections.singleton(buildSchema("foo_db"));
+        return new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas, new ConfigurationProperties(new Properties()));
+    }
+    
+    private ShardingSphereSchema buildSchema(final String schemaName) {
         ShardingSphereTable table = new ShardingSphereTable(
                 "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
-        Collection<ShardingSphereSchema> schemas = Collections.singleton(new ShardingSphereSchema("foo_db", mock(DatabaseType.class), Collections.singleton(table), Collections.emptyList()));
-        return new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas, new ConfigurationProperties(new Properties()));
+        return new ShardingSphereSchema(schemaName, mock(DatabaseType.class), Collections.singleton(table), Collections.emptyList());
     }
 }
