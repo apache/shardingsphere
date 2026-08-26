@@ -48,8 +48,10 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("UseOfObsoleteDateTimeApi")
@@ -160,6 +162,22 @@ class ColumnValueConvertUtilsTest {
         Timestamp expectedTimestamp = Timestamp.valueOf(localDateTime);
         assertThat(actual.getSeconds(), is(expectedTimestamp.getTime() / 1000L));
         assertThat(actual.getNanos(), is(expectedTimestamp.getNanos()));
+    }
+    
+    @Test
+    void assertConvertPreEpochTimestampToTimestampMessage() {
+        for (long millis : new long[]{-1500L, -1L, -1000L, -86400000L, 1500L, 0L}) {
+            assertRoundTrip(new Timestamp(millis), millis);
+            assertRoundTrip(new Date(millis), millis);
+        }
+    }
+    
+    private void assertRoundTrip(final Date value, final long millis) {
+        com.google.protobuf.Timestamp actual = (com.google.protobuf.Timestamp) ColumnValueConvertUtils.convertToProtobufMessage(value);
+        // a protobuf timestamp is only valid with a nanosecond offset inside the second
+        assertThat(value.getClass().getSimpleName() + " " + millis, actual.getNanos(), greaterThanOrEqualTo(0));
+        assertThat(value.getClass().getSimpleName() + " " + millis, actual.getNanos(), lessThan(1_000_000_000));
+        assertThat(value.getClass().getSimpleName() + " " + millis, actual.getSeconds() * 1000L + actual.getNanos() / 1_000_000L, is(millis));
     }
     
     @Test
