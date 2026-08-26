@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -93,6 +94,19 @@ class CDCSchemaTableUtilsTest {
     }
     
     @Test
+    void assertParseTableExpressionsMergesSchemaWildcardResults() {
+        ShardingSphereSchema publicSchema = mockSchema("public", "t_order", "t_order_item");
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("sharding_db", databaseType, null, null, Collections.singleton(publicSchema), new ConfigurationProperties(new Properties()));
+        List<SchemaTable> schemaTables = Arrays.asList(
+                SchemaTable.newBuilder().setSchema("*").setTable("t_order").build(),
+                SchemaTable.newBuilder().setSchema("*").setTable("t_order_item").build());
+        Map<String, Set<String>> actualResult = CDCSchemaTableUtils.parseTableExpressions(database, schemaTables);
+        Map<String, Set<String>> expectedResult = Collections.singletonMap("public", new HashSet<>(Arrays.asList("t_order", "t_order_item")));
+        assertThat(actualResult, is(expectedResult));
+    }
+    
+    @Test
     void assertParseTableExpressionsWithAllTablesInSchema() {
         ShardingSphereSchema quotedSchema = mockSchema("CaseSchema", "t_order", "t_order_item");
         ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", databaseType, null, null, Collections.singleton(quotedSchema), new ConfigurationProperties(new Properties()));
@@ -154,6 +168,14 @@ class CDCSchemaTableUtilsTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", databaseType, null, null, Collections.singleton(publicSchema), new ConfigurationProperties(new Properties()));
         List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("public").setTable("t_missing").build());
         assertThrows(TableNotFoundException.class, () -> CDCSchemaTableUtils.parseTableExpressions(database, schemaTables));
+    }
+    
+    @Test
+    void assertParseTableExpressionsWithMissingSchema() {
+        ShardingSphereSchema publicSchema = mockSchema("public", "t_order");
+        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", databaseType, null, null, Collections.singleton(publicSchema), new ConfigurationProperties(new Properties()));
+        List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("missing").setTable("t_order").build());
+        assertThrows(SchemaNotFoundException.class, () -> CDCSchemaTableUtils.parseTableExpressions(database, schemaTables));
     }
     
     @Test

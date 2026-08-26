@@ -103,6 +103,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -121,7 +122,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({PipelineAPIFactory.class, PipelineJobIdUtils.class, PipelineJobRegistry.class})
+@StaticMockSettings({PipelineAPIFactory.class, PipelineJobIdUtils.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CDCJobAPITest {
     
@@ -427,25 +428,105 @@ class CDCJobAPITest {
     }
     
     @Test
-    void assertStartEnableDisableAndType() {
+    void assertStartEnableDisableAndType() throws ReflectiveOperationException {
+        PipelineJobConfigurationManager jobConfigManager = mockPersistedJobConfiguration(createJobConfiguration(1));
         JobConfigurationPOJO jobConfigPOJO = createJobConfigurationPOJO();
         jobConfigPOJO.setShardingTotalCount(1);
+        jobConfigPOJO.setDisabled(true);
+        jobConfigPOJO.getProps().setProperty("stop_time", "2026-08-26 00:00:00");
         when(PipelineJobIdUtils.getElasticJobConfigurationPOJO("foo_job")).thenReturn(jobConfigPOJO);
         JobConfigurationAPI jobConfigAPI = mock(JobConfigurationAPI.class);
         when(PipelineAPIFactory.getJobConfigurationAPI(any())).thenReturn(jobConfigAPI);
         when(PipelineAPIFactory.getRegistryCenter(any())).thenReturn(mock(CoordinatorRegistryCenter.class));
         PipelineSink sink = mock(PipelineSink.class);
-        try (MockedConstruction<OneOffJobBootstrap> jobBootstrapConstruction = mockConstruction(OneOffJobBootstrap.class)) {
+        try (
+                MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class);
+                MockedConstruction<OneOffJobBootstrap> jobBootstrapConstruction = mockConstruction(OneOffJobBootstrap.class)) {
             jobAPI.start("foo_job", sink);
-            assertThat(jobConfigPOJO.getProps().getProperty("start_time_millis"), is(jobConfigPOJO.getProps().getProperty("start_time_millis")));
+            verify(jobConfigManager).getJobConfiguration("foo_job");
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job"));
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.add(eq("foo_job"), any()));
+            assertFalse(jobConfigPOJO.isDisabled());
+            assertNotNull(jobConfigPOJO.getProps().getProperty("start_time_millis"));
+            assertFalse(jobConfigPOJO.getProps().containsKey("stop_time"));
             verify(jobConfigAPI).updateJobConfiguration(jobConfigPOJO);
             jobAPI.disable("foo_job");
+            assertTrue(jobConfigPOJO.isDisabled());
             assertNotNull(jobConfigPOJO.getProps().getProperty("stop_time"));
             jobAPI.commit("foo_job");
             jobAPI.rollback("foo_job");
             assertThat(jobAPI.getType(), is("STREAMING"));
             assertThat(jobBootstrapConstruction.constructed().size(), is(1));
         }
+    }
+    
+    @Test
+    void assertStartRejectsPersistedUnresolvedDataSource() throws ReflectiveOperationException {
+        mockPersistedJobConfiguration(createJobConfiguration(Collections.singletonList("foo_missing_ds"), false));
+        JobConfigurationPOJO jobConfigPOJO = createJobConfigurationPOJO();
+        jobConfigPOJO.setDisabled(false);
+        when(PipelineJobIdUtils.getElasticJobConfigurationPOJO("foo_job")).thenReturn(jobConfigPOJO);
+        JobConfigurationAPI jobConfigAPI = mock(JobConfigurationAPI.class);
+        when(PipelineAPIFactory.getJobConfigurationAPI(any())).thenReturn(jobConfigAPI);
+        try (
+                MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class);
+                MockedConstruction<OneOffJobBootstrap> jobBootstrapConstruction = mockConstruction(OneOffJobBootstrap.class)) {
+            PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.start("foo_job", mock(PipelineSink.class)));
+            assertThat(actual.getMessage(), containsString("foo_missing_ds"));
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job"));
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.add(anyString(), any()), never());
+            assertTrue(jobConfigPOJO.isDisabled());
+            verify(jobConfigAPI).updateJobConfiguration(jobConfigPOJO);
+            assertTrue(jobBootstrapConstruction.constructed().isEmpty());
+        }
+    }
+    
+    @Test
+    void assertStartRejectsPersistedDuplicateBareTableWithoutRepeatedGovernanceWrite() throws ReflectiveOperationException {
+        mockPersistedJobConfiguration(createJobConfiguration(Collections.singletonList("foo_ds"), false, Arrays.asList("foo_schema.foo_tbl", "bar_schema.FOO_TBL")));
+        JobConfigurationPOJO jobConfigPOJO = createJobConfigurationPOJO();
+        jobConfigPOJO.setDisabled(true);
+        when(PipelineJobIdUtils.getElasticJobConfigurationPOJO("foo_job")).thenReturn(jobConfigPOJO);
+        JobConfigurationAPI jobConfigAPI = mock(JobConfigurationAPI.class);
+        when(PipelineAPIFactory.getJobConfigurationAPI(any())).thenReturn(jobConfigAPI);
+        try (
+                MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class);
+                MockedConstruction<OneOffJobBootstrap> jobBootstrapConstruction = mockConstruction(OneOffJobBootstrap.class)) {
+            PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.start("foo_job", mock(PipelineSink.class)));
+            assertThat(actual.getMessage(), is("There is invalid parameter value. More than one schema table has the same table name `FOO_TBL`."));
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job"));
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.add(anyString(), any()), never());
+            verify(jobConfigAPI, never()).updateJobConfiguration(any());
+            assertTrue(jobBootstrapConstruction.constructed().isEmpty());
+        }
+    }
+    
+    @Test
+    void assertStartPreservesValidationExceptionWhenCleanupFails() throws ReflectiveOperationException {
+        mockPersistedJobConfiguration(createJobConfiguration(Collections.singletonList("foo_missing_ds"), false));
+        JobConfigurationPOJO jobConfigPOJO = createJobConfigurationPOJO();
+        jobConfigPOJO.setDisabled(false);
+        when(PipelineJobIdUtils.getElasticJobConfigurationPOJO("foo_job")).thenReturn(jobConfigPOJO);
+        JobConfigurationAPI jobConfigAPI = mock(JobConfigurationAPI.class);
+        when(PipelineAPIFactory.getJobConfigurationAPI(any())).thenReturn(jobConfigAPI);
+        doThrow(new IllegalStateException("governance unavailable")).when(jobConfigAPI).updateJobConfiguration(jobConfigPOJO);
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.stop("foo_job")).thenThrow(new IllegalStateException("stop unavailable"));
+            PipelineInvalidParameterException actual = assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.start("foo_job", mock(PipelineSink.class)));
+            assertThat(actual.getMessage(), containsString("foo_missing_ds"));
+            assertThat(actual.getSuppressed().length, is(2));
+            assertThat(actual.getSuppressed()[0].getMessage(), is("stop unavailable"));
+            assertThat(actual.getSuppressed()[1].getMessage(), is("governance unavailable"));
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job"));
+            assertTrue(jobConfigPOJO.isDisabled());
+        }
+    }
+    
+    private PipelineJobConfigurationManager mockPersistedJobConfiguration(final CDCJobConfiguration jobConfig) throws ReflectiveOperationException {
+        PipelineJobConfigurationManager result = mock(PipelineJobConfigurationManager.class);
+        when(result.getJobConfiguration("foo_job")).thenReturn(jobConfig);
+        Plugins.getMemberAccessor().set(CDCJobAPI.class.getDeclaredField("jobConfigManager"), jobAPI, result);
+        return result;
     }
     
     private void putContext(final Map<String, StorageUnit> storageUnits) {

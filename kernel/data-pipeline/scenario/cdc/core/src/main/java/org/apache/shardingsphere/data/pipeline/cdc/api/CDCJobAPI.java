@@ -138,8 +138,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         if (governanceFacade.getJobFacade().getConfiguration().isExisted(jobConfig.getJobId())) {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
-            checkDataSources(jobConfig);
-            checkSchemaTableNames(jobConfig.getSchemaTableNames());
+            checkJobConfiguration(jobConfig);
             governanceFacade.getJobFacade().getJob().create(jobConfig.getJobId(), jobType.getOption().getJobClass());
             JobConfigurationPOJO jobConfigPOJO = jobConfigManager.convertToJobConfigurationPOJO(jobConfig);
             jobConfigPOJO.setDisabled(true);
@@ -149,6 +148,11 @@ public final class CDCJobAPI implements TransmissionJobAPI {
             }
         }
         return jobConfig.getJobId();
+    }
+    
+    private void checkJobConfiguration(final CDCJobConfiguration jobConfig) {
+        checkDataSources(jobConfig);
+        checkSchemaTableNames(jobConfig.getSchemaTableNames());
     }
     
     private void checkDataSources(final CDCJobConfiguration jobConfig) {
@@ -255,17 +259,40 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      * @param sink sink
      */
     public void start(final String jobId, final PipelineSink sink) {
+        CDCJobConfiguration jobConfig = jobConfigManager.getJobConfiguration(jobId);
+        try {
+            checkJobConfiguration(jobConfig);
+        } catch (final PipelineInvalidParameterException ex) {
+            try {
+                PipelineJobRegistry.stop(jobId);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException cleanupException) {
+                // CHECKSTYLE:ON
+                ex.addSuppressed(cleanupException);
+            }
+            try {
+                JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
+                if (!jobConfigPOJO.isDisabled()) {
+                    disable(jobConfigPOJO);
+                }
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException cleanupException) {
+                // CHECKSTYLE:ON
+                ex.addSuppressed(cleanupException);
+            }
+            throw ex;
+        }
+        PipelineJobRegistry.stop(jobId);
         CDCJob job = new CDCJob(sink);
         PipelineJobRegistry.add(jobId, job);
-        enable(jobId);
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
+        enable(jobConfigPOJO);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfigPOJO.toJobConfiguration());
         job.getJobRunnerManager().setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }
     
-    private void enable(final String jobId) {
-        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
+    private void enable(final JobConfigurationPOJO jobConfigPOJO) {
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
         jobConfigPOJO.getProps().remove("stop_time");
@@ -279,6 +306,10 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      */
     public void disable(final String jobId) {
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
+        disable(jobConfigPOJO);
+    }
+    
+    private void disable(final JobConfigurationPOJO jobConfigPOJO) {
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DateTimeFormatterFactory.getDatetimeFormatter()));
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobConfigPOJO.getJobName())).updateJobConfiguration(jobConfigPOJO);
