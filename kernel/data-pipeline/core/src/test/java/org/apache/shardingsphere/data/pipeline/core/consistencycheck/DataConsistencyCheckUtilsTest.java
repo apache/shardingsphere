@@ -60,6 +60,19 @@ class DataConsistencyCheckUtilsTest {
     }
     
     @Test
+    void assertTimestampEqualsBeforeEpoch() {
+        EqualsBuilder equalsBuilder = new EqualsBuilder();
+        // -1500 and -1000 are half a second apart and fall in different seconds
+        assertFalse(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(-1500L), new Timestamp(-1000L)));
+        // -500 and 400 straddle the epoch and fall in different seconds
+        assertFalse(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(-500L), new Timestamp(400L)));
+        // -1000 and -999 differ by a millisecond and fall in the same second
+        assertTrue(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(-1000L), new Timestamp(-999L)));
+        // the sub-second tolerance still holds below the epoch
+        assertTrue(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(-1999L), new Timestamp(-1001L)));
+    }
+    
+    @Test
     void assertIsFirstUniqueKeysValueMatched() {
         Map<String, Object> record1 = ImmutableMap.of("order_id", 101, "user_id", 1, "status", "ok");
         Map<String, Object> record2 = ImmutableMap.of("order_id", 102, "user_id", 2, "status", "ok");
