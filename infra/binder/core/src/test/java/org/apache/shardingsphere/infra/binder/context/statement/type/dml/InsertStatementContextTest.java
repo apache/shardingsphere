@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -54,9 +54,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.RandomAccess;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -104,6 +105,21 @@ class InsertStatementContextTest {
         InsertStatementContext actual = createInsertStatementContext(insertStatement);
         actual.bindParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
         assertInsertStatementContext(actual);
+    }
+    
+    @Test
+    void assertInsertValueContextsSupportRandomAccess() {
+        InsertStatement insertStatement = mock(InsertStatement.class);
+        when(insertStatement.getDatabaseType()).thenReturn(databaseType);
+        TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("tbl"));
+        tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        when(insertStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(tableNameSegment)));
+        setUpInsertValues(insertStatement);
+        InsertStatementContext actual = createInsertStatementContext(insertStatement);
+        actual.bindParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
+        List<InsertValueContext> actualInsertValueContexts = actual.getInsertValueContexts();
+        assertThat(actualInsertValueContexts.size(), is(2));
+        assertTrue(actualInsertValueContexts instanceof RandomAccess);
     }
     
     @Test
