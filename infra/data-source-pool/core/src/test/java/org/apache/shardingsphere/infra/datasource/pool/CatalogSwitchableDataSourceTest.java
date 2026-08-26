@@ -36,6 +36,8 @@ import java.util.logging.Logger;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -74,6 +76,32 @@ class CatalogSwitchableDataSourceTest {
         assertThat(actualConnection, is(connection));
         verify(dataSource).getConnection();
         verify(connection).setCatalog("db");
+    }
+    
+    @Test
+    void assertGetConnectionClosesTheConnectionWhenSwitchingCatalogFails() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.getCatalog()).thenReturn("other_db");
+        SQLException expectedException = new SQLException("unknown database");
+        doThrow(expectedException).when(connection).setCatalog("db");
+        CatalogSwitchableDataSource dataSourceUnderTest = new CatalogSwitchableDataSource(dataSource, "db", "jdbc:mysql://localhost:3306/db");
+        SQLException actualException = assertThrows(SQLException.class, dataSourceUnderTest::getConnection);
+        assertThat(actualException, is(expectedException));
+        verify(connection).close();
+    }
+    
+    @Test
+    void assertGetConnectionKeepsTheOriginalFailureWhenClosingAlsoFails() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.getCatalog()).thenReturn("other_db");
+        SQLException expectedException = new SQLException("unknown database");
+        doThrow(expectedException).when(connection).setCatalog("db");
+        SQLException closeException = new SQLException("connection already dead");
+        doThrow(closeException).when(connection).close();
+        CatalogSwitchableDataSource dataSourceUnderTest = new CatalogSwitchableDataSource(dataSource, "db", "jdbc:mysql://localhost:3306/db");
+        SQLException actualException = assertThrows(SQLException.class, dataSourceUnderTest::getConnection);
+        assertThat(actualException, is(expectedException));
+        verify(connection).close();
     }
     
     @Test
