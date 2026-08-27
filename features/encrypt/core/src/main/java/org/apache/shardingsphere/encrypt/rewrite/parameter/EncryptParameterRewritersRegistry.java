@@ -52,6 +52,6 @@ public final class EncryptParameterRewritersRegistry implements ParameterRewrite
                 new EncryptPredicateParameterRewriter(rule, encryptConditions),
                 new EncryptInsertPredicateParameterRewriter(rule, encryptConditions),
                 new EncryptInsertValueParameterRewriter(rule, databaseName),
-                new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter(rule, databaseName));
+                new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter(rule, sqlRewriteContext.getDatabase()));
     }
 }

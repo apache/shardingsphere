@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -43,7 +43,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     
     private final EncryptRule rule;
     
-    private final String databaseName;
+    private final ShardingSphereDatabase database;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
@@ -60,7 +60,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 : ((GroupedParameterBuilder) paramBuilder).getAfterGenericParameterBuilder();
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
+                .orElseGet(database::getDefaultSchemaName);
         int onDuplicateKeyParameterMarkerIndex = 0;
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             String logicColumnName = onDuplicateKeyUpdateValueContext.getColumn(index).getIdentifier().getValue();
@@ -74,7 +74,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
             }
             int parameterIndex = getParameterMarkerIndex(paramBuilder, (ParameterMarkerExpressionSegment) valueExpression, onDuplicateKeyParameterMarkerIndex++);
             Object plainValue = onDuplicateKeyUpdateValueContext.getValue(index);
-            Object cipherColumnValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue);
+            Object cipherColumnValue = encryptColumn.getCipher().encrypt(database.getName(), schemaName, tableName, logicColumnName, plainValue);
             standardParamBuilder.addReplacedParameters(parameterIndex, cipherColumnValue);
             Collection<Object> addedParams = buildAddedParams(schemaName, tableName, encryptColumn, logicColumnName, plainValue);
             if (!addedParams.isEmpty()) {
@@ -93,10 +93,10 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     private Collection<Object> buildAddedParams(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final String logicColumnName, final Object plainValue) {
         Collection<Object> result = new LinkedList<>();
         if (encryptColumn.getAssistedQuery().isPresent()) {
-            result.add(encryptColumn.getAssistedQuery().get().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue));
+            result.add(encryptColumn.getAssistedQuery().get().encrypt(database.getName(), schemaName, tableName, logicColumnName, plainValue));
         }
         if (encryptColumn.getLikeQuery().isPresent()) {
-            result.add(encryptColumn.getLikeQuery().get().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue));
+            result.add(encryptColumn.getLikeQuery().get().encrypt(database.getName(), schemaName, tableName, logicColumnName, plainValue));
         }
         return result;
     }
