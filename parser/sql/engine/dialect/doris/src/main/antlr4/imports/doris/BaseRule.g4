@@ -1163,11 +1163,11 @@ all
 // DORIS ADDED END
 
 overClause
-    : OVER (windowSpecification | identifier)
+    : OVER windowSpecification
     ;
 
 windowSpecification
-    : LP_ identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
+    : LP_ (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
     ;
 
 frameClause
@@ -1243,7 +1243,7 @@ windowFunction
     ;
 
 windowingClause
-    : OVER (windowName=identifier | windowSpecification)
+    : OVER windowSpecification
     ;
 
 leadLagInfo
