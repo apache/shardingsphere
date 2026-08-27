@@ -19,13 +19,19 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.packages.PackageAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.plsql.RoutineNameAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedRoutineName;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleCreatePackageStatementTestCase;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -67,6 +73,18 @@ public final class OracleCreatePackageStatementAssert {
         }
         if (!expected.getColumns().isEmpty()) {
             ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
+        }
+        assertPackageRoutineNames(assertContext, actual.getPackageRoutineNames(), expected.getPackageRoutineNames());
+    }
+    
+    private static void assertPackageRoutineNames(final SQLCaseAssertContext assertContext, final Collection<FunctionNameSegment> actual, final Collection<ExpectedRoutineName> expected) {
+        if (expected.isEmpty()) {
+            return;
+        }
+        assertThat(assertContext.getText("Package routine names size mismatched: "), actual.size(), is(expected.size()));
+        Iterator<FunctionNameSegment> actualIterator = actual.iterator();
+        for (ExpectedRoutineName each : expected) {
+            RoutineNameAssert.assertIs(assertContext, actualIterator.next(), each);
         }
     }
 }
