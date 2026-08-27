@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
@@ -71,7 +72,9 @@ public final class WindowClauseAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        assertWindowName(assertContext, actual, expected);
         assertPartitionBy(assertContext, actual, expected);
+        assertFrame(assertContext, actual, expected);
         ExpectedOrderByClause expectedOrderByClause = expected.getOrderByClause();
         OrderBySegment actualOrderBySegment = actual.getOrderBySegment();
         if (null == expectedOrderByClause) {
@@ -79,6 +82,15 @@ public final class WindowClauseAssert {
             return;
         }
         OrderByClauseAssert.assertIs(assertContext, actualOrderBySegment, expectedOrderByClause);
+    }
+    
+    private static void assertWindowName(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
+        if (null == expected.getWindowName()) {
+            assertNull(actual.getWindowName(), assertContext.getText("Actual window item name should not exist."));
+            return;
+        }
+        assertNotNull(actual.getWindowName(), assertContext.getText("Actual window item name should exist."));
+        assertThat(assertContext.getText("Window item name assertion error: "), actual.getWindowName().getValue(), is(expected.getWindowName()));
     }
     
     private static void assertPartitionBy(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
@@ -94,5 +106,9 @@ public final class WindowClauseAssert {
             assertThat(assertContext.getText("Window item partition by expression assertion error: "), actualExpression, isA(ColumnSegment.class));
             ColumnAssert.assertIs(assertContext, (ColumnSegment) actualExpression, each);
         }
+    }
+    
+    private static void assertFrame(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
+        ExpressionAssert.assertExpression(assertContext, actual.getFrameClause(), expected.getFrameClause());
     }
 }

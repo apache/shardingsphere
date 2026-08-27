@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -173,6 +174,11 @@ class CreateDatabaseObjectStatementContextTest {
         
         @Override
         public Collection<ProcedureCallNameSegment> getProcedureCallNames() {
+            return Collections.emptyList();
+        }
+        
+        @Override
+        public Collection<FunctionNameSegment> getPackageRoutineNames() {
             return Collections.emptyList();
         }
         

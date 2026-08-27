@@ -69,20 +69,22 @@ public final class CDCSchemaTableUtils {
         Map<String, Set<String>> result = new HashMap<>();
         for (SchemaTable each : schemaTables) {
             if ("*".equals(each.getSchema())) {
-                result.putAll(parseTableExpressionWithAllSchema(database, systemSchemas, each));
+                mergeSchemaTables(result, parseTableExpressionWithAllSchema(database, systemSchemas, each));
             } else if ("*".equals(each.getTable())) {
                 result.putAll(parseTableExpressionWithAllTable(database, each));
             } else {
-                String schemaName = each.getSchema();
-                if (schemaName.isEmpty()) {
-                    schemaName = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse("");
-                }
+                String schemaName = each.getSchema().isEmpty() ? dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse("") : each.getSchema();
                 ShardingSphereSchema schema = database.getSchema(new IdentifierValue(schemaName));
+                ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaName));
                 ShardingSpherePreconditions.checkNotNull(schema.getTable(each.getTable()), () -> new TableNotFoundException(each.getTable()));
                 result.computeIfAbsent(schema.getName(), ignored -> new HashSet<>()).add(each.getTable());
             }
         }
         return result;
+    }
+    
+    private static void mergeSchemaTables(final Map<String, Set<String>> target, final Map<String, Set<String>> source) {
+        source.forEach((schemaName, tableNames) -> target.computeIfAbsent(schemaName, ignored -> new HashSet<>()).addAll(tableNames));
     }
     
     private static Map<String, Set<String>> parseTableExpressionWithAllTables(final ShardingSphereDatabase database, final Collection<String> systemSchemas) {

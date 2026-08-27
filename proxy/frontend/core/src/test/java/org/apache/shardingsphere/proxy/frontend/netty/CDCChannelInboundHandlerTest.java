@@ -53,7 +53,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -83,13 +83,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -345,16 +345,27 @@ class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    void assertStreamDataRequestWrapsPipelineSQLException() {
-        CDCConnectionContext connectionContext = new CDCConnectionContext(user);
-        channel.attr(CONNECTION_CONTEXT_KEY).set(connectionContext);
-        StreamDataRequestBody.Builder bodyBuilder = StreamDataRequestBody.newBuilder().setDatabase("logic_db");
-        bodyBuilder.addSourceSchemaTable(StreamDataRequestBody.SchemaTable.newBuilder().setSchema("schema").setTable("table").build());
-        CDCRequest request = CDCRequest.newBuilder().setType(Type.STREAM_DATA).setRequestId("stream-request").setStreamDataRequestBody(bodyBuilder.build()).build();
-        when(backendHandler.streamData(any(), any(), any(), any())).thenThrow(mock(PipelineSQLException.class));
-        ChannelHandlerContext context = channel.pipeline().context(handler);
-        assertThrows(CDCExceptionWrapper.class, () -> handler.channelRead(context, request));
-        assertThat(channel.attr(CONNECTION_CONTEXT_KEY).get(), is(connectionContext));
+    void assertStreamDataRequestWithSchemaNotFoundException() {
+        channel.attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user));
+        CDCRequest request = createStreamDataRequest("logic_db");
+        when(backendHandler.streamData(any(), any(), any(), any())).thenThrow(new SchemaNotFoundException("foo_schema"));
+        channel.writeInbound(request);
+        CDCResponse response = readResponseSkippingGreeting();
+        assertThat(response.getStatus(), is(Status.FAILED));
+        assertThat(response.getRequestId(), is("stream-request"));
+        assertThat(response.getErrorCode(), is(XOpenSQLState.NOT_FOUND.getValue()));
+    }
+    
+    @Test
+    void assertStreamDataRequestWithInvalidParameterException() {
+        channel.attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user));
+        CDCRequest request = createStreamDataRequest("logic_db");
+        when(backendHandler.streamData(any(), any(), any(), any())).thenThrow(new PipelineInvalidParameterException("invalid job configuration"));
+        channel.writeInbound(request);
+        CDCResponse response = readResponseSkippingGreeting();
+        assertThat(response.getStatus(), is(Status.FAILED));
+        assertThat(response.getRequestId(), is("stream-request"));
+        assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
     }
     
     @Test
@@ -427,6 +438,20 @@ class CDCChannelInboundHandlerTest {
         CDCResponse response = readResponseSkippingGreeting();
         verify(backendHandler).startStreaming("job-1", connectionContext, channel);
         assertThat(response.getStatus(), is(Status.SUCCEED));
+    }
+    
+    @Test
+    void assertStartStreamingRequestWithInvalidParameterException() {
+        channel.attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user));
+        when(backendHandler.getDatabaseNameByJobId("job-1")).thenReturn("logic_db");
+        doThrow(new PipelineInvalidParameterException("invalid job configuration")).when(backendHandler).startStreaming(any(), any(), any());
+        StartStreamingRequestBody body = StartStreamingRequestBody.newBuilder().setStreamingId("job-1").build();
+        CDCRequest request = CDCRequest.newBuilder().setType(Type.START_STREAMING).setRequestId("start-request").setStartStreamingRequestBody(body).build();
+        channel.writeInbound(request);
+        CDCResponse response = readResponseSkippingGreeting();
+        assertThat(response.getStatus(), is(Status.FAILED));
+        assertThat(response.getRequestId(), is("start-request"));
+        assertThat(response.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
     }
     
     @Test

@@ -144,6 +144,9 @@ identifierKeywordsUnambiguous
     | ANN
     | ANY
     | ARRAY
+    // DORIS ADDED BEGIN
+    | ARRAY_LAST
+    // DORIS ADDED END
     | AT
     | ATTRIBUTE
     | AUTOEXTEND_SIZE
@@ -1099,7 +1102,9 @@ aggregationExpression
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? aggregationExpression? collateClause? separatorName? RP_ overClause?
+    // DORIS CHANGED BEGIN
+    : aggregationFunctionName LP_ (distinct | all)? aggregationExpression? collateClause? separatorName? RP_ overClause?
+    // DORIS CHANGED END
     ;
 
 // DORIS ADDED BEGIN
@@ -1143,13 +1148,19 @@ aggregationFunctionName
 
 // DORIS ADDED BEGIN
 bitwiseBinaryFunctionName
-    : BITXOR | BITOR
+    : BITOR | BITXOR
     ;
 // DORIS ADDED END
 
 distinct
     : DISTINCT
     ;
+
+// DORIS ADDED BEGIN
+all
+    : ALL
+    ;
+// DORIS ADDED END
 
 overClause
     : OVER (windowSpecification | identifier)

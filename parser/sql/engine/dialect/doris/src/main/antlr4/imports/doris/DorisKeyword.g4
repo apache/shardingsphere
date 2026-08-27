@@ -95,6 +95,12 @@ ARRAY
     : A R R A Y
     ;
 
+// DORIS ADDED BEGIN
+ARRAY_LAST
+    : A R R A Y UL_ L A S T
+    ;
+// DORIS ADDED END
+
 AS
     : A S
     ;
@@ -147,9 +153,7 @@ ALIAS
 BITOR
     : B I T O R
     ;
-// DORIS ADDED END
 
-// DORIS ADDED BEGIN
 BITXOR
     : B I T X O R
     ;
