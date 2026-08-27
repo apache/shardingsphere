@@ -46,7 +46,6 @@ public final class EncryptParameterRewritersRegistry implements ParameterRewrite
     
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
-        String databaseName = sqlRewriteContext.getDatabase().getName();
         return Arrays.asList(
                 new EncryptAssignmentParameterRewriter(rule, sqlRewriteContext.getDatabase()),
                 new EncryptPredicateParameterRewriter(rule, encryptConditions),
