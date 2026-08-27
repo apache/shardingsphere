@@ -203,6 +203,27 @@ class WALEventConverterTest {
         assertThat(walEventConverter.convert(mockUnknownTableEvent()), isA(PlaceholderRecord.class));
     }
     
+    @Test
+    void assertConvertWithQuotedUpperCaseTable() {
+        PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
+        when(metaDataLoader.getTableMetaData("UPPER_SCHEMA", "UPPER_TABLE")).thenReturn(pipelineTableMetaData);
+        WALEventConverter converter = createSchemaAwareWALEventConverter("UPPER_TABLE", "UPPER_SCHEMA", metaDataLoader);
+        WriteRowEvent event = createWriteRowEvent("\"UPPER_SCHEMA\"");
+        event.setTableName("\"UPPER_TABLE\"");
+        assertThat(converter.convert(event), isA(DataRecord.class));
+        verify(metaDataLoader).getTableMetaData("UPPER_SCHEMA", "UPPER_TABLE");
+    }
+    
+    @Test
+    void assertConvertWithQuotedTableCaseCollision() {
+        PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
+        WALEventConverter converter = createSchemaAwareWALEventConverter("UPPER_TABLE", "UPPER_SCHEMA", metaDataLoader);
+        WriteRowEvent event = createWriteRowEvent("\"UPPER_SCHEMA\"");
+        event.setTableName("\"upper_table\"");
+        assertThat(converter.convert(event), isA(PlaceholderRecord.class));
+        verifyNoInteractions(metaDataLoader);
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideDifferentConcreteSchemaNames")
     void assertConvertWithDifferentConcreteSchema(final String name, final String expectedSchemaName, final String eventSchemaName) {
@@ -263,10 +284,14 @@ class WALEventConverterTest {
     }
     
     private WALEventConverter createSchemaAwareWALEventConverter(final String expectedSchemaName, final PipelineTableMetaDataLoader metaDataLoader) {
+        return createSchemaAwareWALEventConverter("t_order", expectedSchemaName, metaDataLoader);
+    }
+    
+    private WALEventConverter createSchemaAwareWALEventConverter(final String actualTableName, final String expectedSchemaName, final PipelineTableMetaDataLoader metaDataLoader) {
         PipelineDataSourceConfiguration dataSourceConfig = mock(PipelineDataSourceConfiguration.class);
         when(dataSourceConfig.getDatabaseType()).thenReturn(databaseType);
         DumperCommonContext commonContext = new DumperCommonContext(null, dataSourceConfig,
-                new ActualAndLogicTableNameMapper(Collections.singletonMap(new ShardingSphereIdentifier("t_order"), new ShardingSphereIdentifier("t_order"))),
+                new ActualAndLogicTableNameMapper(Collections.singletonMap(new ShardingSphereIdentifier(actualTableName), new ShardingSphereIdentifier("t_order"))),
                 new TableAndSchemaNameMapper(Collections.singletonMap("t_order", expectedSchemaName)));
         return new WALEventConverter(new IncrementalDumperContext(commonContext, null, false), metaDataLoader);
     }

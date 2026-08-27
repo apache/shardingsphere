@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationS
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.MigrateTableStatement;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,7 +73,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MigrateTableExecutorTest {
     
-    private static final String SOURCE_DATABASE_NAME = "foo_source";
+    private static final String SOURCE_DATABASE_NAME = "FOO_SOURCE";
     
     private static final String TARGET_DATABASE_NAME = "foo_target";
     
@@ -165,7 +167,11 @@ class MigrateTableExecutorTest {
             normalizeEngine.when(() -> IdentifierNormalizeEngine.resolvePolicy(schemaCapableDatabaseType, null, IdentifierScope.SCHEMA)).thenReturn(identifierCasePolicy);
             executor.executeUpdate(createStatement(sourceSchemaName), contextManager);
             verify(jobAPI).schedule(any(PipelineContextKey.class), entriesCaptor.capture(), eq(TARGET_DATABASE_NAME));
-            assertThat(entriesCaptor.getValue().iterator().next().getSource().getSchemaName(), is(expectedSchemaName));
+            MigrationSourceTargetEntry actual = entriesCaptor.getValue().iterator().next();
+            assertThat(actual.getSource().getDataSourceName(), is(SOURCE_DATABASE_NAME));
+            assertThat(actual.getSource().getSchemaName(), is(expectedSchemaName));
+            assertThat(actual.getSource().getTableName(), is("FOO_TBL"));
+            assertThat(actual.getTargetTableName(), is("foo_tbl"));
             schemaUtils.verify(() -> PipelineSchemaUtils.getDefaultSchema(any(StandardPipelineDataSourceConfiguration.class)), never());
         }
     }
@@ -195,7 +201,9 @@ class MigrateTableExecutorTest {
     }
     
     private MigrateTableStatement createStatement(final String sourceSchemaName) {
-        MigrationSourceTargetSegment entry = new MigrationSourceTargetSegment(SOURCE_DATABASE_NAME, sourceSchemaName, "foo_tbl", "foo_tbl");
+        MigrationSourceTargetSegment entry = new MigrationSourceTargetSegment(new IdentifierValue(SOURCE_DATABASE_NAME, QuoteCharacter.BACK_QUOTE),
+                null == sourceSchemaName ? null : new IdentifierValue(sourceSchemaName), new IdentifierValue("FOO_TBL", QuoteCharacter.BACK_QUOTE),
+                new IdentifierValue("foo_tbl", QuoteCharacter.NONE));
         return new MigrateTableStatement(null, Collections.singleton(entry));
     }
     

@@ -39,14 +39,17 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import java.util.Collection;
@@ -60,7 +63,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.withSettings;
 import static org.mockito.Mockito.when;
 
 class MigrationJobExecutorCallbackTest {
@@ -122,6 +127,27 @@ class MigrationJobExecutorCallbackTest {
         }
     }
     
+    @Test
+    void assertBuildJobItemContextWithPostgreSQLTargetIdentifiers() {
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
+                        (mock, context) -> when(mock.getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()).thenReturn(true));
+                MockedStatic<DatabaseTypeFactory> databaseTypeFactory = mockStatic(DatabaseTypeFactory.class);
+                MockedStatic<PipelineAPIFactory> pipelineAPIFactory = mockStatic(PipelineAPIFactory.class);
+                MockedStatic<PipelineContextManager> pipelineContextManager = mockStatic(PipelineContextManager.class)) {
+            mockDatabaseTypeFactory(databaseTypeFactory);
+            mockGovernanceFacade(pipelineAPIFactory, createSourceDataSourceYaml(10, 20));
+            mockProxyContext(pipelineContextManager);
+            MigrationJobItemContext actual = new MigrationJobExecutorCallback().buildJobItemContext(
+                    createPostgreSQLJobConfiguration(), 0, null, mockProcessContext(), mock(PipelineDataSourceManager.class));
+            CreateTableConfiguration actualCreateTableConfig = actual.getTaskConfig().getCreateTableConfigurations().iterator().next();
+            assertThat(actualCreateTableConfig.getSourceName(), is(new QualifiedTable("UPPER_SCHEMA", "UPPER_TABLE")));
+            assertThat(actualCreateTableConfig.getTargetName(), is(new QualifiedTable("upper_schema", "t_order")));
+            assertThat(actual.getTaskConfig().getImporterConfig().getTableAndSchemaNameMapper().getQualifiedTables(),
+                    is(Collections.singletonList(new QualifiedTable("upper_schema", "t_order"))));
+        }
+    }
+    
     private void mockDatabaseTypeFactory(final MockedStatic<DatabaseTypeFactory> databaseTypeFactory) {
         databaseTypeFactory.when(() -> DatabaseTypeFactory.get(anyString())).thenReturn(databaseType);
     }
@@ -164,11 +190,25 @@ class MigrationJobExecutorCallbackTest {
         sources.put(SOURCE_DATA_SOURCE_NAME, new StandardPipelineDataSourceConfiguration(createDataSourceProperties(SOURCE_JDBC_URL, 2, 3)));
         return new MigrationJobConfiguration(createJobId(), DATABASE_NAME, databaseType, databaseType, sources,
                 new ShardingSpherePipelineDataSourceConfiguration(createRootConfiguration(4, 5)), Collections.singletonList("t_order"),
-                Collections.singletonMap("t_order", "foo_schema"), createJobDataNodeLine(), Collections.singletonList(createJobDataNodeLine()), 1, 3);
+                null, createJobDataNodeLine(), Collections.singletonList(createJobDataNodeLine()), 1, 3);
+    }
+    
+    private MigrationJobConfiguration createPostgreSQLJobConfiguration() {
+        JobDataNodeLine jobDataNodeLine = new JobDataNodeLine(Collections.singletonList(
+                new JobDataNodeEntry("T_ORDER", Collections.singletonList(new DataNode(SOURCE_DATA_SOURCE_NAME, "UPPER_SCHEMA", "UPPER_TABLE")))));
+        Map<String, PipelineDataSourceConfiguration> sources = new LinkedHashMap<>(1, 1F);
+        sources.put(SOURCE_DATA_SOURCE_NAME, new StandardPipelineDataSourceConfiguration(createDataSourceProperties(SOURCE_JDBC_URL, 2, 3)));
+        return new MigrationJobConfiguration(createJobId(jobDataNodeLine), DATABASE_NAME, databaseType, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), sources,
+                new ShardingSpherePipelineDataSourceConfiguration(createRootConfiguration(4, 5)), Collections.singletonList("T_ORDER"),
+                Collections.singletonMap("T_ORDER", "UPPER_SCHEMA"), jobDataNodeLine, Collections.singletonList(jobDataNodeLine), 1, 3);
     }
     
     private String createJobId() {
-        return PipelineJobIdUtils.marshal(new MigrationJobId(new PipelineContextKey(InstanceType.PROXY), Collections.singletonList(createJobDataNodeLine().marshal())));
+        return createJobId(createJobDataNodeLine());
+    }
+    
+    private String createJobId(final JobDataNodeLine jobDataNodeLine) {
+        return PipelineJobIdUtils.marshal(new MigrationJobId(new PipelineContextKey(InstanceType.PROXY), Collections.singletonList(jobDataNodeLine.marshal())));
     }
     
     private JobDataNodeLine createJobDataNodeLine() {

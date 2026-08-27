@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -70,26 +71,27 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
     private Collection<MigrationSourceTargetEntry> getMigrationSourceTargetEntries(final PipelineContextKey contextKey, final MigrateTableStatement sqlStatement) {
         Collection<MigrationSourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
-            String schemaName = getSchemaName(contextKey, each.getSourceDatabaseName(), each.getSourceSchemaName()).orElse(null);
+            String schemaName = getSchemaName(contextKey, each.getSourceDatabaseName(), each.getSourceSchemaIdentifier()).orElse(null);
             result.add(new MigrationSourceTargetEntry(new DataNode(each.getSourceDatabaseName(), schemaName, each.getSourceTableName()), each.getTargetTableName()));
         }
         return result;
     }
     
-    private Optional<String> getSchemaName(final PipelineContextKey contextKey, final String sourceDatabaseName, final String sourceSchemaName) {
+    private Optional<String> getSchemaName(final PipelineContextKey contextKey, final String sourceDatabaseName, final IdentifierValue sourceSchemaIdentifier) {
         Map<String, DataSourcePoolProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(contextKey, "MIGRATION");
         DataSourcePoolProperties sourceDataSourcePoolProps = metaDataDataSource.get(sourceDatabaseName);
         if (null == sourceDataSourcePoolProps) {
-            return Optional.ofNullable(sourceSchemaName);
+            return Optional.ofNullable(sourceSchemaIdentifier).map(IdentifierValue::getValue);
         }
         Map<String, Object> sourceDataSourceProps = new YamlDataSourceConfigurationSwapper().swapToMap(sourceDataSourcePoolProps);
         StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
         if (!new DatabaseTypeRegistry(sourceDataSourceConfig.getDatabaseType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
-            return Optional.ofNullable(sourceSchemaName);
+            return Optional.ofNullable(sourceSchemaIdentifier).map(IdentifierValue::getValue);
         }
-        return Optional.ofNullable(null == sourceSchemaName
+        return Optional.ofNullable(null == sourceSchemaIdentifier
                 ? PipelineSchemaUtils.getDefaultSchema(sourceDataSourceConfig)
-                : IdentifierNormalizeEngine.normalize(IdentifierNormalizeEngine.resolvePolicy(sourceDataSourceConfig.getDatabaseType(), null, IdentifierScope.SCHEMA), sourceSchemaName));
+                : IdentifierNormalizeEngine.normalize(IdentifierNormalizeEngine.resolvePolicy(sourceDataSourceConfig.getDatabaseType(), null, IdentifierScope.SCHEMA),
+                        sourceSchemaIdentifier.getValueWithQuoteCharacters()));
     }
     
     @Override
