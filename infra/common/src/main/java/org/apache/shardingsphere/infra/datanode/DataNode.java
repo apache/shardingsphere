@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -71,29 +71,25 @@ public final class DataNode {
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
         DatabaseTypeRegistry registry = new DatabaseTypeRegistry(databaseType);
-        DialectDatabaseMetaData dialectDatabaseMetaData = registry.getDialectDatabaseMetaData();
-        boolean isSchemaCandidate = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && !hasInvalidDelimiterStructure(dataNode);
-        List<String> segments = isSchemaCandidate ? Splitter.on(DELIMITER).splitToList(dataNode) : Splitter.on(DELIMITER).limit(2).splitToList(dataNode);
-        boolean isIncludeSchema = isSchemaCandidate && 3 == segments.size() && areSegmentsValid(segments);
+        DialectSchemaOption schemaOption = registry.getDialectDatabaseMetaData().getSchemaOption();
+        boolean canContainSchema = schemaOption.isSchemaAvailable() && !hasInvalidDelimiterStructure(dataNode);
+        List<String> segments = canContainSchema ? Splitter.on(DELIMITER).splitToList(dataNode) : Splitter.on(DELIMITER).limit(2).splitToList(dataNode);
+        boolean containsSchema = canContainSchema && 3 == segments.size() && areSegmentsValid(segments);
         String defaultSchemaName = registry.getDefaultSchemaName(databaseName);
         dataSourceName = segments.get(0);
-        schemaName = getSchemaName(dialectDatabaseMetaData, isIncludeSchema, segments, defaultSchemaName);
-        tableName = getTableName(dataNode, isIncludeSchema, segments);
+        schemaName = getSchemaName(schemaOption, containsSchema, segments, defaultSchemaName);
+        tableName = getTableName(dataNode, containsSchema, segments);
     }
     
-    private String getSchemaName(final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments,
-                                 final String defaultSchemaName) {
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(defaultSchemaName);
+    private String getSchemaName(final DialectSchemaOption schemaOption, final boolean containsSchema, final List<String> segments, final String defaultSchemaName) {
+        return schemaOption.getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(defaultSchemaName);
     }
     
-    private String getTableName(final String dataNode, final boolean isIncludeSchema, final List<String> segments) {
+    private String getTableName(final String dataNode, final boolean containsSchema, final List<String> segments) {
         if (2 == segments.size()) {
             return segments.get(1);
         }
-        if (isIncludeSchema) {
-            return segments.get(2);
-        }
-        return dataNode.substring(dataNode.indexOf(DELIMITER) + 1);
+        return containsSchema ? segments.get(2) : dataNode.substring(dataNode.indexOf(DELIMITER) + 1);
     }
     
     private boolean hasInvalidDelimiterStructure(final String dataNodeStr) {
