@@ -72,12 +72,13 @@ public final class DataNode {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
         DatabaseTypeRegistry registry = new DatabaseTypeRegistry(databaseType);
         DialectDatabaseMetaData dialectDatabaseMetaData = registry.getDialectDatabaseMetaData();
-        boolean containsSchema = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && isValidDataNode(dataNode, 3);
+        boolean isSchemaCandidate = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && !hasInvalidDelimiterStructure(dataNode);
+        List<String> segments = isSchemaCandidate ? Splitter.on(DELIMITER).splitToList(dataNode) : Splitter.on(DELIMITER).limit(2).splitToList(dataNode);
+        boolean isIncludeSchema = isSchemaCandidate && 3 == segments.size() && areSegmentsValid(segments);
         String defaultSchemaName = registry.getDefaultSchemaName(databaseName);
-        List<String> segments = Splitter.on(DELIMITER).limit(containsSchema ? 3 : 2).splitToList(dataNode);
         dataSourceName = segments.get(0);
-        schemaName = getSchemaName(dialectDatabaseMetaData, containsSchema, segments, defaultSchemaName);
-        tableName = containsSchema ? segments.get(2) : segments.get(1);
+        schemaName = getSchemaName(dialectDatabaseMetaData, isIncludeSchema, segments, defaultSchemaName);
+        tableName = getTableName(dataNode, isIncludeSchema, segments);
     }
     
     private String getSchemaName(final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments,
@@ -85,12 +86,14 @@ public final class DataNode {
         return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(defaultSchemaName);
     }
     
-    private boolean isValidDataNode(final String dataNodeStr, final int tier) {
-        if (hasInvalidDelimiterStructure(dataNodeStr)) {
-            return false;
+    private String getTableName(final String dataNode, final boolean isIncludeSchema, final List<String> segments) {
+        if (2 == segments.size()) {
+            return segments.get(1);
         }
-        List<String> segments = Splitter.on(DELIMITER).splitToList(dataNodeStr);
-        return tier == segments.size() && areSegmentsValid(segments);
+        if (isIncludeSchema) {
+            return segments.get(2);
+        }
+        return dataNode.substring(dataNode.indexOf(DELIMITER) + 1);
     }
     
     private boolean hasInvalidDelimiterStructure(final String dataNodeStr) {
