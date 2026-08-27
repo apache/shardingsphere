@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -46,7 +48,8 @@ public final class OracleCreatePackageStatement extends DDLStatement implements 
     
     private final PackageSegment packageName;
     
-    private final Optional<PackageSegment> packageEndName;
+    @Getter(AccessLevel.NONE)
+    private final PackageSegment packageEndName;
     
     private final boolean body;
     
@@ -54,15 +57,20 @@ public final class OracleCreatePackageStatement extends DDLStatement implements 
     
     private final boolean ifNotExists;
     
-    private final Optional<Edition> edition;
+    @Getter(AccessLevel.NONE)
+    private final Edition edition;
     
-    private final Optional<Authorization> authorization;
+    @Getter(AccessLevel.NONE)
+    private final Authorization authorization;
     
-    private final Optional<RoutineBodySegment> initialization;
+    @Getter(AccessLevel.NONE)
+    private final RoutineBodySegment initialization;
     
     private final List<SQLStatementSegment> sqlStatements = new ArrayList<>();
     
     private final List<ProcedureCallNameSegment> procedureCallNames = new ArrayList<>();
+    
+    private final List<FunctionNameSegment> packageRoutineNames = new ArrayList<>();
     
     private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
     
@@ -91,14 +99,46 @@ public final class OracleCreatePackageStatement extends DDLStatement implements 
                                         final RoutineBodySegment initialization, final Collection<SimpleTableSegment> tables) {
         super(databaseType);
         this.packageName = packageName;
-        this.packageEndName = Optional.ofNullable(packageEndName);
+        this.packageEndName = packageEndName;
         this.body = body;
         this.replace = replace;
         this.ifNotExists = ifNotExists;
-        this.edition = Optional.ofNullable(edition);
-        this.authorization = Optional.ofNullable(authorization);
-        this.initialization = Optional.ofNullable(initialization);
+        this.edition = edition;
+        this.authorization = authorization;
+        this.initialization = initialization;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables), new ProcedureCallNamesSQLStatementAttribute(procedureCallNames));
+    }
+    
+    @Override
+    public Optional<PackageSegment> getPackageEndName() {
+        return Optional.ofNullable(packageEndName);
+    }
+    
+    /**
+     * Get package edition mode.
+     *
+     * @return package edition mode
+     */
+    public Optional<Edition> getEdition() {
+        return Optional.ofNullable(edition);
+    }
+    
+    /**
+     * Get package authorization mode.
+     *
+     * @return package authorization mode
+     */
+    public Optional<Authorization> getAuthorization() {
+        return Optional.ofNullable(authorization);
+    }
+    
+    /**
+     * Get package initialization body.
+     *
+     * @return package initialization body
+     */
+    public Optional<RoutineBodySegment> getInitialization() {
+        return Optional.ofNullable(initialization);
     }
     
     /**

@@ -123,6 +123,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Cursor
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorForLoopStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorParameterDecContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeclareItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DisassociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropClusterContext;
@@ -170,6 +171,9 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Flashb
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForLoopStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForallStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionDeclarationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexExpressionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
@@ -193,16 +197,20 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfL
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineRefConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PackageNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PackageSpecificationItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterDeclarationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PartitionExtendedNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlFunctionSourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlPackageBodySourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlPackageSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlProcedureSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlStatementsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlTriggerSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlaceholderContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureCallContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureDeclarationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PseudorecordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PurgeContext;
@@ -913,7 +921,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCreatePackage(final CreatePackageContext ctx) {
-        OracleStatementParser.PlsqlPackageBodySourceContext body = ctx.plsqlPackageBodySource();
+        PlsqlPackageBodySourceContext body = ctx.plsqlPackageBodySource();
         if (null != body) {
             body.declareItem().forEach(this::visit);
         }
@@ -946,9 +954,53 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         result.getColumns().addAll(typeAttributeSegments.getColumns());
         result.getSqlStatements().addAll(getSqlStatementsInPlsql());
         result.getProcedureCallNames().addAll(getProcedureCallNames());
+        result.getPackageRoutineNames().addAll(extractPackageRoutineNames(specification, body));
         result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
         result.getCursorForLoopStatements().addAll(getCursorForLoopStatementSegments());
         return result;
+    }
+    
+    private Collection<FunctionNameSegment> extractPackageRoutineNames(final PlsqlPackageSourceContext specification, final PlsqlPackageBodySourceContext body) {
+        Collection<FunctionNameSegment> result = new LinkedList<>();
+        if (null != specification) {
+            for (PackageSpecificationItemContext each : specification.packageSpecificationItem()) {
+                addPackageRoutineName(result, each.functionDeclaration());
+                addPackageRoutineName(result, each.procedureDeclaration());
+            }
+        }
+        if (null != body) {
+            for (DeclareItemContext each : body.declareItem()) {
+                addPackageRoutineName(result, each.functionDeclaration());
+                addPackageRoutineName(result, each.procedureDeclaration());
+                addPackageRoutineName(result, each.functionDefinition());
+                addPackageRoutineName(result, each.procedureDefinition());
+            }
+        }
+        return result;
+    }
+    
+    private void addPackageRoutineName(final Collection<FunctionNameSegment> routineNames, final FunctionDeclarationContext declaration) {
+        if (null != declaration) {
+            routineNames.add(createFunctionNameSegment(declaration.functionHeading().functionName()));
+        }
+    }
+    
+    private void addPackageRoutineName(final Collection<FunctionNameSegment> routineNames, final ProcedureDeclarationContext declaration) {
+        if (null != declaration) {
+            routineNames.add(createProcedureNameSegment(null, declaration.procedureHeading().procedureName()));
+        }
+    }
+    
+    private void addPackageRoutineName(final Collection<FunctionNameSegment> routineNames, final FunctionDefinitionContext definition) {
+        if (null != definition) {
+            routineNames.add(createFunctionNameSegment(definition.functionHeading().functionName()));
+        }
+    }
+    
+    private void addPackageRoutineName(final Collection<FunctionNameSegment> routineNames, final ProcedureDefinitionContext definition) {
+        if (null != definition) {
+            addPackageRoutineName(routineNames, definition.procedureDeclaration());
+        }
     }
     
     @Override
@@ -1517,6 +1569,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         FunctionNameSegment result = new FunctionNameSegment(ctx.owner().start.getStartIndex(), ctx.name().stop.getStopIndex(), functionName);
         result.setOwner(owner);
         return result;
+    }
+    
+    private FunctionNameSegment createFunctionNameSegment(final FunctionNameContext ctx) {
+        return new FunctionNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     private FunctionNameSegment createFunctionNameSegment(final SchemaNameContext schemaName, final FunctionContext function) {

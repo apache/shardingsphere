@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg;
 
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
@@ -72,6 +73,13 @@ public interface CreatePackageStatement {
      * @return procedure call names
      */
     Collection<ProcedureCallNameSegment> getProcedureCallNames();
+    
+    /**
+     * Get package routine names.
+     *
+     * @return package routine names
+     */
+    Collection<FunctionNameSegment> getPackageRoutineNames();
     
     /**
      * Get dynamic SQL statement expressions.
