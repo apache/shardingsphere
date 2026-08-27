@@ -148,6 +148,7 @@ class DataNodeTest {
         return Stream.of(
                 Arguments.of("postgresql_with_schema", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.schema.tbl", "ds", "schema", "tbl"),
                 Arguments.of("postgresql_without_schema_segment", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.tbl", "ds", "*", "tbl"),
+                Arguments.of("postgresql_dotted_table_suffix", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.schema.tbl.part", "ds", "*", "schema.tbl.part"),
                 Arguments.of("mysql_without_schema_support", "test_db", MYSQL_DATABASE_TYPE, "ds.tbl", "ds", "test_db", "tbl"),
                 Arguments.of("mysql_three_segments_kept_as_table_suffix", "test_db", MYSQL_DATABASE_TYPE, "ds.schema.tbl", "ds", "test_db", "schema.tbl"),
                 Arguments.of("postgresql_preserves_table_case", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.schema.TABLE", "ds", "schema", "TABLE"),
