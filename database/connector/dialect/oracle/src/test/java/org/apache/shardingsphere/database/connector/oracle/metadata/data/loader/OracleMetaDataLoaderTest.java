@@ -33,28 +33,40 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class OracleMetaDataLoaderTest {
     
     private static final String NO_COLLATION = "";
     
-    private static final String ALL_CONSTRAINTS_SQL_WITH_TABLES = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A"
-            + " INNER JOIN ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = 'TEST' AND A.TABLE_NAME IN ('tbl')";
+    private static final String ALL_PRIMARY_KEY_CONSTRAINTS_SQL =
+            "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, CONSTRAINT_NAME FROM ALL_CONSTRAINTS WHERE CONSTRAINT_TYPE = 'P' AND OWNER = ? AND TABLE_NAME IN ('tbl')";
+    
+    private static final String ALL_PRIMARY_KEY_COLUMNS_SQL =
+            "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME FROM ALL_CONS_COLUMNS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') AND CONSTRAINT_NAME IN ('foo_pk')";
     
     private static final String ALL_INDEXES_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, UNIQUENESS FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')";
     
@@ -85,10 +97,12 @@ class OracleMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet(collation);
         ResultSet indexMetaDataResultSet = mockIndexMetaDataResultSet();
-        ResultSet primaryKeysResultSet = withPrimaryKey ? mockPrimaryKeysMetaDataResultSet() : mock(ResultSet.class);
+        ResultSet primaryKeyConstraintsResultSet = withPrimaryKey ? mockPrimaryKeyConstraintsMetaDataResultSet() : mock(ResultSet.class);
+        ResultSet primaryKeyColumnsResultSet = mockPrimaryKeyColumnsMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(getTableMetaDataSQL(majorVersion, minorVersion)).executeQuery()).thenReturn(tableMetaDataResultSet);
         when(dataSource.getConnection().prepareStatement(ALL_INDEXES_SQL).executeQuery()).thenReturn(indexMetaDataResultSet);
-        when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeysResultSet);
+        when(dataSource.getConnection().prepareStatement(ALL_PRIMARY_KEY_CONSTRAINTS_SQL).executeQuery()).thenReturn(primaryKeyConstraintsResultSet);
+        when(dataSource.getConnection().prepareStatement(ALL_PRIMARY_KEY_COLUMNS_SQL).executeQuery()).thenReturn(primaryKeyColumnsResultSet);
         when(dataSource.getConnection().getMetaData().getUserName()).thenReturn("TEST");
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(majorVersion);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(minorVersion);
@@ -101,6 +115,47 @@ class OracleMetaDataLoaderTest {
     }
     
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertLoadPrimaryKeysArguments")
+    void assertLoadPrimaryKeys(final String name, final Collection<String> tableNames, final Collection<String> constraintNames,
+                               final Collection<String> primaryKeyTableNames, final Collection<String> primaryKeyColumnNames) throws SQLException {
+        DataSource dataSource = mockDataSource();
+        Connection connection = dataSource.getConnection();
+        ResultSet tableMetaDataResultSet = mockMultipleTableMetaDataResultSet(tableNames);
+        ResultSet primaryKeyConstraintsResultSet = mockPrimaryKeyConstraintRows(constraintNames);
+        ResultSet primaryKeyColumnsResultSet = mockPrimaryKeyColumnRows(primaryKeyTableNames, primaryKeyColumnNames);
+        when(connection.prepareStatement(getMultipleTableMetaDataSQL(tableNames)).executeQuery()).thenReturn(tableMetaDataResultSet);
+        when(connection.prepareStatement(getPrimaryKeyConstraintsSQL(tableNames)).executeQuery()).thenReturn(primaryKeyConstraintsResultSet);
+        when(connection.prepareStatement(getPrimaryKeyColumnsSQL(tableNames, constraintNames)).executeQuery()).thenReturn(primaryKeyColumnsResultSet);
+        when(connection.getMetaData().getUserName()).thenReturn("TEST");
+        when(connection.getMetaData().getDatabaseMajorVersion()).thenReturn(12);
+        when(connection.getMetaData().getDatabaseMinorVersion()).thenReturn(2);
+        clearInvocations(connection);
+        Collection<SchemaMetaData> actualSchemaMetaData = loadMetaData(dataSource, tableNames);
+        assertPrimaryKeys(actualSchemaMetaData.iterator().next().getTables(), primaryKeyTableNames, primaryKeyColumnNames);
+        verify(connection).prepareStatement(getPrimaryKeyConstraintsSQL(tableNames));
+        verify(connection).prepareStatement(getPrimaryKeyColumnsSQL(tableNames, constraintNames));
+    }
+    
+    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
+    @Test
+    void assertLoadWithoutPrimaryKeyColumnsQuery() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        Connection connection = dataSource.getConnection();
+        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet("BINARY");
+        when(connection.prepareStatement(ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION).executeQuery()).thenReturn(tableMetaDataResultSet);
+        when(connection.prepareStatement(ALL_PRIMARY_KEY_CONSTRAINTS_SQL).executeQuery()).thenReturn(mock(ResultSet.class));
+        when(connection.getMetaData().getUserName()).thenReturn("TEST");
+        when(connection.getMetaData().getDatabaseMajorVersion()).thenReturn(12);
+        when(connection.getMetaData().getDatabaseMinorVersion()).thenReturn(2);
+        TableMetaData actualTableMetaData = assertAndGetSingleTableMetaData(loadMetaData(dataSource));
+        for (ColumnMetaData each : actualTableMetaData.getColumns()) {
+            assertFalse(each.isPrimaryKey());
+        }
+        verify(connection, never()).prepareStatement(ALL_PRIMARY_KEY_COLUMNS_SQL);
+    }
+    
+    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
     @Test
     void assertLoadWithViewAndMultipleIndexes() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -108,12 +163,14 @@ class OracleMetaDataLoaderTest {
         ResultSet indexMetaDataResultSet = mockIndexMetaDataResultSetWithMultipleIndexes();
         ResultSet indexColumnMetaDataResultSet = mockIndexColumnMetaDataResultSetWithMultipleIndexes();
         ResultSet viewMetaDataResultSet = mockViewMetaDataResultSet();
-        ResultSet primaryKeysResultSet = mockPrimaryKeysMetaDataResultSet();
+        ResultSet primaryKeyConstraintsResultSet = mockPrimaryKeyConstraintsMetaDataResultSet();
+        ResultSet primaryKeyColumnsResultSet = mockPrimaryKeyColumnsMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION).executeQuery()).thenReturn(tableMetaDataResultSet);
         when(dataSource.getConnection().prepareStatement(ALL_INDEXES_SQL).executeQuery()).thenReturn(indexMetaDataResultSet);
         when(dataSource.getConnection().prepareStatement(ALL_INDEX_COLUMNS_SQL_WITH_MULTIPLE_INDEXES).executeQuery()).thenReturn(indexColumnMetaDataResultSet);
         when(dataSource.getConnection().prepareStatement(ALL_VIEWS_SQL).executeQuery()).thenReturn(viewMetaDataResultSet);
-        when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeysResultSet);
+        when(dataSource.getConnection().prepareStatement(ALL_PRIMARY_KEY_CONSTRAINTS_SQL).executeQuery()).thenReturn(primaryKeyConstraintsResultSet);
+        when(dataSource.getConnection().prepareStatement(ALL_PRIMARY_KEY_COLUMNS_SQL).executeQuery()).thenReturn(primaryKeyColumnsResultSet);
         when(dataSource.getConnection().getMetaData().getUserName()).thenReturn("TEST");
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
@@ -129,9 +186,11 @@ class OracleMetaDataLoaderTest {
     void assertLoadWithoutIndexes() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet("BINARY");
-        ResultSet primaryKeysResultSet = mockPrimaryKeysMetaDataResultSet();
+        ResultSet primaryKeyConstraintsResultSet = mockPrimaryKeyConstraintsMetaDataResultSet();
+        ResultSet primaryKeyColumnsResultSet = mockPrimaryKeyColumnsMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION).executeQuery()).thenReturn(tableMetaDataResultSet);
-        when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeysResultSet);
+        when(dataSource.getConnection().prepareStatement(ALL_PRIMARY_KEY_CONSTRAINTS_SQL).executeQuery()).thenReturn(primaryKeyConstraintsResultSet);
+        when(dataSource.getConnection().prepareStatement(ALL_PRIMARY_KEY_COLUMNS_SQL).executeQuery()).thenReturn(primaryKeyColumnsResultSet);
         when(dataSource.getConnection().getMetaData().getUserName()).thenReturn("TEST");
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
@@ -200,12 +259,80 @@ class OracleMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockPrimaryKeysMetaDataResultSet() throws SQLException {
+    private ResultSet mockPrimaryKeyConstraintsMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("CONSTRAINT_NAME")).thenReturn("foo_pk");
+        return result;
+    }
+    
+    private ResultSet mockPrimaryKeyColumnsMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         when(result.getString("COLUMN_NAME")).thenReturn("id");
         return result;
+    }
+    
+    private ResultSet mockPrimaryKeyConstraintRows(final Collection<String> constraintNames) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        List<String> constraints = new ArrayList<>(constraintNames);
+        AtomicInteger rowIndex = new AtomicInteger(-1);
+        when(result.next()).thenAnswer(ignored -> rowIndex.incrementAndGet() < constraints.size());
+        when(result.getString("CONSTRAINT_NAME")).thenAnswer(ignored -> constraints.get(rowIndex.get()));
+        return result;
+    }
+    
+    private ResultSet mockPrimaryKeyColumnRows(final Collection<String> tableNames, final Collection<String> columnNames) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        List<String> tables = new ArrayList<>(tableNames);
+        List<String> columns = new ArrayList<>(columnNames);
+        AtomicInteger rowIndex = new AtomicInteger(-1);
+        when(result.next()).thenAnswer(ignored -> rowIndex.incrementAndGet() < columns.size());
+        when(result.getString("TABLE_NAME")).thenAnswer(ignored -> tables.get(rowIndex.get()));
+        when(result.getString("COLUMN_NAME")).thenAnswer(ignored -> columns.get(rowIndex.get()));
+        return result;
+    }
+    
+    private ResultSet mockMultipleTableMetaDataResultSet(final Collection<String> tableNames) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        Collection<String> tables = new LinkedList<>();
+        Collection<String> columns = new LinkedList<>();
+        for (String each : tableNames) {
+            tables.addAll(Arrays.asList(each, each, each));
+            columns.addAll(Arrays.asList("id", "tenant_id", "name"));
+        }
+        List<String> tableNamesByRow = new ArrayList<>(tables);
+        List<String> columnNamesByRow = new ArrayList<>(columns);
+        AtomicInteger rowIndex = new AtomicInteger(-1);
+        when(result.next()).thenAnswer(ignored -> rowIndex.incrementAndGet() < columnNamesByRow.size());
+        when(result.getString("TABLE_NAME")).thenAnswer(ignored -> tableNamesByRow.get(rowIndex.get()));
+        when(result.getString("COLUMN_NAME")).thenAnswer(ignored -> columnNamesByRow.get(rowIndex.get()));
+        when(result.getString("DATA_TYPE")).thenReturn("int");
+        when(result.getString("HIDDEN_COLUMN")).thenReturn("NO");
+        when(result.getString("IDENTITY_COLUMN")).thenReturn("NO");
+        when(result.getString("COLLATION")).thenReturn("BINARY");
+        when(result.getString("NULLABLE")).thenReturn("Y");
+        return result;
+    }
+    
+    private String getMultipleTableMetaDataSQL(final Collection<String> tableNames) {
+        return "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN, COLLATION"
+                + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN (" + quote(tableNames) + ") ORDER BY COLUMN_ID";
+    }
+    
+    private String getPrimaryKeyConstraintsSQL(final Collection<String> tableNames) {
+        return "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, CONSTRAINT_NAME FROM ALL_CONSTRAINTS WHERE CONSTRAINT_TYPE = 'P' AND OWNER = ? AND TABLE_NAME IN ("
+                + quote(tableNames) + ")";
+    }
+    
+    private String getPrimaryKeyColumnsSQL(final Collection<String> tableNames, final Collection<String> constraintNames) {
+        return "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME FROM ALL_CONS_COLUMNS WHERE OWNER = ? AND TABLE_NAME IN (" + quote(tableNames)
+                + ") AND CONSTRAINT_NAME IN (" + quote(constraintNames) + ")";
+    }
+    
+    private String quote(final Collection<String> values) {
+        return values.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(","));
     }
     
     private String getTableMetaDataSQL(final int majorVersion, final int minorVersion) {
@@ -224,8 +351,12 @@ class OracleMetaDataLoaderTest {
     }
     
     private Collection<SchemaMetaData> loadMetaData(final DataSource dataSource) throws SQLException {
+        return loadMetaData(dataSource, Collections.singleton("tbl"));
+    }
+    
+    private Collection<SchemaMetaData> loadMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
         DataTypeRegistry.load(dataSource, "Oracle");
-        return dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
+        return dialectMetaDataLoader.load(new MetaDataLoaderMaterial(tableNames, "foo_ds", dataSource, databaseType, "sharding_db"));
     }
     
     private TableMetaData assertAndGetSingleTableMetaData(final Collection<SchemaMetaData> schemaMetaDataList) {
@@ -254,6 +385,22 @@ class OracleMetaDataLoaderTest {
         assertThat(actual.isUnique(), is(expected.isUnique()));
     }
     
+    private void assertPrimaryKeys(final Collection<TableMetaData> actualTables, final Collection<String> primaryKeyTableNames,
+                                   final Collection<String> primaryKeyColumnNames) {
+        List<String> tables = new ArrayList<>(primaryKeyTableNames);
+        List<String> columns = new ArrayList<>(primaryKeyColumnNames);
+        Collection<String> expectedPrimaryKeys = new LinkedList<>();
+        for (int i = 0; i < columns.size(); i++) {
+            expectedPrimaryKeys.add(tables.get(i) + "." + columns.get(i));
+        }
+        for (TableMetaData each : actualTables) {
+            for (ColumnMetaData column : each.getColumns()) {
+                boolean expectedPrimaryKey = expectedPrimaryKeys.contains(each.getName() + "." + column.getName());
+                assertThat(column.isPrimaryKey(), is(expectedPrimaryKey));
+            }
+        }
+    }
+    
     private static Stream<Arguments> assertLoadArguments() {
         return Stream.of(
                 Arguments.of("major12Minor2WithoutPrimaryKey", 12, 2, false, "BINARY", true),
@@ -277,5 +424,15 @@ class OracleMetaDataLoaderTest {
                 Arguments.of("major12Minor2UsingNLSSortAccentInsensitive", 12, 2, true, "USING_NLS_SORT_AI", false),
                 Arguments.of("major12Minor2UsingNLSComp", 12, 2, true, "USING_NLS_COMP", false),
                 Arguments.of("major12Minor2UsingNLSSort", 12, 2, true, "USING_NLS_SORT", false));
+    }
+    
+    private static Stream<Arguments> assertLoadPrimaryKeysArguments() {
+        return Stream.of(
+                Arguments.of("singlePrimaryKey", Collections.singletonList("tbl"), Collections.singletonList("foo_pk"), Collections.singletonList("tbl"), Collections.singletonList("id")),
+                Arguments.of("compositePrimaryKey", Collections.singletonList("tbl"), Collections.singletonList("foo_pk"), Arrays.asList("tbl", "tbl"), Arrays.asList("id", "tenant_id")),
+                Arguments.of("differentPrimaryKeys", Arrays.asList("foo_tbl", "bar_tbl"), Arrays.asList("foo_pk", "bar_pk"),
+                        Arrays.asList("foo_tbl", "bar_tbl"), Arrays.asList("id", "tenant_id")),
+                Arguments.of("mixedPrimaryKeys", Arrays.asList("foo_tbl", "bar_tbl"), Collections.singletonList("foo_pk"), Collections.singletonList("foo_tbl"), Collections.singletonList("id")),
+                Arguments.of("missingPrimaryKeyColumns", Collections.singletonList("tbl"), Collections.singletonList("foo_pk"), Collections.emptyList(), Collections.emptyList()));
     }
 }

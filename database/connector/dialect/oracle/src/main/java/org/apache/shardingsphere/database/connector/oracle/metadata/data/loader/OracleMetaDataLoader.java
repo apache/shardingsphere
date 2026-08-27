@@ -68,10 +68,13 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String INDEX_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, UNIQUENESS FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN (%s)";
     
-    private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A INNER JOIN"
-            + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = '%s'";
+    private static final String PRIMARY_KEY_CONSTRAINT_META_DATA_SQL =
+            "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, CONSTRAINT_NAME FROM ALL_CONSTRAINTS WHERE CONSTRAINT_TYPE = 'P' AND OWNER = ?";
     
-    private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND A.TABLE_NAME IN (%s)";
+    private static final String PRIMARY_KEY_CONSTRAINT_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_CONSTRAINT_META_DATA_SQL + " AND TABLE_NAME IN (%s)";
+    
+    private static final String PRIMARY_KEY_COLUMN_META_DATA_SQL =
+            "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME FROM ALL_CONS_COLUMNS WHERE OWNER = ? AND TABLE_NAME IN (%s) AND CONSTRAINT_NAME IN (%s)";
     
     private static final String INDEX_COLUMN_META_DATA_SQL = "SELECT INDEX_NAME, COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND INDEX_NAME IN (%s)";
     
@@ -258,8 +261,32 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
+        Collection<String> constraintNames = loadPrimaryKeyConstraints(connection, tableNames);
+        return constraintNames.isEmpty() ? Collections.emptyMap() : loadPrimaryKeyColumns(connection, tableNames, constraintNames);
+    }
+    
+    private Collection<String> loadPrimaryKeyConstraints(final Connection connection, final Collection<String> tableNames) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyConstraintMetaDataSQL(tableNames))) {
+            preparedStatement.setString(1, connection.getSchema());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    result.add(resultSet.getString("CONSTRAINT_NAME"));
+                }
+            }
+        }
+        return result;
+    }
+    
+    private String getPrimaryKeyConstraintMetaDataSQL(final Collection<String> tableNames) {
+        return String.format(PRIMARY_KEY_CONSTRAINT_META_DATA_SQL_IN_TABLES, tableNames.stream().map(QuoteCharacter.SINGLE_QUOTE::wrap).collect(Collectors.joining(",")));
+    }
+    
+    private Map<String, Collection<String>> loadPrimaryKeyColumns(final Connection connection, final Collection<String> tableNames,
+                                                                  final Collection<String> constraintNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(connection.getSchema(), tableNames))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyColumnMetaDataSQL(tableNames, constraintNames))) {
+            preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String columnName = resultSet.getString("COLUMN_NAME");
@@ -271,8 +298,9 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
         return result;
     }
     
-    private String getPrimaryKeyMetaDataSQL(final String schemaName, final Collection<String> tables) {
-        return String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, schemaName, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    private String getPrimaryKeyColumnMetaDataSQL(final Collection<String> tableNames, final Collection<String> constraintNames) {
+        return String.format(PRIMARY_KEY_COLUMN_META_DATA_SQL, tableNames.stream().map(QuoteCharacter.SINGLE_QUOTE::wrap).collect(Collectors.joining(",")),
+                constraintNames.stream().map(QuoteCharacter.SINGLE_QUOTE::wrap).collect(Collectors.joining(",")));
     }
     
     @Override
