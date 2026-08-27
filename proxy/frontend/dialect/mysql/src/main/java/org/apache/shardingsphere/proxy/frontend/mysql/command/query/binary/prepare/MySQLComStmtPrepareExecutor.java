@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
@@ -101,26 +102,29 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private Collection<DatabasePacket> createPackets(final SQLStatementContext sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
-        Collection<Projection> projections = getProjections(sqlStatementContext);
-        Collection<DatabasePacket> result = new ArrayList<>(sqlStatementContext.getSqlStatement().getParameterCount() + projections.size() + 3);
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
         ShardingSpherePreconditions.checkState(parameterCount <= MAX_PARAMETER_COUNT, TooManyPlaceholdersException::new);
-        result.add(new MySQLComStmtPrepareOKPacket(statementId, projections.size(), parameterCount, 0));
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
+        Collection<MySQLPacket> parameterColumnDefinitions = parameterCount > 0
+                ? createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement)
+                : Collections.emptyList();
+        Collection<MySQLPacket> projectionColumnDefinitions = sqlStatementContext instanceof SelectStatementContext
+                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty()
+                        ? createProjectionColumnDefinition41Packets((SelectStatementContext) sqlStatementContext, characterSet, serverPreparedStatement)
+                        : Collections.emptyList();
+        Collection<DatabasePacket> result = new ArrayList<>(parameterColumnDefinitions.size() + projectionColumnDefinitions.size() + 3);
+        // The OK packet must advertise exactly the number of column definition packets that follow it in the same response.
+        result.add(new MySQLComStmtPrepareOKPacket(statementId, projectionColumnDefinitions.size(), parameterCount, 0));
         int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession, true);
         if (parameterCount > 0) {
-            result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement));
+            result.addAll(parameterColumnDefinitions);
             result.add(new MySQLEofPacket(statusFlags));
         }
-        if (!projections.isEmpty() && sqlStatementContext instanceof SelectStatementContext) {
-            result.addAll(createProjectionColumnDefinition41Packets((SelectStatementContext) sqlStatementContext, characterSet, serverPreparedStatement));
+        if (!projectionColumnDefinitions.isEmpty()) {
+            result.addAll(projectionColumnDefinitions);
             result.add(new MySQLEofPacket(statusFlags));
         }
         return result;
-    }
-    
-    private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections() : Collections.emptyList();
     }
     
     private Collection<MySQLPacket> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
@@ -176,7 +180,16 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return loadProjectionColumnDefinition41Packets(selectStatementContext, characterSet, serverPreparedStatement);
     }
     
+    // A shorthand projection is expanded against ShardingSphere metadata, which can drift from the backend schema, so its
+    // column definitions must be probed from the backend instead of being derived from local metadata.
+    private boolean containsShorthandProjection(final SelectStatementContext selectStatementContext) {
+        return selectStatementContext.getSqlStatement().getProjections().getProjections().stream().anyMatch(each -> each instanceof ShorthandProjectionSegment);
+    }
+    
     private boolean isProjectionMetadataDerivableLocally(final SelectStatementContext selectStatementContext) {
+        if (containsShorthandProjection(selectStatementContext)) {
+            return false;
+        }
         ShardingSphereSchema schema = getSchema(selectStatementContext);
         for (Projection each : selectStatementContext.getProjectionsContext().getExpandProjections()) {
             if (!(each instanceof ColumnProjection)) {

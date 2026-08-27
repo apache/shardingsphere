@@ -46,7 +46,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public int getColumnCount() throws SQLException {
-        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()
+        return ShardingSphereResultSetUtils.useExpandedProjections(sqlStatementContext, resultSetMetaData)
                 ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size()
                 : resultSetMetaData.getColumnCount();
     }
@@ -88,7 +88,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+        if (ShardingSphereResultSetUtils.useExpandedProjections(sqlStatementContext, resultSetMetaData)) {
             checkColumnIndex(column);
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnLabel();
         }
@@ -97,7 +97,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+        if (ShardingSphereResultSetUtils.useExpandedProjections(sqlStatementContext, resultSetMetaData)) {
             checkColumnIndex(column);
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnName();
         }
