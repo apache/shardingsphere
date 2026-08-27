@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.pr
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ide
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.window.WindowClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjections;
@@ -53,6 +55,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -198,16 +201,30 @@ public final class ProjectionAssert {
         assertThat(assertContext.getText("Aggregation projection inner expression assertion error: "), actual.getExpression(), is(expected.getExpression()));
         assertThat(assertContext.getText("Aggregation projection alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         assertThat(assertContext.getText("Aggregation projection separator assertion error: "), actual.getSeparator().orElse(null), is(expected.getSeparator()));
+        assertAggregationParameters(assertContext, actual, expected);
         if (null == expected.getWindowItem()) {
             assertFalse(actual.getWindow().isPresent(), assertContext.getText("Actual aggregation projection window item should not exist."));
         } else {
             assertTrue(actual.getWindow().isPresent(), assertContext.getText("Actual aggregation projection window item should exist."));
             WindowClauseAssert.assertIs(assertContext, actual.getWindow().get(), expected.getWindowItem());
         }
-        if (actual instanceof AggregationDistinctProjectionSegment) {
-            assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedAggregationDistinctProjection.class));
+        if (expected instanceof ExpectedAggregationDistinctProjection) {
+            assertTrue(actual instanceof AggregationDistinctProjectionSegment, assertContext.getText("Actual aggregation projection should be distinct."));
             assertThat(assertContext.getText("Aggregation projection distinct inner expression assertion error: "),
                     ((AggregationDistinctProjectionSegment) actual).getDistinctInnerExpression(), is(((ExpectedAggregationDistinctProjection) expected).getDistinctInnerExpression()));
+        } else {
+            assertFalse(actual instanceof AggregationDistinctProjectionSegment, assertContext.getText("Actual aggregation projection should not be distinct."));
+        }
+    }
+    
+    private static void assertAggregationParameters(final SQLCaseAssertContext assertContext, final AggregationProjectionSegment actual, final ExpectedAggregationProjection expected) {
+        if (expected.getParameters().isEmpty()) {
+            return;
+        }
+        assertThat(assertContext.getText("Aggregation projection parameters size assertion error: "), actual.getParameters().size(), is(expected.getParameters().size()));
+        Iterator<ExpressionSegment> actualIterator = actual.getParameters().iterator();
+        for (ExpectedExpression each : expected.getParameters()) {
+            ExpressionAssert.assertExpression(assertContext, actualIterator.next(), each);
         }
     }
     
