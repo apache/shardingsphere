@@ -20,11 +20,17 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -42,13 +48,79 @@ public final class ShardingSphereResultSetUtils {
      * @throws SQLException SQL exception
      */
     public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
-        if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
+        if (useExpandedProjections(sqlStatementContext, resultSetMetaData)) {
             return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getColumnLabelAndIndexMap();
         }
         Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1F);
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
-            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
+            // The derived columns a rewrite appends are internal plumbing; they never belong to the client-facing view.
+            if (!isDerivedColumn(sqlStatementContext, resultSetMetaData.getColumnLabel(columnIndex))) {
+                result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
+            }
         }
         return result;
+    }
+    
+    /**
+     * Whether to use expanded projections of select statement to describe the result set.
+     *
+     * <p>The expanded projections describe the result set delivered to the client. The count check is skipped only when
+     * the count mismatch is fully explained by the derived columns the rewrite appends: the SUM and COUNT columns of an
+     * AVG rewrite and the derived order-by and group-by columns are appended only by a multi-route rewrite (the
+     * projection token generators are ignored for single routes). After removing those derived columns, the returned
+     * metadata still has to name the expanded projections, because backend schema drift and appended derived columns
+     * can occur together. Any other mismatch is genuine metadata drift, and the returned metadata stays authoritative
+     * for the client-facing columns, with the derived columns hidden.</p>
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param resultSetMetaData meta data of result set
+     * @return use expanded projections or not
+     * @throws SQLException SQL exception
+     */
+    public static boolean useExpandedProjections(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return false;
+        }
+        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+        if (!selectStatementContext.containsDerivedProjections()) {
+            return false;
+        }
+        if (selectStatementContext.getProjectionsContext().getExpandProjections().size() == resultSetMetaData.getColumnCount()) {
+            return true;
+        }
+        return isCountMismatchExplainedByDerivedColumns(selectStatementContext, resultSetMetaData);
+    }
+    
+    private static boolean isCountMismatchExplainedByDerivedColumns(final SelectStatementContext selectStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
+        List<String> returnedLabels = new ArrayList<>(resultSetMetaData.getColumnCount());
+        for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
+            String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
+            if (!isDerivedColumnLabel(columnLabel)) {
+                returnedLabels.add(columnLabel.toUpperCase(Locale.ROOT));
+            }
+        }
+        List<String> expandedLabels = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections().size());
+        for (Projection each : selectStatementContext.getProjectionsContext().getExpandProjections()) {
+            String columnLabel = each.getColumnLabel();
+            if (!isDerivedColumnLabel(columnLabel)) {
+                expandedLabels.add(columnLabel.toUpperCase(Locale.ROOT));
+            }
+        }
+        Collections.sort(returnedLabels);
+        Collections.sort(expandedLabels);
+        return returnedLabels.equals(expandedLabels);
+    }
+    
+    private static boolean isDerivedColumn(final SQLStatementContext sqlStatementContext, final String columnLabel) {
+        return mayAppendDerivedColumns(sqlStatementContext) && isDerivedColumnLabel(columnLabel);
+    }
+    
+    static boolean mayAppendDerivedColumns(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections();
+    }
+    
+    static boolean isDerivedColumnLabel(final String columnLabel) {
+        // Backends fold unquoted aliases to lowercase (e.g. PostgreSQL), while the derived alias patterns are upper case.
+        return DerivedColumn.isDerivedColumnName(columnLabel.toUpperCase(Locale.ROOT));
     }
 }
