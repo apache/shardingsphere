@@ -63,6 +63,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.ArrayList;
@@ -81,13 +82,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({TypedSPILoader.class, DatabaseTypedSPILoader.class, PipelineContextManager.class, CDCSchemaTableUtils.class, PipelineDataNodeUtils.class, PipelineJobRegistry.class,
-        PipelineJobIdUtils.class, CDCImporterManager.class})
+@StaticMockSettings({TypedSPILoader.class, DatabaseTypedSPILoader.class, PipelineContextManager.class, CDCSchemaTableUtils.class, PipelineDataNodeUtils.class, PipelineJobIdUtils.class,
+        CDCImporterManager.class})
 class CDCBackendHandlerTest {
     
     private CDCJobAPI jobAPI;
@@ -183,11 +185,15 @@ class CDCBackendHandlerTest {
         mockProxyContext(mock(ShardingSphereDatabase.class));
         Channel channel = mock(Channel.class);
         CDCConnectionContext connectionContext = createConnectionContext();
-        backendHandler.startStreaming("foo_job", connectionContext, channel);
-        ArgumentCaptor<PipelineSink> sinkCaptor = ArgumentCaptor.forClass(PipelineSink.class);
-        verify(jobAPI).start(eq("foo_job"), sinkCaptor.capture());
-        assertThat(((PipelineCDCSocketSink) sinkCaptor.getValue()).getChannel(), is(channel));
-        assertThat(connectionContext.getJobId(), is("foo_job"));
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.stop("foo_job")).thenThrow(new IllegalStateException("stop should be owned by CDCJobAPI"));
+            backendHandler.startStreaming("foo_job", connectionContext, channel);
+            ArgumentCaptor<PipelineSink> sinkCaptor = ArgumentCaptor.forClass(PipelineSink.class);
+            verify(jobAPI).start(eq("foo_job"), sinkCaptor.capture());
+            assertThat(((PipelineCDCSocketSink) sinkCaptor.getValue()).getChannel(), is(channel));
+            assertThat(connectionContext.getJobId(), is("foo_job"));
+            jobRegistryMocked.verifyNoInteractions();
+        }
     }
     
     @Test
@@ -203,9 +209,11 @@ class CDCBackendHandlerTest {
     
     @Test
     void assertStopStreamingWhenJobMissing() {
-        when(PipelineJobRegistry.get("foo_job")).thenReturn(null);
-        backendHandler.stopStreaming("foo_job", DefaultChannelId.newInstance());
-        verifyNoInteractions(jobAPI);
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.get("foo_job")).thenReturn(null);
+            backendHandler.stopStreaming("foo_job", DefaultChannelId.newInstance());
+            verifyNoInteractions(jobAPI);
+        }
     }
     
     @Test
@@ -214,9 +222,11 @@ class CDCBackendHandlerTest {
         Channel channel = mockChannel(DefaultChannelId.newInstance());
         CDCJob job = mock(CDCJob.class);
         when(job.getSink()).thenReturn(new PipelineCDCSocketSink(channel, mock(ShardingSphereDatabase.class), Collections.emptyList()));
-        when(PipelineJobRegistry.get("foo_job")).thenReturn(job);
-        backendHandler.stopStreaming("foo_job", targetChannelId);
-        verifyNoInteractions(jobAPI);
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.get("foo_job")).thenReturn(job);
+            backendHandler.stopStreaming("foo_job", targetChannelId);
+            verifyNoInteractions(jobAPI);
+        }
     }
     
     @Test
@@ -225,9 +235,12 @@ class CDCBackendHandlerTest {
         Channel channel = mockChannel(targetChannelId);
         CDCJob job = mock(CDCJob.class);
         when(job.getSink()).thenReturn(new PipelineCDCSocketSink(channel, mock(ShardingSphereDatabase.class), Collections.emptyList()));
-        when(PipelineJobRegistry.get("foo_job")).thenReturn(job);
-        backendHandler.stopStreaming("foo_job", targetChannelId);
-        verify(jobAPI).disable("foo_job");
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.get("foo_job")).thenReturn(job);
+            backendHandler.stopStreaming("foo_job", targetChannelId);
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job"));
+            verify(jobAPI).disable("foo_job");
+        }
     }
     
     @Test
