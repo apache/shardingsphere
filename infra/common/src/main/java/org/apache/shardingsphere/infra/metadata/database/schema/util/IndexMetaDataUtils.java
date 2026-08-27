@@ -193,12 +193,26 @@ public final class IndexMetaDataUtils {
      *
      * @param database database
      * @param indexes indexes
+     * @return table names
+     */
+    public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final Collection<IndexSegment> indexes) {
+        return getTableNames(database, database.getDefaultSchemaName(), indexes);
+    }
+    
+    /**
+     * Get table names.
+     *
+     * @param database database
      * @param protocolType protocol type
+     * @param indexes indexes
      * @return table names
      */
     public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final DatabaseType protocolType, final Collection<IndexSegment> indexes) {
+        return getTableNames(database, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(database.getName()), indexes);
+    }
+    
+    private static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final String schemaName, final Collection<IndexSegment> indexes) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(database.getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             findLogicTableNameFromMetaData(database.getSchema(actualSchemaName), each.getIndexName().getIdentifier())
