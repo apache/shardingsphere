@@ -101,6 +101,7 @@
 1. SQL Parser: Support SQLServer table variable declaration parse - [#38904](https://github.com/apache/shardingsphere/pull/38904)
 1. SQL Parser: Support Oracle procedure parser and binder - [#39231](https://github.com/apache/shardingsphere/pull/39231)
 1. SQL Parser: Support Oracle database object DDL parsing - [#39286](https://github.com/apache/shardingsphere/pull/39286)
+1. SQL Parser: Support Oracle package routine name parsing and binding - [#39607](https://github.com/apache/shardingsphere/pull/39607)
 1. SQL Parser: Support parsing Oracle CREATE INDEX sql - [#39292](https://github.com/apache/shardingsphere/pull/39292)
 1. SQL Parser: Support parsing Oracle CREATE INDEXTYPE sql and Add CREATE INDEX/OPERATOR sql it test - [#39302](https://github.com/apache/shardingsphere/pull/39302) 
 1. SQL Parser: Support function table alias column parsing for PostgreSQL and openGauss - [#39268](https://github.com/apache/shardingsphere/pull/39268)
