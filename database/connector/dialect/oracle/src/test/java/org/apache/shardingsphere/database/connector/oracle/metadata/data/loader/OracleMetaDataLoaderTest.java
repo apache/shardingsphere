@@ -34,6 +34,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -66,7 +67,7 @@ class OracleMetaDataLoaderTest {
             "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, CONSTRAINT_NAME FROM ALL_CONSTRAINTS WHERE CONSTRAINT_TYPE = 'P' AND OWNER = ? AND TABLE_NAME IN ('tbl')";
     
     private static final String ALL_PRIMARY_KEY_COLUMNS_SQL =
-            "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME FROM ALL_CONS_COLUMNS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') AND CONSTRAINT_NAME IN ('foo_pk')";
+            "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME FROM ALL_CONS_COLUMNS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') AND CONSTRAINT_NAME IN (?)";
     
     private static final String ALL_INDEXES_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, UNIQUENESS FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')";
     
@@ -124,17 +125,24 @@ class OracleMetaDataLoaderTest {
         ResultSet tableMetaDataResultSet = mockMultipleTableMetaDataResultSet(tableNames);
         ResultSet primaryKeyConstraintsResultSet = mockPrimaryKeyConstraintRows(constraintNames);
         ResultSet primaryKeyColumnsResultSet = mockPrimaryKeyColumnRows(primaryKeyTableNames, primaryKeyColumnNames);
+        PreparedStatement primaryKeyColumnsStatement = mock(PreparedStatement.class);
         when(connection.prepareStatement(getMultipleTableMetaDataSQL(tableNames)).executeQuery()).thenReturn(tableMetaDataResultSet);
         when(connection.prepareStatement(getPrimaryKeyConstraintsSQL(tableNames)).executeQuery()).thenReturn(primaryKeyConstraintsResultSet);
-        when(connection.prepareStatement(getPrimaryKeyColumnsSQL(tableNames, constraintNames)).executeQuery()).thenReturn(primaryKeyColumnsResultSet);
+        when(connection.prepareStatement(getPrimaryKeyColumnsSQL(tableNames, constraintNames))).thenReturn(primaryKeyColumnsStatement);
+        when(primaryKeyColumnsStatement.executeQuery()).thenReturn(primaryKeyColumnsResultSet);
         when(connection.getMetaData().getUserName()).thenReturn("TEST");
         when(connection.getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(connection.getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        clearInvocations(connection);
+        clearInvocations(connection, primaryKeyColumnsStatement);
         Collection<SchemaMetaData> actualSchemaMetaData = loadMetaData(dataSource, tableNames);
         assertPrimaryKeys(actualSchemaMetaData.iterator().next().getTables(), primaryKeyTableNames, primaryKeyColumnNames);
         verify(connection).prepareStatement(getPrimaryKeyConstraintsSQL(tableNames));
         verify(connection).prepareStatement(getPrimaryKeyColumnsSQL(tableNames, constraintNames));
+        verify(primaryKeyColumnsStatement).setString(1, "TEST");
+        int parameterIndex = 2;
+        for (String each : constraintNames) {
+            verify(primaryKeyColumnsStatement).setString(parameterIndex++, each);
+        }
     }
     
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
@@ -262,7 +270,7 @@ class OracleMetaDataLoaderTest {
     private ResultSet mockPrimaryKeyConstraintsMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
-        when(result.getString("CONSTRAINT_NAME")).thenReturn("foo_pk");
+        when(result.getString("CONSTRAINT_NAME")).thenReturn("PK'O");
         return result;
     }
     
@@ -328,7 +336,7 @@ class OracleMetaDataLoaderTest {
     
     private String getPrimaryKeyColumnsSQL(final Collection<String> tableNames, final Collection<String> constraintNames) {
         return "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME FROM ALL_CONS_COLUMNS WHERE OWNER = ? AND TABLE_NAME IN (" + quote(tableNames)
-                + ") AND CONSTRAINT_NAME IN (" + quote(constraintNames) + ")";
+                + ") AND CONSTRAINT_NAME IN (" + String.join(",", Collections.nCopies(constraintNames.size(), "?")) + ")";
     }
     
     private String quote(final Collection<String> values) {
@@ -428,7 +436,7 @@ class OracleMetaDataLoaderTest {
     
     private static Stream<Arguments> assertLoadPrimaryKeysArguments() {
         return Stream.of(
-                Arguments.of("singlePrimaryKey", Collections.singletonList("tbl"), Collections.singletonList("foo_pk"), Collections.singletonList("tbl"), Collections.singletonList("id")),
+                Arguments.of("quotedPrimaryKey", Collections.singletonList("tbl"), Collections.singletonList("PK'O"), Collections.singletonList("tbl"), Collections.singletonList("id")),
                 Arguments.of("compositePrimaryKey", Collections.singletonList("tbl"), Collections.singletonList("foo_pk"), Arrays.asList("tbl", "tbl"), Arrays.asList("id", "tenant_id")),
                 Arguments.of("differentPrimaryKeys", Arrays.asList("foo_tbl", "bar_tbl"), Arrays.asList("foo_pk", "bar_pk"),
                         Arrays.asList("foo_tbl", "bar_tbl"), Arrays.asList("id", "tenant_id")),

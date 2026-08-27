@@ -287,6 +287,10 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
         Map<String, Collection<String>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyColumnMetaDataSQL(tableNames, constraintNames))) {
             preparedStatement.setString(1, connection.getSchema());
+            int parameterIndex = 2;
+            for (String each : constraintNames) {
+                preparedStatement.setString(parameterIndex++, each);
+            }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String columnName = resultSet.getString("COLUMN_NAME");
@@ -300,7 +304,7 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private String getPrimaryKeyColumnMetaDataSQL(final Collection<String> tableNames, final Collection<String> constraintNames) {
         return String.format(PRIMARY_KEY_COLUMN_META_DATA_SQL, tableNames.stream().map(QuoteCharacter.SINGLE_QUOTE::wrap).collect(Collectors.joining(",")),
-                constraintNames.stream().map(QuoteCharacter.SINGLE_QUOTE::wrap).collect(Collectors.joining(",")));
+                Joiner.on(",").join(Collections.nCopies(constraintNames.size(), "?")));
     }
     
     @Override
