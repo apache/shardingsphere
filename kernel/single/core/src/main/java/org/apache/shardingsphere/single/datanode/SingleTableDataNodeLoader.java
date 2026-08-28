@@ -198,7 +198,9 @@ public final class SingleTableDataNodeLoader {
             if (null == configuredTablesForDataSource) {
                 continue;
             }
-            if (configuredTablesForDataSource.containsKey(SingleTableConstants.ASTERISK)) {
+            Collection<String> configuredTablesForAllSchemas = configuredTablesForDataSource.get(SingleTableConstants.ASTERISK);
+            if (null != configuredTablesForAllSchemas
+                    && (configuredTablesForAllSchemas.contains(SingleTableConstants.ASTERISK) || configuredTablesForAllSchemas.contains(each.getTableName()))) {
                 result.add(each);
                 continue;
             }
@@ -224,9 +226,9 @@ public final class SingleTableDataNodeLoader {
             DatabaseType databaseType = validStorageTypes.getOrDefault(parsedDataNode.getDataSourceName(), protocolType);
             DataNode dataNode = new DataNode(databaseName, databaseType, each);
             Map<String, Collection<String>> schemaTables = result.getOrDefault(dataNode.getDataSourceName(), new LinkedHashMap<>());
-            Collection<String> tables = schemaTables.getOrDefault(dataNode.getSchemaName(), new LinkedList<>());
+            Collection<String> tables = schemaTables.computeIfAbsent(dataNode.getSchemaName(),
+                    ignored -> SingleTableConstants.ASTERISK.equals(dataNode.getSchemaName()) ? new CaseInsensitiveSet<>() : new LinkedHashSet<>());
             tables.add(dataNode.getTableName());
-            schemaTables.putIfAbsent(dataNode.getSchemaName(), tables);
             result.putIfAbsent(dataNode.getDataSourceName(), schemaTables);
         }
         return result;

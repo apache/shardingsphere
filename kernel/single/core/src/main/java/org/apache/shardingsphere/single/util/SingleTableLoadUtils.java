@@ -132,7 +132,7 @@ public final class SingleTableLoadUtils {
      */
     public static String getAllTablesNodeStrFromDataSource(final DatabaseType databaseType, final String dataSourceName, final String schemaName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()
+        return dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()
                 ? formatDataNode(dataSourceName, schemaName, SingleTableConstants.ASTERISK)
                 : formatDataNode(dataSourceName, SingleTableConstants.ASTERISK);
     }
@@ -148,7 +148,7 @@ public final class SingleTableLoadUtils {
      */
     public static String getDataNodeString(final DatabaseType databaseType, final String dataSourceName, final String schemaName, final String tableName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? formatDataNode(dataSourceName, schemaName, tableName) : formatDataNode(dataSourceName, tableName);
+        return dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() ? formatDataNode(dataSourceName, schemaName, tableName) : formatDataNode(dataSourceName, tableName);
     }
     
     private static String formatDataNode(final String dataSourceName, final String tableName) {
