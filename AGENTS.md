@@ -158,7 +158,7 @@ Use the matching repository Skill when its trigger applies:
 
 - Issue diagnosis and copy-ready maintainer replies: `$analyze-issue`.
 - Unit-test generation or systematic coverage work: `$gen-ut`. This code-changing workflow composes with `code-implementation`, including its pre-write functional and performance non-regression assessment.
-- PR correctness, side effects, mergeability, GitHub review replies, or the pre-handoff review of an authorized implementation targeting an existing PR: `$review-pr`. For pre-handoff review, use its Local Candidate Preflight Mode. Standalone review remains read-only and uses the direct reference routes above without activating `code-implementation`.
+- Use `$review-pr` for PR correctness, side effects, mergeability, CI, discussion replies, and pre-handoff review targeting a PR. Every complete review or recommendation uses Formal Review: `### Result`, one `Review Result: ...` line, `### Evidence`, and `### Coverage`. This includes local candidates; identify local-only changes in `### Coverage`. Use PR Discussion Reply only when explicitly requested. Standalone review is read-only and does not activate `code-implementation`.
 
 If a matching specialized repository Skill is unavailable, apply an equivalent manual checklist, record the fallback in the plan or final response, and continue without installing it. Do not create a new Skill merely to hold task-specific instructions.
 
