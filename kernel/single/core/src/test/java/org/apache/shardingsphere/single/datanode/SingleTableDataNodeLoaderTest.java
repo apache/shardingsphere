@@ -190,7 +190,6 @@ class SingleTableDataNodeLoaderTest {
                 MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class);
                 MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
                     when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-                    when(mock.getDefaultSchemaName("foo_db")).thenReturn("dbo");
                 });
                 MockedConstruction<SchemaMetaDataLoader> ignored = mockConstruction(SchemaMetaDataLoader.class, (mock, context) -> {
                     when(mock.loadSchemaTableNames(anyString(), any(DataSource.class), anyCollection(), anyCollection()))
