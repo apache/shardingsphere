@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationS
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.MigrateTableStatement;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,7 +73,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MigrateTableExecutorTest {
     
-    private static final String SOURCE_DATABASE_NAME = "foo_source";
+    private static final String SOURCE_DATABASE_NAME = "FOO_SOURCE";
     
     private static final String TARGET_DATABASE_NAME = "foo_target";
     
@@ -140,16 +142,20 @@ class MigrateTableExecutorTest {
             schemaUtils.when(() -> PipelineSchemaUtils.getDefaultSchema(any(StandardPipelineDataSourceConfiguration.class))).thenReturn("public");
             executor.executeUpdate(createStatement(null), contextManager);
             verify(jobAPI).schedule(any(PipelineContextKey.class), entriesCaptor.capture(), eq(TARGET_DATABASE_NAME));
-            assertNull(entriesCaptor.getValue().iterator().next().getSource().getSchemaName());
+            MigrationSourceTargetEntry actual = entriesCaptor.getValue().iterator().next();
+            assertNull(actual.getSource().getSchemaName());
+            assertThat(actual.getSource().getTableName(), is("FOO_TBL"));
             schemaUtils.verify(() -> PipelineSchemaUtils.getDefaultSchema(any(StandardPipelineDataSourceConfiguration.class)), never());
             verify(database, never()).getProtocolType();
         }
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("provideExplicitSchemaNames")
-    void assertExecuteUpdateCanonicalizesExplicitSchema(final String name, final String sourceSchemaName, final String expectedSchemaName) {
-        IdentifierCasePolicy identifierCasePolicy = IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.SCHEMA);
+    @MethodSource("provideExplicitSourceIdentifiers")
+    void assertExecuteUpdateCanonicalizesExplicitSourceIdentifiers(final String name, final String sourceSchemaName, final String expectedSchemaName,
+                                                                   final IdentifierValue sourceTableIdentifier, final String expectedTableName) {
+        IdentifierCasePolicy schemaIdentifierCasePolicy = IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.SCHEMA);
+        IdentifierCasePolicy tableIdentifierCasePolicy = IdentifierCasePolicyFactory.newLowerCasePolicySet().getPolicy(IdentifierScope.TABLE);
         try (
                 MockedConstruction<PipelineDataSourcePersistService> ignored = mockConstruction(PipelineDataSourcePersistService.class,
                         (mock, context) -> when(mock.load(any(PipelineContextKey.class), eq("MIGRATION"))).thenReturn(Collections.singletonMap(SOURCE_DATABASE_NAME, sourceProps)));
@@ -162,20 +168,26 @@ class MigrateTableExecutorTest {
                 MockedStatic<PipelineSchemaUtils> schemaUtils = mockStatic(PipelineSchemaUtils.class);
                 MockedStatic<IdentifierNormalizeEngine> normalizeEngine = mockStatic(IdentifierNormalizeEngine.class, Answers.CALLS_REAL_METHODS)) {
             spiLoader.when(() -> TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION")).thenReturn(jobAPI);
-            normalizeEngine.when(() -> IdentifierNormalizeEngine.resolvePolicy(schemaCapableDatabaseType, null, IdentifierScope.SCHEMA)).thenReturn(identifierCasePolicy);
-            executor.executeUpdate(createStatement(sourceSchemaName), contextManager);
+            normalizeEngine.when(() -> IdentifierNormalizeEngine.resolvePolicy(schemaCapableDatabaseType, null, IdentifierScope.SCHEMA)).thenReturn(schemaIdentifierCasePolicy);
+            normalizeEngine.when(() -> IdentifierNormalizeEngine.resolvePolicy(schemaCapableDatabaseType, null, IdentifierScope.TABLE)).thenReturn(tableIdentifierCasePolicy);
+            executor.executeUpdate(createStatement(sourceSchemaName, sourceTableIdentifier), contextManager);
             verify(jobAPI).schedule(any(PipelineContextKey.class), entriesCaptor.capture(), eq(TARGET_DATABASE_NAME));
-            assertThat(entriesCaptor.getValue().iterator().next().getSource().getSchemaName(), is(expectedSchemaName));
+            MigrationSourceTargetEntry actual = entriesCaptor.getValue().iterator().next();
+            assertThat(actual.getSource().getDataSourceName(), is(SOURCE_DATABASE_NAME));
+            assertThat(actual.getSource().getSchemaName(), is(expectedSchemaName));
+            assertThat(actual.getSource().getTableName(), is(expectedTableName));
+            assertThat(actual.getTargetTableName(), is("foo_tbl"));
             schemaUtils.verify(() -> PipelineSchemaUtils.getDefaultSchema(any(StandardPipelineDataSourceConfiguration.class)), never());
         }
     }
     
-    private static Stream<Arguments> provideExplicitSchemaNames() {
+    private static Stream<Arguments> provideExplicitSourceIdentifiers() {
         return Stream.of(
-                Arguments.of("lower-case schema", "foo_schema", "foo_schema"),
-                Arguments.of("unquoted upper-case schema", "FOO_SCHEMA", "foo_schema"),
-                Arguments.of("quoted upper-case schema", "\"FOO_SCHEMA\"", "FOO_SCHEMA"),
-                Arguments.of("quoted mixed-case schema", "\"CaseSchema\"", "CaseSchema"));
+                Arguments.of("lower-case schema", "foo_schema", "foo_schema", new IdentifierValue("FOO_TBL", QuoteCharacter.BACK_QUOTE), "FOO_TBL"),
+                Arguments.of("unquoted upper-case schema", "FOO_SCHEMA", "foo_schema", new IdentifierValue("FOO_TBL", QuoteCharacter.BACK_QUOTE), "FOO_TBL"),
+                Arguments.of("quoted upper-case schema", "\"FOO_SCHEMA\"", "FOO_SCHEMA", new IdentifierValue("FOO_TBL", QuoteCharacter.BACK_QUOTE), "FOO_TBL"),
+                Arguments.of("quoted mixed-case schema", "\"CaseSchema\"", "CaseSchema", new IdentifierValue("FOO_TBL", QuoteCharacter.BACK_QUOTE), "FOO_TBL"),
+                Arguments.of("unquoted upper-case table", "foo_schema", "foo_schema", new IdentifierValue("FOO_TBL", QuoteCharacter.NONE), "foo_tbl"));
     }
     
     @Test
@@ -195,7 +207,13 @@ class MigrateTableExecutorTest {
     }
     
     private MigrateTableStatement createStatement(final String sourceSchemaName) {
-        MigrationSourceTargetSegment entry = new MigrationSourceTargetSegment(SOURCE_DATABASE_NAME, sourceSchemaName, "foo_tbl", "foo_tbl");
+        return createStatement(sourceSchemaName, new IdentifierValue("FOO_TBL", QuoteCharacter.BACK_QUOTE));
+    }
+    
+    private MigrateTableStatement createStatement(final String sourceSchemaName, final IdentifierValue sourceTableIdentifier) {
+        MigrationSourceTargetSegment entry = new MigrationSourceTargetSegment(new IdentifierValue(SOURCE_DATABASE_NAME, QuoteCharacter.BACK_QUOTE),
+                null == sourceSchemaName ? null : new IdentifierValue(sourceSchemaName), sourceTableIdentifier,
+                new IdentifierValue("foo_tbl", QuoteCharacter.NONE));
         return new MigrateTableStatement(null, Collections.singleton(entry));
     }
     

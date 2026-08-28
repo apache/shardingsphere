@@ -36,10 +36,14 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * WAL event converter.
@@ -52,6 +56,12 @@ public final class WALEventConverter {
     
     private final IdentifierCasePolicy schemaIdentifierCasePolicy;
     
+    private final IdentifierCasePolicy tableIdentifierCasePolicy;
+    
+    private final Map<String, ShardingSphereIdentifier> quotedTableNameMap;
+    
+    private final Map<String, ShardingSphereIdentifier> unquotedTableNameMap;
+    
     /**
      * Create a WAL event converter.
      *
@@ -63,6 +73,18 @@ public final class WALEventConverter {
         this.metaDataLoader = metaDataLoader;
         schemaIdentifierCasePolicy = IdentifierNormalizeEngine.resolvePolicy(
                 dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType(), null, IdentifierScope.SCHEMA);
+        tableIdentifierCasePolicy = IdentifierNormalizeEngine.resolvePolicy(
+                dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType(), null, IdentifierScope.TABLE);
+        Map<ShardingSphereIdentifier, ShardingSphereIdentifier> tableNameMap = dumperContext.getCommonContext().getTableNameMapper().getTableNameMap();
+        quotedTableNameMap = new HashMap<>(tableNameMap.size(), 1F);
+        unquotedTableNameMap = new HashMap<>(tableNameMap.size(), 1F);
+        for (Entry<ShardingSphereIdentifier, ShardingSphereIdentifier> entry : tableNameMap.entrySet()) {
+            String actualTableName = entry.getKey().getValue();
+            quotedTableNameMap.put(getLookupKey(actualTableName, QuoteCharacter.QUOTE), entry.getValue());
+            if (tableIdentifierCasePolicy.matches(actualTableName, actualTableName, QuoteCharacter.NONE)) {
+                unquotedTableNameMap.put(getLookupKey(actualTableName, QuoteCharacter.NONE), entry.getValue());
+            }
+        }
     }
     
     /**
@@ -77,8 +99,9 @@ public final class WALEventConverter {
             return createPlaceholderRecord(event);
         }
         AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-        String actualTableName = rowEvent.getTableName();
-        ShardingSphereIdentifier logicTableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(actualTableName);
+        QuoteCharacter tableQuoteCharacter = QuoteCharacter.getQuoteCharacter(rowEvent.getTableName());
+        String actualTableName = tableQuoteCharacter.unwrap(rowEvent.getTableName());
+        ShardingSphereIdentifier logicTableName = getLogicTableName(actualTableName, tableQuoteCharacter);
         if (null == logicTableName) {
             return createPlaceholderRecord(event);
         }
@@ -97,6 +120,15 @@ public final class WALEventConverter {
             return handleDeleteRowEvent((DeleteRowEvent) event, tableMetaData, logicTableName);
         }
         throw new UnsupportedSQLOperationException("");
+    }
+    
+    private ShardingSphereIdentifier getLogicTableName(final String actualTableName, final QuoteCharacter quoteCharacter) {
+        Map<String, ShardingSphereIdentifier> tableNameMap = QuoteCharacter.NONE == quoteCharacter ? unquotedTableNameMap : quotedTableNameMap;
+        return tableNameMap.get(getLookupKey(actualTableName, quoteCharacter));
+    }
+    
+    private String getLookupKey(final String identifier, final QuoteCharacter quoteCharacter) {
+        return LookupMode.EXACT == tableIdentifierCasePolicy.getLookupMode(quoteCharacter) ? identifier : tableIdentifierCasePolicy.normalizeForLookup(identifier);
     }
     
     private boolean isDifferentSchemaName(final AbstractRowEvent event, final String expectedSchemaName) {

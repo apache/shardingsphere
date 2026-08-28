@@ -30,8 +30,8 @@ import java.util.List;
 /**
  * Table inventory check parameter.
  */
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public final class TableInventoryCheckParameter {
     
     private final String jobId;
@@ -50,11 +50,23 @@ public final class TableInventoryCheckParameter {
     
     private final List<PipelineColumnMetaData> uniqueKeys;
     
+    private final List<String> targetColumnNames;
+    
+    private final List<PipelineColumnMetaData> targetUniqueKeys;
+    
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
     private final ConsistencyCheckJobItemProgressContext progressContext;
     
     private final String queryCondition;
+    
+    public TableInventoryCheckParameter(final String jobId, final int splittingItem, final PipelineDataSource sourceDataSource, final PipelineDataSource targetDataSource,
+                                        final QualifiedTable sourceTable, final QualifiedTable targetTable,
+                                        final List<String> columnNames, final List<PipelineColumnMetaData> uniqueKeys,
+                                        final JobRateLimitAlgorithm readRateLimitAlgorithm, final ConsistencyCheckJobItemProgressContext progressContext, final String queryCondition) {
+        this(jobId, splittingItem, sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, columnNames, uniqueKeys,
+                readRateLimitAlgorithm, progressContext, queryCondition);
+    }
     
     public TableInventoryCheckParameter(final String jobId, final PipelineDataSource sourceDataSource, final PipelineDataSource targetDataSource,
                                         final QualifiedTable sourceTable, final QualifiedTable targetTable,
