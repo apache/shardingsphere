@@ -390,7 +390,8 @@ class SingleRuleTest {
         SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mockDatabase();
-        String defaultSchemaName = database.getName();
+        String defaultSchemaName = "foo_default_schema";
+        when(database.getDefaultSchemaName()).thenReturn(defaultSchemaName);
         if (useSimpleTableSegments) {
             Collection<SimpleTableSegment> simpleTableSegments = createSimpleTableSegments();
             when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(simpleTableSegments);
