@@ -55,9 +55,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerL
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadXmlStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.BrokerLoadDataDescSegment;
@@ -81,7 +79,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
@@ -557,26 +554,6 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitWindowClause(final WindowClauseContext ctx) {
-        WindowSegment result = new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        for (WindowItemContext each : ctx.windowItem()) {
-            result.getItemSegments().add((WindowItemSegment) visit(each));
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitWindowItem(final WindowItemContext ctx) {
-        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
-        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
-        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
-        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
-        result.setFrameClause(windowItemSegment.getFrameClause());
-        return result;
-    }
-    
-    @Override
     public ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
         if (null != ctx.NTILE()) {
@@ -616,15 +593,10 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitWindowingClause(final WindowingClauseContext ctx) {
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        if (null != ctx.windowName) {
-            result.setWindowName((IdentifierValue) visit(ctx.windowName));
-        }
-        if (null != ctx.windowSpecification()) {
-            WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
-            result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
-            result.setOrderBySegment(windowItemSegment.getOrderBySegment());
-            result.setFrameClause(windowItemSegment.getFrameClause());
-        }
+        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+        result.setFrameClause(windowItemSegment.getFrameClause());
         return result;
     }
 }

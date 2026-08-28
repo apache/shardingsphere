@@ -1103,7 +1103,9 @@ aggregationExpression
 
 aggregationFunction
     // DORIS CHANGED BEGIN
-    : aggregationFunctionName LP_ (distinct | all)? aggregationExpression? collateClause? separatorName? RP_ overClause?
+    : distinctWindowAggregationFunctionName LP_ distinct aggregationExpression? collateClause? separatorName? RP_ overClause
+    | aggregationFunctionName LP_ distinct aggregationExpression? collateClause? separatorName? RP_
+    | aggregationFunctionName LP_ all? aggregationExpression? collateClause? separatorName? RP_ overClause?
     // DORIS CHANGED END
     ;
 
@@ -1147,6 +1149,12 @@ aggregationFunctionName
     ;
 
 // DORIS ADDED BEGIN
+distinctWindowAggregationFunctionName
+    : COUNT | SUM | GROUP_CONCAT
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
 bitwiseBinaryFunctionName
     : BITOR | BITXOR
     ;
@@ -1163,11 +1171,15 @@ all
 // DORIS ADDED END
 
 overClause
-    : OVER (windowSpecification | identifier)
+    // DORIS CHANGED BEGIN
+    : OVER windowSpecification
+    // DORIS CHANGED END
     ;
 
 windowSpecification
-    : LP_ identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
+    // DORIS CHANGED BEGIN
+    : LP_ (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
+    // DORIS CHANGED END
     ;
 
 frameClause
@@ -1243,7 +1255,9 @@ windowFunction
     ;
 
 windowingClause
-    : OVER (windowName=identifier | windowSpecification)
+    // DORIS CHANGED BEGIN
+    : OVER windowSpecification
+    // DORIS CHANGED END
     ;
 
 leadLagInfo

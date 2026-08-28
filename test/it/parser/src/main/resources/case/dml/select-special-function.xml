@@ -5237,21 +5237,53 @@
             </expression-projection>
         </projections>
     </select>
-    <select sql-case-id="select_window_max_distinct_doris" db-types="Doris">
-        <projections start-index="7" stop-index="72">
-            <aggregation-distinct-projection type="MAX" expression="MAX(DISTINCT order_id) OVER (PARTITION BY user_id)" distinct-inner-expression="order_id" alias="max_order_id" start-index="7" stop-index="56">
+    <select sql-case-id="select_max_distinct_doris" db-types="Doris">
+        <projections start-index="7" stop-index="44">
+            <aggregation-distinct-projection type="MAX" expression="MAX(DISTINCT order_id)" distinct-inner-expression="order_id" alias="max_order_id" start-index="7" stop-index="28">
                 <parameters>
                     <column name="order_id" start-index="20" stop-index="27" />
                 </parameters>
-                <window-item start-index="30" stop-index="56">
+            </aggregation-distinct-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="51" stop-index="57" />
+        </from>
+    </select>
+    <select sql-case-id="select_window_distinct_aggregation_doris" db-types="Doris">
+        <projections start-index="7" stop-index="171">
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id) OVER (PARTITION BY user_id)" distinct-inner-expression="order_id" start-index="7" stop-index="58">
+                <parameters>
+                    <column name="order_id" start-index="22" stop-index="29" />
+                </parameters>
+                <window-item start-index="32" stop-index="58">
                     <partition-by>
-                        <column name="user_id" start-index="49" stop-index="55" />
+                        <column name="user_id" start-index="51" stop-index="57" />
+                    </partition-by>
+                </window-item>
+            </aggregation-distinct-projection>
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id) OVER (PARTITION BY user_id)" distinct-inner-expression="order_id" start-index="61" stop-index="110">
+                <parameters>
+                    <column name="order_id" start-index="74" stop-index="81" />
+                </parameters>
+                <window-item start-index="84" stop-index="110">
+                    <partition-by>
+                        <column name="user_id" start-index="103" stop-index="109" />
+                    </partition-by>
+                </window-item>
+            </aggregation-distinct-projection>
+            <aggregation-distinct-projection type="GROUP_CONCAT" expression="GROUP_CONCAT(DISTINCT order_id) OVER (PARTITION BY user_id)" distinct-inner-expression="order_id" start-index="113" stop-index="171">
+                <parameters>
+                    <column name="order_id" start-index="135" stop-index="142" />
+                </parameters>
+                <window-item start-index="145" stop-index="171">
+                    <partition-by>
+                        <column name="user_id" start-index="164" stop-index="170" />
                     </partition-by>
                 </window-item>
             </aggregation-distinct-projection>
         </projections>
         <from>
-            <simple-table name="t_order" start-index="79" stop-index="85" />
+            <simple-table name="t_order" start-index="178" stop-index="184" />
         </from>
     </select>
     <select sql-case-id="select_window_max_all_doris" db-types="Doris">

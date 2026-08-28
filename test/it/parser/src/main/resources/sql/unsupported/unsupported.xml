@@ -31,6 +31,15 @@
     <sql-case id="unsupported_alter_database_set_transaction_quota_with_unit_for_doris" value="ALTER DATABASE example_db SET TRANSACTION QUOTA 1G" db-types="Doris" />
     <sql-case id="unsupported_create_table_with_char_varying_without_length_for_doris" value="CREATE TABLE t_varying (c CHAR VARYING)" db-types="Doris" />
     <sql-case id="unsupported_create_table_with_character_varying_without_length_for_doris" value="CREATE TABLE t_varying (c CHARACTER VARYING)" db-types="Doris" />
+    <sql-case id="unsupported_doris_aggregate_named_window" value="SELECT SUM(1) OVER w" db-types="Doris" />
+    <sql-case id="unsupported_doris_parenthesized_named_window" value="SELECT SUM(1) OVER (w)" db-types="Doris" />
+    <sql-case id="unsupported_doris_inherited_named_window" value="SELECT SUM(v) OVER (w PARTITION BY g ORDER BY v) FROM t" db-types="Doris" />
+    <sql-case id="unsupported_doris_analytic_named_window" value="SELECT ROW_NUMBER() OVER w" db-types="Doris" />
+    <sql-case id="unsupported_doris_window_clause" value="SELECT SUM(v) OVER (ORDER BY v) FROM t WINDOW w AS (ORDER BY v)" db-types="Doris" />
+    <sql-case id="unsupported_doris_max_distinct_window" value="SELECT MAX(DISTINCT v) OVER ()" db-types="Doris" />
+    <sql-case id="unsupported_doris_min_distinct_window" value="SELECT MIN(DISTINCT v) OVER ()" db-types="Doris" />
+    <sql-case id="unsupported_doris_avg_distinct_window" value="SELECT AVG(DISTINCT v) OVER ()" db-types="Doris" />
+    <sql-case id="unsupported_doris_bit_xor_distinct_window" value="SELECT BIT_XOR(DISTINCT v) OVER ()" db-types="Doris" />
     <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
     <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
     <sql-case id="unsupported_date_literal_for_clickhouse" value="SELECT DATE '2024-01-01'" db-types="ClickHouse" />

@@ -298,7 +298,8 @@
     <sql-case id="select_bitmap_to_string_multiple" value="SELECT BITMAP_TO_STRING(BITMAP_OR(TO_BITMAP(1), TO_BITMAP(2)))" db-types="Doris" />
     <sql-case id="select_array_last" value="SELECT ARRAY_LAST(x -&gt; x &gt; 0, [1, 2, 3, -1, 2])" db-types="Doris" />
     <sql-case id="select_array_last_with_multiple_parameters" value="SELECT ARRAY_LAST((x, y) -&gt; x &gt; y, [1, 2, 3, 4, 5], [1.1, 2.2, 3.3, 4.4, 5.5])" db-types="Doris" />
-    <sql-case id="select_window_max_distinct_doris" value="SELECT MAX(DISTINCT order_id) OVER (PARTITION BY user_id) AS max_order_id FROM t_order" db-types="Doris" />
+    <sql-case id="select_max_distinct_doris" value="SELECT MAX(DISTINCT order_id) AS max_order_id FROM t_order" db-types="Doris" />
+    <sql-case id="select_window_distinct_aggregation_doris" value="SELECT COUNT(DISTINCT order_id) OVER (PARTITION BY user_id), SUM(DISTINCT order_id) OVER (PARTITION BY user_id), GROUP_CONCAT(DISTINCT order_id) OVER (PARTITION BY user_id) FROM t_order" db-types="Doris" />
     <sql-case id="select_window_max_all_doris" value="SELECT MAX(ALL order_id) OVER (PARTITION BY user_id) AS max_order_id FROM t_order" db-types="Doris" />
     <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
     <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
