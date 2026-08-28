@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
@@ -30,6 +31,7 @@ import java.util.List;
  * Table inventory check parameter.
  */
 @Getter
+@RequiredArgsConstructor
 public final class TableInventoryCheckParameter {
     
     private final String jobId;
@@ -64,26 +66,6 @@ public final class TableInventoryCheckParameter {
                                         final JobRateLimitAlgorithm readRateLimitAlgorithm, final ConsistencyCheckJobItemProgressContext progressContext, final String queryCondition) {
         this(jobId, splittingItem, sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, columnNames, uniqueKeys,
                 readRateLimitAlgorithm, progressContext, queryCondition);
-    }
-    
-    public TableInventoryCheckParameter(final String jobId, final int splittingItem, final PipelineDataSource sourceDataSource, final PipelineDataSource targetDataSource,
-                                        final QualifiedTable sourceTable, final QualifiedTable targetTable,
-                                        final List<String> columnNames, final List<PipelineColumnMetaData> uniqueKeys,
-                                        final List<String> targetColumnNames, final List<PipelineColumnMetaData> targetUniqueKeys,
-                                        final JobRateLimitAlgorithm readRateLimitAlgorithm, final ConsistencyCheckJobItemProgressContext progressContext, final String queryCondition) {
-        this.jobId = jobId;
-        this.splittingItem = splittingItem;
-        this.sourceDataSource = sourceDataSource;
-        this.targetDataSource = targetDataSource;
-        this.sourceTable = sourceTable;
-        this.targetTable = targetTable;
-        this.columnNames = columnNames;
-        this.uniqueKeys = uniqueKeys;
-        this.targetColumnNames = targetColumnNames;
-        this.targetUniqueKeys = targetUniqueKeys;
-        this.readRateLimitAlgorithm = readRateLimitAlgorithm;
-        this.progressContext = progressContext;
-        this.queryCondition = queryCondition;
     }
     
     public TableInventoryCheckParameter(final String jobId, final PipelineDataSource sourceDataSource, final PipelineDataSource targetDataSource,
