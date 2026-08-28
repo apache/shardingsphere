@@ -100,8 +100,17 @@ class SingleTableLoadUtilsTest {
     
     @Test
     void assertGetAllTablesNodeStrWithSchema() {
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry()) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
             assertThat(SingleTableLoadUtils.getAllTablesNodeStr(databaseType), is("*.*.*"));
+        }
+    }
+    
+    @Test
+    void assertFormatBySchemaAvailabilityWhenDefaultSchemaExists() {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(false)) {
+            assertThat(SingleTableLoadUtils.getAllTablesNodeStr(databaseType), is("*.*.*"));
+            assertThat(SingleTableLoadUtils.getAllTablesNodeStrFromDataSource(databaseType, "foo_ds", "foo_schema"), is("foo_ds.*"));
+            assertThat(SingleTableLoadUtils.getDataNodeString(databaseType, "foo_ds", "foo_schema", "foo_tbl"), is("foo_ds.foo_tbl"));
         }
     }
     
@@ -112,7 +121,7 @@ class SingleTableLoadUtilsTest {
     
     @Test
     void assertGetAllTablesNodeStrFromDataSourceWithSchema() {
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry()) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
             assertThat(SingleTableLoadUtils.getAllTablesNodeStrFromDataSource(databaseType, "foo_ds", "foo_schema"), is("foo_ds.foo_schema.*"));
         }
     }
@@ -124,14 +133,15 @@ class SingleTableLoadUtilsTest {
     
     @Test
     void assertGetDataNodeStringWithSchema() {
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry()) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
             assertThat(SingleTableLoadUtils.getDataNodeString(databaseType, "foo_ds", "foo_schema", "foo_tbl"), is("foo_ds.foo_schema.foo_tbl"));
         }
     }
     
-    private MockedConstruction<DatabaseTypeRegistry> mockSchemaRegistry() {
+    private MockedConstruction<DatabaseTypeRegistry> mockSchemaRegistry(final boolean schemaAvailable) {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("foo_schema"));
+        when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
         return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
     }
     

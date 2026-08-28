@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.single.distsql.handler.update;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -41,6 +43,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -63,7 +66,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -108,10 +113,17 @@ class UnloadSingleTableExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCheckBeforeUpdateWithSuccessArguments")
-    void assertCheckBeforeUpdate(final String name, final UnloadSingleTableStatement sqlStatement, final Collection<String> allTables,
+    void assertCheckBeforeUpdate(final String name, final boolean schemaAvailable, final UnloadSingleTableStatement sqlStatement, final Collection<String> allTables,
                                  final Collection<String> singleTables, final Map<String, Collection<DataNode>> tableDataNodes, final Collection<String> configuredTables) {
         prepareCheckBeforeUpdateContext(allTables, singleTables, tableDataNodes, configuredTables);
-        assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("foo_schema"));
+        when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(
+                        DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData))) {
+            assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
+        }
     }
     
     @Test
@@ -179,13 +191,17 @@ class UnloadSingleTableExecutorTest {
         Map<String, Collection<DataNode>> multipleTableNodes = new HashMap<>(2, 1F);
         multipleTableNodes.put("foo_tbl", Collections.singleton(new DataNode("foo_ds.foo_tbl")));
         multipleTableNodes.put("bar_tbl", Collections.singleton(new DataNode("foo_ds.foo_schema.bar_tbl")));
+        Map<String, Collection<DataNode>> schemaTableNodes = new HashMap<>(1, 1F);
+        schemaTableNodes.put("foo_tbl", Collections.singleton(new DataNode("foo_ds.foo_schema.foo_tbl")));
         return Stream.of(
-                Arguments.of("unload all tables bypasses table checks", new UnloadSingleTableStatement(true, Collections.emptyList()),
+                Arguments.of("unload all tables bypasses table checks", false, new UnloadSingleTableStatement(true, Collections.emptyList()),
                         Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(), Collections.emptyList()),
-                Arguments.of("valid single table passes checks", new UnloadSingleTableStatement(false, Collections.singletonList("foo_tbl")),
+                Arguments.of("valid single table passes checks", false, new UnloadSingleTableStatement(false, Collections.singletonList("foo_tbl")),
                         Collections.singleton("foo_tbl"), Collections.singleton("foo_tbl"), singleTableNodes, Collections.singleton("foo_ds.foo_tbl")),
-                Arguments.of("valid multiple tables pass checks", new UnloadSingleTableStatement(false, Arrays.asList("foo_tbl", "bar_tbl")),
-                        Arrays.asList("foo_tbl", "bar_tbl"), Arrays.asList("foo_tbl", "bar_tbl"), multipleTableNodes, Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl")));
+                Arguments.of("valid multiple tables pass checks", false, new UnloadSingleTableStatement(false, Arrays.asList("foo_tbl", "bar_tbl")),
+                        Arrays.asList("foo_tbl", "bar_tbl"), Arrays.asList("foo_tbl", "bar_tbl"), multipleTableNodes, Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl")),
+                Arguments.of("valid schema table passes checks", true, new UnloadSingleTableStatement(false, Collections.singletonList("foo_tbl")),
+                        Collections.singleton("foo_tbl"), Collections.singleton("foo_tbl"), schemaTableNodes, Collections.singleton("foo_ds.foo_schema.foo_tbl")));
     }
     
     private static Stream<Arguments> assertBuildToBeAlteredRuleConfigurationArguments() {

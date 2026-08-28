@@ -19,7 +19,9 @@ package org.apache.shardingsphere.single.datanode;
 
 import ch.qos.logback.classic.Level;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SchemaMetaDataLoader;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -51,6 +53,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,6 +63,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -169,6 +175,32 @@ class SingleTableDataNodeLoaderTest {
         assertTrue(actual.containsKey("foo_tbl2"));
         assertThat(actual.get("foo_tbl1").iterator().next().getDataSourceName(), is("foo_ds"));
         assertThat(actual.get("foo_tbl2").iterator().next().getDataSourceName(), is("foo_ds"));
+    }
+    
+    @Test
+    void assertLoadExactTablesWhenSchemaIsUnavailable() throws SQLException {
+        Map<String, Collection<String>> fooSchemaTableNames = new LinkedHashMap<>(2, 1F);
+        fooSchemaTableNames.put("bar_schema", Collections.singleton("FOO_TBL1"));
+        fooSchemaTableNames.put("dbo", Collections.singleton("foo_tbl2"));
+        Map<String, Collection<String>> barSchemaTableNames = Collections.singletonMap("dbo", Arrays.asList("bar_tbl1", "bar_tbl2"));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("dbo"));
+        when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(false);
+        try (
+                MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class);
+                MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
+                    when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
+                });
+                MockedConstruction<SchemaMetaDataLoader> ignored = mockConstruction(SchemaMetaDataLoader.class, (mock, context) -> {
+                    when(mock.loadSchemaTableNames(anyString(), any(DataSource.class), anyCollection(), anyCollection()))
+                            .thenAnswer(invocation -> dataSourceMap.get("foo_ds") == invocation.getArgument(1) ? fooSchemaTableNames : barSchemaTableNames);
+                })) {
+            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(dataSourceMap.get("foo_ds"))).thenReturn(databaseType);
+            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(dataSourceMap.get("bar_ds"))).thenReturn(databaseType);
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                    "foo_db", databaseType, dataSourceMap, Collections.emptyList(), Arrays.asList("foo_ds.foo_tbl1", "bar_ds.*"));
+            assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Arrays.asList("FOO_TBL1", "bar_tbl1", "bar_tbl2"))));
+        }
     }
     
     @Test

@@ -68,9 +68,12 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
             database.checkStorageUnitsExisted(storageUnitNames);
         }
         String defaultSchemaName = database.getDefaultSchemaName();
-        checkShouldNotExistLogicTables(sqlStatement, defaultSchemaName);
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
+        boolean isSchemaAvailable = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable();
+        checkShouldNotExistLogicTables(sqlStatement, defaultSchemaName, isSchemaAvailable);
         if (!storageUnitNames.isEmpty()) {
-            checkShouldExistActualTables(sqlStatement, storageUnitNames, defaultSchemaName);
+            boolean isSchemaWildcard = !isSchemaAvailable && dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent();
+            checkShouldExistActualTables(sqlStatement, storageUnitNames, defaultSchemaName, isSchemaWildcard);
         }
     }
     
@@ -78,24 +81,22 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         return sqlStatement.getTables().stream().map(SingleTableSegment::getStorageUnitName).filter(each -> !SingleTableConstants.ASTERISK.equals(each)).collect(Collectors.toSet());
     }
     
-    private void checkShouldNotExistLogicTables(final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
+    private void checkShouldNotExistLogicTables(final LoadSingleTableStatement sqlStatement, final String defaultSchemaName, final boolean isSchemaAvailable) {
         Collection<SingleTableSegment> tableSegments = sqlStatement.getTables();
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
-        boolean isSchemaSupportedDatabaseType = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent();
         ShardingSphereSchema schema = database.getSchema(defaultSchemaName);
         for (SingleTableSegment each : tableSegments) {
-            checkTableNodeFormat(isSchemaSupportedDatabaseType, each);
+            checkTableNodeFormat(isSchemaAvailable, each);
             if (!SingleTableConstants.ASTERISK.equals(each.getTableName())) {
                 ShardingSpherePreconditions.checkState(!schema.containsTable(each.getTableName()), () -> new TableExistsException(each.getTableName()));
             }
         }
     }
     
-    private void checkTableNodeFormat(final boolean isSchemaSupportedDatabaseType, final SingleTableSegment singleTableSegment) {
+    private void checkTableNodeFormat(final boolean isSchemaAvailable, final SingleTableSegment singleTableSegment) {
         if (SingleTableConstants.ALL_TABLES.equals(singleTableSegment.toString()) || SingleTableConstants.ALL_SCHEMA_TABLES.equals(singleTableSegment.toString())) {
             return;
         }
-        if (isSchemaSupportedDatabaseType) {
+        if (isSchemaAvailable) {
             ShardingSpherePreconditions.checkState(singleTableSegment.getSchemaName().isPresent(),
                     () -> new InvalidDataNodeFormatException(singleTableSegment.toString(), "Current database is schema required, please use format `db.schema.table`"));
         } else {
@@ -104,7 +105,8 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         }
     }
     
-    private void checkShouldExistActualTables(final LoadSingleTableStatement sqlStatement, final Collection<String> storageUnitNames, final String defaultSchemaName) {
+    private void checkShouldExistActualTables(final LoadSingleTableStatement sqlStatement, final Collection<String> storageUnitNames, final String defaultSchemaName,
+                                              final boolean isSchemaWildcard) {
         Map<String, DataSource> dataSourceMap = database.getResourceMetaData().getStorageUnits().entrySet()
                 .stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource()));
         Map<String, DataSource> aggregatedDataSourceMap = PhysicalDataSourceAggregator.getAggregatedDataSources(dataSourceMap, database.getRuleMetaData().getRules());
@@ -122,10 +124,12 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
                         () -> new TableNotFoundException(tableName, storageUnitName));
                 DatabaseType storageUnitDatabaseType = storageUnitDatabaseTypes.get(storageUnitName);
                 Map<String, Collection<String>> schemaTableNames = actualTableNodes.get(storageUnitName);
-                Collection<String> actualTableNames = each.getSchemaName().map(schemaName -> schemaTableNames.getOrDefault(schemaName, Collections.emptySet()))
-                        .orElseGet(() -> getDefaultSchemaTableNames(schemaTableNames, defaultSchemaName, storageUnitName, storageUnitDatabaseType,
-                                aggregatedDataSourceMap.get(storageUnitName), schemaPolicies));
-                ShardingSpherePreconditions.checkState(actualTableNames.contains(tableName), () -> new TableNotFoundException(tableName, storageUnitName));
+                boolean tableExists = each.getSchemaName().map(schemaName -> schemaTableNames.getOrDefault(schemaName, Collections.emptySet()).contains(tableName))
+                        .orElseGet(() -> isSchemaWildcard
+                                ? schemaTableNames.values().stream().anyMatch(tableNames -> tableNames.contains(tableName))
+                                : getDefaultSchemaTableNames(schemaTableNames, defaultSchemaName, storageUnitName, storageUnitDatabaseType,
+                                        aggregatedDataSourceMap.get(storageUnitName), schemaPolicies).contains(tableName));
+                ShardingSpherePreconditions.checkState(tableExists, () -> new TableNotFoundException(tableName, storageUnitName));
             }
         }
     }

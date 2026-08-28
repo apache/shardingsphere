@@ -159,7 +159,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
             if (expectedDataNodes.containsKey(entry.getKey())) {
                 DataNode dataNode = expectedDataNodes.get(entry.getKey());
                 String tableNodeStr = getTableNodeString(isSchemaAvailable, physicalDataNode);
-                ShardingSpherePreconditions.checkState(physicalDataNode.equals(dataNode),
+                ShardingSpherePreconditions.checkState(isMatchedDataNode(isSchemaAvailable, physicalDataNode, dataNode),
                         () -> new InvalidSingleRuleConfigurationException(String.format("Single table `%s` is found that does not match %s", tableNodeStr,
                                 getTableNodeString(isSchemaAvailable, dataNode))));
                 result.add(tableNodeStr);
@@ -175,11 +175,18 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
             ShardingSpherePreconditions.checkContainsKey(actualDataNodes, each.getTableName(), () -> new SingleTableNotFoundException(getTableNodeString(isSchemaAvailable, each)));
             DataNode actualDataNode = actualDataNodes.get(each.getTableName()).iterator().next();
             String tableNodeStr = getTableNodeString(isSchemaAvailable, actualDataNode);
-            ShardingSpherePreconditions.checkState(actualDataNode.equals(each), () -> new InvalidSingleRuleConfigurationException(
+            ShardingSpherePreconditions.checkState(isMatchedDataNode(isSchemaAvailable, actualDataNode, each), () -> new InvalidSingleRuleConfigurationException(
                     String.format("Single table '%s' is found that does not match %s", tableNodeStr, getTableNodeString(isSchemaAvailable, each))));
             result.add(tableNodeStr);
         }
         return result;
+    }
+    
+    private boolean isMatchedDataNode(final boolean isSchemaAvailable, final DataNode actualDataNode, final DataNode configuredDataNode) {
+        if (isSchemaAvailable || !SingleTableConstants.ASTERISK.equals(configuredDataNode.getSchemaName())) {
+            return actualDataNode.equals(configuredDataNode);
+        }
+        return actualDataNode.getDataSourceName().equals(configuredDataNode.getDataSourceName()) && actualDataNode.getTableName().equals(configuredDataNode.getTableName());
     }
     
     @Override
