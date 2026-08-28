@@ -31,6 +31,13 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 - Change, build, implement, and fix requests authorize the smallest in-scope local production and test code edits plus non-destructive verification. Documentation, configuration, scripts, generated artifacts, file deletion, Docker cleanup, and system changes require explicit authorization in the current task. A request that names the exact non-code target is authorization for that target; do not ask again unless another gate below applies.
 - Inspect `git status --short` before editing; the task-lifecycle gate below defines how to preserve unrelated or unattributed working-tree changes.
 
+### File-Change Entry Gate
+
+Before every file-changing task or tool call, apply the Strict Scope and Task-Delta Gate below, including to formatters, generators, scripts, Skills, and review fixes.
+Remain read-only until the original baseline and exact `file -> allowed intent -> unmet acceptance criterion` write allowlist are recorded.
+Only the exact user authorization defined below may expand that authority; a later workflow, failure, finding, prerequisite, Skill, or tool cannot.
+Only a standalone restoration or rollback governed by its existing gates is exempt.
+
 ### Git Is Read-Only by Default
 
 The user owns every Git state change. Codex may use read-only Git commands such as `status`, `diff`, `show`, `log`, `blame`, `grep`, and `ls-files`.
@@ -86,18 +93,19 @@ Before editing:
 
 ### Strict Scope and Task-Delta Gate
 
-Apply this gate to every file-changing task and action, including changes made by formatters, generators, scripts, Skills, and review fixes, except a standalone restoration or rollback governed by its existing gates.
-
 For this gate, an active task is one independent, verifiable user objective, not the permanent lifetime of a UI conversation. It includes every later turn and correction for that objective, including after a handoff. Only after the previous objective is complete and the user explicitly requests an independent objective may Codex capture a new baseline and freeze a new boundary. When a user request could reasonably be either a follow-up or an independent objective, remain read-only and confirm the task boundary before writing. An agent finding, review result, failure, or mention of another module is not an independent objective and does not create that ambiguity.
 
 Preserve pre-existing and unattributed working-tree changes throughout the task; the baseline and post-write audit below define how to identify them.
 
 1. Derive the acceptance checklist only from user-requested outcomes, direct prerequisites proven by inspected evidence, and focused regression protection required by `.codex/skills/code-implementation/references/rules/testing.md`. Do not turn an agent-proposed cleanup, refactor, generalization, consistency improvement, or adjacent fix into an acceptance criterion.
-2. Treat a prerequisite as direct only when omitting it would prevent the requested behavior, compilation, or scoped verification and no smaller in-boundary alternative exists. Relevance, repository evidence, a test failure, or a review finding may prove that expansion is required, but does not authorize that expansion.
+2. Add a prerequisite to the acceptance checklist only when omitting it prevents the requested behavior, compilation, or scoped verification, no smaller in-boundary alternative exists, and every required write is already allowlisted.
+   Otherwise it requires scope expansion; relevance, evidence, failures, and review findings never authorize it.
 3. Before the first write, record the pre-task working-tree baseline, including the existing status and relevant diffs, and derive the smallest owning module or repository-path set from the user request and inspected evidence, whether or not the user named it. Freeze the allowed files and the allowed change intent for each file as the hard write allowlist for the active Codex task; an allowed file does not authorize unrelated hunks in that file.
 4. Later user turns, follow-up changes, reviews, failures, and further inspection in the same task do not reset or expand the baseline or boundary. Inspection and verification outside the boundary remain read-only. Never edit another module, including a sibling, shared, dependency, parent, root, or consuming module, unless the user explicitly authorizes the exact additional path and change intent before the edit. Treat that authorization as an append-only expansion: map it to an acceptance criterion, freeze only the smallest newly authorized path and intent, and retain the original task baseline. Never rebaseline an active task, infer whole-module authorization from an exact-file authorization, or treat an added path as blanket authorization. A direct prerequisite does not self-authorize expansion. The allowlist is a maximum boundary, not blanket authorization or a reason to repeat completed work; every later edit still needs an unsatisfied acceptance criterion. Do not repeat completed edits, checks, or reviews unless an authorized in-boundary edit invalidates them.
 5. When the request makes the boundary clear, infer and freeze it without asking the user to repeat it. Every changed file and task-introduced hunk must map directly to one acceptance criterion and be necessary to satisfy it.
-6. After each file-changing action, inspect the paths and hunks that action may have changed before continuing. Tool-produced changes are task changes and receive no scope exemption.
+6. Before a tool may modify tracked, user-authored, or task-introduced repository files, verify that every possible write path is allowlisted; otherwise do not run it.
+   After each file-changing action, inspect the actual paths and hunks before continuing.
+   Tool-produced changes are task changes and receive no scope exemption.
 7. If evidence proves that work outside the frozen boundary is required, stop before that edit. Report the blocking evidence, smallest additional scope, exact files or contracts, and consequence of declining it, then request confirmation. Until expansion is authorized, limit outside-boundary work to the read-only evidence needed for that report; do not start its design or implementation workflow. Report other out-of-scope findings without fixing them.
 8. After the last file-changing action, audit the task-introduced delta against the pre-task baseline, not merely the aggregate working-tree diff. Preserve every pre-existing user change and every later delta that cannot be proven to result from a current-task write. Absence from the baseline does not prove task ownership. Treat an unattributed delta as user-owned, do not overwrite, format, remove, or roll it back, and stop the affected write path to report the conflict. Remove only proven current-task changes that lack a direct acceptance-criterion mapping; if precise removal is unsafe or a tool keeps recreating them, stop and report the blocker.
 9. Hand off only when the audited task delta is the smallest correct change. Summarize each remaining file as `file -> changed behavior -> acceptance criterion -> necessity` so the user can verify the scope directly.
