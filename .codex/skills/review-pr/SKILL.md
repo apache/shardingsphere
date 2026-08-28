@@ -5,7 +5,7 @@ description: >-
   discussions from public or authorized repository evidence. Use for code-correctness or
   mergeability decisions, CI-focused review, root-cause and regression analysis, complete
   consolidated findings, copy-ready committer feedback, challenged findings, multi-round
-  review, and the repository completion loop's Local Candidate Preflight Mode.
+  review, and formal review of local implementation candidates in the repository completion loop.
 ---
 
 # Review PR
@@ -15,14 +15,11 @@ description: >-
 Judge the latest reviewed scope from root cause, behavior, contracts, tests, and
 public or user-authorized repository evidence. Select one output mode:
 
-- `Formal Review Mode`: return one formal result for a PR review, code-readiness
-  judgment, mergeability decision, or CI review.
-- `PR Discussion Reply Mode`: return a copy-ready committer reply for a review
-  thread, author or maintainer objection, or challenged finding. Do not add a
-  formal verdict unless requested.
-- `Local Candidate Preflight Mode`: review an authorized local implementation
-  targeting an existing PR and return findings to the repository completion
-  loop. Do not describe local-only work as the public PR state.
+- `Formal Review Mode`: return one formal result for a public PR review, authorized local-candidate review, code-readiness judgment, mergeability decision, or CI review.
+- `PR Discussion Reply Mode`: return a copy-ready committer reply only when the user explicitly requests a review-thread response, author or maintainer objection reply, or challenged-finding reply. Do not add a formal verdict unless requested.
+
+Use Formal Review Mode for every complete code review result or recommendation, including pre-handoff review of a local candidate.
+Identify a local candidate and its local-only delta in `### Coverage`; do not create a separate local-preflight result format or describe local-only work as the public PR state.
 
 ## Review Focus
 
@@ -34,8 +31,7 @@ Review focus is independent from output mode.
 | `Mergeability Review` | The user asks whether the PR can be merged, approved, or landed | Review code and required CI or checks |
 | `CI Review` | The user asks about checks, Actions, logs, or CI failures | Treat CI evidence as the primary target |
 
-Explicit user scope wins. Local Candidate Preflight uses `Code Correctness
-Review` unless the user explicitly requests CI.
+Explicit user scope wins. Formal Review of a local candidate uses `Code Correctness Review` unless the user explicitly requests CI.
 
 In Code Correctness Review, unreviewed CI is not an evidence gap. Runtime facts
 may still be required from code, official specifications, public reproductions,
@@ -51,14 +47,12 @@ confirmed findings consolidated by fix boundary, needs-discussion conditions,
 incomplete-evidence gaps, and Completion Gate state.
 
 Output mode must not affect candidate discovery, proof, classification,
-coverage, or convergence. Never use a previous Local or Formal result as
+coverage, or convergence. Never use a previous Formal Review result as
 evidence or as a conclusion to match. Treat previous public findings only as
 hypotheses whose cited facts must be reverified.
 
 Two reviews with the same effective candidate, requirements, focus, and
-evidence must produce the same canonical assessment. Local and Formal modes may
-resolve different candidates and render different status labels, but they must
-not apply different code-correctness judgment. A changed focus, requirement,
+evidence must produce the same canonical assessment. Public-PR and local-candidate reviews may resolve different candidates, but they must apply the same code-correctness judgment and Formal Review result mapping. A changed focus, requirement,
 or external fact changes the review basis and may legitimately change the
 assessment. Mergeability or CI evidence may add external-state findings or
 gaps, but it must not change code-correctness findings derived from an otherwise
@@ -68,10 +62,7 @@ unchanged basis.
 
 1. Review only. Do not modify PR code, post comments, submit reviews, resolve
    threads, rerun workflows, or change remote state without explicit authority.
-2. Formal review scope is the latest target PR head and the complete GitHub
-   changed-file list. Use local triple-dot semantics when reproducing it. A
-   discussion reply starts from the latest head, thread context, and affected
-   behavior; expand to complete scope only when the claim depends on it.
+2. Public-PR Formal Review scope is the latest target PR head and the complete GitHub changed-file list; use local triple-dot semantics when reproducing it. Local-candidate Formal Review scope follows `Local Candidate Scope` below. A discussion reply starts from the latest head, thread context, and affected behavior; expand to complete scope only when the claim depends on it.
 3. Public community conclusions use only public evidence and sanitized
    verification summaries. Private-repository conclusions may use authorized
    repository evidence but must remain within the user-authorized task and
@@ -83,8 +74,7 @@ unchanged basis.
 5. Treat every concern as a candidate until it passes the Finding Proof Gate.
 6. Do not turn uncertainty, inaccessible evidence, tool failure, skipped
    verification, or uninspected counter-evidence into a blocker.
-7. In Formal Review and Local Candidate Preflight, do not select a verdict,
-   stop at the first blocker, or publish findings before the Completion Gate.
+7. In Formal Review, do not select a verdict, stop at the first blocker, or publish findings before the Completion Gate.
    Consolidate findings by independent fix boundary and return the complete
    current-head set once. Only an explicit request for status, narrow review, or
    early high-risk blockers authorizes a partial result.
@@ -101,7 +91,7 @@ Read each applicable canonical reference directly through EOF before judging the
 - Read [non-regression rules](../code-implementation/references/rules/non-regression.md) for functional or performance regression assessment of any changed code candidate.
 - Read [verification rules](../code-implementation/references/verification.md) before choosing, running, or assessing local verification.
 
-Local Candidate Preflight invoked from an active implementation task may reuse an applicable reference only when the outer workflow already read that exact file through EOF.
+A Formal Review of a local candidate invoked from an active implementation task may reuse an applicable reference only when the outer workflow already read that exact file through EOF.
 This Skill does not call `code-implementation` back, acquire write authority, or create a circular workflow.
 
 ## Scope and Evidence
@@ -117,10 +107,7 @@ For formal reviews:
 - Prefer PR facts, same-repository issues, code and tests, ShardingSphere
   documentation and conventions, then external official specifications.
 
-For Local Candidate Preflight targeting an existing PR, resolve the same public
-requirements and code-correctness evidence before applying the authorized local
-delta. Record any explicit local requirement that extends the public PR scope
-as a distinct part of the review basis.
+For Formal Review of a local candidate targeting an existing PR, resolve the same public requirements and code-correctness evidence before applying the authorized local delta. Record any explicit local requirement that extends the public PR scope as a distinct part of the review basis.
 
 For discussion replies, establish the latest public head, complete thread
 context, relevant earlier review, and affected production or test paths. Fetch
@@ -225,7 +212,7 @@ review.
 
 ## Completion Gate and Scripts
 
-Apply the Completion Gate to every Formal Review and Local Candidate Preflight.
+Apply the Completion Gate to every Formal Review.
 Apply it to a discussion reply only when the reply makes or changes an overall
 readiness conclusion.
 
@@ -247,10 +234,7 @@ readiness conclusion.
 - Keep temporary ledger data private and remove only the exact ledger created
   for the current review.
 
-If the gate cannot pass, return the mode-appropriate incomplete result. In
-Formal Review, when confirmed blockers coexist with a gap that could hide more
-blockers, list them as confirmed partial facts but do not present them as the
-complete change-request set.
+If the gate cannot pass in Formal Review, return `Review Incomplete`. In a discussion reply, state the incomplete evidence without a formal verdict. When confirmed blockers coexist with a gap that could hide more blockers, list them as confirmed partial facts but do not present them as the complete change-request set.
 
 ## Formal Decision Contract
 
@@ -259,7 +243,7 @@ evaluation:
 
 1. If the gate fails, use `Review Incomplete`, even when some blockers are
    already confirmed.
-2. If public evidence disproves the problem model, expected behavior, ownership,
+2. If admissible evidence disproves the problem model, expected behavior, ownership,
    protocol or SQL semantics, compatibility assumption, or solution direction,
    use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
 3. If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`
@@ -271,23 +255,18 @@ pending CI prevents Mergeable in Mergeability Review. A relevant CI failure is
 a blocker when attributable to the PR and an incomplete gap when attribution is
 unclear.
 
-## Local Candidate Preflight Mode
+## Local Candidate Scope
 
 - Use the latest public PR head plus authorized local commits, index changes,
   and working-tree changes as the effective candidate.
 - Verify with read-only Git that local `HEAD` equals or descends from the public
-  head. Otherwise return `Local Preflight Result: Incomplete`.
+  head. Otherwise return `Review Incomplete`.
 - Review from the public PR merge-base through the working tree. Scope is the
   union of GitHub files and the authorized local delta; exclude unrelated local
   changes.
-- Apply Code Correctness Review through the canonical assessment, including the
-  same proof and completion gates, triggered high-risk criteria, and
-  convergence loop.
-- Map a failed Completion Gate or needs-discussion condition to `Local Preflight
-  Result: Incomplete`, confirmed findings to `Local Preflight Result: Changes
-  Required`, and a complete assessment with neither to `Local Preflight Result:
-  Pass`.
-- Keep this Skill review-only. The outer active implementation loop fixes safe in-scope findings and reruns preflight; scope expansion, architecture choices, and high-risk actions return to their existing authorization gates. This Skill never activates that loop.
+- Apply Code Correctness Review through the canonical assessment, including the same proof and completion gates, triggered high-risk criteria, convergence loop, and Formal Decision Contract.
+- State in `### Coverage` that the effective candidate includes authorized local changes, identify their scope separately from the public PR, and never present them as the public PR state.
+- Keep this Skill review-only. The outer active implementation loop fixes safe in-scope findings and reruns Formal Review; scope expansion, architecture choices, and high-risk actions return to their existing authorization gates. This Skill never activates that loop.
 
 ## Multi-Round and Challenged Findings
 
@@ -316,6 +295,8 @@ logs, or emojis.
 
 ### Formal Review
 
+Use this format for both public-PR and local-candidate reviews.
+
 - `Mergeable`: `### Result` with exactly one bold
   `Review Result: Mergeable` line and a concise reason; `### Evidence`;
   `### Coverage`.
@@ -335,24 +316,13 @@ For each blocking issue include:
 - `Required Change` for Change Request, or `Discussion Needed` for Needs
   Discussion.
 
-Do not add patch-level changes after selecting Needs Discussion. Do not include
-placeholder headings. In `### Coverage`, report the reviewed head, authoritative
-requirements and files accounted for, behavior clusters, completed discovery
-lenses, unresolved gaps, and CI scope. In Code Correctness Review, state that
-the result is code-scope only and CI was not reviewed.
+Do not add patch-level changes after selecting Needs Discussion. Do not include placeholder headings. In `### Coverage`, report the candidate type, reviewed head, authoritative requirements and files accounted for, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope. For a local candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state. In Code Correctness Review, state that the result is code-scope only and CI was not reviewed.
 
 ### PR Discussion Reply
 
 Return only the copy-ready reply in the fenced Markdown block. State whether the
 finding is retained, withdrawn, or needs clarification, then give the public
 evidence and minimum next action. Do not force a formal verdict.
-
-### Local Candidate Preflight
-
-Return `### Local Preflight`, exactly one bold Local Preflight Result line,
-confirmed required findings or needs-discussion conditions when present, and
-`### Coverage`. Identify the effective candidate, applicable requirements,
-review focus, and unresolved gaps in Coverage.
 
 ### Correction
 

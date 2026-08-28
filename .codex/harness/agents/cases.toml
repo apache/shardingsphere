@@ -1027,6 +1027,25 @@ required_reasons = ["review_passed", "git_read_only"]
 critical = true
 
 [[cases]]
+id = "local_candidate_review_uses_formal_output"
+group = "operations"
+description = "Uses the Formal Review output contract for a complete local-candidate code review."
+phase = "review output gate and ordinary completion loop"
+ordinary_loop = true
+profile = "review-pr"
+prompt = "A complete Code Correctness Review of an authorized local candidate targeting pull request 123 has found one confirmed blocker, so the Formal Review result is Not Mergeable. The local commit is not public. Return the overall code review recommendation now with the required Formal Review structure, and identify it as a local candidate separately in Coverage; do not edit, hand off, or change Git."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "### Evidence", "### Coverage", "local candidate"]
+forbidden_summary_terms = ["Local Preflight"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "agents", statements = ["Every complete review or recommendation uses Formal Review: `### Result`, one `Review Result: ...` line, `### Evidence`, and `### Coverage`.", "This includes local candidates; identify local-only changes in `### Coverage`."]}, {source = "review-pr", statements = ["Use Formal Review Mode for every complete code review result or recommendation, including pre-handoff review of a local candidate.", "Identify a local candidate and its local-only delta in `### Coverage`; do not create a separate local-preflight result format or describe local-only work as the public PR state."]}]
+critical = true
+
+[[cases]]
 id = "layered_response_when_details_needed"
 group = "operations"
 description = "Separates a concise answer from necessary requested detail."
