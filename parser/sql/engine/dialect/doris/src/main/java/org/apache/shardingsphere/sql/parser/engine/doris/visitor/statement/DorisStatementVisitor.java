@@ -232,7 +232,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
@@ -953,9 +952,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.havingClause()) {
             selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
-        if (null != ctx.windowClause()) {
-            selectStatementBuilder.window((WindowSegment) visit(ctx.windowClause()));
-        }
         if (null != ctx.selectIntoExpression()) {
             ASTNode intoSegment = visit(ctx.selectIntoExpression());
             if (intoSegment instanceof OutfileSegment) {
@@ -1041,7 +1037,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
-        String aggregationType = ctx.aggregationFunctionName().getText();
+        String aggregationType = null == ctx.aggregationFunctionName() ? ctx.distinctWindowAggregationFunctionName().getText() : ctx.aggregationFunctionName().getText();
         return AggregationType.isAggregationType(aggregationType)
                 ? createAggregationSegment(ctx, aggregationType)
                 : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
@@ -1129,21 +1125,13 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.frameClause()) {
             result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), getOriginalText(ctx.frameClause())));
         }
-        if (null != ctx.identifier()) {
-            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
-        }
         return result;
     }
     
     @Override
     public ASTNode visitOverClause(final OverClauseContext ctx) {
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        if (null != ctx.identifier()) {
-            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
-            return result;
-        }
         WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
-        result.setWindowName(windowItemSegment.getWindowName());
         result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
         result.setOrderBySegment(windowItemSegment.getOrderBySegment());
         result.setFrameClause(windowItemSegment.getFrameClause());
