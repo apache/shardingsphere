@@ -90,6 +90,7 @@ class PostgreSQLMigrationIdentifierCaseE2EIT extends AbstractMigrationE2EIT {
             containerComposer.assertRecordExists(targetDataSource, TARGET_TABLE_NAME, INCREMENTAL_ORDER_ID);
             assertRecordAbsent(targetDataSource, LOWER_CASE_CONFLICT_ORDER_ID);
             assertRecordAbsent(targetDataSource, CROSS_SCHEMA_CONFLICT_ORDER_ID);
+            distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
             distSQLFacade.commit(jobId);
             assertTrue(distSQLFacade.listJobIds().isEmpty());
             Awaitility.waitAtMost(30L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS)

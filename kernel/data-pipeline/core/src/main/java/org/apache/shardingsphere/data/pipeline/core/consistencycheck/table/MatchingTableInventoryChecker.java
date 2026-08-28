@@ -131,7 +131,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
     
     private TableInventoryCalculateParameter getTableInventoryCalculateParameter(final TableInventoryCheckParameter param, final TableCheckRangePosition checkRangePosition) {
         TableInventoryCalculateParameter result = new TableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
-                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
+                param.getTargetColumnNames(), param.getTargetUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
         result.setRange(Range.closed(null != checkRangePosition.getTargetPosition() ? checkRangePosition.getTargetPosition() : checkRangePosition.getTargetRange().getLowerBound(),
                 checkRangePosition.getTargetRange().getUpperBound()));
         return result;

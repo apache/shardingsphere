@@ -50,6 +50,10 @@ import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgori
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDataSourceConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -174,11 +178,22 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         String targetTableName = checkRangePosition.getLogicTableName();
         List<String> columnNames = tableMetaData.getColumnNames();
         List<PipelineColumnMetaData> uniqueKeys = PipelineTableMetaDataUtils.getUniqueKeyColumns(sourceTable.getSchemaName(), sourceTable.getTableName(), metaDataLoader);
-        QualifiedTable targetTable = new QualifiedTable(dataNode.getSchemaName(), targetTableName);
         PipelineDataSource targetDataSource = dataSourceManager.getDataSource(jobConfig.getTarget());
+        IdentifierCasePolicy targetSchemaIdentifierPolicy = IdentifierNormalizeEngine.resolvePolicy(jobConfig.getTargetDatabaseType(), targetDataSource, IdentifierScope.SCHEMA);
+        IdentifierCasePolicy targetTableIdentifierPolicy = IdentifierNormalizeEngine.resolvePolicy(jobConfig.getTargetDatabaseType(), targetDataSource, IdentifierScope.TABLE);
+        IdentifierCasePolicy targetColumnIdentifierPolicy = IdentifierNormalizeEngine.resolvePolicy(jobConfig.getTargetDatabaseType(), targetDataSource, IdentifierScope.COLUMN);
+        String targetSchemaName = null != dataNode.getSchemaName()
+                && new DatabaseTypeRegistry(jobConfig.getTargetDatabaseType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()
+                        ? IdentifierNormalizeEngine.normalize(targetSchemaIdentifierPolicy, dataNode.getSchemaName())
+                        : null;
+        QualifiedTable targetTable = new QualifiedTable(targetSchemaName, IdentifierNormalizeEngine.normalize(targetTableIdentifierPolicy, targetTableName));
+        List<String> targetColumnNames = columnNames.stream().map(each -> IdentifierNormalizeEngine.normalize(targetColumnIdentifierPolicy, each)).collect(Collectors.toList());
+        List<PipelineColumnMetaData> targetUniqueKeys = uniqueKeys.stream().map(each -> new PipelineColumnMetaData(each.getOrdinalPosition(),
+                IdentifierNormalizeEngine.normalize(targetColumnIdentifierPolicy, each.getName()), each.getDataType(), each.getDataTypeName(),
+                each.isNullable(), each.isPrimaryKey(), each.isUniqueKey())).collect(Collectors.toList());
         TableInventoryCheckParameter param = new TableInventoryCheckParameter(
-                jobConfig.getJobId(), checkRangePosition.getSplittingItem(), sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys,
-                readRateLimitAlgorithm, progressContext, checkRangePosition.getQueryCondition());
+                jobConfig.getJobId(), checkRangePosition.getSplittingItem(), sourceDataSource, targetDataSource, sourceTable, targetTable,
+                columnNames, uniqueKeys, targetColumnNames, targetUniqueKeys, readRateLimitAlgorithm, progressContext, checkRangePosition.getQueryCondition());
         TableInventoryChecker tableInventoryChecker = tableChecker.buildTableInventoryChecker(param);
         currentTableInventoryChecker.set(tableInventoryChecker);
         Optional<TableDataConsistencyCheckResult> preCheckResult = tableInventoryChecker.preCheck();
