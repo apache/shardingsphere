@@ -97,11 +97,14 @@ The following code of conduct is based on full compliance with the [Apache Softw
    - Error tolerance testing: Get expected results through incorrect inputs such as illegal data, exception flows, etc.
 - Use `assert` prefix for all test method names.
 - Unit tests must exercise behavior through public APIs only. Reflection-based invocation of private members is forbidden. If tests must access fields via reflection, use `Plugins.getMemberAccessor()` and limit reflection to `Field` access only.
-- Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class.
+- Obtain SPI implementations through the project loader by default. If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it through `TypedSPILoader` or `DatabaseTypedSPILoader`, not with `new`.
+- Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class. This class-name rule is mandatory and is independent of scenario-focused test-method naming.
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
 - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
+- Keep test names concise and scenario-focused; avoid `ReturnsXXX` and wording that restates the expected result instead of naming the scenario.
 - Each test case needs precise assertions, try not to use `not`, `containsString` assertions.
-- Separate environment preparation code from test code.
+- Use JUnit 5 and Mockito. Keep environment preparation, test action, and assertions distinct; reset static state between scenarios and reuse existing swappers or helpers for complex configuration.
+- Default to direct Mockito mocks. Use a private helper only for repeated local setup and a standalone fixture only for a stable external or packaged test boundary. Give fixtures the narrowest practical visibility, keep them in the nearest owning test package or module, and do not create cross-module test APIs for convenience. Delete or inline thin mock wrappers.
 - Only Mockito, junit `Assertions`, hamcrest `CoreMatchers` and `MatcherAssert` related can use static import.
 - Data assertion standards should follow:
    - Boolean type assertions should use `assertTrue` and `assertFalse`;
@@ -113,9 +116,10 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - The actual values in test cases should be named actual XXX, and expected values should be named expected XXX.
 - Test classes and methods marked with `@Test` do not need JAVADOC.
 - Using `mock` should follow the following specifications:
-   - When unit tests need to connect to a certain environment, `mock` should be used;
-   - When unit tests contain objects that are not easy to construct, for example: objects with more than two levels of nesting and unrelated to testing, `mock` should be used.
-   - For mocking static methods or constructors, consider using `AutoMockExtension` and `StaticMockSettings` provided by the testing framework for automatic resource release; if using Mockito's `mockStatic` and `mockConstruction` methods, must be paired with `try-with-resource` or closed in cleanup methods to avoid leaks.
+   - Mock databases, caches, registries, network calls, time, and other heavy external dependencies instead of connecting to external environments.
+   - Mock objects with more than two levels of nesting when they are unrelated to the behavior under test; do not construct deep unrelated object graphs.
+   - Prefer `AutoMockExtension` and its static or construction mocking support. Use direct `mockStatic` or `mockConstruction` only when the extension cannot apply and the reason is recorded; scope it with try-with-resources. When a class is listed in `@StaticMockSettings`, do not call `mockStatic` or `mockConstruction` for it; stub it through `when(...)`.
+   - Do not mix Mockito matchers with raw arguments in one invocation.
    - When verifying only one call, there's no need to use `times(1)` parameter, the single-parameter method of `verify` is sufficient.
 - Do not stub methods or verify interactions that do not affect the behavior or result being tested. Omit stubbing when Mockito's default return value is sufficient.
 - For deep chained interactions, use Mockito’s `RETURNS_DEEP_STUBS` instead of layering intermediate mocks.

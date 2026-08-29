@@ -101,12 +101,15 @@ chapter = true
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
  - 使用 `assert` 前缀命名所有的测试用例。
  - 单元测试必须通过公共 API 验证行为，禁止通过反射调用私有成员。 若测试必须通过反射访问字段，应使用 `Plugins.getMemberAccessor()`，且反射仅限于 `Field` 访问。
- - 每个单元测试类必须直接测试一个对应的生产类，测试类必须使用生产类的准确简单类名并命名为 `<ProductionClassName>Test`。
+ - 默认通过项目加载器获取 SPI 实现。 如果被测类实现了 `TypedSPI` 或 `DatabaseTypedSPI`，应通过 `TypedSPILoader` 或 `DatabaseTypedSPILoader` 实例化，禁止使用 `new`。
+ - 每个单元测试类必须直接测试一个对应的生产类，测试类必须使用生产类的准确简单类名并命名为 `<ProductionClassName>Test`。 该测试类命名规则为强制要求，与面向场景的测试方法命名规则相互独立。
  - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀。
  - 每个公有方法使用一个独立的测试方法，测试方法顺序在可行时与生产方法保持一致。
  - 参数化测试需通过参数提供显示名，并使用 `"{0}"` 作为展示名模板。
+ - 测试名称应简洁并聚焦场景；避免使用 `ReturnsXXX`，也不要使用仅复述预期结果而未说明场景的措辞。
  - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
- - 准备环境的代码和测试代码分离。
+ - 使用 JUnit 5 和 Mockito。 明确区分环境准备、测试执行和断言；不同场景之间应重置静态状态，并复用现有的 swapper 或辅助工具处理复杂配置。
+ - 默认直接使用 Mockito mock。 仅对重复的局部准备使用私有辅助方法，仅对稳定的外部测试边界或打包测试边界使用独立测试夹具。 测试夹具应采用实际可行的最小可见性，并放在最近的所属测试包或模块中；不要为了方便而创建跨模块测试 API。 删除或内联内容单薄的 mock 包装器。
  - 只有 Mockito，junit `Assertions`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
  - 数据断言规范应遵循：
     - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
@@ -118,9 +121,10 @@ chapter = true
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 JAVADOC。
  - 使用 `mock` 应遵循如下规范：
-   - 单元测试需要连接某个环境时，应使用 `mock`；
-   - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
-   - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
+   - 数据库、缓存、注册中心、网络调用、时间以及其他重量级外部依赖应使用 mock，不要连接外部环境。
+   - 与被测行为无关且嵌套超过两层的对象应使用 mock；不要构造深层无关对象图。
+   - 优先使用 `AutoMockExtension` 及其静态 mock 或构造 mock 支持。 只有该扩展无法适用并且记录了原因时，才可直接使用 `mockStatic` 或 `mockConstruction`，并且必须通过 try-with-resources 限定作用域。 如果某个类已列入 `@StaticMockSettings`，不要对它调用 `mockStatic` 或 `mockConstruction`，而应通过 `when(...)` 设置桩行为。
+   - 不要在一次调用中混用 Mockito 参数匹配器和原始参数。
    - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
  - 不得对与当前测试所验证的行为或结果无关的方法进行 stub，也不得 verify 此类交互。当 Mockito 的默认返回值足以满足测试需要时，应省略 stub。
  - 深度链式交互使用 Mockito 的 `RETURNS_DEEP_STUBS`，不要层层手动 mock。
