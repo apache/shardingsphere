@@ -980,6 +980,89 @@ def run_codex(
                 return 124, time.monotonic() - started, {}
 
 
+def bounded_marker_excerpt(message: str, marker_index: int, limit: int = 240) -> str:
+    """Keep a bounded diagnostic excerpt that includes its decisive marker."""
+    start = max(0, marker_index - limit // 3)
+    prefix = "..." if start else ""
+    end = min(len(message), start + limit - len(prefix))
+    suffix = "..." if end < len(message) else ""
+    if suffix:
+        end -= len(suffix)
+    return f"{prefix}{message[start:end]}{suffix}"
+
+
+def summarize_runner_failure(output_dir: Path, exit_code: int) -> dict[str, Any]:
+    """Classify a failed Codex run and return bounded diagnostic evidence."""
+    events_path = output_dir / "events.jsonl"
+    stderr_path = output_dir / "stderr.log"
+    markers = {
+        "network": ("failed to lookup address", "connection failed", "error sending request"),
+        "sandbox": ("operation not permitted", "permission denied", "sandbox denied"),
+        "timeout": ("timeout",),
+    }
+    evidence_by_category: dict[str, list[str]] = {each: [] for each in markers}
+
+    def record_evidence(message: str) -> None:
+        normalized = " ".join(message.split())
+        lowered = normalized.lower()
+        for category, category_markers in markers.items():
+            marker_positions = [lowered.find(each) for each in category_markers if each in lowered]
+            if len(evidence_by_category[category]) < 3 and marker_positions:
+                evidence_by_category[category].append(bounded_marker_excerpt(normalized, min(marker_positions)))
+
+    if events_path.is_file():
+        with events_path.open(encoding="utf-8", errors="replace") as events_file:
+            for line in events_file:
+                try:
+                    event = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                message = event.get("message")
+                if not isinstance(message, str) and isinstance(event.get("item"), dict):
+                    message = event["item"].get("message")
+                if isinstance(message, str):
+                    record_evidence(message)
+    if stderr_path.is_file():
+        with stderr_path.open(encoding="utf-8", errors="replace") as stderr_file:
+            for line in stderr_file:
+                record_evidence(line)
+    if evidence_by_category["network"]:
+        category = "network"
+    elif evidence_by_category["sandbox"]:
+        category = "sandbox"
+    elif 124 == exit_code or evidence_by_category["timeout"]:
+        category = "timeout"
+    else:
+        category = "runner"
+    evidence = evidence_by_category.get(category, [])
+    if not evidence:
+        evidence = [f"Codex runner exited with code {exit_code}; inspect the bounded log paths."]
+    return {
+        "category": category,
+        "evidence": evidence,
+        "events_log": str(events_path),
+        "stderr_log": str(stderr_path),
+    }
+
+
+def write_runner_failure_summary(
+        output_dir: Path, snapshot_dir: Path, label: str, exit_code: int,
+        evaluations: list[dict[str, Any]]) -> dict[str, Any]:
+    """Write the summary for a failed Codex runner execution."""
+    summary = {
+        "label": label,
+        "runner_exit_code": exit_code,
+        "evaluations": evaluations,
+        "runner_failure": summarize_runner_failure(output_dir, exit_code),
+        "output_dir": str(output_dir),
+        "policy_snapshot_dir": str(snapshot_dir),
+    }
+    with (output_dir / "summary.json").open("w", encoding="utf-8") as summary_file:
+        json.dump(summary, summary_file, indent=2)
+        summary_file.write("\n")
+    return summary
+
+
 def read_usage(events_path: Path) -> dict[str, int]:
     """Aggregate usage records from the Codex JSONL event stream."""
     usage = {"input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0}
@@ -1358,12 +1441,8 @@ def main() -> int:
         policy, codex_home, output_dir, cases, policy_sha256, args.timeout
     )
     if exit_code:
-        print(json.dumps({
-            "label": args.label,
-            "runner_exit_code": exit_code,
-            "evaluations": evaluations,
-            "output_dir": str(output_dir),
-        }, indent=2))
+        summary = write_runner_failure_summary(output_dir, snapshot_dir, args.label, exit_code, evaluations)
+        print(json.dumps(summary, indent=2))
         return exit_code
 
     with (output_dir / "result.json").open("w", encoding="utf-8") as result_file:
