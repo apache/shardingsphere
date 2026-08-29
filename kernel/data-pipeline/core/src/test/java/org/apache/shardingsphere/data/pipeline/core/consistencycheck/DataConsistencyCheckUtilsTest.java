@@ -20,13 +20,19 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -59,17 +65,18 @@ class DataConsistencyCheckUtilsTest {
         assertFalse(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(time), new Timestamp(time + 1000L)));
     }
     
-    @Test
-    void assertTimestampEqualsBeforeEpoch() {
-        EqualsBuilder equalsBuilder = new EqualsBuilder();
-        // -1500 and -1000 are half a second apart and fall in different seconds
-        assertFalse(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(-1500L), new Timestamp(-1000L)));
-        // -500 and 400 straddle the epoch and fall in different seconds
-        assertFalse(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(-500L), new Timestamp(400L)));
-        // -1000 and -999 differ by a millisecond and fall in the same second
-        assertTrue(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(-1000L), new Timestamp(-999L)));
-        // the sub-second tolerance still holds below the epoch
-        assertTrue(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(-1999L), new Timestamp(-1001L)));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("preEpochTimestampCases")
+    void assertTimestampMatchedBeforeEpoch(final String scenario, final long thisMillis, final long thatMillis, final boolean expected) {
+        assertThat(DataConsistencyCheckUtils.isMatched(new EqualsBuilder(), new Timestamp(thisMillis), new Timestamp(thatMillis)), is(expected));
+    }
+    
+    private static Stream<Arguments> preEpochTimestampCases() {
+        return Stream.of(
+                Arguments.of("different seconds before epoch", -1500L, -1000L, false),
+                Arguments.of("different seconds across epoch", -500L, 400L, false),
+                Arguments.of("same second before epoch", -1000L, -999L, true),
+                Arguments.of("sub second tolerance before epoch", -1999L, -1001L, true));
     }
     
     @Test

@@ -107,7 +107,7 @@ public final class DataConsistencyCheckUtils {
          * strategies with different database types could be considered.
          */
         if (thisColumnValue instanceof Timestamp && thatColumnValue instanceof Timestamp) {
-            return toSeconds((Timestamp) thisColumnValue) == toSeconds((Timestamp) thatColumnValue);
+            return toFlooredSeconds((Timestamp) thisColumnValue) == toFlooredSeconds((Timestamp) thatColumnValue);
         }
         if (thisColumnValue instanceof Array && thatColumnValue instanceof Array) {
             return Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
@@ -115,9 +115,7 @@ public final class DataConsistencyCheckUtils {
         return equalsBuilder.append(thisColumnValue, thatColumnValue).isEquals();
     }
     
-    private static long toSeconds(final Timestamp timestamp) {
-        // Math.floorDiv, not /: integer division truncates towards zero, so it would put a
-        // pre-epoch value in the second above the one it belongs to.
+    private static long toFlooredSeconds(final Timestamp timestamp) {
         return Math.floorDiv(timestamp.getTime(), 1000L);
     }
     
