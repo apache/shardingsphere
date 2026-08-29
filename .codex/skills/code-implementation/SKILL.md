@@ -14,6 +14,7 @@ Read every selected reference through EOF before relying on it. Do not substitut
 - For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`, `.codex/skills/code-implementation/references/rules/contracts-and-removal.md`, and `.codex/skills/code-implementation/references/rules/non-regression.md`. Apply each contract, impact, or removal rule only when its own trigger matches.
 - Before deciding whether tests or test support are required, and before creating or changing them, read `.codex/skills/code-implementation/references/rules/testing.md`.
 - Before choosing or running verification and before handoff, read `.codex/skills/code-implementation/references/verification.md`.
+- For every implementation, fix, or refactor, read `.codex/skills/coding-standards/SKILL.md` through EOF and use its Implementation Guidance Mode. Do not run its standalone inventory or physical-line audit unless the user explicitly requests that audit.
 
 Specialized repository Skills compose with this Skill when they write code. Their narrower rules add to these rules and do not replace them.
 

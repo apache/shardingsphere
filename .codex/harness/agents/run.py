@@ -892,11 +892,15 @@ For a new non-regression case that explicitly makes functional or performance no
 Use `triage_failed_smoke` or `rerun_failed_smoke` only when the case asks to perform that step at the current decision point.
 Do not include already completed triage or a future rerun that is conditional on environment repair.
 Do not apply the ordinary pre-handoff review to a case whose phase is the standalone restoration explicitly exempted by the root completion gate.
+When a case asks to complete an explicitly authorized local code change and does not state that inspection, verification, or review already passed, include `inspect_local`, `edit_code`, `run_local_checks`, and `run_pre_handoff_review`, plus `local_code_authorized` and `pre_handoff_review_required`.
 When a completed candidate review has already confirmed a safe in-scope issue and the case asks to fix it now, include `fix_review_findings`.
 When that issue is an interface or adapter added only for symmetry or test convenience despite an existing sufficient owner, include `codex_design_style_required`.
 When a case states that scoped verification and the pre-handoff review passed, asks to complete that task without another edit, and does not authorize a Git write, include `propose_commit_message`.
 Treat the stated completed inspection, review, or verification as evidence, not as an action to repeat.
 Likewise, use the detailed task-lifecycle and attribution reasons only when the case explicitly asks to evaluate that condition.
+When `original_baseline_must_persist` is included, state `original baseline` in the summary.
+For a `confirm` decision with `scope_expansion_required`, explicitly ask the user to `authorize` the exact scope.
+When a case says not to repeat already granted task authority, do not restate its authorized targets in the summary.
 Do not replace an existing reason such as `preserve_unrelated_work` merely because `frozen_task_boundary` is also compatible with the situation.
 Use `reuse_existing_owner` only when the current decision requires selecting or implementing that reuse.
 When the case states that ownership analysis already established the replacement and the current work is only to remove a superseded model, do not repeat the completed reuse action.
