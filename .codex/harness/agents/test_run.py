@@ -180,6 +180,58 @@ class RunTest(unittest.TestCase):
         self.assertEqual(1, run_codex.call_count)
         self.assertEqual(124, evaluations[0]["runner_exit_code"])
 
+    def test_summarize_runner_failure_prioritizes_network_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as output_directory:
+            output_path = Path(output_directory)
+            (output_path / "events.jsonl").write_text(json.dumps({
+                "type": "error", "message": "Connection failed: failed to lookup address information",
+            }), encoding="utf-8")
+            (output_path / "stderr.log").write_text("Harness timeout after 600 seconds.\n", encoding="utf-8")
+            actual = run.summarize_runner_failure(output_path, 124)
+        self.assertEqual("network", actual["category"])
+        self.assertEqual(["Connection failed: failed to lookup address information"], actual["evidence"])
+
+    def test_summarize_runner_failure_classifies_sandbox_denial(self) -> None:
+        with tempfile.TemporaryDirectory() as output_directory:
+            output_path = Path(output_directory)
+            (output_path / "stderr.log").write_text("Operation not permitted\n", encoding="utf-8")
+            actual = run.summarize_runner_failure(output_path, 1)
+        self.assertEqual("sandbox", actual["category"])
+        self.assertEqual(["Operation not permitted"], actual["evidence"])
+
+    def test_summarize_runner_failure_keeps_late_marker_in_bounded_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as output_directory:
+            output_path = Path(output_directory)
+            (output_path / "stderr.log").write_text(f"{'context ' * 80}Permission denied\n", encoding="utf-8")
+            actual = run.summarize_runner_failure(output_path, 1)
+        self.assertEqual("sandbox", actual["category"])
+        self.assertIn("Permission denied", actual["evidence"][0])
+        self.assertLessEqual(len(actual["evidence"][0]), 240)
+
+    def test_summarize_runner_failure_classifies_timeout(self) -> None:
+        with tempfile.TemporaryDirectory() as output_directory:
+            actual = run.summarize_runner_failure(Path(output_directory), 124)
+        self.assertEqual("timeout", actual["category"])
+
+    def test_summarize_runner_failure_falls_back_to_runner(self) -> None:
+        with tempfile.TemporaryDirectory() as output_directory:
+            actual = run.summarize_runner_failure(Path(output_directory), 2)
+        self.assertEqual("runner", actual["category"])
+        self.assertEqual(["Codex runner exited with code 2; inspect the bounded log paths."], actual["evidence"])
+
+    def test_write_runner_failure_summary_persists_diagnostics(self) -> None:
+        with tempfile.TemporaryDirectory() as output_directory:
+            output_path = Path(output_directory)
+            snapshot_path = output_path / "policy-snapshot"
+            (output_path / "stderr.log").write_text("Permission denied\n", encoding="utf-8")
+            actual = run.write_runner_failure_summary(
+                output_path, snapshot_path, "failed-candidate", 1, [{"evaluation": 1, "runner_exit_code": 1}]
+            )
+            persisted = json.loads((output_path / "summary.json").read_text(encoding="utf-8"))
+        self.assertEqual(actual, persisted)
+        self.assertEqual("sandbox", persisted["runner_failure"]["category"])
+        self.assertEqual(str(snapshot_path), persisted["policy_snapshot_dir"])
+
     def test_read_usage_aggregates_evaluations(self) -> None:
         events = [
             {"type": "turn.completed", "usage": {"input_tokens": 10, "cached_input_tokens": 3, "output_tokens": 2}},
