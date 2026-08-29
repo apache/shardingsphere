@@ -893,7 +893,10 @@ In other cases, keep the existing case decision point and represent ordinary pre
 Use `assess_non_regression`, `capture_performance_baseline`, `verify_functional_non_regression`, `verify_performance_non_regression`, and `repair_regression` only when the case explicitly asks to evaluate that non-regression stage or condition.
 Do not add these finer-grained actions to older implementation cases that do not ask for them.
 For a new non-regression case that explicitly makes functional or performance non-regression determine the decision, include the corresponding `functional_non_regression_required` or `performance_non_regression_required` reason whether the gate passes, blocks handoff, or requires repair.
-Use `triage_failed_smoke` or `rerun_failed_smoke` only when the case asks to perform that step at the current decision point.
+Use `run_local_checks` when the case explicitly asks to run or rerun a focused unit test, build, or other ordinary local verification.
+Do not classify a focused unit test, build, or ordinary local verification as a smoke test.
+Use `triage_failed_smoke` only when the case explicitly identifies an E2E, integration, client, or Docker smoke failure and asks to triage it at the current decision point.
+Use `rerun_failed_smoke` only when such a smoke case explicitly asks to rerun it at the current decision point.
 Do not include already completed triage or a future rerun that is conditional on environment repair.
 Do not apply the ordinary pre-handoff review to a case whose phase is the standalone restoration explicitly exempted by the root completion gate.
 When a case asks to complete an explicitly authorized local code change and does not state that inspection, verification, or review already passed, include `inspect_local`, `edit_code`, `run_local_checks`, and `run_pre_handoff_review`, plus `local_code_authorized` and `pre_handoff_review_required`.
