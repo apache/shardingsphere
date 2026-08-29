@@ -31,7 +31,7 @@ import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdAcceptPacket;
@@ -88,7 +88,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
             case CONT_AUTH:
                 // TODO implement CONT_AUTH
             default:
-                throw new FirebirdProtocolException("Wrong operation %s during authentication phase", type.name());
+                throw new DatabaseProtocolException("Wrong operation %s during authentication phase", type.name());
         }
     }
     

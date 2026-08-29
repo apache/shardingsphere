@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common;
 
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +49,7 @@ class FirebirdCommonInfoPacketTypeTest {
     
     @Test
     void assertParseCommonInfoWithUnknownType() {
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdCommonInfoPacketType.parseCommonInfo(payload, FirebirdCommonInfoPacketType.ERROR));
+        assertThrows(DatabaseProtocolException.class, () -> FirebirdCommonInfoPacketType.parseCommonInfo(payload, FirebirdCommonInfoPacketType.ERROR));
     }
     
     @Test

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.constant.buffer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdValueFormat;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -103,7 +103,7 @@ class FirebirdParameterBufferTest {
         buffer.writeByte(1);
         buffer.writeByte(4);
         FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> version == 1);
-        assertThrows(FirebirdProtocolException.class, () -> parameterBuffer.parseBuffer(buffer));
+        assertThrows(DatabaseProtocolException.class, () -> parameterBuffer.parseBuffer(buffer));
     }
     
     private Function<Integer, FirebirdParameterBufferType> createValueOf() {

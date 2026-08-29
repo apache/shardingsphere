@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.constant.buffer;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -71,7 +71,7 @@ public final class FirebirdParameterBuffer {
                 int length = traditionalStyle ? parameterBuffer.readByte() : parameterBuffer.readIntLE();
                 return parameterBuffer.readSlice(length).toString(StandardCharsets.UTF_8);
             default:
-                throw new FirebirdProtocolException("Unsupported format type %s", type.getFormat().name());
+                throw new DatabaseProtocolException("Unsupported format type %s", type.getFormat().name());
         }
     }
     

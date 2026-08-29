@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
@@ -106,7 +106,7 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     FirebirdPrepareStatementReturnPacket.writeCode(FirebirdSQLInfoPacketType.DESCRIBE_END, payload);
                     break;
                 default:
-                    throw new FirebirdProtocolException("Unknown statement info request type %d", requestedItem);
+                    throw new DatabaseProtocolException("Unknown statement info request type %d", requestedItem);
             }
         }
     }

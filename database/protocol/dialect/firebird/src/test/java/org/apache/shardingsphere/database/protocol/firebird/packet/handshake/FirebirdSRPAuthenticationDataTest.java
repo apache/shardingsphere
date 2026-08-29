@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.handshake;
 
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -68,7 +68,7 @@ class FirebirdSRPAuthenticationDataTest {
     @Test
     void assertServerProofWithUnknownHashAlgorithm() {
         FirebirdSRPAuthenticationData actual = new FirebirdSRPAuthenticationData("SHA-0", "alice", "password", "04");
-        assertThat(assertThrows(FirebirdProtocolException.class, () -> actual.serverProof("alice")).getMessage(), is("Unrecognised hash algorithm `SHA-0`."));
+        assertThat(assertThrows(DatabaseProtocolException.class, () -> actual.serverProof("alice")).getMessage(), is("Unrecognised hash algorithm `SHA-0`."));
     }
     
     @Test

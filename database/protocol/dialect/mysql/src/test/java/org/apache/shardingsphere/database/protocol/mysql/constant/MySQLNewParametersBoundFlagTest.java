@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.constant;
 
-import org.apache.shardingsphere.database.protocol.mysql.exception.MySQLProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -33,6 +33,6 @@ class MySQLNewParametersBoundFlagTest {
     
     @Test
     void assertValueOfWithIllegalArgument() {
-        assertThrows(MySQLProtocolException.class, () -> MySQLNewParametersBoundFlag.valueOf(-1));
+        assertThrows(DatabaseProtocolException.class, () -> MySQLNewParametersBoundFlag.valueOf(-1));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.Test;
@@ -113,7 +113,7 @@ class FirebirdParseBatchBlrTest {
     @MethodSource("blobFieldArguments")
     void assertParseRejectsBlob(final String name, final byte[] fieldBlr, final int scale) {
         ByteBuf blr = createBlr(BlrConstants.blr_version5, fieldBlr, 2);
-        FirebirdProtocolException actual = assertThrows(FirebirdProtocolException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
+        DatabaseProtocolException actual = assertThrows(DatabaseProtocolException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
         assertThat(actual.getMessage(), is("BLOB fields are not supported in Firebird batch operations"));
     }
     

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAut
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocol;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdAcceptPacket;
@@ -122,7 +122,7 @@ class FirebirdAuthenticationEngineTest {
         AuthorityRule rule = mock(AuthorityRule.class);
         mockProxyContext(rule, true);
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.CONT_AUTH);
-        assertThrows(FirebirdProtocolException.class, () -> authenticationEngine.authenticate(context, payload));
+        assertThrows(DatabaseProtocolException.class, () -> authenticationEngine.authenticate(context, payload));
     }
     
     @ParameterizedTest(name = "{0}")

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free;
 
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
@@ -127,7 +127,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     @Test
     void assertExecuteWithUnknownOption() {
         when(packet.getOption()).thenReturn(999);
-        assertThrows(FirebirdProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
+        assertThrows(DatabaseProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
     }
     
     private static Stream<Arguments> preparedStatementFreeOptions() {

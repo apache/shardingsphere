@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.handshake;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.firebirdsql.util.ByteArrayHelper;
 
 import java.math.BigInteger;
@@ -196,7 +196,7 @@ public final class FirebirdSRPAuthenticationData {
         return ByteArrayHelper.toHexString(pad(publicKey));
     }
     
-    private byte[] clientProofHash(final byte[]... arrays) throws FirebirdProtocolException {
+    private byte[] clientProofHash(final byte[]... arrays) {
         try {
             MessageDigest md = MessageDigest.getInstance(clientProofHashAlgorithm);
             for (byte[] array : arrays) {
@@ -204,7 +204,7 @@ public final class FirebirdSRPAuthenticationData {
             }
             return md.digest();
         } catch (final NoSuchAlgorithmException ex) {
-            throw new FirebirdProtocolException("Unrecognised hash algorithm `%s`.", clientProofHashAlgorithm);
+            throw new DatabaseProtocolException("Unrecognised hash algorithm `%s`.", clientProofHashAlgorithm);
         }
     }
     

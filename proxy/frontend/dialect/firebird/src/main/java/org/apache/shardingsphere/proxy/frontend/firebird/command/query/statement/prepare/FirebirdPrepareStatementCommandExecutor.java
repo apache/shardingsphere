@@ -22,7 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
@@ -162,7 +162,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                     }
                     break;
                 default:
-                    throw new FirebirdProtocolException("Unknown statement info request type %d", packet.getCurrentItem());
+                    throw new DatabaseProtocolException("Unknown statement info request type %d", packet.getCurrentItem());
             }
         }
         return Collections.singleton(new FirebirdGenericResponsePacket().setData(returnPacket));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended;
 
-import org.apache.shardingsphere.database.protocol.postgresql.exception.PostgreSQLProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -73,8 +73,8 @@ class PostgreSQLBinaryColumnTypeTest {
     }
     
     @Test
-    void assertValueOfThrowsPostgreSQLProtocolException() {
-        assertThrows(PostgreSQLProtocolException.class, () -> PostgreSQLBinaryColumnType.valueOf(9999));
+    void assertValueOfThrowsDatabaseProtocolException() {
+        assertThrows(DatabaseProtocolException.class, () -> PostgreSQLBinaryColumnType.valueOf(9999));
     }
     
     private static Stream<Arguments> assertValueOfJDBCTypeArguments() {

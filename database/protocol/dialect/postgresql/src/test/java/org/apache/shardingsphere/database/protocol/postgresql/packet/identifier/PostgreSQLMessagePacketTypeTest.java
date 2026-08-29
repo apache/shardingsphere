@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.identifier;
 
-import org.apache.shardingsphere.database.protocol.postgresql.exception.PostgreSQLProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -33,6 +33,6 @@ class PostgreSQLMessagePacketTypeTest {
     
     @Test
     void assertGetValueWithIllegalArgument() {
-        assertThrows(PostgreSQLProtocolException.class, () -> PostgreSQLMessagePacketType.valueOf(-1));
+        assertThrows(DatabaseProtocolException.class, () -> PostgreSQLMessagePacketType.valueOf(-1));
     }
 }
