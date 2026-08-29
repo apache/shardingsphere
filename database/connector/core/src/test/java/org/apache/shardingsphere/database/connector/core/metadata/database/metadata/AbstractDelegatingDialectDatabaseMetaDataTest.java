@@ -42,6 +42,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -91,7 +92,7 @@ class AbstractDelegatingDialectDatabaseMetaDataTest {
         when(delegate.getFunctionOption()).thenReturn(mock(DialectFunctionOption.class));
         assertThat(metaData.getFunctionOption(), is(delegate.getFunctionOption()));
         when(delegate.isTableVariableIdentifier("@MyTableVar", QuoteCharacter.NONE)).thenReturn(true);
-        assertThat(metaData.isTableVariableIdentifier("@MyTableVar", QuoteCharacter.NONE), is(true));
+        assertTrue(metaData.isTableVariableIdentifier("@MyTableVar", QuoteCharacter.NONE));
     }
     
     @Test
