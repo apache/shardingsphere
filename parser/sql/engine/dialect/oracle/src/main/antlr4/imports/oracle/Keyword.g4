@@ -1100,6 +1100,26 @@ EXITCOMMIT
     : E X I T C O M M I T
     ;
 
+EXTPROC_DLLS
+    : E X T P R O C UL_ D L L S
+    ;
+
+DBID
+    : D B I D
+    ;
+
+DB_UNIQUE_NAME
+    : D B UL_ U N I Q U E UL_ N A M E
+    ;
+
+DECRYPTION
+    : D E C R Y P T I O N
+    ;
+
+REPORT
+    : R E P O R T
+    ;
+
 OMMIT
     : O M M I T
     ;

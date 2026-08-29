@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -55,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.PivotSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -171,6 +173,98 @@ class SelectStatementContextTest {
     }
     
     @Test
+    void assertIsSameGroupByAndOrderByItemsWithDifferentOrderDirection() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST)))).build();
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    void assertIsSameGroupByAndOrderByItemsWithColumnOrderByAndDifferentOrderDirection() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(
+                        new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, NullsOrderType.LAST))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(
+                        new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.DESC, NullsOrderType.LAST))))
+                .build();
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    void assertIsSameGroupByAndOrderByItemsWithGeneratedOrderBy() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(
+                        new ExpressionOrderByItemSegment(0, 0, "LOWER(id)", OrderDirection.ASC, NullsOrderType.LAST))))
+                .build();
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    void assertIsNotSameGroupByAndOrderByItemsWhenResolvedExpressionIndexesCollide() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(
+                        new ExpressionOrderByItemSegment(0, 0, "CONCAT('a,b', name, 'c')", OrderDirection.ASC, NullsOrderType.LAST))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(
+                        new ExpressionOrderByItemSegment(0, 0, "CONCAT('a', 'b,name', 'c')", OrderDirection.DESC, NullsOrderType.LAST))))
+                .build();
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.getGroupByContext().getItems().iterator().next().setIndex(1);
+        selectStatementContext.getOrderByContext().getItems().iterator().next().setIndex(1);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    void assertIsNotSameGroupByAndOrderByItemsWhenExpressionsContainDifferentParameterMarkers() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(new ExpressionOrderByItemSegment(
+                        0, 0, "MOD(id, ?)", OrderDirection.ASC, NullsOrderType.LAST, new ParameterMarkerExpressionSegment(0, 0, 0)))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(new ExpressionOrderByItemSegment(
+                        0, 0, "MOD(id, ?)", OrderDirection.DESC, NullsOrderType.LAST, new ParameterMarkerExpressionSegment(0, 0, 1)))))
+                .build();
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    void assertIsNotSameGroupByAndOrderByItemsWhenQuotedColumnCaseDiffers() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(
+                        new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("\"Foo\"")), OrderDirection.ASC, NullsOrderType.LAST))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(
+                        new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("\"foo\"")), OrderDirection.DESC, NullsOrderType.LAST))))
+                .build();
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    void assertIsNotSameGroupByAndOrderByItemsWhenColumnMatchesDifferentProjectionAliasIgnoringCase() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ColumnSegmentBoundInfo boundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("name"));
+        ColumnSegment projectionColumn = new ColumnSegment(0, 0, new IdentifierValue("name"));
+        projectionColumn.setColumnBoundInfo(boundInfo);
+        ColumnProjectionSegment projectionSegment = new ColumnProjectionSegment(projectionColumn);
+        projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("ID")));
+        projectionsSegment.getProjections().add(projectionSegment);
+        ColumnSegment groupByColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        groupByColumn.setColumnBoundInfo(boundInfo);
+        ColumnSegment orderByColumn = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        orderByColumn.setColumnBoundInfo(boundInfo);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(
+                        new ColumnOrderByItemSegment(groupByColumn, OrderDirection.ASC, NullsOrderType.LAST))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(
+                        new ColumnOrderByItemSegment(orderByColumn, OrderDirection.DESC, NullsOrderType.LAST))))
+                .build();
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy() {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
@@ -181,7 +275,31 @@ class SelectStatementContextTest {
     void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy() {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
                 .groupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))))
-                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST)))).build();
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.LAST)))).build();
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    void assertIsNotSameGroupByAndOrderByItemsWhenDifferentColumnOrderBy() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(
+                        new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, NullsOrderType.LAST))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(
+                        new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.DESC, NullsOrderType.LAST))))
+                .build();
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
+    }
+    
+    @Test
+    void assertIsNotSameGroupByAndOrderByItemsWhenExpressionOrderBy() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0))
+                .groupBy(new GroupBySegment(0, 0, Collections.singletonList(
+                        new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, NullsOrderType.LAST))))
+                .orderBy(new OrderBySegment(0, 0, Collections.singletonList(
+                        new ExpressionOrderByItemSegment(0, 0, "COUNT(*)", OrderDirection.DESC, NullsOrderType.LAST))))
+                .build();
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }

@@ -54,6 +54,7 @@ execute
     | dropTrigger
     | alterResourceGroup
     | alterResource
+    | createResource
     | createResourceGroup
     | createWorkloadGroup
     | dropResourceGroup
@@ -141,6 +142,7 @@ execute
     | delimiter
     | startReplica
     | createMaterializedView
+    | refreshMaterializedView
     | resumeJob
     | pauseJob
     | dropJob
@@ -155,8 +157,12 @@ execute
     | adminCopyTablet
     | adminCheckTablet
     | adminSetPartitionVersion
+    | adminSetTableStatus
     | adminCleanTrash
     | adminRebalanceDisk
+    | adminCancelRebalanceDisk
+    | adminRepair
+    | adminCancelRepair
     | createSqlBlockRule
     | alterSqlBlockRule
     | dropSqlBlockRule

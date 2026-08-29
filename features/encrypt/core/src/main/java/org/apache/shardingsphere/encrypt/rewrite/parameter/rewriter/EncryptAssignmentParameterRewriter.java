@@ -26,6 +26,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -54,7 +55,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     
     private final EncryptRule rule;
     
-    private final String databaseName;
+    private final ShardingSphereDatabase database;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
@@ -70,8 +71,8 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType());
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> databaseTypeRegistry.getDefaultSchemaName(databaseName));
         DialectDatabaseMetaData dialectDatabaseMetaData = databaseTypeRegistry.getDialectDatabaseMetaData();
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(database::getDefaultSchemaName);
         for (ColumnAssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             ColumnSegment assignedColumn = each.getColumns().get(0);
             if (isTableVariableBoundColumn(assignedColumn, dialectDatabaseMetaData)) {
@@ -111,14 +112,14 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
                                    final String tableName, final EncryptColumn encryptColumn, final int parameterMarkerIndex, final List<Object> params) {
         String columnName = encryptColumn.getName();
         Object originalValue = params.get(parameterMarkerIndex);
-        Object cipherValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
+        Object cipherValue = encryptColumn.getCipher().encrypt(database.getName(), schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
         paramBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
         Collection<Object> addedParams = new LinkedList<>();
         if (encryptColumn.getAssistedQuery().isPresent()) {
-            addedParams.add(encryptColumn.getAssistedQuery().get().encrypt(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
+            addedParams.add(encryptColumn.getAssistedQuery().get().encrypt(database.getName(), schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
         }
         if (encryptColumn.getLikeQuery().isPresent()) {
-            addedParams.add(encryptColumn.getLikeQuery().get().encrypt(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
+            addedParams.add(encryptColumn.getLikeQuery().get().encrypt(database.getName(), schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next());
         }
         if (!addedParams.isEmpty()) {
             paramBuilder.addAddedParameters(parameterMarkerIndex, addedParams);

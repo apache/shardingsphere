@@ -48,8 +48,8 @@ import org.apache.shardingsphere.database.exception.core.exception.connection.Ac
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -181,7 +181,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         try {
             CDCResponse response = backendHandler.streamData(request.getRequestId(), requestBody, connectionContext, ctx.channel());
             ctx.writeAndFlush(response);
-        } catch (final PipelineSQLException ex) {
+        } catch (final ShardingSphereSQLException ex) {
             throw new CDCExceptionWrapper(request.getRequestId(), ex);
         }
     }
@@ -205,10 +205,14 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         if (requestBody.getStreamingId().isEmpty()) {
             throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Streaming id is empty"));
         }
-        String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
-        checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
-        backendHandler.startStreaming(requestBody.getStreamingId(), connectionContext, ctx.channel());
-        ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
+        try {
+            String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
+            checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
+            backendHandler.startStreaming(requestBody.getStreamingId(), connectionContext, ctx.channel());
+            ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
+        } catch (final ShardingSphereSQLException ex) {
+            throw new CDCExceptionWrapper(request.getRequestId(), ex);
+        }
     }
     
     private void processStopStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {

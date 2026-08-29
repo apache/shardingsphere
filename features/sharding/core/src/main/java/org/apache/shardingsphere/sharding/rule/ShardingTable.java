@@ -202,21 +202,12 @@ public final class ShardingTable {
                 throw new DataNodeGenerateException(each);
             }
             result.add(dataNode);
-            dataNodeIndexMap.put(dataNode, index);
+            dataNodeIndexMap.put(new DataNode(dataNode.getDataSourceName(), (String) null, dataNode.getTableName()), index);
             actualDataSourceNames.add(dataNode.getDataSourceName());
             addActualTable(dataNode.getDataSourceName(), dataNode.getTableName());
             index++;
         }
         return result;
-    }
-    
-    /**
-     * Get data node groups.
-     *
-     * @return data node groups, key is data source name, values are data nodes belong to this data source
-     */
-    public Map<String, List<DataNode>> getDataNodeGroups() {
-        return DataNodeUtils.getDataNodeGroups(actualDataNodes);
     }
     
     /**

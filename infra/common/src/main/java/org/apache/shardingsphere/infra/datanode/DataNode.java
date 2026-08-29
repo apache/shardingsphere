@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -54,8 +54,7 @@ public final class DataNode {
      * @param dataNode string of data node. use {@code .} to split data source name and table name.
      */
     public DataNode(final String dataNode) {
-        validateDataNodeFormat(dataNode);
-        List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
+        List<String> segments = parseDataNode(dataNode);
         boolean isIncludeSchema = 3 == segments.size();
         dataSourceName = segments.get(0);
         schemaName = isIncludeSchema ? segments.get(1) : null;
@@ -72,26 +71,25 @@ public final class DataNode {
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
         DatabaseTypeRegistry registry = new DatabaseTypeRegistry(databaseType);
-        DialectDatabaseMetaData dialectDatabaseMetaData = registry.getDialectDatabaseMetaData();
-        boolean containsSchema = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && isValidDataNode(dataNode, 3);
+        DialectSchemaOption schemaOption = registry.getDialectDatabaseMetaData().getSchemaOption();
+        boolean canContainSchema = schemaOption.isSchemaAvailable() && !hasInvalidDelimiterStructure(dataNode);
+        List<String> segments = canContainSchema ? Splitter.on(DELIMITER).splitToList(dataNode) : Splitter.on(DELIMITER).limit(2).splitToList(dataNode);
+        boolean containsSchema = canContainSchema && 3 == segments.size() && areSegmentsValid(segments);
         String defaultSchemaName = registry.getDefaultSchemaName(databaseName);
-        List<String> segments = Splitter.on(DELIMITER).limit(containsSchema ? 3 : 2).splitToList(dataNode);
         dataSourceName = segments.get(0);
-        schemaName = getSchemaName(dialectDatabaseMetaData, containsSchema, segments, defaultSchemaName);
-        tableName = containsSchema ? segments.get(2) : segments.get(1);
+        schemaName = getSchemaName(schemaOption, containsSchema, segments, defaultSchemaName);
+        tableName = getTableName(dataNode, containsSchema, segments);
     }
     
-    private String getSchemaName(final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments,
-                                 final String defaultSchemaName) {
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(defaultSchemaName);
+    private String getSchemaName(final DialectSchemaOption schemaOption, final boolean containsSchema, final List<String> segments, final String defaultSchemaName) {
+        return schemaOption.getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(defaultSchemaName);
     }
     
-    private boolean isValidDataNode(final String dataNodeStr, final int tier) {
-        if (hasInvalidDelimiterStructure(dataNodeStr)) {
-            return false;
+    private String getTableName(final String dataNode, final boolean containsSchema, final List<String> segments) {
+        if (2 == segments.size()) {
+            return segments.get(1);
         }
-        List<String> segments = Splitter.on(DELIMITER).splitToList(dataNodeStr);
-        return isAnySegmentIsEmptyOrContainsOnlyWhitespace(tier, segments);
+        return containsSchema ? segments.get(2) : dataNode.substring(dataNode.indexOf(DELIMITER) + 1);
     }
     
     private boolean hasInvalidDelimiterStructure(final String dataNodeStr) {
@@ -110,18 +108,15 @@ public final class DataNode {
         return dataNodeStr.contains(" " + DELIMITER) || dataNodeStr.contains(DELIMITER + " ");
     }
     
-    private boolean isAnySegmentIsEmptyOrContainsOnlyWhitespace(final int tier, final List<String> segments) {
-        return segments.stream().noneMatch(each -> each.trim().isEmpty()) && tier == segments.size();
+    private boolean areSegmentsValid(final List<String> segments) {
+        return segments.stream().noneMatch(each -> each.trim().isEmpty());
     }
     
-    /**
-     * Validates the data node format based on its structure.
-     *
-     * @param dataNode the data node string to validate
-     * @throws InvalidDataNodeFormatException if the format is invalid
-     */
-    private void validateDataNodeFormat(final String dataNode) {
-        ShardingSpherePreconditions.checkState(isValidDataNode(dataNode, 2) || isValidDataNode(dataNode, 3), () -> new InvalidDataNodeFormatException(dataNode));
+    private List<String> parseDataNode(final String dataNode) {
+        ShardingSpherePreconditions.checkState(!hasInvalidDelimiterStructure(dataNode), () -> new InvalidDataNodeFormatException(dataNode));
+        List<String> result = Splitter.on(DELIMITER).splitToList(dataNode);
+        ShardingSpherePreconditions.checkState((2 == result.size() || 3 == result.size()) && areSegmentsValid(result), () -> new InvalidDataNodeFormatException(dataNode));
+        return result;
     }
     
     /**

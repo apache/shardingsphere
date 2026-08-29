@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.datanode;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SchemaMetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
  * Single table data node loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class SingleTableDataNodeLoader {
     
     /**
@@ -68,7 +70,9 @@ public final class SingleTableDataNodeLoader {
         Collection<String> splitTables = SingleTableLoadUtils.splitTableLines(configuredTables);
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             Map<String, DatabaseType> storageTypes = dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
-            return load(databaseName, dataSourceMap, Collections.emptySet(), excludedTables, storageTypes);
+            Map<String, Collection<DataNode>> result = load(databaseName, dataSourceMap, Collections.emptySet(), excludedTables, storageTypes);
+            warnIfSingleTableLoadedFromMultipleDataSources(databaseName, result);
+            return result;
         }
         Collection<DataNode> configuredDataNodes = getConfiguredDataNodes(splitTables);
         Collection<String> configuredDataSources = getConfiguredDataSources(configuredDataNodes);
@@ -78,7 +82,9 @@ public final class SingleTableDataNodeLoader {
         Map<String, DatabaseType> validStorageTypes = validDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
         Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, validDataSources, includedTables, excludedTables, validStorageTypes);
         Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, protocolType, splitTables, validStorageTypes);
-        return loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, configuredTableMap);
+        Map<String, Collection<DataNode>> result = loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, configuredTableMap);
+        warnIfSingleTableLoadedFromMultipleDataSources(databaseName, result);
+        return result;
     }
     
     /**
@@ -119,6 +125,15 @@ public final class SingleTableDataNodeLoader {
             }
         }
         return result;
+    }
+    
+    private static void warnIfSingleTableLoadedFromMultipleDataSources(final String databaseName, final Map<String, Collection<DataNode>> dataNodes) {
+        for (Entry<String, Collection<DataNode>> entry : dataNodes.entrySet()) {
+            Collection<String> dataSourceNames = entry.getValue().stream().map(DataNode::getDataSourceName).collect(Collectors.toCollection(LinkedHashSet::new));
+            if (1 < dataSourceNames.size()) {
+                log.warn("Single table '{}' is loaded from multiple storage units {} in database '{}'.", entry.getKey(), dataSourceNames, databaseName);
+            }
+        }
     }
     
     private static Collection<DataNode> getConfiguredDataNodes(final Collection<String> splitTables) {
@@ -183,7 +198,9 @@ public final class SingleTableDataNodeLoader {
             if (null == configuredTablesForDataSource) {
                 continue;
             }
-            if (configuredTablesForDataSource.containsKey(SingleTableConstants.ASTERISK)) {
+            Collection<String> configuredTablesForAllSchemas = configuredTablesForDataSource.get(SingleTableConstants.ASTERISK);
+            if (null != configuredTablesForAllSchemas
+                    && (configuredTablesForAllSchemas.contains(SingleTableConstants.ASTERISK) || configuredTablesForAllSchemas.contains(each.getTableName()))) {
                 result.add(each);
                 continue;
             }
@@ -209,9 +226,9 @@ public final class SingleTableDataNodeLoader {
             DatabaseType databaseType = validStorageTypes.getOrDefault(parsedDataNode.getDataSourceName(), protocolType);
             DataNode dataNode = new DataNode(databaseName, databaseType, each);
             Map<String, Collection<String>> schemaTables = result.getOrDefault(dataNode.getDataSourceName(), new LinkedHashMap<>());
-            Collection<String> tables = schemaTables.getOrDefault(dataNode.getSchemaName(), new LinkedList<>());
+            Collection<String> tables = schemaTables.computeIfAbsent(dataNode.getSchemaName(),
+                    ignored -> SingleTableConstants.ASTERISK.equals(dataNode.getSchemaName()) ? new CaseInsensitiveSet<>() : new LinkedHashSet<>());
             tables.add(dataNode.getTableName());
-            schemaTables.putIfAbsent(dataNode.getSchemaName(), tables);
             result.putIfAbsent(dataNode.getDataSourceName(), schemaTables);
         }
         return result;

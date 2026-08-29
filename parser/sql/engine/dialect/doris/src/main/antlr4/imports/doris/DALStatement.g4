@@ -433,6 +433,12 @@ alterResource
     : ALTER RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
     ;
 
+// DORIS ADDED BEGIN
+createResource
+    : CREATE EXTERNAL? RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
+    ;
+// DORIS ADDED END
+
 resourceName
     : identifier | string_
     ;
@@ -504,8 +510,26 @@ adminSetPartitionVersion
     : ADMIN SET TABLE tableName PARTITION VERSION propertiesClause
     ;
 
+// DORIS ADDED BEGIN
+adminSetTableStatus
+    : ADMIN SET TABLE tableName STATUS propertiesClause
+    ;
+// DORIS ADDED END
+
 adminRebalanceDisk
     : ADMIN REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
+    ;
+
+adminCancelRebalanceDisk
+    : ADMIN CANCEL REBALANCE DISK (ON LP_ string_ (COMMA_ string_)* RP_)?
+    ;
+
+adminRepair
+    : ADMIN REPAIR TABLE tableName (PARTITION LP_ partitionName (COMMA_ partitionName)* RP_)?
+    ;
+
+adminCancelRepair
+    : ADMIN CANCEL REPAIR TABLE tableName (PARTITION LP_ partitionName (COMMA_ partitionName)* RP_)?
     ;
 
 createSqlBlockRule

@@ -27,6 +27,7 @@
     <sql-case id="select_three_part_column_doris" value="SELECT db1.t1.c1 FROM db1.t1" db-types="Doris" />
     <sql-case id="select_digit_leading_column_doris" value="SELECT 1GB FROM t" db-types="Doris" />
     <sql-case id="select_workload_keyword_column_doris" value="SELECT workload FROM t" db-types="Doris" />
+    <sql-case id="select_external_keyword_column_doris" value="SELECT external FROM t" db-types="Doris" />
     <sql-case id="select_subquery_excpet" value="select * from (select * from t1 except all select * from t1 limit 2) a" db-types="MySQL" />
     <sql-case id="select_point_function_with_in" value="SELECT point(1,1) IN ('1',1,'1') AS res" db-types="MySQL" />
     <sql-case id="select_with_in" value="SELECT b, b IN ('20161213'), b in ('20161213', 0) FROM t2" db-types="MySQL" />
@@ -205,6 +206,7 @@
     <sql-case id="select_xmlcolattval_function" value="SELECT XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary) 'Emp Element' FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
     <sql-case id="select_xmlexists_function" value="SELECT id, XMLEXISTS('//student[@age=20]' PASSING BY VALUE xcol AS x) FROM x_table;" db-types="Oracle" />
     <sql-case id="select_xmlforest_function" value="SELECT XMLFOREST(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary) FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
+    <sql-case id="select_xmlforest_function_without_as" value="SELECT XMLFOREST(e.employee_id &quot;ID&quot;, e.last_name, e.salary) FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
     <sql-case id="select_xmlparse_function" value="SELECT XMLPARSE(DOCUMENT 'DEPTXML' WELLFORMED) AS dept FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlpi_function" value="SELECT XMLPI(NAME &quot;Order analysisComp&quot;, 'imported, reconfigured, disassembled') AS 'XMLPI' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlpi_evalname_function" value="SELECT XMLPI(EVALNAME 'target', 'value') FROM dual;" db-types="Oracle" />
@@ -256,7 +258,6 @@
     <sql-case id="select_with_lead_and_lag_function" value="SELECT hire_date, LAG(hire_date, 1) OVER (ORDER BY hire_date) AS LAG1, LEAD(hire_date, 1) OVER (ORDER BY hire_date) AS LEAD1 FROM employees WHERE department_id = 30 ORDER BY hire_date;" db-types="Oracle,MySQL" />
     <sql-case id="select_with_connect_by_root" value="SELECT CONNECT_BY_ROOT last_name 'Manager' FROM employees CONNECT BY PRIOR employee_id = manager_id" db-types="Oracle" />
     <sql-case id="select_with_ntile_function" value="SELECT NTILE(4) OVER (ORDER BY salary DESC) AS quartile FROM employees WHERE department_id = 100 ORDER BY last_name" db-types="Oracle,MySQL,Doris" />
-    <sql-case id="select_window_named_partition_doris" value="SELECT SUM(sales) OVER w AS total_sales FROM orders WINDOW w AS (PARTITION BY region ORDER BY order_id)" db-types="Doris" />
     <sql-case id="select_window_frame_lag_doris" value="SELECT LAG(amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY tx_time ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) AS lag_amt FROM payments" db-types="Doris" />
     <sql-case id="select_first_value_doris" value="SELECT FIRST_VALUE(price) OVER (ORDER BY created_at) AS first_price FROM product_prices" db-types="Doris" />
     <sql-case id="select_nth_value_doris" value="SELECT NTH_VALUE(score, 2) OVER (ORDER BY score) AS second_score FROM rankings" db-types="Doris" />
@@ -465,6 +466,7 @@
     <sql-case id="select_where_is_not_null_sql92" value="SELECT * FROM t_order WHERE status IS NOT NULL" db-types="SQL92" />
     <sql-case id="select_compare_subquery_sql92" value="SELECT * FROM t_order WHERE order_id = (SELECT 1)" db-types="SQL92" />
     <sql-case id="select_distinct_simple_sql92" value="SELECT DISTINCT user_id FROM t_order" db-types="SQL92" />
+    <sql-case id="select_system_user_sql92" value="SELECT SYSTEM_USER" db-types="SQL92" />
     <sql-case id="select_distinct_with_count_sql92" value="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" db-types="SQL92" />
     <sql-case id="select_having_sql92" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) &gt; 1" db-types="SQL92" />
     <sql-case id="select_cast_int_sql92" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="SQL92" />
@@ -536,7 +538,9 @@
     <sql-case id="select_limit_parameter" value="SELECT * FROM t4 LIMIT ?;" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_limit_complex_expr" value="SELECT * FROM t4 LIMIT (CASE WHEN true THEN 10 ELSE 20 END);" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_func" value="select public.int4range(400, 500, '[]');" db-types="PostgreSQL" />
-    <sql-case id="select_ltrim_function" value="SELECT LTRIM('  barbar')" db-types="MySQL" />
+    <sql-case id="select_ltrim_function" value="SELECT LTRIM('  barbar')" db-types="MySQL,Doris" />
+    <sql-case id="select_element_at" value="SELECT element_at(k1, 1) FROM t_order" db-types="Doris" />
+    <sql-case id="select_array_subscript" value="SELECT k1[1] FROM t_order" db-types="Doris" />
     <sql-case id="select_ltrim_as_column_alias" value="SELECT id AS ltrim FROM t" db-types="MySQL" />
     <sql-case id="select_ltrim_as_qualified_column" value="SELECT t.ltrim FROM t" db-types="MySQL" />
     <sql-case id="select_make_set_single" value="SELECT MAKE_SET(1,'a','b','c')" db-types="MySQL" />

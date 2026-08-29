@@ -57,6 +57,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -82,6 +83,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -112,9 +114,21 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
      * @return job ID
      */
     public String schedule(final PipelineContextKey contextKey, final Collection<MigrationSourceTargetEntry> sourceTargetEntries, final String targetDatabaseName) {
-        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(contextKey, sourceTargetEntries, targetDatabaseName));
+        Collection<MigrationSourceTargetEntry> distinctSourceTargetEntries = new HashSet<>(sourceTargetEntries);
+        checkSourceTableNames(distinctSourceTargetEntries);
+        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(contextKey, distinctSourceTargetEntries, targetDatabaseName));
         jobManager.start(jobConfig);
         return jobConfig.getJobId();
+    }
+    
+    private void checkSourceTableNames(final Collection<MigrationSourceTargetEntry> sourceTargetEntries) {
+        Map<String, Set<ShardingSphereIdentifier>> actualTableNames = new HashMap<>(sourceTargetEntries.size(), 1F);
+        for (MigrationSourceTargetEntry each : sourceTargetEntries) {
+            String dataSourceName = each.getSource().getDataSourceName();
+            Set<ShardingSphereIdentifier> tableNames = actualTableNames.computeIfAbsent(dataSourceName, key -> new HashSet<>());
+            ShardingSpherePreconditions.checkState(tableNames.add(new ShardingSphereIdentifier(each.getSource().getTableName())),
+                    () -> new PipelineInvalidParameterException("More than one source table with the same table name for " + dataSourceName));
+        }
     }
     
     private YamlMigrationJobConfiguration buildYamlJobConfiguration(final PipelineContextKey contextKey,
@@ -125,7 +139,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         Map<String, List<DataNode>> sourceDataNodes = new LinkedHashMap<>(sourceTargetEntries.size(), 1F);
         Map<String, YamlPipelineDataSourceConfiguration> configSources = new LinkedHashMap<>(sourceTargetEntries.size(), 1F);
         YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
-        for (MigrationSourceTargetEntry each : new HashSet<>(sourceTargetEntries).stream()
+        for (MigrationSourceTargetEntry each : sourceTargetEntries.stream()
                 .sorted(Comparator.comparing(MigrationSourceTargetEntry::getTargetTableName).thenComparing(each -> each.getSource().format())).collect(Collectors.toList())) {
             sourceDataNodes.computeIfAbsent(each.getTargetTableName(), key -> new LinkedList<>()).add(each.getSource());
             ShardingSpherePreconditions.checkState(1 == sourceDataNodes.get(each.getTargetTableName()).size(),

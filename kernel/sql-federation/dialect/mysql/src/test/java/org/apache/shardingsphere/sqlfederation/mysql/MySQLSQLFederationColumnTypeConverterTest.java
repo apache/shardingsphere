@@ -22,11 +22,13 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.resultset.converter.DialectSQLFederationColumnTypeConverter;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -36,6 +38,13 @@ class MySQLSQLFederationColumnTypeConverterTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     private final DialectSQLFederationColumnTypeConverter converter = DatabaseTypedSPILoader.getService(DialectSQLFederationColumnTypeConverter.class, databaseType);
+    
+    @Test
+    void assertConvertColumnValueClass() {
+        assertThat(converter.convertColumnValueClass(SqlTypeName.BOOLEAN), is(Optional.of(Integer.class)));
+        assertThat(converter.convertColumnValueClass(SqlTypeName.INTEGER), is(Optional.empty()));
+        assertThat(converter.convertColumnValueClass(SqlTypeName.ANY), is(Optional.empty()));
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("convertValueSource")

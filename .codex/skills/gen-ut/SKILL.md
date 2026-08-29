@@ -37,7 +37,10 @@ If target classes or modules cannot be resolved, return `R10-INPUT_BLOCKED`.
 
 ### R1: Repository authority
 
-Follow `AGENTS.md` and the applicable `CODE_OF_CONDUCT.md` sections. Their authority, safety, command-output, completion-loop, and unit-test rules remain in force.
+Before any test write, read `AGENTS.md` and [code-implementation/SKILL.md](../code-implementation/SKILL.md) through EOF, then read every reference selected by that base Skill for this task through EOF, including its implementation, testing, contract, impact, removal, non-regression, and verification rules.
+Follow the applicable `CODE_OF_CONDUCT.md` sections.
+The base Skill owns universal implementation, testing, non-regression, verification, and completion requirements; this Skill adds target resolution, coverage, branch-map, parameterization, and scanner requirements for systematic unit-test generation.
+Reading either Skill does not expand the user-authorized scope, file types, Git authority, or other permissions.
 
 ### R2: Test form and naming
 
@@ -65,7 +68,6 @@ Follow `AGENTS.md` and the applicable `CODE_OF_CONDUCT.md` sections. Their autho
 
 - Keep one scenario per test and invoke the target public method at most once per scenario.
 - Keep the coverage-relevant invocation and its externally observable assertions in the test body. Helpers and providers must not execute target behavior.
-- Give every behavior-owning public method focused coverage.
 - For interface targets, test only `default` methods unless the user explicitly requests abstract methods.
 
 ### R6: SPI, mocks, and reflection
@@ -74,7 +76,6 @@ Follow `AGENTS.md` and the applicable `CODE_OF_CONDUCT.md` sections. Their autho
 - Obtain SPI targets through the applicable project loader and keep the resolved instance as a test-class field by default. Record a concrete reason before bypassing the loader.
 - Do not add tests for `getType`, `getOrder`, or `getTypeClass` unless explicitly requested.
 - Mock heavy dependencies and collaborator-owned decisions. Allow real simple values and explicitly scoped integration, contract, or E2E behavior.
-- Use `Plugins.getMemberAccessor()` only for permitted field access; never invoke private methods reflectively.
 
 ### R7: Related tests
 
@@ -131,7 +132,6 @@ Mark `R4=N/A (triggered by R12)` and retain the coverage command and report path
 - Remove collaborator-only tests from the target unit test and report the separate owner when coverage is needed there.
 - Remove redundant stubs, assertions, and locals that affect neither behavior nor diagnosis. Prefer Mockito defaults when the scenario permits.
 - Apply `KEEP` only to an otherwise redundant item retained for a concrete readability or diagnostic reason; meaningful tests need no tag.
-- Do not declare local variables `final`.
 
 ### R14: Boolean assertions
 
@@ -155,7 +155,7 @@ Do not use boolean `assertEquals`, boolean literals inside Hamcrest `is`, or con
 
 ## Workflow
 
-1. Read `AGENTS.md`, `CODE_OF_CONDUCT.md`, and [references/verification.md](references/verification.md).
+1. Complete the `R1` source loading, then read this Skill's [verification commands](references/verification.md) through EOF.
 2. Resolve targets, related tests, editable files, modules, and input-blocked state.
 3. Create a task-specific temporary directory and capture `Task scope baseline` for the resolved file set.
 4. Run focused baseline coverage through the repository command wrapper, then use `collect_quality_baseline.py` to report coverage and mechanical risks.

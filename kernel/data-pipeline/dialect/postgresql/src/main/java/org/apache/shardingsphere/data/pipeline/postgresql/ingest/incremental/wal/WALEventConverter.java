@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
@@ -33,20 +32,60 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * WAL event converter.
  */
-@RequiredArgsConstructor
 public final class WALEventConverter {
     
     private final IncrementalDumperContext dumperContext;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
+    
+    private final IdentifierCasePolicy schemaIdentifierCasePolicy;
+    
+    private final IdentifierCasePolicy tableIdentifierCasePolicy;
+    
+    private final Map<String, ShardingSphereIdentifier> quotedTableNameMap;
+    
+    private final Map<String, ShardingSphereIdentifier> unquotedTableNameMap;
+    
+    /**
+     * Create a WAL event converter.
+     *
+     * @param dumperContext incremental dumper context
+     * @param metaDataLoader pipeline table metadata loader
+     */
+    public WALEventConverter(final IncrementalDumperContext dumperContext, final PipelineTableMetaDataLoader metaDataLoader) {
+        this.dumperContext = dumperContext;
+        this.metaDataLoader = metaDataLoader;
+        schemaIdentifierCasePolicy = IdentifierNormalizeEngine.resolvePolicy(
+                dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType(), null, IdentifierScope.SCHEMA);
+        tableIdentifierCasePolicy = IdentifierNormalizeEngine.resolvePolicy(
+                dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType(), null, IdentifierScope.TABLE);
+        Map<ShardingSphereIdentifier, ShardingSphereIdentifier> tableNameMap = dumperContext.getCommonContext().getTableNameMapper().getTableNameMap();
+        quotedTableNameMap = new HashMap<>(tableNameMap.size(), 1F);
+        unquotedTableNameMap = new HashMap<>(tableNameMap.size(), 1F);
+        for (Entry<ShardingSphereIdentifier, ShardingSphereIdentifier> entry : tableNameMap.entrySet()) {
+            String actualTableName = entry.getKey().getValue();
+            quotedTableNameMap.put(getLookupKey(actualTableName, QuoteCharacter.QUOTE), entry.getValue());
+            if (tableIdentifierCasePolicy.matches(actualTableName, actualTableName, QuoteCharacter.NONE)) {
+                unquotedTableNameMap.put(getLookupKey(actualTableName, QuoteCharacter.NONE), entry.getValue());
+            }
+        }
+    }
     
     /**
      * Convert WAL event to {@code Record}.
@@ -56,57 +95,78 @@ public final class WALEventConverter {
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public Record convert(final AbstractWALEvent event) {
-        if (filter(event)) {
-            return createPlaceholderRecord(event);
-        }
         if (!(event instanceof AbstractRowEvent)) {
             return createPlaceholderRecord(event);
         }
-        PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((AbstractRowEvent) event).getTableName());
+        AbstractRowEvent rowEvent = (AbstractRowEvent) event;
+        QuoteCharacter tableQuoteCharacter = QuoteCharacter.getQuoteCharacter(rowEvent.getTableName());
+        String actualTableName = tableQuoteCharacter.unwrap(rowEvent.getTableName());
+        ShardingSphereIdentifier logicTableName = getLogicTableName(actualTableName, tableQuoteCharacter);
+        if (null == logicTableName) {
+            return createPlaceholderRecord(event);
+        }
+        String expectedSchemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(logicTableName);
+        if (isDifferentSchemaName(rowEvent, expectedSchemaName)) {
+            return createPlaceholderRecord(event);
+        }
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(expectedSchemaName, actualTableName);
         if (event instanceof WriteRowEvent) {
-            return handleWriteRowEvent((WriteRowEvent) event, tableMetaData);
+            return handleWriteRowEvent((WriteRowEvent) event, tableMetaData, logicTableName);
         }
         if (event instanceof UpdateRowEvent) {
-            return handleUpdateRowEvent((UpdateRowEvent) event, tableMetaData);
+            return handleUpdateRowEvent((UpdateRowEvent) event, tableMetaData, logicTableName);
         }
         if (event instanceof DeleteRowEvent) {
-            return handleDeleteRowEvent((DeleteRowEvent) event, tableMetaData);
+            return handleDeleteRowEvent((DeleteRowEvent) event, tableMetaData, logicTableName);
         }
         throw new UnsupportedSQLOperationException("");
     }
     
-    private boolean filter(final AbstractWALEvent event) {
-        if (event instanceof AbstractRowEvent) {
-            AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !dumperContext.getCommonContext().getTableNameMapper().containsTable(rowEvent.getTableName());
+    private ShardingSphereIdentifier getLogicTableName(final String actualTableName, final QuoteCharacter quoteCharacter) {
+        Map<String, ShardingSphereIdentifier> tableNameMap = QuoteCharacter.NONE == quoteCharacter ? unquotedTableNameMap : quotedTableNameMap;
+        return tableNameMap.get(getLookupKey(actualTableName, quoteCharacter));
+    }
+    
+    private String getLookupKey(final String identifier, final QuoteCharacter quoteCharacter) {
+        return LookupMode.EXACT == tableIdentifierCasePolicy.getLookupMode(quoteCharacter) ? identifier : tableIdentifierCasePolicy.normalizeForLookup(identifier);
+    }
+    
+    private boolean isDifferentSchemaName(final AbstractRowEvent event, final String expectedSchemaName) {
+        if (!isConcreteSchemaName(expectedSchemaName)) {
+            return false;
         }
-        return false;
+        String actualSchemaName = event.getSchemaName();
+        if (!isConcreteSchemaName(actualSchemaName)) {
+            return false;
+        }
+        // The mapper stores a canonical schema name, while the WAL decoders preserve the event identifier's quote characters.
+        QuoteCharacter quoteCharacter = QuoteCharacter.getQuoteCharacter(actualSchemaName);
+        return !schemaIdentifierCasePolicy.matches(expectedSchemaName, quoteCharacter.unwrap(actualSchemaName), quoteCharacter);
+    }
+    
+    private static boolean isConcreteSchemaName(final String schemaName) {
+        return null != schemaName && !schemaName.isEmpty() && !"*".equals(schemaName);
     }
     
     private PlaceholderRecord createPlaceholderRecord(final AbstractWALEvent event) {
         return new PlaceholderRecord(new WALPosition(event.getLogSequenceNumber()));
     }
     
-    private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
-        ShardingSphereIdentifier logicTableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(actualTableName);
-        return metaDataLoader.getTableMetaData(dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(logicTableName), actualTableName);
-    }
-    
-    private DataRecord handleWriteRowEvent(final WriteRowEvent writeRowEvent, final PipelineTableMetaData tableMetaData) {
-        DataRecord result = createDataRecord(PipelineSQLOperationType.INSERT, writeRowEvent, writeRowEvent.getAfterRow().size());
+    private DataRecord handleWriteRowEvent(final WriteRowEvent writeRowEvent, final PipelineTableMetaData tableMetaData, final ShardingSphereIdentifier logicTableName) {
+        DataRecord result = createDataRecord(PipelineSQLOperationType.INSERT, writeRowEvent, logicTableName, writeRowEvent.getAfterRow().size());
         putColumnsIntoDataRecord(result, tableMetaData, writeRowEvent.getAfterRow());
         return result;
     }
     
-    private DataRecord handleUpdateRowEvent(final UpdateRowEvent updateRowEvent, final PipelineTableMetaData tableMetaData) {
-        DataRecord result = createDataRecord(PipelineSQLOperationType.UPDATE, updateRowEvent, updateRowEvent.getAfterRow().size());
+    private DataRecord handleUpdateRowEvent(final UpdateRowEvent updateRowEvent, final PipelineTableMetaData tableMetaData, final ShardingSphereIdentifier logicTableName) {
+        DataRecord result = createDataRecord(PipelineSQLOperationType.UPDATE, updateRowEvent, logicTableName, updateRowEvent.getAfterRow().size());
         putColumnsIntoDataRecord(result, tableMetaData, updateRowEvent.getAfterRow());
         return result;
     }
     
-    private DataRecord handleDeleteRowEvent(final DeleteRowEvent event, final PipelineTableMetaData tableMetaData) {
+    private DataRecord handleDeleteRowEvent(final DeleteRowEvent event, final PipelineTableMetaData tableMetaData, final ShardingSphereIdentifier logicTableName) {
         // TODO completion columns
-        DataRecord result = createDataRecord(PipelineSQLOperationType.DELETE, event, event.getPrimaryKeys().size());
+        DataRecord result = createDataRecord(PipelineSQLOperationType.DELETE, event, logicTableName, event.getPrimaryKeys().size());
         // TODO Unique key may be a column within unique index
         List<String> primaryKeyColumns = tableMetaData.getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
@@ -115,9 +175,8 @@ public final class WALEventConverter {
         return result;
     }
     
-    private DataRecord createDataRecord(final PipelineSQLOperationType type, final AbstractRowEvent rowsEvent, final int columnCount) {
-        String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).toString();
-        DataRecord result = new DataRecord(type, rowsEvent.getSchemaName(), tableName, new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
+    private DataRecord createDataRecord(final PipelineSQLOperationType type, final AbstractRowEvent rowsEvent, final ShardingSphereIdentifier logicTableName, final int columnCount) {
+        DataRecord result = new DataRecord(type, rowsEvent.getSchemaName(), logicTableName.toString(), new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
         result.setActualTableName(rowsEvent.getTableName());
         result.setCsn(rowsEvent.getCsn());
         return result;

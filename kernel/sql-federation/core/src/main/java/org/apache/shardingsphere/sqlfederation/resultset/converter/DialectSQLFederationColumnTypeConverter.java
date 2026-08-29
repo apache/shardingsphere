@@ -21,6 +21,8 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
+import java.util.Optional;
+
 /**
  * Dialect SQL federation column type converter.
  */
@@ -42,4 +44,14 @@ public interface DialectSQLFederationColumnTypeConverter extends DatabaseTypedSP
      * @return converted column type
      */
     int convertColumnType(SqlTypeName sqlTypeName);
+    
+    /**
+     * Convert column value class.
+     *
+     * @param sqlTypeName original SQL type name
+     * @return actual Java class of the converted value
+     */
+    default Optional<Class<?>> convertColumnValueClass(final SqlTypeName sqlTypeName) {
+        return Optional.empty();
+    }
 }

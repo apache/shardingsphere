@@ -63,12 +63,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -76,18 +78,18 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({TypedSPILoader.class, DatabaseTypedSPILoader.class, PipelineContextManager.class, CDCSchemaTableUtils.class, PipelineDataNodeUtils.class, PipelineJobRegistry.class,
-        PipelineJobIdUtils.class, CDCImporterManager.class})
+@StaticMockSettings({TypedSPILoader.class, DatabaseTypedSPILoader.class, PipelineContextManager.class, CDCSchemaTableUtils.class, PipelineDataNodeUtils.class, PipelineJobIdUtils.class,
+        CDCImporterManager.class})
 class CDCBackendHandlerTest {
     
     private CDCJobAPI jobAPI;
@@ -117,10 +119,11 @@ class CDCBackendHandlerTest {
     @Test
     void assertStreamDataWhenSchemaAvailable() {
         ShardingSphereDatabase database = mockDatabase();
-        mockDialectMetaData(true, false);
-        when(CDCSchemaTableUtils.parseTableExpressionWithSchema(eq(database), anyCollection()))
-                .thenReturn(Collections.singletonMap("foo_schema", new LinkedHashSet<>(Collections.singleton("foo_tbl"))));
-        when(PipelineDataNodeUtils.buildTableAndDataNodesMap(eq(database), anyCollection())).thenReturn(Collections.singletonMap("foo_tbl", Collections.singletonList(mock(DataNode.class))));
+        mockDialectMetaData(false);
+        Map<String, Set<String>> schemaTableNames = Collections.singletonMap("foo_schema", Collections.singleton("foo_tbl"));
+        when(CDCSchemaTableUtils.parseTableExpressions(eq(database), anyCollection())).thenReturn(schemaTableNames);
+        DataNode fooDataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
+        when(PipelineDataNodeUtils.buildTableAndDataNodesMap(database, schemaTableNames)).thenReturn(Collections.singletonMap("foo_tbl", Collections.singletonList(fooDataNode)));
         when(jobAPI.create(any(StreamDataParameter.class), eq(CDCSinkType.SOCKET), any(Properties.class))).thenReturn("foo_job");
         when(jobConfigManager.getJobConfiguration("foo_job")).thenReturn(createJobConfiguration());
         StreamDataRequestBody requestBody = StreamDataRequestBody.newBuilder().setDatabase("foo_db")
@@ -129,30 +132,40 @@ class CDCBackendHandlerTest {
         assertThat(actualResponse.getStatus(), is(CDCResponse.Status.SUCCEED));
         assertThat(actualResponse.getResponseCase(), is(CDCResponse.ResponseCase.STREAM_DATA_RESULT));
         assertThat(actualResponse.getStreamDataResult().getStreamingId(), is("foo_job"));
+        ArgumentCaptor<StreamDataParameter> parameterCaptor = ArgumentCaptor.forClass(StreamDataParameter.class);
+        verify(jobAPI).create(parameterCaptor.capture(), eq(CDCSinkType.SOCKET), any(Properties.class));
+        assertThat(parameterCaptor.getValue().getSchemaTableNames(), is(Collections.singletonList("foo_schema.foo_tbl")));
+        assertThat(parameterCaptor.getValue().getTableAndDataNodesMap().get("foo_tbl"), is(Collections.singletonList(fooDataNode)));
     }
     
     @Test
     void assertStreamDataWithoutSchema() {
         ShardingSphereDatabase database = mockDatabase();
-        mockDialectMetaData(false, true);
-        when(CDCSchemaTableUtils.parseTableExpressionWithoutSchema(eq(database), anyList())).thenReturn(Collections.singleton("foo_tbl"));
-        when(PipelineDataNodeUtils.buildTableAndDataNodesMap(eq(database), anyCollection())).thenReturn(Collections.singletonMap("foo_tbl", Collections.singletonList(mock(DataNode.class))));
+        mockDialectMetaData(true);
+        Map<String, Set<String>> schemaTableNames = Collections.singletonMap("", Collections.singleton("foo_tbl"));
+        when(CDCSchemaTableUtils.parseTableExpressions(eq(database), anyCollection())).thenReturn(schemaTableNames);
+        when(PipelineDataNodeUtils.buildTableAndDataNodesMap(database, schemaTableNames)).thenReturn(Collections.singletonMap("foo_tbl", Collections.singletonList(mock(DataNode.class))));
         when(jobAPI.create(any(StreamDataParameter.class), eq(CDCSinkType.SOCKET), any(Properties.class))).thenReturn("foo_job");
         when(jobConfigManager.getJobConfiguration("foo_job")).thenReturn(createJobConfiguration());
         StreamDataRequestBody requestBody = StreamDataRequestBody.newBuilder().setDatabase("foo_db").addSourceSchemaTable(SchemaTable.newBuilder().setTable("foo_tbl")).build();
         CDCResponse actualResponse = backendHandler.streamData("foo_req", requestBody, createConnectionContext(), mock());
         assertThat(actualResponse.getStatus(), is(CDCResponse.Status.SUCCEED));
         assertThat(actualResponse.getStreamDataResult().getStreamingId(), is("foo_job"));
+        ArgumentCaptor<StreamDataParameter> parameterCaptor = ArgumentCaptor.forClass(StreamDataParameter.class);
+        verify(jobAPI).create(parameterCaptor.capture(), eq(CDCSinkType.SOCKET), any(Properties.class));
+        assertThat(parameterCaptor.getValue().getSchemaTableNames(), is(Collections.singletonList("foo_tbl")));
     }
     
     @Test
     void assertStreamDataWhenTableNamesMissing() {
-        ShardingSphereDatabase database = mockDatabase();
-        mockDialectMetaData(false, false);
-        when(CDCSchemaTableUtils.parseTableExpressionWithoutSchema(eq(database), anyList())).thenReturn(Collections.emptySet());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        mockProxyContext(database);
+        mockDialectMetaData(false);
+        when(CDCSchemaTableUtils.parseTableExpressions(eq(database), anyCollection())).thenReturn(Collections.emptyMap());
         StreamDataRequestBody requestBody = StreamDataRequestBody.newBuilder().setDatabase("foo_db").addSourceSchemaTable(SchemaTable.newBuilder().setTable("foo_tbl")).build();
         CDCExceptionWrapper actualException = assertThrows(CDCExceptionWrapper.class, () -> backendHandler.streamData("foo_req", requestBody, createConnectionContext(), mock()));
         assertThat(actualException.getCause(), isA(MissingRequiredStreamDataSourceException.class));
+        verifyNoInteractions(jobAPI);
     }
     
     @Test
@@ -172,11 +185,15 @@ class CDCBackendHandlerTest {
         mockProxyContext(mock(ShardingSphereDatabase.class));
         Channel channel = mock(Channel.class);
         CDCConnectionContext connectionContext = createConnectionContext();
-        backendHandler.startStreaming("foo_job", connectionContext, channel);
-        ArgumentCaptor<PipelineSink> sinkCaptor = ArgumentCaptor.forClass(PipelineSink.class);
-        verify(jobAPI).start(eq("foo_job"), sinkCaptor.capture());
-        assertThat(((PipelineCDCSocketSink) sinkCaptor.getValue()).getChannel(), is(channel));
-        assertThat(connectionContext.getJobId(), is("foo_job"));
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.stop("foo_job")).thenThrow(new IllegalStateException("stop should be owned by CDCJobAPI"));
+            backendHandler.startStreaming("foo_job", connectionContext, channel);
+            ArgumentCaptor<PipelineSink> sinkCaptor = ArgumentCaptor.forClass(PipelineSink.class);
+            verify(jobAPI).start(eq("foo_job"), sinkCaptor.capture());
+            assertThat(((PipelineCDCSocketSink) sinkCaptor.getValue()).getChannel(), is(channel));
+            assertThat(connectionContext.getJobId(), is("foo_job"));
+            jobRegistryMocked.verifyNoInteractions();
+        }
     }
     
     @Test
@@ -192,9 +209,11 @@ class CDCBackendHandlerTest {
     
     @Test
     void assertStopStreamingWhenJobMissing() {
-        when(PipelineJobRegistry.get("foo_job")).thenReturn(null);
-        backendHandler.stopStreaming("foo_job", DefaultChannelId.newInstance());
-        verifyNoInteractions(jobAPI);
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.get("foo_job")).thenReturn(null);
+            backendHandler.stopStreaming("foo_job", DefaultChannelId.newInstance());
+            verifyNoInteractions(jobAPI);
+        }
     }
     
     @Test
@@ -203,9 +222,11 @@ class CDCBackendHandlerTest {
         Channel channel = mockChannel(DefaultChannelId.newInstance());
         CDCJob job = mock(CDCJob.class);
         when(job.getSink()).thenReturn(new PipelineCDCSocketSink(channel, mock(ShardingSphereDatabase.class), Collections.emptyList()));
-        when(PipelineJobRegistry.get("foo_job")).thenReturn(job);
-        backendHandler.stopStreaming("foo_job", targetChannelId);
-        verifyNoInteractions(jobAPI);
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.get("foo_job")).thenReturn(job);
+            backendHandler.stopStreaming("foo_job", targetChannelId);
+            verifyNoInteractions(jobAPI);
+        }
     }
     
     @Test
@@ -214,9 +235,12 @@ class CDCBackendHandlerTest {
         Channel channel = mockChannel(targetChannelId);
         CDCJob job = mock(CDCJob.class);
         when(job.getSink()).thenReturn(new PipelineCDCSocketSink(channel, mock(ShardingSphereDatabase.class), Collections.emptyList()));
-        when(PipelineJobRegistry.get("foo_job")).thenReturn(job);
-        backendHandler.stopStreaming("foo_job", targetChannelId);
-        verify(jobAPI).disable("foo_job");
+        try (MockedStatic<PipelineJobRegistry> jobRegistryMocked = mockStatic(PipelineJobRegistry.class)) {
+            jobRegistryMocked.when(() -> PipelineJobRegistry.get("foo_job")).thenReturn(job);
+            backendHandler.stopStreaming("foo_job", targetChannelId);
+            jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job"));
+            verify(jobAPI).disable("foo_job");
+        }
     }
     
     @Test
@@ -268,9 +292,8 @@ class CDCBackendHandlerTest {
         when(PipelineContextManager.getProxyContext()).thenReturn(contextManager);
     }
     
-    private void mockDialectMetaData(final boolean schemaAvailable, final boolean supportGlobalCSN) {
+    private void mockDialectMetaData(final boolean supportGlobalCSN) {
         DialectDatabaseMetaData databaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
         lenient().when(databaseMetaData.getTransactionOption().isSupportGlobalCSN()).thenReturn(supportGlobalCSN);
         when(DatabaseTypedSPILoader.getService(any(), any())).thenReturn(databaseMetaData);
     }

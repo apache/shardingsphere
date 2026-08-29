@@ -5032,6 +5032,67 @@
         </from>
     </select>
 
+    <select sql-case-id="select_bitor" db-types="Doris">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="BITOR(3,5)" start-index="7" stop-index="16">
+                <expr>
+                    <function function-name="BITOR" start-index="7" stop-index="16" text="BITOR(3,5)">
+                        <parameter>
+                            <literal-expression value="3" start-index="13" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="5" start-index="15" stop-index="15" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_bitor_with_columns" db-types="Doris">
+        <projections start-index="7" stop-index="34">
+            <expression-projection text="BITOR(user_id, order_id + 1)" start-index="7" stop-index="34">
+                <expr>
+                    <function function-name="BITOR" start-index="7" stop-index="34" text="BITOR(user_id, order_id + 1)">
+                        <parameter>
+                            <column name="user_id" start-index="13" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="22" stop-index="33">
+                                <left>
+                                    <column name="order_id" start-index="22" stop-index="29" />
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression value="1" start-index="33" stop-index="33" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="41" stop-index="47" />
+        </from>
+    </select>
+    <select sql-case-id="select_bitor_with_parameter_marker" db-types="Doris" parameters="3, 5">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="BITOR(?, ?)" literal-text="BITOR(3, 5)" start-index="7" stop-index="17">
+                <expr>
+                    <function function-name="BITOR" start-index="7" stop-index="17" text="BITOR(?, ?)" literal-text="BITOR(3, 5)">
+                        <parameter>
+                            <literal-expression value="3" start-index="13" stop-index="13" />
+                            <parameter-marker-expression parameter-index="0" start-index="13" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="5" start-index="16" stop-index="16" />
+                            <parameter-marker-expression parameter-index="1" start-index="16" stop-index="16" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_bitxor" db-types="Doris">
         <projections start-index="7" stop-index="17">
             <expression-projection text="BITXOR(3,5)" start-index="7" stop-index="17">
@@ -5047,6 +5108,200 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+    <select sql-case-id="select_bitmap_to_string" db-types="Doris">
+        <projections start-index="7" stop-index="36">
+            <expression-projection text="BITMAP_TO_STRING(TO_BITMAP(1))" start-index="7" stop-index="36">
+                <expr>
+                    <function function-name="BITMAP_TO_STRING" start-index="7" stop-index="36" text="BITMAP_TO_STRING(TO_BITMAP(1))">
+                        <parameter>
+                            <function function-name="TO_BITMAP" start-index="24" stop-index="35" text="TO_BITMAP(1)">
+                                <parameter>
+                                    <literal-expression value="1" start-index="34" stop-index="34" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_bitmap_to_string_multiple" db-types="Doris">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="BITMAP_TO_STRING(BITMAP_OR(TO_BITMAP(1), TO_BITMAP(2)))" start-index="7" stop-index="61">
+                <expr>
+                    <function function-name="BITMAP_TO_STRING" start-index="7" stop-index="61" text="BITMAP_TO_STRING(BITMAP_OR(TO_BITMAP(1), TO_BITMAP(2)))">
+                        <parameter>
+                            <function function-name="BITMAP_OR" start-index="24" stop-index="60" text="BITMAP_OR(TO_BITMAP(1), TO_BITMAP(2))">
+                                <parameter>
+                                    <function function-name="TO_BITMAP" start-index="34" stop-index="45" text="TO_BITMAP(1)">
+                                        <parameter>
+                                            <literal-expression value="1" start-index="44" stop-index="44" />
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                                <parameter>
+                                    <function function-name="TO_BITMAP" start-index="48" stop-index="59" text="TO_BITMAP(2)">
+                                        <parameter>
+                                            <literal-expression value="2" start-index="58" stop-index="58" />
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_array_last" db-types="Doris">
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="ARRAY_LAST(x -&gt; x &gt; 0, [1, 2, 3, -1, 2])" start-index="7" stop-index="46">
+                <expr>
+                    <function function-name="ARRAY_LAST" start-index="7" stop-index="46" text="ARRAY_LAST(x -&gt; x &gt; 0, [1, 2, 3, -1, 2])">
+                        <parameter>
+                            <common-expression text="x -&gt; x &gt; 0" start-index="18" stop-index="27" />
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="30" stop-index="45">
+                                <items>
+                                    <literal-expression value="1" start-index="31" stop-index="31" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="34" stop-index="34" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="37" stop-index="37" />
+                                </items>
+                                <items>
+                                    <literal-expression value="-1" start-index="40" stop-index="41" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="44" stop-index="44" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_array_last_with_multiple_parameters" db-types="Doris">
+        <projections start-index="7" stop-index="77">
+            <expression-projection text="ARRAY_LAST((x, y) -&gt; x &gt; y, [1, 2, 3, 4, 5], [1.1, 2.2, 3.3, 4.4, 5.5])" start-index="7" stop-index="77">
+                <expr>
+                    <function function-name="ARRAY_LAST" start-index="7" stop-index="77" text="ARRAY_LAST((x, y) -&gt; x &gt; y, [1, 2, 3, 4, 5], [1.1, 2.2, 3.3, 4.4, 5.5])">
+                        <parameter>
+                            <common-expression text="(x, y) -&gt; x &gt; y" start-index="18" stop-index="32" />
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="35" stop-index="49">
+                                <items>
+                                    <literal-expression value="1" start-index="36" stop-index="36" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="39" stop-index="39" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="42" stop-index="42" />
+                                </items>
+                                <items>
+                                    <literal-expression value="4" start-index="45" stop-index="45" />
+                                </items>
+                                <items>
+                                    <literal-expression value="5" start-index="48" stop-index="48" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="52" stop-index="76">
+                                <items>
+                                    <literal-expression value="1.1" start-index="53" stop-index="55" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2.2" start-index="58" stop-index="60" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3.3" start-index="63" stop-index="65" />
+                                </items>
+                                <items>
+                                    <literal-expression value="4.4" start-index="68" stop-index="70" />
+                                </items>
+                                <items>
+                                    <literal-expression value="5.5" start-index="73" stop-index="75" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_max_distinct_doris" db-types="Doris">
+        <projections start-index="7" stop-index="44">
+            <aggregation-distinct-projection type="MAX" expression="MAX(DISTINCT order_id)" distinct-inner-expression="order_id" alias="max_order_id" start-index="7" stop-index="28">
+                <parameters>
+                    <column name="order_id" start-index="20" stop-index="27" />
+                </parameters>
+            </aggregation-distinct-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="51" stop-index="57" />
+        </from>
+    </select>
+    <select sql-case-id="select_window_distinct_aggregation_doris" db-types="Doris">
+        <projections start-index="7" stop-index="171">
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id) OVER (PARTITION BY user_id)" distinct-inner-expression="order_id" start-index="7" stop-index="58">
+                <parameters>
+                    <column name="order_id" start-index="22" stop-index="29" />
+                </parameters>
+                <window-item start-index="32" stop-index="58">
+                    <partition-by>
+                        <column name="user_id" start-index="51" stop-index="57" />
+                    </partition-by>
+                </window-item>
+            </aggregation-distinct-projection>
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id) OVER (PARTITION BY user_id)" distinct-inner-expression="order_id" start-index="61" stop-index="110">
+                <parameters>
+                    <column name="order_id" start-index="74" stop-index="81" />
+                </parameters>
+                <window-item start-index="84" stop-index="110">
+                    <partition-by>
+                        <column name="user_id" start-index="103" stop-index="109" />
+                    </partition-by>
+                </window-item>
+            </aggregation-distinct-projection>
+            <aggregation-distinct-projection type="GROUP_CONCAT" expression="GROUP_CONCAT(DISTINCT order_id) OVER (PARTITION BY user_id)" distinct-inner-expression="order_id" start-index="113" stop-index="171">
+                <parameters>
+                    <column name="order_id" start-index="135" stop-index="142" />
+                </parameters>
+                <window-item start-index="145" stop-index="171">
+                    <partition-by>
+                        <column name="user_id" start-index="164" stop-index="170" />
+                    </partition-by>
+                </window-item>
+            </aggregation-distinct-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="178" stop-index="184" />
+        </from>
+    </select>
+    <select sql-case-id="select_window_max_all_doris" db-types="Doris">
+        <projections start-index="7" stop-index="67">
+            <aggregation-projection type="MAX" expression="MAX(ALL order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="51" alias="max_order_id">
+                <parameters>
+                    <column name="order_id" start-index="15" stop-index="22" />
+                </parameters>
+                <window-item start-index="25" stop-index="51">
+                    <partition-by>
+                        <column name="user_id" start-index="44" stop-index="50" />
+                    </partition-by>
+                </window-item>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="74" stop-index="80" />
+        </from>
     </select>
     <select sql-case-id="select_instr" db-types="Doris">
         <projections start-index="7" stop-index="27">
@@ -6370,5 +6625,343 @@
         <from>
             <simple-table name="t_order" start-index="60" stop-index="66" />
         </from>
+    </select>
+
+    <select sql-case-id="select_array_cum_sum" db-types="Doris">
+        <projections start-index="7" stop-index="30">
+            <expression-projection start-index="7" stop-index="30" text="ARRAY_CUM_SUM([1, 2, 3])">
+                <expr>
+                    <function function-name="ARRAY_CUM_SUM" text="ARRAY_CUM_SUM([1, 2, 3])" start-index="7" stop-index="30">
+                        <parameter>
+                            <list-expression start-index="21" stop-index="29">
+                                <items>
+                                    <literal-expression value="1" start-index="22" stop-index="22" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="25" stop-index="25" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="28" stop-index="28" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_array_cum_sum_empty_array" db-types="Doris">
+        <projections start-index="7" stop-index="23">
+            <expression-projection start-index="7" stop-index="23" text="ARRAY_CUM_SUM([])">
+                <expr>
+                    <function function-name="ARRAY_CUM_SUM" text="ARRAY_CUM_SUM([])" start-index="7" stop-index="23">
+                        <parameter>
+                            <list-expression start-index="21" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_array_cum_sum_from_table" db-types="Doris">
+        <projections start-index="7" stop-index="30">
+            <expression-projection start-index="7" stop-index="30" text="ARRAY_CUM_SUM([1, 2, 3])">
+                <expr>
+                    <function function-name="ARRAY_CUM_SUM" text="ARRAY_CUM_SUM([1, 2, 3])" start-index="7" stop-index="30">
+                        <parameter>
+                            <list-expression start-index="21" stop-index="29">
+                                <items>
+                                    <literal-expression value="1" start-index="22" stop-index="22" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="25" stop-index="25" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="28" stop-index="28" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="37" stop-index="43" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_ucase" db-types="MySQL,Doris">
+        <projections start-index="7" stop-index="20">
+            <expression-projection start-index="7" stop-index="20" text="UCASE('hello')">
+                <expr>
+                    <function function-name="UCASE" text="UCASE('hello')" start-index="7" stop-index="20">
+                        <parameter>
+                            <literal-expression value="hello" start-index="13" stop-index="19" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_starts_with_doris" db-types="Doris">
+        <projections start-index="7" stop-index="41">
+            <expression-projection start-index="7" stop-index="41" text="STARTS_WITH(&quot;hello world&quot;, &quot;hello&quot;)">
+                <expr>
+                    <function function-name="STARTS_WITH" text="STARTS_WITH(&quot;hello world&quot;, &quot;hello&quot;)" start-index="7" stop-index="41">
+                        <parameter>
+                            <literal-expression value="hello world" start-index="19" stop-index="31" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="hello" start-index="34" stop-index="40" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_conv_with_number" db-types="MySQL,Doris">
+        <projections start-index="7" stop-index="21">
+            <expression-projection start-index="7" stop-index="21" text="CONV(15, 10, 2)">
+                <expr>
+                    <function function-name="CONV" text="CONV(15, 10, 2)" start-index="7" stop-index="21">
+                        <parameter>
+                            <literal-expression value="15" start-index="12" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="10" start-index="16" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="20" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_conv_with_string" db-types="MySQL,Doris">
+        <projections start-index="7" stop-index="24">
+            <expression-projection start-index="7" stop-index="24" text="CONV('ff', 16, 10)">
+                <expr>
+                    <function function-name="CONV" text="CONV('ff', 16, 10)" start-index="7" stop-index="24">
+                        <parameter>
+                            <literal-expression value="ff" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="16" start-index="18" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="10" start-index="22" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bitmap_intersect_doris" db-types="Doris">
+        <projections start-index="7" stop-index="36">
+            <column-projection name="tag" start-index="7" stop-index="9" />
+            <expression-projection start-index="12" stop-index="36" text="BITMAP_INTERSECT(user_id)">
+                <expr>
+                    <function function-name="BITMAP_INTERSECT" text="BITMAP_INTERSECT(user_id)" start-index="12" stop-index="36">
+                        <parameter>
+                            <column name="user_id" start-index="29" stop-index="35" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="43" stop-index="166">
+            <subquery-table alias="a" start-index="43" stop-index="166">
+                <subquery start-index="43" stop-index="164">
+                    <select>
+                        <projections start-index="51" stop-index="90">
+                            <column-projection name="tag" start-index="51" stop-index="53" />
+                            <column-projection name="date" start-index="56" stop-index="59" />
+                            <expression-projection alias="user_id" start-index="62" stop-index="90" text="BITMAP_UNION(user_id)">
+                                <expr>
+                                    <function function-name="BITMAP_UNION" text="BITMAP_UNION(user_id)" start-index="62" stop-index="82">
+                                        <parameter>
+                                            <column name="user_id" start-index="75" stop-index="81" />
+                                        </parameter>
+                                    </function>
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="table" start-index="97" stop-index="101" />
+                        </from>
+                        <where start-index="103" stop-index="144">
+                            <expr>
+                                <in-expression start-index="109" stop-index="144">
+                                    <not>false</not>
+                                    <left>
+                                        <column name="date" start-index="109" stop-index="112" />
+                                    </left>
+                                    <right>
+                                        <list-expression start-index="117" stop-index="144">
+                                            <items>
+                                                <literal-expression value="2020-05-18" start-index="118" stop-index="129" />
+                                            </items>
+                                            <items>
+                                                <literal-expression value="2020-05-19" start-index="132" stop-index="143" />
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                </in-expression>
+                            </expr>
+                        </where>
+                        <group-by>
+                            <column-item name="tag" order-direction="ASC" start-index="155" stop-index="157" />
+                            <column-item name="date" order-direction="ASC" start-index="160" stop-index="163" />
+                        </group-by>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <group-by>
+            <column-item name="tag" order-direction="ASC" start-index="177" stop-index="179" />
+        </group-by>
+    </select>
+
+    <select sql-case-id="select_bitmap_to_string_with_bitmap_intersect_doris" db-types="Doris">
+        <projections start-index="7" stop-index="54">
+            <column-projection name="tag" start-index="7" stop-index="9" />
+            <expression-projection start-index="12" stop-index="54" text="BITMAP_TO_STRING(BITMAP_INTERSECT(user_id))">
+                <expr>
+                    <function function-name="BITMAP_TO_STRING" text="BITMAP_TO_STRING(BITMAP_INTERSECT(user_id))" start-index="12" stop-index="54">
+                        <parameter>
+                            <function function-name="BITMAP_INTERSECT" text="BITMAP_INTERSECT(user_id)" start-index="29" stop-index="53">
+                                <parameter>
+                                    <column name="user_id" start-index="46" stop-index="52" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="61" stop-index="184">
+            <subquery-table alias="a" start-index="61" stop-index="184">
+                <subquery start-index="61" stop-index="182">
+                    <select>
+                        <projections start-index="69" stop-index="108">
+                            <column-projection name="tag" start-index="69" stop-index="71" />
+                            <column-projection name="date" start-index="74" stop-index="77" />
+                            <expression-projection alias="user_id" start-index="80" stop-index="108" text="BITMAP_UNION(user_id)">
+                                <expr>
+                                    <function function-name="BITMAP_UNION" text="BITMAP_UNION(user_id)" start-index="80" stop-index="100">
+                                        <parameter>
+                                            <column name="user_id" start-index="93" stop-index="99" />
+                                        </parameter>
+                                    </function>
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="table" start-index="115" stop-index="119" />
+                        </from>
+                        <where start-index="121" stop-index="162">
+                            <expr>
+                                <in-expression start-index="127" stop-index="162">
+                                    <not>false</not>
+                                    <left>
+                                        <column name="date" start-index="127" stop-index="130" />
+                                    </left>
+                                    <right>
+                                        <list-expression start-index="135" stop-index="162">
+                                            <items>
+                                                <literal-expression value="2020-05-18" start-index="136" stop-index="147" />
+                                            </items>
+                                            <items>
+                                                <literal-expression value="2020-05-19" start-index="150" stop-index="161" />
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                </in-expression>
+                            </expr>
+                        </where>
+                        <group-by>
+                            <column-item name="tag" order-direction="ASC" start-index="173" stop-index="175" />
+                            <column-item name="date" order-direction="ASC" start-index="178" stop-index="181" />
+                        </group-by>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <group-by>
+            <column-item name="tag" order-direction="ASC" start-index="195" stop-index="197" />
+        </group-by>
+    </select>
+
+    <select sql-case-id="select_bitcount_doris" db-types="Doris">
+        <projections start-index="7" stop-index="17">
+            <expression-projection start-index="7" stop-index="17" text="BITCOUNT(7)">
+                <expr>
+                    <function function-name="BITCOUNT" text="BITCOUNT(7)" start-index="7" stop-index="17">
+                        <parameter>
+                            <literal-expression value="7" start-index="16" stop-index="16" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bitnot_doris" db-types="Doris">
+        <projections start-index="7" stop-index="15">
+            <expression-projection start-index="7" stop-index="15" text="BITNOT(1)">
+                <expr>
+                    <function function-name="BITNOT" text="BITNOT(1)" start-index="7" stop-index="15">
+                        <parameter>
+                            <literal-expression value="1" start-index="14" stop-index="14" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bitmap_or_count_doris" db-types="Doris">
+        <projections start-index="7" stop-index="66">
+            <expression-projection start-index="7" stop-index="66" text="BITMAP_OR_COUNT(BITMAP_FROM_STRING('1,2,3'), BITMAP_EMPTY())">
+                <expr>
+                    <function function-name="BITMAP_OR_COUNT" text="BITMAP_OR_COUNT(BITMAP_FROM_STRING('1,2,3'), BITMAP_EMPTY())" start-index="7" stop-index="66">
+                        <parameter>
+                            <function function-name="BITMAP_FROM_STRING" text="BITMAP_FROM_STRING('1,2,3')" start-index="23" stop-index="49">
+                                <parameter>
+                                    <literal-expression value="1,2,3" start-index="42" stop-index="48" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <function function-name="BITMAP_EMPTY" text="BITMAP_EMPTY()" start-index="52" stop-index="65" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_bitor_doris" db-types="Doris">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="BITOR(3,5)">
+                <expr>
+                    <function function-name="BITOR" text="BITOR(3,5)" start-index="7" stop-index="16">
+                        <parameter>
+                            <literal-expression value="3" start-index="13" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="5" start-index="15" stop-index="15" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>

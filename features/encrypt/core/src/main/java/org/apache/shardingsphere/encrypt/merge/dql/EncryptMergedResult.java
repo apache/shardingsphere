@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.exception.data.DecryptFailedException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -68,7 +67,7 @@ public final class EncryptMergedResult extends DecoratorMergedResult {
         Object cipherValue = getMergedResult().getValue(columnIndex, Object.class);
         EncryptColumn encryptColumn = rule.get().getEncryptTable(originalTableName).getEncryptColumn(originalColumnName);
         String schemaName = selectStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(selectStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
+                .orElseGet(database::getDefaultSchemaName);
         try {
             return encryptColumn.getCipher().decrypt(database.getName(), schemaName, originalTableName, originalColumnName, cipherValue);
             // CHECKSTYLE:OFF

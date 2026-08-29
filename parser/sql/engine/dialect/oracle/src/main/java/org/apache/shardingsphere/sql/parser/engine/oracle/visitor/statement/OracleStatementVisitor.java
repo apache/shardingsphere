@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CaseWh
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorFunctionContext;
@@ -49,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTy
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DateTimeLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeTypeSuffixContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DefaultStringContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprListContext;
@@ -579,7 +582,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitConstraintName(final ConstraintNameContext ctx) {
-        return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        IdentifierValue constraintName = 1 == ctx.identifier().size() ? (IdentifierValue) visit(ctx.identifier(0)) : new IdentifierValue(ctx.getText());
+        return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), constraintName);
     }
     
     @Override
@@ -1655,7 +1659,28 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
             result.setDataLength(dataTypeLengthSegment);
         }
+        if (null != ctx.datetimeTypeSuffix()) {
+            appendDatetimeTypeSuffix(result, ctx.datetimeTypeSuffix());
+        }
         return result;
+    }
+    
+    private void appendDatetimeTypeSuffix(final DataTypeSegment dataType, final DatetimeTypeSuffixContext ctx) {
+        Collection<String> suffixKeywords = new LinkedList<>();
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            ParseTree child = ctx.getChild(i);
+            if (child instanceof TerminalNode && OracleStatementParser.LP_ != ((TerminalNode) child).getSymbol().getType()
+                    && OracleStatementParser.RP_ != ((TerminalNode) child).getSymbol().getType()) {
+                suffixKeywords.add(child.getText());
+            }
+        }
+        dataType.setDataTypeName(dataType.getDataTypeName() + " " + String.join(" ", suffixKeywords));
+        if (null == ctx.fractionalSecondPrecision()) {
+            return;
+        }
+        DataTypeLengthSegment dataLength = null == dataType.getDataLength() ? new DataTypeLengthSegment() : dataType.getDataLength();
+        dataLength.setScale(Integer.parseInt(ctx.fractionalSecondPrecision().getText()));
+        dataType.setDataLength(dataLength);
     }
     
     @Override

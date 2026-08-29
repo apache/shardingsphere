@@ -543,6 +543,8 @@ public enum SQLVisitorRule {
     
     SHUTDOWN("Shutdown", SQLStatementType.DAL),
     
+    CREATE_RESOURCE("CreateResource", SQLStatementType.DAL),
+    
     CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
     
     ALTER_RESOURCE_COST("AlterResourceCost", SQLStatementType.DAL),
@@ -603,9 +605,17 @@ public enum SQLVisitorRule {
     
     ADMIN_SET_PARTITION_VERSION("AdminSetPartitionVersion", SQLStatementType.DAL),
     
+    ADMIN_SET_TABLE_STATUS("AdminSetTableStatus", SQLStatementType.DAL),
+    
     ADMIN_CLEAN_TRASH("AdminCleanTrash", SQLStatementType.DAL),
     
     ADMIN_REBALANCE_DISK("AdminRebalanceDisk", SQLStatementType.DAL),
+    
+    ADMIN_CANCEL_REBALANCE_DISK("AdminCancelRebalanceDisk", SQLStatementType.DAL),
+    
+    ADMIN_REPAIR("AdminRepair", SQLStatementType.DAL),
+    
+    ADMIN_CANCEL_REPAIR("AdminCancelRepair", SQLStatementType.DAL),
     
     CLEAN_ALL_PROFILE("CleanAllProfile", SQLStatementType.DAL),
     
@@ -684,6 +694,8 @@ public enum SQLVisitorRule {
     CREATE_CLUSTER("CreateCluster", SQLStatementType.DDL),
     
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
+    
+    CREATE_TYPE_BODY("CreateTypeBody", SQLStatementType.DDL),
     
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
     
@@ -829,6 +841,8 @@ public enum SQLVisitorRule {
     
     CREATE_MATERIALIZED_VIEW_LOG("CreateMaterializedViewLog", SQLStatementType.DDL),
     
+    DORIS_REFRESH_MATERIALIZED_VIEW("RefreshMaterializedView", SQLStatementType.DDL),
+    
     CREATE_OPERATOR("CreateOperator", SQLStatementType.DDL),
     
     CREATE_INDEX_TYPE("CreateIndexType", SQLStatementType.DDL),
@@ -878,6 +892,12 @@ public enum SQLVisitorRule {
     DECLARE_VARIABLE("DeclareVariable", SQLStatementType.DDL),
     
     SPOOL("Spool", SQLStatementType.DAL),
+    
+    LIST("List", SQLStatementType.DAL),
+    
+    REPORT("Report", SQLStatementType.DAL),
+    
+    CHANGE("Change", SQLStatementType.DAL),
     
     START_REPLICA("StartReplica", SQLStatementType.DAL),
     

@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.single.datanode;
 
+import ch.qos.logback.classic.Level;
+import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SchemaMetaDataLoader;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -25,12 +29,16 @@ import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.exception.SingleTablesLoadingException;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
@@ -45,6 +53,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,11 +63,16 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(LogCaptureExtension.class)
 class SingleTableDataNodeLoaderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -164,9 +178,75 @@ class SingleTableDataNodeLoaderTest {
     }
     
     @Test
+    void assertLoadExactTablesWhenSchemaIsUnavailable() throws SQLException {
+        Map<String, Collection<String>> fooSchemaTableNames = new LinkedHashMap<>(2, 1F);
+        fooSchemaTableNames.put("bar_schema", Collections.singleton("FOO_TBL1"));
+        fooSchemaTableNames.put("dbo", Collections.singleton("foo_tbl2"));
+        Map<String, Collection<String>> barSchemaTableNames = Collections.singletonMap("dbo", Arrays.asList("bar_tbl1", "bar_tbl2"));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("dbo"));
+        when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(false);
+        try (
+                MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class);
+                MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
+                    when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
+                });
+                MockedConstruction<SchemaMetaDataLoader> ignored = mockConstruction(SchemaMetaDataLoader.class, (mock, context) -> {
+                    when(mock.loadSchemaTableNames(anyString(), any(DataSource.class), anyCollection(), anyCollection()))
+                            .thenAnswer(invocation -> dataSourceMap.get("foo_ds") == invocation.getArgument(1) ? fooSchemaTableNames : barSchemaTableNames);
+                })) {
+            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(dataSourceMap.get("foo_ds"))).thenReturn(databaseType);
+            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(dataSourceMap.get("bar_ds"))).thenReturn(databaseType);
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                    "foo_db", databaseType, dataSourceMap, Collections.emptyList(), Arrays.asList("foo_ds.foo_tbl1", "bar_ds.*"));
+            assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Arrays.asList("FOO_TBL1", "bar_tbl1", "bar_tbl2"))));
+        }
+    }
+    
+    @Test
     void assertLoadWithSameTableInDifferentSchemas() {
         Collection<String> configuredTables = Collections.singleton("foo_ds.target_schema.same_tbl");
         assertTrue(SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), configuredTables).isEmpty());
+    }
+    
+    @Test
+    void assertLoadWithSameTableInDifferentDataSources(final LogCaptureAssertion logCaptureAssertion) throws SQLException {
+        Map<String, DataSource> localDataSourceMap = new LinkedHashMap<>(2, 1F);
+        localDataSourceMap.put("foo_ds", mockDataSource("foo_ds", Collections.singletonList("same_tbl")));
+        localDataSourceMap.put("bar_ds", mockDataSource("bar_ds", Collections.singletonList("same_tbl")));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                "foo_db", databaseType, localDataSourceMap, Collections.emptyList(), Arrays.asList("foo_ds.same_tbl", "bar_ds.same_tbl"));
+        assertThat(actual.get("same_tbl").size(), is(2));
+        logCaptureAssertion.assertLogCount(1);
+        logCaptureAssertion.assertLogContent(0, Level.WARN,
+                "Single table 'same_tbl' is loaded from multiple storage units [foo_ds, bar_ds] in database 'foo_db'.", true);
+    }
+    
+    @Test
+    void assertLoadWithSameTableInDifferentSchemasOfSameDataSource(final LogCaptureAssertion logCaptureAssertion) throws SQLException {
+        Map<String, DataSource> localDataSourceMap = Collections.singletonMap("foo_ds", dataSourceMap.get("foo_ds"));
+        Map<String, Collection<String>> schemaTableNames = new LinkedHashMap<>(2, 1F);
+        schemaTableNames.put("foo_schema", Collections.singleton("same_tbl"));
+        schemaTableNames.put("bar_schema", Collections.singleton("same_tbl"));
+        try (
+                MockedConstruction<SchemaMetaDataLoader> ignored = mockConstruction(SchemaMetaDataLoader.class,
+                        (mock, context) -> when(mock.loadSchemaTableNames("foo_db", localDataSourceMap.get("foo_ds"), Collections.emptySet(), Collections.emptySet())).thenReturn(schemaTableNames))) {
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                    "foo_db", databaseType, localDataSourceMap, Collections.emptyList(), Collections.singleton("*.*.*"));
+            assertThat(actual.get("same_tbl").size(), is(2));
+            logCaptureAssertion.assertLogCount(0);
+        }
+    }
+    
+    @Test
+    void assertLoadWithDataSourceMapDoesNotWarn(final LogCaptureAssertion logCaptureAssertion) throws SQLException {
+        Map<String, DataSource> localDataSourceMap = new LinkedHashMap<>(2, 1F);
+        localDataSourceMap.put("foo_ds", mockDataSource("foo_ds", Collections.singletonList("same_tbl")));
+        localDataSourceMap.put("bar_ds", mockDataSource("bar_ds", Collections.singletonList("same_tbl")));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                "foo_db", localDataSourceMap, Collections.emptySet(), Collections.emptySet(), createStorageTypes(localDataSourceMap));
+        assertThat(actual.get("same_tbl").size(), is(2));
+        logCaptureAssertion.assertLogCount(0);
     }
     
     @Test

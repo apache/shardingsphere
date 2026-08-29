@@ -2372,8 +2372,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitMergeWhenClause(final MergeWhenClauseContext ctx) {
         MergeWhenAndThenSegment result = new MergeWhenAndThenSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
-        if (null != ctx.mergeDeleteClause() && null != ctx.mergeDeleteClause().expr()) {
-            result.setAndExpr((ExpressionSegment) visit(ctx.mergeDeleteClause().expr()));
+        if (null != ctx.mergeDeleteClause()) {
+            result.setDelete(DeleteStatement.builder().databaseType(databaseType).build());
+            if (null != ctx.mergeDeleteClause().expr()) {
+                result.setAndExpr((ExpressionSegment) visit(ctx.mergeDeleteClause().expr()));
+            }
         }
         if (null != ctx.mergeUpdateClause()) {
             result.setUpdate((UpdateStatement) visit(ctx.mergeUpdateClause()));

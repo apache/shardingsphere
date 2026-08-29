@@ -40,6 +40,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.swapper.Yaml
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
@@ -63,10 +64,12 @@ import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTas
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -81,12 +84,14 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -133,6 +138,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         if (governanceFacade.getJobFacade().getConfiguration().isExisted(jobConfig.getJobId())) {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
+            checkJobConfiguration(jobConfig);
             governanceFacade.getJobFacade().getJob().create(jobConfig.getJobId(), jobType.getOption().getJobClass());
             JobConfigurationPOJO jobConfigPOJO = jobConfigManager.convertToJobConfigurationPOJO(jobConfig);
             jobConfigPOJO.setDisabled(true);
@@ -142,6 +148,32 @@ public final class CDCJobAPI implements TransmissionJobAPI {
             }
         }
         return jobConfig.getJobId();
+    }
+    
+    private void checkJobConfiguration(final CDCJobConfiguration jobConfig) {
+        checkDataSources(jobConfig);
+        checkSchemaTableNames(jobConfig.getSchemaTableNames());
+    }
+    
+    private void checkDataSources(final CDCJobConfiguration jobConfig) {
+        Map<String, Map<String, Object>> dataSources = jobConfig.getDataSourceConfig().getRootConfig().getDataSources();
+        for (DataNode each : getDataNodes(jobConfig)) {
+            ShardingSpherePreconditions.checkContainsKey(dataSources, each.getDataSourceName(),
+                    () -> new PipelineInvalidParameterException(String.format("Data source `%s` does not exist in job data source configuration.", each.getDataSourceName())));
+        }
+    }
+    
+    private Collection<DataNode> getDataNodes(final CDCJobConfiguration jobConfig) {
+        return jobConfig.getJobShardingDataNodes().stream().flatMap(each -> each.getEntries().stream()).flatMap(dataNodeEntry -> dataNodeEntry.getDataNodes().stream()).collect(Collectors.toList());
+    }
+    
+    private void checkSchemaTableNames(final Collection<String> schemaTableNames) {
+        Set<ShardingSphereIdentifier> tableNames = new HashSet<>(schemaTableNames.size(), 1F);
+        for (String each : schemaTableNames) {
+            String tableName = each.substring(each.lastIndexOf('.') + 1);
+            ShardingSpherePreconditions.checkState(tableNames.add(new ShardingSphereIdentifier(tableName)),
+                    () -> new PipelineInvalidParameterException(String.format("More than one schema table has the same table name `%s`.", tableName)));
+        }
     }
     
     private YamlCDCJobConfiguration getYamlCDCJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
@@ -227,17 +259,40 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      * @param sink sink
      */
     public void start(final String jobId, final PipelineSink sink) {
+        CDCJobConfiguration jobConfig = jobConfigManager.getJobConfiguration(jobId);
+        try {
+            checkJobConfiguration(jobConfig);
+        } catch (final PipelineInvalidParameterException ex) {
+            try {
+                PipelineJobRegistry.stop(jobId);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException cleanupException) {
+                // CHECKSTYLE:ON
+                ex.addSuppressed(cleanupException);
+            }
+            try {
+                JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
+                if (!jobConfigPOJO.isDisabled()) {
+                    disable(jobConfigPOJO);
+                }
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException cleanupException) {
+                // CHECKSTYLE:ON
+                ex.addSuppressed(cleanupException);
+            }
+            throw ex;
+        }
+        PipelineJobRegistry.stop(jobId);
         CDCJob job = new CDCJob(sink);
         PipelineJobRegistry.add(jobId, job);
-        enable(jobId);
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
+        enable(jobConfigPOJO);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfigPOJO.toJobConfiguration());
         job.getJobRunnerManager().setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }
     
-    private void enable(final String jobId) {
-        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
+    private void enable(final JobConfigurationPOJO jobConfigPOJO) {
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
         jobConfigPOJO.getProps().remove("stop_time");
@@ -251,6 +306,10 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      */
     public void disable(final String jobId) {
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
+        disable(jobConfigPOJO);
+    }
+    
+    private void disable(final JobConfigurationPOJO jobConfigPOJO) {
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DateTimeFormatterFactory.getDatetimeFormatter()));
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobConfigPOJO.getJobName())).updateJobConfiguration(jobConfigPOJO);

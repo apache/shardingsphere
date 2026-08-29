@@ -104,7 +104,7 @@ Missing target classes, CLASS counters, or LINE counters fail when `--minimum-ra
 
 ## Repository completion gates
 
-After the last edit, run the exact Spotless and Checkstyle commands required by `AGENTS.md`, through the canonical output wrapper.
+After the last edit, run the applicable Spotless and Checkstyle commands required by the [code-implementation verification rules](../../code-implementation/references/verification.md), through the canonical output wrapper.
 Do not replace `spotless:apply` with `spotless:check`. Re-run invalidated checks after any later edit.
 
 Run the mechanical scan once after implementation stabilizes and once immediately before delivery. The second scan must execute; do not reuse its earlier result.

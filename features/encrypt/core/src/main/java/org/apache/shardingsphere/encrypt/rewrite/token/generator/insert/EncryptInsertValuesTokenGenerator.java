@@ -20,7 +20,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertAttachableColumnToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertColumnToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertSubstitutableColumnToken;
@@ -107,7 +106,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
         int count = 0;
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
+                .orElseGet(database::getDefaultSchemaName);
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             applyInsertColumnTokens(insertValuesToken.getInsertValues().get(count), encryptToken(schemaName, encryptTable, insertStatementContext, each));
             count++;
@@ -120,7 +119,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
+                .orElseGet(database::getDefaultSchemaName);
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(new LinkedList<>(each.getValueExpressions()));
             applyInsertColumnTokens(insertValueToken, encryptToken(schemaName, encryptTable, insertStatementContext, each));

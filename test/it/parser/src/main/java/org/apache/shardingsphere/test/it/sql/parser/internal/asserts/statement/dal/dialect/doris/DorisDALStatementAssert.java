@@ -23,14 +23,19 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.UnsetVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCleanTrashStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRebalanceDiskStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCancelRebalanceDiskStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRepairStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCancelRepairStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCleanAllProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplayerPlayStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCheckTabletStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetPartitionVersionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelBackupStatement;
@@ -64,14 +69,19 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowDa
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminCleanTrashStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminRebalanceDiskStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminCancelRebalanceDiskStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminRepairStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminCancelRepairStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisCleanAllProfileStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisPlanReplayerPlayStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminCopyTabletStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminCheckTabletStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminSetPartitionVersionStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminSetTableStatusStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminSetReplicaStatusStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminSetReplicaVersionStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAlterResourceStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisCreateResourceStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAlterSystemStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisBackupStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisCancelBackupStatementAssert;
@@ -106,14 +116,19 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminRebalanceDiskStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCancelRebalanceDiskStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminRepairStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCancelRepairStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanAllProfileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisPlanReplayerPlayStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCheckTabletStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetPartitionVersionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaVersionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateResourceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisBackupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCancelBackupStatementTestCase;
@@ -162,6 +177,8 @@ public final class DorisDALStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final DALStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof DorisAlterResourceStatement) {
             DorisAlterResourceStatementAssert.assertIs(assertContext, (DorisAlterResourceStatement) actual, (DorisAlterResourceStatementTestCase) expected);
+        } else if (actual instanceof DorisCreateResourceStatement) {
+            DorisCreateResourceStatementAssert.assertIs(assertContext, (DorisCreateResourceStatement) actual, (DorisCreateResourceStatementTestCase) expected);
         } else if (actual instanceof DorisAlterSystemStatement) {
             DorisAlterSystemStatementAssert.assertIs(assertContext, (DorisAlterSystemStatement) actual, (DorisAlterSystemStatementTestCase) expected);
         } else if (actual instanceof DorisCreateSqlBlockRuleStatement) {
@@ -208,6 +225,8 @@ public final class DorisDALStatementAssert {
             DorisAdminCheckTabletStatementAssert.assertIs(assertContext, (DorisAdminCheckTabletStatement) actual, (DorisAdminCheckTabletStatementTestCase) expected);
         } else if (actual instanceof DorisAdminSetPartitionVersionStatement) {
             DorisAdminSetPartitionVersionStatementAssert.assertIs(assertContext, (DorisAdminSetPartitionVersionStatement) actual, (DorisAdminSetPartitionVersionStatementTestCase) expected);
+        } else if (actual instanceof DorisAdminSetTableStatusStatement) {
+            DorisAdminSetTableStatusStatementAssert.assertIs(assertContext, (DorisAdminSetTableStatusStatement) actual, (DorisAdminSetTableStatusStatementTestCase) expected);
         } else if (actual instanceof DorisShowFileStatement) {
             DorisShowFileStatementAssert.assertIs(assertContext, (DorisShowFileStatement) actual, (DorisShowFileStatementTestCase) expected);
         } else if (actual instanceof DorisShowEncryptKeysStatement) {
@@ -216,6 +235,12 @@ public final class DorisDALStatementAssert {
             DorisAdminCleanTrashStatementAssert.assertIs(assertContext, (DorisAdminCleanTrashStatement) actual, (DorisAdminCleanTrashStatementTestCase) expected);
         } else if (actual instanceof DorisAdminRebalanceDiskStatement) {
             DorisAdminRebalanceDiskStatementAssert.assertIs(assertContext, (DorisAdminRebalanceDiskStatement) actual, (DorisAdminRebalanceDiskStatementTestCase) expected);
+        } else if (actual instanceof DorisAdminCancelRebalanceDiskStatement) {
+            DorisAdminCancelRebalanceDiskStatementAssert.assertIs(assertContext, (DorisAdminCancelRebalanceDiskStatement) actual, (DorisAdminCancelRebalanceDiskStatementTestCase) expected);
+        } else if (actual instanceof DorisAdminRepairStatement) {
+            DorisAdminRepairStatementAssert.assertIs(assertContext, (DorisAdminRepairStatement) actual, (DorisAdminRepairStatementTestCase) expected);
+        } else if (actual instanceof DorisAdminCancelRepairStatement) {
+            DorisAdminCancelRepairStatementAssert.assertIs(assertContext, (DorisAdminCancelRepairStatement) actual, (DorisAdminCancelRepairStatementTestCase) expected);
         } else if (actual instanceof DorisShowTrashStatement) {
             DorisShowTrashStatementAssert.assertIs(assertContext, (DorisShowTrashStatement) actual, (DorisShowTrashStatementTestCase) expected);
         } else if (actual instanceof DorisShowLoadStatement) {

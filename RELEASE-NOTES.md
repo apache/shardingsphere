@@ -70,9 +70,11 @@
 1. Sharding: Fix generated actual index names exceeding database identifier length limits while preserving legacy generated index name compatibility - [#38449](https://github.com/apache/shardingsphere/pull/38449)
 1. Sharding: Fix AUTO_INTERVAL sharding failure under JVM default locales that use comma decimal separators - [#38806](https://github.com/apache/shardingsphere/pull/38806)
 1. Sharding: Compute the Snowflake key generator epoch in UTC instead of the JVM default timezone - [#38932](https://github.com/apache/shardingsphere/pull/38932)
+1. Sharding: Fix order-dependent data source intersection in Cartesian routing - [#39407](https://github.com/apache/shardingsphere/pull/39407)
 1. Sharding: Fix incorrect AVG(DISTINCT) merge result across shards - [#39429](https://github.com/apache/shardingsphere/pull/39429)
 1. Readwrite-splitting: Evaluate inline expressions in data source names of rule configuration checker - [#39374](https://github.com/apache/shardingsphere/pull/39374)
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
+1. Broadcast: Fix case-sensitive table name lookup in broadcast data node rule attribute - [#39153](https://github.com/apache/shardingsphere/pull/39153)
 
 ### Enhancements
 
@@ -99,11 +101,13 @@
 1. SQL Parser: Support SQLServer table variable declaration parse - [#38904](https://github.com/apache/shardingsphere/pull/38904)
 1. SQL Parser: Support Oracle procedure parser and binder - [#39231](https://github.com/apache/shardingsphere/pull/39231)
 1. SQL Parser: Support Oracle database object DDL parsing - [#39286](https://github.com/apache/shardingsphere/pull/39286)
+1. SQL Parser: Support Oracle package routine name parsing and binding - [#39607](https://github.com/apache/shardingsphere/pull/39607)
 1. SQL Parser: Support parsing Oracle CREATE INDEX sql - [#39292](https://github.com/apache/shardingsphere/pull/39292)
 1. SQL Parser: Support parsing Oracle CREATE INDEXTYPE sql and Add CREATE INDEX/OPERATOR sql it test - [#39302](https://github.com/apache/shardingsphere/pull/39302) 
 1. SQL Parser: Support function table alias column parsing for PostgreSQL and openGauss - [#39268](https://github.com/apache/shardingsphere/pull/39268)
 1. SQL Parser: Support MySQL and Oracle CTAS parsing and binding enhancements, and Doris TABLE statement segment extraction - [#39332](https://github.com/apache/shardingsphere/pull/39332)
 1. SQL Parser: Support Oracle full width SQL symbols parsing - [#39349](https://github.com/apache/shardingsphere/pull/39349)
+1. SQL Parser: Support Oracle pseudo-record collection index parsing - [#39566](https://github.com/apache/shardingsphere/pull/39566)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. SQL Binder: Support PostgreSQL whole-row projection binding - [#39276](https://github.com/apache/shardingsphere/pull/39276)
@@ -126,6 +130,7 @@
 1. Encrypt: Support SqlServer for Using the UPDATE statement with information from another table  when use encrypt feature - [#38926](https://github.com/apache/shardingsphere/pull/38926)
 1. SQL Binder: Support internal binding and extraction for SQL Server UPDATE table variable targets - [#39093](https://github.com/apache/shardingsphere/pull/39093)
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
+1. SQL Parser: Support parsing SYSTEM_USER in SQL92 dialect and bind it as a niladic function instead of a column - [#39102](https://github.com/apache/shardingsphere/pull/39102)
 
 ## Release 5.5.3
 

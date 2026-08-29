@@ -25,13 +25,18 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowAlterTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBuildIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminRepairStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCancelRepairStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCancelRebalanceDiskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminRebalanceDiskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCheckTabletStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetPartitionVersionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetTableStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaVersionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateResourceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisBackupStatementTestCase;
@@ -122,6 +127,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLChecksumTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLOptimizeTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLRepairTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleChangeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleListStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleReportStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleSpoolStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.postgresql.PostgreSQLResetParameterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.standard.EmptyStatementTestCase;
@@ -161,6 +169,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateStreamingJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisRefreshMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseJobStatementTestCase;
@@ -177,6 +186,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAuditStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleCreatePackageStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleCreateTypeBodyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleDropPackageStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleNoAuditStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OraclePurgeStatementTestCase;
@@ -647,6 +657,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "create-streaming-job")
     private final List<DorisCreateStreamingJobStatementTestCase> createStreamingJobTestCases = new LinkedList<>();
     
+    @XmlElement(name = "doris-refresh-materialized-view")
+    private final List<DorisRefreshMaterializedViewStatementTestCase> dorisRefreshMaterializedViewTestCases = new LinkedList<>();
+    
     @XmlElement(name = "alter-catalog")
     private final List<AlterCatalogStatementTestCase> alterCatalogTestCases = new LinkedList<>();
     
@@ -821,6 +834,15 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "admin-rebalance-disk")
     private final List<DorisAdminRebalanceDiskStatementTestCase> adminRebalanceDiskTestCases = new LinkedList<>();
     
+    @XmlElement(name = "admin-cancel-rebalance-disk")
+    private final List<DorisAdminCancelRebalanceDiskStatementTestCase> adminCancelRebalanceDiskTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-repair")
+    private final List<DorisAdminRepairStatementTestCase> adminRepairTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-cancel-repair")
+    private final List<DorisAdminCancelRepairStatementTestCase> adminCancelRepairTestCases = new LinkedList<>();
+    
     @XmlElement(name = "clean-all-profile")
     private final List<DorisCleanAllProfileStatementTestCase> cleanAllProfileTestCases = new LinkedList<>();
     
@@ -850,6 +872,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "admin-set-partition-version")
     private final List<DorisAdminSetPartitionVersionStatementTestCase> adminSetPartitionVersionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-set-table-status")
+    private final List<DorisAdminSetTableStatusStatementTestCase> adminSetTableStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sql-block-rule")
     private final List<DorisCreateSqlBlockRuleStatementTestCase> createSqlBlockRuleTestCases = new LinkedList<>();
@@ -916,6 +941,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-resource")
     private final List<DorisAlterResourceStatementTestCase> alterResourceTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-resource")
+    private final List<DorisCreateResourceStatementTestCase> createResourceTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-resource-group")
     private final List<MySQLCreateResourceGroupStatementTestCase> createResourceGroupTestCases = new LinkedList<>();
@@ -1033,6 +1061,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-package")
     private final List<OracleCreatePackageStatementTestCase> createPackageTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-type-body")
+    private final List<OracleCreateTypeBodyStatementTestCase> createTypeBodyTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-dimension")
     private final List<OracleCreateDimensionStatementTestCase> createDimensionTestCases = new LinkedList<>();
@@ -2107,6 +2138,15 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "spool")
     private final List<OracleSpoolStatementTestCase> oracleSpoolStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "list")
+    private final List<OracleListStatementTestCase> oracleListStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "report")
+    private final List<OracleReportStatementTestCase> oracleReportStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "change")
+    private final List<OracleChangeStatementTestCase> oracleChangeStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-loadable-function")
     private final List<MySQLCreateLoadableFunctionTestCase> createLoadableFunctionTestCases = new LinkedList<>();

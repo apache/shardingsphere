@@ -154,7 +154,9 @@ class PreviewExecutorTest {
     @Test
     void assertGetRowsWithCursorAttributeAndNotCursorHeld() {
         HintValueContext hintValueContext = new HintValueContext();
-        executor.setDatabase(mockCompleteDatabase());
+        ShardingSphereDatabase database = mockCompleteDatabase();
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        executor.setDatabase(database);
         executor.setConnectionContext(mockConnectionContext(hintValueContext, new ConnectionContext(Collections::emptyList), mock(DatabaseConnectionManager.class)));
         SQLStatement sqlStatement = mockSQLStatement(new CursorSQLStatementAttribute(null));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -166,7 +168,10 @@ class PreviewExecutorTest {
                         mockConstruction(SQLBindEngine.class, (mock, context) -> when(mock.bind(any(SQLStatement.class))).thenReturn(sqlStatementContext));
                 MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<SQLFederationEngine> ignoredFederationEngine =
-                        mockConstruction(SQLFederationEngine.class, (mock, context) -> when(mock.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(false));
+                        mockConstruction(SQLFederationEngine.class, (mock, context) -> {
+                            assertThat(context.arguments().get(1), is("foo_default_schema"));
+                            when(mock.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(false);
+                        });
                 MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
                         (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext))) {
             assertThat(executor.getRows(new PreviewStatement("SELECT 1"), contextManager).iterator().next().getCell(1), is("foo_ds"));

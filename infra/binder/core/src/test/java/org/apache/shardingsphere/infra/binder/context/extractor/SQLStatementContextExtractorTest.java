@@ -17,12 +17,24 @@
 
 package org.apache.shardingsphere.infra.binder.context.extractor;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -35,6 +47,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SQLStatementContextExtractorTest {
+    
+    @Test
+    void assertGetTableNamesWithDatabaseDefaultSchema() {
+        IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx")));
+        IndexSQLStatementAttribute indexSQLStatementAttribute = mock(IndexSQLStatementAttribute.class);
+        when(indexSQLStatementAttribute.getIndexes()).thenReturn(Collections.singleton(indexSegment));
+        SQLStatement sqlStatement = mock(SQLStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes(indexSQLStatementAttribute));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ShardingSphereTable table = new ShardingSphereTable(
+                "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_default_schema", mock(DatabaseType.class), Collections.singleton(table), Collections.emptyList());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        when(database.getSchema("foo_default_schema")).thenReturn(schema);
+        assertThat(SQLStatementContextExtractor.getTableNames(database, sqlStatementContext), is(Collections.singletonList("foo_tbl")));
+    }
     
     @Test
     void assertGetAllSubqueryContextsForSelectStatement() {

@@ -138,6 +138,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Uninsta
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UnsetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateResourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResourceNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyKeyContext;
@@ -149,6 +150,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCleanTrashContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminRebalanceDiskContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCancelRebalanceDiskContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminRepairContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCancelRepairContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CleanAllProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlanReplayerPlayContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemContext;
@@ -157,6 +161,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSe
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCopyTabletContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCheckTabletContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetPartitionVersionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateWorkloadGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
@@ -252,8 +257,13 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetRep
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCheckTabletStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetPartitionVersionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRebalanceDiskStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCancelRebalanceDiskStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminRepairStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCancelRepairStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelBackupStatement;
@@ -1242,6 +1252,18 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         return new DorisAlterResourceStatement(getDatabaseType(), resourceName, properties);
     }
     
+    @Override
+    public ASTNode visitCreateResource(final CreateResourceContext ctx) {
+        String resourceName = getResourceName(ctx.resourceName());
+        Properties properties = new Properties();
+        for (PropertyAssignmentContext each : ctx.propertyAssignments().propertyAssignment()) {
+            String key = getPropertyKey(each.propertyKey());
+            String value = getPropertyValue(each.propertyValue());
+            properties.setProperty(key, value);
+        }
+        return new DorisCreateResourceStatement(getDatabaseType(), resourceName, properties);
+    }
+    
     private String getResourceName(final ResourceNameContext ctx) {
         if (null != ctx.identifier()) {
             return ((IdentifierValue) visit(ctx.identifier())).getValue();
@@ -1308,6 +1330,27 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminCancelRebalanceDisk(final AdminCancelRebalanceDiskContext ctx) {
+        DorisAdminCancelRebalanceDiskStatement result = new DorisAdminCancelRebalanceDiskStatement(getDatabaseType());
+        if (null != ctx.string_()) {
+            ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminRepair(final AdminRepairContext ctx) {
+        return new DorisAdminRepairStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()),
+                ctx.partitionName().isEmpty() ? Collections.emptyList() : ctx.partitionName().stream().map(each -> (PartitionSegment) visit(each)).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public ASTNode visitAdminCancelRepair(final AdminCancelRepairContext ctx) {
+        return new DorisAdminCancelRepairStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()),
+                ctx.partitionName().isEmpty() ? Collections.emptyList() : ctx.partitionName().stream().map(each -> (PartitionSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -1380,6 +1423,15 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
         return result;
     }
+    
+    // DORIS ADDED BEGIN
+    @Override
+    public ASTNode visitAdminSetTableStatus(final AdminSetTableStatusContext ctx) {
+        DorisAdminSetTableStatusStatement result = new DorisAdminSetTableStatusStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    // DORIS ADDED END
     
     @Override
     public ASTNode visitCreateSqlBlockRule(final CreateSqlBlockRuleContext ctx) {

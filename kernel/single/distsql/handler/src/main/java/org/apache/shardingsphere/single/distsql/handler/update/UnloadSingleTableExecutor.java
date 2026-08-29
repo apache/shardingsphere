@@ -34,6 +34,7 @@ import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
 import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -86,7 +87,8 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     private void checkTableRuleExist(final String databaseName, final DatabaseType databaseType, final Collection<DataNode> dataNodes, final String tableName) {
         ShardingSpherePreconditions.checkNotEmpty(dataNodes, () -> new MissingRequiredRuleException("Single", databaseName, tableName));
         DataNode dataNode = dataNodes.iterator().next();
-        ShardingSpherePreconditions.checkContains(rule.getConfiguration().getTables(), dataNode.format(databaseType), () -> new MissingRequiredRuleException("Single", databaseName, tableName));
+        String dataNodeString = SingleTableLoadUtils.getDataNodeString(databaseType, dataNode.getDataSourceName(), dataNode.getSchemaName(), dataNode.getTableName());
+        ShardingSpherePreconditions.checkContains(rule.getConfiguration().getTables(), dataNodeString, () -> new MissingRequiredRuleException("Single", databaseName, tableName));
     }
     
     @Override

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal;
 
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAn
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
@@ -39,15 +41,18 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.postgresql.replication.LogSequenceNumber;
 
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -60,13 +65,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class WALEventConverterTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     private WALEventConverter walEventConverter;
     
@@ -127,23 +139,18 @@ class WALEventConverterTest {
     }
     
     @Test
-    void assertWriteRowEvent() throws ReflectiveOperationException {
-        DataRecord actual = getDataRecord(createWriteRowEvent());
+    void assertWriteRowEvent() {
+        DataRecord actual = (DataRecord) walEventConverter.convert(createWriteRowEvent(""));
         assertThat(actual.getType(), is(PipelineSQLOperationType.INSERT));
         assertThat(actual.getColumnCount(), is(3));
     }
     
-    private WriteRowEvent createWriteRowEvent() {
+    private WriteRowEvent createWriteRowEvent(final String schemaName) {
         WriteRowEvent result = new WriteRowEvent();
-        result.setSchemaName("");
+        result.setSchemaName(schemaName);
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList(101, 1, "OK"));
         return result;
-    }
-    
-    private DataRecord getDataRecord(final WriteRowEvent rowsEvent) throws ReflectiveOperationException {
-        Method method = WALEventConverter.class.getDeclaredMethod("handleWriteRowEvent", WriteRowEvent.class, PipelineTableMetaData.class);
-        return (DataRecord) Plugins.getMemberAccessor().invoke(method, walEventConverter, rowsEvent, pipelineTableMetaData);
     }
     
     @Test
@@ -194,6 +201,99 @@ class WALEventConverterTest {
     @Test
     void assertUnknownTable() {
         assertThat(walEventConverter.convert(mockUnknownTableEvent()), isA(PlaceholderRecord.class));
+    }
+    
+    @Test
+    void assertConvertWithQuotedUpperCaseTable() {
+        PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
+        when(metaDataLoader.getTableMetaData("UPPER_SCHEMA", "UPPER_TABLE")).thenReturn(pipelineTableMetaData);
+        WALEventConverter converter = createSchemaAwareWALEventConverter("UPPER_TABLE", "UPPER_SCHEMA", metaDataLoader);
+        WriteRowEvent event = createWriteRowEvent("\"UPPER_SCHEMA\"");
+        event.setTableName("\"UPPER_TABLE\"");
+        assertThat(converter.convert(event), isA(DataRecord.class));
+        verify(metaDataLoader).getTableMetaData("UPPER_SCHEMA", "UPPER_TABLE");
+    }
+    
+    @Test
+    void assertConvertWithQuotedTableCaseCollision() {
+        PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
+        WALEventConverter converter = createSchemaAwareWALEventConverter("UPPER_TABLE", "UPPER_SCHEMA", metaDataLoader);
+        WriteRowEvent event = createWriteRowEvent("\"UPPER_SCHEMA\"");
+        event.setTableName("\"upper_table\"");
+        assertThat(converter.convert(event), isA(PlaceholderRecord.class));
+        verifyNoInteractions(metaDataLoader);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideDifferentConcreteSchemaNames")
+    void assertConvertWithDifferentConcreteSchema(final String name, final String expectedSchemaName, final String eventSchemaName) {
+        PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
+        when(metaDataLoader.getTableMetaData(expectedSchemaName, "t_order")).thenReturn(pipelineTableMetaData);
+        WALEventConverter converter = createSchemaAwareWALEventConverter(expectedSchemaName, metaDataLoader);
+        Record actual = converter.convert(createWriteRowEvent(eventSchemaName));
+        assertThat(actual, isA(PlaceholderRecord.class));
+        verifyNoInteractions(metaDataLoader);
+    }
+    
+    private static Stream<Arguments> provideDifferentConcreteSchemaNames() {
+        return Stream.of(
+                Arguments.of("different schema", "test", "public"),
+                Arguments.of("quoted upper-case schema", "public", "\"PUBLIC\""),
+                Arguments.of("quoted schema and unquoted token", "CaseSchema", "CaseSchema"),
+                Arguments.of("quoted and unquoted case collision", "CaseSchema", "caseschema"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideSameConcreteSchemaNames")
+    void assertConvertWithSameConcreteSchema(final String name, final String expectedSchemaName, final String eventSchemaName) {
+        PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
+        when(metaDataLoader.getTableMetaData(expectedSchemaName, "t_order")).thenReturn(pipelineTableMetaData);
+        WALEventConverter converter = createSchemaAwareWALEventConverter(expectedSchemaName, metaDataLoader);
+        Record actual = converter.convert(createWriteRowEvent(eventSchemaName));
+        assertThat(actual, isA(DataRecord.class));
+        verify(metaDataLoader).getTableMetaData(expectedSchemaName, "t_order");
+    }
+    
+    private static Stream<Arguments> provideSameConcreteSchemaNames() {
+        return Stream.of(
+                Arguments.of("lower-case schema", "public", "public"),
+                Arguments.of("unquoted mixed-case token", "caseschema", "CaseSchema"),
+                Arguments.of("quoted upper-case schema", "PUBLIC", "\"PUBLIC\""),
+                Arguments.of("quoted mixed-case schema", "CaseSchema", "\"CaseSchema\""));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideUnspecifiedSchema")
+    void assertConvertWithUnspecifiedSchema(final String name, final String expectedSchemaName, final String eventSchemaName) {
+        PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
+        when(metaDataLoader.getTableMetaData(expectedSchemaName, "t_order")).thenReturn(pipelineTableMetaData);
+        WALEventConverter converter = createSchemaAwareWALEventConverter(expectedSchemaName, metaDataLoader);
+        Record actual = converter.convert(createWriteRowEvent(eventSchemaName));
+        assertThat(actual, isA(DataRecord.class));
+        verify(metaDataLoader).getTableMetaData(expectedSchemaName, "t_order");
+    }
+    
+    private static Stream<Arguments> provideUnspecifiedSchema() {
+        return Stream.of(
+                Arguments.of("null expected schema", null, "public"),
+                Arguments.of("empty expected schema", "", "public"),
+                Arguments.of("wildcard expected schema", "*", "public"),
+                Arguments.of("null event schema", "public", null),
+                Arguments.of("empty event schema", "public", ""),
+                Arguments.of("wildcard event schema", "public", "*"));
+    }
+    
+    private WALEventConverter createSchemaAwareWALEventConverter(final String expectedSchemaName, final PipelineTableMetaDataLoader metaDataLoader) {
+        return createSchemaAwareWALEventConverter("t_order", expectedSchemaName, metaDataLoader);
+    }
+    
+    private WALEventConverter createSchemaAwareWALEventConverter(final String actualTableName, final String expectedSchemaName, final PipelineTableMetaDataLoader metaDataLoader) {
+        PipelineDataSourceConfiguration dataSourceConfig = mock(PipelineDataSourceConfiguration.class);
+        when(dataSourceConfig.getDatabaseType()).thenReturn(databaseType);
+        DumperCommonContext commonContext = new DumperCommonContext(null, dataSourceConfig,
+                new ActualAndLogicTableNameMapper(Collections.singletonMap(new ShardingSphereIdentifier(actualTableName), new ShardingSphereIdentifier("t_order"))),
+                new TableAndSchemaNameMapper(Collections.singletonMap("t_order", expectedSchemaName)));
+        return new WALEventConverter(new IncrementalDumperContext(commonContext, null, false), metaDataLoader);
     }
     
     @Test

@@ -100,12 +100,23 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
             if (null == dataNodes) {
                 continue;
             }
+            Collection<String> removedDataNodeStrings = new LinkedList<>();
             Iterator<DataNode> iterator = dataNodes.iterator();
             while (iterator.hasNext()) {
                 DataNode dataNode = iterator.next();
                 if (schemaNames.contains(dataNode.getSchemaName())) {
                     iterator.remove();
-                    configuration.getTables().remove(SingleTableLoadUtils.getDataNodeString(protocolType, dataNode.getDataSourceName(), dataNode.getSchemaName(), each));
+                    removedDataNodeStrings.add(getDataNodeString(dataNode, each));
+                }
+            }
+            if (!removedDataNodeStrings.isEmpty()) {
+                Collection<String> retainedDataNodeStrings = new LinkedHashSet<>(dataNodes.size(), 1F);
+                for (DataNode dataNode : dataNodes) {
+                    retainedDataNodeStrings.add(getDataNodeString(dataNode, each));
+                }
+                removedDataNodeStrings.removeAll(retainedDataNodeStrings);
+                for (String removedDataNodeString : removedDataNodeStrings) {
+                    configuration.getTables().remove(removedDataNodeString);
                 }
             }
             if (dataNodes.isEmpty()) {
@@ -113,6 +124,10 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
                 tableMapperRuleAttribute.getLogicTableNames().remove(each);
             }
         }
+    }
+    
+    private String getDataNodeString(final DataNode dataNode, final String tableName) {
+        return SingleTableLoadUtils.getDataNodeString(protocolType, dataNode.getDataSourceName(), dataNode.getSchemaName(), tableName);
     }
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")

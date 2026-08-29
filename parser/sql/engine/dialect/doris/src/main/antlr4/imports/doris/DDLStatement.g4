@@ -39,7 +39,7 @@ alterStatement
 
 createTable
     // DORIS CHANGED BEGIN
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? duplicatekeyClause? commentClause? partitionClause? distributedbyClause? propertiesClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? duplicatekeyClause? commentClause? partitionClause? distributedbyClause? rollupClause? propertiesClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
     // DORIS CHANGED END
     ;
 
@@ -53,7 +53,11 @@ commentClause
     ;
 
 distributedbyClause
-    : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
+    : DISTRIBUTED BY (HASH LP_ columnNames RP_ | RANDOM) (BUCKETS (NUMBER_ | AUTO))?
+    ;
+
+rollupClause
+    : ROLLUP LP_ rollupItem (COMMA_ rollupItem)* RP_
     ;
 
 modifyDistributionClause
@@ -85,7 +89,9 @@ partitionClause
 partitionTypeDef
     : LINEAR? KEY partitionKeyAlgorithm? LP_ columnNames? RP_
     | LINEAR? HASH LP_ bitExpr RP_
-    | (RANGE | LIST) (LP_ bitExpr RP_ | COLUMNS LP_ columnNames RP_ )
+    // DORIS CHANGED BEGIN
+    | (RANGE | LIST) (LP_ bitExpr (COMMA_ bitExpr)* RP_ | COLUMNS LP_ columnNames RP_ )
+    // DORIS CHANGED END
     ;
 
 subPartitions
@@ -161,7 +167,7 @@ alterOrderList
     ;
 
 rollupItem
-    : rollupName=identifier LP_ columnNames RP_ (FROM fromIndexName=indexName)? propertiesClause?
+    : rollupName=identifier LP_ rollupColumns=columnNames RP_ (DUPLICATE KEY LP_ duplicateKeyColumns=columnNames RP_)? (FROM fromIndexName=indexName)? propertiesClause?
     ;
 
 rollupNameItem
@@ -312,7 +318,7 @@ truncateTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression (indexTypeClause | dorisIndexTypeClause)? propertiesClause? commentClause? algorithmOptionAndLockOption?
+    : CREATE createIndexSpecification? INDEX ifNotExists? indexName ON tableName keyListWithExpression (dorisIndexTypeClause | indexTypeClause)? propertiesClause? commentClause? algorithmOptionAndLockOption?
     ;
 
 dorisIndexTypeClause
@@ -472,7 +478,9 @@ createView
       (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ columnNames RP_)?
+      // DORIS CHANGED BEGIN
+      VIEW ifNotExists? viewName (LP_ (columnNames | viewColumnDefinitions) RP_)? commentClause?
+      // DORIS CHANGED END
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
@@ -504,6 +512,18 @@ refreshTrigger
 // DORIS ADDED BEGIN
 refreshSchedule
     : EVERY intervalValue (STARTS timestampValue)?
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+refreshMaterializedView
+    : REFRESH MATERIALIZED VIEW name (partitionSpec | refreshMethod)
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+partitionSpec
+    : PARTITIONS LP_ identifierList RP_
     ;
 // DORIS ADDED END
 
@@ -672,7 +692,9 @@ referenceOption
     ;
 
 indexType
-    : BTREE | RTREE | HASH
+    // DORIS CHANGED BEGIN
+    : BTREE | RTREE | HASH | INVERTED
+    // DORIS CHANGED END
     ;
 
 indexTypeClause
@@ -775,7 +797,7 @@ place
 
 partitionDefinitions
     // DORIS CHANGED BEGIN
-    : LP_ partitionDefinitionItem (COMMA_ partitionDefinitionItem)* RP_
+    : LP_ (partitionDefinitionItem (COMMA_ partitionDefinitionItem)*)? RP_
     // DORIS CHANGED END
     ;
 

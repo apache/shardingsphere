@@ -115,6 +115,21 @@ packageInitialization
     : BEGIN plsqlStatements (EXCEPTION exceptionHandler+)?
     ;
 
+createTypeBody
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE BODY plsqlTypeBodySource
+    ;
+
+plsqlTypeBodySource
+    : typeName (IS | AS) typeBodyElement+ END typeName? SEMI_?
+    ;
+
+typeBodyElement
+    : (MEMBER | STATIC)? FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? returnDateType (IS | AS) declareSection? body
+    | (MEMBER | STATIC)? PROCEDURE procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? (IS | AS) declareSection? body
+    | (FINAL | INSTANTIABLE)? CONSTRUCTOR FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN SELF AS RESULT (IS | AS) declareSection? body
+    | (MAP | ORDER) MEMBER FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? returnDateType (IS | AS) declareSection? body
+    ;
+
 plsqlProcedureSource
     : (schemaName DOT_)? procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? sharingClause?
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
@@ -751,7 +766,7 @@ referencingItem
     ;
 
 triggerEditionClause
-    : (FORWARD | REVERSE) CROSSEDITION
+    : (FORWARD | REVERSE)? CROSSEDITION
     ;
 
 triggerOrderingClause

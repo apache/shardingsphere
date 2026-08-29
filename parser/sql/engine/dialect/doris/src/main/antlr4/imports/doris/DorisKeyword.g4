@@ -95,6 +95,12 @@ ARRAY
     : A R R A Y
     ;
 
+// DORIS ADDED BEGIN
+ARRAY_LAST
+    : A R R A Y UL_ L A S T
+    ;
+// DORIS ADDED END
+
 AS
     : A S
     ;
@@ -144,6 +150,10 @@ ALIAS
     ;
 
 // DORIS ADDED BEGIN
+BITOR
+    : B I T O R
+    ;
+
 BITXOR
     : B I T X O R
     ;
@@ -859,6 +869,10 @@ EXTENDED
     :  E X T E N D E D
     ;
 
+EXTERNAL
+    : E X T E R N A L
+    ;
+
 // DORIS ADDED BEGIN
 EXTRACT_URL_PARAMETER
     : E X T R A C T UL_ U R L UL_ P A R A M E T E R
@@ -1083,6 +1097,10 @@ HELP
 
 HIGH_PRIORITY
     : H I G H UL_ P R I O R I T Y
+    ;
+
+HLL
+    : H L L
     ;
 
 HLL_UNION
