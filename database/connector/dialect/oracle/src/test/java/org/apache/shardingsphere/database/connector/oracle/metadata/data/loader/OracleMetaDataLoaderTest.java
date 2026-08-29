@@ -115,7 +115,7 @@ class OracleMetaDataLoaderTest {
         assertColumnMetaData(columnMetaDataList.get(2), new ColumnMetaData("creation_time", Types.TIMESTAMP, false, false, false, true, false, true));
     }
     
-    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertLoadPrimaryKeysArguments")
     void assertLoadPrimaryKeys(final String name, final Collection<String> tableNames, final Collection<String> constraintNames,
@@ -145,7 +145,7 @@ class OracleMetaDataLoaderTest {
         }
     }
     
-    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadWithoutPrimaryKeyColumnsQuery() throws SQLException {
         DataSource dataSource = mockDataSource();
