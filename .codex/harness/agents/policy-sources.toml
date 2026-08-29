@@ -18,15 +18,16 @@ root_max_bytes = 26000
 
 [profiles]
 root = ["agents"]
-code-write = ["agents", "code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
-test-write = ["agents", "code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
-code-review = ["agents", "code-of-conduct", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification"]
+code-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
+test-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
+code-review = ["agents", "code-of-conduct", "coding-standards", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification"]
 code-design = ["agents", "implementation-rules", "testing-rules", "contracts-and-removal", "cross-cutting-skills"]
+coding-standards-audit = ["agents", "code-of-conduct", "coding-standards", "coding-standards-compliance"]
 runtime-diagnosis = ["agents", "runtime-triage", "code-verification"]
 command-execution = ["agents", "token-efficiency", "code-verification"]
 cross-cutting = ["agents", "cross-cutting-skills"]
-gen-ut = ["agents", "code-of-conduct", "code-implementation", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
-review-pr = ["agents", "code-of-conduct", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
+gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
+review-pr = ["agents", "code-of-conduct", "coding-standards", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
 policy-maintenance = ["agents", "policy-maintenance", "policy-source-manifest"]
 
 [[sources]]
@@ -111,7 +112,7 @@ id = "code-implementation"
 path = ".codex/skills/code-implementation/SKILL.md"
 kind = "skill"
 semantic = true
-references = ["AGENTS.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+references = ["AGENTS.md", ".codex/skills/coding-standards/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
 
 [[sources]]
 id = "code-implementation-metadata"
@@ -119,6 +120,27 @@ path = ".codex/skills/code-implementation/agents/openai.yaml"
 kind = "metadata"
 semantic = false
 references = []
+
+[[sources]]
+id = "coding-standards"
+path = ".codex/skills/coding-standards/SKILL.md"
+kind = "skill"
+semantic = true
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/code-compliance.md"]
+
+[[sources]]
+id = "coding-standards-metadata"
+path = ".codex/skills/coding-standards/agents/openai.yaml"
+kind = "metadata"
+semantic = false
+references = []
+
+[[sources]]
+id = "coding-standards-compliance"
+path = ".codex/skills/coding-standards/references/code-compliance.md"
+kind = "reference"
+semantic = true
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md"]
 
 [[sources]]
 id = "implementation-rules"
