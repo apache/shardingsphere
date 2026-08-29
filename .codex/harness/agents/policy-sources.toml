@@ -35,7 +35,7 @@ id = "agents"
 path = "AGENTS.md"
 kind = "instructions"
 semantic = true
-references = ["CODE_OF_CONDUCT.md", ".codex/context/token-efficiency.md", ".codex/context/cross-cutting-skills.md", ".codex/context/runtime-triage.md", ".codex/context/change-completion.md", ".codex/harness/agents/policy-maintenance.md", ".codex/harness/agents/policy-sources.toml", ".codex/skills/code-implementation/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+references = ["CODE_OF_CONDUCT.md", ".codex/context/token-efficiency.md", ".codex/context/cross-cutting-skills.md", ".codex/context/runtime-triage.md", ".codex/context/change-completion.md", ".codex/harness/agents/policy-maintenance.md", ".codex/harness/agents/policy-sources.toml", ".codex/skills/code-implementation/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
 
 [[sources]]
 id = "code-of-conduct"
@@ -56,7 +56,7 @@ id = "cross-cutting-skills"
 path = ".codex/context/cross-cutting-skills.md"
 kind = "context"
 semantic = true
-references = ["AGENTS.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md"]
+references = ["AGENTS.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md"]
 
 [[sources]]
 id = "runtime-triage"
@@ -112,7 +112,7 @@ id = "code-implementation"
 path = ".codex/skills/code-implementation/SKILL.md"
 kind = "skill"
 semantic = true
-references = ["AGENTS.md", ".codex/skills/coding-standards/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+references = ["AGENTS.md", ".codex/skills/coding-standards/SKILL.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
 
 [[sources]]
 id = "code-implementation-metadata"
@@ -147,7 +147,7 @@ id = "implementation-rules"
 path = ".codex/skills/code-implementation/references/rules/implementation.md"
 kind = "rules"
 semantic = true
-references = ["CODE_OF_CONDUCT.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md"]
+references = ["CODE_OF_CONDUCT.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md"]
 
 [[sources]]
 id = "testing-rules"
@@ -158,7 +158,7 @@ references = ["CODE_OF_CONDUCT.md"]
 
 [[sources]]
 id = "contracts-and-removal"
-path = ".codex/skills/code-implementation/references/rules/contracts-and-removal.md"
+path = ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md"
 kind = "rules"
 semantic = true
 references = [".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/non-regression.md"]
@@ -196,7 +196,7 @@ id = "review-pr"
 path = ".codex/skills/review-pr/SKILL.md"
 kind = "skill"
 semantic = true
-references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/review-pr/references/evidence-access.md", ".codex/skills/review-pr/references/high-risk-review.md", ".codex/skills/review-pr/references/sql-parser-review.md", ".codex/skills/review-pr/references/review-corrections.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/contracts-and-removal.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/review-pr/references/evidence-access.md", ".codex/skills/review-pr/references/high-risk-review.md", ".codex/skills/review-pr/references/sql-parser-review.md", ".codex/skills/review-pr/references/review-corrections.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
 
 [[sources]]
 id = "review-pr-evidence"

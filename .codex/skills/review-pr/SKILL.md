@@ -87,7 +87,7 @@ Read each applicable canonical reference directly through EOF before judging the
 
 - Read [implementation rules](../code-implementation/references/rules/implementation.md) for every production, test, script, or other implementation artifact, including build logic, generated source, and behavior-affecting configuration.
 - Read [testing rules](../code-implementation/references/rules/testing.md) when the candidate changes tests or the assessment depends on test validity or coverage.
-- Read [contract and removal rules](../code-implementation/references/rules/contracts-and-removal.md) for every implementation candidate. Apply each contract, impact, or removal rule only when its own trigger matches.
+- Read [artifact removal and contract impact rules](../code-implementation/references/rules/artifact-removal-and-contract-impact.md) for every implementation candidate. Apply each contract, impact, or removal rule only when its own trigger matches.
 - Read [non-regression rules](../code-implementation/references/rules/non-regression.md) for functional or performance regression assessment of any changed code candidate.
 - Read [verification rules](../code-implementation/references/verification.md) before choosing, running, or assessing local verification.
 
