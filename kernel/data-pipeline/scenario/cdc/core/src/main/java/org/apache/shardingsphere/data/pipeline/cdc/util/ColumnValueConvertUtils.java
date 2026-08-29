@@ -145,9 +145,6 @@ public final class ColumnValueConvertUtils {
     }
     
     private static com.google.protobuf.Timestamp converToProtobufTimestamp(final Date timestamp) {
-        // A protobuf timestamp is a second plus a non-negative nanosecond offset into it, so the
-        // seconds have to be floored. Integer division truncates towards zero, which for a value
-        // before the epoch names the second above the one the value is in.
         if (timestamp instanceof Timestamp) {
             Timestamp value = (Timestamp) timestamp;
             return com.google.protobuf.Timestamp.newBuilder().setSeconds(Math.floorDiv(value.getTime(), 1000L)).setNanos(value.getNanos()).build();
