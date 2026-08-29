@@ -21,9 +21,8 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 
 ## Response Style
 
-- Use plain language and the shortest response that fully answers the request.
-- Do not add details unless the user requests them or they are necessary.
-- When details are necessary, put a self-contained concise answer above a line containing only `---` and the details below it. Omit the separator when no details follow.
+- Use plain language and the shortest complete answer; add only requested or necessary details.
+- When details are needed, put the complete concise answer first, then `---` alone and the details; otherwise omit it.
 
 ## Authority and Safety
 
@@ -33,10 +32,17 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 
 ### File-Change Entry Gate
 
-Before every file-changing task or tool call, apply the Strict Scope and Task-Delta Gate below, including to formatters, generators, scripts, Skills, and review fixes.
-Remain read-only until the original baseline and exact `file -> allowed intent -> unmet acceptance criterion` write allowlist are recorded.
-Only the exact user authorization defined below may expand that authority; a later workflow, failure, finding, prerequisite, Skill, or tool cannot.
-Only a standalone restoration or rollback governed by its existing gates is exempt.
+Before any file-changing task or tool, including formatters, generators, scripts, Skills, and review fixes, apply the Strict Scope and Task-Delta Gate.
+Remain read-only until recording the original baseline and exact `file -> intent -> unmet criterion` write allowlist.
+Only exact user authorization expands it; no later workflow, failure, finding, prerequisite, Skill, or tool does.
+Only a governed standalone restoration or rollback is exempt.
+
+### Consolidated Authorization Requests
+
+Before requesting authorization, inspect the workflow for all proven exact needs: scope expansion; non-code or system writes; Git mutation; remote transmission or mutation; destructive actions; and file-changing tools.
+Request all once by target, action, intent, and impact. List unresolved conditions without requesting them; never request speculative or granted authority.
+Request again only when new evidence proves an unforeseeable need. State the evidence, exact delta, why it was unknowable, and the effect of declining it; preserve the original baseline and boundary.
+Separate task authority from command-bound platform approval. A preannouncement needs no task confirmation; invoke approval only with its command, and let neither expand the other. Preserve required dangerous-operation warnings.
 
 ### Git Is Read-Only by Default
 
@@ -101,7 +107,7 @@ Preserve pre-existing and unattributed working-tree changes throughout the task;
 2. Add a prerequisite to the acceptance checklist only when omitting it prevents the requested behavior, compilation, or scoped verification, no smaller in-boundary alternative exists, and every required write is already allowlisted.
    Otherwise it requires scope expansion; relevance, evidence, failures, and review findings never authorize it.
 3. Before the first write, record the pre-task working-tree baseline, including the existing status and relevant diffs, and derive the smallest owning module or repository-path set from the user request and inspected evidence, whether or not the user named it. Freeze the allowed files and the allowed change intent for each file as the hard write allowlist for the active Codex task; an allowed file does not authorize unrelated hunks in that file.
-4. Later user turns, follow-up changes, reviews, failures, and further inspection in the same task do not reset or expand the baseline or boundary. Inspection and verification outside the boundary remain read-only. Never edit another module, including a sibling, shared, dependency, parent, root, or consuming module, unless the user explicitly authorizes the exact additional path and change intent before the edit. Treat that authorization as an append-only expansion: map it to an acceptance criterion, freeze only the smallest newly authorized path and intent, and retain the original task baseline. Never rebaseline an active task, infer whole-module authorization from an exact-file authorization, or treat an added path as blanket authorization. A direct prerequisite does not self-authorize expansion. The allowlist is a maximum boundary, not blanket authorization or a reason to repeat completed work; every later edit still needs an unsatisfied acceptance criterion. Do not repeat completed edits, checks, or reviews unless an authorized in-boundary edit invalidates them.
+4. Later turns, corrections, reviews, failures, inspection, and verification never reset or expand the original baseline or boundary; keep outside work read-only. Edit another path only after its exact path and intent are authorized; append its smallest delta to an unmet criterion without rebaselining. Exact-file authority excludes siblings and its module; prerequisites grant nothing. The allowlist is a maximum; every edit needs an unmet criterion. Repeat work only when an authorized edit invalidates it.
 5. When the request makes the boundary clear, infer and freeze it without asking the user to repeat it. Every changed file and task-introduced hunk must map directly to one acceptance criterion and be necessary to satisfy it.
 6. Before a tool may modify tracked, user-authored, or task-introduced repository files, verify that every possible write path is allowlisted; otherwise do not run it.
    After each file-changing action, inspect the actual paths and hunks before continuing.
