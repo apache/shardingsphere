@@ -1046,7 +1046,7 @@ allowed_actions = []
 forbidden_actions = ["edit_code", "add_meaningless_test", "mutate_git", "mutate_remote"]
 required_reasons = ["meaningful_test_required"]
 policy_binding_profile = "test-write"
-policy_assertions = [{source = "testing-rules", statements = ["Do not add tests that only prove pass-throughs, constants, accessors, delegation, wiring, Java, Lombok, Mockito, parsers, collection libraries, framework behavior, or private implementation shape.", "Never add a test solely to increase a coverage number or duplicate an existing scenario unless it covers a new branch, input class, edge case, contract, calculation path, or failure mode."]}]
+policy_assertions = [{source = "testing-rules", statements = ["Test a pass-through, constant, accessor, delegation, wiring path, or contract literal only when it expresses documented behavior owned by the production type or a public or externally visible contract that no broader behavior test protects.", "Never add a test solely to increase a coverage number or duplicate an existing scenario unless it covers a new branch, input class, edge case, contract, calculation path, or failure mode."]}]
 critical = true
 
 [[cases]]

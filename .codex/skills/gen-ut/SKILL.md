@@ -61,14 +61,14 @@ Reading either Skill does not expand the user-authorized scope, file types, Git 
 ### R4: Branch map
 
 - Before coding, enumerate target public-method branches and map each planned scenario to one branch or path.
-- Classify every trigger and assertion as SUT-owned or collaborator-owned. Mock the nearest stable boundary for collaborator results.
+- Classify every trigger and assertion as SUT-owned or collaborator-owned. Isolate collaborator-owned results at the nearest stable boundary and apply `R6` to decide whether to mock them.
 - Exclude Lombok-generated behavior without custom logic. Default to one test per branch or path; use `R13` for additional cases.
 
 ### R5: Scenario granularity
 
-- Keep one scenario per test and invoke the target public method at most once per scenario.
+- Keep one scenario per test and invoke the target public method once by default. Invoke it more than once only when repeated invocation is itself the scenario, such as idempotency, accumulation, or a state transition.
 - Keep the coverage-relevant invocation and its externally observable assertions in the test body. Helpers and providers must not execute target behavior.
-- For interface targets, test only `default` methods unless the user explicitly requests abstract methods.
+- For interface targets, test owned `default` or `static` methods directly. Exercise abstract contracts through concrete implementations, including when the user explicitly requests an interface-contract test.
 
 ### R6: SPI, mocks, and reflection
 
