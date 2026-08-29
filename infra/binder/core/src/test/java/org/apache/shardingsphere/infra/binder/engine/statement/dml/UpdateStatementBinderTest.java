@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -70,6 +71,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -289,6 +291,29 @@ class UpdateStatementBinderTest {
         ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
         assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationNote"));
         assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("Employee"));
+    }
+    
+    @Test
+    void assertBindPhysicalTargetThrowsWhenSetColumnMissingAndFromContainsTableVariable() {
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("v")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(employee);
+        fromJoin.setRight(tableVariable);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("MissingColumn"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("e"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        assertThrows(ColumnNotFoundException.class, () -> new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement)));
     }
     
     @Test

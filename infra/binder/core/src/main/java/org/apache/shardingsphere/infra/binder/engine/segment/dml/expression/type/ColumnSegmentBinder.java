@@ -106,7 +106,8 @@ public final class ColumnSegmentBinder {
         if (!inputColumnSegment.isPresent() && isUnparenthesizedFunction(segment, parentSegmentType, binderContext)) {
             return segment;
         }
-        ShardingSpherePreconditions.checkState(inputColumnSegment.isPresent() || isSkipColumnBind(tableSegmentBinderContexts, outerTableBinderContexts.values()),
+        boolean tableVariableSkipAllowed = SegmentType.SET_ASSIGNMENT_COLUMNS != parentSegmentType || bindTableVariableTargetColumn;
+        ShardingSpherePreconditions.checkState(inputColumnSegment.isPresent() || isSkipColumnBind(tableSegmentBinderContexts, outerTableBinderContexts.values(), tableVariableSkipAllowed),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         columnSegment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
@@ -385,24 +386,25 @@ public final class ColumnSegmentBinder {
         return result;
     }
     
-    private static boolean isSkipColumnBind(final Collection<TableSegmentBinderContext> tableBinderContexts, final Collection<TableSegmentBinderContext> outerBinderContexts) {
-        return containsMetadataUnavailableContext(tableBinderContexts) || containsMetadataUnavailableContext(outerBinderContexts);
+    private static boolean isSkipColumnBind(final Collection<TableSegmentBinderContext> tableBinderContexts, final Collection<TableSegmentBinderContext> outerBinderContexts,
+                                            final boolean tableVariableSkipAllowed) {
+        return containsMetadataUnavailableContext(tableBinderContexts, tableVariableSkipAllowed) || containsMetadataUnavailableContext(outerBinderContexts, tableVariableSkipAllowed);
     }
     
-    private static boolean containsMetadataUnavailableContext(final Collection<TableSegmentBinderContext> tableBinderContexts) {
+    private static boolean containsMetadataUnavailableContext(final Collection<TableSegmentBinderContext> tableBinderContexts, final boolean tableVariableSkipAllowed) {
         for (TableSegmentBinderContext each : tableBinderContexts) {
             if (each instanceof FunctionTableSegmentBinderContext) {
                 return true;
             }
-            if (each instanceof SimpleTableSegmentBinderContext && isMetadataUnavailable((SimpleTableSegmentBinderContext) each)) {
+            if (each instanceof SimpleTableSegmentBinderContext && isMetadataUnavailable((SimpleTableSegmentBinderContext) each, tableVariableSkipAllowed)) {
                 return true;
             }
         }
         return false;
     }
     
-    private static boolean isMetadataUnavailable(final SimpleTableSegmentBinderContext tableBinderContext) {
-        return tableBinderContext.isContainsDBLink() || tableBinderContext.isContainsTableVariable();
+    private static boolean isMetadataUnavailable(final SimpleTableSegmentBinderContext tableBinderContext, final boolean tableVariableSkipAllowed) {
+        return tableBinderContext.isContainsDBLink() || tableVariableSkipAllowed && tableBinderContext.isContainsTableVariable();
     }
     
     /**
