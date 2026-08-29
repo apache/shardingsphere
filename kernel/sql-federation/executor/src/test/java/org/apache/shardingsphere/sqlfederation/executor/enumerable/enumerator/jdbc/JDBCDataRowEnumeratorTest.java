@@ -111,6 +111,22 @@ class JDBCDataRowEnumeratorTest {
     }
     
     @Test
+    void assertCloseContinuesWhenTwoStatementsThrowTheSameException() throws SQLException {
+        SQLException sharedException = new SQLException("shared failure");
+        Statement firstStatement = mock(Statement.class);
+        doThrow(sharedException).when(firstStatement).close();
+        Statement secondStatement = mock(Statement.class);
+        doThrow(sharedException).when(secondStatement).close();
+        Statement thirdStatement = mock(Statement.class);
+        JDBCDataRowEnumerator enumerator = new JDBCDataRowEnumerator(
+                mock(MergedResult.class), mock(QueryResultMetaData.class), Arrays.asList(firstStatement, secondStatement, thirdStatement));
+        SQLWrapperException actualException = assertThrows(SQLWrapperException.class, enumerator::close);
+        assertThat(actualException.getCause(), is(sharedException));
+        verify(thirdStatement).close();
+        assertNull(enumerator.current());
+    }
+    
+    @Test
     void assertCloseSuppressesLaterFailures() throws SQLException {
         Statement firstStatement = mock(Statement.class);
         SQLException firstException = new SQLException("first");

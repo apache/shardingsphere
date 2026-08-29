@@ -97,7 +97,9 @@ public final class JDBCDataRowEnumerator implements Enumerator<Object> {
         if (null == previousFailure) {
             return failure;
         }
-        previousFailure.addSuppressed(failure);
+        if (previousFailure != failure) {
+            previousFailure.addSuppressed(failure);
+        }
         return previousFailure;
     }
 }
