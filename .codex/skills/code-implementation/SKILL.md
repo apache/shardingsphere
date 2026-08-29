@@ -21,6 +21,9 @@ Specialized repository Skills compose with this Skill when they write code. Thei
 ## Workflow
 
 1. Apply the pre-write evidence, acceptance, frozen-boundary, baseline, architecture, and source-line gates in `AGENTS.md`.
+   Before the first write, derive the exact `file -> allowed change intent -> unmet acceptance criterion` write allowlist required by the frozen-boundary gate.
+   When the current request clearly authorizes the inferred allowlist, record and freeze it without asking the user to repeat the request; otherwise obtain confirmation of the exact allowlist, then record and freeze it before writing.
+   Expand the frozen allowlist only after the user explicitly authorizes the exact additional path and change intent.
 2. Map every planned production and test change to one unsatisfied acceptance criterion and identify the supported existing paths that the change can affect.
 3. Classify functional and performance regression risk before the first relevant write. Capture any required behavioral or performance baseline using the protocol in `.codex/skills/code-implementation/references/rules/non-regression.md`.
 4. Implement the smallest clear change under `.codex/skills/code-implementation/references/rules/implementation.md`, and apply `.codex/skills/code-implementation/references/rules/testing.md` to every affected test decision.
