@@ -300,6 +300,13 @@ class RunTest(unittest.TestCase):
         self.assertIn("Infer `invoke_source_driven_development` only", prompt)
         self.assertIn("Preserve exact technical terms", prompt)
 
+    def test_create_prompt_distinguishes_local_checks_from_smoke_actions(self) -> None:
+        prompt = run.create_prompt([self.case], "sha256")
+        self.assertIn("Use `run_local_checks` when the case explicitly asks to run or rerun a focused unit test", prompt)
+        self.assertIn("Do not classify a focused unit test, build, or ordinary local verification as a smoke test", prompt)
+        self.assertIn("Use `triage_failed_smoke` only when the case explicitly identifies an E2E", prompt)
+        self.assertIn("Use `rerun_failed_smoke` only when such a smoke case explicitly asks to rerun it", prompt)
+
     def test_semantic_metadata_disclaims_profile_content_evaluation(self) -> None:
         metadata = run.semantic_evaluation_metadata()
         self.assertEqual("root", metadata["decision_surface"])
