@@ -317,6 +317,147 @@ class UpdateStatementBinderTest {
     }
     
     @Test
+    void assertBindPhysicalTargetThrowsWhenSetColumnMissingWithoutTableVariable() {
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        targetTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("MissingColumn"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .build();
+        assertThrows(ColumnNotFoundException.class, () -> new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement)));
+    }
+    
+    @Test
+    void assertBindPhysicalTargetThrowsWhenAnySetColumnMissingAndFromContainsTableVariable() {
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("v")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(employee);
+        fromJoin.setRight(tableVariable);
+        ColumnAssignmentSegment validAssignment = new ColumnAssignmentSegment(
+                0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("VacationHours"))), new LiteralExpressionSegment(0, 0, 1));
+        ColumnAssignmentSegment missingAssignment = new ColumnAssignmentSegment(
+                0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("MissingColumn"))), new LiteralExpressionSegment(0, 0, 2));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("e"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Arrays.asList(validAssignment, missingAssignment)))
+                .targetTableIsFromAlias(true)
+                .build();
+        assertThrows(ColumnNotFoundException.class, () -> new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement)));
+    }
+    
+    @Test
+    void assertBindPhysicalTargetTableNameThrowsWhenSetColumnMissingAndFromContainsTableVariable() {
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(employee);
+        fromJoin.setRight(tableVariable);
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        targetTable.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("MissingColumn"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(targetTable)
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        assertThrows(ColumnNotFoundException.class, () -> new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement)));
+    }
+    
+    @Test
+    void assertBindTableVariableTargetWithoutFromSkipsSetColumnValidation() {
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("AnyColumn"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar"))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("AnyColumn"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
+    }
+    
+    @Test
+    void assertBindAliasedTableVariableTargetSkipsValidationWhenSetColumnAbsentFromPhysicalSource() {
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("v")));
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(tableVariable);
+        fromJoin.setRight(employee);
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("TableVarOnlyColumn"));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("v"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), new LiteralExpressionSegment(0, 0, 1)))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("TableVarOnlyColumn"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("@MyTableVar"));
+    }
+    
+    @Test
+    void assertBindPhysicalTargetRetainsRelaxedTableVariableSourceExpressions() {
+        SimpleTableSegment employee = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("Employee")));
+        employee.setOwner(new OwnerSegment(0, 0, new IdentifierValue("HumanResources")));
+        employee.setAlias(new AliasSegment(0, 0, new IdentifierValue("e")));
+        SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
+        tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("v")));
+        ColumnSegment onLeft = new ColumnSegment(0, 0, new IdentifierValue("BusinessEntityID"));
+        onLeft.setOwner(new OwnerSegment(0, 0, new IdentifierValue("e")));
+        ColumnSegment onRight = new ColumnSegment(0, 0, new IdentifierValue("EmployeeID"));
+        onRight.setOwner(new OwnerSegment(0, 0, new IdentifierValue("v")));
+        JoinTableSegment fromJoin = new JoinTableSegment();
+        fromJoin.setLeft(employee);
+        fromJoin.setRight(tableVariable);
+        fromJoin.setJoinType("INNER");
+        fromJoin.setCondition(new BinaryOperationExpression(0, 0, onLeft, onRight, "=", "e.BusinessEntityID = v.EmployeeID"));
+        ColumnSegment setColumn = new ColumnSegment(0, 0, new IdentifierValue("VacationHours"));
+        ColumnSegment setValueColumn = new ColumnSegment(0, 0, new IdentifierValue("NewHours"));
+        setValueColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("v")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(sqlServerDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("e"))))
+                .from(fromJoin)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(
+                        new ColumnAssignmentSegment(0, 0, Collections.singletonList(setColumn), setValueColumn))))
+                .targetTableIsFromAlias(true)
+                .build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement,
+                new SQLStatementBinderContext(createSQLServerMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        ColumnSegment actualSetColumn = actual.getAssignment().get().getAssignments().iterator().next().getColumns().iterator().next();
+        ColumnSegment actualValueColumn = (ColumnSegment) actual.getAssignment().get().getAssignments().iterator().next().getValue();
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("VacationHours"));
+        assertThat(actualSetColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("Employee"));
+        assertThat(actualValueColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("NewHours"));
+    }
+    
+    @Test
     void assertBindAliasedTableVariableTargetPreservesOwnershipWhenSetColumnCollidesWithPhysicalSource() {
         SimpleTableSegment tableVariable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("@MyTableVar")));
         tableVariable.setAlias(new AliasSegment(0, 0, new IdentifierValue("target")));
