@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -35,6 +35,6 @@ public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        throw new FirebirdProtocolException("SEEK BLOB is not supported at the moment, blob handle: %d", packet.getBlobHandle());
+        throw new DatabaseProtocolException("SEEK BLOB is not supported at the moment, blob handle: %d", packet.getBlobHandle());
     }
 }

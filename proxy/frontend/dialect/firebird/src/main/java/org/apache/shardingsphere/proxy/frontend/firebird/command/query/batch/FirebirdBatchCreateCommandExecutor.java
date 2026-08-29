@@ -25,7 +25,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
@@ -137,7 +137,7 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
                     // int requestedBlobPolicy = readIntegerValue(reader, tag, valueLength);
                     // blobPolicy = BLOB_STREAM == requestedBlobPolicy ? requestedBlobPolicy : BLOB_STREAM;
                     // TODO Support BLOB policy after implementing the Firebird batch BLOB subprotocol.
-                    throw new FirebirdProtocolException("BLOB policy is not supported in Firebird batch operations");
+                    throw new DatabaseProtocolException("BLOB policy is not supported in Firebird batch operations");
                 } else {
                     reader.skipBytes(valueLength);
                 }
@@ -153,19 +153,19 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         
         private static void ensureClumpletHeaderReadable(final ByteBuf reader) {
             if (reader.readableBytes() < 1 + WIDE_CLUMPLET_LENGTH_SIZE) {
-                throw new FirebirdProtocolException("Invalid batch parameters buffer");
+                throw new DatabaseProtocolException("Invalid batch parameters buffer");
             }
         }
         
         private static void ensureClumpletValueReadable(final ByteBuf reader, final int tag, final int valueLength) {
             if (valueLength < 0 || valueLength > reader.readableBytes()) {
-                throw new FirebirdProtocolException("Invalid batch parameter length for tag %d: %d", tag, valueLength);
+                throw new DatabaseProtocolException("Invalid batch parameter length for tag %d: %d", tag, valueLength);
             }
         }
         
         private static int readIntegerValue(final ByteBuf reader, final int tag, final int valueLength) {
             if (INTEGER_VALUE_LENGTH != valueLength) {
-                throw new FirebirdProtocolException("Invalid batch parameter integer length for tag %d: %d", tag, valueLength);
+                throw new DatabaseProtocolException("Invalid batch parameter integer length for tag %d: %d", tag, valueLength);
             }
             return reader.readIntLE();
         }

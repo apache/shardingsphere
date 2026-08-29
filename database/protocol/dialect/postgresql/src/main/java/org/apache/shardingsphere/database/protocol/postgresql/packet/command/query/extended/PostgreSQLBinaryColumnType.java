@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.binary.BinaryColumnType;
-import org.apache.shardingsphere.database.protocol.postgresql.exception.PostgreSQLProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLBitValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLBoolValueParser;
@@ -268,7 +268,7 @@ public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
      *
      * @param value value
      * @return PostgreSQL column type
-     * @throws PostgreSQLProtocolException PostgreSQL protocol exception
+     * @throws DatabaseProtocolException database protocol exception
      */
     public static PostgreSQLBinaryColumnType valueOf(final int value) {
         for (PostgreSQLBinaryColumnType each : values()) {
@@ -276,6 +276,6 @@ public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
                 return each;
             }
         }
-        throw new PostgreSQLProtocolException("Can not find value `%s` in PostgreSQL column type.", value);
+        throw new DatabaseProtocolException("Can not find value `%s` in PostgreSQL column type.", value);
     }
 }

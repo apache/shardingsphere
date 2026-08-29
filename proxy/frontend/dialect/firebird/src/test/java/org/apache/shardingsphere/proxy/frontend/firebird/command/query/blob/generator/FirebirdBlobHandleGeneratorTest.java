@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator;
 
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,13 +64,13 @@ class FirebirdBlobHandleGeneratorTest {
         for (int i = 1; i < MAX_OBJECT_HANDLE; i++) {
             generator.nextBlobHandle(CONNECTION_ID);
         }
-        assertThrows(FirebirdProtocolException.class, () -> generator.nextBlobHandle(CONNECTION_ID));
+        assertThrows(DatabaseProtocolException.class, () -> generator.nextBlobHandle(CONNECTION_ID));
     }
     
     @Test
     void assertNextBlobHandleWhenConnectionIsNotRegistered() {
         FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID));
+        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID));
     }
     
     @Test
@@ -139,12 +139,12 @@ class FirebirdBlobHandleGeneratorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidBlobHandleProvider")
     void assertReleaseBlobHandleWhenHandleIsOutsideValidRange(final String name, final int blobHandle) {
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
+        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
     }
     
     @Test
     void assertReleaseBlobHandleWhenHandleIsNotActive() {
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, 1));
+        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, 1));
     }
     
     @Test

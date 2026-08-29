@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -81,7 +81,7 @@ class FirebirdCancelBlobCommandExecutorTest {
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(0));
         assertFalse(FirebirdBlobWriteCache.getInstance().getBlobId(CONNECTION_ID, blobHandle).isPresent());
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
+        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
     }
     
     @Test
@@ -90,6 +90,6 @@ class FirebirdCancelBlobCommandExecutorTest {
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         Collection<DatabasePacket> actual = new FirebirdCancelBlobCommandExecutor(packet, connectionSession).execute();
         assertThat(actual.size(), is(1));
-        assertThrows(FirebirdProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
+        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
     }
 }

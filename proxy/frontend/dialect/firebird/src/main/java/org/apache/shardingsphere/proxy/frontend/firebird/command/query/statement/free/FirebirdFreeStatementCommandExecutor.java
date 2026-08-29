@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -54,7 +54,7 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
                 FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), false);
                 break;
             default:
-                throw new FirebirdProtocolException("Unknown DSQL option type %d", packet.getOption());
+                throw new DatabaseProtocolException("Unknown DSQL option type %d", packet.getOption());
         }
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }

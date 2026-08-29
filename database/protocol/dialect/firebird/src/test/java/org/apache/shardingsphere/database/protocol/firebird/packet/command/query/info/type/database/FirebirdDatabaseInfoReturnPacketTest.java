@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database;
 
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdArchType;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -72,7 +72,7 @@ class FirebirdDatabaseInfoReturnPacketTest {
     
     @Test
     void assertParseDatabaseInfoWithUnknownType() {
-        assertThrows(FirebirdProtocolException.class, () -> new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.DB_ID)).write(payload));
+        assertThrows(DatabaseProtocolException.class, () -> new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.DB_ID)).write(payload));
     }
     
     @Test

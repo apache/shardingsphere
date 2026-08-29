@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -83,7 +83,7 @@ class FirebirdBlobInfoReturnPacketTest {
     
     @Test
     void assertWriteCommonInfoWithUnsupportedType() {
-        assertThrows(FirebirdProtocolException.class, () -> new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoPacketType.TRUNCATED), 0).write((PacketPayload) payload));
+        assertThrows(DatabaseProtocolException.class, () -> new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoPacketType.TRUNCATED), 0).write((PacketPayload) payload));
     }
     
     @Test
@@ -93,7 +93,7 @@ class FirebirdBlobInfoReturnPacketTest {
         int actualSwitchValue = switchMap[typeIndex];
         switchMap[typeIndex] = 0;
         try {
-            assertThrows(FirebirdProtocolException.class, () -> new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdBlobInfoPacketType.TYPE), 0).write((PacketPayload) payload));
+            assertThrows(DatabaseProtocolException.class, () -> new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdBlobInfoPacketType.TYPE), 0).write((PacketPayload) payload));
         } finally {
             switchMap[typeIndex] = actualSwitchValue;
         }
