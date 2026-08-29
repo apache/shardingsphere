@@ -1078,7 +1078,7 @@ allowed_actions = []
 forbidden_actions = ["edit_code", "use_nonstandard_test_class_name", "mutate_git", "mutate_remote"]
 required_reasons = ["production_test_class_name_required"]
 policy_binding_profile = "test-write"
-policy_assertions = [{source = "testing-rules", statements = ["Every unit-test class must be named `<ProductionClassName>Test`, using the exact simple name of the production class it directly tests.", "This class-name rule is mandatory and is independent of scenario-focused test-method naming."]}]
+policy_assertions = [{source = "code-of-conduct", statements = ["Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class.", "This class-name rule is mandatory and is independent of scenario-focused test-method naming."]}]
 critical = true
 
 [[cases]]
