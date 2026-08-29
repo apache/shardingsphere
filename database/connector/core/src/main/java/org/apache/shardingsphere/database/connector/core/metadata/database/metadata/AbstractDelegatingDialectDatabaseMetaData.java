@@ -149,5 +149,10 @@ public abstract class AbstractDelegatingDialectDatabaseMetaData implements Diale
     }
     
     @Override
+    public boolean isTableVariableIdentifier(final String value, final QuoteCharacter quoteCharacter) {
+        return delegate.isTableVariableIdentifier(value, quoteCharacter);
+    }
+    
+    @Override
     public abstract String getDatabaseType();
 }

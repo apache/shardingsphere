@@ -90,6 +90,8 @@ class AbstractDelegatingDialectDatabaseMetaDataTest {
         assertThat(metaData.getProtocolVersionOption(), is(delegate.getProtocolVersionOption()));
         when(delegate.getFunctionOption()).thenReturn(mock(DialectFunctionOption.class));
         assertThat(metaData.getFunctionOption(), is(delegate.getFunctionOption()));
+        when(delegate.isTableVariableIdentifier("@MyTableVar", QuoteCharacter.NONE)).thenReturn(true);
+        assertThat(metaData.isTableVariableIdentifier("@MyTableVar", QuoteCharacter.NONE), is(true));
     }
     
     @Test
