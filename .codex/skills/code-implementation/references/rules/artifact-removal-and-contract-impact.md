@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 
-# Contract, Impact, and Removal Rules
+# Artifact Removal and Contract Impact Rules
 
 ## Unused and Removal Conclusions
 
