@@ -47,7 +47,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -141,11 +141,8 @@ class TableMetaDataLoaderTest {
     }
     
     @Test
-    void assertLoadWithNotExistedTable() throws SQLException {
-        Map<String, SchemaMetaData> actual = MetaDataLoader.load(
-                Collections.singleton(new MetaDataLoaderMaterial(Collections.singleton(NOT_EXISTED_TABLE), "foo_ds", dataSource, databaseType, "sharding_db")));
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey("sharding_db"));
-        assertTrue(actual.get("sharding_db").getTables().isEmpty());
+    void assertLoadWithNotExistedTable() {
+        assertThrows(SQLException.class, () -> MetaDataLoader.load(
+                Collections.singleton(new MetaDataLoaderMaterial(Collections.singleton(NOT_EXISTED_TABLE), "foo_ds", dataSource, databaseType, "sharding_db"))));
     }
 }
