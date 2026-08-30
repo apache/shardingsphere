@@ -110,7 +110,7 @@ class OpenGaussIncrementalDumperTest {
         PipelineChannel channel = new MemoryPipelineChannel(10, records -> {
         });
         OpenGaussIncrementalDumper dumper = new OpenGaussIncrementalDumper(createDumperContext(false), position, channel, mock());
-        AtomicReference<Boolean> running = getRunningState(dumper);
+        final AtomicReference<Boolean> running = getRunningState(dumper);
         OpenGaussLogicalReplication logicalReplication = mock(OpenGaussLogicalReplication.class);
         Plugins.getMemberAccessor().set(OpenGaussIncrementalDumper.class.getDeclaredField("logicalReplication"), dumper, logicalReplication);
         IncrementalDumperContext dumperContext = getDumperContext(dumper);

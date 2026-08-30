@@ -74,7 +74,7 @@ class PostgreSQLSetVariableAdminExecutorTest {
     @Test
     void assertExecuteWithInvalidClientEncoding() {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "client_encoding"), "'LATIN1'")));
-        PostgreSQLSetVariableAdminExecutor executor = new PostgreSQLSetVariableAdminExecutor(setStatement);
+        final PostgreSQLSetVariableAdminExecutor executor = new PostgreSQLSetVariableAdminExecutor(setStatement);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
         AttributeMap attributeMap = mock(AttributeMap.class);

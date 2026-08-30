@@ -52,7 +52,7 @@ class SetAutoCommitProxyBackendHandlerTest {
     
     @Test
     void assertExecuteCommitWhenNestedTransactionSupported() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -75,7 +75,7 @@ class SetAutoCommitProxyBackendHandlerTest {
     
     @Test
     void assertExecuteWithoutCommitWhenNestedTransactionUnsupported() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false);
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -97,7 +97,7 @@ class SetAutoCommitProxyBackendHandlerTest {
     
     @Test
     void assertExecuteWhenAutoCommitDisabled() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -119,7 +119,7 @@ class SetAutoCommitProxyBackendHandlerTest {
     
     @Test
     void assertExecuteWhenNotInTransaction() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(false);
         ConnectionSession connectionSession = mock(ConnectionSession.class);

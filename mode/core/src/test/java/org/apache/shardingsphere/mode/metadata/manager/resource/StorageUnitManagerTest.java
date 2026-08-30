@@ -72,7 +72,7 @@ class StorageUnitManagerTest {
     
     @Test
     void assertRegisterSuccess() {
-        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        final MetaDataContexts metaDataContexts = mockMetaDataContexts();
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
         when(resourceSwitchManager.switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean())).thenReturn(switchingResource);
@@ -124,7 +124,7 @@ class StorageUnitManagerTest {
     
     @Test
     void assertAlterSuccess() {
-        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        final MetaDataContexts metaDataContexts = mockMetaDataContexts();
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
         when(resourceSwitchManager.switchByAlterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean())).thenReturn(switchingResource);
@@ -156,7 +156,7 @@ class StorageUnitManagerTest {
     
     @Test
     void assertUnregisterSuccess() {
-        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        final MetaDataContexts metaDataContexts = mockMetaDataContexts();
         ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
         when(resourceSwitchManager.switchByUnregisterStorageUnit(any(ResourceMetaData.class), any(Collection.class))).thenReturn(switchingResource);
