@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -197,18 +196,6 @@ public final class IndexMetaDataUtils {
      */
     public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final Collection<IndexSegment> indexes) {
         return getTableNames(database, database.getDefaultSchemaName(), indexes);
-    }
-    
-    /**
-     * Get table names.
-     *
-     * @param database database
-     * @param protocolType protocol type
-     * @param indexes indexes
-     * @return table names
-     */
-    public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final DatabaseType protocolType, final Collection<IndexSegment> indexes) {
-        return getTableNames(database, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(database.getName()), indexes);
     }
     
     private static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final String schemaName, final Collection<IndexSegment> indexes) {
