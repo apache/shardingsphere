@@ -36,6 +36,9 @@
         <property name="fileExtensions" value="java" />
         <property name="max" value="200" />
     </module>
+    <module name="LineEnding">
+        <property name="lineEnding" value="lf" />
+    </module>
     <module name="NewlineAtEndOfFile">
         <property name="lineSeparator" value="lf" />
     </module>
@@ -61,6 +64,7 @@
         <module name="AnnotationUseStyle" />
         <module name="MissingDeprecated" />
         <module name="MissingOverride" />
+        <module name="MissingOverrideOnRecordAccessor" />
         <module name="PackageAnnotation" />
         <module name="SuppressWarnings">
             <property name="format" value="^(?i:all)$" />
@@ -75,6 +79,10 @@
         </module>
         <module name="LeftCurly" />
         <module name="RightCurly" />
+        <module name="RightCurly">
+            <property name="id" value="RightCurlySwitch" />
+            <property name="tokens" value="LITERAL_SWITCH, LITERAL_CASE, LITERAL_DEFAULT" />
+        </module>
         <module name="NeedBraces" />
         
         <!-- Class Design -->
@@ -147,7 +155,9 @@
         <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
         <module name="UnnecessarySemicolonInEnumeration" />
         <module name="UnnecessarySemicolonInTryWithResources" />
-        <module name="UnusedLocalVariable" />
+        <module name="UnusedLocalVariable">
+            <property name="jdkVersion" value="21" />
+        </module>
         <module name="VariableDeclarationUsageDistance" />
         <module name="RegexpSinglelineJava">
             <property name="format" value="^(?!\s*import\s+java\.util\.Map\.Entry\s*;).*\b(?:java\.util\.)?Map\.Entry\b" />
@@ -239,6 +249,7 @@
             <property name="arrayInitIndent" value="2" />
             <property name="lineWrappingIndentation" value="8" />
         </module>
+        <module name="MultilineCommentLeadingAsteriskPresence" />
         <module name="NoCodeInFile" />
         <module name="OuterTypeFilename" />
         <module name="TodoComment" />
