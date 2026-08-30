@@ -320,6 +320,13 @@ class ShardingTableRuleStatementCheckerTest {
     }
     
     @Test
+    void assertCheckCreationWithSameSchemaDifferentCaseForSameDataSource() {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product_1", Arrays.asList("ds_0.foo_schema.t_order_0", "ds_0.FOO_SCHEMA.t_order_1"), null, null);
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", null, new AlgorithmSegment("CORE.HINT.FIXTURE", new Properties())));
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(tableRuleSegment), false, shardingRuleConfig));
+    }
+    
+    @Test
     void assertCheckCreationWithMultipleSchemasForSameDataSource() {
         assertThrows(InvalidRuleConfigurationException.class,
                 () -> ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(createTableRuleWithMultipleSchemas()), true, shardingRuleConfig));

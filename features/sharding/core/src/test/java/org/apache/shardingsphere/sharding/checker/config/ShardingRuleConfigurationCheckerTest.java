@@ -97,6 +97,8 @@ class ShardingRuleConfigurationCheckerTest {
         return Stream.of(
                 Arguments.of("same schema for same data source", Collections.singleton(
                         new ShardingTableRuleConfiguration("foo_tbl", "ds_0.foo_schema.foo_tbl_0,ds_0.foo_schema.foo_tbl_1"))),
+                Arguments.of("same schema in different cases for same data source", Collections.singleton(
+                        new ShardingTableRuleConfiguration("foo_tbl", "ds_0.foo_schema.foo_tbl_0,ds_0.FOO_SCHEMA.foo_tbl_1"))),
                 Arguments.of("omitted schema and explicit schema for same data source", Collections.singleton(
                         new ShardingTableRuleConfiguration("foo_tbl", "ds_0.foo_tbl_0,ds_0.foo_schema.foo_tbl_1"))),
                 Arguments.of("different schemas for different data sources", Collections.singleton(

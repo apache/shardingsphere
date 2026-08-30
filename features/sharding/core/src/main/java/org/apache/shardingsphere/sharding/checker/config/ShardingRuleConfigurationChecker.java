@@ -165,7 +165,7 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
                 continue;
             }
             String configuredSchemaName = schemaNamesByDataSource.putIfAbsent(dataNode.getDataSourceName(), dataNode.getSchemaName());
-            ShardingSpherePreconditions.checkState(null == configuredSchemaName || configuredSchemaName.equals(dataNode.getSchemaName()),
+            ShardingSpherePreconditions.checkState(null == configuredSchemaName || configuredSchemaName.equalsIgnoreCase(dataNode.getSchemaName()),
                     () -> new InvalidRuleConfigurationException("sharding table", Collections.singleton(tableRuleConfig.getLogicTable()),
                             Collections.singleton(String.format("Multiple schemas are configured for storage unit '%s'.", dataNode.getDataSourceName()))));
         }
