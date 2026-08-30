@@ -86,6 +86,11 @@ class RunTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Unknown reasons"):
             run.validate_cases([self.case])
 
+    def test_semantic_policy_assertions_must_be_boolean(self) -> None:
+        self.case["semantic_policy_assertions"] = "true"
+        with self.assertRaisesRegex(ValueError, "semantic_policy_assertions must be a boolean"):
+            run.validate_cases([self.case])
+
     def test_summary_terms_must_be_list(self) -> None:
         self.case["required_summary_terms"] = "term"
         with self.assertRaisesRegex(ValueError, "Summary terms must be a non-empty list"):
@@ -100,6 +105,14 @@ class RunTest(unittest.TestCase):
         self.case["forbidden_summary_terms"] = [""]
         with self.assertRaisesRegex(ValueError, "Summary terms must be a non-empty list"):
             run.validate_cases([self.case])
+
+    def test_summary_term_groups_must_contain_non_empty_lists_of_non_empty_strings(self) -> None:
+        for groups in ("term", [], [[]], [[""]]):
+            with self.subTest(groups=groups):
+                case = copy.deepcopy(self.case)
+                case["required_summary_term_groups"] = groups
+                with self.assertRaisesRegex(ValueError, "Summary term groups must contain"):
+                    run.validate_cases([case])
 
     def test_required_action_must_be_allowed(self) -> None:
         self.case["required_actions"] = ["inspect_local"]
@@ -254,9 +267,31 @@ class RunTest(unittest.TestCase):
         self.assertEqual(["alpha", "beta"], actual["required_summary_terms"])
         self.assertEqual(["delta", "gamma"], actual["forbidden_summary_terms"])
 
+    def test_normalize_case_contracts_sorts_summary_term_groups(self) -> None:
+        self.case["required_summary_term_groups"] = [["beta", "alpha"], ["gamma"]]
+        self.assertEqual(
+            [["alpha", "beta"], ["gamma"]],
+            run.normalize_case_contracts([self.case])[0]["required_summary_term_groups"]
+        )
+
     def test_normalize_case_contracts_preserves_explicit_profile(self) -> None:
         self.case["profile"] = "code-write"
         self.assertEqual("code-write", run.normalize_case_contracts([self.case])[0]["profile"])
+
+    def test_normalize_case_contracts_preserves_semantic_policy_assertions(self) -> None:
+        self.case["semantic_policy_assertions"] = True
+        self.assertTrue(run.normalize_case_contracts([self.case])[0]["semantic_policy_assertions"])
+
+    def test_select_semantic_policy_assertions_requires_binding(self) -> None:
+        self.assertEqual({}, run.select_semantic_policy_assertions([self.case], []))
+        self.case["semantic_policy_assertions"] = True
+        with self.assertRaisesRegex(ValueError, "require a policy binding"):
+            run.select_semantic_policy_assertions([self.case], [])
+        binding = {
+            "case_id": self.case["id"],
+            "assertions": [{"source_id": "rules", "source_path": ".codex/rules.md", "statements": ["Keep behavior."]}],
+        }
+        self.assertEqual(binding["assertions"], run.select_semantic_policy_assertions([self.case], [binding])[self.case["id"]])
 
     def test_compare_with_baseline_ignores_unselected_contracts(self) -> None:
         baseline_case = run.normalize_case_contracts([self.case])[0]
@@ -282,6 +317,26 @@ class RunTest(unittest.TestCase):
         self.assertIn("routing profile `code-write`", prompt)
         self.assertIn("root decision", prompt)
         self.assertIn("do not supply profile source contents", prompt)
+
+    def test_create_prompt_supplies_bound_policy_only_to_selected_case(self) -> None:
+        statement = "Remove unsupported defensive code before handoff."
+        assertions = {
+            self.case["id"]: [{
+                "source_id": "implementation-rules",
+                "source_path": ".codex/rules.md",
+                "statements": [statement],
+            }],
+            "other_case": [{
+                "source_id": "other-rules",
+                "source_path": ".codex/other.md",
+                "statements": ["This statement must not be supplied."],
+            }],
+        }
+        prompt = run.create_prompt([self.case], "sha256", assertions)
+        self.assertIn("Apply each bound statement only to its named case", prompt)
+        self.assertIn("Source `implementation-rules` at `.codex/rules.md`", prompt)
+        self.assertIn(statement, prompt)
+        self.assertNotIn("This statement must not be supplied.", prompt)
 
     def test_create_prompt_maps_root_only_decision_stages(self) -> None:
         prompt = run.create_prompt([self.case], "sha256")
@@ -309,9 +364,38 @@ class RunTest(unittest.TestCase):
 
     def test_semantic_metadata_disclaims_profile_content_evaluation(self) -> None:
         metadata = run.semantic_evaluation_metadata()
+        self.assertTrue(metadata["executed"])
         self.assertEqual("root", metadata["decision_surface"])
         self.assertFalse(metadata["profile_source_contents_included"])
+        self.assertFalse(metadata["full_profile_source_contents_included"])
+        self.assertFalse(metadata["bound_policy_assertions_configured"])
+        self.assertFalse(metadata["bound_policy_assertions_included"])
         self.assertIn("non-root", metadata["does_not_prove"])
+
+    def test_semantic_metadata_records_bound_policy_assertions(self) -> None:
+        assertions = {
+            self.case["id"]: [{"source_id": "implementation-rules", "source_path": ".codex/rules.md", "statements": ["Keep behavior."]}],
+        }
+        metadata = run.semantic_evaluation_metadata(assertions)
+        self.assertTrue(metadata["executed"])
+        self.assertEqual("root-and-bound-assertions", metadata["decision_surface"])
+        self.assertTrue(metadata["profile_source_contents_included"])
+        self.assertFalse(metadata["full_profile_source_contents_included"])
+        self.assertTrue(metadata["bound_policy_assertions_configured"])
+        self.assertTrue(metadata["bound_policy_assertions_included"])
+        self.assertEqual(["implementation-rules"], metadata["case_policy_sources"][self.case["id"]])
+
+    def test_semantic_metadata_does_not_claim_unexecuted_evidence(self) -> None:
+        assertions = {
+            self.case["id"]: [{"source_id": "implementation-rules", "source_path": ".codex/rules.md", "statements": ["Keep behavior."]}],
+        }
+        metadata = run.semantic_evaluation_metadata(assertions, executed=False)
+        self.assertFalse(metadata["executed"])
+        self.assertIsNone(metadata["evaluated_source"])
+        self.assertIsNone(metadata["decision_surface"])
+        self.assertTrue(metadata["bound_policy_assertions_configured"])
+        self.assertFalse(metadata["bound_policy_assertions_included"])
+        self.assertIsNone(metadata["proves"])
 
     def test_grade_checks_summary_terms_case_insensitively(self) -> None:
         self.case["required_summary_terms"] = ["required term"]
@@ -340,6 +424,32 @@ class RunTest(unittest.TestCase):
         }]}
         failures = run.grade([self.case], actual)[0]["failures"]
         self.assertIn("summary lacks required terms=['required term']", failures)
+
+    def test_grade_accepts_any_term_from_each_required_summary_group(self) -> None:
+        self.case["required_summary_term_groups"] = [["keep", "preserve"], ["snapshot copy"]]
+        actual = {"results": [{
+            "case_id": self.case["id"],
+            "decision": "proceed",
+            "actions": [],
+            "reasons": [],
+            "summary": "Preserve the snapshot copy.",
+            "response_style": "concise",
+        }]}
+        failures = run.grade([self.case], actual)[0]["failures"]
+        self.assertFalse(any("summary lacks a term from groups" in each for each in failures), failures)
+
+    def test_grade_reports_missing_required_summary_term_group(self) -> None:
+        self.case["required_summary_term_groups"] = [["keep", "preserve"]]
+        actual = {"results": [{
+            "case_id": self.case["id"],
+            "decision": "proceed",
+            "actions": [],
+            "reasons": [],
+            "summary": "Remove the snapshot copy.",
+            "response_style": "concise",
+        }]}
+        failures = run.grade([self.case], actual)[0]["failures"]
+        self.assertIn("summary lacks a term from groups=[['keep', 'preserve']]", failures)
 
     def test_grade_rejects_authorization_contract_violations(self) -> None:
         summaries = {
