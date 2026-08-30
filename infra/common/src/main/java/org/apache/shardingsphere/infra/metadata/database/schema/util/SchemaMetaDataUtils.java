@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -78,7 +79,7 @@ public final class SchemaMetaDataUtils {
         int loadTableMetadataBatchSize = material.getProps().getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE);
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageUnits().get(entry.getKey()).getStorageType();
-            String defaultSchemaName = new DatabaseTypeRegistry(storageType).getDefaultSchemaName(material.getDefaultSchemaName());
+            String defaultSchemaName = DefaultSchemaNameResolver.resolveStorage(storageType, getDataSource(material, entry.getKey()), material.getDefaultSchemaName());
             result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize));
         }
         return result;
