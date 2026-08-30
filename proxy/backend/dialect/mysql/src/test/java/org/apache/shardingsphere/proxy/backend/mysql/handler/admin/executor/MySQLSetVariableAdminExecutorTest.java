@@ -76,7 +76,7 @@ class MySQLSetVariableAdminExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         SetStatement setStatement = prepareSetStatement();
-        MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
+        final MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getAttributeMap()).thenReturn(new DefaultAttributeMap());
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");

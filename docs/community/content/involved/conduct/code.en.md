@@ -56,7 +56,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - In `equals` and `==` conditional expressions, constants on the left, variables on the right; in conditional expressions like greater than or less than, variables on the left, constants on the right.
 - Avoid using `this` modifier except for assignment statements where constructor parameters have the same name as global variables.
 - For parameters, use `final` only on method parameters, constructor parameters and `catch` parameters.
-- Local variables should not be set as `final`, including ordinary local declarations, loop variables, enhanced `for` variables and try-with-resources resources.
+- Local variables should not be set as `final`, including ordinary local declarations, loop variables, enhanced `for` variables and try-with-resources resources, unless required by Checkstyle.
 - Lambda parameters should not be marked as `final` unless required by surrounding code style or tooling.
 - Try to design classes as `final` except for abstract classes used for inheritance.
 - Nested loops should be extracted into methods.

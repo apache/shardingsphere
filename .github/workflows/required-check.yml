@@ -42,6 +42,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6.0.1
+      - uses: actions/setup-java@v5.2.0
+        with:
+          distribution: 'temurin'
+          java-version: '21'
       - name: Run CheckStyle
         run: ./mvnw checkstyle:check -Pcheck -T1C
 

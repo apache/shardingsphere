@@ -76,7 +76,7 @@ class MetaDataImportExecutorTest {
     void assertImportClusterConfigurations() {
         MetaDataManagerPersistService metaDataManagerService = mock(MetaDataManagerPersistService.class);
         when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(metaDataManagerService);
-        ExportedMetaData exportedMetaData = createExportedMetaData();
+        final ExportedMetaData exportedMetaData = createExportedMetaData();
         MetaDataImportExecutor executor = new MetaDataImportExecutor(contextManager);
         setField(executor, "databaseConfigImportExecutor", databaseConfigImportExecutor);
         YamlRuleConfigurationSwapperEngine swapperEngine = mock(YamlRuleConfigurationSwapperEngine.class);

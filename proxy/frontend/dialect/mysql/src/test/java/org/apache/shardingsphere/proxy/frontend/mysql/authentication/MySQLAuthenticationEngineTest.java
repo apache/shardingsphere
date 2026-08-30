@@ -323,7 +323,7 @@ class MySQLAuthenticationEngineTest {
         setAuthenticationResult();
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         when(payload.readStringEOFByBytes()).thenReturn(authResponse);
-        ChannelHandlerContext context = mockDomainSocketChannelHandlerContext();
+        final ChannelHandlerContext context = mockDomainSocketChannelHandlerContext();
         AuthorityRule rule = mock(AuthorityRule.class);
         ShardingSphereUser user = new ShardingSphereUser("root", "", "local_host");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));

@@ -183,7 +183,6 @@
         </module>
         <module name="JavadocMissingLeadingAsterisk" />
         <module name="JavadocMissingWhitespaceAfterAsterisk" />
-        <module name="JavadocStyle" />
         <module name="JavadocTagContinuationIndentation">
             <property name="violateExecutionOnNonTightHtml" value="true" />
         </module>

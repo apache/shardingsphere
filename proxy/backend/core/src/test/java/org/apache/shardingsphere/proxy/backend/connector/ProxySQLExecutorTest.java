@@ -417,7 +417,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWithMetaDataRefreshInXATransaction() {
-        DatabaseType databaseType = mock(DatabaseType.class);
+        final DatabaseType databaseType = mock(DatabaseType.class);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(
                 new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, true, false, false, Collections.emptyList()));

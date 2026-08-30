@@ -47,10 +47,10 @@ class DatabaseRuleDefinitionExecuteEngineTest {
     @MethodSource("assertExecuteUpdateWithRefreshRequiredArguments")
     void assertExecuteUpdateWithRefreshRequired(final String name, final boolean dropExecutor, final boolean currentRuleExists,
                                                 final boolean hasAnyOneToBeDropped, final boolean expectedNullCurrentRuleConfig) {
-        ContextManager contextManager = mock(ContextManager.class);
+        final ContextManager contextManager = mock(ContextManager.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
-        DatabaseRuleOperator operator = mock(DatabaseRuleOperator.class);
+        final DatabaseRuleOperator operator = mock(DatabaseRuleOperator.class);
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         DatabaseRuleDropExecutor dropExecutorInstance = dropExecutor ? mock(DatabaseRuleDropExecutor.class) : null;
         DatabaseRuleDefinitionExecutor executor = null == dropExecutorInstance ? mock(DatabaseRuleDefinitionExecutor.class) : dropExecutorInstance;
@@ -77,8 +77,8 @@ class DatabaseRuleDefinitionExecuteEngineTest {
     
     @Test
     void assertExecuteUpdateWithoutCurrentRuleForDropExecutor() {
-        DatabaseRuleDefinitionStatement sqlStatement = mock(DatabaseRuleDefinitionStatement.class);
-        ContextManager contextManager = mock(ContextManager.class);
+        final DatabaseRuleDefinitionStatement sqlStatement = mock(DatabaseRuleDefinitionStatement.class);
+        final ContextManager contextManager = mock(ContextManager.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         DatabaseRuleDropExecutor executor = mock(DatabaseRuleDropExecutor.class);
@@ -95,8 +95,8 @@ class DatabaseRuleDefinitionExecuteEngineTest {
     
     @Test
     void assertExecuteUpdateWithoutDroppedDataForDropExecutor() {
-        DatabaseRuleDefinitionStatement sqlStatement = mock(DatabaseRuleDefinitionStatement.class);
-        ContextManager contextManager = mock(ContextManager.class);
+        final DatabaseRuleDefinitionStatement sqlStatement = mock(DatabaseRuleDefinitionStatement.class);
+        final ContextManager contextManager = mock(ContextManager.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         ShardingSphereRule rule = mock(ShardingSphereRule.class);

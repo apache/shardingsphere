@@ -47,7 +47,7 @@ class ReleaseSavepointProxyBackendHandlerTest {
     
     @Test
     void assertReleaseSavepoint() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData("public");
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData("public");
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -68,7 +68,7 @@ class ReleaseSavepointProxyBackendHandlerTest {
     
     @Test
     void assertReleaseWithDefaultSchemaMissing() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(null);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(null);
         TransactionStatus transactionStatus = new TransactionStatus();
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
@@ -88,7 +88,7 @@ class ReleaseSavepointProxyBackendHandlerTest {
     
     @Test
     void assertReleaseWithInvalidStatus() {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData("public");
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData("public");
         TransactionStatus transactionStatus = new TransactionStatus();
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
