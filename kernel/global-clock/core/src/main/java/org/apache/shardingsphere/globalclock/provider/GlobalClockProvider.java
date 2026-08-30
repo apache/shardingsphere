@@ -39,4 +39,19 @@ public interface GlobalClockProvider extends TypedSPI {
      * @return next timestamp
      */
     long getNextTimestamp();
+    
+    /**
+     * Try to acquire a distributed lock for the commit timestamp assignment.
+     *
+     * @return true if the lock was acquired, false if it was already held by another transaction
+     */
+    default boolean tryLock() {
+        return true;
+    }
+    
+    /**
+     * Release the distributed lock acquired by {@link #tryLock()}.
+     */
+    default void unlock() {
+    }
 }

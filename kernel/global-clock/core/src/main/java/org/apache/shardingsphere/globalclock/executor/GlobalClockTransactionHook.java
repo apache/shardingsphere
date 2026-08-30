@@ -83,6 +83,9 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         Preconditions.checkArgument(globalClockTransactionExecutor.isPresent());
         Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
         Preconditions.checkState(globalClockProvider.isPresent());
+        if (!globalClockProvider.get().tryLock()) {
+            throw new SQLException("Failed to acquire distributed lock for TSO commit");
+        }
         globalClockTransactionExecutor.get().sendCommitTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
     }
     
@@ -94,6 +97,7 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
         Preconditions.checkState(globalClockProvider.isPresent());
         globalClockProvider.get().getNextTimestamp();
+        globalClockProvider.get().unlock();
     }
     
     @Override

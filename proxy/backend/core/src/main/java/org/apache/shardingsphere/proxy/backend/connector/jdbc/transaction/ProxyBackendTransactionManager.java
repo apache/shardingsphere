@@ -110,18 +110,11 @@ public final class ProxyBackendTransactionManager {
             return;
         }
         DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabaseType();
-        boolean isNeedLock = isNeedLockWhenCommit();
-        if (isNeedLock) {
-            // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
-            ProxyContext.getInstance().getContextManager().getExclusiveOperatorEngine().operate(new TransactionCommitOperation(), 200L, () -> commit(databaseType));
-        } else {
-            commit(databaseType);
-        }
+        commit(databaseType);
     }
     
     private void commit(final DatabaseType databaseType) throws SQLException {
         try {
-            // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
                 entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), transactionContext);
             }
@@ -130,18 +123,12 @@ public final class ProxyBackendTransactionManager {
             } else {
                 distributedTransactionManager.commit(transactionContext.isExceptionOccur());
             }
+            for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
+                entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), transactionContext);
+            }
         } finally {
             clear();
         }
-    }
-    
-    private boolean isNeedLockWhenCommit() {
-        for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
-            if (entry.getValue().isNeedLockWhenCommit(entry.getKey())) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private void clear() {
