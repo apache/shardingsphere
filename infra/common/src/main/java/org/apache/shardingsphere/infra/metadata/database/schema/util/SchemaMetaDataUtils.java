@@ -22,6 +22,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -79,10 +81,17 @@ public final class SchemaMetaDataUtils {
         int loadTableMetadataBatchSize = material.getProps().getValue(ConfigurationPropertyKey.LOAD_TABLE_METADATA_BATCH_SIZE);
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageUnits().get(entry.getKey()).getStorageType();
-            String defaultSchemaName = DefaultSchemaNameResolver.resolveStorage(storageType, getDataSource(material, entry.getKey()), material.getDefaultSchemaName());
+            String defaultSchemaName = getDefaultSchemaName(material, entry.getKey(), storageType);
             result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize));
         }
         return result;
+    }
+    
+    private static String getDefaultSchemaName(final GenericSchemaBuilderMaterial material, final String dataSourceName, final DatabaseType storageType) {
+        DialectSchemaOption schemaOption = new DatabaseTypeRegistry(storageType).getDialectDatabaseMetaData().getSchemaOption();
+        return schemaOption.isSchemaAvailable() || DialectSchemaSemantics.DATABASE_AS_SCHEMA == schemaOption.getSchemaSemantics()
+                ? DefaultSchemaNameResolver.resolveStorage(storageType, getDataSource(material, dataSourceName), material.getDefaultSchemaName())
+                : material.getDefaultSchemaName();
     }
     
     private static Collection<MetaDataLoaderMaterial> buildMaterials(final GenericSchemaBuilderMaterial material, final String dataSourceName, final Collection<String> actualTableNames,
