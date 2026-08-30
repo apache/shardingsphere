@@ -1216,7 +1216,7 @@ allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_
 forbidden_actions = ["edit_non_code", "mutate_git", "mutate_remote", "propose_commit_message", "add_abstraction"]
 required_reasons = ["codex_design_style_required", "existing_owner_sufficient", "safe_in_scope_review_finding", "pre_handoff_review_required"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "implementation-rules", statements = ["Preserve existing architecture by default.", "Prefer direct reuse, then composition or delegation, then an existing extension point.", "Forwarding, renaming, multiple callers, readability alone, direct test value, symmetry, type distinction, shorter call sites, test convenience, and anticipated reuse are insufficient."]}]
+policy_assertions = [{source = "implementation-rules", statements = ["Among designs that satisfy these prerequisites, first preserve the maintained architecture already present in the repository, including its behavior owners, module boundaries, and design patterns, unless the user explicitly requires an authorized architecture change.", "Prefer direct reuse, then composition or delegation, then an existing extension point.", "Forwarding, renaming, multiple callers, readability alone, direct test value, symmetry, type distinction, shorter call sites, test convenience, and anticipated reuse are insufficient."]}]
 critical = true
 
 [[cases]]
