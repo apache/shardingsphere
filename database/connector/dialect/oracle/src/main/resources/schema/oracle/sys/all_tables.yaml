@@ -1,0 +1,327 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: all_tables
+columns:
+  OWNER:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OWNER
+    primaryKey: false
+    visible: true
+  TABLE_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_NAME
+    primaryKey: false
+    visible: true
+  TABLESPACE_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLESPACE_NAME
+    primaryKey: false
+    visible: true
+  CLUSTER_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CLUSTER_NAME
+    primaryKey: false
+    visible: true
+  IOT_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IOT_NAME
+    primaryKey: false
+    visible: true
+  STATUS:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: STATUS
+    primaryKey: false
+    visible: true
+  PCT_FREE:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: PCT_FREE
+    primaryKey: false
+    visible: true
+  PCT_USED:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: PCT_USED
+    primaryKey: false
+    visible: true
+  INI_TRANS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: INI_TRANS
+    primaryKey: false
+    visible: true
+  MAX_TRANS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: MAX_TRANS
+    primaryKey: false
+    visible: true
+  INITIAL_EXTENT:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: INITIAL_EXTENT
+    primaryKey: false
+    visible: true
+  NEXT_EXTENT:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: NEXT_EXTENT
+    primaryKey: false
+    visible: true
+  MIN_EXTENTS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: MIN_EXTENTS
+    primaryKey: false
+    visible: true
+  MAX_EXTENTS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: MAX_EXTENTS
+    primaryKey: false
+    visible: true
+  LOGGING:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: LOGGING
+    primaryKey: false
+    visible: true
+  BACKED_UP:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: BACKED_UP
+    primaryKey: false
+    visible: true
+  NUM_ROWS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: NUM_ROWS
+    primaryKey: false
+    visible: true
+  BLOCKS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: BLOCKS
+    primaryKey: false
+    visible: true
+  EMPTY_BLOCKS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: EMPTY_BLOCKS
+    primaryKey: false
+    visible: true
+  AVG_SPACE:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: AVG_SPACE
+    primaryKey: false
+    visible: true
+  CHAIN_CNT:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: CHAIN_CNT
+    primaryKey: false
+    visible: true
+  AVG_ROW_LEN:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: AVG_ROW_LEN
+    primaryKey: false
+    visible: true
+  DEGREE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DEGREE
+    primaryKey: false
+    visible: true
+  INSTANCES:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INSTANCES
+    primaryKey: false
+    visible: true
+  CACHE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CACHE
+    primaryKey: false
+    visible: true
+  TABLE_LOCK:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_LOCK
+    primaryKey: false
+    visible: true
+  SAMPLE_SIZE:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: SAMPLE_SIZE
+    primaryKey: false
+    visible: true
+  LAST_ANALYZED:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_ANALYZED
+    primaryKey: false
+    visible: true
+  PARTITIONED:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PARTITIONED
+    primaryKey: false
+    visible: true
+  IOT_TYPE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IOT_TYPE
+    primaryKey: false
+    visible: true
+  TEMPORARY:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TEMPORARY
+    primaryKey: false
+    visible: true
+  SECONDARY:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SECONDARY
+    primaryKey: false
+    visible: true
+  NESTED:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: NESTED
+    primaryKey: false
+    visible: true
+  BUFFER_POOL:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: BUFFER_POOL
+    primaryKey: false
+    visible: true
+  ROW_MOVEMENT:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ROW_MOVEMENT
+    primaryKey: false
+    visible: true
+  GLOBAL_STATS:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: GLOBAL_STATS
+    primaryKey: false
+    visible: true
+  USER_STATS:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: USER_STATS
+    primaryKey: false
+    visible: true
+  DURATION:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DURATION
+    primaryKey: false
+    visible: true
+  SKIP_CORRUPT:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SKIP_CORRUPT
+    primaryKey: false
+    visible: true
+  MONITORING:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MONITORING
+    primaryKey: false
+    visible: true
+  CLUSTER_OWNER:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CLUSTER_OWNER
+    primaryKey: false
+    visible: true
+  DEPENDENCIES:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DEPENDENCIES
+    primaryKey: false
+    visible: true
+  COMPRESSION:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COMPRESSION
+    primaryKey: false
+    visible: true
+  DROPPED:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DROPPED
+    primaryKey: false
+    visible: true

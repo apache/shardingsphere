@@ -1881,4 +1881,67 @@
             </simple-table>
         </from>
     </select>
+    <select sql-case-id="select_oracle_all_sequences_unqualified">
+        <projections start-index="7" stop-index="19">
+            <column-projection name="SEQUENCE_NAME" start-index="7" stop-index="19">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="SYS" />
+                    <original-table name="ALL_SEQUENCES" />
+                    <original-column name="SEQUENCE_NAME" start-delimiter="&quot;" end-delimiter="&quot;" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-projection>
+        </projections>
+        <from start-index="21" stop-index="38">
+            <simple-table name="ALL_SEQUENCES" start-index="26" stop-index="38">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="SYS" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
+    <select sql-case-id="select_oracle_all_synonyms_unqualified">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="SYNONYM_NAME" start-index="7" stop-index="18">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="SYS" />
+                    <original-table name="ALL_SYNONYMS" />
+                    <original-column name="SYNONYM_NAME" start-delimiter="&quot;" end-delimiter="&quot;" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-projection>
+        </projections>
+        <from start-index="20" stop-index="36">
+            <simple-table name="ALL_SYNONYMS" start-index="25" stop-index="36">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="SYS" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
+    <select sql-case-id="select_oracle_all_tables_unqualified">
+        <projections start-index="7" stop-index="11">
+            <column-projection name="OWNER" start-index="7" stop-index="11">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="SYS" />
+                    <original-table name="ALL_TABLES" />
+                    <original-column name="OWNER" start-delimiter="&quot;" end-delimiter="&quot;" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-projection>
+        </projections>
+        <from start-index="13" stop-index="27">
+            <simple-table name="ALL_TABLES" start-index="18" stop-index="27">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="SYS" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
