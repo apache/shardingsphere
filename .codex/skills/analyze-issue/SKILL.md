@@ -53,6 +53,19 @@ Default mode is analysis-only:
 - Do not provide patch-ready implementation content unless the user explicitly asks for implementation.
 - If implementation is requested, finish issue analysis first and explicitly state that execution has switched from analysis mode to implementation mode.
 
+## Correction Contract
+
+When an analysis conclusion, issue classification, or recommended label is challenged
+or disproved by stronger evidence:
+- Do not stop at patching the current analysis text.
+- First inspect whether the error came from the triage gate, evidence package,
+  conflict-resolution rule, output template, lint expectations, or missing
+  regression examples for similar issue patterns.
+- Fix the highest-leverage analysis rule or checklist gap first, then update the
+  analysis output as a consequence of that fix.
+- Only do a one-off output correction without rule or checklist repair when the
+  user explicitly asks for that limited action.
+
 ## Source Policy
 
 Use only the following sources:
