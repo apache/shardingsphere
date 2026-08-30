@@ -349,7 +349,7 @@ class MySQLBinlogClientTest {
     
     @Test
     void assertMySQLCommandResponseHandlerBranches() throws Exception {
-        AtomicReference<ChannelInitializer<SocketChannel>> initializer = new AtomicReference<>();
+        final AtomicReference<ChannelInitializer<SocketChannel>> initializer = new AtomicReference<>();
         SocketChannel socketChannel = mock(SocketChannel.class, RETURNS_DEEP_STUBS);
         when(socketChannel.pipeline()).thenReturn(pipeline);
         when(channelFuture.channel()).thenReturn(channel);

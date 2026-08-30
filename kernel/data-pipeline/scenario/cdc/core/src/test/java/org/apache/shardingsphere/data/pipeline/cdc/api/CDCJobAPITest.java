@@ -429,7 +429,7 @@ class CDCJobAPITest {
     
     @Test
     void assertStartEnableDisableAndType() throws ReflectiveOperationException {
-        PipelineJobConfigurationManager jobConfigManager = mockPersistedJobConfiguration(createJobConfiguration(1));
+        final PipelineJobConfigurationManager jobConfigManager = mockPersistedJobConfiguration(createJobConfiguration(1));
         JobConfigurationPOJO jobConfigPOJO = createJobConfigurationPOJO();
         jobConfigPOJO.setShardingTotalCount(1);
         jobConfigPOJO.setDisabled(true);

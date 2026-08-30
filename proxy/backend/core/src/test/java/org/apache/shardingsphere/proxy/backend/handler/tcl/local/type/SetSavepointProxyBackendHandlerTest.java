@@ -47,7 +47,7 @@ class SetSavepointProxyBackendHandlerTest {
     
     @Test
     void assertExecuteWithTransaction() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData("public");
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData("public");
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -68,7 +68,7 @@ class SetSavepointProxyBackendHandlerTest {
     
     @Test
     void assertExecuteWithoutTransactionButNoDefaultSchema() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(null);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(null);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
@@ -87,7 +87,7 @@ class SetSavepointProxyBackendHandlerTest {
     
     @Test
     void assertExecuteWithInvalidStatus() {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData("public");
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData("public");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
         when(connectionSession.getProtocolType()).thenReturn(databaseType);

@@ -138,7 +138,7 @@ class PostgreSQLPipelineSQLBuilderTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseMajorVersion()).thenReturn(10);
         when(connection.getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        DataSource dataSource = new MockedDataSource(connection);
+        final DataSource dataSource = new MockedDataSource(connection);
         Collection<Map<String, Object>> columns = new ArrayList<>(3);
         Map<String, Object> arrayColumn = new HashMap<>(2, 1F);
         arrayColumn.put("cltype", "int4[]");

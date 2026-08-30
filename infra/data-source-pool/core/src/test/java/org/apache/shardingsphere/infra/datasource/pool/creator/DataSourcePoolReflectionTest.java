@@ -133,8 +133,6 @@ class DataSourcePoolReflectionTest {
     void assertAddDefaultDataSourcePoolPropertiesWithDefaultQueryProperties(final String name, final Properties jdbcUrlProperties,
                                                                             final Properties queryProperties, final Properties defaultQueryProps, final Properties expectedJdbcUrlProps) {
         DataSourcePoolReflectionFixture dataSource = new DataSourcePoolReflectionFixture();
-        DataSourcePoolMetaData metaData = mockDataSourcePoolMetaData();
-        DatabaseType databaseType = mock(DatabaseType.class);
         ConnectionProperties connectionProperties = mock(ConnectionProperties.class);
         dataSource.setUrl("jdbc:mock://127.0.0.1/foo_ds");
         dataSource.setJdbcUrlProperties(jdbcUrlProperties);
@@ -142,6 +140,8 @@ class DataSourcePoolReflectionTest {
         ConnectionPropertiesParser connectionPropertiesParser = mock(ConnectionPropertiesParser.class);
         when(connectionPropertiesParser.parse("jdbc:mock://127.0.0.1/foo_ds", null, null)).thenReturn(connectionProperties);
         DialectDefaultQueryPropertiesProvider defaultQueryPropsProvider = mock(DialectDefaultQueryPropertiesProvider.class);
+        DataSourcePoolMetaData metaData = mockDataSourcePoolMetaData();
+        DatabaseType databaseType = mock(DatabaseType.class);
         try (
                 MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class);

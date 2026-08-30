@@ -52,7 +52,7 @@ class CommitProxyBackendHandlerTest {
     
     @Test
     void assertReturnRollbackStatementWhenCommitFailed() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptyList);
@@ -73,7 +73,7 @@ class CommitProxyBackendHandlerTest {
     
     @Test
     void assertReturnOriginalStatementWhenNoException() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptyList);

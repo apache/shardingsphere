@@ -47,8 +47,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext
-                && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getOnDuplicateKeyColumns().isPresent();
+        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).getSqlStatement().getOnDuplicateKeyColumns().isPresent();
     }
     
     @Override

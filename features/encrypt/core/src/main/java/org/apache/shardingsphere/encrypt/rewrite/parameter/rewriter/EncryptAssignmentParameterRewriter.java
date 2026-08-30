@@ -59,7 +59,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
             return true;
         }
         if (sqlStatementContext instanceof InsertStatementContext) {
-            return (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent();
+            return ((InsertStatementContext) sqlStatementContext).getSqlStatement().getSetAssignment().isPresent();
         }
         return false;
     }

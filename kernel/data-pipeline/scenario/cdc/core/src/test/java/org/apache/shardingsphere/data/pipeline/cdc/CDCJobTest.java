@@ -187,9 +187,9 @@ class CDCJobTest {
     void assertExecuteInventorySuccessAndSkipIncrementalWhenRunning() {
         CDCJobConfiguration jobConfig = mockJobConfiguration(
                 Collections.singletonList(new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("logic_tbl", Collections.singletonList(new DataNode("ds_0.tbl_0")))))));
-        ShardingContext shardingContext = mockShardingContext("jobParam");
+        final ShardingContext shardingContext = mockShardingContext("jobParam");
         prepareJobTypeAndContext(jobConfig);
-        PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(new PipelineReadConfiguration(1, 1, 1, null),
+        final PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(new PipelineReadConfiguration(1, 1, 1, null),
                 new PipelineWriteConfiguration(1, 1, new AlgorithmConfiguration("RATE_LIMIT", new Properties())), new AlgorithmConfiguration("MEMORY", new Properties()));
         when(PipelineAPIFactory.getPipelineGovernanceFacade(CONTEXT_KEY)).thenReturn(mock(PipelineGovernanceFacade.class, RETURNS_DEEP_STUBS));
         when(PipelineDistributedBarrier.getInstance(CONTEXT_KEY)).thenReturn(mock(PipelineDistributedBarrier.class));

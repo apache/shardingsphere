@@ -137,11 +137,11 @@ public abstract class SQLRewriterIT {
     private Collection<SQLRewriteUnit> createSQLRewriteUnits(final SQLRewriteResult sqlRewriteResult) {
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singleton(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
-                : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
+                : ((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits().values();
     }
     
-    private RewriteScenarioContext getCachedRewriteScenarioContext(final SQLRewriteEngineTestParameters testParams, final DatabaseType databaseType,
-                                                                   final SQLStatement sqlStatement) throws IOException, SQLException {
+    private RewriteScenarioContext getCachedRewriteScenarioContext(final SQLRewriteEngineTestParameters testParams,
+                                                                   final DatabaseType databaseType, final SQLStatement sqlStatement) throws IOException, SQLException {
         String cacheKey = getRewriteScenarioCacheKey(testParams, sqlStatement);
         RewriteScenarioContext result = REWRITE_SCENARIO_CONTEXT_CACHE.get(cacheKey);
         if (null != result) {

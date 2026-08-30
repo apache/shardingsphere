@@ -49,7 +49,7 @@ class PipelineJobManagerTest {
     @Test
     @SuppressWarnings({"rawtypes", "unchecked"})
     void assertGetJobInfosSkipsMissingJobConfiguration() {
-        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY);
+        final PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY);
         JobStatisticsAPI jobStatisticsAPI = mock(JobStatisticsAPI.class);
         when(jobStatisticsAPI.getAllJobsBriefInfo()).thenReturn(Arrays.asList(createJobBriefInfo("j0101p0000_active"), createJobBriefInfo("j0101p0000_missing")));
         PipelineJobType jobType = mock(PipelineJobType.class);
