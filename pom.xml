@@ -925,6 +925,17 @@
                 
                 <!-- Report plugins -->
                 <plugin>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>${checkstyle.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
                     <configuration>
@@ -1353,7 +1364,6 @@
                         </plugin>
                         <plugin>
                             <artifactId>maven-checkstyle-plugin</artifactId>
-                            <version>${maven-checkstyle-plugin.version}</version>
                             <configuration>
                                 <consoleOutput>true</consoleOutput>
                                 <failOnViolation>true</failOnViolation>
@@ -1364,13 +1374,6 @@
                                 <includeTestSourceDirectory>true</includeTestSourceDirectory>
                                 <excludes>**/autogen/**/*</excludes>
                             </configuration>
-                            <dependencies>
-                                <dependency>
-                                    <groupId>com.puppycrawl.tools</groupId>
-                                    <artifactId>checkstyle</artifactId>
-                                    <version>${checkstyle.version}</version>
-                                </dependency>
-                            </dependencies>
                         </plugin>
                         <plugin>
                             <artifactId>maven-pmd-plugin</artifactId>
