@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -318,6 +319,18 @@ class ShardingTableRuleStatementCheckerTest {
         assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(tableRuleSegment), false, shardingRuleConfig));
     }
     
+    @Test
+    void assertCheckCreationWithMultipleSchemasForSameDataSource() {
+        assertThrows(InvalidRuleConfigurationException.class,
+                () -> ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(createTableRuleWithMultipleSchemas()), true, shardingRuleConfig));
+    }
+    
+    @Test
+    void assertCheckAlterationWithMultipleSchemasForSameDataSource() {
+        assertThrows(InvalidRuleConfigurationException.class,
+                () -> ShardingTableRuleStatementChecker.checkAlteration(database, Collections.singleton(createTableRuleWithMultipleSchemas()), shardingRuleConfig));
+    }
+    
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order${0..1}");
@@ -373,6 +386,14 @@ class ShardingTableRuleStatementCheckerTest {
         TableRuleSegment result = new TableRuleSegment("t_product_1", Collections.singleton("ds_0.t_order${0..1}"), keyGenerator, null);
         result.setDatabaseStrategySegment(new ShardingStrategySegment("none", null, null));
         result.setTableStrategySegment(new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("inline", props)));
+        return result;
+    }
+    
+    private TableRuleSegment createTableRuleWithMultipleSchemas() {
+        Properties props = new Properties();
+        TableRuleSegment result = new TableRuleSegment("t_order", Arrays.asList("ds_0.foo_schema.t_order_0", "ds_0.bar_schema.t_order_1"), null, null);
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", null, new AlgorithmSegment("CORE.HINT.FIXTURE", props)));
+        result.setTableStrategySegment(new ShardingStrategySegment("hint", null, new AlgorithmSegment("CORE.HINT.FIXTURE", props)));
         return result;
     }
 }
