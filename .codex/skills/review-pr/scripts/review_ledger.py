@@ -273,7 +273,7 @@ def cmd_add_pass(args: argparse.Namespace) -> int:
     return 0
 
 
-def validate_ledger(ledger: dict[str, Any]) -> list[str]:
+def validate_ledger(ledger: dict[str, Any], incomplete_result: bool = False) -> list[str]:
     validate_schema(ledger)
     result: list[str] = []
     github_files = ledger["scope"].get("github_files", {})
@@ -289,8 +289,20 @@ def validate_ledger(ledger: dict[str, Any]) -> list[str]:
     invalid_files = [each["path"] for each in ledger["files"] if each["status"] not in FINAL_FILE_STATUSES]
     if invalid_files:
         result.append(f"Invalid final file statuses remain: {len(invalid_files)}")
-    blocked_files = [each["path"] for each in ledger["files"] if "blocked" == each["status"]]
-    if blocked_files:
+    incomplete_gaps = [each for each in ledger["findings"] if "review-incomplete-gap" == each["status"]]
+    if incomplete_result and not incomplete_gaps:
+        result.append("Review Incomplete validation requires at least one incomplete gap")
+    blocked_files = [each for each in ledger["files"] if "blocked" == each["status"]]
+    if incomplete_result:
+        incomplete_gap_ids = {each["id"] for each in incomplete_gaps}
+        unexplained_blocked_files = [each["path"] for each in blocked_files if not has_text(each.get("reason"))]
+        if unexplained_blocked_files:
+            result.append(f"Blocked files missing incomplete reasons: {len(unexplained_blocked_files)}")
+        unlinked_blocked_files = [each["path"] for each in blocked_files
+                                  if incomplete_gap_ids.isdisjoint(each["findings"])]
+        if unlinked_blocked_files:
+            result.append(f"Blocked files not linked to an incomplete gap: {len(unlinked_blocked_files)}")
+    elif blocked_files:
         result.append(f"Blocked files require more evidence or an incomplete result: {len(blocked_files)}")
     missing_clusters = [each["path"] for each in ledger["files"]
                         if each["status"] in SUBSTANTIVE_FILE_STATUSES
@@ -348,8 +360,25 @@ def validate_ledger(ledger: dict[str, Any]) -> list[str]:
                 result.append(f"{each['id']} confirmed finding is missing scope files")
         if "review-incomplete-gap" == each["status"]:
             if not has_text(each["reason"]):
-                result.append(f"{each['id']} incomplete gap is missing a reason")
-            result.append(f"{each['id']} requires a Review Incomplete result")
+                missing_fact = "the unavailable fact" if incomplete_result else "a reason"
+                result.append(f"{each['id']} incomplete gap is missing {missing_fact}")
+            if incomplete_result:
+                if not has_text(each["origin"]):
+                    result.append(f"{each['id']} incomplete gap is missing the fact source")
+                if not has_text_entries(each["evidence"]):
+                    result.append(f"{each['id']} incomplete gap is missing unavailability proof")
+                if not has_text_entries(each["full_path"]):
+                    result.append(f"{each['id']} incomplete gap is missing the affected full path")
+                if not has_text_entries(each["counter_evidence"]):
+                    result.append(f"{each['id']} incomplete gap is missing alternative evidence checks")
+                if not has_text(each["necessity"]):
+                    result.append(f"{each['id']} incomplete gap is missing outcome impact")
+                if not has_text(each["scope_proof"]):
+                    result.append(f"{each['id']} incomplete gap is missing scope proof")
+                if not has_text_entries(each["files"]):
+                    result.append(f"{each['id']} incomplete gap is missing affected scope files")
+            else:
+                result.append(f"{each['id']} requires a Review Incomplete result")
     pass_foci = {each.get("focus") for each in ledger["passes"]}
     missing_passes = [each for each in PASS_FOCUSES if each not in pass_foci]
     if missing_passes:
@@ -368,6 +397,17 @@ def validate_ledger(ledger: dict[str, Any]) -> list[str]:
 def cmd_validate(args: argparse.Namespace) -> int:
     ledger = read_ledger(args.ledger)
     errors = validate_ledger(ledger)
+    if errors:
+        for each in errors:
+            print(f"ERROR: {each}")
+        return 1
+    print("OK")
+    return 0
+
+
+def cmd_validate_incomplete(args: argparse.Namespace) -> int:
+    ledger = read_ledger(args.ledger)
+    errors = validate_ledger(ledger, incomplete_result=True)
     if errors:
         for each in errors:
             print(f"ERROR: {each}")
@@ -438,6 +478,9 @@ def build_parser() -> argparse.ArgumentParser:
     validate = subparsers.add_parser("validate", help="Validate mechanical coverage completion")
     validate.add_argument("--ledger", required=True, help="Ledger file or directory")
     validate.set_defaults(func=cmd_validate)
+    validate_incomplete = subparsers.add_parser("validate-incomplete", help="Validate a proven Review Incomplete result")
+    validate_incomplete.add_argument("--ledger", required=True, help="Ledger file or directory")
+    validate_incomplete.set_defaults(func=cmd_validate_incomplete)
     status = subparsers.add_parser("status", help="Print compact coverage status")
     status.add_argument("--ledger", required=True, help="Ledger file or directory")
     status.set_defaults(func=cmd_status)

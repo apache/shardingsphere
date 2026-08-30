@@ -95,6 +95,76 @@ class ReviewLedgerTest(unittest.TestCase):
         errors = ledger.validate_ledger(actual_ledger)
         self.assertIn("Confirmed findings share fix boundaries: 1", errors)
 
+    def test_incomplete_validation_requires_gap(self):
+        errors = ledger.validate_ledger(self.create_valid_ledger(), incomplete_result=True)
+        self.assertIn("Review Incomplete validation requires at least one incomplete gap", errors)
+
+    def test_complete_incomplete_ledger_is_valid(self):
+        actual_ledger = self.create_valid_ledger()
+        actual_ledger["findings"] = [self.create_incomplete_gap()]
+        actual_ledger["files"][0].update({
+            "status": "blocked",
+            "findings": ["G1"],
+            "reason": "Decisive version evidence is unavailable.",
+        })
+        self.assertEqual([], ledger.validate_ledger(actual_ledger, incomplete_result=True))
+
+    def test_incomplete_gap_requires_complete_proof(self):
+        actual_ledger = self.create_valid_ledger()
+        actual_ledger["findings"] = [{
+            "id": "G1",
+            "status": "review-incomplete-gap",
+            "origin": " ",
+            "fix_boundary": "",
+            "evidence": [""],
+            "full_path": [" "],
+            "counter_evidence": [],
+            "necessity": " ",
+            "scope_proof": " ",
+            "files": [""],
+            "reason": " ",
+        }]
+        errors = ledger.validate_ledger(actual_ledger, incomplete_result=True)
+        expected_errors = [
+            "G1 incomplete gap is missing the unavailable fact",
+            "G1 incomplete gap is missing the fact source",
+            "G1 incomplete gap is missing unavailability proof",
+            "G1 incomplete gap is missing the affected full path",
+            "G1 incomplete gap is missing alternative evidence checks",
+            "G1 incomplete gap is missing outcome impact",
+            "G1 incomplete gap is missing scope proof",
+            "G1 incomplete gap is missing affected scope files",
+        ]
+        for each in expected_errors:
+            with self.subTest(error=each):
+                self.assertIn(each, errors)
+
+    def test_incomplete_blocked_file_requires_reason_and_gap_link(self):
+        actual_ledger = self.create_valid_ledger()
+        actual_ledger["findings"] = [self.create_incomplete_gap()]
+        actual_ledger["files"][0].update({"status": "blocked", "reason": "", "findings": []})
+        errors = ledger.validate_ledger(actual_ledger, incomplete_result=True)
+        self.assertIn("Blocked files missing incomplete reasons: 1", errors)
+        self.assertIn("Blocked files not linked to an incomplete gap: 1", errors)
+
+    def test_incomplete_validation_rejects_unresolved_candidate(self):
+        actual_ledger = self.create_valid_ledger()
+        candidate = self.create_confirmed_finding("F1")
+        candidate["status"] = "candidate"
+        actual_ledger["findings"] = [self.create_incomplete_gap(), candidate]
+        errors = ledger.validate_ledger(actual_ledger, incomplete_result=True)
+        self.assertIn("F1 is still a candidate", errors)
+
+    def test_standard_validation_still_rejects_incomplete_gap(self):
+        actual_ledger = self.create_valid_ledger()
+        actual_ledger["findings"] = [self.create_incomplete_gap()]
+        errors = ledger.validate_ledger(actual_ledger)
+        self.assertIn("G1 requires a Review Incomplete result", errors)
+
+    def test_validate_incomplete_subcommand_uses_incomplete_validator(self):
+        args = ledger.build_parser().parse_args(["validate-incomplete", "--ledger", "candidate"])
+        self.assertIs(ledger.cmd_validate_incomplete, args.func)
+
     def test_cleanup_removes_only_validated_ledger_directory(self):
         with tempfile.TemporaryDirectory() as temp_dir, patch.object(ledger.tempfile, "gettempdir", return_value=temp_dir):
             ledger_dir = ledger.ledger_root() / "candidate"
@@ -147,6 +217,22 @@ class ReviewLedgerTest(unittest.TestCase):
             "scope_proof": "introduced by reviewed change",
             "files": ["src/main/java/Foo.java"],
             "reason": "",
+        }
+
+    @staticmethod
+    def create_incomplete_gap():
+        return {
+            "id": "G1",
+            "status": "review-incomplete-gap",
+            "origin": "target tool version owner",
+            "fix_boundary": "",
+            "evidence": ["Authenticated source and local metadata were both unavailable."],
+            "full_path": ["configuration input to version-specific behavior"],
+            "counter_evidence": ["Repository metadata and public release records checked."],
+            "necessity": "The missing fact can change whether the behavior is correct.",
+            "scope_proof": "The reviewed file invokes the version-specific behavior.",
+            "files": ["src/main/java/Foo.java"],
+            "reason": "The target tool version is unavailable.",
         }
 
 
