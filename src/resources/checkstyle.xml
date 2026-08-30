@@ -165,7 +165,10 @@
             <property name="ignoreComments" value="true" />
             <property name="message" value="Use static import for org.hamcrest.Matchers and org.junit.jupiter.api.Assertions." />
         </module>
-        <module name="IllegalImport" />
+        <module name="IllegalImport">
+            <property name="regexp" value="true" />
+            <property name="illegalPkgs" value="sun,.*[.]shaded" />
+        </module>
         <module name="RedundantImport" />
         <module name="UnusedImports" />
         
