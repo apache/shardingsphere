@@ -147,6 +147,13 @@ Classify failed candidates as an incomplete-evidence gap, non-blocking
 observation, clarification question, pre-existing issue, or no issue. Do not
 publish non-blocking observations unless they materially help the user.
 
+## Review Incomplete Proof Gate
+
+`Review Incomplete` is a terminal evidence classification, not a fallback for unfinished analysis.
+Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.
+After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result.
+If authoritative scope cannot be established, state the exact unavailable scope fact and attempted routes in `### Required Evidence`; do not fabricate ledger scope.
+
 ## Behavior Clusters and Risk Triage
 
 Before deep review, group the scope into the smallest independently meaningful
@@ -206,9 +213,8 @@ a previous result to influence the assessment:
    step 5 and repeat. Freeze the canonical assessment only after the Completion
    Gate evaluation, then map it to the selected mode's status.
 
-If the scope cannot be reviewed honestly, return the mode-appropriate incomplete
-result or request a split. Do not produce a complete verdict from a partial
-review.
+If an outcome-sensitive decisive fact passes the Review Incomplete Proof Gate, return the mode-appropriate incomplete result.
+Otherwise continue the review or request a split; do not produce a complete verdict from a partial review.
 
 ## Completion Gate and Scripts
 
@@ -234,15 +240,15 @@ readiness conclusion.
 - Keep temporary ledger data private and remove only the exact ledger created
   for the current review.
 
-If the gate cannot pass in Formal Review, return `Review Incomplete`. In a discussion reply, state the incomplete evidence without a formal verdict. When confirmed blockers coexist with a gap that could hide more blockers, list them as confirmed partial facts but do not present them as the complete change-request set.
+If the gate cannot pass because a gap satisfies the Review Incomplete Proof Gate, return `Review Incomplete` in Formal Review and state the incomplete evidence without a formal verdict in a discussion reply.
+When confirmed blockers coexist with a proven gap that could hide more blockers, list them as confirmed partial facts but do not present them as the complete change-request set.
 
 ## Formal Decision Contract
 
 Map the canonical assessment to Formal Review only after the Completion Gate
 evaluation:
 
-1. If the gate fails, use `Review Incomplete`, even when some blockers are
-   already confirmed.
+1. If the gate fails because a gap satisfies the Review Incomplete Proof Gate, use `Review Incomplete`, even when some blockers are already confirmed.
 2. If admissible evidence disproves the problem model, expected behavior, ownership,
    protocol or SQL semantics, compatibility assumption, or solution direction,
    use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
@@ -259,8 +265,8 @@ unclear.
 
 - Use the latest public PR head plus authorized local commits, index changes,
   and working-tree changes as the effective candidate.
-- Verify with read-only Git that local `HEAD` equals or descends from the public
-  head. Otherwise return `Review Incomplete`.
+- Verify with read-only Git that local `HEAD` equals or descends from the public head.
+- If that relationship cannot be established, record the unavailable effective-candidate lineage as an incomplete gap; if the refs prove divergence, resolve the correct review basis before selecting a verdict.
 - Review from the public PR merge-base through the working tree. Scope is the
   union of GitHub files and the authorized local delta; exclude unrelated local
   changes.

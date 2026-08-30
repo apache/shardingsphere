@@ -1181,10 +1181,29 @@ required_actions = []
 allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = []
-required_summary_terms = ["### Result", "Review Result: Not Mergeable", "### Evidence", "### Coverage", "local candidate"]
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "### Evidence", "### Coverage", "local", "candidate"]
 forbidden_summary_terms = ["Local Preflight"]
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "agents", statements = ["Every complete review or recommendation uses Formal Review: `### Result`, one `Review Result: ...` line, `### Evidence`, and `### Coverage`.", "This includes local candidates; identify local-only changes in `### Coverage`."]}, {source = "review-pr", statements = ["Use Formal Review Mode for every complete code review result or recommendation, including pre-handoff review of a local candidate.", "Identify a local candidate and its local-only delta in `### Coverage`; do not create a separate local-preflight result format or describe local-only work as the public PR state."]}]
+policy_assertions = [{source = "agents", statements = ["Complete reviews or recommendations use Formal Review with `### Result`, one `Review Result`, `### Evidence`, and `### Coverage`; Coverage identifies local-only changes."]}, {source = "review-pr", statements = ["Use Formal Review Mode for every complete code review result or recommendation, including pre-handoff review of a local candidate.", "Identify a local candidate and its local-only delta in `### Coverage`; do not create a separate local-preflight result format or describe local-only work as the public PR state."]}]
+critical = true
+
+[[cases]]
+id = "resolvable_review_evidence_must_complete"
+group = "operations"
+description = "Completes a review when every outcome-sensitive decisive fact is available."
+phase = "review evidence gate and ordinary completion loop"
+ordinary_loop = true
+profile = "review-pr"
+prompt = "Authoritative scope is established for a Formal Review, every file and risk axis has been reviewed, and all three discovery lenses plus a zero-new-finding convergence pass are complete. One candidate arose from an apparent conflict between a general and a specialized repository rule, but both exact rules and their strongest counter-evidence are locally available and show no conflict. Every candidate fails the Finding Proof Gate, and no CI review was requested. Return the overall Code Correctness Review result without editing, handing off, or changing Git."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage"]
+forbidden_summary_terms = ["Review Result: Review Incomplete", "Review Result: Not Mergeable"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "agents", statements = ["Use `Review Incomplete` only when an outcome-sensitive decisive fact is proven unavailable."]}, {source = "review-pr", statements = ["`Review Incomplete` is a terminal evidence classification, not a fallback for unfinished analysis.", "Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.", "After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result."]}]
 critical = true
 
 [[cases]]

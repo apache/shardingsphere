@@ -164,7 +164,7 @@ Use the matching repository Skill when its trigger applies:
 
 - Issue diagnosis and copy-ready maintainer replies: `$analyze-issue`.
 - Unit-test generation or systematic coverage work: `$gen-ut`. This code-changing workflow composes with `code-implementation`, including its pre-write functional and performance non-regression assessment.
-- Use `$review-pr` for PR correctness, side effects, mergeability, CI, discussion replies, and pre-handoff review targeting a PR. Every complete review or recommendation uses Formal Review: `### Result`, one `Review Result: ...` line, `### Evidence`, and `### Coverage`. This includes local candidates; identify local-only changes in `### Coverage`. Use PR Discussion Reply only when explicitly requested. Standalone review is read-only and does not activate `code-implementation`.
+- Use `$review-pr` for PR correctness, side effects, mergeability, CI, and PR pre-handoff review; use its Discussion Reply only when explicitly requested. Complete reviews or recommendations use Formal Review with `### Result`, one `Review Result`, `### Evidence`, and `### Coverage`; Coverage identifies local-only changes. Use `Review Incomplete` only when an outcome-sensitive decisive fact is proven unavailable. Standalone review is read-only; skip `code-implementation`.
 
 If a matching specialized repository Skill is unavailable, apply an equivalent manual checklist, record the fallback in the plan or final response, and continue without installing it. Do not create a new Skill merely to hold task-specific instructions.
 
