@@ -194,7 +194,7 @@ class ColumnValueConvertUtilsTest {
                 Arguments.of("sub second after epoch", 1500L),
                 Arguments.of("epoch", 0L));
     }
-
+    
     @Test
     void assertConvertLocalDateToInt64Value() {
         LocalDate localDate = LocalDate.of(2022, 3, 4);
