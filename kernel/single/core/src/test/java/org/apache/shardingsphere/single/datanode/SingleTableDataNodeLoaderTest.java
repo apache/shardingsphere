@@ -178,7 +178,7 @@ class SingleTableDataNodeLoaderTest {
     }
     
     @Test
-    void assertLoadExactTablesWhenSchemaIsUnavailable() throws SQLException {
+    void assertLoadExactTablesWhenSchemaIsUnavailable() {
         Map<String, Collection<String>> fooSchemaTableNames = new LinkedHashMap<>(2, 1F);
         fooSchemaTableNames.put("bar_schema", Collections.singleton("FOO_TBL1"));
         fooSchemaTableNames.put("dbo", Collections.singleton("foo_tbl2"));
@@ -188,13 +188,11 @@ class SingleTableDataNodeLoaderTest {
         when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(false);
         try (
                 MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class);
-                MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
-                    when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-                });
-                MockedConstruction<SchemaMetaDataLoader> ignored = mockConstruction(SchemaMetaDataLoader.class, (mock, context) -> {
-                    when(mock.loadSchemaTableNames(anyString(), any(DataSource.class), anyCollection(), anyCollection()))
-                            .thenAnswer(invocation -> dataSourceMap.get("foo_ds") == invocation.getArgument(1) ? fooSchemaTableNames : barSchemaTableNames);
-                })) {
+                MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockConstruction(DatabaseTypeRegistry.class,
+                        (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+                MockedConstruction<SchemaMetaDataLoader> ignored = mockConstruction(SchemaMetaDataLoader.class,
+                        (mock, context) -> when(mock.loadSchemaTableNames(anyString(), any(DataSource.class), anyCollection(), anyCollection()))
+                                .thenAnswer(invocation -> dataSourceMap.get("foo_ds") == invocation.getArgument(1) ? fooSchemaTableNames : barSchemaTableNames))) {
             databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(dataSourceMap.get("foo_ds"))).thenReturn(databaseType);
             databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(dataSourceMap.get("bar_ds"))).thenReturn(databaseType);
             Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
@@ -223,7 +221,7 @@ class SingleTableDataNodeLoaderTest {
     }
     
     @Test
-    void assertLoadWithSameTableInDifferentSchemasOfSameDataSource(final LogCaptureAssertion logCaptureAssertion) throws SQLException {
+    void assertLoadWithSameTableInDifferentSchemasOfSameDataSource(final LogCaptureAssertion logCaptureAssertion) {
         Map<String, DataSource> localDataSourceMap = Collections.singletonMap("foo_ds", dataSourceMap.get("foo_ds"));
         Map<String, Collection<String>> schemaTableNames = new LinkedHashMap<>(2, 1F);
         schemaTableNames.put("foo_schema", Collections.singleton("same_tbl"));
