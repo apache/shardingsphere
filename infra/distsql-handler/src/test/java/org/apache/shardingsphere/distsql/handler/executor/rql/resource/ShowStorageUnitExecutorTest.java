@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.rql.resource;
 
-import org.apache.groovy.util.Maps;
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -68,7 +68,7 @@ class ShowStorageUnitExecutorTest {
     
     @Test
     void assertGetRowsWithAllStorageUnits() {
-        Map<Integer, String> storageUnitNames = Maps.of(0, "ds_2", 1, "ds_1", 2, "ds_0");
+        Map<Integer, String> storageUnitNames = ImmutableMap.of(0, "ds_2", 1, "ds_1", 2, "ds_0");
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(FromDatabaseSegment.class), null), mock(ContextManager.class));
         assertThat(actual.size(), is(3));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();

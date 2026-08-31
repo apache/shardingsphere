@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
@@ -105,7 +104,7 @@ class ShardingSphereDatabaseMetaDataTest {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, DATA_SOURCE_NAME + "." + TABLE_NAME);
         ruleConfig.setTables(Collections.singleton(shardingTableRuleConfig));
-        return new ShardingRule(ruleConfig, Maps.of(DATA_SOURCE_NAME, new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        return new ShardingRule(ruleConfig, Collections.singletonMap(DATA_SOURCE_NAME, new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     @Test

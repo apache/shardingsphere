@@ -24,11 +24,13 @@ import com.google.common.collect.Sets;
 import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.GroovyShell;
+import groovy.lang.MissingMethodException;
 import groovy.lang.Script;
 import groovy.util.Expando;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.expr.core.GroovyUtils;
+import org.apache.shardingsphere.infra.expr.exception.InlineExpressionEvaluationException;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 
 import java.util.ArrayList;
@@ -102,14 +104,18 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
         if (isConstantExpression(inlineExpression)) {
             return inlineExpression;
         }
-        Object scriptResult = evaluate("{it -> \"" + handlePlaceHolder(inlineExpression) + "\"}");
-        if (scriptResult instanceof Closure) {
-            Closure<?> result = ((Closure<?>) scriptResult).rehydrate(new Expando(), null, null);
-            result.setResolveStrategy(Closure.DELEGATE_ONLY);
-            map.forEach(result::setProperty);
-            return result.call().toString();
+        try {
+            Object scriptResult = evaluate("{it -> \"" + handlePlaceHolder(inlineExpression) + "\"}");
+            if (scriptResult instanceof Closure) {
+                Closure<?> result = ((Closure<?>) scriptResult).rehydrate(new Expando(), null, null);
+                result.setResolveStrategy(Closure.DELEGATE_ONLY);
+                map.forEach(result::setProperty);
+                return result.call().toString();
+            }
+            return scriptResult.toString();
+        } catch (final MissingMethodException ex) {
+            throw new InlineExpressionEvaluationException(ex);
         }
-        return scriptResult.toString();
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {

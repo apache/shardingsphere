@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.typ
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
@@ -68,9 +68,16 @@ public final class ColumnSegmentBinder {
     private static final Set<SegmentType> COLUMN_ONLY_SEGMENT_TYPES = EnumSet.of(
             SegmentType.LOCK, SegmentType.SET_ASSIGNMENT_COLUMNS, SegmentType.COPY, SegmentType.INSERT_COLUMNS, SegmentType.DEFINITION_COLUMNS);
     
-    private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
-            SegmentType.PREDICATE, "where clause", SegmentType.HAVING, "having clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS,
-            "field list");
+    private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = ImmutableMap.<SegmentType, String>builder()
+            .put(SegmentType.PROJECTION, "field list")
+            .put(SegmentType.JOIN_ON, "on clause")
+            .put(SegmentType.JOIN_USING, "from clause")
+            .put(SegmentType.PREDICATE, "where clause")
+            .put(SegmentType.HAVING, "having clause")
+            .put(SegmentType.ORDER_BY, "order clause")
+            .put(SegmentType.GROUP_BY, "group statement")
+            .put(SegmentType.INSERT_COLUMNS, "field list")
+            .build();
     
     private static final String UNKNOWN_SEGMENT_TYPE_MESSAGE = "unknown clause";
     
