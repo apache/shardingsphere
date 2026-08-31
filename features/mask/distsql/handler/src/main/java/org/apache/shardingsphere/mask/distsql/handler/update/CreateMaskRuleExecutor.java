@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -59,7 +60,8 @@ public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<
     
     private void checkDuplicatedRuleNames(final CreateMaskRuleStatement sqlStatement) {
         if (null != rule) {
-            Collection<String> currentRuleNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+            Collection<String> currentRuleNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName)
+                    .collect(Collectors.toCollection(CaseInsensitiveSet::new));
             Collection<String> duplicatedRuleNames = sqlStatement.getRules().stream().map(MaskRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
             ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("mask", database.getName(), duplicatedRuleNames));
         }
