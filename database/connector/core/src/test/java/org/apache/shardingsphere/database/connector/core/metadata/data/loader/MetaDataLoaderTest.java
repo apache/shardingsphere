@@ -89,7 +89,7 @@ class MetaDataLoaderTest {
         when(dialectMetaDataLoader.load(material)).thenReturn(null);
         try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
             SQLException actual = assertThrows(SQLException.class, () -> MetaDataLoader.load(Collections.singleton(material)));
-            assertThat(actual.getMessage(), is("Schema metadata is null for storage unit 'dialect_null'."));
+            assertThat(actual.getMessage(), is("Schema metadata is incomplete for storage unit 'dialect_null', missing tables [foo_tbl]."));
         }
     }
     
@@ -101,7 +101,7 @@ class MetaDataLoaderTest {
         when(dialectMetaDataLoader.load(material)).thenReturn(Collections.emptyList());
         try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
             SQLException actual = assertThrows(SQLException.class, () -> MetaDataLoader.load(Collections.singleton(material)));
-            assertThat(actual.getMessage(), is("Schema metadata is empty for storage unit 'dialect_empty', tables [foo_tbl]."));
+            assertThat(actual.getMessage(), is("Schema metadata is incomplete for storage unit 'dialect_empty', missing tables [foo_tbl]."));
         }
     }
     

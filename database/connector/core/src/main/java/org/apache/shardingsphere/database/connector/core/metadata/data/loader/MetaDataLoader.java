@@ -92,6 +92,7 @@ public final class MetaDataLoader {
         } else {
             result = loadByDefault(material);
         }
+        result = null == result ? Collections.emptyList() : result;
         validate(material, result);
         for (SchemaMetaData each : result) {
             for (TableMetaData table : each.getTables()) {
@@ -118,16 +119,6 @@ public final class MetaDataLoader {
     }
     
     private static void validate(final MetaDataLoaderMaterial material, final Collection<SchemaMetaData> loadedSchemas) throws SQLException {
-        if (null == loadedSchemas) {
-            throw new SQLException("Schema metadata is null for storage unit '" + material.getStorageUnitName() + "'.");
-        }
-        if (material.getTableNamesLoadedFromStorage().isEmpty()) {
-            return;
-        }
-        if (loadedSchemas.isEmpty()) {
-            throw new SQLException("Schema metadata is empty for storage unit '" + material.getStorageUnitName() + "', tables "
-                    + material.getTableNamesLoadedFromStorage() + ".");
-        }
         Collection<String> loadedTableNames = new LinkedList<>();
         for (SchemaMetaData each : loadedSchemas) {
             for (TableMetaData table : each.getTables()) {
