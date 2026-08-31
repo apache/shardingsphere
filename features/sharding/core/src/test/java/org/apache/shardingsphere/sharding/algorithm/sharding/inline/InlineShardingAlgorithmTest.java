@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +79,14 @@ class InlineShardingAlgorithmTest {
         assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
         assertThrows(MismatchedInlineShardingAlgorithmExpressionAndColumnException.class,
                 () -> shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_INFO, 0)));
+    }
+    
+    @Test
+    void assertDoShardingWithMissingMethod() {
+        InlineShardingAlgorithm inlineShardingAlgorithm = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
+                PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id.missingMethod()}")));
+        assertThrows(MismatchedInlineShardingAlgorithmExpressionAndColumnException.class,
+                () -> inlineShardingAlgorithm.doSharding(Collections.singleton("t_order_0"), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)));
     }
     
     @Test

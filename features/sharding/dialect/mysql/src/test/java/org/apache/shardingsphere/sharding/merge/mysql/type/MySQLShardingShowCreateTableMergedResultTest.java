@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.mysql.type;
 
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -67,7 +66,7 @@ class MySQLShardingShowCreateTableMergedResultTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("foo_tbl", "ds.foo_tbl_${0..2}"));
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("bar_tbl", "ds.bar_tbl_${0..2}"));
-        return new ShardingRule(shardingRuleConfig, Maps.of("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     private ShardingSphereSchema createSchema() {

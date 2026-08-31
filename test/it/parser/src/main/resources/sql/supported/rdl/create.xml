@@ -19,6 +19,7 @@
 <sql-cases>
     <sql-case id="register-storage-unit-simple-single-without-password" value="REGISTER STORAGE UNIT ds_0(HOST='127.0.0.1',PORT=3306,DB='test0',USER='ROOT');" db-types="ShardingSphere" />
     <sql-case id="register-storage-unit-simple-single-with-password" value="REGISTER STORAGE UNIT ds_0(HOST='127.0.0.1',PORT=3306,DB='test0',USER='ROOT',PASSWORD='123456');" db-types="ShardingSphere" />
+    <sql-case id="register-storage-unit-simple-single-with-escaped-password" value="REGISTER STORAGE UNIT ds_0(HOST='127.0.0.1',PORT=3306,DB='test0',USER='ROOT',PASSWORD='foo\nbar\\nbaz\squx');" db-types="ShardingSphere" />
     <sql-case id="register-storage-unit-simple-single-with-password-if-not-exists" value="REGISTER STORAGE UNIT IF NOT EXISTS ds_0(HOST='127.0.0.1',PORT=3306,DB='test0',USER='ROOT',PASSWORD='123456');" db-types="ShardingSphere" />
     <sql-case id="register-storage-unit-simple-multiple" value="REGISTER STORAGE UNIT ds_0(HOST='127.0.0.1',PORT=3306,DB='test0',USER='ROOT',PASSWORD='123456'), ds_1(HOST='127.0.0.1',PORT=3306,DB='test1',USER='ROOT',PASSWORD='123456');" db-types="ShardingSphere" />
     <sql-case id="register-storage-unit-url-single-without-password" value="REGISTER STORAGE UNIT ds_0(URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT');" db-types="ShardingSphere" />

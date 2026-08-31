@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -72,7 +72,7 @@ class ShowShardingTableNodesExecutorTest {
                 .filter(YamlShardingRuleConfiguration.class::isInstance).map(YamlShardingRuleConfiguration.class::cast).findFirst();
         assertTrue(yamlShardingRuleConfig.isPresent());
         return new ShardingRule(new YamlShardingRuleConfigurationSwapper().swapToObject(yamlShardingRuleConfig.get()),
-                Maps.of("ds_1", new MockedDataSource(), "ds_2", new MockedDataSource(), "ds_3", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+                ImmutableMap.of("ds_1", new MockedDataSource(), "ds_2", new MockedDataSource(), "ds_3", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     private void assertOrder(final ShardingRule rule) throws SQLException {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.parser.core.kernel;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.groovy.parser.antlr4.util.StringUtils;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
@@ -140,13 +139,75 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitStorageUnitDefinition(final StorageUnitDefinitionContext ctx) {
         String user = IdentifierValueUtils.getValue(ctx.user());
-        String password = null == ctx.password() ? "" : new StringLiteralValue(StringUtils.replaceStandardEscapes(ctx.password().getText())).getValue();
+        String password = null == ctx.password() ? "" : new StringLiteralValue(replaceStandardEscapes(ctx.password().getText())).getValue();
         Properties props = getProperties(ctx.propertiesDefinition());
         return null == ctx.urlSource()
                 ? new HostnameAndPortBasedDataSourceSegment(IdentifierValueUtils.getValue(ctx.storageUnitName()),
                         IdentifierValueUtils.getValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(), IdentifierValueUtils.getValue(ctx.simpleSource().dbName()), user, password,
                         props)
                 : new URLBasedDataSourceSegment(IdentifierValueUtils.getValue(ctx.storageUnitName()), IdentifierValueUtils.getValue(ctx.urlSource().url()), user, password, props);
+    }
+    
+    private String replaceStandardEscapes(final String value) {
+        if (!value.contains("\\")) {
+            return value;
+        }
+        StringBuilder result = new StringBuilder(value.length());
+        int index = 0;
+        while (index < value.length()) {
+            if ('\\' != value.charAt(index)) {
+                result.append(value.charAt(index++));
+                continue;
+            }
+            int backslashEndIndex = index;
+            while (backslashEndIndex < value.length() && '\\' == value.charAt(backslashEndIndex)) {
+                backslashEndIndex++;
+            }
+            int backslashCount = backslashEndIndex - index;
+            int backslashPairCount = backslashCount / 2;
+            while (0 < backslashPairCount--) {
+                result.append('\\');
+            }
+            if (0 != backslashCount % 2) {
+                if (backslashEndIndex < value.length() && appendStandardEscape(value.charAt(backslashEndIndex), result)) {
+                    backslashEndIndex++;
+                } else {
+                    result.append('\\');
+                }
+            }
+            index = backslashEndIndex;
+        }
+        return result.toString();
+    }
+    
+    private boolean appendStandardEscape(final char value, final StringBuilder result) {
+        switch (value) {
+            case 'b':
+                result.append('\b');
+                break;
+            case 't':
+                result.append('\t');
+                break;
+            case 'n':
+                result.append('\n');
+                break;
+            case 'f':
+                result.append('\f');
+                break;
+            case 'r':
+                result.append('\r');
+                break;
+            case 's':
+                result.append(' ');
+                break;
+            case '"':
+            case '\'':
+                result.append(value);
+                break;
+            default:
+                return false;
+        }
+        return true;
     }
     
     @Override

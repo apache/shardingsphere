@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
-import org.apache.groovy.util.Maps;
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -55,7 +55,7 @@ class ShardingUnicastRouteEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
         rule = new ShardingRule(shardingRuleConfig,
-                Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "ds_2", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+                ImmutableMap.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "ds_2", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     @Test
