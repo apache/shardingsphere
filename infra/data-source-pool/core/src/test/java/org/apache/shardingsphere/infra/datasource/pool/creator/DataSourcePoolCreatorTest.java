@@ -38,6 +38,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
+import org.mockito.exceptions.verification.WantedButNotInvoked;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -175,7 +176,7 @@ class DataSourcePoolCreatorTest {
         MockedDataSource actual = (MockedDataSource) DataSourcePoolCreator.create(
                 "foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createMockedDataSourceProperties()), false, Collections.singleton(storageNode));
         assertMockedDataSource(actual);
-        assertThrows(org.mockito.exceptions.verification.WantedButNotInvoked.class, () -> org.mockito.Mockito.verify(storageNode).close());
+        assertThrows(WantedButNotInvoked.class, () -> org.mockito.Mockito.verify(storageNode).close());
     }
     
     @Test

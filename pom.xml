@@ -1321,12 +1321,25 @@
                             <artifactId>spotless-maven-plugin</artifactId>
                             <version>${spotless-maven-plugin.version}</version>
                             <configuration>
+                                <formats>
+                                    <format>
+                                        <includes>
+                                            <include>.github/workflows/**/*.yml</include>
+                                        </includes>
+                                        <trimTrailingWhitespace />
+                                        <endWithNewline />
+                                    </format>
+                                </formats>
                                 <java>
+                                    <shortenFullyQualifiedTypes />
                                     <eclipse>
                                         <version>4.40</version>
                                         <!--suppress MavenModelInspection -->
                                         <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/java.xml</file>
                                     </eclipse>
+                                    <removeUnusedImports>
+                                        <engine>google-java-format</engine>
+                                    </removeUnusedImports>
                                     <licenseHeader>
                                         <!--suppress MavenModelInspection -->
                                         <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/copyright.txt</file>

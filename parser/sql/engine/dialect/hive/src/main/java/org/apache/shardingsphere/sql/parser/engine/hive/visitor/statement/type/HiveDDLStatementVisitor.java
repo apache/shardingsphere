@@ -70,6 +70,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Tab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
@@ -280,7 +281,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitAddColumns(final AddColumnsContext ctx) {
-        java.util.Collection<ColumnDefinitionSegment> cols = new java.util.LinkedList<>();
+        Collection<ColumnDefinitionSegment> cols = new LinkedList<>();
         for (ColumnDefinitionContext each : ctx.columnDefinition()) {
             cols.add((ColumnDefinitionSegment) visit(each));
         }
@@ -289,7 +290,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitReplaceColumns(final ReplaceColumnsContext ctx) {
-        java.util.Collection<ColumnDefinitionSegment> cols = new java.util.LinkedList<>();
+        Collection<ColumnDefinitionSegment> cols = new LinkedList<>();
         for (ColumnDefinitionContext each : ctx.columnDefinition()) {
             cols.add((ColumnDefinitionSegment) visit(each));
         }
@@ -327,7 +328,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         } else {
             SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.identifier(1).getStart().getStartIndex(),
                     ctx.identifier(1).getStop().getStopIndex(), new IdentifierValue(ctx.identifier(1).getText())));
-            result.setOwner(new org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment(
+            result.setOwner(new OwnerSegment(
                     ctx.identifier(0).getStart().getStartIndex(), ctx.identifier(0).getStop().getStopIndex(),
                     new IdentifierValue(ctx.identifier(0).getText())));
             return result;
@@ -366,7 +367,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         } else {
             SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.identifier(1).getStart().getStartIndex(),
                     ctx.identifier(1).getStop().getStopIndex(), new IdentifierValue(ctx.identifier(1).getText())));
-            result.setOwner(new org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment(
+            result.setOwner(new OwnerSegment(
                     ctx.identifier(0).getStart().getStartIndex(), ctx.identifier(0).getStop().getStopIndex(),
                     new IdentifierValue(ctx.identifier(0).getText())));
             return result;

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
@@ -166,7 +167,7 @@ class OpenGaussComQueryExecutorTest {
     void assertExecuteUpdateWithEmptyStatementReturnsEmptyQueryResponse() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new EmptyStatement(databaseType)));
         Collection<DatabasePacket> actualPackets = queryExecutor.execute();
-        assertThat(new LinkedList<>(actualPackets).getFirst(), is(isA(org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket.class)));
+        assertThat(new LinkedList<>(actualPackets).getFirst(), is(isA(PostgreSQLEmptyQueryResponsePacket.class)));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));
     }
     
