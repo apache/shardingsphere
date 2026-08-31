@@ -24,8 +24,8 @@ import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDa
 import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

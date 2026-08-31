@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.spec.ProtocolVersions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import io.modelcontextprotocol.spec.ProtocolVersions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 
 import java.io.IOException;

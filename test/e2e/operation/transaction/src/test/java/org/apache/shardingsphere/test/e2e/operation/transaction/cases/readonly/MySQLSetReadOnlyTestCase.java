@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.constants
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**

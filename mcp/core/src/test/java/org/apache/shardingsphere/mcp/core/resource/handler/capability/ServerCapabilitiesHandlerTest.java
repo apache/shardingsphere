@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.junit.jupiter.api.Test;

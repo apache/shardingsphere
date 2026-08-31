@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
-import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
-import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
-import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
-import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
+import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
+import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.core.context.MCPFeatureRuntimeRequestContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;

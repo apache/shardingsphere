@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.core.completion.handler;
 
-import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -26,6 +24,8 @@ import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCand
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;

@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTablespaceInnodbContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTablespaceNdbContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnContext;
@@ -70,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateT
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeallocateContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropFunctionContext;
@@ -82,6 +84,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTab
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExecuteStmtContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlowControlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionNameContext;
@@ -109,9 +112,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TextOrI
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
@@ -148,12 +148,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Loc
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
@@ -188,13 +188,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
@@ -202,7 +203,6 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.instance.MySQLAl
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLAlterLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLCreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLDropLogfileGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLDescribeStatement;
 
 import java.util.Collection;
 import java.util.Collections;

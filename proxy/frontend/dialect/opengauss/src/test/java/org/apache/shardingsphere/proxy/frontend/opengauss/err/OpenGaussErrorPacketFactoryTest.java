@@ -29,8 +29,8 @@ import org.opengauss.util.ServerErrorMessage;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class OpenGaussErrorPacketFactoryTest {
     

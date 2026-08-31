@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTyp
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePurgeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleCreateIndexTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleAssociateStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleCreateIndexTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleAlterSessionStatementAssert;

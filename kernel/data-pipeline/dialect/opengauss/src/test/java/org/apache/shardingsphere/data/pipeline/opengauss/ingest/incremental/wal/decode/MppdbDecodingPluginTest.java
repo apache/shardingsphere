@@ -28,12 +28,12 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.WriteRowEvent;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedConstruction;
 import org.opengauss.jdbc.TimestampUtils;
 import org.opengauss.replication.LogSequenceNumber;
 import org.opengauss.util.PGobject;
-import org.mockito.MockedConstruction;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -43,11 +43,11 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Stream;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;

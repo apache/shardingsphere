@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class VariableSegmentConverterTest {
     

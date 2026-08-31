@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 
 import java.io.IOException;

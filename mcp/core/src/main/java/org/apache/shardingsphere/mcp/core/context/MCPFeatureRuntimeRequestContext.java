@@ -26,8 +26,8 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPSQLExecutionFa
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;

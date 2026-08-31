@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.config;
 
-import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;

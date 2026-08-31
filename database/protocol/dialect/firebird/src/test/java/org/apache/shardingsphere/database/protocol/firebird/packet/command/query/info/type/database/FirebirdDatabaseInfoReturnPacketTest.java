@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database;
 
-import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdArchType;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdArchType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;

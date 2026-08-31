@@ -1337,6 +1337,10 @@
                                         <!--suppress MavenModelInspection -->
                                         <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/java.xml</file>
                                     </eclipse>
+                                    <importOrder>
+                                        <order>,javax|java,\#</order>
+                                        <semanticSort>false</semanticSort>
+                                    </importOrder>
                                     <removeUnusedImports>
                                         <engine>google-java-format</engine>
                                     </removeUnusedImports>

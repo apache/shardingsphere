@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.e2e.sql.env;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.url.core.ShardingSphereURL;
 import org.apache.shardingsphere.infra.url.core.arg.URLArgumentLineRender;
 import org.apache.shardingsphere.infra.url.core.arg.URLArgumentPlaceholderTypeFactory;
-import org.apache.shardingsphere.infra.url.spi.ShardingSphereModeConfigurationURLLoader;
 import org.apache.shardingsphere.infra.url.spi.ShardingSphereLocalFileURLLoader;
+import org.apache.shardingsphere.infra.url.spi.ShardingSphereModeConfigurationURLLoader;
 
 import java.util.Arrays;
 import java.util.Collection;

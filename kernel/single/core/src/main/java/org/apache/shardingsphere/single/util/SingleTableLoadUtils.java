@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttri
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 

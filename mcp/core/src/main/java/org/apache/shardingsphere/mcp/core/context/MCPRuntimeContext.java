@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.core.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionStore;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;

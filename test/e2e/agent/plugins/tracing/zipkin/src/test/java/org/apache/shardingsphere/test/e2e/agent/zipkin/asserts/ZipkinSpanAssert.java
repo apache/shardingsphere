@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.e2e.agent.zipkin.asserts;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.test.e2e.agent.engine.util.AgentE2EHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.response.ZipkinSpanResponse;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinE2ETestCase;

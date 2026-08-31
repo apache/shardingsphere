@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.TimeService;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.TimeService;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
