@@ -61,7 +61,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StorageUnitsDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlockClusterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnregisterStorageUnitContext;
-import org.apache.shardingsphere.distsql.parser.util.DistSQLStringUtils;
+import org.apache.shardingsphere.distsql.parser.util.DistSQLStringEscapeDecoder;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
@@ -140,7 +140,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitStorageUnitDefinition(final StorageUnitDefinitionContext ctx) {
         String user = IdentifierValueUtils.getValue(ctx.user());
-        String password = null == ctx.password() ? "" : new StringLiteralValue(DistSQLStringUtils.replaceStandardEscapes(ctx.password().getText())).getValue();
+        String password = null == ctx.password() ? "" : new StringLiteralValue(DistSQLStringEscapeDecoder.decode(ctx.password().getText())).getValue();
         Properties props = getProperties(ctx.propertiesDefinition());
         return null == ctx.urlSource()
                 ? new HostnameAndPortBasedDataSourceSegment(IdentifierValueUtils.getValue(ctx.storageUnitName()),

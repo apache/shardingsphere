@@ -21,18 +21,18 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * DistSQL string utilities.
+ * DistSQL string escape decoder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DistSQLStringUtils {
+public final class DistSQLStringEscapeDecoder {
     
     /**
-     * Replace standard escapes.
+     * Decode standard escapes.
      *
-     * @param value value to be replaced
-     * @return replaced value
+     * @param value value to be decoded
+     * @return decoded value
      */
-    public static String replaceStandardEscapes(final String value) {
+    public static String decode(final String value) {
         if (!value.contains("\\")) {
             return value;
         }
