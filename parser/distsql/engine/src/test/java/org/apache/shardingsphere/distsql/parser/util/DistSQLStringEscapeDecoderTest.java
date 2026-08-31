@@ -26,13 +26,12 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class DistSQLStringUtilsTest {
+class DistSQLStringEscapeDecoderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("standardEscapesArguments")
-    void assertReplaceStandardEscapes(final String input, final String expected) {
-        String actual = DistSQLStringUtils.replaceStandardEscapes(input);
-        assertThat(actual, is(expected));
+    void assertDecode(final String input, final String expected) {
+        assertThat(DistSQLStringEscapeDecoder.decode(input), is(expected));
     }
     
     private static Stream<Arguments> standardEscapesArguments() {
