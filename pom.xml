@@ -1323,7 +1323,7 @@
                             <configuration>
                                 <java>
                                     <eclipse>
-                                        <version>4.35</version>
+                                        <version>4.40</version>
                                         <!--suppress MavenModelInspection -->
                                         <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/java.xml</file>
                                     </eclipse>

@@ -214,12 +214,15 @@ public final class MetadataCompletionHandler implements MCPCompletionHandler<MCP
             case SCHEMA -> database.isEmpty() ? "" : String.format("shardingsphere://databases/%s/schemas", encode(database));
             case TABLE -> database.isEmpty() || schema.isEmpty() ? "" : String.format("shardingsphere://databases/%s/schemas/%s/tables", encode(database), encode(schema));
             case SEQUENCE -> database.isEmpty() || schema.isEmpty()
-                    ? "" : String.format("shardingsphere://databases/%s/schemas/%s/sequences", encode(database), encode(schema));
+                    ? ""
+                    : String.format("shardingsphere://databases/%s/schemas/%s/sequences", encode(database), encode(schema));
             case STORAGE_UNIT -> database.isEmpty() ? "" : String.format("shardingsphere://databases/%s/storage-units", encode(database));
             case COLUMN -> database.isEmpty() || schema.isEmpty() || table.isEmpty()
-                    ? "" : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", encode(database), encode(schema), encode(table));
+                    ? ""
+                    : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", encode(database), encode(schema), encode(table));
             case INDEX -> database.isEmpty() || schema.isEmpty() || table.isEmpty()
-                    ? "" : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", encode(database), encode(schema), encode(table));
+                    ? ""
+                    : String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", encode(database), encode(schema), encode(table));
             case UNKNOWN -> "";
         };
     }
