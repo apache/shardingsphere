@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
@@ -146,7 +147,7 @@ class CDCJobTest {
             when(PipelineDataSourceConfigurationFactory.newInstance(anyString(), anyString())).thenReturn(mock(PipelineDataSourceConfiguration.class));
             CDCJob job = new CDCJob(mock(PipelineSink.class));
             PipelineTasksRunner tasksRunner = mock(PipelineTasksRunner.class);
-            when(tasksRunner.getJobItemContext()).thenReturn(mock(org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext.class));
+            when(tasksRunner.getJobItemContext()).thenReturn(mock(PipelineJobItemContext.class));
             job.getJobRunnerManager().addTasksRunner(0, tasksRunner);
             try (MockedStatic<PipelineExecuteEngine> triggerMocked = mockStatic(PipelineExecuteEngine.class)) {
                 job.execute(shardingContext);

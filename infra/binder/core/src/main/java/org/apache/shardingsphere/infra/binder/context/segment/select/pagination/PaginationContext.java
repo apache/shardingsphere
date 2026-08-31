@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ExpressionRowNumberValueSegment;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -121,8 +122,8 @@ public final class PaginationContext {
         if (null != caseWhenExpression.getCaseExpr()) {
             return null;
         }
-        java.util.Iterator<ExpressionSegment> whenIterator = caseWhenExpression.getWhenExprs().iterator();
-        java.util.Iterator<ExpressionSegment> thenIterator = caseWhenExpression.getThenExprs().iterator();
+        Iterator<ExpressionSegment> whenIterator = caseWhenExpression.getWhenExprs().iterator();
+        Iterator<ExpressionSegment> thenIterator = caseWhenExpression.getThenExprs().iterator();
         while (whenIterator.hasNext() && thenIterator.hasNext()) {
             Boolean whenValue = getBooleanValueFromExpression(whenIterator.next(), params);
             if (Boolean.TRUE.equals(whenValue)) {

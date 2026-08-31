@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.log;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -63,7 +64,7 @@ class SQLLoggerTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @BeforeAll
     static void setupLogger() {
-        ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.apache.shardingsphere.sql");
+        Logger log = (Logger) LoggerFactory.getLogger("org.apache.shardingsphere.sql");
         ListAppender<LoggingEvent> appender = (ListAppender) log.getAppender("SQLLoggerTestAppender");
         appenderList = appender.list;
     }
