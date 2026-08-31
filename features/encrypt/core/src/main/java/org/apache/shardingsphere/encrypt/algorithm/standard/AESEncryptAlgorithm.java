@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -65,7 +64,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public AlgorithmConfiguration toConfiguration() {
         return new AlgorithmConfiguration(getType(),
-                PropertiesBuilder.build(new Property(AES_KEY, props.getProperty(AES_KEY)), new Property(DIGEST_ALGORITHM_NAME, StringUtils.upperCase(props.getProperty(DIGEST_ALGORITHM_NAME)))));
+                PropertiesBuilder.build(new Property(AES_KEY, props.getProperty(AES_KEY)), new Property(DIGEST_ALGORITHM_NAME, props.getProperty(DIGEST_ALGORITHM_NAME).toUpperCase())));
     }
     
     @Override
