@@ -23,6 +23,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Meta data loader material.
@@ -41,4 +43,16 @@ public final class MetaDataLoaderMaterial {
     
     private final String defaultSchemaName;
     
+    private final Set<String> tableNamesLoadedFromStorage;
+    
+    public MetaDataLoaderMaterial(final Collection<String> actualTableNames, final String storageUnitName, final DataSource dataSource,
+                                  final DatabaseType storageType, final String defaultSchemaName) {
+        this(actualTableNames, storageUnitName, dataSource, storageType, defaultSchemaName, toSet(actualTableNames));
+    }
+    
+    private static Set<String> toSet(final Collection<String> tableNames) {
+        Set<String> result = new LinkedHashSet<>(tableNames.size(), 1F);
+        result.addAll(tableNames);
+        return result;
+    }
 }

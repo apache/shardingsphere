@@ -55,29 +55,96 @@ class MetaDataLoaderTest {
     
     @Test
     void assertLoadWithDialectLoader() throws Exception {
-        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "dialect_success", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "dialect_success", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
         DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
         when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
         when(dialectMetaDataLoader.load(material)).thenReturn(Collections.singleton(
-                new SchemaMetaData("foo_db", Collections.singleton(new TableMetaData("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
+                new SchemaMetaData("foo_db", Collections.singleton(new TableMetaData("FOO_TBL", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
         try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
             Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
             TableMetaData actualTable = actual.get("foo_db").getTables().iterator().next();
-            assertThat(actualTable.getName(), is("foo_tbl"));
+            assertThat(actualTable.getName(), is("FOO_TBL"));
             assertThat(actualTable.getStorageUnitName(), is("dialect_success"));
         }
     }
     
     @Test
     void assertLoadWithDialectLoaderSQLException() throws Exception {
-        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "dialect_sql_exception", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "dialect_sql_exception", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
         DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
         when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
-        when(dialectMetaDataLoader.load(any(MetaDataLoaderMaterial.class))).thenThrow(SQLException.class);
+        SQLException expected = new SQLException("Dialect metadata loading failed.");
+        when(dialectMetaDataLoader.load(any(MetaDataLoaderMaterial.class))).thenThrow(expected);
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            SQLException actual = assertThrows(SQLException.class, () -> MetaDataLoader.load(Collections.singleton(material)));
+            assertThat(actual, is(expected));
+        }
+    }
+    
+    @Test
+    void assertLoadWithNullDialectMetadata() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "dialect_null", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(material)).thenReturn(null);
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            SQLException actual = assertThrows(SQLException.class, () -> MetaDataLoader.load(Collections.singleton(material)));
+            assertThat(actual.getMessage(), is("Schema metadata is incomplete for storage unit 'dialect_null', missing tables [foo_tbl]."));
+        }
+    }
+    
+    @Test
+    void assertLoadWithEmptyDialectMetadata() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "dialect_empty", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(material)).thenReturn(Collections.emptyList());
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            SQLException actual = assertThrows(SQLException.class, () -> MetaDataLoader.load(Collections.singleton(material)));
+            assertThat(actual.getMessage(), is("Schema metadata is incomplete for storage unit 'dialect_empty', missing tables [foo_tbl]."));
+        }
+    }
+    
+    @Test
+    void assertLoadWithIncompleteDialectMetadata() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "dialect_incomplete", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(material)).thenReturn(Collections.singleton(new SchemaMetaData("foo_db", Collections.emptyList())));
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            SQLException actual = assertThrows(SQLException.class, () -> MetaDataLoader.load(Collections.singleton(material)));
+            assertThat(actual.getMessage(), is("Schema metadata is incomplete for storage unit 'dialect_incomplete', missing tables [foo_tbl]."));
+        }
+    }
+    
+    @Test
+    void assertLoadWithUnloadedTableMetadata() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Arrays.asList("foo_tbl", "foo_order"), "dialect_mixed", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db",
+                Collections.singleton("foo_tbl"));
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(material)).thenReturn(createSchemaMetaData("foo_tbl"));
         try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
             Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
-            assertThat(actual.size(), is(1));
-            assertTrue(actual.get("foo_db").getTables().isEmpty());
+            assertThat(actual.get("foo_db").getTables().size(), is(1));
+        }
+    }
+    
+    @Test
+    void assertLoadWithMissingMetadataInOneStorageUnit() throws Exception {
+        MetaDataLoaderMaterial loadedMaterial = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "foo_ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        MetaDataLoaderMaterial missingMaterial = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "foo_ds_2", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(any(MetaDataLoaderMaterial.class))).thenAnswer(invocation -> {
+            MetaDataLoaderMaterial material = invocation.getArgument(0);
+            return "foo_ds_1".equals(material.getStorageUnitName())
+                    ? createSchemaMetaData("foo_tbl")
+                    : Collections.singleton(new SchemaMetaData("foo_db", Collections.emptyList()));
+        });
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            SQLException actual = assertThrows(SQLException.class, () -> MetaDataLoader.load(Arrays.asList(loadedMaterial, missingMaterial)));
+            assertThat(actual.getMessage(), is("Schema metadata is incomplete for storage unit 'foo_ds_2', missing tables [foo_tbl]."));
         }
     }
     
@@ -93,9 +160,8 @@ class MetaDataLoaderTest {
     @Test
     void assertLoadWithDefaultLoader() throws SQLException {
         MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("t_order"), "foo_ds", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
-        Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.get("foo_db").getTables().isEmpty());
+        SQLException actual = assertThrows(SQLException.class, () -> MetaDataLoader.load(Collections.singleton(material)));
+        assertThat(actual.getMessage(), is("Table metadata not found for table 't_order' in storage unit 'foo_ds'."));
     }
     
     @Test
@@ -111,14 +177,62 @@ class MetaDataLoaderTest {
         try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
             Thread.currentThread().interrupt();
             try {
-                Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
-                assertTrue(actual.isEmpty());
+                SQLException actual = assertThrows(SQLException.class, () -> MetaDataLoader.load(Collections.singleton(material)));
+                assertThat(actual.getMessage(), is("Interrupted while loading schema metadata."));
                 assertTrue(Thread.currentThread().isInterrupted());
             } finally {
                 Thread.interrupted();
                 latch.countDown();
             }
         }
+    }
+    
+    @Test
+    void assertCancelRemainingTasksWhenExecutionExceptionOccurs() throws Exception {
+        MetaDataLoaderMaterial failingMaterial = new MetaDataLoaderMaterial(Collections.emptyList(), "failing_ds", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        MetaDataLoaderMaterial blockedMaterial = new MetaDataLoaderMaterial(Collections.emptyList(), "blocked_ds", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        CountDownLatch blockedTaskStarted = new CountDownLatch(1);
+        CountDownLatch blockedTaskInterrupted = new CountDownLatch(1);
+        CountDownLatch blockedTaskRelease = new CountDownLatch(1);
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(any(MetaDataLoaderMaterial.class))).thenAnswer(invocation -> loadForCancellation(invocation.getArgument(0), blockedTaskStarted,
+                blockedTaskInterrupted, blockedTaskRelease));
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            assertThrows(SQLException.class, () -> MetaDataLoader.load(Arrays.asList(failingMaterial, blockedMaterial)));
+            assertTrue(blockedTaskInterrupted.await(5L, TimeUnit.SECONDS));
+        } finally {
+            blockedTaskRelease.countDown();
+        }
+    }
+    
+    private Collection<SchemaMetaData> loadForCancellation(final MetaDataLoaderMaterial material, final CountDownLatch blockedTaskStarted,
+                                                           final CountDownLatch blockedTaskInterrupted, final CountDownLatch blockedTaskRelease) throws SQLException {
+        if ("failing_ds".equals(material.getStorageUnitName())) {
+            try {
+                if (!blockedTaskStarted.await(5L, TimeUnit.SECONDS)) {
+                    throw new SQLException("Blocked metadata task did not start.");
+                }
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                throw new SQLException("Failing metadata task was interrupted.", ex);
+            }
+            throw new SQLException("Metadata load failed.");
+        }
+        blockedTaskStarted.countDown();
+        try {
+            blockedTaskRelease.await();
+        } catch (final InterruptedException ex) {
+            blockedTaskInterrupted.countDown();
+            Thread.currentThread().interrupt();
+            throw new SQLException("Metadata loading task was interrupted.", ex);
+        }
+        return Collections.singleton(new SchemaMetaData("foo_db", Collections.emptyList()));
+    }
+    
+    private Collection<SchemaMetaData> createSchemaMetaData(final String tableName) {
+        return Collections.singleton(new SchemaMetaData("foo_db", Collections.singleton(
+                new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))));
     }
     
     @Test

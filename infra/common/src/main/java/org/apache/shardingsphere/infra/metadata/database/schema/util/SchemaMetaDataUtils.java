@@ -37,12 +37,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +65,7 @@ public final class SchemaMetaDataUtils {
     public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames, final DatabaseType protocolType,
                                                                                 final GenericSchemaBuilderMaterial material) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
+        Map<String, Collection<String>> dataSourceTableNamesLoadedFromStorage = new LinkedHashMap<>();
         Collection<DatabaseType> unsupportedThreeTierStorageStructureDatabaseTypes = getUnsupportedThreeTierStorageStructureDatabaseTypes(material.getStorageUnits().values());
         DataNodes dataNodes = new DataNodes(material.getRules());
         boolean checkMetaDataEnable = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
@@ -69,9 +73,9 @@ public final class SchemaMetaDataUtils {
             checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(unsupportedThreeTierStorageStructureDatabaseTypes, dataNodes, each);
             boolean tableNameLoadedFromStorage = dataNodes.isDataNodeTableNameLoadedFromStorage(each);
             if (checkMetaDataEnable) {
-                addAllActualTableDataNode(material, dataSourceTableGroups, dataNodes, each, protocolType, tableNameLoadedFromStorage);
+                addAllActualTableDataNode(material, dataSourceTableGroups, dataSourceTableNamesLoadedFromStorage, dataNodes, each, protocolType, tableNameLoadedFromStorage);
             } else {
-                addOneActualTableDataNode(material, dataSourceTableGroups, dataNodes, each, protocolType, tableNameLoadedFromStorage);
+                addOneActualTableDataNode(material, dataSourceTableGroups, dataSourceTableNamesLoadedFromStorage, dataNodes, each, protocolType, tableNameLoadedFromStorage);
             }
         }
         Collection<MetaDataLoaderMaterial> result = new LinkedList<>();
@@ -79,18 +83,27 @@ public final class SchemaMetaDataUtils {
         for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
             DatabaseType storageType = material.getStorageUnits().get(entry.getKey()).getStorageType();
             String defaultSchemaName = new DatabaseTypeRegistry(storageType).getDefaultSchemaName(material.getDefaultSchemaName());
-            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), storageType, defaultSchemaName, loadTableMetadataBatchSize));
+            result.addAll(buildMaterials(material, entry.getKey(), entry.getValue(), dataSourceTableNamesLoadedFromStorage.getOrDefault(entry.getKey(), Collections.emptyList()),
+                    storageType, defaultSchemaName, loadTableMetadataBatchSize));
         }
         return result;
     }
     
     private static Collection<MetaDataLoaderMaterial> buildMaterials(final GenericSchemaBuilderMaterial material, final String dataSourceName, final Collection<String> actualTableNames,
-                                                                     final DatabaseType storageType, final String defaultSchemaName,
+                                                                     final Collection<String> tableNamesLoadedFromStorage, final DatabaseType storageType, final String defaultSchemaName,
                                                                      final int loadTableMetadataBatchSize) {
         Collection<MetaDataLoaderMaterial> result = new LinkedList<>();
         DataSource dataSource = getDataSource(material, dataSourceName);
+        Set<String> loadedTableNameSet = new LinkedHashSet<>(tableNamesLoadedFromStorage.size(), 1F);
+        loadedTableNameSet.addAll(tableNamesLoadedFromStorage);
         for (List<String> each : Lists.partition(new ArrayList<>(actualTableNames), loadTableMetadataBatchSize)) {
-            result.add(new MetaDataLoaderMaterial(each, dataSourceName, dataSource, storageType, defaultSchemaName));
+            Set<String> loadedTableNames = new LinkedHashSet<>(each.size(), 1F);
+            for (String tableName : each) {
+                if (loadedTableNameSet.contains(tableName)) {
+                    loadedTableNames.add(tableName);
+                }
+            }
+            result.add(new MetaDataLoaderMaterial(each, dataSourceName, dataSource, storageType, defaultSchemaName, loadedTableNames));
         }
         return result;
     }
@@ -118,7 +131,8 @@ public final class SchemaMetaDataUtils {
     }
     
     private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterial material,
-                                                  final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table,
+                                                  final Map<String, Collection<String>> dataSourceTableGroups,
+                                                  final Map<String, Collection<String>> dataSourceTableNamesLoadedFromStorage, final DataNodes dataNodes, final String table,
                                                   final DatabaseType protocolType, final boolean tableNameLoadedFromStorage) {
         Optional<DataNode> dataNode = dataNodes.getDataNodes(table).stream().filter(each -> isSameDataSourceNameSchemaName(material, each)).findFirst();
         if (!dataNode.isPresent() && !material.getStorageUnits().keySet().iterator().hasNext()) {
@@ -127,7 +141,7 @@ public final class SchemaMetaDataUtils {
         String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> material.getStorageUnits().keySet().iterator().next());
         String tableName = dataNode.map(optional -> getTableName(material, protocolType, optional, tableNameLoadedFromStorage))
                 .orElseGet(() -> normalizeTableName(material, protocolType, dataSourceName, table));
-        addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
+        addDataSourceTableGroups(dataSourceName, tableName, tableNameLoadedFromStorage, dataSourceTableGroups, dataSourceTableNamesLoadedFromStorage);
     }
     
     private static boolean isSameDataSourceNameSchemaName(final GenericSchemaBuilderMaterial material, final DataNode dataNode) {
@@ -136,14 +150,17 @@ public final class SchemaMetaDataUtils {
     }
     
     private static void addAllActualTableDataNode(final GenericSchemaBuilderMaterial material,
-                                                  final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table,
+                                                  final Map<String, Collection<String>> dataSourceTableGroups,
+                                                  final Map<String, Collection<String>> dataSourceTableNamesLoadedFromStorage, final DataNodes dataNodes, final String table,
                                                   final DatabaseType protocolType, final boolean tableNameLoadedFromStorage) {
         Collection<DataNode> tableDataNodes = dataNodes.getDataNodes(table);
         if (tableDataNodes.isEmpty() && !material.getStorageUnits().isEmpty()) {
             String dataSourceName = material.getStorageUnits().keySet().iterator().next();
-            addDataSourceTableGroups(dataSourceName, normalizeTableName(material, protocolType, dataSourceName, table), dataSourceTableGroups);
+            addDataSourceTableGroups(dataSourceName, normalizeTableName(material, protocolType, dataSourceName, table), tableNameLoadedFromStorage,
+                    dataSourceTableGroups, dataSourceTableNamesLoadedFromStorage);
         } else {
-            tableDataNodes.forEach(each -> addDataSourceTableGroups(each.getDataSourceName(), getTableName(material, protocolType, each, tableNameLoadedFromStorage), dataSourceTableGroups));
+            tableDataNodes.forEach(each -> addDataSourceTableGroups(each.getDataSourceName(), getTableName(material, protocolType, each, tableNameLoadedFromStorage), tableNameLoadedFromStorage,
+                    dataSourceTableGroups, dataSourceTableNamesLoadedFromStorage));
         }
     }
     
@@ -157,9 +174,16 @@ public final class SchemaMetaDataUtils {
         return protocolType.equals(storageType) ? tableName : material.getIdentifierContext().normalizeStorage(IdentifierScope.TABLE, new IdentifierValue(tableName));
     }
     
-    private static void addDataSourceTableGroups(final String dataSourceName, final String tableName, final Map<String, Collection<String>> dataSourceTableGroups) {
+    private static void addDataSourceTableGroups(final String dataSourceName, final String tableName, final boolean tableNameLoadedFromStorage,
+                                                 final Map<String, Collection<String>> dataSourceTableGroups,
+                                                 final Map<String, Collection<String>> dataSourceTableNamesLoadedFromStorage) {
         Collection<String> tables = dataSourceTableGroups.getOrDefault(dataSourceName, new LinkedList<>());
         tables.add(tableName);
         dataSourceTableGroups.putIfAbsent(dataSourceName, tables);
+        if (tableNameLoadedFromStorage) {
+            Collection<String> loadedTables = dataSourceTableNamesLoadedFromStorage.getOrDefault(dataSourceName, new LinkedList<>());
+            loadedTables.add(tableName);
+            dataSourceTableNamesLoadedFromStorage.putIfAbsent(dataSourceName, loadedTables);
+        }
     }
 }
