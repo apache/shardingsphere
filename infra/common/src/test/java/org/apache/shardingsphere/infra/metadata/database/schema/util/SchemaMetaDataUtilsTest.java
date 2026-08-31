@@ -62,6 +62,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -153,6 +154,7 @@ class SchemaMetaDataUtilsTest {
         List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, material));
         assertThat(actual.size(), is(1));
         assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("t_user")));
+        assertThat(new ArrayList<>(actual.get(0).getTableNamesLoadedFromStorage()), is(Collections.singletonList("t_user")));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -166,6 +168,7 @@ class SchemaMetaDataUtilsTest {
         List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, material));
         assertThat(actual.size(), is(1));
         assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("T_USER")));
+        assertTrue(actual.get(0).getTableNamesLoadedFromStorage().isEmpty());
     }
     
     @Test

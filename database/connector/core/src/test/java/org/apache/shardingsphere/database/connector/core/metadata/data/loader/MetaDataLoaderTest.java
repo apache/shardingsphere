@@ -118,6 +118,19 @@ class MetaDataLoaderTest {
     }
     
     @Test
+    void assertLoadWithUnloadedTableMetadata() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Arrays.asList("foo_tbl", "foo_order"), "dialect_mixed", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db",
+                Collections.singleton("foo_tbl"));
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(material)).thenReturn(createSchemaMetaData("foo_tbl"));
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
+            assertThat(actual.get("foo_db").getTables().size(), is(1));
+        }
+    }
+    
+    @Test
     void assertLoadWithMissingMetadataInOneStorageUnit() throws Exception {
         MetaDataLoaderMaterial loadedMaterial = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "foo_ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
         MetaDataLoaderMaterial missingMaterial = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "foo_ds_2", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");

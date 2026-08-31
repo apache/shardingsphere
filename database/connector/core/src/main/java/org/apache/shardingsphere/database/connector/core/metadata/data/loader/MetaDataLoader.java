@@ -106,8 +106,11 @@ public final class MetaDataLoader {
         for (String each : material.getActualTableNames()) {
             Optional<TableMetaData> loaded = TableMetaDataLoader.loadNormalized(material.getDataSource(), each, material.getStorageType());
             if (!loaded.isPresent()) {
-                throw new SQLException("Table metadata not found for table '" + each + "' in storage unit '"
-                        + material.getStorageUnitName() + "'.");
+                if (material.getTableNamesLoadedFromStorage().contains(each)) {
+                    throw new SQLException("Table metadata not found for table '" + each + "' in storage unit '"
+                            + material.getStorageUnitName() + "'.");
+                }
+                continue;
             }
             tableMetaData.add(loaded.get());
         }
@@ -118,12 +121,12 @@ public final class MetaDataLoader {
         if (null == loadedSchemas) {
             throw new SQLException("Schema metadata is null for storage unit '" + material.getStorageUnitName() + "'.");
         }
-        if (material.getActualTableNames().isEmpty()) {
+        if (material.getTableNamesLoadedFromStorage().isEmpty()) {
             return;
         }
         if (loadedSchemas.isEmpty()) {
             throw new SQLException("Schema metadata is empty for storage unit '" + material.getStorageUnitName() + "', tables "
-                    + material.getActualTableNames() + ".");
+                    + material.getTableNamesLoadedFromStorage() + ".");
         }
         Collection<String> loadedTableNames = new LinkedList<>();
         for (SchemaMetaData each : loadedSchemas) {
@@ -133,7 +136,7 @@ public final class MetaDataLoader {
         }
         IdentifierCasePolicy tableIdentifierPolicy = IdentifierNormalizeEngine.resolvePolicy(material.getStorageType(), material.getDataSource(), IdentifierScope.TABLE);
         Collection<String> missingTableNames = new LinkedList<>();
-        for (String each : material.getActualTableNames()) {
+        for (String each : material.getTableNamesLoadedFromStorage()) {
             if (!IdentifierNormalizeEngine.findMatchedIdentifier(loadedTableNames, tableIdentifierPolicy, each).isPresent()) {
                 missingTableNames.add(each);
             }
