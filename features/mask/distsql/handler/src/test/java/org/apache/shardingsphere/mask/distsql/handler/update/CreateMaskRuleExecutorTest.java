@@ -65,7 +65,7 @@ class CreateMaskRuleExecutorTest {
         CreateMaskRuleStatement sqlStatement = createDuplicatedSQLStatement(false, "MD5", "T_MASK", "T_ORDER");
         assertThrows(DuplicateRuleException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(rule), null).executeUpdate());
     }
-
+    
     @Test
     void assertExecuteUpdateWithoutIfNotExists() throws SQLException {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfiguration();
@@ -104,7 +104,7 @@ class CreateMaskRuleExecutorTest {
     private CreateMaskRuleStatement createDuplicatedSQLStatement(final boolean ifNotExists, final String algorithmType) {
         return createDuplicatedSQLStatement(ifNotExists, algorithmType, "t_mask", "t_order");
     }
-
+    
     private CreateMaskRuleStatement createDuplicatedSQLStatement(final boolean ifNotExists, final String algorithmType, final String maskTableName, final String orderTableName) {
         MaskColumnSegment tMaskColumnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment(algorithmType, new Properties()));
         MaskColumnSegment tOrderColumnSegment = new MaskColumnSegment("order_id", new AlgorithmSegment(algorithmType, new Properties()));

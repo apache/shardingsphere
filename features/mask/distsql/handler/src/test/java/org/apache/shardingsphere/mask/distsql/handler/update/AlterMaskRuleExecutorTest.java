@@ -124,7 +124,7 @@ class AlterMaskRuleExecutorTest {
         assertThat(actual.getMaskAlgorithms().size(), is(1));
         assertTrue(actual.getMaskAlgorithms().containsKey("unused_mask"));
     }
-
+    
     @Test
     void assertGetRuleClass() {
         assertThat(executor.getRuleClass(), is(MaskRule.class));
