@@ -150,6 +150,6 @@ class ShardingSphereDatabaseFactoryTest {
                 Arguments.of("fixture database adds default schema", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), "system_db", "system_db", 1),
                 Arguments.of("mysql system database keeps existing default schema", TypedSPILoader.getService(DatabaseType.class, "MySQL"), "mysql", "mysql", 1),
                 Arguments.of("mysql database adds default schema", TypedSPILoader.getService(DatabaseType.class, "MySQL"), "foo_db", "foo_db", 1),
-                Arguments.of("oracle database formats default schema to upper case", TypedSPILoader.getService(DatabaseType.class, "Oracle"), "foo_db", "FOO_DB", 1));
+                Arguments.of("oracle database formats default schema to upper case", TypedSPILoader.getService(DatabaseType.class, "Oracle"), "foo_db", "FOO_DB", 3));
     }
 }
