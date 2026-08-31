@@ -71,9 +71,10 @@ public final class GenericSchemaBuilder {
      * @throws SQLException SQL exception
      */
     public static Map<String, ShardingSphereSchema> build(final Collection<String> tableNames, final DatabaseType protocolType, final GenericSchemaBuilderMaterial material) throws SQLException {
-        Map<String, SchemaMetaData> result = loadSchemas(tableNames, protocolType, material);
+        Collection<MetaDataLoaderMaterial> loaderMaterials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, protocolType, material);
+        Map<String, SchemaMetaData> result = loadSchemas(loaderMaterials);
         if (!isSchemaCompatible(protocolType, material.getStorageUnits())) {
-            result = translate(result, protocolType, material);
+            result = translate(result, protocolType, material, loaderMaterials);
         }
         return revise(result, material, protocolType);
     }
@@ -86,9 +87,7 @@ public final class GenericSchemaBuilder {
         return result;
     }
     
-    private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final DatabaseType protocolType,
-                                                           final GenericSchemaBuilderMaterial material) throws SQLException {
-        Collection<MetaDataLoaderMaterial> materials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, protocolType, material);
+    private static Map<String, SchemaMetaData> loadSchemas(final Collection<MetaDataLoaderMaterial> materials) throws SQLException {
         return materials.isEmpty() ? Collections.emptyMap() : MetaDataLoader.load(materials);
     }
     
@@ -106,12 +105,11 @@ public final class GenericSchemaBuilder {
                 .map(each -> each.getSchemaOption().isSchemaAvailable()).orElse(false);
     }
     
-    private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final DatabaseType protocolType, final GenericSchemaBuilderMaterial material) {
+    private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final DatabaseType protocolType, final GenericSchemaBuilderMaterial material,
+                                                         final Collection<MetaDataLoaderMaterial> loaderMaterials) {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
-        for (StorageUnit each : material.getStorageUnits().values()) {
-            DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(each.getStorageType());
-            String defaultSchemaName = databaseTypeRegistry.getDefaultSchemaName(material.getDefaultSchemaName());
-            tableMetaDataList.addAll(Optional.ofNullable(schemaMetaDataMap.get(defaultSchemaName)).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList));
+        for (String each : loaderMaterials.stream().map(MetaDataLoaderMaterial::getDefaultSchemaName).distinct().collect(Collectors.toList())) {
+            tableMetaDataList.addAll(Optional.ofNullable(schemaMetaDataMap.get(each)).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList));
         }
         String frontendSchemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(material.getDefaultSchemaName());
         return Collections.singletonMap(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));

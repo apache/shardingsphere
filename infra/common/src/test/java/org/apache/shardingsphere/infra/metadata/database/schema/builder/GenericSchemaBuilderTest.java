@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader;
+import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -41,6 +42,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -63,6 +68,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @StaticMockSettings(MetaDataLoader.class)
 class GenericSchemaBuilderTest {
+    
+    private static final DatabaseType H2_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "H2");
     
     private static final DatabaseType MYSQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
@@ -152,9 +159,27 @@ class GenericSchemaBuilderTest {
     
     @Test
     void assertBuildTranslatesSchemaWhenStorageSchemaUnavailable() throws SQLException {
-        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("PUBLIC", createSchemaMetaData("PUBLIC", "foo_tbl")));
+        mockLoadedSchemaWithMaterialDefault("foo_tbl");
         Map<String, ShardingSphereSchema> actual =
                 GenericSchemaBuilder.build(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, createMaterial(ORACLE_DATABASE_TYPE, "public"));
+        assertThat(actual.size(), is(1));
+        assertSchemaTable(actual, "public", "foo_tbl");
+    }
+    
+    @Test
+    void assertBuildTranslatesSchemaWithStorageDataSourcePolicy() throws SQLException {
+        mockLoadedSchemaWithMaterialDefault("foo_tbl");
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE,
+                createMaterial(MYSQL_DATABASE_TYPE, "Foo_DB", mockMySQLDataSource(1)));
+        assertThat(actual.size(), is(1));
+        assertSchemaTable(actual, "public", "foo_tbl");
+    }
+    
+    @Test
+    void assertBuildTranslatesSchemaWithHiddenStorageSchema() throws SQLException {
+        mockLoadedSchemaWithMaterialDefault("foo_tbl");
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(
+                Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, createMaterial(H2_DATABASE_TYPE, "Foo_DB"));
         assertThat(actual.size(), is(1));
         assertSchemaTable(actual, "public", "foo_tbl");
     }
@@ -166,13 +191,38 @@ class GenericSchemaBuilderTest {
     }
     
     private GenericSchemaBuilderMaterial createMaterial(final DatabaseType storageType, final String defaultSchemaName) {
+        return createMaterial(storageType, defaultSchemaName, new MockedDataSource());
+    }
+    
+    private GenericSchemaBuilderMaterial createMaterial(final DatabaseType storageType, final String defaultSchemaName, final DataSource dataSource) {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mock(TableMapperRuleAttribute.class)));
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(storageUnit.getStorageType()).thenReturn(storageType);
-        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
         return new GenericSchemaBuilderMaterial(Collections.singletonMap("foo_schema", storageUnit), Collections.singleton(rule), new ConfigurationProperties(new Properties()),
                 defaultSchemaName, DatabaseIdentifierContextFactory.createDefault());
+    }
+    
+    private static DataSource mockMySQLDataSource(final int lowerCaseTableNames) throws SQLException {
+        DataSource result = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(result.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT @@lower_case_table_names")).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt(1)).thenReturn(lowerCaseTableNames);
+        return result;
+    }
+    
+    private void mockLoadedSchemaWithMaterialDefault(final String tableName) throws SQLException {
+        when(MetaDataLoader.load(any())).thenAnswer(invocation -> {
+            Collection<MetaDataLoaderMaterial> loaderMaterials = invocation.getArgument(0);
+            String defaultSchemaName = loaderMaterials.iterator().next().getDefaultSchemaName();
+            return Collections.singletonMap(defaultSchemaName, createSchemaMetaData(defaultSchemaName, tableName));
+        });
     }
     
     private SchemaMetaData createSchemaMetaData(final String schemaName, final String tableName) {
