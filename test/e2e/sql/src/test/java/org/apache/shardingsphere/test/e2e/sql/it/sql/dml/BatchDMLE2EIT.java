@@ -34,8 +34,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @SQLE2EITSettings(value = SQLCommandType.DML, batch = true)
 class BatchDMLE2EIT extends BaseDMLE2EIT {

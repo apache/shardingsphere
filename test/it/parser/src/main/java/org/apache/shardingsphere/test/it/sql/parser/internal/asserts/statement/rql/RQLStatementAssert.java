@@ -26,19 +26,19 @@ import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowTablesS
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGenerateStrategiesStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowRulesStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowShardingKeyGeneratorsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowShardingKeyGenerateStrategiesStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowShardingKeyGeneratorsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowStorageUnitsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowTablesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding.ShowShardingKeyGeneratorsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding.ShowShardingKeyGenerateStrategiesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding.ShowShardingKeyGeneratorsStatementTestCase;
 import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 
 /**

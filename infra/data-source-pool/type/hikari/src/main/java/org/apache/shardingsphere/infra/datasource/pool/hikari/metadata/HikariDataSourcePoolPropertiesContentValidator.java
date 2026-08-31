@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.datasource.pool.hikari.metadata;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesContentValidator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesContentValidator;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;

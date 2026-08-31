@@ -23,12 +23,12 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.type.SQL92DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.type.SQL92DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.type.SQL92DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.type.SQL92DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.type.SQL92TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
 /**
  * Statement visitor facade for SQL92.

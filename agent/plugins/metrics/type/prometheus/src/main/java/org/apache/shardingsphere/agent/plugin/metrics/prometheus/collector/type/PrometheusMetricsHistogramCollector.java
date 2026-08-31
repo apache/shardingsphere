@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type
 
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Histogram.Builder;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.HistogramMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 
 import java.util.Map;
 

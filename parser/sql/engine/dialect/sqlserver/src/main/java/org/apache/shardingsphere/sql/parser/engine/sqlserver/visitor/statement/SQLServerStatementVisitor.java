@@ -41,9 +41,9 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Bit
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanPrimaryContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CaseExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CaseWhenContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ChangeTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;

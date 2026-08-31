@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleEntity;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField;
 import org.apache.shardingsphere.mode.node.rule.tuple.annotation.RuleNodeTupleField.Type;
-import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

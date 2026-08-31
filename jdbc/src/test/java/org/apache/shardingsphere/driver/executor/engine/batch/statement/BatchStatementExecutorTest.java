@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
