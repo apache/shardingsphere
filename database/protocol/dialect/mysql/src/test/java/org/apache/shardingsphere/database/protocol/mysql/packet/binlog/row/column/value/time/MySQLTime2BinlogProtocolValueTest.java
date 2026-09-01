@@ -92,6 +92,35 @@ class MySQLTime2BinlogProtocolValueTest {
     }
     
     @Test
+    void assertReadHourBeyondLocalTimeRange() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (100 << 12) | (8 << 6) | 4);
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("100:08:04"));
+    }
+    
+    @Test
+    void assertReadMaxHour() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (838 << 12) | (59 << 6) | 59);
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("838:59:59"));
+    }
+    
+    @Test
+    void assertReadNegativeTime() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMedium()).thenReturn(0x1000000 - (0x800000 | (16 << 12) | (8 << 6) | 4));
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("-16:08:04"));
+    }
+    
+    @Test
+    void assertReadNegativeTimeWithFraction() {
+        columnDef.setColumnMeta(6);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMedium()).thenReturn(0x1000000 - (0x800000 | (16 << 12) | (8 << 6) | 4), 10123);
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("-16:08:04.010123"));
+    }
+    
+    @Test
     void assertReadNullTimeWithFraction() {
         columnDef.setColumnMeta(4);
         when(payload.getByteBuf()).thenReturn(byteBuf);
