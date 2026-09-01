@@ -82,6 +82,22 @@ class DataNodeTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("resolvedDefaultSchemaDataNodeArguments")
+    void assertCreateWithDefaultSchemaName(final String name, final String defaultSchemaName, final DatabaseType databaseType, final String dataNodeText,
+                                           final String expectedSchemaName, final String expectedTableName) {
+        DataNode actual = DataNode.createWithDefaultSchemaName(defaultSchemaName, databaseType, dataNodeText);
+        assertThat(actual.getDataSourceName(), is("ds"));
+        assertThat(actual.getSchemaName(), is(expectedSchemaName));
+        assertThat(actual.getTableName(), is(expectedTableName));
+    }
+    
+    @Test
+    void assertCreateWithDefaultSchemaNameWithInvalidFormat() {
+        assertThrows(InvalidDataNodeFormatException.class,
+                () -> DataNode.createWithDefaultSchemaName("public", POSTGRESQL_DATABASE_TYPE, "invalid_format_without_delimiter"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("formatArguments")
     void assertFormat(final String name, final DataNode dataNode, final String expectedText) {
         assertThat(dataNode.format(), is(expectedText));
@@ -153,6 +169,14 @@ class DataNodeTest {
                 Arguments.of("mysql_three_segments_kept_as_table_suffix", "test_db", MYSQL_DATABASE_TYPE, "ds.schema.tbl", "ds", "test_db", "schema.tbl"),
                 Arguments.of("postgresql_preserves_table_case", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.schema.TABLE", "ds", "schema", "TABLE"),
                 Arguments.of("oracle_normalizes_database_schema", "logic_db", ORACLE_DATABASE_TYPE, "ds.tbl", "ds", "LOGIC_DB", "tbl"));
+    }
+    
+    private static Stream<Arguments> resolvedDefaultSchemaDataNodeArguments() {
+        return Stream.of(
+                Arguments.of("oracle_preserves_resolved_schema", "storage_schema", ORACLE_DATABASE_TYPE, "ds.tbl", "storage_schema", "tbl"),
+                Arguments.of("postgresql_explicit_schema", "ignored", POSTGRESQL_DATABASE_TYPE, "ds.schema.tbl", "schema", "tbl"),
+                Arguments.of("postgresql_all_schemas", "ignored", POSTGRESQL_DATABASE_TYPE, "ds.tbl", "*", "tbl"),
+                Arguments.of("mysql_dotted_table_suffix", "storage_schema", MYSQL_DATABASE_TYPE, "ds.schema.tbl", "storage_schema", "schema.tbl"));
     }
     
     private static Stream<Arguments> formatArguments() {

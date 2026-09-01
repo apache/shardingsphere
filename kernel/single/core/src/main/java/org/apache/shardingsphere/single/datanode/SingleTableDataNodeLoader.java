@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SchemaMetaDataLoader;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -81,7 +82,7 @@ public final class SingleTableDataNodeLoader {
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         Map<String, DatabaseType> validStorageTypes = validDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
         Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, validDataSources, includedTables, excludedTables, validStorageTypes);
-        Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, protocolType, splitTables, validStorageTypes);
+        Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, protocolType, splitTables, validDataSources, validStorageTypes);
         Map<String, Collection<DataNode>> result = loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, configuredTableMap);
         warnIfSingleTableLoadedFromMultipleDataSources(databaseName, result);
         return result;
@@ -216,15 +217,14 @@ public final class SingleTableDataNodeLoader {
     }
     
     private static Map<String, Map<String, Collection<String>>> getConfiguredTableMap(final String databaseName, final DatabaseType protocolType, final Collection<String> configuredTables,
-                                                                                      final Map<String, DatabaseType> validStorageTypes) {
+                                                                                      final Map<String, DataSource> validDataSources, final Map<String, DatabaseType> validStorageTypes) {
         if (configuredTables.isEmpty()) {
             return Collections.emptyMap();
         }
         Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>(configuredTables.size(), 1F);
+        Map<String, String> defaultSchemaNames = getDefaultSchemaNames(databaseName, validDataSources, validStorageTypes);
         for (String each : configuredTables) {
-            DataNode parsedDataNode = new DataNode(each);
-            DatabaseType databaseType = validStorageTypes.getOrDefault(parsedDataNode.getDataSourceName(), protocolType);
-            DataNode dataNode = new DataNode(databaseName, databaseType, each);
+            DataNode dataNode = getConfiguredDataNode(databaseName, protocolType, validStorageTypes, defaultSchemaNames, each);
             Map<String, Collection<String>> schemaTables = result.getOrDefault(dataNode.getDataSourceName(), new LinkedHashMap<>());
             Collection<String> tables = schemaTables.computeIfAbsent(dataNode.getSchemaName(),
                     ignored -> SingleTableConstants.ASTERISK.equals(dataNode.getSchemaName()) ? new CaseInsensitiveSet<>() : new LinkedHashSet<>());
@@ -232,6 +232,23 @@ public final class SingleTableDataNodeLoader {
             result.putIfAbsent(dataNode.getDataSourceName(), schemaTables);
         }
         return result;
+    }
+    
+    private static Map<String, String> getDefaultSchemaNames(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes) {
+        Map<String, String> result = new LinkedHashMap<>(dataSources.size(), 1F);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            DatabaseType storageType = storageTypes.get(entry.getKey());
+            result.put(entry.getKey(), DefaultSchemaNameResolver.resolveStorage(storageType, entry.getValue(), databaseName));
+        }
+        return result;
+    }
+    
+    private static DataNode getConfiguredDataNode(final String databaseName, final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes,
+                                                  final Map<String, String> defaultSchemaNames, final String dataNode) {
+        String dataSourceName = new DataNode(dataNode).getDataSourceName();
+        return defaultSchemaNames.containsKey(dataSourceName)
+                ? DataNode.createWithDefaultSchemaName(defaultSchemaNames.get(dataSourceName), storageTypes.get(dataSourceName), dataNode)
+                : new DataNode(databaseName, protocolType, dataNode);
     }
     
     /**
