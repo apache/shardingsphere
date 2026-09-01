@@ -85,6 +85,18 @@ class MySQLDatetime2BinlogProtocolValueTest {
     }
     
     @Test
+    void assertReadWithZeroMonth() {
+        when(payload.readInt1()).thenReturn(0x99, 0xae, 0xde, 0xa0, 0x00);
+        assertThat(protocolValue.read(columnDef, payload), is("2023-00-15 10:00:00"));
+    }
+    
+    @Test
+    void assertReadWithZeroDay() {
+        when(payload.readInt1()).thenReturn(0x99, 0xb0, 0x00, 0xa0, 0x00);
+        assertThat(protocolValue.read(columnDef, payload), is("2023-05-00 10:00:00"));
+    }
+    
+    @Test
     void assertReadWithZeroDatetime() {
         assertThat(protocolValue.read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
     }
