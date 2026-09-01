@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.loader.Me
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 
@@ -78,11 +79,13 @@ public final class SchemaMetaDataLoader {
      */
     public Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DataSource dataSource, final Collection<String> includedTables,
                                                                 final Collection<String> excludedTables) throws SQLException {
+        boolean hasDefaultSchema = schemaOption.getDefaultSchema().isPresent();
+        String storageDefaultSchemaName = hasDefaultSchema ? null : DefaultSchemaNameResolver.resolveStorage(databaseType, dataSource, databaseName);
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
             Collection<String> schemaNames = loadSchemaNames(connection);
             Map<String, Collection<String>> result = new LinkedHashMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
-                String schemaName = schemaOption.getDefaultSchema().isPresent() ? each : new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
+                String schemaName = hasDefaultSchema ? each : storageDefaultSchemaName;
                 result.put(schemaName, loadTableNames(connection, each, includedTables, excludedTables));
             }
             return result;
