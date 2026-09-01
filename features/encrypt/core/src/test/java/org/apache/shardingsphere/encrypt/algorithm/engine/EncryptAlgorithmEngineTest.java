@@ -84,6 +84,17 @@ class EncryptAlgorithmEngineTest {
     }
     
     @Test
+    void assertDecryptWithBase64EncoderAndBoundaryWhitespace() {
+        EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm(byte[].class);
+        when(encryptAlgorithm.decrypt(any(byte[].class), any(AlgorithmSQLContext.class))).thenReturn("plain");
+        Object actualPlainValue = EncryptAlgorithmEngine.decrypt(encryptAlgorithm, "Y2lwaGVy                          ", createAlgorithmSQLContext(), "BASE64");
+        ArgumentCaptor<byte[]> actualCipherValueCaptor = ArgumentCaptor.forClass(byte[].class);
+        verify(encryptAlgorithm).decrypt(actualCipherValueCaptor.capture(), any(AlgorithmSQLContext.class));
+        assertArrayEquals("cipher".getBytes(StandardCharsets.UTF_8), actualCipherValueCaptor.getValue());
+        assertThat(actualPlainValue, is("plain"));
+    }
+    
+    @Test
     void assertDecryptWithTextAlgorithm() {
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm(Object.class);
         when(encryptAlgorithm.decrypt(eq("cipher"), any(AlgorithmSQLContext.class))).thenReturn("plain");

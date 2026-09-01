@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithmValueUtils;
 
 import java.util.Base64;
 import java.util.Locale;
@@ -118,7 +119,7 @@ public final class EncryptAlgorithmEngine {
     }
     
     private static byte[] decode(final String value, final String encoder) {
-        return BASE64.equalsIgnoreCase(encoder) ? Base64.getDecoder().decode(value) : decodeHex(value.trim());
+        return BASE64.equalsIgnoreCase(encoder) ? CryptographicAlgorithmValueUtils.decodeBase64(value) : decodeHex(value.trim());
     }
     
     private static String encodeHex(final byte[] value, final boolean lowerCase) {
