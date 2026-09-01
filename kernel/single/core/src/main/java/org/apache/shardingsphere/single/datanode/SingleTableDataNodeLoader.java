@@ -247,7 +247,7 @@ public final class SingleTableDataNodeLoader {
                                                   final Map<String, String> defaultSchemaNames, final String dataNode) {
         String dataSourceName = new DataNode(dataNode).getDataSourceName();
         return defaultSchemaNames.containsKey(dataSourceName)
-                ? DataNode.createWithDefaultSchemaName(storageTypes.get(dataSourceName), defaultSchemaNames.get(dataSourceName), dataNode)
+                ? DataNode.createWithDefaultSchemaName(defaultSchemaNames.get(dataSourceName), storageTypes.get(dataSourceName), dataNode)
                 : new DataNode(databaseName, protocolType, dataNode);
     }
     

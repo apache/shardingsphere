@@ -69,10 +69,10 @@ public final class DataNode {
      * @param dataNode data node use {@code .} to split schema name and table name
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
-        this(new DatabaseTypeRegistry(databaseType), databaseName, dataNode);
+        this(databaseName, new DatabaseTypeRegistry(databaseType), dataNode);
     }
     
-    private DataNode(final DatabaseTypeRegistry registry, final String databaseName, final String dataNode) {
+    private DataNode(final String databaseName, final DatabaseTypeRegistry registry, final String dataNode) {
         this(registry.getDefaultSchemaName(databaseName), registry.getDialectDatabaseMetaData().getSchemaOption(), dataNode);
     }
     
@@ -89,12 +89,12 @@ public final class DataNode {
     /**
      * Create a data node with resolved default schema name.
      *
-     * @param databaseType database type
      * @param defaultSchemaName resolved default schema name
+     * @param databaseType database type
      * @param dataNode data node use {@code .} to split schema name and table name
      * @return created data node
      */
-    public static DataNode createWithDefaultSchemaName(final DatabaseType databaseType, final String defaultSchemaName, final String dataNode) {
+    public static DataNode createWithDefaultSchemaName(final String defaultSchemaName, final DatabaseType databaseType, final String dataNode) {
         return new DataNode(defaultSchemaName, new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption(), dataNode);
     }
     

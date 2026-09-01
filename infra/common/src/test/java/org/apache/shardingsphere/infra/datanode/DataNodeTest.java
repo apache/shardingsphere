@@ -85,7 +85,7 @@ class DataNodeTest {
     @MethodSource("resolvedDefaultSchemaDataNodeArguments")
     void assertCreateWithDefaultSchemaName(final String name, final String defaultSchemaName, final DatabaseType databaseType, final String dataNodeText,
                                            final String expectedSchemaName, final String expectedTableName) {
-        DataNode actual = DataNode.createWithDefaultSchemaName(databaseType, defaultSchemaName, dataNodeText);
+        DataNode actual = DataNode.createWithDefaultSchemaName(defaultSchemaName, databaseType, dataNodeText);
         assertThat(actual.getDataSourceName(), is("ds"));
         assertThat(actual.getSchemaName(), is(expectedSchemaName));
         assertThat(actual.getTableName(), is(expectedTableName));
@@ -94,7 +94,7 @@ class DataNodeTest {
     @Test
     void assertCreateWithDefaultSchemaNameWithInvalidFormat() {
         assertThrows(InvalidDataNodeFormatException.class,
-                () -> DataNode.createWithDefaultSchemaName(POSTGRESQL_DATABASE_TYPE, "public", "invalid_format_without_delimiter"));
+                () -> DataNode.createWithDefaultSchemaName("public", POSTGRESQL_DATABASE_TYPE, "invalid_format_without_delimiter"));
     }
     
     @ParameterizedTest(name = "{0}")
