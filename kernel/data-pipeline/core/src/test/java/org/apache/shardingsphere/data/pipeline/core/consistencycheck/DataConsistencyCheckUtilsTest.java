@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,17 +64,27 @@ class DataConsistencyCheckUtilsTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("preEpochTimestampCases")
-    void assertTimestampMatchedBeforeEpoch(final String scenario, final long thisMillis, final long thatMillis, final boolean expected) {
-        assertThat(DataConsistencyCheckUtils.isMatched(new EqualsBuilder(), new Timestamp(thisMillis), new Timestamp(thatMillis)), is(expected));
+    @MethodSource("matchedPreEpochTimestampCases")
+    void assertTimestampMatchedBeforeEpoch(final String scenario, final long thisMillis, final long thatMillis) {
+        assertTrue(DataConsistencyCheckUtils.isMatched(new EqualsBuilder(), new Timestamp(thisMillis), new Timestamp(thatMillis)));
     }
     
-    private static Stream<Arguments> preEpochTimestampCases() {
+    private static Stream<Arguments> matchedPreEpochTimestampCases() {
         return Stream.of(
-                Arguments.of("different seconds before epoch", -1500L, -1000L, false),
-                Arguments.of("different seconds across epoch", -500L, 400L, false),
-                Arguments.of("same second before epoch", -1000L, -999L, true),
-                Arguments.of("sub second tolerance before epoch", -1999L, -1001L, true));
+                Arguments.of("same second before epoch", -1000L, -999L),
+                Arguments.of("sub second tolerance before epoch", -1999L, -1001L));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("notMatchedPreEpochTimestampCases")
+    void assertTimestampNotMatchedBeforeEpoch(final String scenario, final long thisMillis, final long thatMillis) {
+        assertFalse(DataConsistencyCheckUtils.isMatched(new EqualsBuilder(), new Timestamp(thisMillis), new Timestamp(thatMillis)));
+    }
+    
+    private static Stream<Arguments> notMatchedPreEpochTimestampCases() {
+        return Stream.of(
+                Arguments.of("different seconds before epoch", -1500L, -1000L),
+                Arguments.of("different seconds across epoch", -500L, 400L));
     }
     
     @Test
