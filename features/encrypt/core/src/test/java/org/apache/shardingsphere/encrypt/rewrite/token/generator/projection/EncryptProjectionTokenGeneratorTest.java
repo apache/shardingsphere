@@ -29,6 +29,8 @@ import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
@@ -58,6 +60,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -196,9 +199,17 @@ class EncryptProjectionTokenGeneratorTest {
     }
     
     private EncryptColumn createEncryptColumnWithDerivedColumns() {
-        EncryptColumn result = new EncryptColumn("mobile", new CipherColumnItem("cipher_mobile", mock(EncryptAlgorithm.class)));
-        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_mobile", mock(EncryptAlgorithm.class)));
-        result.setLikeQuery(new LikeQueryColumnItem("like_mobile", mock(EncryptAlgorithm.class)));
+        EncryptColumn result = new EncryptColumn("mobile", new CipherColumnItem("cipher_mobile", mockEncryptAlgorithm()));
+        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_mobile", mockEncryptAlgorithm()));
+        result.setLikeQuery(new LikeQueryColumnItem("like_mobile", mockEncryptAlgorithm()));
+        return result;
+    }
+    
+    private EncryptAlgorithm mockEncryptAlgorithm() {
+        EncryptAlgorithm result = mock(EncryptAlgorithm.class);
+        when(result.getMetaData()).thenReturn(new EncryptAlgorithmMetaData(true, true, true));
+        when(result.getEncoder()).thenReturn(Optional.empty());
+        when(result.toConfiguration()).thenReturn(new AlgorithmConfiguration("FIXTURE", new Properties()));
         return result;
     }
     

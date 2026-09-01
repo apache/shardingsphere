@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.spi;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 
 /**
  * Cryptographic algorithm.
@@ -28,15 +29,24 @@ public interface CryptographicAlgorithm extends ShardingSphereAlgorithm {
      * Encrypt.
      *
      * @param plainValue plain value
+     * @param cryptographicContext cryptographic context
      * @return cipher value
      */
-    Object encrypt(Object plainValue);
+    byte[] encrypt(Object plainValue, CryptographicContext cryptographicContext);
     
     /**
      * Decrypt.
      *
      * @param cipherValue cipher value
+     * @param cryptographicContext cryptographic context
      * @return plain value
      */
-    Object decrypt(Object cipherValue);
+    Object decrypt(byte[] cipherValue, CryptographicContext cryptographicContext);
+    
+    /**
+     * Convert to cryptographic algorithm configuration.
+     *
+     * @return converted configuration
+     */
+    AlgorithmConfiguration toConfiguration();
 }

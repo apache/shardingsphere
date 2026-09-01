@@ -21,25 +21,39 @@ import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class EncryptColumnTest {
     
     @Test
     void assertGetQueryEncryptorWithoutAssisted() {
-        EncryptAlgorithm cipherAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptAlgorithm cipherAlgorithm = mockEncryptAlgorithm();
         assertThat(new EncryptColumn("foo_tbl", new CipherColumnItem("foo_col", cipherAlgorithm)).getEncryptor(EncryptColumnItemType.CIPHER), is(cipherAlgorithm));
     }
     
     @Test
     void assertGetQueryEncryptorWithAssisted() {
-        EncryptColumn encryptColumn = new EncryptColumn("foo_tbl", new CipherColumnItem("foo_cipher_col", mock(EncryptAlgorithm.class)));
-        EncryptAlgorithm assistedQueryAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptColumn encryptColumn = new EncryptColumn("foo_tbl", new CipherColumnItem("foo_cipher_col", mockEncryptAlgorithm()));
+        EncryptAlgorithm assistedQueryAlgorithm = mockEncryptAlgorithm();
         encryptColumn.setAssistedQuery(new AssistedQueryColumnItem("foo_assisted_query_col", assistedQueryAlgorithm));
         assertThat(encryptColumn.getEncryptor(EncryptColumnItemType.ASSISTED_QUERY), is(assistedQueryAlgorithm));
+    }
+    
+    private EncryptAlgorithm mockEncryptAlgorithm() {
+        EncryptAlgorithm result = mock(EncryptAlgorithm.class);
+        when(result.getMetaData()).thenReturn(new EncryptAlgorithmMetaData(true, true, true));
+        when(result.getEncoder()).thenReturn(Optional.empty());
+        when(result.toConfiguration()).thenReturn(new AlgorithmConfiguration("FIXTURE", new Properties()));
+        return result;
     }
 }
