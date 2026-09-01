@@ -45,7 +45,6 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -82,7 +81,7 @@ class AlterViewFederationMetaDataRefresherTest {
         verify(metaDataManagerPersistService).alterViews(eq(database), eq(schemaName), alteredViewsCaptor.capture());
         verify(metaDataManagerPersistService).dropViews(eq(database), eq(schemaName), droppedViewsCaptor.capture());
         Collection<ShardingSphereView> alteredViews = alteredViewsCaptor.getValue();
-        assertThat(alteredViews, hasSize(1));
+        assertThat(alteredViews.size(), is(1));
         ShardingSphereView actualView = alteredViews.iterator().next();
         assertThat(actualView.getName(), is("bar_view"));
         assertThat(actualView.getViewDefinition(), is("SELECT * FROM foo_tbl"));
@@ -102,7 +101,7 @@ class AlterViewFederationMetaDataRefresherTest {
         verify(metaDataManagerPersistService).alterViews(eq(database), eq(schemaName), alteredViewsCaptor.capture());
         verify(metaDataManagerPersistService).dropViews(eq(database), eq(schemaName), droppedViewsCaptor.capture());
         Collection<ShardingSphereView> alteredViews = alteredViewsCaptor.getValue();
-        assertThat(alteredViews, hasSize(1));
+        assertThat(alteredViews.size(), is(1));
         ShardingSphereView actualView = alteredViews.iterator().next();
         assertThat(actualView.getName(), is("foo_view"));
         assertThat(actualView.getViewDefinition(), is(expectedViewDefinition));

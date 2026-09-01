@@ -35,11 +35,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter
@@ -135,7 +134,7 @@ public final class TestShardingService {
     
     private void assertQueryInTOrder() throws SQLException {
         List<Order> orders = orderRepository.selectAll();
-        assertThat(orders.stream().map(Order::getOrderId).collect(Collectors.toList()), not(empty()));
+        assertFalse(orders.isEmpty());
         assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
                 containsInAnyOrder(0, 1, 0, 1, 0, 1, 0, 1, 0, 1));
         assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toList()),
@@ -147,8 +146,7 @@ public final class TestShardingService {
     }
     
     private void assertQueryInTOrderItem(final List<OrderItem> orderItems) {
-        assertThat(orderItems.stream().map(OrderItem::getOrderItemId).collect(Collectors.toList()), not(empty()));
-        assertThat(orderItems.stream().map(OrderItem::getOrderId).collect(Collectors.toList()), not(empty()));
+        assertFalse(orderItems.isEmpty());
         assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
                 containsInAnyOrder(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         assertThat(orderItems.stream().map(OrderItem::getPhone).collect(Collectors.toList()),

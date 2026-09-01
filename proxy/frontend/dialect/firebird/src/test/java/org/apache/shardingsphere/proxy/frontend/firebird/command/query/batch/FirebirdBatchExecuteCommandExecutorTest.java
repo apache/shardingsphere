@@ -52,7 +52,6 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
@@ -119,7 +118,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
             FirebirdBatchCompletionStateResponse actualResponse = (FirebirdBatchCompletionStateResponse) actual.iterator().next();
             assertThat(actualResponse, isA(FirebirdBatchCompletionStateResponse.class));
             assertThat(getRecordsCount(actualResponse), is(2L));
-            assertArrayEquals(new int[0], getUpdateCounts(actualResponse));
+            assertThat(getUpdateCounts(actualResponse), is(new int[0]));
             verify(batchRegistry).getBatchStatement(CONNECTION_ID, STATEMENT_ID);
             verify(connectionSession.getServerPreparedStatementRegistry()).getPreparedStatement(STATEMENT_ID);
             verify(batchStatement).reset();
@@ -143,7 +142,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
             assertThat(getRecordsCount(actual), is(2L));
-            assertArrayEquals(new int[]{5, 5}, getUpdateCounts(actual));
+            assertThat(getUpdateCounts(actual), is(new int[]{5, 5}));
             verify(batchStatement).reset();
         }
     }
@@ -164,7 +163,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
             clearInvocations(connectionSession.getServerPreparedStatementRegistry());
             FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
             assertThat(getRecordsCount(actual), is(0L));
-            assertArrayEquals(new int[0], getUpdateCounts(actual));
+            assertThat(getUpdateCounts(actual), is(new int[0]));
             verify(connectionSession.getServerPreparedStatementRegistry(), never()).getPreparedStatement(anyInt());
         } finally {
             FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
@@ -191,7 +190,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
             assertThat(getRecordsCount(actual), is(2L));
-            assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, getUpdateCounts(actual));
+            assertThat(getUpdateCounts(actual), is(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}));
             List<DetailedError> detailedErrors = getDetailedErrors(actual);
             assertThat(detailedErrors.size(), is(1));
             assertThat(detailedErrors.get(0).getElement(), is(1));
@@ -218,7 +217,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             FirebirdBatchCompletionStateResponse actual = (FirebirdBatchCompletionStateResponse) new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute().iterator().next();
             assertThat(getRecordsCount(actual), is(1L));
-            assertArrayEquals(new int[0], getUpdateCounts(actual));
+            assertThat(getUpdateCounts(actual), is(new int[0]));
             List<DetailedError> detailedErrors = getDetailedErrors(actual);
             assertThat(detailedErrors.size(), is(1));
             assertThat(detailedErrors.get(0).getElement(), is(0));
@@ -248,7 +247,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithNoBatchStatement() throws SQLException {
+    void assertExecuteWithNoBatchStatement() {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(null);

@@ -27,12 +27,12 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -48,7 +48,7 @@ class AlgorithmChangedProcessorTest {
     @Test
     void assertSwapRuleItemConfiguration() {
         AlgorithmConfiguration actual = processor.swapRuleItemConfiguration(null, createYAMLContent());
-        assertThat(actual, deepEqual(new AlgorithmConfiguration("foo_algo", new Properties())));
+        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new AlgorithmConfiguration("foo_algo", new Properties())));
     }
     
     private String createYAMLContent() {

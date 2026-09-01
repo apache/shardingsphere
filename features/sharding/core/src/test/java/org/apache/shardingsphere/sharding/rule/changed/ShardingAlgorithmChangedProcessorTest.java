@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,7 +44,7 @@ class ShardingAlgorithmChangedProcessorTest {
     
     @Test
     void assertFindRuleConfigurationWhenAbsent() {
-        assertThat(processor.findRuleConfiguration(mockDatabase()), deepEqual(new ShardingRuleConfiguration()));
+        assertThat(processor.findRuleConfiguration(mockDatabase()), ShardingSphereAssertionMatchers.deepEqual(new ShardingRuleConfiguration()));
     }
     
     private ShardingSphereDatabase mockDatabase() {

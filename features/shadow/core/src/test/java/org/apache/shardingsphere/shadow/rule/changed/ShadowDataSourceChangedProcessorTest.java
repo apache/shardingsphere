@@ -27,12 +27,12 @@ import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -48,7 +48,7 @@ class ShadowDataSourceChangedProcessorTest {
     @Test
     void assertSwapRuleItemConfiguration() {
         ShadowDataSourceConfiguration actual = processor.swapRuleItemConfiguration("foo_ds", createYAMLContent());
-        assertThat(actual, deepEqual(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
+        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new ShadowDataSourceConfiguration("foo_ds", "prod_ds", "shadow_ds")));
     }
     
     private String createYAMLContent() {

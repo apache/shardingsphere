@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
 class MCPMetadataSnapshotTest {
@@ -39,6 +39,6 @@ class MCPMetadataSnapshotTest {
     @Test
     void assertGetSequencesWithoutSchema() {
         MCPMetadataSnapshot snapshot = new MCPMetadataSnapshot(Collections.emptyList(), Collections.emptyMap());
-        assertThat(snapshot.getSequences("public"), is(empty()));
+        assertTrue(snapshot.getSequences("public").isEmpty());
     }
 }

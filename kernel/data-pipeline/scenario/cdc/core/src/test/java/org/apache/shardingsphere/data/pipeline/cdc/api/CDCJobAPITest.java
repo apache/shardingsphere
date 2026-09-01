@@ -100,8 +100,6 @@ import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -110,10 +108,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -396,9 +394,9 @@ class CDCJobAPITest {
             when(DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, storageUnitWithoutSQL.getStorageType())).thenReturn(builderWithoutSQL);
             when(DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, storageUnitWithSQL.getStorageType())).thenReturn(builderWithSQL);
             List<CDCJobItemInfo> actual = new ArrayList<>(jobAPI.getJobItemInfos("foo_job"));
-            assertThat(actual, hasSize(3));
-            assertThat(actual.get(0).getConfirmedPosition(), emptyString());
-            assertThat(actual.get(1).getConfirmedPosition(), emptyString());
+            assertThat(actual.size(), is(3));
+            assertTrue(actual.get(0).getConfirmedPosition().isEmpty());
+            assertTrue(actual.get(1).getConfirmedPosition().isEmpty());
             assertThat(actual.get(2).getConfirmedPosition(), is("binlog_001"));
             assertThat(actual.get(2).getCurrentPosition(), is("bar_position"));
         }

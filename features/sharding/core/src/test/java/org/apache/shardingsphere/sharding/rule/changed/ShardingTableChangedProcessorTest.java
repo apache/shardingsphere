@@ -27,12 +27,12 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -48,7 +48,7 @@ class ShardingTableChangedProcessorTest {
     @Test
     void assertSwapRuleItemConfiguration() {
         ShardingTableRuleConfiguration actual = processor.swapRuleItemConfiguration(null, createYAMLContent());
-        assertThat(actual, deepEqual(new ShardingTableRuleConfiguration("foo_tbl", "foo_ds.foo_tbl")));
+        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new ShardingTableRuleConfiguration("foo_tbl", "foo_ds.foo_tbl")));
     }
     
     private String createYAMLContent() {

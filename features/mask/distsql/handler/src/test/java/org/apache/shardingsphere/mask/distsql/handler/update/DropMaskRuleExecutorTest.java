@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -43,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -64,7 +64,7 @@ class DropMaskRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(createSQLStatement(false, "T_MASK"), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutIfExists)));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), argThat(this::assertRuleConfigurationWithoutIfExists)));
     }
     
     private boolean assertRuleConfigurationWithoutIfExists(final MaskRuleConfiguration actual) {
@@ -82,8 +82,8 @@ class DropMaskRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(createSQLStatement(true, "T_USER"), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithoutIfExists));
-        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfigurationWithIfExists)));
+        metaDataManagerPersistService.alterRuleConfiguration(any(), argThat(this::assertRuleConfigurationWithoutIfExists));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), argThat(this::assertRuleConfigurationWithIfExists)));
     }
     
     private DropMaskRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {

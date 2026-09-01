@@ -110,7 +110,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Each test case needs precise assertions, try not to use `not`, `containsString` assertions.
 - Use JUnit 5 and Mockito. Keep environment preparation, test action, and assertions distinct; reset static state between scenarios and reuse existing swappers or helpers for complex configuration.
 - Default to direct Mockito mocks. Use a private helper only for repeated local setup and a standalone fixture only for a stable external or packaged test boundary. Give fixtures the narrowest practical visibility, keep them in the nearest owning test package or module, and do not create cross-module test APIs for convenience. Delete or inline thin mock wrappers.
-- Only Mockito, junit `Assertions`, hamcrest `CoreMatchers` and `MatcherAssert` related can use static import.
 - Data assertion standards should follow:
     - Boolean type assertions should use `assertTrue` and `assertFalse`;
     - Null value assertions should use `assertNull` and `assertNotNull`;

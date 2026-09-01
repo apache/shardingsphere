@@ -49,7 +49,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -382,7 +381,7 @@ class ProxyBackendTransactionManagerTest {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(transactionRule)));
         when(contextManager.getExclusiveOperatorEngine()).thenReturn(exclusiveOperatorEngine);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(OrderedSPILoader.getServices(eq(TransactionHook.class), ArgumentMatchers.<Collection<ShardingSphereRule>>any())).thenReturn(transactionHooks);
+        when(OrderedSPILoader.<ShardingSphereRule, TransactionHook>getServices(eq(TransactionHook.class), anyCollection())).thenReturn(transactionHooks);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

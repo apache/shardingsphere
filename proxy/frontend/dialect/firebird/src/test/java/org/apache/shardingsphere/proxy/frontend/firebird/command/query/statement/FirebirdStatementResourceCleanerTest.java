@@ -43,6 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -142,7 +143,7 @@ class FirebirdStatementResourceCleanerTest {
         actualConnectionManager.add(actualProxyBackendHandler);
         actualConnectionManager.markResourceInUse(actualProxyBackendHandler);
         AtomicBoolean closed = new AtomicBoolean(false);
-        org.mockito.Mockito.doAnswer(invocation -> {
+        doAnswer(invocation -> {
             if (closed.getAndSet(true)) {
                 throw new SQLException("close twice");
             }

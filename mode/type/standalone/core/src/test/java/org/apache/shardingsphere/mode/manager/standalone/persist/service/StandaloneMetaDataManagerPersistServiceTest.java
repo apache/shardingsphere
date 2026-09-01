@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.Data
 import org.apache.shardingsphere.mode.node.path.version.MetaDataVersion;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +52,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -176,7 +176,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(new MetaDataVersion(databaseRuleNodePath)));
         when(metaDataPersistFacade.getRepository().query("/metadata/foo_db/rules/fixture/unique/active_version")).thenReturn("0");
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(deepEq(databaseRuleNodePath));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(ShardingSphereArgumentVerifyMatchers.deepEq(databaseRuleNodePath));
     }
     
     @Test
@@ -221,8 +221,8 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Arrays.asList(
                 new MetaDataVersion(uniqueDatabaseRuleNodePath), new MetaDataVersion(namedDatabaseRuleNodePath)));
         metaDataManagerPersistService.removeRuleConfigurationItem(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(uniqueDatabaseRuleNodePath));
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(namedDatabaseRuleNodePath));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(ShardingSphereArgumentVerifyMatchers.deepEq(uniqueDatabaseRuleNodePath));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(ShardingSphereArgumentVerifyMatchers.deepEq(namedDatabaseRuleNodePath));
     }
     
     @Test

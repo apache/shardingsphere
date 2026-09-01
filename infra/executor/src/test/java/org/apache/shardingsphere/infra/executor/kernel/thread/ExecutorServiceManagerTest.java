@@ -47,11 +47,11 @@ class ExecutorServiceManagerTest {
             assertValueChangedInConcurrencyThread();
             finished.set(true);
         });
-        assertTimeout(Duration.ofSeconds(1L), () -> assertFinished(finished));
+        assertTimeout(Duration.ofSeconds(2L), () -> assertFinished(finished));
     }
     
     private void assertFinished(final AtomicBoolean finished) {
-        Awaitility.await().atMost(1L, TimeUnit.MINUTES).pollInterval(100L, TimeUnit.MILLISECONDS).until(finished::get);
+        Awaitility.await().atMost(1L, TimeUnit.SECONDS).pollInterval(100L, TimeUnit.MILLISECONDS).until(finished::get);
     }
     
     private void assertValueChangedInConcurrencyThread() {

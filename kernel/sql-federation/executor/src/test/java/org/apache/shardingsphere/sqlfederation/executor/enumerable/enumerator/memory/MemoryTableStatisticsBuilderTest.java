@@ -39,10 +39,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -84,7 +85,7 @@ class MemoryTableStatisticsBuilderTest {
     void assertBuildRoleData() {
         DialectDriverQuerySystemCatalogOption option = mock(DialectDriverQuerySystemCatalogOption.class);
         when(option.isRoleDataTable("pg_roles")).thenReturn(true);
-        AuthorityRule authorityRule = mock(AuthorityRule.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        AuthorityRule authorityRule = mock(AuthorityRule.class, RETURNS_DEEP_STUBS);
         when(authorityRule.getGrantees()).thenReturn(new LinkedHashSet<>(Arrays.asList(new Grantee("alice", ""), new Grantee("bob", ""))));
         ShardingSphereMetaData metaData = createMetaData(Collections.emptyList(), new RuleMetaData(Collections.singleton(authorityRule)));
         TableStatistics actual = MemoryTableStatisticsBuilder.buildTableStatistics(mockTable("pg_roles"), metaData, option);
@@ -98,7 +99,7 @@ class MemoryTableStatisticsBuilderTest {
     void assertBuildDefaultWhenNoMatch() {
         DialectDriverQuerySystemCatalogOption option = mock(DialectDriverQuerySystemCatalogOption.class);
         TableStatistics actual = MemoryTableStatisticsBuilder.buildTableStatistics(mockTable("other"), createMetaData(Collections.emptyList(), new RuleMetaData(Collections.emptyList())), option);
-        assertThat(actual.getRows(), empty());
+        assertTrue(actual.getRows().isEmpty());
         assertThat(actual.getName(), is("other"));
     }
     

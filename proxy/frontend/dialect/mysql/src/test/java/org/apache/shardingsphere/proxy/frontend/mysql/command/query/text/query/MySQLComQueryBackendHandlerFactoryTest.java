@@ -69,13 +69,12 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -164,7 +163,7 @@ class MySQLComQueryBackendHandlerFactoryTest {
         assertThat(actual.getParameters().size(), is(1));
         assertTrue(actual.isUseCache());
         Blob blob = (Blob) actual.getParameters().get(0);
-        assertArrayEquals(new byte[]{(byte) 0xFF}, blob.getBytes(1, (int) blob.length()));
+        assertThat(blob.getBytes(1, (int) blob.length()), is(new byte[]{(byte) 0xFF}));
     }
     
     @Test

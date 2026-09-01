@@ -25,7 +25,6 @@ import java.math.BigInteger;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -180,8 +179,8 @@ class UniqueKeyIngestPositionTest {
         UniqueKeyIngestPosition<?> actual = UniqueKeyIngestPosition.decode("b,AQID,BAUG");
         assertThat(actual, isA(UniqueKeyIngestPosition.class));
         assertThat(actual.getType(), is('b'));
-        assertArrayEquals(new byte[]{0x01, 0x02, 0x03}, (byte[]) actual.getLowerBound());
-        assertArrayEquals(new byte[]{0x04, 0x05, 0x06}, (byte[]) actual.getUpperBound());
+        assertThat((byte[]) actual.getLowerBound(), is(new byte[]{0x01, 0x02, 0x03}));
+        assertThat((byte[]) actual.getUpperBound(), is(new byte[]{0x04, 0x05, 0x06}));
     }
     
     @Test
@@ -198,8 +197,8 @@ class UniqueKeyIngestPositionTest {
         byte[] upperBound = new byte[]{0x03, 0x04};
         UniqueKeyIngestPosition<?> actual = UniqueKeyIngestPosition.newInstance(Range.closed(lowerBound, upperBound));
         assertThat(actual.getType(), is('b'));
-        assertArrayEquals(lowerBound, (byte[]) actual.getLowerBound());
-        assertArrayEquals(upperBound, (byte[]) actual.getUpperBound());
+        assertThat((byte[]) actual.getLowerBound(), is(lowerBound));
+        assertThat((byte[]) actual.getUpperBound(), is(upperBound));
     }
     
     @Test
@@ -207,7 +206,7 @@ class UniqueKeyIngestPositionTest {
         byte[] lowerBound = new byte[]{0x01, 0x02};
         UniqueKeyIngestPosition<?> actual = UniqueKeyIngestPosition.newInstance(Range.closed(lowerBound, null));
         assertThat(actual.getType(), is('b'));
-        assertArrayEquals(lowerBound, (byte[]) actual.getLowerBound());
+        assertThat((byte[]) actual.getLowerBound(), is(lowerBound));
         assertNull(actual.getUpperBound());
     }
 }

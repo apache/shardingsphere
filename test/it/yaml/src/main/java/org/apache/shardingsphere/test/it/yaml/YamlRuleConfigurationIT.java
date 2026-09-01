@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -34,7 +35,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -61,7 +61,7 @@ public abstract class YamlRuleConfigurationIT {
         YamlRootConfiguration yamlRootConfigFromFile = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
         YamlRootConfiguration yamlRootConfigFromBytes = YamlEngine.unmarshal(
                 Files.readAllLines(Paths.get(url.toURI())).stream().collect(Collectors.joining(System.lineSeparator())).getBytes(), YamlRootConfiguration.class);
-        assertThat(yamlRootConfigFromFile, deepEqual(yamlRootConfigFromBytes));
+        assertThat(yamlRootConfigFromFile, ShardingSphereAssertionMatchers.deepEqual(yamlRootConfigFromBytes));
     }
     
     @SuppressWarnings("unchecked")
@@ -74,7 +74,7 @@ public abstract class YamlRuleConfigurationIT {
         YamlRuleConfiguration actualYAMLRuleConfig = actual.getRules().iterator().next();
         YamlRuleConfiguration expectedYAMLRuleConfig = (YamlRuleConfiguration) swapper.swapToYamlConfiguration(expectedRuleConfig);
         if (!assertYamlConfiguration(actualYAMLRuleConfig)) {
-            assertThat(actualYAMLRuleConfig, deepEqual(expectedYAMLRuleConfig));
+            assertThat(actualYAMLRuleConfig, ShardingSphereAssertionMatchers.deepEqual(expectedYAMLRuleConfig));
         }
     }
     
@@ -85,7 +85,7 @@ public abstract class YamlRuleConfigurationIT {
         assertNotNull(url);
         YamlRootConfiguration actual = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
         RuleConfiguration actualRuleConfig = (RuleConfiguration) swapper.swapToObject(actual.getRules().iterator().next());
-        assertThat(actualRuleConfig, deepEqual(expectedRuleConfig));
+        assertThat(actualRuleConfig, ShardingSphereAssertionMatchers.deepEqual(expectedRuleConfig));
     }
     
     // TODO should remove the method when yaml rule swapper fixed by map's key

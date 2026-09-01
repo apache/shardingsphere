@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -34,7 +35,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -57,6 +57,6 @@ class ShadowUpdateStatementDataSourceMappingsRetrieverTest {
         ShadowUpdateStatementDataSourceMappingsRetriever retriever = new ShadowUpdateStatementDataSourceMappingsRetriever(sqlStatementContext, Collections.singletonList("foo"));
         Collection<ShadowColumnCondition> actual = retriever.getShadowColumnConditions("foo_col");
         Collection<ShadowColumnCondition> expected = Collections.singletonList(new ShadowColumnCondition("foo_tbl", "foo_col", Collections.singleton("foo")));
-        assertThat(actual, deepEqual(expected));
+        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(expected));
     }
 }
