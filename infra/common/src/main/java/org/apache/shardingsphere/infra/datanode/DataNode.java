@@ -69,16 +69,33 @@ public final class DataNode {
      * @param dataNode data node use {@code .} to split schema name and table name
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
+        this(new DatabaseTypeRegistry(databaseType), databaseName, dataNode);
+    }
+    
+    private DataNode(final DatabaseTypeRegistry registry, final String databaseName, final String dataNode) {
+        this(registry.getDefaultSchemaName(databaseName), registry.getDialectDatabaseMetaData().getSchemaOption(), dataNode);
+    }
+    
+    private DataNode(final String defaultSchemaName, final DialectSchemaOption schemaOption, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
-        DatabaseTypeRegistry registry = new DatabaseTypeRegistry(databaseType);
-        DialectSchemaOption schemaOption = registry.getDialectDatabaseMetaData().getSchemaOption();
         boolean canContainSchema = schemaOption.isSchemaAvailable() && !hasInvalidDelimiterStructure(dataNode);
         List<String> segments = canContainSchema ? Splitter.on(DELIMITER).splitToList(dataNode) : Splitter.on(DELIMITER).limit(2).splitToList(dataNode);
         boolean containsSchema = canContainSchema && 3 == segments.size() && areSegmentsValid(segments);
-        String defaultSchemaName = registry.getDefaultSchemaName(databaseName);
         dataSourceName = segments.get(0);
         schemaName = getSchemaName(schemaOption, containsSchema, segments, defaultSchemaName);
         tableName = getTableName(dataNode, containsSchema, segments);
+    }
+    
+    /**
+     * Create a data node with resolved default schema name.
+     *
+     * @param databaseType database type
+     * @param defaultSchemaName resolved default schema name
+     * @param dataNode data node use {@code .} to split schema name and table name
+     * @return created data node
+     */
+    public static DataNode createWithDefaultSchemaName(final DatabaseType databaseType, final String defaultSchemaName, final String dataNode) {
+        return new DataNode(defaultSchemaName, new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption(), dataNode);
     }
     
     private String getSchemaName(final DialectSchemaOption schemaOption, final boolean containsSchema, final List<String> segments, final String defaultSchemaName) {
