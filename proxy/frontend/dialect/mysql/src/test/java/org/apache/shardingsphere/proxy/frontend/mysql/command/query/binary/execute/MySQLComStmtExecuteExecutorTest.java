@@ -94,7 +94,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -396,7 +395,7 @@ class MySQLComStmtExecuteExecutorTest {
         });
         new MySQLComStmtExecuteExecutor(packet, connectionSession).execute();
         assertThat(actualQueryContext.get().getParameters(), contains("中"));
-        assertThat(preparedStatement.getLongDataIndexes(), is(empty()));
+        assertTrue(preparedStatement.getLongDataIndexes().isEmpty());
     }
     
     @Test
@@ -409,7 +408,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(packet.readParameters(anyList(), any(), anyList())).thenThrow(expected);
         SQLException actual = assertThrows(SQLException.class, () -> new MySQLComStmtExecuteExecutor(packet, connectionSession).execute());
         assertThat(actual, is(expected));
-        assertThat(preparedStatement.getLongDataIndexes(), is(empty()));
+        assertTrue(preparedStatement.getLongDataIndexes().isEmpty());
     }
     
     @Test
@@ -427,7 +426,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
         SQLException actual = assertThrows(SQLException.class, () -> new MySQLComStmtExecuteExecutor(packet, connectionSession).execute());
         assertThat(actual, is(expected));
-        assertThat(preparedStatement.getLongDataIndexes(), is(empty()));
+        assertTrue(preparedStatement.getLongDataIndexes().isEmpty());
     }
     
     @Test

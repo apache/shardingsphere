@@ -23,13 +23,13 @@ import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRul
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,15 +42,15 @@ class ReadwriteSplittingRuleStatementConverterTest {
         ReadwriteSplittingRuleConfiguration actual = ReadwriteSplittingRuleStatementConverter.convert(Collections.singleton(ruleSegment));
         ReadwriteSplittingDataSourceGroupRuleConfiguration expectedDataSourceGroupRuleConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo_name", "write_ds", Arrays.asList("read_ds0", "read_ds1"), TransactionalReadQueryStrategy.FIXED, "foo_name_foo_algo");
-        assertThat(actual.getDataSourceGroups(), deepEqual(Collections.singletonList(expectedDataSourceGroupRuleConfig)));
-        assertThat(actual.getLoadBalancers(), deepEqual(Collections.singletonMap("foo_name_foo_algo", new AlgorithmConfiguration("foo_algo", new Properties()))));
+        assertThat(actual.getDataSourceGroups(), ShardingSphereAssertionMatchers.deepEqual(Collections.singletonList(expectedDataSourceGroupRuleConfig)));
+        assertThat(actual.getLoadBalancers(), ShardingSphereAssertionMatchers.deepEqual(Collections.singletonMap("foo_name_foo_algo", new AlgorithmConfiguration("foo_algo", new Properties()))));
     }
     
     @Test
     void assertConvertWithoutTransactionalReadQueryStrategyAndLoadBalancer() {
         ReadwriteSplittingRuleConfiguration actual = ReadwriteSplittingRuleStatementConverter.convert(
                 Collections.singleton(new ReadwriteSplittingRuleSegment("foo_name", "write_ds", Arrays.asList("read_ds0", "read_ds1"), null)));
-        assertThat(actual.getDataSourceGroups(), deepEqual(Collections.singletonList(
+        assertThat(actual.getDataSourceGroups(), ShardingSphereAssertionMatchers.deepEqual(Collections.singletonList(
                 new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_name", "write_ds", Arrays.asList("read_ds0", "read_ds1"), null))));
         assertTrue(actual.getLoadBalancers().isEmpty());
     }

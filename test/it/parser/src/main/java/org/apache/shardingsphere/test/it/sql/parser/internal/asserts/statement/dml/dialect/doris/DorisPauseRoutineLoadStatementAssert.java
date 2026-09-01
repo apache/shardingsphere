@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisPauseRoutin
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisPauseRoutineLoadStatementTestCase;
-import org.hamcrest.MatcherAssert;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -41,9 +41,9 @@ public final class DorisPauseRoutineLoadStatementAssert {
      * @param expected expected pause routine load statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DorisPauseRoutineLoadStatement actual, final DorisPauseRoutineLoadStatementTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText("All flag does not match: "), actual.isAll(), is(expected.isAll()));
+        assertThat(assertContext.getText("All flag does not match: "), actual.isAll(), is(expected.isAll()));
         if (!expected.isAll() && actual.getJobName().isPresent()) {
-            MatcherAssert.assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), is(expected.getJobName()));
+            assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), is(expected.getJobName()));
             if (null != expected.getOwner()) {
                 OwnerAssert.assertIs(assertContext, actual.getJobName().get().getOwner().orElse(null), expected.getOwner());
             }

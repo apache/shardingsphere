@@ -36,7 +36,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -68,7 +67,7 @@ class FirebirdBlobBinaryProtocolValueTest {
     @Test
     void assertContentIsScopedByConnection() {
         long blobId = writeAndGetBlobId(new byte[]{1, 2});
-        assertArrayEquals(new byte[]{1, 2}, FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId));
+        assertThat(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId), is(new byte[]{1, 2}));
         assertNull(FirebirdBlobBinaryProtocolValue.getBlobContent(2, blobId));
     }
     
@@ -87,7 +86,7 @@ class FirebirdBlobBinaryProtocolValueTest {
         new FirebirdBlobBinaryProtocolValue().write(payload, value);
         long blobId = byteBuf.getLong(0);
         assertTrue(blobId < 0);
-        assertArrayEquals(expected, FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId));
+        assertThat(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId), is(expected));
     }
     
     @Test
@@ -117,7 +116,7 @@ class FirebirdBlobBinaryProtocolValueTest {
         new FirebirdBlobBinaryProtocolValue().write(payload, blob);
         long blobId = byteBuf.getLong(0);
         assertTrue(blobId < 0);
-        assertArrayEquals(new byte[]{0, 0}, FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId));
+        assertThat(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId), is(new byte[]{0, 0}));
     }
     
     @Test
@@ -150,7 +149,7 @@ class FirebirdBlobBinaryProtocolValueTest {
         new FirebirdBlobBinaryProtocolValue().write(payload, clob);
         long blobId = byteBuf.getLong(0);
         assertTrue(blobId < 0);
-        assertArrayEquals(new byte[]{120, 121, 122}, FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId));
+        assertThat(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobId), is(new byte[]{120, 121, 122}));
     }
     
     @Test

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +30,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -64,18 +64,21 @@ class UniqueRuleItemConfigurationChangedHandlerTest {
     @Test
     void assertHandleWithAddItem() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/unique/active_version", "0", Type.ADDED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager())
+                .alter(ShardingSphereArgumentVerifyMatchers.deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))));
     }
     
     @Test
     void assertHandleWithAlterItem() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/unique/active_version", "0", Type.UPDATED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).alter(deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager())
+                .alter(ShardingSphereArgumentVerifyMatchers.deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))));
     }
     
     @Test
     void assertHandleWitDropItem() {
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/unique", "0", Type.DELETED));
-        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).drop(deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))));
+        verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager())
+                .drop(ShardingSphereArgumentVerifyMatchers.deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("unique"))));
     }
 }

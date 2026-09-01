@@ -29,13 +29,13 @@ import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfigu
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,7 +51,7 @@ class MaskTableChangedProcessorTest {
     @Test
     void assertSwapRuleItemConfiguration() {
         MaskTableRuleConfiguration actual = processor.swapRuleItemConfiguration(null, createYAMLContent());
-        assertThat(actual, deepEqual(new MaskTableRuleConfiguration("foo_tbl", Collections.singletonList(new MaskColumnRuleConfiguration("foo_col", "foo_algo")))));
+        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new MaskTableRuleConfiguration("foo_tbl", Collections.singletonList(new MaskColumnRuleConfiguration("foo_col", "foo_algo")))));
     }
     
     private String createYAMLContent() {

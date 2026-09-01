@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -53,7 +54,7 @@ class CreateSchemaPushDownMetaDataRefresherTest {
     void assertRefreshNoSchemaOrUserDoesNothing() {
         SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
         refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, new CreateSchemaStatement(databaseType), new ConfigurationProperties(new Properties()));
-        assertThat(persistService.getCreatedSchemaName(), org.hamcrest.Matchers.nullValue());
+        assertNull(persistService.getCreatedSchemaName());
     }
     
     private ShardingSphereDatabase createDatabase() {

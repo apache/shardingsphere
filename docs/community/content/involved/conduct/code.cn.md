@@ -110,7 +110,6 @@ chapter = true
  - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
  - 使用 JUnit 5 和 Mockito。 明确区分环境准备、测试执行和断言；不同场景之间应重置静态状态，并复用现有的 swapper 或辅助工具处理复杂配置。
  - 默认直接使用 Mockito mock。 仅对重复的局部准备使用私有辅助方法，仅对稳定的外部测试边界或打包测试边界使用独立测试夹具。 测试夹具应采用实际可行的最小可见性，并放在最近的所属测试包或模块中；不要为了方便而创建跨模块测试 API。 删除或内联内容单薄的 mock 包装器。
- - 只有 Mockito，junit `Assertions`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
  - 数据断言规范应遵循：
     - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
     - 空值断言应使用 `assertNull` 和 `assertNotNull`；

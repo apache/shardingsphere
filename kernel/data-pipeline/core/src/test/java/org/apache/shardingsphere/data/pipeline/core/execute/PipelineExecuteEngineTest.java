@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,14 +40,21 @@ import static org.mockito.Mockito.verify;
 
 class PipelineExecuteEngineTest {
     
+    private static final long FUTURE_TIMEOUT_SECONDS = 30L;
+
+    private static final Duration ASSERTION_TIMEOUT = Duration.ofSeconds(FUTURE_TIMEOUT_SECONDS + 1L);
+
     @Test
     void assertSubmitWithoutExecuteCallback() {
         PipelineLifecycleRunnable pipelineLifecycleRunnable = mock(PipelineLifecycleRunnable.class);
         PipelineExecuteEngine executeEngine = PipelineExecuteEngine.newFixedThreadInstance(1, PipelineExecuteEngineTest.class.getSimpleName());
-        Future<?> future = executeEngine.submit(pipelineLifecycleRunnable);
-        assertTimeout(Duration.ofSeconds(30L), () -> future.get());
-        verify(pipelineLifecycleRunnable).run();
-        executeEngine.shutdown();
+        try {
+            Future<?> future = executeEngine.submit(pipelineLifecycleRunnable);
+            assertTimeout(ASSERTION_TIMEOUT, () -> future.get(FUTURE_TIMEOUT_SECONDS, TimeUnit.SECONDS));
+            verify(pipelineLifecycleRunnable).run();
+        } finally {
+            executeEngine.shutdown();
+        }
     }
     
     @Test
@@ -53,11 +62,14 @@ class PipelineExecuteEngineTest {
         PipelineLifecycleRunnable pipelineLifecycleRunnable = mock(PipelineLifecycleRunnable.class);
         ExecuteCallback callback = mock(ExecuteCallback.class);
         PipelineExecuteEngine executeEngine = PipelineExecuteEngine.newCachedThreadInstance(PipelineExecuteEngineTest.class.getSimpleName());
-        Future<?> future = executeEngine.submit(pipelineLifecycleRunnable, callback);
-        assertTimeout(Duration.ofSeconds(30L), () -> future.get());
-        verify(pipelineLifecycleRunnable).run();
-        verify(callback).onSuccess();
-        executeEngine.shutdown();
+        try {
+            Future<?> future = executeEngine.submit(pipelineLifecycleRunnable, callback);
+            assertTimeout(ASSERTION_TIMEOUT, () -> future.get(FUTURE_TIMEOUT_SECONDS, TimeUnit.SECONDS));
+            verify(pipelineLifecycleRunnable).run();
+            verify(callback).onSuccess();
+        } finally {
+            executeEngine.shutdown();
+        }
     }
     
     @Test
@@ -67,17 +79,20 @@ class PipelineExecuteEngineTest {
         doThrow(expectedException).when(pipelineLifecycleRunnable).run();
         ExecuteCallback callback = mock(ExecuteCallback.class);
         PipelineExecuteEngine executeEngine = PipelineExecuteEngine.newCachedThreadInstance(PipelineExecuteEngineTest.class.getSimpleName());
-        Future<?> future = executeEngine.submit(pipelineLifecycleRunnable, callback);
-        Optional<Throwable> actualCause = assertTimeout(Duration.ofSeconds(30L), () -> execute(future));
-        assertTrue(actualCause.isPresent());
-        assertThat(actualCause.get(), is(expectedException));
-        verify(callback).onFailure(expectedException);
-        executeEngine.shutdown();
+        try {
+            Future<?> future = executeEngine.submit(pipelineLifecycleRunnable, callback);
+            Optional<Throwable> actualCause = assertTimeout(ASSERTION_TIMEOUT, () -> execute(future));
+            assertTrue(actualCause.isPresent());
+            assertThat(actualCause.get(), is(expectedException));
+            verify(callback).onFailure(expectedException);
+        } finally {
+            executeEngine.shutdown();
+        }
     }
     
-    private Optional<Throwable> execute(final Future<?> future) throws InterruptedException {
+    private Optional<Throwable> execute(final Future<?> future) throws InterruptedException, TimeoutException {
         try {
-            future.get();
+            future.get(FUTURE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             return Optional.empty();
         } catch (final ExecutionException ex) {
             return Optional.of(ex.getCause());

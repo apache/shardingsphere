@@ -44,7 +44,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,6 +58,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -149,7 +149,7 @@ class MySQLNegotiateHandlerTest {
     @Test
     void assertHandleCachingSha2SkipPublicKeyRequest() throws ReflectiveOperationException {
         mysqlNegotiateHandler.channelRead(channelHandlerContext, new MySQLAuthMoreDataPacket(new byte[]{1}));
-        verify(channel, never()).writeAndFlush(ArgumentMatchers.any());
+        verify(channel, never()).writeAndFlush(any());
         assertFalse((Boolean) Plugins.getMemberAccessor().get(MySQLNegotiateHandler.class.getDeclaredField("publicKeyRequested"), mysqlNegotiateHandler));
     }
     

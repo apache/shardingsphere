@@ -32,10 +32,9 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQL
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class MySQLToBeRemovedSegmentsProviderTest {
@@ -54,7 +53,7 @@ class MySQLToBeRemovedSegmentsProviderTest {
     @Test
     void assertGetToBeRemovedSQLSegmentsWhenShowColumnsWithoutFromDatabase() {
         MySQLShowColumnsStatement statement = new MySQLShowColumnsStatement(mock(DatabaseType.class), createSimpleTableSegment(), null, null);
-        assertThat(provider.getToBeRemovedSQLSegments(statement), is(empty()));
+        assertTrue(provider.getToBeRemovedSQLSegments(statement).isEmpty());
     }
     
     @Test

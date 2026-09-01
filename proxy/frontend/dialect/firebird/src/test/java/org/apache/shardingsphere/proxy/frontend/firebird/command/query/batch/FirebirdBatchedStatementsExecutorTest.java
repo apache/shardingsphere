@@ -77,7 +77,6 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -122,7 +121,7 @@ class FirebirdBatchedStatementsExecutorTest {
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, "foo_1"), Arrays.asList(2, "foo_2"));
         FirebirdBatchCompletion actual = new FirebirdBatchedStatementsExecutor(mockConnectionSession(), firebirdPreparedStatement, parameterSets, false).executeBatch();
         assertThat(actual.getRecordsCount(), is(2));
-        assertArrayEquals(new int[]{1, 2}, actual.getUpdateCounts());
+        assertThat(actual.getUpdateCounts(), is(new int[]{1, 2}));
         assertTrue(actual.getFailures().isEmpty());
         InOrder inOrder = inOrder(preparedStatement);
         for (List<Object> each : parameterSets) {
@@ -160,7 +159,7 @@ class FirebirdBatchedStatementsExecutorTest {
                                 .thenReturn(new ExecutionContext(null, Arrays.asList(firstExecutionUnit, secondExecutionUnit), mock(RouteContext.class))))) {
             FirebirdBatchCompletion actual = new FirebirdBatchedStatementsExecutor(mockConnectionSession(), firebirdPreparedStatement, Collections.singletonList(params), false).executeBatch();
             assertThat(actual.getRecordsCount(), is(1));
-            assertArrayEquals(new int[]{2}, actual.getUpdateCounts());
+            assertThat(actual.getUpdateCounts(), is(new int[]{2}));
             assertTrue(actual.getFailures().isEmpty());
         }
     }
@@ -195,7 +194,7 @@ class FirebirdBatchedStatementsExecutorTest {
             FirebirdBatchCompletion actual = new FirebirdBatchedStatementsExecutor(mockConnectionSession(), firebirdPreparedStatement,
                     Arrays.asList(firstParams, secondParams), false).executeBatch();
             assertThat(actual.getRecordsCount(), is(2));
-            assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
+            assertThat(actual.getUpdateCounts(), is(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}));
             assertThat(actual.getFailures().size(), is(1));
             FirebirdBatchCompletion.Failure actualFailure = actual.getFailures().iterator().next();
             assertThat(actualFailure.getMessageIndex(), is(1));
@@ -235,7 +234,7 @@ class FirebirdBatchedStatementsExecutorTest {
             verify(secondPreparedStatement, never()).executeBatch();
             verify(secondPreparedStatement).close();
             assertThat(actual.getRecordsCount(), is(1));
-            assertArrayEquals(new int[]{FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
+            assertThat(actual.getUpdateCounts(), is(new int[]{FirebirdBatchCompletion.EXECUTE_FAILED}));
             assertThat(actual.getFailures().size(), is(1));
             FirebirdBatchCompletion.Failure actualFailure = actual.getFailures().iterator().next();
             assertThat(actualFailure.getMessageIndex(), is(0));
@@ -273,7 +272,7 @@ class FirebirdBatchedStatementsExecutorTest {
             FirebirdBatchCompletion actual = new FirebirdBatchedStatementsExecutor(mockConnectionSession(), firebirdPreparedStatement,
                     Arrays.asList(firstParams, secondParams), true).executeBatch();
             assertThat(actual.getRecordsCount(), is(2));
-            assertArrayEquals(new int[]{FirebirdBatchCompletion.EXECUTE_FAILED, 1}, actual.getUpdateCounts());
+            assertThat(actual.getUpdateCounts(), is(new int[]{FirebirdBatchCompletion.EXECUTE_FAILED, 1}));
             assertThat(actual.getFailures().size(), is(1));
             FirebirdBatchCompletion.Failure actualFailure = actual.getFailures().iterator().next();
             assertThat(actualFailure.getMessageIndex(), is(0));
@@ -285,10 +284,10 @@ class FirebirdBatchedStatementsExecutorTest {
     void assertExecuteBatchWithoutMultiErrorStopsSameRouteAtFailedMessage() throws SQLException {
         PreparedStatement preparedStatement = mockSameRoutePreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1}).thenThrow(createFailure(new int[0]));
-        FirebirdBatchCompletion actual = executeSameRouteBatch(preparedStatement, false);
+        FirebirdBatchCompletion actual = executeSameRouteBatch(false);
         verify(preparedStatement, times(2)).executeBatch();
         assertThat(actual.getRecordsCount(), is(2));
-        assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
+        assertThat(actual.getUpdateCounts(), is(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}));
         assertThat(actual.getFailures().size(), is(1));
         assertThat(actual.getFailures().iterator().next().getMessageIndex(), is(1));
     }
@@ -298,10 +297,10 @@ class FirebirdBatchedStatementsExecutorTest {
         PreparedStatement preparedStatement = mockSameRoutePreparedStatement();
         BatchUpdateException failure = createFailure(new int[0]);
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1}).thenThrow(failure);
-        FirebirdBatchCompletion actual = executeSameRouteBatch(preparedStatement, false);
+        FirebirdBatchCompletion actual = executeSameRouteBatch(false);
         
         assertThat(actual.getRecordsCount(), is(2));
-        assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
+        assertThat(actual.getUpdateCounts(), is(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}));
         assertThat(actual.getFailures().size(), is(1));
         FirebirdBatchCompletion.Failure actualFailure = actual.getFailures().iterator().next();
         assertThat(actualFailure.getMessageIndex(), is(1));
@@ -316,9 +315,9 @@ class FirebirdBatchedStatementsExecutorTest {
     void assertExecuteBatchWithMultiErrorContinuesSameRouteAfterFailedMessage() throws SQLException {
         PreparedStatement preparedStatement = mockSameRoutePreparedStatement();
         when(preparedStatement.executeBatch()).thenThrow(createFailure(new int[]{1})).thenReturn(new int[]{1});
-        FirebirdBatchCompletion actual = executeSameRouteBatch(preparedStatement, true);
+        FirebirdBatchCompletion actual = executeSameRouteBatch(true);
         assertThat(actual.getRecordsCount(), is(3));
-        assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED, 1}, actual.getUpdateCounts());
+        assertThat(actual.getUpdateCounts(), is(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED, 1}));
         assertThat(actual.getFailures().size(), is(1));
         assertThat(actual.getFailures().iterator().next().getMessageIndex(), is(1));
         verify(preparedStatement, times(2)).executeBatch();
@@ -332,9 +331,9 @@ class FirebirdBatchedStatementsExecutorTest {
         PreparedStatement preparedStatement = mockSameRoutePreparedStatement();
         SQLException failure = new SQLException("connection lost", "08006", 335544721);
         when(preparedStatement.executeBatch()).thenThrow(failure);
-        FirebirdBatchCompletion actual = executeSameRouteBatch(preparedStatement, false);
+        FirebirdBatchCompletion actual = executeSameRouteBatch(false);
         assertThat(actual.getRecordsCount(), is(1));
-        assertArrayEquals(new int[]{FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
+        assertThat(actual.getUpdateCounts(), is(new int[]{FirebirdBatchCompletion.EXECUTE_FAILED}));
         assertThat(actual.getFailures().size(), is(1));
         FirebirdBatchCompletion.Failure actualFailure = actual.getFailures().iterator().next();
         assertThat(actualFailure.getMessageIndex(), is(0));
@@ -351,9 +350,9 @@ class FirebirdBatchedStatementsExecutorTest {
         SQLException secondCause = new SQLException("second violation", "23000", 335544349);
         secondFailure.setNextException(secondCause);
         when(preparedStatement.executeBatch()).thenThrow(firstFailure).thenThrow(secondFailure);
-        FirebirdBatchCompletion actual = executeSameRouteBatch(preparedStatement, true);
+        FirebirdBatchCompletion actual = executeSameRouteBatch(true);
         assertThat(actual.getRecordsCount(), is(3));
-        assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED, FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
+        assertThat(actual.getUpdateCounts(), is(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED, FirebirdBatchCompletion.EXECUTE_FAILED}));
         Iterator<FirebirdBatchCompletion.Failure> actualFailures = actual.getFailures().iterator();
         FirebirdBatchCompletion.Failure actualFirstFailure = actualFailures.next();
         assertThat(actualFirstFailure.getMessageIndex(), is(1));
@@ -372,7 +371,7 @@ class FirebirdBatchedStatementsExecutorTest {
         when(secondPreparedStatement.executeBatch()).thenThrow(failure);
         FirebirdBatchCompletion actual = executeInterleavedRoutesBatch(firstPreparedStatement, secondPreparedStatement);
         assertThat(actual.getRecordsCount(), is(2));
-        assertArrayEquals(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
+        assertThat(actual.getUpdateCounts(), is(new int[]{1, FirebirdBatchCompletion.EXECUTE_FAILED}));
         assertThat(actual.getFailures().size(), is(1));
         FirebirdBatchCompletion.Failure actualFailure = actual.getFailures().iterator().next();
         assertThat(actualFailure.getMessageIndex(), is(1));
@@ -400,7 +399,7 @@ class FirebirdBatchedStatementsExecutorTest {
         when(secondPreparedStatement.executeBatch()).thenReturn(new int[]{1});
         FirebirdBatchCompletion actual = executeInterleavedRoutesBatch(firstPreparedStatement, secondPreparedStatement);
         assertThat(actual.getRecordsCount(), is(3));
-        assertArrayEquals(new int[]{1, 1, FirebirdBatchCompletion.EXECUTE_FAILED}, actual.getUpdateCounts());
+        assertThat(actual.getUpdateCounts(), is(new int[]{1, 1, FirebirdBatchCompletion.EXECUTE_FAILED}));
         assertThat(actual.getFailures().size(), is(1));
         FirebirdBatchCompletion.Failure actualFailure = actual.getFailures().iterator().next();
         assertThat(actualFailure.getMessageIndex(), is(2));
@@ -463,7 +462,7 @@ class FirebirdBatchedStatementsExecutorTest {
         return result;
     }
     
-    private FirebirdBatchCompletion executeSameRouteBatch(final PreparedStatement preparedStatement, final boolean multiError) throws SQLException {
+    private FirebirdBatchCompletion executeSameRouteBatch(final boolean multiError) throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         FirebirdServerPreparedStatement firebirdPreparedStatement = new FirebirdServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)",

@@ -40,7 +40,6 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -73,7 +72,7 @@ class FirebirdMetaDataLoaderTest {
                         mockConstruction(FirebirdBlobColumnLoader.class, (mock, context) -> when(mock.load()).thenReturn(allBlobColumns))) {
             tableLoaderMocked.when(() -> TableMetaDataLoader.loadNormalized(dataSource, "TEST_TABLE", databaseType)).thenReturn(Optional.of(tableMetaData));
             Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(material);
-            assertThat(actual, hasSize(1));
+            assertThat(actual.size(), is(1));
             SchemaMetaData schema = actual.iterator().next();
             assertThat(schema.getName(), is("schema"));
             assertThat(schema.getTables(), contains(tableMetaData));

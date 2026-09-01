@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -32,7 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -48,7 +48,7 @@ class EncryptorChangedProcessorTest {
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     @Test
     void assertFindRuleConfigurationWhenAbsent() {
-        assertThat(processor.findRuleConfiguration(mockDatabase()), deepEqual(new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>())));
+        assertThat(processor.findRuleConfiguration(mockDatabase()), ShardingSphereAssertionMatchers.deepEqual(new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>())));
     }
     
     private ShardingSphereDatabase mockDatabase() {

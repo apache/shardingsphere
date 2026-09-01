@@ -88,7 +88,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -484,7 +483,7 @@ class ProxyDatabaseConnectionManagerTest {
         Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) Plugins.getMemberAccessor()
                 .get(ProxyDatabaseConnectionManager.class.getDeclaredField("cachedConnections"), databaseConnectionManager);
         assertTrue(cachedConnections.containsKey(dataSourceName));
-        assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), connections.toArray());
+        assertThat(connections.toArray(), is(cachedConnections.get(dataSourceName).toArray()));
     }
     
     @Test

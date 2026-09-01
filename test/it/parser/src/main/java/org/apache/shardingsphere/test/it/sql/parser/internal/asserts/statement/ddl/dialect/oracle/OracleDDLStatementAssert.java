@@ -58,6 +58,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.statistics.OracleAssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.statistics.OracleDisassociateStatisticsStatementTestCase;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
+
 /**
  * DDL statement assert for Oracle.
  */
@@ -95,8 +98,8 @@ public final class OracleDDLStatementAssert {
         } else if (actual instanceof OraclePurgeStatement) {
             OraclePurgeStatementAssert.assertIs(assertContext, (OraclePurgeStatement) actual, (OraclePurgeStatementTestCase) expected);
         } else if (expected instanceof OracleCreateIndexTypeStatementTestCase) {
-            org.hamcrest.MatcherAssert.assertThat(assertContext.getText("Actual statement should be OracleCreateIndexTypeStatement."),
-                    actual, org.hamcrest.CoreMatchers.instanceOf(OracleCreateIndexTypeStatement.class));
+            assertThat(assertContext.getText("Actual statement should be OracleCreateIndexTypeStatement."),
+                    actual, isA(OracleCreateIndexTypeStatement.class));
         }
     }
 }

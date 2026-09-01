@@ -27,11 +27,11 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -47,7 +47,7 @@ class DefaultKeyGenerateStrategyChangedProcessorTest {
     @Test
     void assertSwapRuleItemConfiguration() {
         KeyGenerateStrategyConfiguration actual = processor.swapRuleItemConfiguration(null, createYAMLContent());
-        assertThat(actual, deepEqual(new KeyGenerateStrategyConfiguration("foo_col", "foo_algo")));
+        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new KeyGenerateStrategyConfiguration("foo_col", "foo_algo")));
     }
     
     private String createYAMLContent() {

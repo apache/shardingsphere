@@ -79,8 +79,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -246,7 +246,6 @@ class FirebirdAuthenticationEngineTest {
         }
     }
     
-    @SuppressWarnings("rawtypes")
     @SneakyThrows(ReflectiveOperationException.class)
     @Test
     void assertAuthenticateAttachWithUnknownCharset() {
