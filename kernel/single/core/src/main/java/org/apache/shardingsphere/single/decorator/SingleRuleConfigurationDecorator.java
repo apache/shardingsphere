@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.decorator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
@@ -67,32 +68,43 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
             return splitTables;
         }
         Map<String, DataSource> aggregatedDataSources = PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules);
-        DatabaseType databaseType = dataSources.isEmpty() ? DatabaseTypeEngine.getDefaultStorageType() : DatabaseTypeEngine.getStorageType(dataSources.values().iterator().next());
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
         Map<String, DatabaseType> storageTypes = aggregatedDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
         Map<String, Collection<DataNode>> actualDataNodes = SingleTableDataNodeLoader.load(databaseName, aggregatedDataSources, Collections.emptySet(), excludedTables, storageTypes);
-        boolean isSchemaAvailable = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable();
+        Set<String> schemaAvailableDataSources = getSchemaAvailableDataSources(storageTypes, actualDataNodes);
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
-            return loadAllTables(isSchemaAvailable, actualDataNodes);
+            return loadAllTables(schemaAvailableDataSources, actualDataNodes);
         }
-        Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, splitTables);
-        return loadSpecifiedTables(isSchemaAvailable, actualDataNodes, builtRules, configuredDataNodes);
+        Collection<DataNode> configuredDataNodes = getConfiguredDataNodes(databaseName, aggregatedDataSources, storageTypes, splitTables);
+        return loadSpecifiedTables(schemaAvailableDataSources, actualDataNodes, builtRules, configuredDataNodes);
     }
     
     private boolean isExpandRequired(final Collection<String> splitTables) {
         return splitTables.stream().anyMatch(each -> each.contains(SingleTableConstants.ASTERISK));
     }
     
-    private Collection<String> loadAllTables(final boolean isSchemaAvailable, final Map<String, Collection<DataNode>> actualDataNodes) {
-        Collection<String> result = new LinkedList<>();
-        for (Entry<String, Collection<DataNode>> entry : actualDataNodes.entrySet()) {
-            result.addAll(entry.getValue().stream().map(each -> getTableNodeString(isSchemaAvailable, each)).collect(Collectors.toList()));
+    private Set<String> getSchemaAvailableDataSources(final Map<String, DatabaseType> storageTypes, final Map<String, Collection<DataNode>> actualDataNodes) {
+        Set<String> result = storageTypes.entrySet().stream().filter(each -> isSchemaAvailable(each.getValue())).map(Entry::getKey).collect(Collectors.toCollection(LinkedHashSet::new));
+        if (storageTypes.isEmpty() && isSchemaAvailable(DatabaseTypeEngine.getDefaultStorageType())) {
+            actualDataNodes.values().stream().flatMap(Collection::stream).map(DataNode::getDataSourceName).forEach(result::add);
         }
         return result;
     }
     
-    private String getTableNodeString(final boolean isSchemaAvailable, final DataNode dataNode) {
-        return isSchemaAvailable
+    private boolean isSchemaAvailable(final DatabaseType databaseType) {
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable();
+    }
+    
+    private Collection<String> loadAllTables(final Set<String> schemaAvailableDataSources, final Map<String, Collection<DataNode>> actualDataNodes) {
+        Collection<String> result = new LinkedList<>();
+        for (Entry<String, Collection<DataNode>> entry : actualDataNodes.entrySet()) {
+            result.addAll(entry.getValue().stream().map(each -> getTableNodeString(schemaAvailableDataSources, each)).collect(Collectors.toList()));
+        }
+        return result;
+    }
+    
+    private String getTableNodeString(final Set<String> schemaAvailableDataSources, final DataNode dataNode) {
+        return schemaAvailableDataSources.contains(dataNode.getDataSourceName())
                 ? formatTableName(dataNode.getDataSourceName(), dataNode.getSchemaName(), dataNode.getTableName())
                 : formatTableName(dataNode.getDataSourceName(), dataNode.getTableName());
     }
@@ -105,13 +117,30 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         return String.format("%s.%s", dataSourceName, tableName);
     }
     
-    private Collection<String> loadSpecifiedTables(final boolean isSchemaAvailable, final Map<String, Collection<DataNode>> actualDataNodes,
+    private Collection<DataNode> getConfiguredDataNodes(final String databaseName, final Map<String, DataSource> dataSources,
+                                                        final Map<String, DatabaseType> storageTypes, final Collection<String> dataNodes) {
+        if (storageTypes.isEmpty()) {
+            return SingleTableLoadUtils.convertToDataNodes(databaseName, DatabaseTypeEngine.getDefaultStorageType(), dataNodes);
+        }
+        Map<String, String> defaultSchemaNames = getDefaultSchemaNames(databaseName, dataSources, storageTypes);
+        return SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(defaultSchemaNames, storageTypes, dataNodes);
+    }
+    
+    private Map<String, String> getDefaultSchemaNames(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes) {
+        Map<String, String> result = new LinkedHashMap<>(dataSources.size(), 1F);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            result.put(entry.getKey(), DefaultSchemaNameResolver.resolveStorage(storageTypes.get(entry.getKey()), entry.getValue(), databaseName));
+        }
+        return result;
+    }
+    
+    private Collection<String> loadSpecifiedTables(final Set<String> schemaAvailableDataSources, final Map<String, Collection<DataNode>> actualDataNodes,
                                                    final Collection<ShardingSphereRule> builtRules, final Collection<DataNode> configuredDataNodes) {
         DataNodeClassification dataNodeClassification = classifyDataNodes(configuredDataNodes);
         if (dataNodeClassification.expandDataSources.isEmpty() && dataNodeClassification.expandDataSourceSchemas.isEmpty()) {
-            return loadSpecifiedTablesWithoutExpand(isSchemaAvailable, actualDataNodes, configuredDataNodes);
+            return loadSpecifiedTablesWithoutExpand(schemaAvailableDataSources, actualDataNodes, configuredDataNodes);
         }
-        return loadSpecifiedTablesWithExpand(isSchemaAvailable, actualDataNodes, SingleTableLoadUtils.getFeatureRequiredSingleTables(builtRules),
+        return loadSpecifiedTablesWithExpand(schemaAvailableDataSources, actualDataNodes, SingleTableLoadUtils.getFeatureRequiredSingleTables(builtRules),
                 dataNodeClassification.getExpandDataSources(), dataNodeClassification.getExpandDataSourceSchemas(), dataNodeClassification.getExpectedDataNodes());
     }
     
@@ -138,7 +167,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         }
     }
     
-    private Collection<String> loadSpecifiedTablesWithExpand(final boolean isSchemaAvailable, final Map<String, Collection<DataNode>> actualDataNodes,
+    private Collection<String> loadSpecifiedTablesWithExpand(final Set<String> schemaAvailableDataSources, final Map<String, Collection<DataNode>> actualDataNodes,
                                                              final Collection<String> featureRequiredSingleTables, final Collection<String> expandDataSources,
                                                              final Map<String, Set<String>> expandDataSourceSchemas, final Map<String, DataNode> expectedDataNodes) {
         Collection<String> result = new LinkedHashSet<>(actualDataNodes.size(), 1F);
@@ -148,42 +177,43 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
             }
             DataNode physicalDataNode = entry.getValue().iterator().next();
             if (expandDataSources.contains(physicalDataNode.getDataSourceName())) {
-                result.add(getTableNodeString(isSchemaAvailable, physicalDataNode));
+                result.add(getTableNodeString(schemaAvailableDataSources, physicalDataNode));
                 continue;
             }
             Set<String> requiredSchemas = expandDataSourceSchemas.get(physicalDataNode.getDataSourceName());
             if (null != requiredSchemas && requiredSchemas.contains(physicalDataNode.getSchemaName())) {
-                result.add(getTableNodeString(isSchemaAvailable, physicalDataNode));
+                result.add(getTableNodeString(schemaAvailableDataSources, physicalDataNode));
                 continue;
             }
             if (expectedDataNodes.containsKey(entry.getKey())) {
                 DataNode dataNode = expectedDataNodes.get(entry.getKey());
-                String tableNodeStr = getTableNodeString(isSchemaAvailable, physicalDataNode);
-                ShardingSpherePreconditions.checkState(isMatchedDataNode(isSchemaAvailable, physicalDataNode, dataNode),
+                String tableNodeStr = getTableNodeString(schemaAvailableDataSources, physicalDataNode);
+                ShardingSpherePreconditions.checkState(isMatchedDataNode(schemaAvailableDataSources, physicalDataNode, dataNode),
                         () -> new InvalidSingleRuleConfigurationException(String.format("Single table `%s` is found that does not match %s", tableNodeStr,
-                                getTableNodeString(isSchemaAvailable, dataNode))));
+                                getTableNodeString(schemaAvailableDataSources, dataNode))));
                 result.add(tableNodeStr);
             }
         }
         return result;
     }
     
-    private Collection<String> loadSpecifiedTablesWithoutExpand(final boolean isSchemaAvailable, final Map<String, Collection<DataNode>> actualDataNodes,
+    private Collection<String> loadSpecifiedTablesWithoutExpand(final Set<String> schemaAvailableDataSources, final Map<String, Collection<DataNode>> actualDataNodes,
                                                                 final Collection<DataNode> configuredDataNodes) {
         Collection<String> result = new LinkedHashSet<>(configuredDataNodes.size(), 1F);
         for (DataNode each : configuredDataNodes) {
-            ShardingSpherePreconditions.checkContainsKey(actualDataNodes, each.getTableName(), () -> new SingleTableNotFoundException(getTableNodeString(isSchemaAvailable, each)));
+            ShardingSpherePreconditions.checkContainsKey(
+                    actualDataNodes, each.getTableName(), () -> new SingleTableNotFoundException(getTableNodeString(schemaAvailableDataSources, each)));
             DataNode actualDataNode = actualDataNodes.get(each.getTableName()).iterator().next();
-            String tableNodeStr = getTableNodeString(isSchemaAvailable, actualDataNode);
-            ShardingSpherePreconditions.checkState(isMatchedDataNode(isSchemaAvailable, actualDataNode, each), () -> new InvalidSingleRuleConfigurationException(
-                    String.format("Single table '%s' is found that does not match %s", tableNodeStr, getTableNodeString(isSchemaAvailable, each))));
+            String tableNodeStr = getTableNodeString(schemaAvailableDataSources, actualDataNode);
+            ShardingSpherePreconditions.checkState(isMatchedDataNode(schemaAvailableDataSources, actualDataNode, each), () -> new InvalidSingleRuleConfigurationException(
+                    String.format("Single table '%s' is found that does not match %s", tableNodeStr, getTableNodeString(schemaAvailableDataSources, each))));
             result.add(tableNodeStr);
         }
         return result;
     }
     
-    private boolean isMatchedDataNode(final boolean isSchemaAvailable, final DataNode actualDataNode, final DataNode configuredDataNode) {
-        if (isSchemaAvailable || !SingleTableConstants.ASTERISK.equals(configuredDataNode.getSchemaName())) {
+    private boolean isMatchedDataNode(final Set<String> schemaAvailableDataSources, final DataNode actualDataNode, final DataNode configuredDataNode) {
+        if (schemaAvailableDataSources.contains(actualDataNode.getDataSourceName()) || !SingleTableConstants.ASTERISK.equals(configuredDataNode.getSchemaName())) {
             return actualDataNode.equals(configuredDataNode);
         }
         return actualDataNode.getDataSourceName().equals(configuredDataNode.getDataSourceName()) && actualDataNode.getTableName().equals(configuredDataNode.getTableName());
