@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithmValueUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.Optional;
@@ -111,6 +112,9 @@ public final class EncryptAlgorithmEngine {
     }
     
     private static String encode(final EncryptAlgorithm encryptAlgorithm, final byte[] value, final String encoder) {
+        if (null == encoder) {
+            return new String(value, StandardCharsets.UTF_8);
+        }
         return BASE64.equalsIgnoreCase(encoder) ? Base64.getEncoder().encodeToString(value) : encodeHex(value, isUseLowerHexEncode(encryptAlgorithm));
     }
     
@@ -119,6 +123,9 @@ public final class EncryptAlgorithmEngine {
     }
     
     private static byte[] decode(final String value, final String encoder) {
+        if (null == encoder) {
+            return value.getBytes(StandardCharsets.UTF_8);
+        }
         return BASE64.equalsIgnoreCase(encoder) ? CryptographicAlgorithmValueUtils.decodeBase64(value) : decodeHex(value.trim());
     }
     

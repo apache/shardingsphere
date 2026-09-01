@@ -23,19 +23,20 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 @Getter
 public final class RewriteQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
     
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false, String.class);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false, byte[].class);
     
     @Override
-    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+    public byte[] encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
         if (null == plainValue) {
             return null;
         }
-        return "assisted_query_" + plainValue;
+        return ("assisted_query_" + plainValue).getBytes(StandardCharsets.UTF_8);
     }
     
     @Override

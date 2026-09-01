@@ -23,16 +23,17 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 @Getter
 public final class RewriteQueryLikeEncryptAlgorithmFixture implements EncryptAlgorithm {
     
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true, String.class);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true, byte[].class);
     
     @Override
-    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
-        return null == plainValue ? null : "like_query_" + plainValue;
+    public byte[] encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+        return null == plainValue ? null : ("like_query_" + plainValue).getBytes(StandardCharsets.UTF_8);
     }
     
     @Override

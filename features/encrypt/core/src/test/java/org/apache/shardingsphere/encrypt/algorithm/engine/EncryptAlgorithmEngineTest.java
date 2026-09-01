@@ -64,6 +64,13 @@ class EncryptAlgorithmEngineTest {
     }
     
     @Test
+    void assertEncryptWithoutEncoder() {
+        EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm(byte[].class);
+        when(encryptAlgorithm.encrypt(eq("plain"), any(AlgorithmSQLContext.class))).thenReturn("cipher".getBytes(StandardCharsets.UTF_8));
+        assertThat(EncryptAlgorithmEngine.encrypt(encryptAlgorithm, "plain", createAlgorithmSQLContext(), null, false), is("cipher"));
+    }
+    
+    @Test
     void assertEncryptWithTextAlgorithm() {
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm(Object.class);
         when(encryptAlgorithm.encrypt(eq("plain"), any(AlgorithmSQLContext.class))).thenReturn("cipher");
@@ -91,6 +98,16 @@ class EncryptAlgorithmEngineTest {
         verify(encryptAlgorithm).decrypt(actualCipherValueCaptor.capture(), any(AlgorithmSQLContext.class));
         assertThat(actualCipherValueCaptor.getValue(), is("cipher".getBytes(StandardCharsets.UTF_8)));
         assertThat(actualPlainValue, is("plain"));
+    }
+    
+    @Test
+    void assertDecryptWithoutEncoder() {
+        EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm(byte[].class);
+        when(encryptAlgorithm.decrypt(any(byte[].class), any(AlgorithmSQLContext.class))).thenReturn("plain");
+        assertThat(EncryptAlgorithmEngine.decrypt(encryptAlgorithm, "cipher", createAlgorithmSQLContext(), null), is("plain"));
+        ArgumentCaptor<byte[]> actualCipherValueCaptor = ArgumentCaptor.forClass(byte[].class);
+        verify(encryptAlgorithm).decrypt(actualCipherValueCaptor.capture(), any(AlgorithmSQLContext.class));
+        assertThat(actualCipherValueCaptor.getValue(), is("cipher".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test

@@ -23,16 +23,17 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 @Getter
 public final class CoreQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
     
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false, String.class);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false, byte[].class);
     
     @Override
-    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
-        return "assistedEncryptValue";
+    public byte[] encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+        return "assistedEncryptValue".getBytes(StandardCharsets.UTF_8);
     }
     
     @Override

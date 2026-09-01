@@ -23,19 +23,20 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 @Getter
 public final class RewriteNormalEncryptAlgorithmFixture implements EncryptAlgorithm {
     
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(true, true, false, String.class);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(true, true, false, byte[].class);
     
     @Override
-    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+    public byte[] encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
         if (null == plainValue) {
             return null;
         }
-        return "encrypt_" + plainValue;
+        return ("encrypt_" + plainValue).getBytes(StandardCharsets.UTF_8);
     }
     
     @Override
@@ -43,7 +44,7 @@ public final class RewriteNormalEncryptAlgorithmFixture implements EncryptAlgori
         if (null == cipherValue) {
             return null;
         }
-        return cipherValue.toString().replaceAll("encrypt_", "");
+        return new String((byte[]) cipherValue, StandardCharsets.UTF_8).replaceAll("encrypt_", "");
     }
     
     @Override
