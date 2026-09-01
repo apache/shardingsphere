@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.datanode;
 import ch.qos.logback.classic.Level;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SchemaMetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
@@ -292,6 +293,20 @@ class SingleTableDataNodeLoaderTest {
             Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
                     "foo_db", protocolDatabaseType, localDataSourceMap, Collections.emptyList(), Collections.singleton("foo_ds.foo_tbl1"));
             assertTrue(actual.containsKey("foo_tbl1"));
+            assertThat(actual.get("foo_tbl1"), is(Collections.singletonList(new DataNode("foo_ds", "foo_db", "foo_tbl1"))));
+        }
+    }
+    
+    @Test
+    void assertLoadWithStorageSchemaCasePolicy() throws SQLException {
+        Map<String, DataSource> localDataSourceMap = Collections.singletonMap("foo_ds", mockDataSource("foo_ds", Collections.singletonList("foo_tbl1")));
+        try (
+                MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class);
+                MockedStatic<DefaultSchemaNameResolver> defaultSchemaNameResolver = mockStatic(DefaultSchemaNameResolver.class)) {
+            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(localDataSourceMap.get("foo_ds"))).thenReturn(storageDatabaseType);
+            defaultSchemaNameResolver.when(() -> DefaultSchemaNameResolver.resolveStorage(storageDatabaseType, localDataSourceMap.get("foo_ds"), "Foo_DB")).thenReturn("foo_db");
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                    "Foo_DB", protocolDatabaseType, localDataSourceMap, Collections.emptyList(), Collections.singleton("foo_ds.foo_tbl1"));
             assertThat(actual.get("foo_tbl1"), is(Collections.singletonList(new DataNode("foo_ds", "foo_db", "foo_tbl1"))));
         }
     }
