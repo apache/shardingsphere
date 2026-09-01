@@ -32,6 +32,7 @@ import org.apache.shardingsphere.single.constant.SingleTableConstants;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -109,6 +110,24 @@ public final class SingleTableLoadUtils {
      */
     public static Collection<DataNode> convertToDataNodes(final String databaseName, final DatabaseType databaseType, final Collection<String> dataNodes) {
         return dataNodes.stream().map(each -> new DataNode(databaseName, databaseType, each)).collect(Collectors.toCollection(LinkedList::new));
+    }
+    
+    /**
+     * Convert tables to data nodes with resolved default schema names.
+     *
+     * @param defaultSchemaNames resolved default schema names by data source name
+     * @param storageTypes storage types by data source name
+     * @param dataNodes data nodes
+     * @return data nodes
+     */
+    public static Collection<DataNode> convertToDataNodesWithDefaultSchemaNames(final Map<String, String> defaultSchemaNames,
+                                                                                final Map<String, DatabaseType> storageTypes, final Collection<String> dataNodes) {
+        return dataNodes.stream().map(each -> createDataNode(defaultSchemaNames, storageTypes, each)).collect(Collectors.toCollection(LinkedList::new));
+    }
+    
+    private static DataNode createDataNode(final Map<String, String> defaultSchemaNames, final Map<String, DatabaseType> storageTypes, final String dataNode) {
+        String dataSourceName = Splitter.on('.').limit(2).splitToList(dataNode).get(0);
+        return DataNode.createWithDefaultSchemaName(defaultSchemaNames.get(dataSourceName), storageTypes.get(dataSourceName), dataNode);
     }
     
     /**
