@@ -28,13 +28,13 @@ import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplitti
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,13 +50,13 @@ class ReadwriteSplittingDataSourceChangedProcessorTest {
     @Test
     void assertSwapRuleItemConfigurationWithoutTransactionalReadQueryStrategy() {
         ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration("foo", createYAMLContent(null));
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), "foo_balancer")));
+        assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), "foo_balancer")));
     }
     
     @Test
     void assertSwapRuleItemConfigurationWithTransactionalReadQueryStrategy() {
         ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration("foo", createYAMLContent(TransactionalReadQueryStrategy.PRIMARY));
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration(
+        assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo", "write_ds", Collections.singletonList("read_ds"), TransactionalReadQueryStrategy.PRIMARY, "foo_balancer")));
     }
     

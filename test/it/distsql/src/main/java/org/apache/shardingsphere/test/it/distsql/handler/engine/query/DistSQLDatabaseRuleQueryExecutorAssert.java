@@ -29,13 +29,13 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -61,7 +61,7 @@ public final class DistSQLDatabaseRuleQueryExecutorAssert {
         DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, "foo_db", mockContextManager(ruleConfig), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new ArrayList<>(expected)));
+        assertThat(actual, deepEqual(new ArrayList<>(expected)));
     }
     
     private ContextManager mockContextManager(final DatabaseRuleConfiguration ruleConfig) {

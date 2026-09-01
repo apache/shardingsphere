@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereConstraint;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -36,6 +35,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
@@ -54,21 +54,21 @@ class YamlTableSwapperTest {
         ShardingSphereTable table = createShardingSphereTable();
         YamlShardingSphereTable actual = swapper.swapToYamlConfiguration(table);
         YamlShardingSphereTable expected = YamlEngine.unmarshal(SystemResourceFileUtils.readFile(YAML_FILE), YamlShardingSphereTable.class);
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(expected));
+        assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObject() {
         ShardingSphereTable actual = swapper.swapToObject(YamlEngine.unmarshal(SystemResourceFileUtils.readFile(YAML_FILE), YamlShardingSphereTable.class));
         ShardingSphereTable expected = createShardingSphereTable();
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(expected));
+        assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObjectWithEmptySchema() {
         ShardingSphereTable actual = swapper.swapToObject(YamlEngine.unmarshal(SystemResourceFileUtils.readFile(EMPTY_YAML_FILE), YamlShardingSphereTable.class));
         ShardingSphereTable expected = new ShardingSphereTable("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE);
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(expected));
+        assertThat(actual, deepEqual(expected));
     }
     
     @Test

@@ -27,11 +27,11 @@ import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,7 +47,7 @@ class ShadowTableChangedProcessorTest {
     @Test
     void assertSwapRuleItemConfiguration() {
         ShadowTableConfiguration actual = processor.swapRuleItemConfiguration("foo_ds", createYAMLContent());
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new ShadowTableConfiguration(Collections.singletonList("foo_ds"), Collections.singletonList("foo_algo"))));
+        assertThat(actual, deepEqual(new ShadowTableConfiguration(Collections.singletonList("foo_ds"), Collections.singletonList("foo_algo"))));
     }
     
     private String createYAMLContent() {

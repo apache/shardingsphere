@@ -27,11 +27,11 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -48,7 +48,7 @@ class DefaultShardingAuditorStrategyChangedProcessorTest {
     @Test
     void assertSwapRuleItemConfiguration() {
         ShardingAuditStrategyConfiguration actual = processor.swapRuleItemConfiguration(null, createYAMLContent());
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new ShardingAuditStrategyConfiguration(Collections.singletonList("foo_algo"), true)));
+        assertThat(actual, deepEqual(new ShardingAuditStrategyConfiguration(Collections.singletonList("foo_algo"), true)));
     }
     
     private String createYAMLContent() {
