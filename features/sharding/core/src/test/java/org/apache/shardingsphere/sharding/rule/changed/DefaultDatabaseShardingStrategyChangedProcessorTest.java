@@ -30,11 +30,11 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -50,7 +50,7 @@ class DefaultDatabaseShardingStrategyChangedProcessorTest {
     @Test
     void assertSwapRuleItemConfiguration() {
         ShardingStrategyConfiguration actual = processor.swapRuleItemConfiguration(null, createYAMLContent());
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(new NoneShardingStrategyConfiguration()));
+        assertThat(actual, deepEqual(new NoneShardingStrategyConfiguration()));
     }
     
     private String createYAMLContent() {

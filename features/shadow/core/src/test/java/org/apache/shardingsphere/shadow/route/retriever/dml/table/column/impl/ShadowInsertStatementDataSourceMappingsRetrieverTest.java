@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.values.Inse
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -29,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -48,7 +48,7 @@ class ShadowInsertStatementDataSourceMappingsRetrieverTest {
         ShadowInsertStatementDataSourceMappingsRetriever retriever = new ShadowInsertStatementDataSourceMappingsRetriever(sqlStatementContext);
         Collection<ShadowColumnCondition> actual = retriever.getShadowColumnConditions("foo_col");
         Collection<ShadowColumnCondition> expected = Collections.singletonList(new ShadowColumnCondition("foo_tbl", "foo_col", Collections.singletonList("foo")));
-        assertThat(actual, ShardingSphereAssertionMatchers.deepEqual(expected));
+        assertThat(actual, deepEqual(expected));
     }
     
     @Test
