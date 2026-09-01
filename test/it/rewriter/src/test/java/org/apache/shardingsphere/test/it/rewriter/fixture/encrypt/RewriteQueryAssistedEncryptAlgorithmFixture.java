@@ -28,7 +28,7 @@ import java.util.Properties;
 @Getter
 public final class RewriteQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
     
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false, String.class);
     
     @Override
     public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {

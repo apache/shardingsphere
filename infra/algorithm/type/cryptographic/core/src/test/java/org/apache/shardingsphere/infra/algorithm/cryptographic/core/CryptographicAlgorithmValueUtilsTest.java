@@ -28,19 +28,18 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CryptographicAlgorithmValueUtilsTest {
     
     @Test
     void assertConvertToBytesWithDefaultContext() {
-        assertArrayEquals("test".getBytes(StandardCharsets.UTF_8), CryptographicAlgorithmValueUtils.convertToBytes("test", null));
+        assertThat(CryptographicAlgorithmValueUtils.convertToBytes("test", null), is("test".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
     void assertConvertToBytesWithPlainCharset() {
-        assertArrayEquals("test".getBytes(StandardCharsets.UTF_16BE), CryptographicAlgorithmValueUtils.convertToBytes("test", new CryptographicContext(StandardCharsets.UTF_16BE, false)));
+        assertThat(CryptographicAlgorithmValueUtils.convertToBytes("test", new CryptographicContext(StandardCharsets.UTF_16BE, false)), is("test".getBytes(StandardCharsets.UTF_16BE)));
     }
     
     @Test
@@ -51,18 +50,18 @@ class CryptographicAlgorithmValueUtilsTest {
     @Test
     void assertConvertToPlainValueWithBytes() {
         byte[] value = new byte[]{(byte) 0xFF};
-        assertArrayEquals(value, (byte[]) CryptographicAlgorithmValueUtils.convertToPlainValue(value, new CryptographicContext(StandardCharsets.UTF_8, true)));
+        assertThat((byte[]) CryptographicAlgorithmValueUtils.convertToPlainValue(value, new CryptographicContext(StandardCharsets.UTF_8, true)), is(value));
     }
     
     @Test
     void assertDecodeBase64() {
-        assertArrayEquals("test".getBytes(StandardCharsets.UTF_8), CryptographicAlgorithmValueUtils.decodeBase64("dGVzdA=="));
+        assertThat(CryptographicAlgorithmValueUtils.decodeBase64("dGVzdA=="), is("test".getBytes(StandardCharsets.UTF_8)));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("acceptedBase64WhitespaceArguments")
     void assertDecodeBase64WithWhitespace(final String name, final String value) {
-        assertArrayEquals("test".getBytes(StandardCharsets.UTF_8), CryptographicAlgorithmValueUtils.decodeBase64(value));
+        assertThat(CryptographicAlgorithmValueUtils.decodeBase64(value), is("test".getBytes(StandardCharsets.UTF_8)));
     }
     
     private static Stream<Arguments> acceptedBase64WhitespaceArguments() {

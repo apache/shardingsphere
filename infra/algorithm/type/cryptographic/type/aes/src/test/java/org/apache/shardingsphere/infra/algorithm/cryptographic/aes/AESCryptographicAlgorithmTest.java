@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithmEngine;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -31,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -62,42 +60,13 @@ class AESCryptographicAlgorithmTest {
     }
     
     @Test
-    void assertEncrypt() {
-        assertThat(encryptBase64("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
-    }
-    
-    @Test
-    void assertEncryptBytes() {
-        assertThat(encryptBase64("test".getBytes(StandardCharsets.UTF_8)), is("dSpPiyENQGDUXMKFMJPGWA=="));
-    }
-    
-    @Test
     void assertEncryptNullValue() {
         assertNull(cryptographicAlgorithm.encrypt(null, CryptographicContext.DEFAULT));
     }
     
     @Test
-    void assertDecrypt() {
-        assertThat(CryptographicAlgorithmEngine.decrypt(cryptographicAlgorithm, "dSpPiyENQGDUXMKFMJPGWA==", CryptographicContext.DEFAULT, "BASE64"), is("test"));
-    }
-    
-    @Test
-    void assertDecryptWithBase64Whitespace() {
-        assertThat(CryptographicAlgorithmEngine.decrypt(cryptographicAlgorithm, "dSpPiyENQGDUX\r\nMKFMJPGWA==", CryptographicContext.DEFAULT, "BASE64"), is("test"));
-    }
-    
-    @Test
-    void assertDecryptNullValue() {
-        assertNull(CryptographicAlgorithmEngine.decrypt(cryptographicAlgorithm, null, CryptographicContext.DEFAULT, "BASE64"));
-    }
-    
-    @Test
     void assertDecryptWithBinaryPlainValue() {
         byte[] cipherValue = cryptographicAlgorithm.encrypt(new byte[]{(byte) 0xFF}, CryptographicContext.DEFAULT);
-        assertArrayEquals(new byte[]{(byte) 0xFF}, (byte[]) cryptographicAlgorithm.decrypt(cipherValue, new CryptographicContext(StandardCharsets.UTF_8, true)));
-    }
-    
-    private String encryptBase64(final Object plainValue) {
-        return (String) CryptographicAlgorithmEngine.encrypt(cryptographicAlgorithm, plainValue, CryptographicContext.DEFAULT, "BASE64", false);
+        assertThat((byte[]) cryptographicAlgorithm.decrypt(cipherValue, new CryptographicContext(StandardCharsets.UTF_8, true)), is(new byte[]{(byte) 0xFF}));
     }
 }

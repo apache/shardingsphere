@@ -26,7 +26,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,7 +54,7 @@ class MessageDigestAlgorithmEngineTest {
         byte[] expectedDigestValue = "digest".getBytes(StandardCharsets.UTF_8);
         when(digestAlgorithm.digest("plain")).thenReturn(expectedDigestValue);
         Object actualDigestValue = MessageDigestAlgorithmEngine.digest(digestAlgorithm, "plain", "BASE64", true);
-        assertArrayEquals(expectedDigestValue, (byte[]) actualDigestValue);
+        assertThat((byte[]) actualDigestValue, is(expectedDigestValue));
     }
     
     @Test

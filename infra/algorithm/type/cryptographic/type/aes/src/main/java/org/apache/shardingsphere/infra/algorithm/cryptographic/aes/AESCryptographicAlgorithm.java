@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithmValueUtils;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicContext;
@@ -38,12 +37,9 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
     
     private CryptographicPropertiesProvider propsProvider;
     
-    private AlgorithmConfiguration algorithmConfiguration;
-    
     @Override
     public void init(final Properties props) {
         propsProvider = TypedSPILoader.getService(CryptographicPropertiesProvider.class, "DEFAULT", props);
-        algorithmConfiguration = new AlgorithmConfiguration(getType(), props);
     }
     
     @HighFrequencyInvocation
@@ -72,13 +68,6 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(propsProvider.getSecretKey(), getType()));
         return result;
-    }
-    
-    @Override
-    public AlgorithmConfiguration toConfiguration() {
-        Properties props = new Properties();
-        props.putAll(algorithmConfiguration.getProps());
-        return new AlgorithmConfiguration(algorithmConfiguration.getType(), props);
     }
     
     @Override

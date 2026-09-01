@@ -24,24 +24,23 @@ import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class AlgorithmValueUtilsTest {
     
     @Test
     void assertConvertToBytesWithBytes() {
         byte[] value = "test".getBytes(StandardCharsets.UTF_8);
-        assertArrayEquals(value, AlgorithmValueUtils.convertToBytes(value, StandardCharsets.UTF_8));
+        assertThat(AlgorithmValueUtils.convertToBytes(value, StandardCharsets.UTF_8), is(value));
     }
     
     @Test
     void assertConvertToBytesWithCharset() {
-        assertArrayEquals("test".getBytes(StandardCharsets.UTF_8), AlgorithmValueUtils.convertToBytes("test", StandardCharsets.UTF_8));
+        assertThat(AlgorithmValueUtils.convertToBytes("test", StandardCharsets.UTF_8), is("test".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
     void assertConvertToBytesWithDefaultCharset() {
-        assertArrayEquals("test".getBytes(StandardCharsets.UTF_8), AlgorithmValueUtils.convertToBytes("test", (Charset) null));
+        assertThat(AlgorithmValueUtils.convertToBytes("test", (Charset) null), is("test".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
@@ -78,6 +77,6 @@ class AlgorithmValueUtilsTest {
     @Test
     void assertConvertToPlainValueWithBytes() {
         byte[] value = "test".getBytes(StandardCharsets.UTF_8);
-        assertArrayEquals(value, (byte[]) AlgorithmValueUtils.convertToPlainValue(value, StandardCharsets.UTF_8, true));
+        assertThat((byte[]) AlgorithmValueUtils.convertToPlainValue(value, StandardCharsets.UTF_8, true), is(value));
     }
 }

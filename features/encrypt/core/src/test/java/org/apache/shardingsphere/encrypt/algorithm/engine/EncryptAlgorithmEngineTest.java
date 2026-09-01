@@ -30,7 +30,6 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -61,7 +60,7 @@ class EncryptAlgorithmEngineTest {
         byte[] expectedCipherValue = "cipher".getBytes(StandardCharsets.UTF_8);
         when(encryptAlgorithm.encrypt(eq("plain"), any(AlgorithmSQLContext.class))).thenReturn(expectedCipherValue);
         Object actualCipherValue = EncryptAlgorithmEngine.encrypt(encryptAlgorithm, "plain", createAlgorithmSQLContext(), "BASE64", true);
-        assertArrayEquals(expectedCipherValue, (byte[]) actualCipherValue);
+        assertThat((byte[]) actualCipherValue, is(expectedCipherValue));
     }
     
     @Test
@@ -79,7 +78,7 @@ class EncryptAlgorithmEngineTest {
         Object actualPlainValue = EncryptAlgorithmEngine.decrypt(encryptAlgorithm, "Y2lwaGVy", createAlgorithmSQLContext(), "BASE64");
         ArgumentCaptor<byte[]> actualCipherValueCaptor = ArgumentCaptor.forClass(byte[].class);
         verify(encryptAlgorithm).decrypt(actualCipherValueCaptor.capture(), any(AlgorithmSQLContext.class));
-        assertArrayEquals("cipher".getBytes(StandardCharsets.UTF_8), actualCipherValueCaptor.getValue());
+        assertThat(actualCipherValueCaptor.getValue(), is("cipher".getBytes(StandardCharsets.UTF_8)));
         assertThat(actualPlainValue, is("plain"));
     }
     
@@ -90,7 +89,7 @@ class EncryptAlgorithmEngineTest {
         Object actualPlainValue = EncryptAlgorithmEngine.decrypt(encryptAlgorithm, "Y2lwaGVy                          ", createAlgorithmSQLContext(), "BASE64");
         ArgumentCaptor<byte[]> actualCipherValueCaptor = ArgumentCaptor.forClass(byte[].class);
         verify(encryptAlgorithm).decrypt(actualCipherValueCaptor.capture(), any(AlgorithmSQLContext.class));
-        assertArrayEquals("cipher".getBytes(StandardCharsets.UTF_8), actualCipherValueCaptor.getValue());
+        assertThat(actualCipherValueCaptor.getValue(), is("cipher".getBytes(StandardCharsets.UTF_8)));
         assertThat(actualPlainValue, is("plain"));
     }
     

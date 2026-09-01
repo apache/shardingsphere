@@ -34,8 +34,4 @@ public final class EncryptAlgorithmMetaData {
     private final boolean supportLike;
     
     private final Class<?> cipherValueType;
-    
-    public EncryptAlgorithmMetaData(final boolean supportDecrypt, final boolean supportEquivalentFilter, final boolean supportLike) {
-        this(supportDecrypt, supportEquivalentFilter, supportLike, Object.class);
-    }
 }

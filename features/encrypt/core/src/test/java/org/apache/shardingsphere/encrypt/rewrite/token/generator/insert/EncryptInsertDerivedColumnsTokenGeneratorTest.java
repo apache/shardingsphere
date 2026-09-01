@@ -125,7 +125,7 @@ class EncryptInsertDerivedColumnsTokenGeneratorTest {
     
     private EncryptAlgorithm mockEncryptAlgorithm() {
         EncryptAlgorithm result = mock(EncryptAlgorithm.class);
-        when(result.getMetaData()).thenReturn(new EncryptAlgorithmMetaData(true, true, true));
+        when(result.getMetaData()).thenReturn(new EncryptAlgorithmMetaData(true, true, true, String.class));
         when(result.getEncoder()).thenReturn(Optional.empty());
         when(result.toConfiguration()).thenReturn(new AlgorithmConfiguration("FIXTURE", new Properties()));
         return result;

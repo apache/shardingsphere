@@ -28,7 +28,7 @@ import java.util.Properties;
 @Getter
 public final class CoreQueryLikeEncryptAlgorithmFixture implements EncryptAlgorithm {
     
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, false, true);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, false, true, String.class);
     
     @Override
     public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {

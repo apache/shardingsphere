@@ -54,7 +54,7 @@ public final class E2EEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     private static final int MAX_NUMERIC_LETTER_CHAR = 255;
     
     @Getter
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true, String.class);
     
     private int delta;
     

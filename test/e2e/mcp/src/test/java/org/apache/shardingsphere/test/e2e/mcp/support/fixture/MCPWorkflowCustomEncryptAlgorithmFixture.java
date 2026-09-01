@@ -32,7 +32,7 @@ public final class MCPWorkflowCustomEncryptAlgorithmFixture implements EncryptAl
     
     private static final String PREFIX = "mcp_custom:";
     
-    private static final EncryptAlgorithmMetaData META_DATA = new EncryptAlgorithmMetaData(true, false, false);
+    private static final EncryptAlgorithmMetaData META_DATA = new EncryptAlgorithmMetaData(true, false, false, String.class);
     
     @Override
     public Object encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
