@@ -41,9 +41,9 @@ import static org.mockito.Mockito.verify;
 class PipelineExecuteEngineTest {
     
     private static final long FUTURE_TIMEOUT_SECONDS = 30L;
-
+    
     private static final Duration ASSERTION_TIMEOUT = Duration.ofSeconds(FUTURE_TIMEOUT_SECONDS + 1L);
-
+    
     @Test
     void assertSubmitWithoutExecuteCallback() {
         PipelineLifecycleRunnable pipelineLifecycleRunnable = mock(PipelineLifecycleRunnable.class);
