@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDe
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
@@ -176,6 +178,26 @@ class SingleRuleConfigurationDecoratorTest {
             assertThat(decorator.decorate("foo_db", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables(),
                     contains("foo_ds.foo_schema.t_order"));
         }
+    }
+    
+    @Test
+    void assertDecorateUsesPhysicalStorageTypeForUnresolvedDataSourceAfterAggregation() {
+        DataSource dataSource = mock(DataSource.class);
+        DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "H2");
+        when(DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(storageType);
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds", Collections.singleton("foo_ds")));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        Collection<String> splitTables = Collections.singleton("missing_ds.*");
+        when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenReturn(splitTables);
+        when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(anyString(), any(DatabaseType.class), anyMap(), anyMap(), anyCollection())).thenCallRealMethod();
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(Collections.emptyMap());
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(splitTables, null);
+        SingleRuleConfiguration actual = decorator.decorate("foo_db", Collections.singletonMap("foo_ds", dataSource), Collections.singleton(rule), ruleConfig);
+        assertTrue(actual.getTables().isEmpty());
     }
     
     @Test

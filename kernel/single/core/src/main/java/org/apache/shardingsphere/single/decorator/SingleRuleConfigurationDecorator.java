@@ -77,7 +77,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         }
         DatabaseType fallbackDatabaseType = dataSources.isEmpty()
                 ? DatabaseTypeEngine.getDefaultStorageType()
-                : storageTypes.get(dataSources.keySet().iterator().next());
+                : DatabaseTypeEngine.getStorageType(dataSources.values().iterator().next());
         Collection<DataNode> configuredDataNodes = getConfiguredDataNodes(databaseName, fallbackDatabaseType, aggregatedDataSources, storageTypes, splitTables);
         return loadSpecifiedTables(schemaAvailableDataSources, actualDataNodes, builtRules, configuredDataNodes);
     }
