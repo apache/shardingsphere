@@ -43,6 +43,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -57,6 +58,7 @@ import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -88,9 +90,11 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertCreateDatabase() {
         metaDataManagerPersistService.createDatabase("foo_db");
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
-        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE);
-        verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
+        DatabaseMetaDataPersistService databaseMetaDataPersistService = metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase();
+        InOrder actual = inOrder(databaseMetaDataPersistService, clusterDatabaseListenerPersistCoordinator);
+        actual.verify(databaseMetaDataPersistService).add("foo_db");
+        actual.verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE);
+        actual.verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
     }
     
     @Test
@@ -105,9 +109,11 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertDropDatabase() {
         metaDataManagerPersistService.dropDatabase(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
-        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.DROP);
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
-        verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
+        DatabaseMetaDataPersistService databaseMetaDataPersistService = metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase();
+        InOrder actual = inOrder(databaseMetaDataPersistService, clusterDatabaseListenerPersistCoordinator);
+        actual.verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.DROP);
+        actual.verify(databaseMetaDataPersistService).drop("foo_db");
+        actual.verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
     }
     
     @Test
