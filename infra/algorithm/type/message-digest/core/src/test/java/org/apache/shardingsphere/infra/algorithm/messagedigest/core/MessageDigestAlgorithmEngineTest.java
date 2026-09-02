@@ -43,9 +43,9 @@ class MessageDigestAlgorithmEngineTest {
     @Test
     void assertDigestWithHexEncoder() {
         MessageDigestAlgorithm digestAlgorithm = mock(MessageDigestAlgorithm.class);
-        when(digestAlgorithm.digest("plain")).thenReturn("digest".getBytes(StandardCharsets.UTF_8));
+        when(digestAlgorithm.digest("plain")).thenReturn(new byte[]{0, 15, 16, (byte) 0xFF});
         Object actualDigestValue = MessageDigestAlgorithmEngine.digest(digestAlgorithm, "plain", "HEX", false);
-        assertThat(actualDigestValue, is("646967657374"));
+        assertThat(actualDigestValue, is("000f10ff"));
     }
     
     @Test

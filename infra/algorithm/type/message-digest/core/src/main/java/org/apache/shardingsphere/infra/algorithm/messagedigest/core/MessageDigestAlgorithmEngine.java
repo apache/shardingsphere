@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.algorithm.messagedigest.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.infra.algorithm.messagedigest.spi.MessageDigestAlgorithm;
 
 import java.util.Base64;
@@ -30,8 +31,6 @@ import java.util.Base64;
 public final class MessageDigestAlgorithmEngine {
     
     private static final String BASE64 = "BASE64";
-    
-    private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
     
     /**
      * Digest.
@@ -63,11 +62,6 @@ public final class MessageDigestAlgorithmEngine {
     }
     
     private static String encodeHex(final byte[] value) {
-        StringBuilder result = new StringBuilder(value.length * 2);
-        for (byte each : value) {
-            result.append(HEX_DIGITS[each >> 4 & 0xF]);
-            result.append(HEX_DIGITS[each & 0xF]);
-        }
-        return result.toString();
+        return Hex.encodeHexString(value);
     }
 }
