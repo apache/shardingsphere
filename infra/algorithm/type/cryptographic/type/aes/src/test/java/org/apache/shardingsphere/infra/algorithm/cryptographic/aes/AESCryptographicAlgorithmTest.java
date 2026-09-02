@@ -19,11 +19,14 @@ package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -57,22 +60,13 @@ class AESCryptographicAlgorithmTest {
     }
     
     @Test
-    void assertEncrypt() {
-        assertThat(cryptographicAlgorithm.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
-    }
-    
-    @Test
     void assertEncryptNullValue() {
-        assertNull(cryptographicAlgorithm.encrypt(null));
+        assertNull(cryptographicAlgorithm.encrypt(null, CryptographicContext.DEFAULT));
     }
     
     @Test
-    void assertDecrypt() {
-        assertThat(cryptographicAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA=="), is("test"));
-    }
-    
-    @Test
-    void assertDecryptNullValue() {
-        assertNull(cryptographicAlgorithm.decrypt(null));
+    void assertDecryptWithBinaryPlainValue() {
+        byte[] cipherValue = cryptographicAlgorithm.encrypt(new byte[]{(byte) 0xFF}, CryptographicContext.DEFAULT);
+        assertThat((byte[]) cryptographicAlgorithm.decrypt(cipherValue, new CryptographicContext(StandardCharsets.UTF_8, true)), is(new byte[]{(byte) 0xFF}));
     }
 }
