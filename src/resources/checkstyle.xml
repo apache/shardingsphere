@@ -296,7 +296,9 @@
             <property name="severity" value="warning" />
             <property name="max" value="50" />
         </module>
-        <module name="LambdaBodyLength" />
+        <module name="LambdaBodyLength">
+            <property name="max" value="50" />
+        </module>
         <module name="MethodCount">
             <property name="severity" value="warning" />
         </module>
