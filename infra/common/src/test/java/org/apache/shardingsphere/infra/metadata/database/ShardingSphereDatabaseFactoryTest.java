@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
@@ -53,9 +52,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 class ShardingSphereDatabaseFactoryTest {
     
@@ -85,17 +82,19 @@ class ShardingSphereDatabaseFactoryTest {
         systemSchemas.put("system_schema", new ShardingSphereSchema("system_schema", protocolType));
         systemSchemas.put("metadata_schema", new ShardingSphereSchema("metadata_schema", protocolType));
         try (
-                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_schema"));
+                MockedStatic<DefaultSchemaNameResolver> mockedDefaultSchemaNameResolver = mockStatic(DefaultSchemaNameResolver.class);
                 MockedStatic<DatabaseRulesBuilder> mockedRulesBuilder = mockStatic(DatabaseRulesBuilder.class);
                 MockedStatic<GenericSchemaBuilder> mockedGenericSchemaBuilder = mockStatic(GenericSchemaBuilder.class);
                 MockedStatic<SystemSchemaBuilder> mockedSystemSchemaBuilder = mockStatic(SystemSchemaBuilder.class)) {
             ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+            mockedDefaultSchemaNameResolver.when(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db")).thenReturn("foo_schema");
             mockedRulesBuilder.when(() -> DatabaseRulesBuilder.build(eq("foo_db"), eq(protocolType), eq(databaseConfig), eq(computeNodeInstanceContext), any(ResourceMetaData.class)))
                     .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
             mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(protocolType), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
             mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(systemSchemas);
             ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext);
+            mockedDefaultSchemaNameResolver.verify(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db"));
             assertThat(actual.getName(), is("foo_db"));
             assertThat(actual.getProtocolType(), is(protocolType));
             assertThat(actual.getAllSchemas().size(), is(3));
@@ -111,11 +110,12 @@ class ShardingSphereDatabaseFactoryTest {
         DatabaseType protocolType = mock(DatabaseType.class);
         ShardingSphereSchema candidateSchema = new ShardingSphereSchema("candidate_schema", protocolType);
         try (
-                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_schema"));
+                MockedStatic<DefaultSchemaNameResolver> mockedDefaultSchemaNameResolver = mockStatic(DefaultSchemaNameResolver.class);
                 MockedStatic<DatabaseRulesBuilder> mockedRulesBuilder = mockStatic(DatabaseRulesBuilder.class);
                 MockedStatic<GenericSchemaBuilder> mockedGenericSchemaBuilder = mockStatic(GenericSchemaBuilder.class);
                 MockedStatic<SystemSchemaBuilder> mockedSystemSchemaBuilder = mockStatic(SystemSchemaBuilder.class)) {
             ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+            mockedDefaultSchemaNameResolver.when(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db")).thenReturn("foo_schema");
             mockedRulesBuilder.when(() -> DatabaseRulesBuilder.build(eq("foo_db"), eq(protocolType), eq(databaseConfig), eq(computeNodeInstanceContext), any(ResourceMetaData.class)))
                     .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
             mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(protocolType),
@@ -124,6 +124,7 @@ class ShardingSphereDatabaseFactoryTest {
             mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(Collections.emptyMap());
             ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(
                     "foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext, Collections.singleton(candidateSchema));
+            mockedDefaultSchemaNameResolver.verify(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db"));
             assertTrue(actual.containsSchema("foo_schema"));
         }
     }
