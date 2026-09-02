@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.decorator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
@@ -75,7 +76,10 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(isSchemaAvailable, actualDataNodes);
         }
-        Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, splitTables);
+        String defaultSchemaName = dataSources.isEmpty()
+                ? new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName)
+                : DefaultSchemaNameResolver.resolveStorage(databaseType, dataSources.values().iterator().next(), databaseName);
+        Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName(defaultSchemaName, databaseType, splitTables);
         return loadSpecifiedTables(isSchemaAvailable, actualDataNodes, builtRules, configuredDataNodes);
     }
     
