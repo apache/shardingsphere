@@ -19,6 +19,8 @@ package org.apache.shardingsphere.encrypt.algorithm.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
@@ -38,10 +40,6 @@ public final class EncryptAlgorithmEngine {
     private static final String BASE64 = "BASE64";
     
     private static final String ENCODER_SUFFIX = "-encoder";
-    
-    private static final char[] LOWER_HEX_DIGITS = "0123456789abcdef".toCharArray();
-    
-    private static final char[] UPPER_HEX_DIGITS = "0123456789ABCDEF".toCharArray();
     
     /**
      * Encrypt.
@@ -130,20 +128,14 @@ public final class EncryptAlgorithmEngine {
     }
     
     private static String encodeHex(final byte[] value, final boolean lowerCase) {
-        char[] digits = lowerCase ? LOWER_HEX_DIGITS : UPPER_HEX_DIGITS;
-        StringBuilder result = new StringBuilder(value.length * 2);
-        for (byte each : value) {
-            result.append(digits[each >> 4 & 0xF]);
-            result.append(digits[each & 0xF]);
-        }
-        return result.toString();
+        return Hex.encodeHexString(value, lowerCase);
     }
     
     private static byte[] decodeHex(final String value) {
-        byte[] result = new byte[value.length() / 2];
-        for (int i = 0; i < value.length(); i += 2) {
-            result[i / 2] = (byte) Integer.parseInt(value.substring(i, i + 2), 16);
+        try {
+            return Hex.decodeHex(value);
+        } catch (final DecoderException ex) {
+            throw new IllegalArgumentException(ex);
         }
-        return result;
     }
 }

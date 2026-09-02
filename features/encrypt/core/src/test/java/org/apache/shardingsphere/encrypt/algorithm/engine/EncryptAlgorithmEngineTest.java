@@ -22,6 +22,8 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 
 import java.nio.charset.StandardCharsets;
@@ -30,6 +32,7 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -49,9 +52,9 @@ class EncryptAlgorithmEngineTest {
     @Test
     void assertEncryptWithHexEncoder() {
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm(byte[].class);
-        when(encryptAlgorithm.encrypt(eq("plain"), any(AlgorithmSQLContext.class))).thenReturn("cipher".getBytes(StandardCharsets.UTF_8));
+        when(encryptAlgorithm.encrypt(eq("plain"), any(AlgorithmSQLContext.class))).thenReturn(new byte[]{0, 15, 16, (byte) 0xFF});
         Object actualCipherValue = EncryptAlgorithmEngine.encrypt(encryptAlgorithm, "plain", createAlgorithmSQLContext(), "HEX", false);
-        assertThat(actualCipherValue, is("636970686572"));
+        assertThat(actualCipherValue, is("000F10FF"));
     }
     
     @Test
@@ -98,6 +101,24 @@ class EncryptAlgorithmEngineTest {
         verify(encryptAlgorithm).decrypt(actualCipherValueCaptor.capture(), any(AlgorithmSQLContext.class));
         assertThat(actualCipherValueCaptor.getValue(), is("cipher".getBytes(StandardCharsets.UTF_8)));
         assertThat(actualPlainValue, is("plain"));
+    }
+    
+    @Test
+    void assertDecryptWithHexEncoder() {
+        EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm(byte[].class);
+        when(encryptAlgorithm.decrypt(any(byte[].class), any(AlgorithmSQLContext.class))).thenReturn("plain");
+        Object actualPlainValue = EncryptAlgorithmEngine.decrypt(encryptAlgorithm, "000f10Ff", createAlgorithmSQLContext(), "HEX");
+        ArgumentCaptor<byte[]> actualCipherValueCaptor = ArgumentCaptor.forClass(byte[].class);
+        verify(encryptAlgorithm).decrypt(actualCipherValueCaptor.capture(), any(AlgorithmSQLContext.class));
+        assertThat(actualCipherValueCaptor.getValue(), is(new byte[]{0, 15, 16, (byte) 0xFF}));
+        assertThat(actualPlainValue, is("plain"));
+    }
+    
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "GG"})
+    void assertDecryptWithInvalidHexEncoder(final String cipherValue) {
+        EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm(byte[].class);
+        assertThrows(IllegalArgumentException.class, () -> EncryptAlgorithmEngine.decrypt(encryptAlgorithm, cipherValue, createAlgorithmSQLContext(), null));
     }
     
     @Test

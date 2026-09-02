@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.util.AlgorithmValueUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.util.Properties;
@@ -57,6 +56,6 @@ public final class MD5MessageDigestEngine {
      * @throws GeneralSecurityException digest failure
      */
     public static byte[] digest(final Object plainValue, final String salt) throws GeneralSecurityException {
-        return MessageDigest.getInstance(MD5).digest((AlgorithmValueUtils.convertToUTF8Text(plainValue) + salt).getBytes(StandardCharsets.UTF_8));
+        return MessageDigest.getInstance(MD5).digest(AlgorithmValueUtils.convertToBytes(AlgorithmValueUtils.convertToUTF8Text(plainValue) + salt, null));
     }
 }
