@@ -23,10 +23,11 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.readwritesplitting.deliver.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -76,7 +77,7 @@ class ReadwriteSplittingStaticDataSourceRuleAttributeTest {
                 "foo_db", Collections.singletonMap("foo_group", dataSourceGroupRule), computeNodeInstanceContext);
         ruleAttribute.cleanStorageNodeDataSource("foo_group");
         verify(computeNodeInstanceContext.getEventBusContext())
-                .post(ShardingSphereArgumentVerifyMatchers.deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
+                .post(deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
     }
     
     @Test
@@ -89,6 +90,6 @@ class ReadwriteSplittingStaticDataSourceRuleAttributeTest {
                 "foo_db", Collections.singletonMap("foo_group", dataSourceGroupRule), computeNodeInstanceContext);
         ruleAttribute.cleanStorageNodeDataSources();
         verify(computeNodeInstanceContext.getEventBusContext())
-                .post(ShardingSphereArgumentVerifyMatchers.deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
+                .post(deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
     }
 }
