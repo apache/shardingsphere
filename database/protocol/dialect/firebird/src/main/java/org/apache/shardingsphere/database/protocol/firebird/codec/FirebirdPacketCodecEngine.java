@@ -175,7 +175,10 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             if (expectedLength < 0) {
                 return -1;
             }
-            return 0 == expectedLength ? readableBytes : readableBytes >= expectedLength ? expectedLength : -1;
+            if (0 == expectedLength) {
+                return readableBytes;
+            }
+            return readableBytes >= expectedLength ? expectedLength : -1;
         } catch (final IndexOutOfBoundsException ex) {
             return -1;
         } finally {

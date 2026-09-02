@@ -70,7 +70,6 @@ chapter = true
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 优先使用三目运算符代替 if else 的返回和赋值语句。
- - 禁止嵌套使用三目运算符。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
  - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法性能的优化。
    - 使用 `@HighFrequencyInvocation` 注解的时机：
