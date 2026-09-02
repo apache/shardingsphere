@@ -23,6 +23,8 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -89,7 +91,7 @@ class EncryptMergedResultTest {
     void assertGetValueWithoutEncryptTable() throws SQLException {
         ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("foo_col"));
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
-        EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
+        EncryptRule rule = mockRule(mockEncryptAlgorithm());
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
@@ -100,7 +102,7 @@ class EncryptMergedResultTest {
     void assertGetValueWithoutEncryptColumn() throws SQLException {
         ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("bar_col"));
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
-        EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
+        EncryptRule rule = mockRule(mockEncryptAlgorithm());
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
@@ -114,7 +116,7 @@ class EncryptMergedResultTest {
                 TableSourceType.PHYSICAL_TABLE);
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
-        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
         when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
                 .thenReturn("foo_decrypted_value");
         EncryptRule rule = mockRule(encryptAlgorithm);
@@ -132,7 +134,7 @@ class EncryptMergedResultTest {
                 TableSourceType.PHYSICAL_TABLE);
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
-        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
         when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_default_schema", "foo_tbl", "foo_col"))))
                 .thenReturn("foo_decrypted_value");
         EncryptRule rule = mockRule(encryptAlgorithm);
@@ -151,7 +153,7 @@ class EncryptMergedResultTest {
                 TableSourceType.PHYSICAL_TABLE);
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
-        EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
+        EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
         when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
                 .thenThrow(new RuntimeException("Test failed"));
         EncryptRule rule = mockRule(encryptAlgorithm);
@@ -170,6 +172,14 @@ class EncryptMergedResultTest {
         when(encryptTable.getEncryptColumn("foo_col")).thenReturn(encryptColumn);
         when(result.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
         when(result.getEncryptTable("foo_tbl")).thenReturn(encryptTable);
+        return result;
+    }
+    
+    private EncryptAlgorithm mockEncryptAlgorithm() {
+        EncryptAlgorithm result = mock(EncryptAlgorithm.class);
+        when(result.getMetaData()).thenReturn(new EncryptAlgorithmMetaData(true, true, false, String.class));
+        when(result.getEncoder()).thenReturn(Optional.empty());
+        when(result.toConfiguration()).thenReturn(new AlgorithmConfiguration("FIXTURE", new Properties()));
         return result;
     }
     
