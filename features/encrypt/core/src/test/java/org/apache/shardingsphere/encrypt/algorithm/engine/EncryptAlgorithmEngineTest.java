@@ -114,11 +114,11 @@ class EncryptAlgorithmEngineTest {
         assertThat(actualPlainValue, is("plain"));
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @ValueSource(strings = {"0", "GG"})
     void assertDecryptWithInvalidHexEncoder(final String cipherValue) {
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm(byte[].class);
-        assertThrows(IllegalArgumentException.class, () -> EncryptAlgorithmEngine.decrypt(encryptAlgorithm, cipherValue, createAlgorithmSQLContext(), null));
+        assertThrows(IllegalArgumentException.class, () -> EncryptAlgorithmEngine.decrypt(encryptAlgorithm, cipherValue, createAlgorithmSQLContext(), "HEX"));
     }
     
     @Test
