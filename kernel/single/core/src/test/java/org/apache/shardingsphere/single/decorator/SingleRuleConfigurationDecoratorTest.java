@@ -79,6 +79,7 @@ class SingleRuleConfigurationDecoratorTest {
     void setUp() {
         when(DatabaseTypeEngine.getDefaultStorageType()).thenReturn(databaseType);
         when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(databaseType);
+        when(DefaultSchemaNameResolver.resolveStorage(any(DatabaseType.class), any(DataSource.class), anyString())).thenReturn("foo_db");
     }
     
     @ParameterizedTest(name = "{0}")
@@ -121,47 +122,31 @@ class SingleRuleConfigurationDecoratorTest {
     }
     
     @Test
-    void assertDecorateWithHeterogeneousStorageSchemaPolicies() {
-        DataSource schemaAvailableDataSource = mock(DataSource.class);
-        DatabaseType schemaAvailableDatabaseType = mock(DatabaseType.class);
-        when(DatabaseTypeEngine.getStorageType(schemaAvailableDataSource)).thenReturn(schemaAvailableDatabaseType);
-        DataSource schemaUnavailableDataSource = mock(DataSource.class);
-        DatabaseType schemaUnavailableDatabaseType = mock(DatabaseType.class);
-        when(DatabaseTypeEngine.getStorageType(schemaUnavailableDataSource)).thenReturn(schemaUnavailableDatabaseType);
+    void assertDecorateUsesFirstDataSourceDefaultSchema() {
+        DataSource firstDataSource = mock(DataSource.class);
+        DatabaseType firstDatabaseType = mock(DatabaseType.class);
+        when(DatabaseTypeEngine.getStorageType(firstDataSource)).thenReturn(firstDatabaseType);
+        DataSource secondDataSource = mock(DataSource.class);
+        when(DatabaseTypeEngine.getStorageType(secondDataSource)).thenReturn(mock(DatabaseType.class));
         Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
-        dataSources.put("foo_ds", schemaAvailableDataSource);
-        dataSources.put("bar_ds", schemaUnavailableDataSource);
-        when(DefaultSchemaNameResolver.resolveStorage(schemaAvailableDatabaseType, schemaAvailableDataSource, "foo_db")).thenReturn("foo_schema");
-        when(DefaultSchemaNameResolver.resolveStorage(schemaUnavailableDatabaseType, schemaUnavailableDataSource, "foo_db")).thenReturn("foo_db");
-        Map<String, Collection<DataNode>> actualDataNodes = new LinkedHashMap<>(2, 1F);
-        actualDataNodes.put("foo_tbl", Collections.singleton(new DataNode("foo_ds", "foo_schema", "foo_tbl")));
-        actualDataNodes.put("bar_tbl", Collections.singleton(new DataNode("bar_ds", "foo_db", "bar_tbl")));
+        dataSources.put("foo_ds", firstDataSource);
+        dataSources.put("bar_ds", secondDataSource);
+        when(DefaultSchemaNameResolver.resolveStorage(firstDatabaseType, firstDataSource, "foo_db")).thenReturn("foo_schema");
+        Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap("foo_tbl", Collections.singleton(new DataNode("foo_ds", "foo_schema", "foo_tbl")));
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
-        Collection<String> splitTables = Arrays.asList("foo_ds.*", "bar_ds.bar_tbl");
+        Collection<String> splitTables = Collections.singleton("foo_ds.*");
         when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenReturn(splitTables);
         when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenReturn(Collections.emptyList());
         when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenReturn(Collections.emptyList());
-        Map<String, String> expectedDefaultSchemaNames = new LinkedHashMap<>(2, 1F);
-        expectedDefaultSchemaNames.put("foo_ds", "foo_schema");
-        expectedDefaultSchemaNames.put("bar_ds", "foo_db");
-        Map<String, DatabaseType> expectedStorageTypes = new LinkedHashMap<>(2, 1F);
-        expectedStorageTypes.put("foo_ds", schemaAvailableDatabaseType);
-        expectedStorageTypes.put("bar_ds", schemaUnavailableDatabaseType);
-        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(anyString(), any(DatabaseType.class), anyMap(), anyMap(), anyCollection())).thenAnswer(invocation -> {
-            assertThat(invocation.<String>getArgument(0), is("foo_db"));
-            assertThat(invocation.<DatabaseType>getArgument(1), is(schemaAvailableDatabaseType));
-            assertThat(invocation.<Map<String, String>>getArgument(2), is(expectedDefaultSchemaNames));
-            assertThat(invocation.<Map<String, DatabaseType>>getArgument(3), is(expectedStorageTypes));
-            assertThat(invocation.<Collection<String>>getArgument(4), contains("foo_ds.*", "bar_ds.bar_tbl"));
-            return Arrays.asList(new DataNode("foo_ds", "foo_schema", "*"), new DataNode("bar_ds", "foo_db", "bar_tbl"));
+        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName(anyString(), any(DatabaseType.class), anyCollection())).thenAnswer(invocation -> {
+            assertThat(invocation.<String>getArgument(0), is("foo_schema"));
+            assertThat(invocation.<DatabaseType>getArgument(1), is(firstDatabaseType));
+            assertThat(invocation.<Collection<String>>getArgument(2), contains("foo_ds.*"));
+            return Collections.singleton(new DataNode("foo_ds", "foo_schema", "*"));
         });
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(splitTables, null);
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
-            DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-            when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailableDatabaseType == context.arguments().get(0));
-            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-        })) {
-            assertThat(decorator.decorate("foo_db", dataSources, Collections.emptyList(), ruleConfig).getTables(), contains("foo_ds.foo_schema.foo_tbl", "bar_ds.bar_tbl"));
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
+            assertThat(decorator.decorate("foo_db", dataSources, Collections.emptyList(), ruleConfig).getTables(), contains("foo_ds.foo_schema.foo_tbl"));
         }
     }
     
@@ -181,7 +166,7 @@ class SingleRuleConfigurationDecoratorTest {
     }
     
     @Test
-    void assertDecorateUsesPhysicalStorageTypeForUnresolvedDataSourceAfterAggregation() {
+    void assertDecorateWithAggregatedDataSource() {
         DataSource dataSource = mock(DataSource.class);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "H2");
         when(DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(storageType);
@@ -193,7 +178,8 @@ class SingleRuleConfigurationDecoratorTest {
         when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenReturn(splitTables);
         when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenReturn(Collections.emptyList());
         when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenReturn(Collections.emptyList());
-        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(anyString(), any(DatabaseType.class), anyMap(), anyMap(), anyCollection())).thenCallRealMethod();
+        when(DefaultSchemaNameResolver.resolveStorage(storageType, dataSource, "foo_db")).thenReturn("PUBLIC");
+        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName(anyString(), any(DatabaseType.class), anyCollection())).thenCallRealMethod();
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(Collections.emptyMap());
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(splitTables, null);
         SingleRuleConfiguration actual = decorator.decorate("foo_db", Collections.singletonMap("foo_ds", dataSource), Collections.singleton(rule), ruleConfig);
@@ -298,12 +284,9 @@ class SingleRuleConfigurationDecoratorTest {
         Collection<String> splitTables = Collections.singleton("schema_ds.foo_schema.*");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("schema_ds", "foo_schema", SingleTableConstants.ASTERISK));
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
-        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(anyString(), any(DatabaseType.class), anyMap(), anyMap(), anyCollection())).thenCallRealMethod();
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singleton("schema_ds.foo_schema.*"), null);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
-            assertTrue(decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables().isEmpty());
-        }
+        assertTrue(decorator.decorate("foo_db", dataSources, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables().isEmpty());
     }
     
     @Test
@@ -322,7 +305,10 @@ class SingleRuleConfigurationDecoratorTest {
     private MockedConstruction<DatabaseTypeRegistry> mockSchemaRegistry(final boolean schemaAvailable) {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
-        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
+            when(mock.getDefaultSchemaName(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
+            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
+        });
     }
     
     private void mockSplitAndConvert(final Collection<String> splitTables, final Collection<DataNode> configuredDataNodes,
@@ -330,7 +316,7 @@ class SingleRuleConfigurationDecoratorTest {
         when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenReturn(splitTables);
         when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenReturn(excludedTables);
         when(SingleTableLoadUtils.convertToDataNodes(anyString(), any(DatabaseType.class), anyCollection())).thenReturn(configuredDataNodes);
-        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(anyString(), any(DatabaseType.class), anyMap(), anyMap(), anyCollection())).thenReturn(configuredDataNodes);
+        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName(anyString(), any(DatabaseType.class), anyCollection())).thenReturn(configuredDataNodes);
         when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenReturn(featureRequiredTables);
     }
     

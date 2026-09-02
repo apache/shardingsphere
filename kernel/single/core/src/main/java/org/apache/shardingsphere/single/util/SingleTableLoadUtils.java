@@ -32,7 +32,6 @@ import org.apache.shardingsphere.single.constant.SingleTableConstants;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -113,24 +112,15 @@ public final class SingleTableLoadUtils {
     }
     
     /**
-     * Convert tables to data nodes with resolved default schema names.
+     * Convert tables to data nodes with resolved default schema name.
      *
-     * @param databaseName database name
-     * @param fallbackDatabaseType fallback database type for an unresolved data source
-     * @param defaultSchemaNames resolved default schema names by data source name
-     * @param storageTypes storage types by data source name
+     * @param defaultSchemaName resolved default schema name
+     * @param databaseType database type
      * @param dataNodes data nodes
      * @return data nodes
      */
-    public static Collection<DataNode> convertToDataNodesWithDefaultSchemaNames(final String databaseName, final DatabaseType fallbackDatabaseType,
-                                                                                final Map<String, String> defaultSchemaNames,
-                                                                                final Map<String, DatabaseType> storageTypes, final Collection<String> dataNodes) {
-        return dataNodes.stream().map(each -> {
-            String dataSourceName = Splitter.on('.').limit(2).splitToList(each).get(0);
-            return defaultSchemaNames.containsKey(dataSourceName) && storageTypes.containsKey(dataSourceName)
-                    ? DataNode.createWithDefaultSchemaName(defaultSchemaNames.get(dataSourceName), storageTypes.get(dataSourceName), each)
-                    : new DataNode(databaseName, fallbackDatabaseType, each);
-        }).collect(Collectors.toCollection(LinkedList::new));
+    public static Collection<DataNode> convertToDataNodesWithDefaultSchemaName(final String defaultSchemaName, final DatabaseType databaseType, final Collection<String> dataNodes) {
+        return dataNodes.stream().map(each -> DataNode.createWithDefaultSchemaName(defaultSchemaName, databaseType, each)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**

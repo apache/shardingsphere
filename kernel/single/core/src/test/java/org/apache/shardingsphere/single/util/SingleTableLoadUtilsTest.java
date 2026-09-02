@@ -36,10 +36,8 @@ import org.mockito.MockedConstruction;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Stream;
@@ -96,17 +94,9 @@ class SingleTableLoadUtilsTest {
     }
     
     @Test
-    void assertConvertToDataNodesWithDefaultSchemaNames() {
-        Map<String, String> defaultSchemaNames = new LinkedHashMap<>(2, 1F);
-        defaultSchemaNames.put("foo_ds", "foo_schema");
-        defaultSchemaNames.put("bar_ds", "bar_schema");
-        Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1F);
-        storageTypes.put("foo_ds", TypedSPILoader.getService(DatabaseType.class, "Oracle"));
-        storageTypes.put("bar_ds", TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        Collection<DataNode> expected = Arrays.asList(new DataNode("foo_ds", "foo_schema", "foo_tbl"), new DataNode("bar_ds", "bar_schema", "schema.bar_tbl.part"),
-                new DataNode("foo_db", databaseType, "missing_ds.missing_tbl"));
-        assertThat(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(
-                "foo_db", databaseType, defaultSchemaNames, storageTypes, Arrays.asList("foo_ds.foo_tbl", "bar_ds.schema.bar_tbl.part", "missing_ds.missing_tbl")),
+    void assertConvertToDataNodesWithDefaultSchemaName() {
+        Collection<DataNode> expected = Arrays.asList(new DataNode("foo_ds", "foo_schema", "foo_tbl"), new DataNode("bar_ds", "foo_schema", "schema.bar_tbl.part"));
+        assertThat(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName("foo_schema", databaseType, Arrays.asList("foo_ds.foo_tbl", "bar_ds.schema.bar_tbl.part")),
                 is(new LinkedList<>(expected)));
     }
     
