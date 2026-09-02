@@ -103,9 +103,11 @@ class SingleTableLoadUtilsTest {
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1F);
         storageTypes.put("foo_ds", TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         storageTypes.put("bar_ds", TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        Collection<DataNode> expected = Arrays.asList(new DataNode("foo_ds", "foo_schema", "foo_tbl"), new DataNode("bar_ds", "bar_schema", "schema.bar_tbl.part"));
+        Collection<DataNode> expected = Arrays.asList(new DataNode("foo_ds", "foo_schema", "foo_tbl"), new DataNode("bar_ds", "bar_schema", "schema.bar_tbl.part"),
+                new DataNode("foo_db", databaseType, "missing_ds.missing_tbl"));
         assertThat(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(
-                defaultSchemaNames, storageTypes, Arrays.asList("foo_ds.foo_tbl", "bar_ds.schema.bar_tbl.part")), is(new LinkedList<>(expected)));
+                "foo_db", databaseType, defaultSchemaNames, storageTypes, Arrays.asList("foo_ds.foo_tbl", "bar_ds.schema.bar_tbl.part", "missing_ds.missing_tbl")),
+                is(new LinkedList<>(expected)));
     }
     
     @Test

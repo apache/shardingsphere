@@ -75,7 +75,10 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(schemaAvailableDataSources, actualDataNodes);
         }
-        Collection<DataNode> configuredDataNodes = getConfiguredDataNodes(databaseName, aggregatedDataSources, storageTypes, splitTables);
+        DatabaseType fallbackDatabaseType = dataSources.isEmpty()
+                ? DatabaseTypeEngine.getDefaultStorageType()
+                : storageTypes.get(dataSources.keySet().iterator().next());
+        Collection<DataNode> configuredDataNodes = getConfiguredDataNodes(databaseName, fallbackDatabaseType, aggregatedDataSources, storageTypes, splitTables);
         return loadSpecifiedTables(schemaAvailableDataSources, actualDataNodes, builtRules, configuredDataNodes);
     }
     
@@ -117,13 +120,13 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         return String.format("%s.%s", dataSourceName, tableName);
     }
     
-    private Collection<DataNode> getConfiguredDataNodes(final String databaseName, final Map<String, DataSource> dataSources,
+    private Collection<DataNode> getConfiguredDataNodes(final String databaseName, final DatabaseType fallbackDatabaseType, final Map<String, DataSource> dataSources,
                                                         final Map<String, DatabaseType> storageTypes, final Collection<String> dataNodes) {
         if (storageTypes.isEmpty()) {
-            return SingleTableLoadUtils.convertToDataNodes(databaseName, DatabaseTypeEngine.getDefaultStorageType(), dataNodes);
+            return SingleTableLoadUtils.convertToDataNodes(databaseName, fallbackDatabaseType, dataNodes);
         }
         Map<String, String> defaultSchemaNames = getDefaultSchemaNames(databaseName, dataSources, storageTypes);
-        return SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(defaultSchemaNames, storageTypes, dataNodes);
+        return SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaNames(databaseName, fallbackDatabaseType, defaultSchemaNames, storageTypes, dataNodes);
     }
     
     private Map<String, String> getDefaultSchemaNames(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes) {

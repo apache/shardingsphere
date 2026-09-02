@@ -115,19 +115,22 @@ public final class SingleTableLoadUtils {
     /**
      * Convert tables to data nodes with resolved default schema names.
      *
+     * @param databaseName database name
+     * @param fallbackDatabaseType fallback database type for an unresolved data source
      * @param defaultSchemaNames resolved default schema names by data source name
      * @param storageTypes storage types by data source name
      * @param dataNodes data nodes
      * @return data nodes
      */
-    public static Collection<DataNode> convertToDataNodesWithDefaultSchemaNames(final Map<String, String> defaultSchemaNames,
+    public static Collection<DataNode> convertToDataNodesWithDefaultSchemaNames(final String databaseName, final DatabaseType fallbackDatabaseType,
+                                                                                final Map<String, String> defaultSchemaNames,
                                                                                 final Map<String, DatabaseType> storageTypes, final Collection<String> dataNodes) {
-        return dataNodes.stream().map(each -> createDataNode(defaultSchemaNames, storageTypes, each)).collect(Collectors.toCollection(LinkedList::new));
-    }
-    
-    private static DataNode createDataNode(final Map<String, String> defaultSchemaNames, final Map<String, DatabaseType> storageTypes, final String dataNode) {
-        String dataSourceName = Splitter.on('.').limit(2).splitToList(dataNode).get(0);
-        return DataNode.createWithDefaultSchemaName(defaultSchemaNames.get(dataSourceName), storageTypes.get(dataSourceName), dataNode);
+        return dataNodes.stream().map(each -> {
+            String dataSourceName = Splitter.on('.').limit(2).splitToList(each).get(0);
+            return defaultSchemaNames.containsKey(dataSourceName) && storageTypes.containsKey(dataSourceName)
+                    ? DataNode.createWithDefaultSchemaName(defaultSchemaNames.get(dataSourceName), storageTypes.get(dataSourceName), each)
+                    : new DataNode(databaseName, fallbackDatabaseType, each);
+        }).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**
