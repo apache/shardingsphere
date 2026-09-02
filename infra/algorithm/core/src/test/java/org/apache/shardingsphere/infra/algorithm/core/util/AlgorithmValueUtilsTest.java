@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.algorithm.core.util;
 
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,7 +39,7 @@ class AlgorithmValueUtilsTest {
     
     @Test
     void assertConvertToBytesWithDefaultCharset() {
-        assertThat(AlgorithmValueUtils.convertToBytes("test", (Charset) null), is("test".getBytes(StandardCharsets.UTF_8)));
+        assertThat(AlgorithmValueUtils.convertToBytes("test", null), is("test".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test

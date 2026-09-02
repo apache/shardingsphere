@@ -27,10 +27,11 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers;
 
 import java.sql.SQLException;
 import java.util.Collections;
+
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -65,7 +66,7 @@ public final class DistSQLGlobalRuleDefinitionExecutorAssert {
         }
         engine.executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(ShardingSphereArgumentVerifyMatchers.deepEq(matchedRuleConfig));
+        verify(metaDataManagerPersistService).alterGlobalRuleConfiguration(deepEq(matchedRuleConfig));
     }
     
     private ContextManager mockContextManager(final GlobalRuleConfiguration ruleConfig) {

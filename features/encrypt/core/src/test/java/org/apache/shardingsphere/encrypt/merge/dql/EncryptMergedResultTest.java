@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -53,6 +52,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Properties;
+
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -116,7 +117,7 @@ class EncryptMergedResultTest {
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
-        when(encryptAlgorithm.decrypt(eq("foo_value"), ShardingSphereArgumentVerifyMatchers.deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
+        when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
                 .thenReturn("foo_decrypted_value");
         EncryptRule rule = mockRule(encryptAlgorithm);
         ShardingSphereDatabase database =
@@ -134,7 +135,7 @@ class EncryptMergedResultTest {
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
-        when(encryptAlgorithm.decrypt(eq("foo_value"), ShardingSphereArgumentVerifyMatchers.deepEq(new AlgorithmSQLContext("foo_db", "foo_default_schema", "foo_tbl", "foo_col"))))
+        when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_default_schema", "foo_tbl", "foo_col"))))
                 .thenReturn("foo_decrypted_value");
         EncryptRule rule = mockRule(encryptAlgorithm);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
@@ -153,7 +154,7 @@ class EncryptMergedResultTest {
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         when(selectStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("foo_schema"));
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
-        when(encryptAlgorithm.decrypt(eq("foo_value"), ShardingSphereArgumentVerifyMatchers.deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
+        when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
                 .thenThrow(new RuntimeException("Test failed"));
         EncryptRule rule = mockRule(encryptAlgorithm);
         ShardingSphereDatabase database =

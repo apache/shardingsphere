@@ -21,12 +21,13 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
+
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,7 +46,7 @@ class CipherColumnItemTest {
     @Test
     void assertEncryptSingleValue() {
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
-        when(encryptAlgorithm.encrypt(eq("foo_value"), ShardingSphereArgumentVerifyMatchers.deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
+        when(encryptAlgorithm.encrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
                 .thenReturn("encrypted_foo_value");
         CipherColumnItem cipherColumnItem = new CipherColumnItem("foo_col", encryptAlgorithm);
         assertThat(cipherColumnItem.encrypt("foo_db", "foo_schema", "foo_tbl", "foo_col", "foo_value"), is("encrypted_foo_value"));
@@ -54,7 +55,7 @@ class CipherColumnItemTest {
     @Test
     void assertEncryptMultipleValues() {
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
-        when(encryptAlgorithm.encrypt(eq("foo_value"), ShardingSphereArgumentVerifyMatchers.deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
+        when(encryptAlgorithm.encrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
                 .thenReturn("encrypted_foo_value");
         CipherColumnItem cipherColumnItem = new CipherColumnItem("foo_col", encryptAlgorithm);
         assertThat(cipherColumnItem.encrypt("foo_db", "foo_schema", "foo_tbl", "foo_col", Arrays.asList(null, "foo_value")), is(Arrays.asList(null, "encrypted_foo_value")));
@@ -68,7 +69,7 @@ class CipherColumnItemTest {
     @Test
     void assertDecrypt() {
         EncryptAlgorithm encryptAlgorithm = mockEncryptAlgorithm();
-        when(encryptAlgorithm.decrypt(eq("encrypted_foo_value"), ShardingSphereArgumentVerifyMatchers.deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
+        when(encryptAlgorithm.decrypt(eq("encrypted_foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col"))))
                 .thenReturn("foo_value");
         CipherColumnItem cipherColumnItem = new CipherColumnItem("foo_col", encryptAlgorithm);
         assertThat(cipherColumnItem.decrypt("foo_db", "foo_schema", "foo_tbl", "foo_col", "encrypted_foo_value"), is("foo_value"));
