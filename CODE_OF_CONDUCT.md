@@ -24,7 +24,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 
 ## Coding Standards
 
-- Use Linux line endings.
 - No line breaks are needed if each line of code does not exceed 200 characters.
 - There should be no meaningless blank lines. Please extract private methods instead of using blank line spacing for overly long method bodies or logically closed code segments.
 - Naming conventions:
