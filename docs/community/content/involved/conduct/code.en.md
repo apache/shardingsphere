@@ -22,7 +22,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Ensure all steps in the build process complete successfully, including: Apache license header check, Checkstyle check, compilation, unit tests, etc. Build process command: `./mvnw clean install -B -T1C -Pcheck`.
 - Unify code style through Spotless, execute `./mvnw spotless:apply -Pcheck` to format code.
 - Ensure coverage is not lower than the master branch, except for simple `getter /setter` methods, unit tests need full coverage.
-- Try to refine design with fine-grained splitting; achieve small modifications with multiple commits, but ensure the completeness of each commit.
+- Keep each commit small, complete, and independently verifiable. Split a change into multiple commits when it contains independent objectives.
 - If you use IDEA, you can import `src/resources/idea/code-style.xml` to maintain code style consistency.
 - If you use IDEA, you can import `src/resources/idea/inspections.xml` to detect potential code issues.
 
@@ -51,14 +51,14 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - Method parameter names are forbidden from using `result`, `each`, `entry`.
     - Utility class names should be named `xxUtils`.
     - Configuration files use `Spinal Case` naming (a special `Snake Case` that uses `-` to separate words).
-- Code that needs comments to explain should be extracted into small methods, using method names for explanation.
+- Extract code that requires explanatory comments into small methods, and use method names to express the intent.
 - In `equals` and `==` conditional expressions, constants on the left, variables on the right; in conditional expressions like greater than or less than, variables on the left, constants on the right.
 - Avoid using `this` modifier except for assignment statements where constructor parameters have the same name as global variables.
 - For parameters, use `final` only on method parameters, constructor parameters and `catch` parameters.
 - Local variables should not be set as `final`, including ordinary local declarations, loop variables, enhanced `for` variables and try-with-resources resources, unless required by Checkstyle.
-- Lambda parameters should not be marked as `final` unless required by surrounding code style or tooling.
-- Try to design classes as `final` except for abstract classes used for inheritance.
-- Nested loops should be extracted into methods.
+- Lambda parameters should not be marked as `final`.
+- Declare every class `final` unless it is an abstract class intended for inheritance.
+- Extract nested loops into separate methods.
 - The order of member variable definitions and parameter passing should remain consistent across all classes and methods.
 - Prefer guard clauses.
 - Access control for classes and methods should be minimal.
@@ -106,7 +106,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
 - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
 - Keep test names concise and scenario-focused; avoid `ReturnsXXX` and wording that restates the expected result instead of naming the scenario.
-- Each test case needs precise assertions, try not to use `not`, `containsString` assertions.
+- Assertions must directly express the tested contract. Use `not` or `containsString` only when the contract requires inequality or substring matching; do not use them when an exact value or a more specific matcher is available.
 - Use JUnit 5 and Mockito. Keep environment preparation, test action, and assertions distinct; reset static state between scenarios and reuse existing swappers or helpers for complex configuration.
 - Default to direct Mockito mocks. Use a private helper only for repeated local setup and a standalone fixture only for a stable external or packaged test boundary. Give fixtures the narrowest practical visibility, keep them in the nearest owning test package or module, and do not create cross-module test APIs for convenience. Delete or inline thin mock wrappers.
 - Data assertion standards should follow:
