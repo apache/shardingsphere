@@ -70,7 +70,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Consider using `LinkedList` first, only use `ArrayList` when you need to get element values from the collection by index.
 - Collection types that may cause expansion like `ArrayList`, `HashMap` must specify initial collection size to avoid expansion.
 - Prefer using ternary operators instead of if else return and assignment statements.
-- Nested use of ternary operators is forbidden.
 - In conditional expressions, prefer positive semantics for easier code logic understanding. For example: `if (null == param) {} else {}`.
 - Use `@HighFrequencyInvocation` annotation reasonably to focus on performance optimization of key methods.
     - When to use `@HighFrequencyInvocation` annotation:

@@ -242,7 +242,12 @@
         <module name="ArrayTypeStyle" />
         <module name="AvoidEscapedUnicodeCharacters" />
         <module name="CommentsIndentation" />
-        <module name="DescendantToken" />
+        <module name="DescendantToken">
+            <property name="tokens" value="QUESTION" />
+            <property name="limitedTokens" value="QUESTION" />
+            <property name="maximumNumber" value="1" />
+            <property name="maximumMessage" value="Nested ternary operators are forbidden." />
+        </module>
         <module name="FinalParameters">
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, LITERAL_CATCH" />
         </module>

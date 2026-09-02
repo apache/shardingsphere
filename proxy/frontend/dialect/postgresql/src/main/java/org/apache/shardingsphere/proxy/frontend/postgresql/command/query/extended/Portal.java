@@ -176,7 +176,12 @@ public final class Portal {
         result.add(new PostgreSQLCommandCompletePacket("SET", 0L));
         for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
             String variableName = each.getVariable().getVariable();
-            String variableValue = isClientEncodingVariable(variableName) ? UTF8 : null == each.getAssignValue() ? null : QuoteCharacter.unwrapText(each.getAssignValue());
+            String variableValue;
+            if (isClientEncodingVariable(variableName)) {
+                variableValue = UTF8;
+            } else {
+                variableValue = null == each.getAssignValue() ? null : QuoteCharacter.unwrapText(each.getAssignValue());
+            }
             result.add(new PostgreSQLParameterStatusPacket(variableName, variableValue));
         }
         return result;

@@ -173,7 +173,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     private String getOperationType(final PipelineJobType<?> jobType, final String status) {
-        return isSupportCommitRollback(jobType) ? (JobStatus.FINISHED.name().equals(status) ? "COMMIT" : "ROLLBACK") : "DROP";
+        if (isSupportCommitRollback(jobType)) {
+            return JobStatus.FINISHED.name().equals(status) ? "COMMIT" : "ROLLBACK";
+        }
+        return "DROP";
     }
     
     private boolean isSupportCommitRollback(final PipelineJobType<?> jobType) {
