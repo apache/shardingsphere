@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -76,8 +77,11 @@ public final class CDCSchemaTableUtils {
                 String schemaName = each.getSchema().isEmpty() ? dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse("") : each.getSchema();
                 ShardingSphereSchema schema = database.getSchema(new IdentifierValue(schemaName));
                 ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaName));
-                ShardingSpherePreconditions.checkNotNull(schema.getTable(each.getTable()), () -> new TableNotFoundException(each.getTable()));
-                result.computeIfAbsent(schema.getName(), ignored -> new HashSet<>()).add(each.getTable());
+                IdentifierValue tableName = new IdentifierValue(each.getTable());
+                ShardingSphereTable matchedTable = schema.getTable(tableName);
+                ShardingSpherePreconditions.checkNotNull(matchedTable, () -> new TableNotFoundException(each.getTable()));
+                result.computeIfAbsent(schema.getName(), ignored -> new HashSet<>())
+                        .add(QuoteCharacter.NONE == tableName.getQuoteCharacter() ? each.getTable() : matchedTable.getName());
             }
         }
         return result;
@@ -99,10 +103,15 @@ public final class CDCSchemaTableUtils {
     
     private static Map<String, Set<String>> parseTableExpressionWithAllSchema(final ShardingSphereDatabase database, final Collection<String> systemSchemas, final SchemaTable table) {
         Map<String, Set<String>> result = new HashMap<>(database.getAllSchemas().size(), 1F);
+        IdentifierValue tableName = new IdentifierValue(table.getTable());
         for (ShardingSphereSchema schema : database.getAllSchemas()) {
             if (!systemSchemas.contains(schema.getName())) {
-                schema.getAllTables().stream().filter(each -> each.getName().equals(table.getTable())).findFirst()
-                        .ifPresent(optional -> result.computeIfAbsent(schema.getName(), ignored -> new HashSet<>()).add(optional.getName()));
+                ShardingSphereTable matchedTable = QuoteCharacter.NONE == tableName.getQuoteCharacter()
+                        ? schema.getAllTables().stream().filter(each -> each.getName().equals(table.getTable())).findFirst().orElse(null)
+                        : schema.getTable(tableName);
+                if (null != matchedTable) {
+                    result.computeIfAbsent(schema.getName(), ignored -> new HashSet<>()).add(matchedTable.getName());
+                }
             }
         }
         return result;
