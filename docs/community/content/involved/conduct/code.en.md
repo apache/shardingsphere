@@ -9,7 +9,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 ## Development Philosophy
 
 - **Dedication** Maintain responsibility and reverence, continuously crafting with artisanal spirit.
-- **Readability** Code should be unambiguous, revealing its intent through reading rather than debugging.
+- **Readability** Code and names must express their intent clearly and unambiguously so they can be understood by reading rather than debugging.
 - **Cleanliness** Embrace the concepts from "Refactoring" and "Clean Code", pursuing clean and elegant code.
 - **Consistency** Maintain complete consistency in code style, naming, and usage patterns.
 - **Simplicity** Minimalist code, expressing the most correct meaning with the least code. Highly reusable, with no duplicate code or configuration. Delete unused code promptly.
@@ -31,7 +31,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - No line breaks are needed if each line of code does not exceed 200 characters.
 - There should be no meaningless blank lines. Please extract private methods instead of using blank line spacing for overly long method bodies or logically closed code segments.
 - Naming conventions:
-    - Naming should be self-explanatory.
     - Class and method names should avoid abbreviations, some variable names can use abbreviations.
         - Variable name `arguments` abbreviated as `args`;
         - Variable name `parameters` abbreviated as `params`;
@@ -54,25 +53,25 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Extract code that requires explanatory comments into small methods, and use method names to express the intent.
 - In `equals` and `==` conditional expressions, constants on the left, variables on the right; in conditional expressions like greater than or less than, variables on the left, constants on the right.
 - Avoid using `this` modifier except for assignment statements where constructor parameters have the same name as global variables.
-- Local variables should not be set as `final`, including ordinary local declarations, loop variables, enhanced `for` variables and try-with-resources resources, unless required by Checkstyle.
+- Local variables must not be declared as `final`, including ordinary local variables, `for` loop variables, enhanced `for` loop variables and try-with-resources resources.
 - Lambda parameters should not be marked as `final`.
 - Declare every class `final` unless it is an abstract class intended for inheritance.
 - Extract nested loops into separate methods.
 - The order of member variable definitions and parameter passing should remain consistent across all classes and methods.
-- Prefer guard clauses.
+- Use guard clauses for invalid inputs, missing states and exceptional conditions so that the normal execution path uses positive conditions and minimal nesting.
 - Access control for classes and methods should be minimal.
 - Private methods used by a method should immediately follow that method. If there are multiple private methods, they should be written in the same order as they appear in the original method.
-- Method parameters and return values are not allowed to be `null`.
-- Method parameters must not use `Optional`; pass plain values (nullable when needed).
-- Prefer using lombok instead of constructors, getter, setter methods and log variables.
-- Collection types that may cause expansion like `ArrayList`, `HashMap` must specify initial collection size to avoid expansion.
-- Prefer using ternary operators instead of if else return and assignment statements.
-- In conditional expressions, prefer positive semantics for easier code logic understanding. For example: `if (null == param) {} else {}`.
-- Use `@HighFrequencyInvocation` annotation reasonably to focus on performance optimization of key methods.
-    - When to use `@HighFrequencyInvocation` annotation:
-        - In frequently called request chains, mark the high-frequency called classes, methods or constructors, with precise matching of scope;
-        - When the `canBeCached` attribute is `true`, it indicates the target is a reusable cache resource, for example: database connections.
-    - Code segments marked with `@HighFrequencyInvocation` must strictly guarantee code performance, the following are prohibited items in marked code segments:
+- Method parameters and return values must not be `null` by default.
+- Allow `null` only when an existing API, SPI or framework contract explicitly uses it to represent absence, and document its meaning with `@Nullable` or JAVADOC.
+- Method parameters must not use `Optional`.
+- Use Lombok for boilerplate constructors, getters, setters and log variables only when the generated signature, visibility and behavior match the manual implementation.
+- Keep a manual implementation when it contains validation, business logic, documentation, compatibility or framework semantics.
+- When the expected number of elements is known before creating a mutable collection, set a sufficient initial capacity with a capacity argument or a constructor that accepts an existing collection.
+- Use a ternary operator when each `if`/`else` branch contains only a return statement or assigns the same variable; otherwise, use `if`/`else`.
+- Use `@HighFrequencyInvocation` only when call-chain analysis or performance data confirms that the target is invoked frequently.
+    - Apply the annotation only to the class, field, method or constructor that is actually invoked frequently.
+    - Set `canBeCached = true` only when the annotated method invocation can be cached.
+    - Code marked with `@HighFrequencyInvocation` must not use the following:
         - Forbidden to call Java Stream API;
         - Forbidden to concatenate strings through `+`;
         - Forbidden to call LinkedList's `get(int index)` method.
