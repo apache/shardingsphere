@@ -124,8 +124,8 @@
         </module>
         <module name="MatchXpath">
             <property name="query"
-                      value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='Test'] or ./DOT/IDENT[@text='Test'] or ./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'])] and not(./IDENT[starts-with(@text, 'assert')])]" />
-            <message key="matchxpath.match" value="Method names for @Test and @ParameterizedTest must start with 'assert'." />
+                      value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='Test'] or ./DOT/IDENT[@text='Test'] or ./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'] or ./IDENT[@text='RepeatedTest'] or ./DOT/IDENT[@text='RepeatedTest'] or ./IDENT[@text='TestFactory'] or ./DOT/IDENT[@text='TestFactory'] or ./IDENT[@text='TestTemplate'] or ./DOT/IDENT[@text='TestTemplate'])] and not(./IDENT[starts-with(@text, 'assert')])]" />
+            <message key="matchxpath.match" value="Test method names must start with 'assert'." />
         </module>
         <module name="IllegalType" />
         <module name="MissingSwitchDefault" />
