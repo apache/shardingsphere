@@ -65,7 +65,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Method parameters and return values are not allowed to be `null`.
 - Method parameters must not use `Optional`; pass plain values (nullable when needed).
 - Prefer using lombok instead of constructors, getter, setter methods and log variables.
-- Consider using `LinkedList` first, only use `ArrayList` when you need to get element values from the collection by index.
 - Collection types that may cause expansion like `ArrayList`, `HashMap` must specify initial collection size to avoid expansion.
 - Prefer using ternary operators instead of if else return and assignment statements.
 - In conditional expressions, prefer positive semantics for easier code logic understanding. For example: `if (null == param) {} else {}`.
@@ -112,7 +111,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - Type assertions must use `assertThat(actual, isA(ExpectedType.class))`;
     - Reference identity assertions must use `assertThat(actual, sameInstance(expected))`;
     - Reference non-identity assertions must use `assertThat(actual, not(sameInstance(expected)))`;
-    - Use Hamcrest matchers like `is()`, `not()` for precise and readable assertions.
 - The actual values in test cases should be named actual XXX, and expected values should be named expected XXX.
 - Using `mock` should follow the following specifications:
     - Mock databases, caches, registries, network calls, time, and other heavy external dependencies instead of connecting to external environments.

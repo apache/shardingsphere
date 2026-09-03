@@ -65,7 +65,6 @@ chapter = true
  - 方法入参和返回值不允许为 `null`。
  - 方法入参禁止使用 `Optional`；应传递普通值（必要时允许为 `null`）。
  - 优先使用 lombok 代替构造器，getter, setter 方法和 log 变量。
- - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 优先使用三目运算符代替 if else 的返回和赋值语句。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
@@ -112,7 +111,6 @@ chapter = true
     - 类型断言必须使用 `assertThat(actual, isA(ExpectedType.class))`；
     - 引用同一性断言必须使用 `assertThat(actual, sameInstance(expected))`；
     - 引用非同一性断言必须使用 `assertThat(actual, not(sameInstance(expected)))`；
-    - 使用 Hamcrest 匹配器（如 `is()`、`not()`）来进行精确且可读性高的断言。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 使用 `mock` 应遵循如下规范：
    - 数据库、缓存、注册中心、网络调用、时间以及其他重量级外部依赖应使用 mock，不要连接外部环境。
