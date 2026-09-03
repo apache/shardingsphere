@@ -191,7 +191,7 @@
         <module name="JavadocBlockTagLocation" />
         <module name="JavadocContentLocation" />
         <module name="JavadocMethod">
-            <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest" />
+            <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest, RepeatedTest, TestFactory, TestTemplate" />
             <property name="validateThrows" value="true" />
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF" />
         </module>
@@ -202,6 +202,7 @@
         </module>
         <module name="JavadocType" />
         <module name="MissingJavadocMethod">
+            <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest, RepeatedTest, TestFactory, TestTemplate" />
             <property name="allowMissingPropertyJavadoc" value="true" />
             <property name="tokens" value="METHOD_DEF" />
         </module>

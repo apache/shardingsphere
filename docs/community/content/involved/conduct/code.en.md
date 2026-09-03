@@ -114,7 +114,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - Reference non-identity assertions must use `assertThat(actual, not(sameInstance(expected)))`;
     - Use Hamcrest matchers like `is()`, `not()` for precise and readable assertions.
 - The actual values in test cases should be named actual XXX, and expected values should be named expected XXX.
-- Test classes and methods marked with `@Test` do not need JAVADOC.
 - Using `mock` should follow the following specifications:
     - Mock databases, caches, registries, network calls, time, and other heavy external dependencies instead of connecting to external environments.
     - Mock objects with more than two levels of nesting when they are unrelated to the behavior under test; do not construct deep unrelated object graphs.
