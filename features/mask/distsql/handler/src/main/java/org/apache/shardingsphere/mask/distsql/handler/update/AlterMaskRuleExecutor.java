@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleAlterExecutor;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -85,7 +87,20 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
                 toBeDroppedAlgorithms.put(each, rule.getConfiguration().getMaskAlgorithms().get(each));
             }
         }
-        return new MaskRuleConfiguration(Collections.emptyList(), toBeDroppedAlgorithms);
+        return new MaskRuleConfiguration(findStaleCaseChangedTables(toBeAlteredRuleConfig), toBeDroppedAlgorithms);
+    }
+    
+    private Collection<MaskTableRuleConfiguration> findStaleCaseChangedTables(final MaskRuleConfiguration toBeAlteredRuleConfig) {
+        Map<String, String> alteredTableNames = new CaseInsensitiveMap<>();
+        toBeAlteredRuleConfig.getTables().forEach(each -> alteredTableNames.put(each.getName(), each.getName()));
+        Collection<MaskTableRuleConfiguration> result = new LinkedList<>();
+        for (MaskTableRuleConfiguration each : rule.getConfiguration().getTables()) {
+            String alteredName = alteredTableNames.get(each.getName());
+            if (null != alteredName && !alteredName.equals(each.getName())) {
+                result.add(new MaskTableRuleConfiguration(each.getName(), Collections.emptyList()));
+            }
+        }
+        return result;
     }
     
     @Override

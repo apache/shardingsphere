@@ -110,19 +110,21 @@ class AlterMaskRuleExecutorTest {
     }
     
     @Test
-    void assertBuildToBeDroppedRuleConfigurationWithCaseInsensitiveTableName() {
+    void assertBuildToBeDroppedRuleConfigurationWithCaseChangedTableName() {
         Map<String, AlgorithmConfiguration> currentAlgorithms = new LinkedHashMap<>(3, 1F);
-        currentAlgorithms.put("order_mask", new AlgorithmConfiguration("MD5", new Properties()));
+        currentAlgorithms.put("old_order_mask", new AlgorithmConfiguration("MD5", new Properties()));
         currentAlgorithms.put("user_mask", new AlgorithmConfiguration("MD5", new Properties()));
         currentAlgorithms.put("unused_mask", new AlgorithmConfiguration("SM3", new Properties()));
         executor.setRule(createRule(new MaskRuleConfiguration(Arrays.asList(
-                new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "order_mask"))),
+                new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "old_order_mask"))),
                 new MaskTableRuleConfiguration("t_user", Collections.singleton(new MaskColumnRuleConfiguration("user_id", "user_mask")))), currentAlgorithms)));
-        MaskTableRuleConfiguration toBeAlteredTable = new MaskTableRuleConfiguration("T_ORDER", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "order_mask")));
+        MaskTableRuleConfiguration toBeAlteredTable = new MaskTableRuleConfiguration("T_ORDER", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "new_order_mask")));
         MaskRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new MaskRuleConfiguration(Collections.singleton(toBeAlteredTable), Collections.emptyMap()));
-        assertTrue(actual.getTables().isEmpty());
-        assertThat(actual.getMaskAlgorithms().size(), is(1));
+        assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getTables().iterator().next().getName(), is("t_order"));
+        assertThat(actual.getMaskAlgorithms().size(), is(2));
         assertTrue(actual.getMaskAlgorithms().containsKey("unused_mask"));
+        assertTrue(actual.getMaskAlgorithms().containsKey("old_order_mask"));
     }
     
     @Test
