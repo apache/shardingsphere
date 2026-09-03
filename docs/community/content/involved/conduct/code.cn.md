@@ -114,7 +114,6 @@ chapter = true
     - 引用非同一性断言必须使用 `assertThat(actual, not(sameInstance(expected)))`；
     - 使用 Hamcrest 匹配器（如 `is()`、`not()`）来进行精确且可读性高的断言。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
- - 测试类和 `@Test` 标注的方法无需 JAVADOC。
  - 使用 `mock` 应遵循如下规范：
    - 数据库、缓存、注册中心、网络调用、时间以及其他重量级外部依赖应使用 mock，不要连接外部环境。
    - 与被测行为无关且嵌套超过两层的对象应使用 mock；不要构造深层无关对象图。
