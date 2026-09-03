@@ -29,6 +29,7 @@ SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
+import review_common as common
 import review_ledger as ledger
 
 
@@ -88,6 +89,21 @@ class ReviewLedgerTest(unittest.TestCase):
         actual_ledger["scope"]["github_files"] = {"provided": True, "matched": False}
         errors = ledger.validate_ledger(actual_ledger)
         self.assertIn("GitHub file list does not match local triple-dot scope", errors)
+
+    def test_init_uses_exact_candidate_files(self):
+        changed_files = [common.ChangedFile(status="M", path="AGENTS.md")]
+        args = Namespace(repo_root=".", pr="local-task", base_ref="base", head_ref="head", github_files=None,
+                         candidate_files="candidate.txt")
+        with patch.object(ledger, "get_repo_root", return_value=Path("/repo")), \
+                patch.object(ledger, "run_git", side_effect=["base-sha\n", "head-sha\n", "merge-base\n"]), \
+                patch.object(ledger, "resolve_candidate_changes", return_value=changed_files) as resolve_candidate_changes, \
+                patch.object(ledger, "create_ledger_dir", return_value=Path("ledger")), \
+                patch.object(ledger, "write_ledger") as write_ledger, redirect_stdout(StringIO()):
+            self.assertEqual(0, ledger.cmd_init(args))
+        actual = write_ledger.call_args.args[1]
+        self.assertEqual({"provided": True}, actual["scope"]["candidate_files"])
+        self.assertEqual("AGENTS.md", actual["files"][0]["path"])
+        resolve_candidate_changes.assert_called_once_with(Path("/repo"), "merge-base", "candidate.txt")
 
     def test_confirmed_findings_must_have_distinct_fix_boundaries(self):
         actual_ledger = self.create_valid_ledger()

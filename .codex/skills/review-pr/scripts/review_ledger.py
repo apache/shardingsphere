@@ -32,7 +32,9 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
 
-from review_common import categorize, compare_github_files, final_paths, get_repo_root, parse_name_status, run_git
+from review_common import (
+    categorize, compare_github_files, final_paths, get_repo_root, parse_name_status, resolve_candidate_changes, run_git,
+)
 
 
 LEDGER_KIND = "review-pr-coverage-ledger"
@@ -173,7 +175,9 @@ def cmd_init(args: argparse.Namespace) -> int:
     base_sha = run_git(["rev-parse", args.base_ref], repo_root).strip()
     head_sha = run_git(["rev-parse", args.head_ref], repo_root).strip()
     merge_base = run_git(["merge-base", args.base_ref, args.head_ref], repo_root).strip()
-    changed_files = parse_name_status(run_git(["diff", "--name-status", f"{merge_base}..{args.head_ref}"], repo_root))
+    candidate_files = getattr(args, "candidate_files", None)
+    changed_files = resolve_candidate_changes(repo_root, merge_base, candidate_files) if candidate_files else parse_name_status(
+        run_git(["diff", "--name-status", f"{merge_base}..{args.head_ref}"], repo_root))
     ledger_dir = create_ledger_dir(repo_root, args.pr, head_sha)
     ledger_file = ledger_dir / LEDGER_FILE_NAME
     now = int(time.time())
@@ -192,6 +196,7 @@ def cmd_init(args: argparse.Namespace) -> int:
             "head_sha": head_sha,
             "merge_base": merge_base,
             "changed_file_count": len(changed_files),
+            "candidate_files": {"provided": bool(candidate_files)},
             "github_files": compare_github_files(final_paths(changed_files), args.github_files),
         },
         "files": [{
@@ -447,6 +452,7 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("--base-ref", required=True, help="Base ref used to compute merge-base")
     init.add_argument("--head-ref", required=True, help="PR head ref")
     init.add_argument("--github-files", help="File containing GitHub changed paths")
+    init.add_argument("--candidate-files", help="Exact repository-relative local candidate paths, one per line")
     init.set_defaults(func=cmd_init)
     mark_file = subparsers.add_parser("mark-file", help="Set one authoritative file's coverage state")
     mark_file.add_argument("--ledger", required=True, help="Ledger file or directory")

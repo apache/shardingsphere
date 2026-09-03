@@ -70,7 +70,7 @@ id = "change-completion"
 path = ".codex/context/change-completion.md"
 kind = "context"
 semantic = true
-references = ["AGENTS.md", ".codex/context/cross-cutting-skills.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/review-pr/SKILL.md"]
+references = ["AGENTS.md", ".codex/context/cross-cutting-skills.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md", ".codex/skills/review-pr/SKILL.md"]
 
 [[sources]]
 id = "policy-maintenance"
@@ -196,7 +196,7 @@ id = "review-pr"
 path = ".codex/skills/review-pr/SKILL.md"
 kind = "skill"
 semantic = true
-references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/review-pr/references/evidence-access.md", ".codex/skills/review-pr/references/high-risk-review.md", ".codex/skills/review-pr/references/sql-parser-review.md", ".codex/skills/review-pr/references/review-corrections.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/context/change-completion.md", ".codex/skills/review-pr/references/evidence-access.md", ".codex/skills/review-pr/references/high-risk-review.md", ".codex/skills/review-pr/references/sql-parser-review.md", ".codex/skills/review-pr/references/review-corrections.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
 
 [[sources]]
 id = "review-pr-evidence"

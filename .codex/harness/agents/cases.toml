@@ -1663,3 +1663,97 @@ required_reasons = ["code_policy_required", "output_capture_required"]
 policy_binding_profile = "test-write"
 policy_assertions = [{source = "code-implementation", statements = ["For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`, `.codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md`, and `.codex/skills/code-implementation/references/rules/non-regression.md`.", "Apply each contract, impact, or removal rule only when its own trigger matches."]}, {source = "contracts-and-removal", statements = ["Regenerate or verify affected snapshots, golden files, fingerprints, SQL cases, descriptors, schemas, and agent-visible metadata with the existing project tool.", "Determine affected GitHub Actions from changed-file path filters and job commands.", "Run the local equivalent when practical; otherwise record the narrower check and residual risk."]}, {source = "code-verification", statements = ["Run the narrowest meaningful checks first."]}]
 critical = true
+
+[[cases]]
+id = "final_style_checks_target_task_files"
+group = "coding / regular"
+description = "Runs final Spotless and Checkstyle verification only for the task-changed files."
+phase = "verification and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "The final code write changed only `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`; unrelated working-tree changes exist elsewhere. Run the mandatory final Spotless and Checkstyle verification before Formal Review, using the smallest safe scope, and do not edit, review, hand off, or change Git."
+decision = "proceed"
+required_actions = ["run_local_checks", "wrap_high_output"]
+allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["output_capture_required"]
+required_summary_terms = ["Spotless", "Checkstyle", "only"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "code-verification", statements = ["After the last code-affecting action and before the pre-handoff Formal Review, run both Spotless and Checkstyle for every applicable task-changed code file; run Spotless for a documentation-only change when the configured formatter governs that file.", "Treat a filtered command as passing only after its output and the post-command task-delta inspection prove that every applicable task file was selected, no non-allowlisted file was written, and the command exited successfully.", "A successful command that matched no intended file is not evidence."]}]
+critical = true
+
+[[cases]]
+id = "standalone_local_completion_invokes_review_pr"
+group = "coding / regular"
+description = "Requires an actual review-pr Formal Review for a standalone local task before handoff."
+phase = "ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "A standalone authorized local implementation has no public PR. Its task delta, final file-scoped checks, and non-regression evidence are complete, but `$review-pr` has not run. Complete the task now with commit artifacts."
+decision = "proceed"
+required_actions = ["run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "run_pre_handoff_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["Formal Review", "Mergeable"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "agents", statements = ["Every authorized change, build, implement, or fix request requires a pre-handoff `$review-pr` Formal Review of the effective local candidate, except a governed standalone restoration or rollback.", "Hand off or propose commit artifacts only after the latest complete Formal Review returns `Review Result: Mergeable`."]}, {source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode on the effective local candidate for every task covered by this loop.", "For a standalone local task, review the original task baseline plus only the task-owned delta; for a task targeting an existing PR, also apply the PR-specific public-head and remote-evidence checks."]}]
+critical = true
+
+[[cases]]
+id = "not_mergeable_reenters_completion_loop"
+group = "coding / regular"
+description = "Fixes safe review-pr findings and repeats invalidated checks and Formal Review until Mergeable."
+phase = "ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "`$review-pr` Formal Review returned `Not Mergeable` with one confirmed safe in-scope Change Request. Fix it and complete the task; the fix invalidates the final Spotless, Checkstyle, and review evidence, and those Maven checks may output more than 100 lines. Do not hand off or propose commit artifacts before a new passing review."
+decision = "proceed"
+required_actions = ["edit_code", "fix_review_findings", "run_local_checks", "wrap_high_output", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "fix_review_findings", "run_local_checks", "wrap_high_output", "run_pre_handoff_review"]
+forbidden_actions = ["edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required", "output_capture_required"]
+required_summary_terms = ["Spotless", "Checkstyle"]
+required_summary_term_groups = [["Formal Review", "review"], ["Mergeable", "passing"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "change-completion", statements = ["If Formal Review returns `Not Mergeable` with safe in-scope required findings, fix them, return to the task-delta audit, rerun every invalidated check, and invoke `$review-pr` again.", "Hand off only after the latest complete Formal Review returns `Review Result: Mergeable`, and include that final formal report as its own fenced `markdown` block."]}, {source = "code-verification", statements = ["Capture high-volume output according to `.codex/context/token-efficiency.md`; report commands, exit codes, and decisive log excerpts instead of dumping raw logs.", "Any later edit invalidates the affected Spotless and Checkstyle evidence and requires both applicable checks to run again before another Formal Review."]}]
+critical = true
+
+[[cases]]
+id = "final_review_and_git_artifacts_are_separate"
+group = "operations"
+description = "Outputs task-file commit artifacts after the passing Formal Review was returned separately."
+phase = "completion output gate"
+ordinary_loop = true
+profile = "code-write"
+prompt = "The latest `$review-pr` Formal Review of a standalone local task returned `Review Result: Mergeable`, and its complete formal report was already returned as a separate artifact. The only task-owned tracked files are `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`, neither contains unrelated hunks, and no Git write is authorized. Return only the proposed commit message and exact manual commit commands now."
+decision = "proceed"
+required_actions = ["propose_commit_message"]
+allowed_actions = ["inspect_local", "propose_commit_message"]
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = ["review_passed", "git_read_only"]
+required_summary_terms = ["git commit --dry-run --only", "git commit --only", "Foo.java", "FooTest.java"]
+forbidden_summary_terms = ["### Result", "### Evidence", "### Coverage"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "change-completion", statements = ["After the fenced `markdown` formal report, provide the proposed commit message in a fenced `text` block and the Git commands in a fenced shell block labeled `bash` or `sh`, both outside the review report.", "Generate `git commit --dry-run --only -m <message> -- <exact-task-paths>` and `git commit --only -m <message> -- <exact-task-paths>` for only task-owned files that contain no unrelated hunks; list any task-created untracked file in an exact `git add -- <new-task-paths>` command first because path-limited commit accepts only files already known to Git.", "Never execute these Git writes without exact current-task authorization."]}]
+critical = true
+
+[[cases]]
+id = "standalone_local_review_pr_artifact"
+group = "operations"
+description = "Reviews a standalone local candidate without requiring a public PR and keeps Git artifacts outside the review."
+phase = "review scope and output gate"
+ordinary_loop = true
+profile = "review-pr"
+prompt = "The repository completion loop invoked Formal Review for a standalone local candidate with an established task baseline and attributed local delta but no public PR. The complete Code Correctness Review found no blocker. Return the review artifact now; the outer workflow, not this reviewer, will provide any commit message and Git commands."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage"]
+required_summary_term_groups = [["standalone", "no public PR"], ["baseline", "established task-local delta", "attributed local candidate"]]
+forbidden_summary_terms = ["git commit"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "agents", statements = ["Complete reviews or recommendations use Formal Review with `### Result`, one `Review Result`, `### Evidence`, and `### Coverage`; Coverage identifies local-only changes."]}, {source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate.", "Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "When the repository completion loop invokes Formal Review, this fenced block remains the complete review artifact, but the outer workflow may append only the separately fenced non-review handoff artifacts required by `.codex/context/change-completion.md` outside it."]}]
+critical = true
