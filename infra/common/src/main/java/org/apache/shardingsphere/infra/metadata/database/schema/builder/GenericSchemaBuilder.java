@@ -24,7 +24,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.loader.Me
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -111,7 +110,7 @@ public final class GenericSchemaBuilder {
         for (String each : loaderMaterials.stream().map(MetaDataLoaderMaterial::getDefaultSchemaName).distinct().collect(Collectors.toList())) {
             tableMetaDataList.addAll(Optional.ofNullable(schemaMetaDataMap.get(each)).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList));
         }
-        String frontendSchemaName = DefaultSchemaNameResolver.resolveProtocol(protocolType, material.getDefaultSchemaName());
+        String frontendSchemaName = material.getDefaultSchemaName();
         return Collections.singletonMap(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
     }
     
