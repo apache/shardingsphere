@@ -99,6 +99,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
     - Error tolerance testing: Get expected results through incorrect inputs such as illegal data, exception flows, etc.
 - Use `assert` prefix for all test method names.
 - Unit tests must exercise behavior through public APIs only. Reflection-based invocation of private members is forbidden. If tests must access fields via reflection, use `Plugins.getMemberAccessor()` and limit reflection to `Field` access only.
+- Tests that modify static state must restore the original state after each test.
 - Obtain SPI implementations through the project loader by default. If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it through `TypedSPILoader` or `DatabaseTypedSPILoader`, not with `new`.
 - Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class. This class-name rule is mandatory and is independent of scenario-focused test-method naming.
 - Except for simple `getter /setter` methods, unit tests need full coverage.
@@ -106,7 +107,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
 - Keep test names concise and scenario-focused; avoid `ReturnsXXX` and wording that restates the expected result instead of naming the scenario.
 - Assertions must directly express the tested contract. Use `not` or `containsString` only when the contract requires inequality or substring matching; do not use them when an exact value or a more specific matcher is available.
-- Use JUnit 5 and Mockito. Keep environment preparation, test action, and assertions distinct; reset static state between scenarios and reuse existing swappers or helpers for complex configuration.
 - Default to direct Mockito mocks. Use a private helper only for repeated local setup and a standalone fixture only for a stable external or packaged test boundary. Give fixtures the narrowest practical visibility, keep them in the nearest owning test package or module, and do not create cross-module test APIs for convenience. Delete or inline thin mock wrappers.
 - Data assertion standards should follow:
     - Boolean type assertions should use `assertTrue` and `assertFalse`;
