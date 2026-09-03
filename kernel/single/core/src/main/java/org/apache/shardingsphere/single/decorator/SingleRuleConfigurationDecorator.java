@@ -77,7 +77,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
             return loadAllTables(isSchemaAvailable, actualDataNodes);
         }
         String defaultSchemaName = dataSources.isEmpty()
-                ? new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName)
+                ? DefaultSchemaNameResolver.resolveProtocol(databaseType, databaseName)
                 : DefaultSchemaNameResolver.resolveStorage(databaseType, dataSources.values().iterator().next(), databaseName);
         Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName(defaultSchemaName, databaseType, splitTables);
         return loadSpecifiedTables(isSchemaAvailable, actualDataNodes, builtRules, configuredDataNodes);
