@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.binder;
 
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -95,7 +95,7 @@ class HavingCorrelatedSubqueryBinderIT {
     
     private Collection<ShardingSphereSchema> mockSchemas(final DatabaseType databaseType) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
-        String defaultSchemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName("foo_db");
+        String defaultSchemaName = DefaultSchemaNameResolver.resolveProtocol(databaseType, "foo_db");
         result.add(new ShardingSphereSchema(defaultSchemaName, databaseType, mockTables(), Collections.emptyList()));
         return result;
     }

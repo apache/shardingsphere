@@ -21,7 +21,11 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ErrorLoggingSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
@@ -32,12 +36,65 @@ import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OracleDMLStatementVisitorTest {
     
     private static final CacheOption CACHE_OPTION = new CacheOption(128, 1024L);
+    
+    @Test
+    void assertVisitMergeUpdateWithScalarSubquery() {
+        MergeStatement actual = parseMerge("MERGE INTO t_user target USING (SELECT ? user_id FROM DUAL) source ON (target.user_id = source.user_id) "
+                + "WHEN MATCHED THEN UPDATE SET target.email = (SELECT MAX(u.email) FROM t_user u WHERE u.user_id < ?)");
+        ExpressionSegment actualValue = actual.getUpdate().get().getAssignment().get().getAssignments().iterator().next().getValue();
+        assertThat(actualValue, isA(SubqueryExpressionSegment.class));
+        assertThat(actualValue.getText(), is("(SELECT MAX(u.email) FROM t_user u WHERE u.user_id < ?)"));
+        assertThat(actual.getParameterCount(), is(2));
+    }
+    
+    @Test
+    void assertVisitMergeInsertWithScalarSubquery() {
+        MergeStatement actual = parseMerge("MERGE INTO t_user target USING (SELECT ? user_id FROM DUAL) source ON (target.user_id = source.user_id) "
+                + "WHEN NOT MATCHED THEN INSERT (user_id, email) VALUES (source.user_id, (SELECT MAX(u.email) FROM t_user u WHERE u.user_id < ?))");
+        ExpressionSegment actualValue = actual.getInsert().get().getValues().iterator().next().getValues().get(1);
+        assertThat(actualValue, isA(SubqueryExpressionSegment.class));
+        assertThat(actualValue.getText(), is("(SELECT MAX(u.email) FROM t_user u WHERE u.user_id < ?)"));
+        assertThat(actual.getParameterCount(), is(2));
+    }
+    
+    @Test
+    void assertVisitSystemDateTimeFunctions() {
+        MergeStatement actual = parseMerge("MERGE INTO t_user target USING (SELECT ? user_id FROM DUAL) source ON (target.user_id = source.user_id) "
+                + "WHEN MATCHED THEN UPDATE SET target.creation_date = SYSDATE "
+                + "WHEN NOT MATCHED THEN INSERT (user_id, creation_date) VALUES (source.user_id, CAST(SYSTIMESTAMP AS TIMESTAMP))");
+        ExpressionSegment actualSysdate = actual.getUpdate().get().getAssignment().get().getAssignments().iterator().next().getValue();
+        FunctionSegment actualCast = (FunctionSegment) actual.getInsert().get().getValues().iterator().next().getValues().get(1);
+        assertThat(actualSysdate, isA(FunctionSegment.class));
+        assertThat(((FunctionSegment) actualSysdate).getFunctionName(), is("SYSDATE"));
+        assertThat(actualCast.getParameters().iterator().next(), isA(FunctionSegment.class));
+        assertThat(((FunctionSegment) actualCast.getParameters().iterator().next()).getFunctionName(), is("SYSTIMESTAMP"));
+    }
+    
+    @Test
+    void assertVisitQuotedSystemDateTimeColumn() {
+        MergeStatement actual = parseMerge("MERGE INTO t_user target USING (SELECT ? user_id FROM DUAL) source ON (target.user_id = source.user_id) "
+                + "WHEN MATCHED THEN UPDATE SET target.creation_date = \"SYSDATE\"");
+        assertThat(actual.getUpdate().get().getAssignment().get().getAssignments().iterator().next().getValue(), isA(ColumnSegment.class));
+    }
+    
+    @Test
+    void assertVisitUpdateAssignmentWithScalarSubquery() {
+        UpdateStatement actual = parseUpdate("UPDATE t_order SET status = (SELECT ? FROM DUAL) WHERE order_id = ?");
+        assertThat(actual.getAssignment().get().getAssignments().iterator().next().getColumns().size(), is(1));
+        assertThat(actual.getAssignment().get().getAssignments().iterator().next().getValue(), isA(SubqueryExpressionSegment.class));
+    }
+    
+    @Test
+    void assertVisitUpdateValueAssignment() {
+        UpdateStatement actual = parseUpdate("UPDATE ot1 SET VALUE(ot1.x) = t1(20) WHERE VALUE(ot1.x) = t1(10)");
+        assertThat(actual.getAssignment().get().getAssignments().iterator().next().getColumns().size(), is(1));
+    }
     
     @Test
     void assertVisitInsertErrorLogging() {
@@ -61,7 +118,7 @@ class OracleDMLStatementVisitorTest {
     
     @Test
     void assertVisitUpdateErrorLogging() {
-        UpdateStatement actual = (UpdateStatement) parse("UPDATE t_user SET email = ? WHERE user_id = ? LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT 2");
+        UpdateStatement actual = parseUpdate("UPDATE t_user SET email = ? WHERE user_id = ? LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT 2");
         assertThat(actual.getParameterCount(), is(3));
         assertErrorLogging(actual.getErrorLogging().get(), "ERR$_T_USER", 2, "2");
     }
@@ -75,19 +132,27 @@ class OracleDMLStatementVisitorTest {
     
     @Test
     void assertVisitMergeErrorLogging() {
-        MergeStatement actual = (MergeStatement) parse("MERGE INTO t_user target USING t_user source ON (target.user_id = source.user_id) "
+        MergeStatement actual = parseMerge("MERGE INTO t_user target USING t_user source ON (target.user_id = source.user_id) "
                 + "WHEN MATCHED THEN UPDATE SET target.email = source.email LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT 3");
         assertThat(actual.getParameterCount(), is(1));
         assertErrorLogging(actual.getErrorLogging().get(), "ERR$_T_USER", 0, "3");
     }
     
-    private static Object parse(final String sql) {
+    private MergeStatement parseMerge(final String sql) {
+        return (MergeStatement) parse(sql);
+    }
+    
+    private UpdateStatement parseUpdate(final String sql) {
+        return (UpdateStatement) parse(sql);
+    }
+    
+    private Object parse(final String sql) {
         return new SQLStatementVisitorEngine("Oracle").visit(new SQLParserEngine("Oracle", CACHE_OPTION).parse(sql, false));
     }
     
-    private static void assertErrorLogging(final ErrorLoggingSegment actual, final String expectedTable, final int expectedParameterIndex, final String expectedRejectLimit) {
+    private void assertErrorLogging(final ErrorLoggingSegment actual, final String expectedTable, final int expectedParameterIndex, final String expectedRejectLimit) {
         assertThat(actual.getTable().getTableName().getIdentifier().getValue(), is(expectedTable));
-        assertTrue(actual.getTag() instanceof ParameterMarkerExpressionSegment);
+        assertThat(actual.getTag(), isA(ParameterMarkerExpressionSegment.class));
         assertThat(((ParameterMarkerExpressionSegment) actual.getTag()).getParameterMarkerIndex(), is(expectedParameterIndex));
         assertThat(actual.getRejectLimit(), is(expectedRejectLimit));
     }

@@ -95,7 +95,6 @@ chapter = true
    - 正确性测试（Correct）：通过正确的输入，得到预期结果。
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
- - 使用 `assert` 前缀命名所有的测试用例。
  - 单元测试必须通过公共 API 验证行为，禁止通过反射调用私有成员。 若测试必须通过反射访问字段，应使用 `Plugins.getMemberAccessor()`，且反射仅限于 `Field` 访问。
  - 测试修改静态状态时，必须在每个测试结束后恢复其原始状态。
  - 默认通过项目加载器获取 SPI 实现。 如果被测类实现了 `TypedSPI` 或 `DatabaseTypedSPI`，应通过 `TypedSPILoader` 或 `DatabaseTypedSPILoader` 实例化，禁止使用 `new`。
@@ -109,12 +108,12 @@ chapter = true
  - 数据断言规范应遵循：
     - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
     - 空值断言应使用 `assertNull` 和 `assertNotNull`；
-    - 其他类型断言应使用 `assertThat(actual, is(expected))` 代替 `assertEquals`；
-    - 类型断言使用 `assertThat(..., isA(...))` 代替 `instanceOf`；
-    - 禁用 `assertSame` / `assertNotSame`，使用 `assertThat(actual, is(expected))` 或 `assertThat(actual, not(expected))`；
+    - 非布尔值、非空值的相等断言必须使用 `assertThat(actual, is(expected))`；
+    - 类型断言必须使用 `assertThat(actual, isA(ExpectedType.class))`；
+    - 引用同一性断言必须使用 `assertThat(actual, sameInstance(expected))`；
+    - 引用非同一性断言必须使用 `assertThat(actual, not(sameInstance(expected)))`；
     - 使用 Hamcrest 匹配器（如 `is()`、`not()`）来进行精确且可读性高的断言。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
- - 测试类和 `@Test` 标注的方法无需 JAVADOC。
  - 使用 `mock` 应遵循如下规范：
    - 数据库、缓存、注册中心、网络调用、时间以及其他重量级外部依赖应使用 mock，不要连接外部环境。
    - 与被测行为无关且嵌套超过两层的对象应使用 mock；不要构造深层无关对象图。

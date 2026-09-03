@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.it.sql.binder;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
@@ -102,7 +102,7 @@ public abstract class SQLBinderIT {
     
     private Collection<ShardingSphereSchema> mockSchemas(final DatabaseType databaseType, final String databaseName) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
-        String defaultSchemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
+        String defaultSchemaName = DefaultSchemaNameResolver.resolveProtocol(databaseType, databaseName);
         Collection<ShardingSphereTable> tables = "foo_db_1".equalsIgnoreCase(databaseName) ? mockFooDB1Tables() : mockFooDB2Tables();
         result.add(new ShardingSphereSchema(defaultSchemaName, databaseType, tables, Collections.emptyList()));
         return result;

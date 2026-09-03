@@ -347,14 +347,10 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(),
                     (SelectStatement) visit(ctx.selectSubquery()), getOriginalText(ctx.selectSubquery()));
             SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
-            ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-            result.getColumns().add(column);
-            return result;
+            return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
         }
         CommonExpressionSegment value = new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.DEFAULT().getText());
-        ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-        result.getColumns().add(column);
-        return result;
+        return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
     
     private ColumnAssignmentSegment createAssignmentSegmentFromMultiColumnAssignment(final UpdateSetColumnClauseContext ctx) {
@@ -375,16 +371,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         columnSegments.add(column);
         if (null != ctx.expr()) {
             ExpressionSegment value = (ExpressionSegment) visit(ctx.expr());
-            ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-            result.getColumns().add(column);
-            return result;
+            return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
         } else {
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(),
                     (SelectStatement) visit(ctx.selectSubquery()), getOriginalText(ctx.selectSubquery()));
             SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
-            ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-            result.getColumns().add(column);
-            return result;
+            return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
         }
     }
     
@@ -1705,8 +1697,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitMergeColumnValue(final MergeColumnValueContext ctx) {
         CollectionValue<InsertValuesSegment> result = new CollectionValue<>();
         List<ExpressionSegment> segments = new LinkedList<>();
-        for (ExprContext each : ctx.expr()) {
-            segments.add(null == each ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : (ExpressionSegment) visit(each));
+        for (MergeAssignmentValueContext each : ctx.mergeAssignmentValue()) {
+            segments.add((ExpressionSegment) visit(each));
         }
         result.getValue().add(new InsertValuesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), segments));
         return result;
@@ -1799,6 +1791,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMergeAssignmentValue(final MergeAssignmentValueContext ctx) {
+        if (null != ctx.selectSubquery()) {
+            SelectStatement selectStatement = (SelectStatement) visit(ctx.selectSubquery());
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), selectStatement, getOriginalText(ctx));
+            return new SubqueryExpressionSegment(subquerySegment);
+        }
         ExprContext expr = ctx.expr();
         return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : visit(expr);
     }

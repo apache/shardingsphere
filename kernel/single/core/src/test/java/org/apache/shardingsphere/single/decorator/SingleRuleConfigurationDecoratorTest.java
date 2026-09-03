@@ -157,7 +157,11 @@ class SingleRuleConfigurationDecoratorTest {
         Collection<String> splitTables = Collections.singleton("*.foo_schema.t_order");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("foo_ds", "foo_schema", "t_order"));
         when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
-        mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
+        when(SingleTableLoadUtils.splitTableLines(anyCollection())).thenReturn(splitTables);
+        when(SingleTableLoadUtils.getExcludedTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(DefaultSchemaNameResolver.resolveProtocol(databaseType, "foo_db")).thenReturn("foo_schema");
+        when(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName("foo_schema", databaseType, splitTables)).thenReturn(configuredDataNodes);
+        when(SingleTableLoadUtils.getFeatureRequiredSingleTables(anyCollection())).thenReturn(Collections.emptyList());
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singleton("*.foo_schema.t_order"), null);
         try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
             assertThat(decorator.decorate("foo_db", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), ruleConfig).getTables(),
@@ -306,7 +310,6 @@ class SingleRuleConfigurationDecoratorTest {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
         return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
-            when(mock.getDefaultSchemaName(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
             when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
         });
     }

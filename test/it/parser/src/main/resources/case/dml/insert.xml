@@ -2252,7 +2252,7 @@
                     <literal-expression value="pgregory@example.com" start-index="133" stop-index="154" />
                 </assignment-value>
                 <assignment-value>
-                    <column name="sysdate" start-index="157" stop-index="163" />
+                    <function function-name="sysdate" text="sysdate" start-index="157" stop-index="163" />
                 </assignment-value>
                 <assignment-value>
                     <literal-expression value="PU_CLERK" start-index="166" stop-index="175" />
@@ -2935,7 +2935,7 @@
                     <literal-expression value="500 Oracle Parkway" start-index="60" stop-index="79" literal-start-index="59" literal-stop-index="79" />
                 </assignment-value>
                 <assignment-value>
-                    <column name="sysdate" start-index="81" stop-index="87" literal-start-index="81" literal-stop-index="87" />
+                    <function function-name="sysdate" text="sysdate" start-index="81" stop-index="87" literal-start-index="81" literal-stop-index="87" />
                 </assignment-value>
             </value>
         </values>

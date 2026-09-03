@@ -91,7 +91,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
    - Correctness testing: Get expected results through correct inputs.
    - Reasonable design: Combined with production code design, design high-quality unit tests.
    - Error tolerance testing: Get expected results through incorrect inputs such as illegal data, exception flows, etc.
-- Use `assert` prefix for all test method names.
 - Unit tests must exercise behavior through public APIs only. Reflection-based invocation of private members is forbidden. If tests must access fields via reflection, use `Plugins.getMemberAccessor()` and limit reflection to `Field` access only.
 - Tests that modify static state must restore the original state after each test.
 - Obtain SPI implementations through the project loader by default. If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it through `TypedSPILoader` or `DatabaseTypedSPILoader`, not with `new`.
@@ -104,12 +103,12 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Data assertion standards should follow:
    - Boolean type assertions should use `assertTrue` and `assertFalse`;
    - Null value assertions should use `assertNull` and `assertNotNull`;
-   - Other types should use `assertThat(actual, is(expected))` instead of `assertEquals`;
-   - Use `assertThat(..., isA(...))` instead of `instanceOf`;
-   - Do not use `assertSame` / `assertNotSame`; use instead of `assertThat(actual, is(expected))` or `assertThat(actual, not(expected))`;
+   - Non-boolean, non-null value equality assertions must use `assertThat(actual, is(expected))`;
+   - Type assertions must use `assertThat(actual, isA(ExpectedType.class))`;
+   - Reference identity assertions must use `assertThat(actual, sameInstance(expected))`;
+   - Reference non-identity assertions must use `assertThat(actual, not(sameInstance(expected)))`;
    - Use Hamcrest matchers like `is()`, `not()` for precise and readable assertions.
 - The actual values in test cases should be named actual XXX, and expected values should be named expected XXX.
-- Test classes and methods marked with `@Test` do not need JAVADOC.
 - Using `mock` should follow the following specifications:
    - Mock databases, caches, registries, network calls, time, and other heavy external dependencies instead of connecting to external environments.
    - Mock objects with more than two levels of nesting when they are unrelated to the behavior under test; do not construct deep unrelated object graphs.
