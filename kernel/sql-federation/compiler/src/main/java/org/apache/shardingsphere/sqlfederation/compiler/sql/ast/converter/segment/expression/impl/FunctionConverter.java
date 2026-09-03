@@ -66,6 +66,9 @@ public final class FunctionConverter {
         if ("OVER".equalsIgnoreCase(functionName.getSimple())) {
             return WindowFunctionConverter.convert(segment);
         }
+        if (segment.getParameters().isEmpty() && segment.getText().equalsIgnoreCase(functionName.getSimple())) {
+            return functionName;
+        }
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
         if (!functions.isEmpty() && segment.getWindow().isPresent()) {
