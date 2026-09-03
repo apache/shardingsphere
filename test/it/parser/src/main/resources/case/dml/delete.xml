@@ -762,7 +762,7 @@
                             </left>
                             <operator>&lt;</operator>
                             <right>
-                                <column name="SYSDATE" start-index="87" stop-index="93" />
+                                <function function-name="SYSDATE" text="SYSDATE" start-index="87" stop-index="93" />
                             </right>
                         </binary-operation-expression>
                     </right>
