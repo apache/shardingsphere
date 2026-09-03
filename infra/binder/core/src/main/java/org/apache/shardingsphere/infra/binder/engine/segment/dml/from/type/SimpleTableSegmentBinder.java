@@ -163,6 +163,12 @@ public final class SimpleTableSegmentBinder {
         if (segment.getOwner().isPresent() && !isOwnerDatabaseName(segment, binderContext, dialectDatabaseMetaData)) {
             return Optional.ofNullable(segment.getOwner().get().getIdentifier());
         }
+        if (!dialectDatabaseMetaData.getSchemaOption().isSystemSchemaPreferredOverCurrentSchema()) {
+            Optional<IdentifierValue> currentSchema = findCurrentSchemaContainingTable(binderContext, segment.getTableName().getIdentifier());
+            if (currentSchema.isPresent()) {
+                return currentSchema;
+            }
+        }
         Optional<String> defaultSystemSchema = dialectDatabaseMetaData.getSchemaOption().getDefaultSystemSchema();
         if (defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), segment.getTableName().getIdentifier().getValue())) {
             return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
@@ -182,6 +188,16 @@ public final class SimpleTableSegmentBinder {
         }
         ShardingSphereDatabase database = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName());
         return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
+    }
+    
+    private static Optional<IdentifierValue> findCurrentSchemaContainingTable(final SQLStatementBinderContext binderContext, final IdentifierValue tableName) {
+        ShardingSphereDatabase database = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName());
+        String defaultSchemaName = database.getDefaultSchemaName();
+        if (null == defaultSchemaName) {
+            return Optional.empty();
+        }
+        ShardingSphereSchema schema = database.getSchema(defaultSchemaName);
+        return null != schema && schema.containsTable(tableName) ? Optional.of(new IdentifierValue(defaultSchemaName)) : Optional.empty();
     }
     
     private static Optional<IdentifierValue> getDefaultSchemaName(final ShardingSphereDatabase database, final Collection<IdentifierValue> currentSchema) {
@@ -355,7 +371,7 @@ public final class SimpleTableSegmentBinder {
         if ("DUAL".equalsIgnoreCase(tableNameValue)) {
             return;
         }
-        if (null != schema && SystemSchemaManager.isSystemTable(schema.getName(), tableNameValue)) {
+        if (null != schema && SystemSchemaManager.isSystemTable(binderContext.getSqlStatement().getDatabaseType().getType(), schema.getName(), tableNameValue)) {
             return;
         }
         if (segment.getDbLink().isPresent()) {

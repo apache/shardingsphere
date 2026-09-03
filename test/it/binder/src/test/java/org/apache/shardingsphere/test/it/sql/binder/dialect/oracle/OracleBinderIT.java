@@ -59,6 +59,30 @@ class OracleBinderIT extends SQLBinderIT {
         assertColumnBound(actual.getProjections().getProjections().get(0), "", "ROWNUM");
     }
     
+    @Test
+    void assertBindCurrentSchemaTableShadowingDictionaryViewName() {
+        String sql = "SELECT USER_COL FROM ALL_VIEWS";
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", sql);
+        ProjectionSegment actualProjection = actual.getProjections().getProjections().get(0);
+        assertColumnBound(actualProjection, "ALL_VIEWS", "USER_COL");
+        ColumnSegmentBoundInfo actualColumnBoundInfo = ((ColumnProjectionSegment) actualProjection).getColumn().getColumnBoundInfo();
+        assertThat(actualColumnBoundInfo.getOriginalSchema().getValue(), is("FOO_DB_1"));
+    }
+    
+    @Test
+    void assertBindReadOnlyColumnOnAllTables() {
+        String sql = "SELECT READ_ONLY FROM ALL_TABLES";
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", sql);
+        assertColumnBound(actual.getProjections().getProjections().get(0), "ALL_TABLES", "READ_ONLY");
+    }
+    
+    @Test
+    void assertBindReadOnlyColumnOnUserTables() {
+        String sql = "SELECT READ_ONLY FROM USER_TABLES";
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", sql);
+        assertColumnBound(actual.getProjections().getProjections().get(0), "USER_TABLES", "READ_ONLY");
+    }
+    
     private void assertColumnBound(final ProjectionSegment actualProjection, final String expectedTable, final String expectedColumn) {
         assertThat(actualProjection, isA(ColumnProjectionSegment.class));
         ColumnSegmentBoundInfo actual = ((ColumnProjectionSegment) actualProjection).getColumn().getColumnBoundInfo();

@@ -57,6 +57,11 @@ public final class OracleSchemaOption implements DialectSchemaOption {
     }
     
     @Override
+    public boolean isSystemSchemaPreferredOverCurrentSchema() {
+        return false;
+    }
+    
+    @Override
     public DialectSchemaSemantics getSchemaSemantics() {
         return delegate.getSchemaSemantics();
     }

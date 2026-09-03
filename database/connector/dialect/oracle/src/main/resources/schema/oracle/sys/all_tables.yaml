@@ -115,6 +115,27 @@ columns:
     name: MAX_EXTENTS
     primaryKey: false
     visible: true
+  PCT_INCREASE:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: PCT_INCREASE
+    primaryKey: false
+    visible: true
+  FREELISTS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: FREELISTS
+    primaryKey: false
+    visible: true
+  FREELIST_GROUPS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: FREELIST_GROUPS
+    primaryKey: false
+    visible: true
   LOGGING:
     caseSensitive: false
     dataType: 12
@@ -169,6 +190,20 @@ columns:
     dataType: 2
     generated: false
     name: AVG_ROW_LEN
+    primaryKey: false
+    visible: true
+  AVG_SPACE_FREELIST_BLOCKS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: AVG_SPACE_FREELIST_BLOCKS
+    primaryKey: false
+    visible: true
+  NUM_FREELIST_BLOCKS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: NUM_FREELIST_BLOCKS
     primaryKey: false
     visible: true
   DEGREE:
@@ -255,6 +290,20 @@ columns:
     name: BUFFER_POOL
     primaryKey: false
     visible: true
+  FLASH_CACHE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: FLASH_CACHE
+    primaryKey: false
+    visible: true
+  CELL_FLASH_CACHE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CELL_FLASH_CACHE
+    primaryKey: false
+    visible: true
   ROW_MOVEMENT:
     caseSensitive: false
     dataType: 12
@@ -318,10 +367,38 @@ columns:
     name: COMPRESSION
     primaryKey: false
     visible: true
+  COMPRESS_FOR:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COMPRESS_FOR
+    primaryKey: false
+    visible: true
   DROPPED:
     caseSensitive: false
     dataType: 12
     generated: false
     name: DROPPED
+    primaryKey: false
+    visible: true
+  READ_ONLY:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: READ_ONLY
+    primaryKey: false
+    visible: true
+  SEGMENT_CREATED:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SEGMENT_CREATED
+    primaryKey: false
+    visible: true
+  RESULT_CACHE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: RESULT_CACHE
     primaryKey: false
     visible: true
