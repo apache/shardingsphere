@@ -54,7 +54,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Extract code that requires explanatory comments into small methods, and use method names to express the intent.
 - In `equals` and `==` conditional expressions, constants on the left, variables on the right; in conditional expressions like greater than or less than, variables on the left, constants on the right.
 - Avoid using `this` modifier except for assignment statements where constructor parameters have the same name as global variables.
-- For parameters, use `final` only on method parameters, constructor parameters and `catch` parameters.
 - Local variables should not be set as `final`, including ordinary local declarations, loop variables, enhanced `for` variables and try-with-resources resources, unless required by Checkstyle.
 - Lambda parameters should not be marked as `final`.
 - Declare every class `final` unless it is an abstract class intended for inheritance.
@@ -66,7 +65,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Method parameters and return values are not allowed to be `null`.
 - Method parameters must not use `Optional`; pass plain values (nullable when needed).
 - Prefer using lombok instead of constructors, getter, setter methods and log variables.
-- Do not leave fully-qualified class names inline; add import statements instead.
 - Consider using `LinkedList` first, only use `ArrayList` when you need to get element values from the collection by index.
 - Collection types that may cause expansion like `ArrayList`, `HashMap` must specify initial collection size to avoid expansion.
 - Prefer using ternary operators instead of if else return and assignment statements.
