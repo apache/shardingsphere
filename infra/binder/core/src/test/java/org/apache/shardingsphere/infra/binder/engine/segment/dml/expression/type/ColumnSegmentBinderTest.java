@@ -128,6 +128,20 @@ class ColumnSegmentBinderTest {
     }
     
     @Test
+    void assertBindParameterMarkerProjectionWithoutBoundInfoFromExternalTable() {
+        IdentifierValue sourceColumnName = new IdentifierValue("\"NewEmail\"");
+        ParameterMarkerExpressionSegment sourceProjection = new ParameterMarkerExpressionSegment(0, 11, 0);
+        sourceProjection.setAlias(new AliasSegment(2, 11, sourceColumnName));
+        SQLStatementBinderContext binderContext = createBinderContext();
+        binderContext.getExternalTableBinderContexts().put(CaseInsensitiveString.of("foo_cte"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(sourceProjection), TableSourceType.TEMPORARY_TABLE));
+        ColumnSegment actual = ColumnSegmentBinder.bind(new ColumnSegment(20, 29, sourceColumnName), SegmentType.SET_ASSIGNMENT,
+                binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertNotNull(actual.getColumnBoundInfo());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn(), is(sourceColumnName));
+    }
+    
+    @Test
     void assertBindModelColumn() {
         SQLStatementBinderContext binderContext = createBinderContext();
         binderContext.getModelColumnNames().add("projected_price");

@@ -315,7 +315,9 @@ public final class ColumnSegmentBinder {
         if (projectionSegment instanceof ParameterMarkerExpressionSegment) {
             ParameterMarkerExpressionSegment parameterMarker = (ParameterMarkerExpressionSegment) projectionSegment;
             ColumnSegment result = new ColumnSegment(0, 0, parameterMarker.getAlias().orElseGet(() -> new IdentifierValue(parameterMarker.getColumnLabel())));
-            result.setColumnBoundInfo(parameterMarker.getBoundInfo());
+            if (null != parameterMarker.getBoundInfo()) {
+                result.setColumnBoundInfo(parameterMarker.getBoundInfo());
+            }
             return result;
         }
         return new ColumnSegment(0, 0, new IdentifierValue(projectionSegment.getColumnLabel()));
