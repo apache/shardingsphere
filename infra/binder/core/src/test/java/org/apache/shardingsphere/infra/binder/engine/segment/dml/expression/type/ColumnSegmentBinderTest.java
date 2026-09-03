@@ -32,7 +32,9 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
@@ -105,6 +107,24 @@ class ColumnSegmentBinderTest {
         assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_schema"));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order_item"));
         assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+    }
+    
+    @Test
+    void assertBindParameterMarkerProjectionFromExternalTable() {
+        IdentifierValue sourceTableName = new IdentifierValue("\"Source\"");
+        IdentifierValue sourceColumnName = new IdentifierValue("\"NewEmail\"");
+        ParameterMarkerExpressionSegment sourceProjection = new ParameterMarkerExpressionSegment(0, 11, 0);
+        sourceProjection.setAlias(new AliasSegment(2, 11, sourceColumnName));
+        sourceProjection.setBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")),
+                sourceTableName, sourceColumnName, TableSourceType.TEMPORARY_TABLE));
+        SQLStatementBinderContext binderContext = createBinderContext();
+        binderContext.getExternalTableBinderContexts().put(CaseInsensitiveString.of(sourceTableName.getValue()),
+                new SimpleTableSegmentBinderContext(Collections.singleton(sourceProjection), TableSourceType.TEMPORARY_TABLE));
+        ColumnSegment actual = ColumnSegmentBinder.bind(new ColumnSegment(20, 29, sourceColumnName), SegmentType.SET_ASSIGNMENT,
+                binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalTable(), is(sourceTableName));
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn(), is(sourceColumnName));
+        assertThat(actual.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
     }
     
     @Test

@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnEx
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -308,8 +309,16 @@ public final class ColumnSegmentBinder {
     }
     
     private static ColumnSegment createColumnSegment(final ProjectionSegment projectionSegment) {
-        return projectionSegment instanceof ColumnProjectionSegment ? ((ColumnProjectionSegment) projectionSegment).getColumn()
-                : new ColumnSegment(0, 0, new IdentifierValue(projectionSegment.getColumnLabel()));
+        if (projectionSegment instanceof ColumnProjectionSegment) {
+            return ((ColumnProjectionSegment) projectionSegment).getColumn();
+        }
+        if (projectionSegment instanceof ParameterMarkerExpressionSegment) {
+            ParameterMarkerExpressionSegment parameterMarker = (ParameterMarkerExpressionSegment) projectionSegment;
+            ColumnSegment result = new ColumnSegment(0, 0, parameterMarker.getAlias().orElseGet(() -> new IdentifierValue(parameterMarker.getColumnLabel())));
+            result.setColumnBoundInfo(parameterMarker.getBoundInfo());
+            return result;
+        }
+        return new ColumnSegment(0, 0, new IdentifierValue(projectionSegment.getColumnLabel()));
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentFromExternalTables(final ColumnSegment segment,
