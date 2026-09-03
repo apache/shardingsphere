@@ -420,6 +420,23 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
+     * Proxy execute one SQL with log.
+     *
+     * @param sql SQL
+     * @param sleepSeconds sleep seconds
+     * @throws SQLException SQL exception
+     */
+    public void proxyExecuteOneSQLWithLog(final String sql, final int sleepSeconds) throws SQLException {
+        log.info("proxy execute: {}", sql);
+        try (
+                Connection connection = proxyDataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+        Awaitility.await().timeout(Duration.ofMinutes(1L)).pollDelay(Math.max(sleepSeconds, 0L), TimeUnit.SECONDS).until(() -> true);
+    }
+    
+    /**
      * Query for list with log.
      *
      * @param sql SQL
