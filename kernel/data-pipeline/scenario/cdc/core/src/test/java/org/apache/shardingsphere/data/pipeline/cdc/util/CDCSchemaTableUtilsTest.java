@@ -93,6 +93,18 @@ class CDCSchemaTableUtilsTest {
     }
     
     @Test
+    void assertParseTableExpressionsWithSchemaWildcardAndQuotedTable() {
+        ShardingSphereSchema fooSchema = mockSchema("foo_schema", "footable", "FooTable");
+        ShardingSphereSchema barSchema = mockSchema("bar_schema", "footable");
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("sharding_db", databaseType, null, null, Arrays.asList(fooSchema, barSchema), new ConfigurationProperties(new Properties()));
+        List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("*").setTable("\"FooTable\"").build());
+        Map<String, Set<String>> actualResult = CDCSchemaTableUtils.parseTableExpressions(database, schemaTables);
+        Map<String, Set<String>> expectedResult = Collections.singletonMap("foo_schema", Collections.singleton("FooTable"));
+        assertThat(actualResult, is(expectedResult));
+    }
+    
+    @Test
     void assertParseTableExpressionsMergesSchemaWildcardResults() {
         ShardingSphereSchema publicSchema = mockSchema("public", "t_order", "t_order_item");
         ShardingSphereDatabase database =
@@ -148,6 +160,17 @@ class CDCSchemaTableUtilsTest {
         Map<String, Set<String>> expectedResult = new HashMap<>(2, 1F);
         expectedResult.put("caseschema", Collections.singleton("t_unquoted"));
         expectedResult.put("CaseSchema", Collections.singleton("t_quoted"));
+        assertThat(actualResult, is(expectedResult));
+    }
+    
+    @Test
+    void assertParseTableExpressionsWithQuotedTable() {
+        ShardingSphereSchema schema = mockSchema("foo_schema", "footable", "FooTable");
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("sharding_db", databaseType, null, null, Collections.singleton(schema), new ConfigurationProperties(new Properties()));
+        List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("foo_schema").setTable("\"FooTable\"").build());
+        Map<String, Set<String>> actualResult = CDCSchemaTableUtils.parseTableExpressions(database, schemaTables);
+        Map<String, Set<String>> expectedResult = Collections.singletonMap("foo_schema", Collections.singleton("FooTable"));
         assertThat(actualResult, is(expectedResult));
     }
     
