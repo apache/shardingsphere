@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="update_with_error_logging" value="UPDATE t_user SET email = ? WHERE user_id = ? LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT 2" db-types="Oracle" case-types="PLACEHOLDER" />
     <sql-case id="update_cast_assignment_hive" value="UPDATE t_product_detail SET description = cast(? AS STRING) WHERE detail_id = ?" case-types="placeholder" db-types="Hive" />
     <sql-case id="update_case_when_assignment_hive" value="UPDATE t_user SET user_name = CASE WHEN user_id = ? THEN concat(user_name, ?) ELSE user_name END WHERE user_id IN (?, ?)" case-types="placeholder" db-types="Hive" />
     <sql-case id="update_values_derived_table_aliases_postgresql" value="UPDATE t_order SET status = t.status FROM (VALUES (1, 'PAID')) AS t(order_id, status) WHERE t_order.order_id = t.order_id" db-types="PostgreSQL" />

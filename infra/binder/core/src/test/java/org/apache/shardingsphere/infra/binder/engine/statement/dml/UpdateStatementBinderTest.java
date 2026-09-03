@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ErrorLoggingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -68,14 +69,17 @@ class UpdateStatementBinderTest {
     @Test
     void assertBind() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        ErrorLoggingSegment errorLogging = new ErrorLoggingSegment(0, 0, null, null, "UNLIMITED");
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(databaseType)
                 .table(simpleTableSegment)
                 .where(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
                         new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")))
+                .errorLogging(errorLogging)
                 .build();
         UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
         assertThat(actual, not(updateStatement));
+        assertThat(actual.getErrorLogging().get(), is(errorLogging));
         assertThat(actual.getTable(), not(updateStatement.getTable()));
         assertThat(actual.getTable(), isA(SimpleTableSegment.class));
         assertTrue(actual.getWhere().isPresent());

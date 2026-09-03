@@ -17,6 +17,26 @@
   -->
 
 <sql-parser-test-cases>
+    <insert sql-case-id="insert_with_error_logging" parameters="1, 'insert_tag'">
+        <table name="t_user" start-index="12" stop-index="17" />
+        <columns start-index="18" stop-index="18" />
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="27" stop-index="27" />
+                </assignment-value>
+            </value>
+        </values>
+        <error-logging reject-limit="UNLIMITED" start-index="30" stop-index="83">
+            <table>
+                <simple-table name="ERR$_T_USER" start-index="46" stop-index="56" />
+            </table>
+            <tag>
+                <parameter-marker-expression parameter-index="1" start-index="59" stop-index="59" />
+            </tag>
+        </error-logging>
+    </insert>
+
     <insert sql-case-id="insert_into_values1">
         <table name="test_nested" start-index="12" stop-index="22" />
         <columns start-index="23" stop-index="23" />

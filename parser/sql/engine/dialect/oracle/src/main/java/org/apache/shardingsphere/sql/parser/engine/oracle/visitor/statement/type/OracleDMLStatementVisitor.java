@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlSub
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlTableAliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DuplicateSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ErrorLoggingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExecuteContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExpressionListContext;
@@ -130,6 +131,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtra
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ErrorLoggingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
@@ -273,10 +275,25 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
         }
+        if (null != ctx.errorLoggingClause()) {
+            result.errorLogging(createErrorLoggingSegment(ctx.errorLoggingClause()));
+        }
         UpdateStatement updateStatement = result.build();
         updateStatement.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         updateStatement.getVariableNames().addAll(getVariableNames());
         return updateStatement;
+    }
+    
+    private ErrorLoggingSegment createErrorLoggingSegment(final ErrorLoggingClauseContext ctx) {
+        SimpleTableSegment table = null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName());
+        ExpressionSegment tag = null == ctx.simpleExpr() ? null : (ExpressionSegment) visit(ctx.simpleExpr());
+        String rejectLimit = null;
+        if (null != ctx.INTEGER_()) {
+            rejectLimit = ctx.INTEGER_().getText();
+        } else if (null != ctx.UNLIMITED()) {
+            rejectLimit = ctx.UNLIMITED().getText();
+        }
+        return new ErrorLoggingSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), table, tag, rejectLimit);
     }
     
     @Override
@@ -398,6 +415,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 .insertColumns(insertStatement.getInsertColumns().orElse(null))
                 .insertSelect(insertSelect)
                 .returning(null == ctx.returningClause() ? null : (ReturningSegment) visit(ctx.returningClause()))
+                .errorLogging(null == ctx.errorLoggingClause() ? null : createErrorLoggingSegment(ctx.errorLoggingClause()))
                 .values(insertValues)
                 .build();
         result.getVariableNames().addAll(getVariableNames());
@@ -522,6 +540,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
         }
+        if (null != ctx.errorLoggingClause()) {
+            result.errorLogging(createErrorLoggingSegment(ctx.errorLoggingClause()));
+        }
         DeleteStatement deleteStatement = result.build();
         deleteStatement.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         deleteStatement.getVariableNames().addAll(getVariableNames());
@@ -579,10 +600,14 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMultiTableElement(final MultiTableElementContext ctx) {
-        InsertStatement result = (InsertStatement) visit(ctx.multiTableInsertIntoClause());
+        InsertStatement insertStatement = (InsertStatement) visit(ctx.multiTableInsertIntoClause());
+        Collection<InsertValuesSegment> insertValues = new LinkedList<>(insertStatement.getValues());
         if (null != ctx.insertValuesClause()) {
-            result.getValues().addAll(createInsertValuesSegments(ctx.insertValuesClause().assignmentValues()));
+            insertValues.addAll(createInsertValuesSegments(ctx.insertValuesClause().assignmentValues()));
         }
+        InsertStatement result = InsertStatement.builder().databaseType(insertStatement.getDatabaseType()).table(insertStatement.getTable().orElse(null))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null)).insertSelect(insertStatement.getInsertSelect().orElse(null))
+                .errorLogging(null == ctx.errorLoggingClause() ? null : createErrorLoggingSegment(ctx.errorLoggingClause())).values(insertValues).build();
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
         return result;
@@ -1641,7 +1666,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 insert = (InsertStatement) visitMergeInsertClause(ctx.mergeInsertClause());
             }
         }
-        MergeStatement result = MergeStatement.builder().databaseType(getDatabaseType()).target(target).source(source).expression(onExpression).update(update).insert(insert).build();
+        MergeStatement result = MergeStatement.builder().databaseType(getDatabaseType()).target(target).source(source).expression(onExpression).update(update).insert(insert)
+                .errorLogging(null == ctx.errorLoggingClause() ? null : createErrorLoggingSegment(ctx.errorLoggingClause())).build();
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         return result;
     }
