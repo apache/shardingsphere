@@ -6174,7 +6174,7 @@
                         <parameter>
                             <binary-operation-expression start-index="50" stop-index="66" literal-start-index="50" literal-stop-index="66">
                                 <left>
-                                    <column name="SYSDATE" start-index="50" stop-index="56" literal-start-index="50" literal-stop-index="56" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="50" stop-index="56" literal-start-index="50" literal-stop-index="56" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6196,7 +6196,7 @@
                         <parameter>
                             <binary-operation-expression start-index="126" stop-index="142" literal-start-index="126" literal-stop-index="142">
                                 <left>
-                                    <column name="SYSDATE" start-index="126" stop-index="132" literal-start-index="126" literal-stop-index="132" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="126" stop-index="132" literal-start-index="126" literal-stop-index="132" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6218,7 +6218,7 @@
                         <parameter>
                             <binary-operation-expression start-index="196" stop-index="212" literal-start-index="196" literal-stop-index="212">
                                 <left>
-                                    <column name="SYSDATE" start-index="196" stop-index="202" literal-start-index="196" literal-stop-index="202" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="196" stop-index="202" literal-start-index="196" literal-stop-index="202" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6240,7 +6240,7 @@
                         <parameter>
                             <binary-operation-expression start-index="267" stop-index="283" literal-start-index="267" literal-stop-index="283">
                                 <left>
-                                    <column name="SYSDATE" start-index="267" stop-index="273" literal-start-index="267" literal-stop-index="273" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="267" stop-index="273" literal-start-index="267" literal-stop-index="273" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6262,7 +6262,7 @@
                         <parameter>
                             <binary-operation-expression start-index="338" stop-index="354" literal-start-index="338" literal-stop-index="354">
                                 <left>
-                                    <column name="SYSDATE" start-index="338" stop-index="344" literal-start-index="338" literal-stop-index="344" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="338" stop-index="344" literal-start-index="338" literal-stop-index="344" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6284,7 +6284,7 @@
                         <parameter>
                             <binary-operation-expression start-index="408" stop-index="424" literal-start-index="408" literal-stop-index="424">
                                 <left>
-                                    <column name="SYSDATE" start-index="408" stop-index="414" literal-start-index="408" literal-stop-index="414" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="408" stop-index="414" literal-start-index="408" literal-stop-index="414" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6780,7 +6780,35 @@
         </projections>
     </select>
 
-    <select sql-case-id="select_projection_with_parameter" parameters="'OK'">
+    <select sql-case-id="select_projection_with_parameter_oracle" parameters="'OK'">
+        <projections start-index="7" stop-index="81" literal-stop-index="84">
+            <expression-projection text="1" start-index="7" stop-index="13" alias="id">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+            <parameter-marker-expression parameter-index="0" start-index="16" stop-index="26" literal-stop-index="29" />
+            <expression-projection text="SYSDATE" start-index="29" stop-index="50" literal-start-index="32" literal-stop-index="53" alias="create_time">
+                <expr>
+                    <function function-name="SYSDATE" text="SYSDATE" start-index="29" stop-index="35" literal-start-index="32" literal-stop-index="38" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRUNC(SYSDATE)" start-index="53" stop-index="81" literal-start-index="56" literal-stop-index="84" alias="create_date">
+                <expr>
+                    <function function-name="TRUNC" start-index="53" stop-index="66" literal-start-index="56" literal-stop-index="69" text="TRUNC(SYSDATE)">
+                        <parameter>
+                            <function function-name="SYSDATE" text="SYSDATE" start-index="59" stop-index="65" literal-start-index="62" literal-stop-index="68" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="88" stop-index="91" literal-start-index="91" literal-stop-index="94" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_projection_with_parameter_firebird" parameters="'OK'">
         <projections start-index="7" stop-index="81" literal-stop-index="84">
             <expression-projection text="1" start-index="7" stop-index="13" alias="id">
                 <expr>
@@ -7423,7 +7451,7 @@
                         <parameter>
                             <binary-operation-expression start-index="25" stop-index="43" literal-start-index="25" literal-stop-index="43">
                                 <left>
-                                    <column name="SYSDATE" start-index="25" stop-index="31" literal-start-index="25" literal-stop-index="31" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="25" stop-index="31" literal-start-index="25" literal-stop-index="31" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -11065,7 +11093,7 @@
                                                 <column name="END_TIME" start-index="51" stop-index="58" />
                                             </parameter>
                                             <parameter>
-                                                <column name="sysdate" start-index="61" stop-index="67" />
+                                                <function function-name="sysdate" text="sysdate" start-index="61" stop-index="67" />
                                             </parameter>
                                         </function>
                                     </left>

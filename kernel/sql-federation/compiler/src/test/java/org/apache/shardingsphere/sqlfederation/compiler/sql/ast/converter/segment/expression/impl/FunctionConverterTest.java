@@ -62,6 +62,30 @@ class FunctionConverterTest {
     }
     
     @Test
+    void assertConvertSysdateWithoutParentheses() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "SYSDATE", "SYSDATE");
+        assertThat(FunctionConverter.convert(segment), isA(SqlIdentifier.class));
+    }
+    
+    @Test
+    void assertConvertSystimestampWithoutParentheses() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "SYSTIMESTAMP", "SYSTIMESTAMP");
+        assertThat(FunctionConverter.convert(segment), isA(SqlIdentifier.class));
+    }
+    
+    @Test
+    void assertConvertFunctionWithParentheses() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "SYSDATE", "SYSDATE()");
+        assertThat(FunctionConverter.convert(segment), isA(SqlBasicCall.class));
+    }
+    
+    @Test
+    void assertConvertOtherFunctionWithoutParentheses() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "CUSTOM_FUNC", "CUSTOM_FUNC");
+        assertThat(FunctionConverter.convert(segment), isA(SqlBasicCall.class));
+    }
+    
+    @Test
     void assertConvertDelegatesToTrimFunctionConverter() {
         FunctionSegment segment = new FunctionSegment(0, 0, "TRIM", "TRIM");
         SqlBasicCall expected = mock(SqlBasicCall.class);
