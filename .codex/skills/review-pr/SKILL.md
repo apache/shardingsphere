@@ -236,6 +236,7 @@ readiness conclusion.
   omission-prone review. It mechanically accounts for files, clusters, risk
   axes, finding classifications, proof fields, and review passes; it does not
   judge semantic correctness.
+- For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
 - Keep temporary ledger data private and remove only the exact ledger created
   for the current review.
@@ -263,15 +264,12 @@ unclear.
 
 ## Local Candidate Scope
 
-- Use the latest public PR head plus authorized local commits, index changes,
-  and working-tree changes as the effective candidate.
-- Verify with read-only Git that local `HEAD` equals or descends from the public head.
-- If that relationship cannot be established, record the unavailable effective-candidate lineage as an incomplete gap; if the refs prove divergence, resolve the correct review basis before selecting a verdict.
-- Review from the public PR merge-base through the working tree. Scope is the
-  union of GitHub files and the authorized local delta; exclude unrelated local
-  changes.
+- First classify the local candidate as standalone or as targeting an existing public PR.
+- For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.
+- For a local candidate targeting an existing PR, use the latest public PR head plus authorized local commits, index changes, and working-tree changes as the effective candidate. Verify with read-only Git that local `HEAD` equals or descends from the public head; if that relationship cannot be established, record the unavailable lineage as an incomplete gap, and if the refs prove divergence, resolve the correct review basis before selecting a verdict.
+- Review a PR-backed local candidate from the public PR merge-base through the working tree, use the union of GitHub files and the authorized local delta, and exclude unrelated local changes.
 - Apply Code Correctness Review through the canonical assessment, including the same proof and completion gates, triggered high-risk criteria, convergence loop, and Formal Decision Contract.
-- State in `### Coverage` that the effective candidate includes authorized local changes, identify their scope separately from the public PR, and never present them as the public PR state.
+- In `### Coverage`, identify whether the candidate is standalone or PR-backed and record its baseline and attributed local delta. For a PR-backed candidate, identify authorized local changes separately from the public PR and never present them as the public PR state.
 - Keep this Skill review-only. The outer active implementation loop fixes safe in-scope findings and reruns Formal Review; scope expansion, architecture choices, and high-risk actions return to their existing authorization gates. This Skill never activates that loop.
 
 ## Multi-Round and Challenged Findings
@@ -288,9 +286,7 @@ latest commits, exposed by the previous fix, or missed in the previous review.
 
 ## Output Contract
 
-Every result returned by this Skill must be exactly one fenced `markdown` block
-with no prose before or after it. The first non-empty line must be
-```` ```markdown ```` and the last non-empty line must be ```` ``` ````.
+Every standalone result returned by this Skill must be exactly one fenced `markdown` block with no prose before or after it. When the repository completion loop invokes Formal Review, this fenced block remains the complete review artifact, but the outer workflow may append only the separately fenced non-review handoff artifacts required by `.codex/context/change-completion.md` outside it. The first non-empty line of the review artifact must be ```` ```markdown ```` and its last non-empty line must be ```` ``` ````.
 
 Use the user's language for formal results. Draft GitHub-facing discussion
 replies in English unless the user requests another language. Use stable labels,
@@ -322,7 +318,7 @@ For each blocking issue include:
 - `Required Change` for Change Request, or `Discussion Needed` for Needs
   Discussion.
 
-Do not add patch-level changes after selecting Needs Discussion. Do not include placeholder headings. In `### Coverage`, report the candidate type, reviewed head, authoritative requirements and files accounted for, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope. For a local candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state. In Code Correctness Review, state that the result is code-scope only and CI was not reviewed.
+Do not add patch-level changes after selecting Needs Discussion. Do not include placeholder headings. In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope. For a standalone local candidate, identify the task baseline and attributed local delta; for a PR-backed candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state. In Code Correctness Review, state that the result is code-scope only and CI was not reviewed.
 
 ### PR Discussion Reply
 

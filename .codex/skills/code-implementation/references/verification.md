@@ -31,10 +31,11 @@ Keep background unit tests under 60 seconds. Capture high-volume output accordin
 
 For every user-forbidden tool, API, assertion, or pattern, run a scoped final search and report the command and result. Do not rely only on plan compliance.
 
-After the last file-changing action:
+After the last code-affecting action and before the pre-handoff Formal Review, run both Spotless and Checkstyle for every applicable task-changed code file; run Spotless for a documentation-only change when the configured formatter governs that file.
 
-1. Run `./mvnw spotless:apply -Pcheck -T1C` for code or documentation changes.
-2. Run `./mvnw checkstyle:check -Pcheck -T1C` when production, test, or project-rule files changed.
-3. Do not manually reformat afterward. Any later edit invalidates formatting and requires the applicable checks again.
+1. Resolve the exact task-changed files governed by Spotless and their owning Maven projects, then run `./mvnw -pl <explicit-owner> -DspotlessFiles='<comma-separated exact absolute-path regular expressions>' spotless:apply -Pcheck -T1C` for each smallest owner set. Construct each regular expression from the current workspace and repository-relative task path without hard-coding a local workspace path, and ensure it can match only an allowlisted task file before running this file-modifying goal.
+2. For production or test Java changes, run `./mvnw -pl <explicit-owner> -Dcheckstyle.includes='<comma-separated source-root-relative task files>' -Dcheckstyle.includeResources=false -Dcheckstyle.includeTestResources=false checkstyle:check -Pcheck -T1C` once per owning Maven project. For a changed resource or project-rule file governed by Checkstyle, use its exact supported resource filter; if the configured plugin cannot isolate that file, stop and report the minimum unavoidable scope instead of silently widening the check.
+3. Treat a filtered command as passing only after its output and the post-command task-delta inspection prove that every applicable task file was selected, no non-allowlisted file was written, and the command exited successfully. A successful command that matched no intended file is not evidence.
+4. Do not manually reformat afterward. Any later edit invalidates the affected Spotless and Checkstyle evidence and requires both applicable checks to run again before another Formal Review.
 
 Record every required command, exit code, decisive result, and remaining unverified path. A required check with missing, incomparable, unstable, or inconclusive evidence is not a pass.
