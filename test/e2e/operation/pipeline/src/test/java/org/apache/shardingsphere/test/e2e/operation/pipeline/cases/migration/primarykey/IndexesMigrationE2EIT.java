@@ -49,6 +49,7 @@ import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -94,16 +95,16 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 return;
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+            Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
             // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
-            Consumer<DataSource> incrementalTaskFn = dataSource -> {
+            Runnable incrementalDataChanges = () -> {
                 if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
                     doCreateUpdateDelete(containerComposer, "a1");
                 }
-                Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
                 insertOneOrder(containerComposer, orderId);
-                containerComposer.assertRecordExists(dataSource, "t_order", orderId);
             };
-            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, incrementalTaskFn);
+            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, incrementalDataChanges,
+                    dataSource -> containerComposer.assertRecordExists(dataSource, "t_order", orderId));
         }
     }
     
@@ -175,11 +176,10 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
             Object uniqueKey = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
-            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
+            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next());
-                containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey);
-            });
+            }, dataSource -> containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey));
         }
     }
     
@@ -198,11 +198,10 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
             Object uniqueKey = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
-            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
+            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next());
-                containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey);
-            });
+            }, dataSource -> containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey));
         }
     }
     
@@ -223,8 +222,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
             // TODO Insert binary string in VARBINARY column. But KeyGenerateAlgorithm.generateKey() require returning Comparable, and byte[] is not Comparable
             byte[] uniqueKey = new byte[]{-1, 0, 1};
-            assertMigrationSuccess(containerComposer, sql, "order_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
-                insertOneOrder(containerComposer, uniqueKey);
+            assertMigrationSuccess(containerComposer, sql, "order_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> insertOneOrder(containerComposer, uniqueKey), dataSource -> {
                 // TODO Select by byte[] from proxy doesn't work, so unhex function is used for now
                 containerComposer.assertRecordExists(dataSource, String.format("SELECT 1 FROM t_order WHERE order_id=UNHEX('%s')", Hex.encodeHexString(uniqueKey)));
             });
@@ -232,7 +230,8 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void assertMigrationSuccess(final PipelineContainerComposer containerComposer, final String sqlPattern, final String shardingColumn, final KeyGenerateAlgorithm keyGenerateAlgorithm,
-                                        final String consistencyCheckAlgorithmType, final Consumer<DataSource> incrementalTaskFn) throws Exception {
+                                        final String consistencyCheckAlgorithmType, final Runnable incrementalDataChanges,
+                                        final Consumer<DataSource> incrementalDataVerification) throws Exception {
         containerComposer.sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_NAME));
         try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
@@ -246,8 +245,9 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         String jobId = distSQLFacade.listJobIds().getFirst();
         distSQLFacade.waitJobPreparingStageFinished(jobId);
         DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
-        incrementalTaskFn.accept(jdbcDataSource);
-        distSQLFacade.waitJobIncrementalStageFinished(jobId);
+        incrementalDataChanges.run();
+        assertFalse(distSQLFacade.waitJobIncrementalStageFinished(jobId).isEmpty(), "Migration incremental stage did not become idle");
+        incrementalDataVerification.accept(jdbcDataSource);
         if (null != consistencyCheckAlgorithmType) {
             distSQLFacade.startCheckAndVerify(jobId, consistencyCheckAlgorithmType);
         }
