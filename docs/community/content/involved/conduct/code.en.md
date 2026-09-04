@@ -68,13 +68,19 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Keep a manual implementation when it contains validation, business logic, documentation, compatibility or framework semantics.
 - When the expected number of elements is known before creating a mutable collection, set a sufficient initial capacity with a capacity argument or a constructor that accepts an existing collection.
 - Use a ternary operator when each `if`/`else` branch contains only a return statement or assigns the same variable; otherwise, use `if`/`else`.
-- Use `@HighFrequencyInvocation` only when call-chain analysis or performance data confirms that the target is invoked frequently.
-    - Apply the annotation only to the class, field, method or constructor that is actually invoked frequently.
-    - Set `canBeCached = true` only when the annotated method invocation can be cached.
-    - Code marked with `@HighFrequencyInvocation` must not use the following:
-        - Forbidden to call Java Stream API;
-        - Forbidden to concatenate strings through `+`;
-        - Forbidden to call LinkedList's `get(int index)` method.
+- Use `@HighFrequencyInvocation` to mark high-frequency production code whose performance behavior requires focused review.
+    - Code is high-frequency in any of the following cases:
+        - It runs repeatedly for every SQL request.
+        - It runs repeatedly for every Pipeline data unit, including a record, event, packet or batch. Code that continuously processes those data units in an internal loop remains high-frequency even if its method is invoked only once or its executor is started only once.
+    - Annotate a class, method or constructor at the smallest accurate scope that covers the high-frequency behavior.
+        - On a class, the rules apply to the implementations of all methods and constructors in that class.
+        - On a method or constructor, the rules apply to that implementation and the same-class private methods it calls.
+    - Set `canBeCached = true` only when the annotated target is a cacheable resource intended for reuse.
+    - Within the high-frequency scope, do not perform expensive operations that can be precomputed, cached, reused or moved out of the high-frequency path. Retain an expensive operation only when its result depends on the current SQL request or Pipeline data and it cannot be moved without changing correctness or lifecycle. Expensive operations include repeated I/O, blocking waits, reflection, parsing, serialization, full scans, and creation of large objects or many objects.
+    - Within the high-frequency scope:
+        - Do not use the Java Stream API;
+        - Do not concatenate strings with `+`;
+        - Do not call `LinkedList#get(int)`.
 - Comments & Logging standards:
     - Logs and comments must be in English.
     - Comments can only contain JAVADOC, TODO and FIXME.
