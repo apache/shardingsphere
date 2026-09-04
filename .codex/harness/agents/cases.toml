@@ -1173,6 +1173,98 @@ policy_assertions = [{source = "code-of-conduct", statements = ["Private methods
 critical = true
 
 [[cases]]
+id = "java_naming_uses_canonical_identifier_components"
+group = "coding / regular"
+description = "Repairs canonical identifier components and Lombok accessor names in the effective Java task delta."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "Continue an authorized in-scope Java implementation whose final naming check found a method parameter `Configuration configuration`, locals `MySQLConfig mySQLConfig` and `PostgreSQLConfig postgreSQLConfig`, a class-level Lombok getter generating `getConfig()` from `Configuration config` even though only its setter is disabled, imported `lombok.Data`, fully qualified `@lombok.Value`, and an unrelated Spring `@Value`; some declarations are split across lines or followed immediately by punctuation. Apply the exact Java naming and Lombok rules, state the corrected identifiers and annotation boundary in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["config", "mysqlConfig", "postgresqlConfig", "configuration", "Lombok", "Spring"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-naming", statements = ["Spell the MySQL component of a variable identifier `mysql`; `mySQL` is prohibited.", "Spell the PostgreSQL component of a variable identifier `postgresql`; `postgreSQL` is prohibited.", "In ordinary variable identifiers, abbreviate `arguments` as `args`, `parameters` as `params`, `environment` as `env`, `configuration` as `config`, `configurations` as `configs`, and `properties` as `props`.", "Apply the abbreviation rule to a whole identifier and to the corresponding lower-camel-case component of a compound identifier.", "Do not use `lombok.Data` or `lombok.Value`, whether referenced through an import or by a fully qualified annotation name.", "Do not report an annotation named `Value` from another package as a violation of the Lombok prohibition.", "When Lombok generates a getter or setter from a field identifier, spell the listed words in that field identifier as `arguments`, `parameters`, `environment`, `configuration`, `configurations`, and `properties` instead of `args`, `params`, `env`, `config`, `configs`, and `props`.", "If either a Lombok getter or a Lombok setter is generated for a field, the full-word field-name rule applies even when generation of the other accessor is disabled.", "Apply the rules regardless of whitespace, line breaks, punctuation, declaration layout, or whether an annotation is imported or fully qualified."]}]
+critical = true
+
+[[cases]]
+id = "java_naming_optional_map_parameter_is_exact"
+group = "coding / regular"
+description = "Names only the direct Optional map lambda parameter optional and rejects optional in ordinary identifiers."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "Continue an authorized Java change whose final naming check found an ordinary local named `optionalRule`, `java.util.Optional#map(value -> normalize(value))`, and `Stream#map(optional -> normalize(optional))`. Apply the exact identifier and Optional-map rules, state the corrected ordinary-local, Optional-map, and Stream-map parameter names in the summary, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["`optional`", "Stream"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-naming", statements = ["An ordinary variable identifier must not contain `optional`; the direct lambda parameter of `java.util.Optional#map` is the only naming exception.", "Name the direct lambda parameter of `java.util.Optional#map` exactly `optional`, regardless of the contained value's domain type.", "The exact `optional` identifier is mandatory for this parameter; do not use `value`, `each`, a domain-specific name, or a compound name such as `optionalRule`.", "This specific rule overrides the ordinary prohibition on `optional` and any general preference for domain-specific lambda parameter names.", "Given `Optional<Rule> maybeRule`, the compliant lambda form is `maybeRule.map(optional -> normalize(optional))`.", "Do not apply the `optional` name to `Stream#map`, `flatMap`, `filter`, `ifPresent`, or any other operation.", "A method reference passed to `Optional#map` has no lambda parameter to name and is not constrained by the `optional` rule."]}]
+critical = true
+
+[[cases]]
+id = "java_naming_returns_and_enhanced_for_variables"
+group = "coding / regular"
+description = "Inlines a return-only local and applies result, each, and entry only in their defined roles."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "Continue an authorized Java change whose final naming check found `Rule result = createRule(); return result;` with no intervening use, a returned local named `rule` that is validated before return, an enhanced loop `for (Rule rule : rules)`, an enhanced `Map.Entry` loop named `each`, and a traditional counter `for (int i = 0; ...)`. Inline the first local as `return createRule();`, rename the necessary returned local to `result`, use `each` and `entry` for the two enhanced loops, leave the traditional counter outside those rules, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["result", "each", "entry"]
+required_summary_term_groups = [["return createRule", "inline", "Inline"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-naming", statements = ["Return an expression directly when a local variable would have no use other than its declaration and immediate return.", "Do not introduce a local variable named `result` solely to satisfy the returned-value naming rule.", "A local variable that must remain because it participates in intermediate accumulation, mutation, validation, or another operation before being returned must be named `result`.", "Name the element variable of an enhanced `for` loop `each`.", "Name the element variable `entry` instead when its declared type is `Map.Entry`.", "Do not apply the `each` or `entry` rule to the initializer, condition, update expression, index, or counter of a traditional `for` loop."]}]
+critical = true
+
+[[cases]]
+id = "java_naming_two_parameter_lambda_roles"
+group = "coding / regular"
+description = "Rejects generic two-parameter lambda names and applies exact role-based pairs."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "Continue an authorized Java change whose final naming check found `Map.merge(key, value, (a, b) -> combine(a, b))` whose callback roles are the old and current values, `map.forEach((k, v) -> consume(k, v))`, and a comparator `(a, b) -> compare(a, b)`. Apply the exact two-parameter lambda-role rules, state the corrected merge, map, and comparator parameter names in the summary, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["oldValue", "currentValue", "key", "value", "comparator"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-naming", statements = ["Do not use generic two-parameter lambda pairs such as `(a, b)` or `(k, v)`.", "Name a map key-and-value pair `(key, value)` or use more specific domain names that express both roles.", "When the two lambda parameters semantically represent the old value and the current value, name them exactly `(oldValue, currentValue)` in that order.", "Do not apply the old-and-current pair merely because a lambda has two parameters; first verify the parameter roles from the invoked API and surrounding code."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_java_naming"
+group = "policy routing"
+description = "Routes an exact current-working-tree Java naming audit through the shared rules without editing."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/Foo.java`, whose complete supplied content contains imported `lombok.Data` and a framework callback parameter named `result` whose verified contract fixes that name. Check the complete file, conclude `Non-compliant`, report the prohibited Lombok annotation and its minimum correction, record the contract-fixed parameter as an allowed exception, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "contract"]
+required_summary_term_groups = [["lombok.Data", "@Data"]]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["Use this mode only when the user explicitly asks to audit, check, or report coding-standards compliance.", "Audit the current working tree rather than a pull request or diff.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "coding-standards-compliance", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-naming", statements = ["Do not use `lombok.Data` or `lombok.Value`, whether referenced through an import or by a fully qualified annotation name.", "Treat a verified contract-fixed identifier as an allowed naming exception in a standalone audit, and report the contract instead of proposing a mechanical rename."]}]
+critical = true
+
+[[cases]]
 id = "preflight_pass_allows_handoff"
 group = "coding / regular"
 description = "Allows handoff only after a complete candidate review has no required finding."
