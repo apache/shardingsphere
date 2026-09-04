@@ -206,4 +206,10 @@
     <create-function sql-case-id="create_function_gtid_is_disjoint_union" />
     <create-function sql-case-id="create_function_gtid_intersection" />
     <create-function sql-case-id="create_function_gtid_intersection_with_uuid" />
+    <create-function sql-case-id="create_function_with_nested_exception_block_in_if_statement">
+        <function-name name="AF_GETWBANDTYPE" start-index="27" stop-index="41" />
+        <sql-statements>
+            <sql-statement start-index="184" stop-index="359" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </create-function>
 </sql-parser-test-cases>

@@ -169,7 +169,8 @@ plsqlStatements
 
 statement
     : {isNotPlsqlBlockTerminator()}? (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_) *)?
-        (assignStatement
+        (plsqlBlock
+        | assignStatement
         | basicLoopStatement
         | caseStatement
         | closeStatement
@@ -189,7 +190,6 @@ statement
         | openStatement
         | openForStatement
         | pipeRowStatement
-        | plsqlBlock
         | raiseStatement
         | returnStatement
         | selectIntoStatement
