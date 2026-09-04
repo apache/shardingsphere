@@ -157,6 +157,22 @@ class CDCBackendHandlerTest {
     }
     
     @Test
+    void assertStreamDataWhenStartFailed() {
+        ShardingSphereDatabase database = mockDatabase();
+        mockDialectMetaData(false);
+        Map<String, Set<String>> schemaTableNames = Collections.singletonMap("foo_schema", Collections.singleton("foo_tbl"));
+        when(CDCSchemaTableUtils.parseTableExpressions(eq(database), anyCollection())).thenReturn(schemaTableNames);
+        when(PipelineDataNodeUtils.buildTableAndDataNodesMap(database, schemaTableNames)).thenReturn(Collections.singletonMap("foo_tbl", Collections.emptyList()));
+        when(jobAPI.create(any(StreamDataParameter.class), eq(CDCSinkType.SOCKET), any(Properties.class))).thenReturn("foo_job");
+        CDCConnectionContext connectionContext = createConnectionContext();
+        connectionContext.setJobId("bar_job");
+        StreamDataRequestBody requestBody = StreamDataRequestBody.newBuilder().setDatabase("foo_db")
+                .addSourceSchemaTable(SchemaTable.newBuilder().setSchema("foo_schema").setTable("foo_tbl")).build();
+        assertThrows(PipelineJobNotFoundException.class, () -> backendHandler.streamData("foo_req", requestBody, connectionContext, mock()));
+        assertThat(connectionContext.getJobId(), is("bar_job"));
+    }
+    
+    @Test
     void assertStreamDataWhenTableNamesMissing() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         mockProxyContext(database);
