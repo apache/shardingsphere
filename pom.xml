@@ -61,6 +61,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <remoteresources.skip>true</remoteresources.skip>
         <jacoco.skip>true</jacoco.skip>
+        <argLine />
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.enforcer.fail>true</maven.enforcer.fail>
