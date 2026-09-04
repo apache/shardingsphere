@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
@@ -71,6 +72,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(LogCaptureExtension.class)
@@ -79,6 +81,8 @@ class SingleTableDataNodeLoaderTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private final DatabaseType protocolDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
+    private final DatabaseType schemaAvailableProtocolDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     private final DatabaseType storageDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
@@ -312,6 +316,43 @@ class SingleTableDataNodeLoaderTest {
     }
     
     @Test
+    void assertLoadWithDottedTableName() throws SQLException {
+        DataSource dataSource = mock(DataSource.class);
+        Map<String, DataSource> localDataSourceMap = Collections.singletonMap("foo_ds", dataSource);
+        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("foo_db", Collections.singleton("foo_tbl.part.item"));
+        try (
+                MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class);
+                MockedStatic<DefaultSchemaNameResolver> defaultSchemaNameResolver = mockStatic(DefaultSchemaNameResolver.class);
+                MockedConstruction<SchemaMetaDataLoader> schemaMetaDataLoader = mockConstruction(SchemaMetaDataLoader.class,
+                        (mock, context) -> when(mock.loadSchemaTableNames(anyString(), any(DataSource.class), anyCollection(), anyCollection())).thenReturn(schemaTableNames))) {
+            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(storageDatabaseType);
+            defaultSchemaNameResolver.when(() -> DefaultSchemaNameResolver.resolveStorage(storageDatabaseType, dataSource, "foo_db")).thenReturn("foo_db");
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                    "foo_db", schemaAvailableProtocolDatabaseType, localDataSourceMap, Collections.emptyList(), Collections.singleton("foo_ds.foo_tbl.part.item"));
+            assertThat(actual.get("foo_tbl.part.item"), is(Collections.singletonList(new DataNode("foo_ds", "foo_db", "foo_tbl.part.item"))));
+            verify(schemaMetaDataLoader.constructed().get(0)).loadSchemaTableNames(
+                    "foo_db", dataSource, Collections.singleton("foo_tbl.part.item"), Collections.emptySet());
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidConfiguredTableArguments")
+    void assertLoadWithInvalidConfiguredTable(final String name, final boolean schemaAvailable, final String configuredTable) {
+        DataSource dataSource = mock(DataSource.class);
+        Map<String, DataSource> localDataSourceMap = Collections.singletonMap("foo_ds", dataSource);
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
+        try (
+                MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class);
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(
+                        DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData))) {
+            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(storageDatabaseType);
+            assertThrows(InvalidDataNodeFormatException.class, () -> SingleTableDataNodeLoader.load(
+                    "foo_db", storageDatabaseType, localDataSourceMap, Collections.emptyList(), Collections.singleton(configuredTable)));
+        }
+    }
+    
+    @Test
     void assertLoadSchemaTableNames() {
         Map<String, Collection<String>> actual = SingleTableDataNodeLoader.loadSchemaTableNames("foo_db", databaseType, dataSourceMap.get("foo_ds"), "foo_ds",
                 Collections.emptySet(), Collections.singleton("foo_tbl2"));
@@ -343,6 +384,13 @@ class SingleTableDataNodeLoaderTest {
                 Arguments.arguments("all tables with excluded tables", Collections.singleton(createRule(Arrays.asList("foo_tbl1", "bar_tbl1", "unused_tbl"), Collections.emptyList())),
                         Collections.singleton("*.*"), createExpectedTableDataSources(excludedTablesExpectedDataSources)),
                 Arguments.arguments("all schema tables", Collections.emptyList(), Collections.singleton("*.*.*"), createExpectedTableDataSources(allSchemaTablesExpectedDataSources)));
+    }
+    
+    private static Stream<Arguments> invalidConfiguredTableArguments() {
+        return Stream.of(
+                Arguments.arguments("schema-aware dotted table", true, "foo_ds.foo_schema.foo.part"),
+                Arguments.arguments("blank dotted segment", false, "foo_ds.\t.foo"),
+                Arguments.arguments("unknown storage unit with dotted table", false, "bar_ds.foo.part.item"));
     }
     
     private static ShardingSphereRule createRule(final Collection<String> distributedTableNames, final Collection<String> enhancedTableNames) {
