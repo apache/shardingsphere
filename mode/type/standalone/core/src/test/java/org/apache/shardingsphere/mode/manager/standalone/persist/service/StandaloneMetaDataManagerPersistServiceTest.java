@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -183,18 +184,26 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertAlterRuleConfigurationWithSingleRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
-        SingleRule singleRule = mock(SingleRule.class);
-        when(singleRule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.singleton("foo_ds.foo_tbl"), null));
-        when(singleRule.getAttributes()).thenReturn(new RuleAttributes());
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(singleRule)));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        TableMapperRuleAttribute originalTableMapperRuleAttribute = mock(TableMapperRuleAttribute.class);
+        when(originalTableMapperRuleAttribute.getLogicTableNames()).thenReturn(Collections.singleton("foo_tbl"));
+        SingleRule originalSingleRule = mock(SingleRule.class);
+        when(originalSingleRule.getAttributes()).thenReturn(new RuleAttributes(originalTableMapperRuleAttribute));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(originalSingleRule)));
+        ShardingSphereDatabase refreshedDatabase = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(refreshedDatabase.getName()).thenReturn("foo_db");
+        when(refreshedDatabase.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(refreshedDatabase.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        TableMapperRuleAttribute refreshedTableMapperRuleAttribute = mock(TableMapperRuleAttribute.class);
+        when(refreshedTableMapperRuleAttribute.getLogicTableNames()).thenReturn(Arrays.asList("foo_tbl", "foo_order.foo_item"));
+        SingleRule refreshedSingleRule = mock(SingleRule.class);
+        when(refreshedSingleRule.getAttributes()).thenReturn(new RuleAttributes(refreshedTableMapperRuleAttribute));
+        when(refreshedDatabase.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(refreshedSingleRule)));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(refreshedDatabase), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), null);
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("foo_ds.foo_tbl", "foo_ds.foo_order.foo_item"), null);
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
         verify(metaDataPersistFacade.getDatabaseRuleService()).persist("foo_db", Collections.singleton(ruleConfig));
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistAlteredTables(eq("foo_db"), any(), eq(Collections.singletonList("bar_tbl")));
+        verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistAlteredTables(eq("foo_db"), any(), eq(Collections.singletonList("foo_order.foo_item")));
     }
     
     @Test
