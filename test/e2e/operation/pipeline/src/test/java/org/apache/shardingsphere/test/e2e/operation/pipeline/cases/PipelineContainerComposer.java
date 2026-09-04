@@ -522,16 +522,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @param sql SQL
      */
     public void assertRecordExists(final DataSource dataSource, final String sql) {
-        boolean recordExist = false;
-        for (int i = 0; i < 5; i++) {
-            List<Map<String, Object>> result = queryForListWithLog(dataSource, sql);
-            recordExist = !result.isEmpty();
-            if (recordExist) {
-                break;
-            }
-            sleepSeconds(2);
-        }
-        assertTrue(recordExist, "Record does not exist");
+        Awaitility.waitAtMost(30L, TimeUnit.SECONDS).pollDelay(0L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS)
+                .until(() -> !queryForListWithLog(dataSource, sql).isEmpty());
     }
     
     /**

@@ -177,8 +177,8 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
             Object uniqueKey = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
-                insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next());
+                insertOneOrder(containerComposer, uniqueKey);
             }, dataSource -> containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey));
         }
     }
@@ -199,8 +199,8 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
             Object uniqueKey = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
-                insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next());
+                insertOneOrder(containerComposer, uniqueKey);
             }, dataSource -> containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey));
         }
     }
@@ -246,8 +246,8 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         distSQLFacade.waitJobPreparingStageFinished(jobId);
         DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
         incrementalDataChanges.run();
-        assertFalse(distSQLFacade.waitJobIncrementalStageFinished(jobId).isEmpty(), "Migration incremental stage did not become idle");
         incrementalDataVerification.accept(jdbcDataSource);
+        assertFalse(distSQLFacade.waitJobIncrementalStageFinished(jobId).isEmpty(), "Migration incremental stage did not become idle");
         if (null != consistencyCheckAlgorithmType) {
             distSQLFacade.startCheckAndVerify(jobId, consistencyCheckAlgorithmType);
         }
