@@ -121,8 +121,7 @@ class UnloadSingleTableExecutorTest {
         aggregatedDataSources.put("foo_ds", dataSource);
         aggregatedDataSources.put("bar_ds", dataSource);
         aggregatedDataSources.put("readwrite_ds", dataSource);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(
-                tableMapperRuleAttribute, dataNodeRuleAttribute, new AggregatedDataSourceRuleAttribute(aggregatedDataSources)));
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(tableMapperRuleAttribute, dataNodeRuleAttribute, new AggregatedDataSourceRuleAttribute(aggregatedDataSources)));
     }
     
     @AfterEach
