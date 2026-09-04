@@ -14,7 +14,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 
 ## Code Submission Guidelines
 
-- Ensure compliance with coding standards.
 - Ensure all steps in the build process complete successfully, including: Apache license header check, Checkstyle check, compilation, unit tests, etc. Build process command: `./mvnw clean install -B -T1C -Pcheck`.
 - Unify code style through Spotless, execute `./mvnw spotless:apply -Pcheck` to format code.
 - Ensure coverage is not lower than the master branch, except for simple `getter /setter` methods, unit tests need full coverage.

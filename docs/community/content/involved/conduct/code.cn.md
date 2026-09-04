@@ -18,7 +18,6 @@ chapter = true
 
 ## 代码提交行为规范
 
- - 确保遵守编码规范。
  - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Pcheck`。
  - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 确保覆盖率不低于 master 分支，除去简单的 `getter /setter` 方法，单元测试需全覆盖。
@@ -103,8 +102,7 @@ chapter = true
  - 测试修改静态状态时，必须在每个测试结束后恢复其原始状态。
  - 默认通过项目加载器获取 SPI 实现。 如果被测类实现了 `TypedSPI` 或 `DatabaseTypedSPI`，应通过 `TypedSPILoader` 或 `DatabaseTypedSPILoader` 实例化，禁止使用 `new`。
  - 每个单元测试类必须直接测试一个对应的生产类，测试类必须使用生产类的准确简单类名并命名为 `<ProductionClassName>Test`。 该测试类命名规则为强制要求，与面向场景的测试方法命名规则相互独立。
- - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀。
- - 每个公有方法使用一个独立的测试方法，测试方法顺序在可行时与生产方法保持一致。
+ - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀；应优先使用独立测试方法覆盖单个公开的生产方法；可行时，测试方法顺序与对应的生产方法保持一致。
  - 参数化测试需通过参数提供显示名，并使用 `"{0}"` 作为展示名模板。
  - 测试名称应简洁并聚焦场景；避免使用 `ReturnsXXX`，也不要使用仅复述预期结果而未说明场景的措辞。
  - 断言必须直接表达被测契约。 仅当被测契约是不相等或包含指定子串时，才可使用 `not` 或 `containsString`；可断言完整值或使用更具体的 matcher 时，不得使用这两个 matcher。

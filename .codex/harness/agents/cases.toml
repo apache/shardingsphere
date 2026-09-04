@@ -977,7 +977,8 @@ forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"
 required_reasons = ["documentation_wording_required"]
 response_style = "concise"
 max_summary_chars = 100
-required_summary_terms = ["## YAML", "schema", "reject", "unknown"]
+required_summary_terms = ["## YAML", "schema", "reject"]
+required_summary_term_groups = [["unknown", "not defined"]]
 forbidden_summary_terms = ["###", "|", "**Summary:**"]
 critical = true
 
