@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 
-# Strict Coding Standards Compliance
+# Standalone Coding Standards Audit
 
 ## Audit Targets
 
@@ -31,7 +31,9 @@ Exclude a file only when ignore rules, repository instructions, or generation co
 
 Before checking physical lines, read `CODE_OF_CONDUCT.md`, every `AGENTS.md` that applies to the target path, Checkstyle, Spotless, and any other standard explicitly referenced for the target category.
 
-When the scope contains Java, read the [Java naming and Lombok rules](java-naming.md) through EOF and include each applicable rule in the audit.
+When the scope contains Java, read the [Java naming and Lombok rules](rules/java-naming.md) through EOF and include each applicable rule in the audit.
+
+When the scope contains implementation artifacts, read the [defensive-code rules](rules/defensive-code.md) through EOF and include each applicable rule in the audit.
 
 For each rule, record its source, exact requirement, constrained files, exceptions, and inspection method. Classify the rule as mandatory, prohibited, conditional, or advisory.
 
@@ -61,7 +63,7 @@ Run `scripts/build_audit_inventory.py` to create the initial inventory.
 4. Record each file as `Pending`, `Checked`, `Blocked`, or `Not constrained by written standards`, together with its checked line count and rules. Do not sample files, infer one file from another, or substitute representative files for complete coverage.
 5. Rebuild the affected inventory when target content changes during the audit. Do not use a stale inventory for the compliance conclusion.
 
-## Use Checkers and Manual Inspection
+## Use Checkers and Semantic Inspection
 
 Run Checkstyle, Spotless, and other repository checkers only in check mode. Do not run `apply`, `format`, or another correction mode.
 
@@ -73,11 +75,15 @@ A passing checker proves only the rules that the checker actually covers. Contin
 
 For Java naming and Lombok rules, resolve receiver types, annotation types, generated accessors, declaration roles, and lambda parameter roles whenever those facts determine applicability; text searches are candidate discovery only.
 
+For defensive-code rules, inspect the relevant contracts, producers, consumers, callers, aliases, failures, concurrency, and lifecycle paths. Do not infer that an existing defense is unnecessary merely because a text search did not find its justification.
+
 ## Violations and Conclusions
 
 An existing-code violation of an applicable written standard is sufficient to report non-compliance. Do not require an additional semantic consequence and do not assign a severity label.
 
-For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction. Violations with the same rule and correction may be grouped only when every violating location is listed rather than sampled.
+For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction.
+
+For every defensive-code violation, also report the production and contract evidence proving that no qualifying condition applies. Violations with the same rule and correction may be grouped only when every violating location is listed rather than sampled.
 
 Use exactly one compliance conclusion:
 

@@ -877,7 +877,7 @@ allowed_actions = ["inspect_local", "edit_code", "keep_manual_throw", "run_local
 forbidden_actions = ["mutate_git", "mutate_remote"]
 required_reasons = ["exception_contract", "local_code_authorized", "pre_handoff_review_required"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "implementation-rules", statements = ["Keep a manual throw when the module cannot depend on `infra/exception`, the code is inside `ShardingSpherePreconditions`, a caller-facing exception contract requires it, or a precondition wrapper would obscure necessary control flow.", "Do not replace manual throws mechanically, and record the concrete reason for keeping one."]}]
+policy_assertions = [{source = "defensive-code", statements = ["Keep a manual throw when the module cannot depend on `infra/exception`, the code is inside `ShardingSpherePreconditions`, a caller-facing exception contract requires it, or a precondition wrapper would obscure necessary control flow.", "Do not replace manual throws mechanically, and record the concrete reason for keeping one."]}]
 critical = true
 
 [[cases]]
@@ -893,7 +893,7 @@ allowed_actions = ["inspect_local", "edit_code", "remove_stale_checked_throw", "
 forbidden_actions = ["mutate_git", "mutate_remote"]
 required_reasons = ["stale_checked_throw", "local_code_authorized", "pre_handoff_review_required"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "implementation-rules", statements = ["When an edit removes the last checked-exception source from a private or internal method, remove the stale `throws` declaration and update callers.", "Keep checked exceptions on public or overridden methods only when a caller-facing, framework, external API, or compatibility contract requires them."]}]
+policy_assertions = [{source = "defensive-code", statements = ["When an edit removes the last checked-exception source from a private or internal method, remove the stale `throws` declaration and update callers.", "Keep checked exceptions on public or overridden methods only when a caller-facing, framework, external API, or compatibility contract requires them."]}]
 critical = true
 
 [[cases]]
@@ -1179,6 +1179,7 @@ description = "Repairs canonical identifier components and Lombok accessor names
 phase = "coding-standards final check and ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
+semantic_policy_assertions = true
 prompt = "Continue an authorized in-scope Java implementation whose final naming check found a method parameter `Configuration configuration`, locals `MySQLConfig mySQLConfig` and `PostgreSQLConfig postgreSQLConfig`, a class-level Lombok getter generating `getConfig()` from `Configuration config` even though only its setter is disabled, imported `lombok.Data`, fully qualified `@lombok.Value`, and an unrelated Spring `@Value`; some declarations are split across lines or followed immediately by punctuation. Apply the exact Java naming and Lombok rules, state the corrected identifiers and annotation boundary in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
 decision = "proceed"
 required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
@@ -1197,6 +1198,7 @@ description = "Names only the direct Optional map lambda parameter optional and 
 phase = "coding-standards final check and ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
+semantic_policy_assertions = true
 prompt = "Continue an authorized Java change whose final naming check found an ordinary local named `optionalRule`, `java.util.Optional#map(value -> normalize(value))`, and `Stream#map(optional -> normalize(optional))`. Apply the exact identifier and Optional-map rules, state the corrected ordinary-local, Optional-map, and Stream-map parameter names in the summary, rerun affected checks and Formal Review, and do not hand off yet."
 decision = "proceed"
 required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
@@ -1215,6 +1217,7 @@ description = "Inlines a return-only local and applies result, each, and entry o
 phase = "coding-standards final check and ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
+semantic_policy_assertions = true
 prompt = "Continue an authorized Java change whose final naming check found `Rule result = createRule(); return result;` with no intervening use, a returned local named `rule` that is validated before return, an enhanced loop `for (Rule rule : rules)`, an enhanced `Map.Entry` loop named `each`, and a traditional counter `for (int i = 0; ...)`. Inline the first local as `return createRule();`, rename the necessary returned local to `result`, use `each` and `entry` for the two enhanced loops, leave the traditional counter outside those rules, rerun affected checks and Formal Review, and do not hand off yet."
 decision = "proceed"
 required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
@@ -1234,6 +1237,7 @@ description = "Rejects generic two-parameter lambda names and applies exact role
 phase = "coding-standards final check and ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
+semantic_policy_assertions = true
 prompt = "Continue an authorized Java change whose final naming check found `Map.merge(key, value, (a, b) -> combine(a, b))` whose callback roles are the old and current values, `map.forEach((k, v) -> consume(k, v))`, and a comparator `(a, b) -> compare(a, b)`. Apply the exact two-parameter lambda-role rules, state the corrected merge, map, and comparator parameter names in the summary, rerun affected checks and Formal Review, and do not hand off yet."
 decision = "proceed"
 required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
@@ -1252,6 +1256,7 @@ description = "Routes an exact current-working-tree Java naming audit through th
 phase = "standalone coding-standards audit"
 ordinary_loop = false
 profile = "coding-standards-audit"
+semantic_policy_assertions = true
 prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/Foo.java`, whose complete supplied content contains imported `lombok.Data` and a framework callback parameter named `result` whose verified contract fixes that name. Check the complete file, conclude `Non-compliant`, report the prohibited Lombok annotation and its minimum correction, record the contract-fixed parameter as an allowed exception, and do not edit or generate a patch."
 decision = "proceed"
 required_actions = ["inspect_local"]
@@ -1261,7 +1266,49 @@ required_reasons = ["read_only_request"]
 required_summary_terms = ["Non-compliant", "contract"]
 required_summary_term_groups = [["lombok.Data", "@Data"]]
 policy_binding_profile = "coding-standards-audit"
-policy_assertions = [{source = "coding-standards", statements = ["Use this mode only when the user explicitly asks to audit, check, or report coding-standards compliance.", "Audit the current working tree rather than a pull request or diff.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "coding-standards-compliance", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-naming", statements = ["Do not use `lombok.Data` or `lombok.Value`, whether referenced through an import or by a fully qualified annotation name.", "Treat a verified contract-fixed identifier as an allowed naming exception in a standalone audit, and report the contract instead of proposing a mechanical rename."]}]
+policy_assertions = [{source = "coding-standards", statements = ["Use this mode only when the user explicitly asks to audit, check, or report coding-standards compliance.", "Audit the current working tree rather than a pull request or diff.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-naming", statements = ["Do not use `lombok.Data` or `lombok.Value`, whether referenced through an import or by a fully qualified annotation name.", "Treat a verified contract-fixed identifier as an allowed naming exception in a standalone audit, and report the contract instead of proposing a mechanical rename."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_defensive_code"
+group = "policy routing"
+description = "Reports proven unnecessary guards and collection wrappers in a read-only standalone coding-standards audit."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/InternalResult.java`. Its complete supplied contracts and supported call graph prove that the constructor argument is always non-null, no producer or consumer mutates the list or any alias after handoff, no owned mutable state is exposed, no asynchronous or concurrent path exists, and no public, SPI, framework, serialization, immutability, snapshot, or isolation contract requires protection. The existing file nevertheless repeats a null check and stores `Collections.unmodifiableList(items)`. Check the complete file and relevant supplied evidence, report both proven violations with the minimum corrections, conclude `Non-compliant`, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "null", "Collections.unmodifiableList"]
+required_summary_term_groups = [["remove", "minimum correction", "pass, store, or return the original collection"]]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "standalone-audit", statements = ["For defensive-code rules, inspect the relevant contracts, producers, consumers, callers, aliases, failures, concurrency, and lifecycle paths. Do not infer that an existing defense is unnecessary merely because a text search did not find its justification.", "An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every defensive-code violation, also report the production and contract evidence proving that no qualifying condition applies."]}, {source = "defensive-code", statements = ["A defensive construct is compliant only when qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.", "Do not add or retain a null guard, `Objects.requireNonNull`, `Optional.ofNullable`, null fallback, or null-triggered early return when supported callers and upstream contracts already guarantee a non-null value and no explicit existing boundary or diagnostic contract requires local validation.", "A mutable collection implementation, or the theoretical ability of a caller to mutate it, is not evidence.", "When inspection finds no supported mutation path and no explicit contract, pass, store, or return the original collection directly; remove every task-introduced copy or wrapper and every task-introduced test that only asserts immutability or rejected mutation.", "In Standalone Compliance Audit Mode, inspect all accessible contracts and supported producers, consumers, and paths before reporting an existing defensive construct as non-compliant."]}]
+critical = true
+
+[[cases]]
+id = "standalone_defensive_code_audit_blocks_on_missing_contract"
+group = "policy routing"
+description = "Returns a partial standalone audit instead of guessing when an unavailable contract could justify existing defensive code."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/ExternalAdapter.java`. The file returns an unmodifiable collection through an external SPI, but the SPI contract and one supported external consumer are unavailable. Those facts could determine whether immutable or snapshot semantics are required. Complete every check that the supplied scope permits, mark the defensive-code check blocked, conclude `Partial audit`, identify the missing evidence, and do not report the wrapper as a confirmed violation or edit any file."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Partial audit", "Blocked", "SPI contract", "external consumer"]
+required_summary_term_groups = [["not a confirmed violation", "do not report the wrapper as a confirmed violation", "do not classify the unmodifiable wrapper as a confirmed violation", "do not report the unmodifiable wrapper as a confirmed violation"]]
+forbidden_summary_terms = ["Non-compliant", "The wrapper is a confirmed violation"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "standalone-audit", statements = ["When material rules conflict or their applicability cannot be determined, do not choose the stricter interpretation. Mark the affected files or checks as `Blocked`.", "`Partial audit`: At least one file, physical line, applicable rule, or required verification was unchecked or blocked. Confirmed violations may also be reported, but the remainder of the scope must not be described as compliant."]}, {source = "defensive-code", statements = ["Failure to find qualifying evidence does not prove that an existing defensive construct is unnecessary when an outcome-sensitive external contract or supported path remains unavailable.", "Mark the affected standalone check as blocked when unavailable evidence could change its conclusion; report a violation only when the completed evidence proves that no qualifying condition applies."]}]
 critical = true
 
 [[cases]]
@@ -1296,7 +1343,7 @@ required_summary_terms = ["null guard"]
 required_summary_term_groups = [["remove", "may not keep", "must not keep", "cannot keep"], ["fallback-only test", "test that only protects the fallback", "test that exists only to preserve the fallback"]]
 forbidden_summary_terms = ["keep the null guard"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "implementation-rules", statements = ["Apply this gate to every defensive construct that the current task adds, extends, or strengthens; touching nearby code does not authorize changing a pre-existing defensive construct that the task does not alter.", "Do not add, extend, or strengthen defensive code unless qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.", "A mutable type, theoretical misuse, a possible future caller, general safety, best practice, consistency with nearby code, hypothetical reuse, and test convenience are not qualifying evidence.", "A test cannot establish the production condition or contract used to justify defensive code by itself; it may only corroborate qualifying production or contract evidence.", "When qualifying evidence does not exist, omit or remove defensive code added by the current task, undo only the task-introduced extension or strengthening of a pre-existing defensive construct, preserve its pre-task behavior, and remove every task-introduced test whose only purpose is to preserve the unsupported defense.", "Add runtime validation only when the defensive-code evidence gate proves that it is required at a real external, public, persisted, parsed, SPI, reflection, shared-state, or asynchronous boundary to preserve an existing contract or provide a concrete diagnostic for a condition that can occur there."]}]
+policy_assertions = [{source = "defensive-code", statements = ["Apply this gate to every defensive construct that the current task adds, extends, or strengthens; touching nearby code does not authorize changing a pre-existing defensive construct that the task does not alter.", "Do not add, extend, or strengthen defensive code unless qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.", "A mutable type, theoretical misuse, a possible future caller, general safety, best practice, consistency with nearby code, hypothetical reuse, and test convenience are not qualifying evidence.", "A test cannot establish the production condition or contract used to justify defensive code by itself; it may only corroborate qualifying production or contract evidence.", "When qualifying evidence does not exist, omit or remove defensive code added by the current task, undo only the task-introduced extension or strengthening of a pre-existing defensive construct, preserve its pre-task behavior, and remove every task-introduced test whose only purpose is to preserve the unsupported defense.", "Add runtime validation only when the defensive-code evidence gate proves that it is required at a real external, public, persisted, parsed, SPI, reflection, shared-state, or asynchronous boundary to preserve an existing contract or provide a concrete diagnostic for a condition that can occur there."]}]
 critical = true
 
 [[cases]]
@@ -1316,7 +1363,7 @@ required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required
 required_summary_term_groups = [["remove", "may not keep", "must not keep", "cannot keep"], ["List.copyOf", "copy", "copies"], ["Collections.unmodifiableMap", "wrapper", "wrappers"], ["immutability-only tests", "mutation-only tests", "mutation-rejection-only tests", "rejected-mutation-only tests", "tests that only assert rejected mutation"]]
 forbidden_summary_terms = ["keep the collection copies"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "implementation-rules", statements = ["Before adding a collection copy or unmodifiable wrapper, inspect current production producers and consumers, alias ownership, asynchronous or concurrent lifetime, and applicable public, SPI, framework, serialization, immutability, snapshot, and isolation contracts.", "A mutable collection implementation, or the theoretical ability of a caller to mutate it, is not evidence.", "When inspection finds no supported mutation path and no explicit contract, pass, store, or return the original collection directly; remove every task-introduced copy or wrapper and every task-introduced test that only asserts immutability or rejected mutation."]}]
+policy_assertions = [{source = "defensive-code", statements = ["Before adding a collection copy or unmodifiable wrapper, inspect current production producers and consumers, alias ownership, asynchronous or concurrent lifetime, and applicable public, SPI, framework, serialization, immutability, snapshot, and isolation contracts.", "A mutable collection implementation, or the theoretical ability of a caller to mutate it, is not evidence.", "When inspection finds no supported mutation path and no explicit contract, pass, store, or return the original collection directly; remove every task-introduced copy or wrapper and every task-introduced test that only asserts immutability or rejected mutation."]}]
 critical = true
 
 [[cases]]
@@ -1337,7 +1384,68 @@ required_summary_terms = ["snapshot copy"]
 required_summary_term_groups = [["keep", "preserve", "retain", "remain"]]
 forbidden_summary_terms = ["remove the snapshot copy"]
 policy_binding_profile = "code-review"
-policy_assertions = [{source = "implementation-rules", statements = ["`List.copyOf`, `Map.copyOf`, `Set.copyOf`, `Collections.unmodifiable*`, collection constructors that copy another collection, and equivalent copies or wrappers are allowed only when the inspected evidence proves at least one of the following allowed cases.", "An explicit existing contract requires immutable or snapshot semantics.", "A supported producer or consumer currently mutates an aliased collection after handoff, and that mutation would violate behavior owned by the receiving object.", "A supported asynchronous or concurrent path requires a stable snapshot.", "When a copy or wrapper is allowed, verify that its null handling, iteration order, duplicate semantics, aliasing, mutation visibility, exception behavior, and time and space cost preserve the required behavior."]}]
+policy_assertions = [{source = "defensive-code", statements = ["`List.copyOf`, `Map.copyOf`, `Set.copyOf`, `Collections.unmodifiable*`, collection constructors that copy another collection, and equivalent copies or wrappers are allowed only when the inspected evidence proves at least one of the following allowed cases.", "An explicit existing contract requires immutable or snapshot semantics.", "A supported producer or consumer currently mutates an aliased collection after handoff, and that mutation would violate behavior owned by the receiving object.", "A supported asynchronous or concurrent path requires a stable snapshot.", "When a copy or wrapper is allowed, verify that its null handling, iteration order, duplicate semantics, aliasing, mutation visibility, exception behavior, and time and space cost preserve the required behavior."]}]
+critical = true
+
+[[cases]]
+id = "verified_boundary_validation_is_preserved"
+group = "reasoning"
+description = "Preserves local validation when a real framework boundary and diagnostic contract require it."
+phase = "read-only implementation review"
+ordinary_loop = true
+profile = "code-review"
+semantic_policy_assertions = true
+prompt = "Review an existing `Objects.requireNonNull` guard without editing. The guarded value enters through a maintained framework deserialization boundary, the framework contract permits malformed external input, and the caller-facing contract requires the guard's exact diagnostic before state is created. Apply the defensive-code evidence rules, decide whether the null guard should remain, and do not edit files, run checks, or change Git or remote state."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["boundary", "diagnostic"]
+required_summary_term_groups = [["null guard", "Objects.requireNonNull"], ["keep", "preserve", "retain", "remain"]]
+forbidden_summary_terms = ["remove the null guard"]
+policy_binding_profile = "code-review"
+policy_assertions = [{source = "defensive-code", statements = ["A defensive construct is compliant only when qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.", "Add runtime validation only when the defensive-code evidence gate proves that it is required at a real external, public, persisted, parsed, SPI, reflection, shared-state, or asynchronous boundary to preserve an existing contract or provide a concrete diagnostic for a condition that can occur there.", "Do not add or retain a null guard, `Objects.requireNonNull`, `Optional.ofNullable`, null fallback, or null-triggered early return when supported callers and upstream contracts already guarantee a non-null value and no explicit existing boundary or diagnostic contract requires local validation."]}]
+critical = true
+
+[[cases]]
+id = "speculative_fallback_and_retry_are_removed"
+group = "coding / regular"
+description = "Removes task-introduced exception suppression, fallback behavior, and retries that have no supported recovery contract."
+phase = "implementation review and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "During pre-handoff review of an authorized in-scope Java implementation, inspect a task-introduced broad `catch (Exception)` that logs and returns an empty list, plus a retry around a non-idempotent operation. No supported production failure demonstrates the caught or transient condition, no existing recovery contract defines the empty-list fallback, and no idempotency or duplicate-effect contract permits another attempt. The only rationale is to make the code safer. Remove the unsupported defensive behavior and its defense-only tests, run the affected checks, repeat Formal Review, and do not hand off early."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review", "fix_review_findings"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required"]
+required_summary_terms = ["catch", "fallback", "retry"]
+required_summary_term_groups = [["remove", "removed", "may not keep", "must not keep"], ["defense-only tests", "tests"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "defensive-code", statements = ["Do not catch and ignore an exception, log and continue, or return a fallback from a catch block unless an existing recovery contract defines that behavior for the caught condition.", "Do not broaden a catch to `Exception` or `Throwable` merely to prevent an unexpected failure from escaping.", "Add a retry only when qualifying evidence identifies a supported transient failure and the operation's idempotency or duplicate-effect contract permits another attempt.", "A retry must have an existing bound, termination condition, and timing policy; the theoretical possibility of a network or storage failure is not sufficient evidence.", "When qualifying evidence does not exist, omit or remove defensive code added by the current task, undo only the task-introduced extension or strengthening of a pre-existing defensive construct, preserve its pre-task behavior, and remove every task-introduced test whose only purpose is to preserve the unsupported defense."]}]
+critical = true
+
+[[cases]]
+id = "speculative_concurrency_and_lifecycle_guards_are_removed"
+group = "coding / regular"
+description = "Removes task-introduced concurrency mechanisms and lifecycle flags when supported execution is single-threaded and single-use."
+phase = "implementation review and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "During pre-handoff review of an authorized in-scope Java implementation, inspect a task-introduced lock, `volatile` field, concurrent collection, and initialized flag. The maintained lifecycle and every supported producer and consumer prove that the object is confined to one thread and invoked exactly once, no asynchronous path exists, and no contract requires repeated-call suppression. The only rationale is possible future concurrency or misuse. Remove these unsupported defensive constructs and their defense-only tests, run the affected checks, repeat Formal Review, and do not hand off early."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review", "fix_review_findings"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required"]
+required_summary_terms = ["lock", "volatile", "concurrent collection", "initialized flag"]
+required_summary_term_groups = [["remove", "removed", "may not keep", "must not keep"], ["defense-only tests", "tests"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "defensive-code", statements = ["Do not add locks, `volatile`, concurrent collections, snapshots, atomic state, or synchronization unless qualifying evidence proves that the protected state is accessed across supported concurrent paths.", "Do not add initialized, closed, executed, or similar state flags to suppress repeated operations when a supported lifecycle contract already guarantees the operation occurs once.", "Keep concurrency or lifecycle protection only when the protected transition, competing path, and required behavior are identified by qualifying evidence.", "When qualifying evidence does not exist, omit or remove defensive code added by the current task, undo only the task-introduced extension or strengthening of a pre-existing defensive construct, preserve its pre-task behavior, and remove every task-introduced test whose only purpose is to preserve the unsupported defense."]}]
 critical = true
 
 [[cases]]
