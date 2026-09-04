@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mode.retry;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-import java.time.Duration;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RetryExecutorTest {
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.support.database.capability;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
-
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
@@ -31,6 +29,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
@@ -182,9 +181,12 @@ class MCPDatabaseCapabilityProviderTest {
     
     private RuntimeDatabaseProfile createDatabaseProfile(final String databaseName, final String databaseType, final CapabilityFixture capabilityFixture,
                                                          final IdentifierCasePolicySet identifierCasePolicySet) {
-        TransactionCapability transactionCapability = capabilityFixture.transactionSupported
-                ? capabilityFixture.savepointSupported ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL
-                : TransactionCapability.NONE;
+        TransactionCapability transactionCapability;
+        if (capabilityFixture.transactionSupported) {
+            transactionCapability = capabilityFixture.savepointSupported ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
+        } else {
+            transactionCapability = TransactionCapability.NONE;
+        }
         return new RuntimeDatabaseProfile(databaseName, databaseType, "", transactionCapability, new DatabaseIdentifierContext(identifierCasePolicySet));
     }
     

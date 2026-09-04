@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTyp
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePurgeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleCreateIndexTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleAssociateStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleCreateIndexTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleAlterSessionStatementAssert;
@@ -57,6 +57,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.index.OracleCreateIndexTypeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.statistics.OracleAssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.statistics.OracleDisassociateStatisticsStatementTestCase;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 /**
  * DDL statement assert for Oracle.
@@ -95,8 +98,8 @@ public final class OracleDDLStatementAssert {
         } else if (actual instanceof OraclePurgeStatement) {
             OraclePurgeStatementAssert.assertIs(assertContext, (OraclePurgeStatement) actual, (OraclePurgeStatementTestCase) expected);
         } else if (expected instanceof OracleCreateIndexTypeStatementTestCase) {
-            org.hamcrest.MatcherAssert.assertThat(assertContext.getText("Actual statement should be OracleCreateIndexTypeStatement."),
-                    actual, org.hamcrest.CoreMatchers.instanceOf(OracleCreateIndexTypeStatement.class));
+            assertThat(assertContext.getText("Actual statement should be OracleCreateIndexTypeStatement."),
+                    actual, isA(OracleCreateIndexTypeStatement.class));
         }
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import org.apache.groovy.util.Maps;
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -31,8 +31,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class ShardingDatabaseBroadcastRouteEngineTest {
@@ -44,7 +44,8 @@ class ShardingDatabaseBroadcastRouteEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
         RouteContext routeContext = shardingDatabaseBroadcastRouteEngine
-                .route(new ShardingRule(shardingRuleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
+                .route(new ShardingRule(shardingRuleConfig, ImmutableMap.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource()), mock(ComputeNodeInstanceContext.class),
+                        Collections.emptyList()));
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));

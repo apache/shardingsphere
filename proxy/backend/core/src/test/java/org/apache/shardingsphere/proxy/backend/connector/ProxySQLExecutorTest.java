@@ -117,14 +117,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyCollection;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -417,7 +417,7 @@ class ProxySQLExecutorTest {
     
     @Test
     void assertCheckExecutePrerequisitesWithMetaDataRefreshInXATransaction() {
-        DatabaseType databaseType = mock(DatabaseType.class);
+        final DatabaseType databaseType = mock(DatabaseType.class);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(
                 new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, true, false, false, Collections.emptyList()));

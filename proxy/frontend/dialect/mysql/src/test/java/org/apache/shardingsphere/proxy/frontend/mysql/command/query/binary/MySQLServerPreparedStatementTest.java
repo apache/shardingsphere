@@ -39,9 +39,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +51,7 @@ class MySQLServerPreparedStatementTest {
     
     @Test
     void assertGetLongDataIndexesWhenEmpty() throws SQLException {
-        assertThat(createPreparedStatement(Collections.emptyList()).getLongDataIndexes(), is(empty()));
+        assertTrue(createPreparedStatement(Collections.emptyList()).getLongDataIndexes().isEmpty());
     }
     
     @Test
@@ -126,7 +126,7 @@ class MySQLServerPreparedStatementTest {
         assertThat(actual.getMessage(), is("Parameter of prepared statement which is set through mysql_send_long_data() is longer than 'max_allowed_packet' bytes"));
         assertThrows(SQLException.class, preparedStatement::getLongDataIndexes);
         preparedStatement.clearLongData();
-        assertThat(preparedStatement.getLongDataIndexes(), is(empty()));
+        assertTrue(preparedStatement.getLongDataIndexes().isEmpty());
     }
     
     private void appendRepeatedLongData(final MySQLServerPreparedStatement preparedStatement, final int count) {

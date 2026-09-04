@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.tool.payload.SQLExecutionPayload;
+import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;

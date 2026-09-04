@@ -26,9 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.PropertyTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisAlterRoutineLoadStatementTestCase;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -54,7 +53,7 @@ public final class DorisAlterRoutineLoadStatementAssert {
     
     private static void assertJobName(final SQLCaseAssertContext assertContext, final DorisAlterRoutineLoadStatement actual, final DorisAlterRoutineLoadStatementTestCase expected) {
         if (actual.getJobName().isPresent()) {
-            MatcherAssert.assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), is(expected.getJobName()));
+            assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), is(expected.getJobName()));
             if (null != expected.getOwner()) {
                 OwnerAssert.assertIs(assertContext, actual.getJobName().get().getOwner().orElse(null), expected.getOwner());
             }
@@ -62,10 +61,10 @@ public final class DorisAlterRoutineLoadStatementAssert {
     }
     
     private static void assertJobProperties(final SQLCaseAssertContext assertContext, final DorisAlterRoutineLoadStatement actual, final DorisAlterRoutineLoadStatementTestCase expected) {
-        if (actual.getJobProperties().isPresent() && null != expected.getJobProperties() && !expected.getJobProperties().isEmpty()) {
+        if (actual.getJobProperties().isPresent() && !expected.getJobProperties().isEmpty()) {
             assertNotNull(actual.getJobProperties().get(), assertContext.getText("Job properties should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Job properties size does not match: "), actual.getJobProperties().get().getProperties().size(),
-                    CoreMatchers.is(expected.getJobProperties().size()));
+            assertThat(assertContext.getText("Job properties size does not match: "), actual.getJobProperties().get().getProperties().size(),
+                    is(expected.getJobProperties().size()));
             for (int i = 0; i < expected.getJobProperties().size(); i++) {
                 assertProperty(assertContext, actual.getJobProperties().get().getProperties().get(i), expected.getJobProperties().get(i));
             }
@@ -74,15 +73,15 @@ public final class DorisAlterRoutineLoadStatementAssert {
     
     private static void assertDataSource(final SQLCaseAssertContext assertContext, final DorisAlterRoutineLoadStatement actual, final DorisAlterRoutineLoadStatementTestCase expected) {
         if (null != expected.getDataSource()) {
-            MatcherAssert.assertThat(assertContext.getText("Data source does not match: "), actual.getDataSource().orElse(null), is(expected.getDataSource()));
+            assertThat(assertContext.getText("Data source does not match: "), actual.getDataSource().orElse(null), is(expected.getDataSource()));
         }
     }
     
     private static void assertDataSourceProperties(final SQLCaseAssertContext assertContext, final DorisAlterRoutineLoadStatement actual, final DorisAlterRoutineLoadStatementTestCase expected) {
-        if (actual.getDataSourceProperties().isPresent() && null != expected.getDataSourceProperties() && !expected.getDataSourceProperties().isEmpty()) {
+        if (actual.getDataSourceProperties().isPresent() && !expected.getDataSourceProperties().isEmpty()) {
             assertNotNull(actual.getDataSourceProperties().get(), assertContext.getText("Data source properties should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Data source properties size does not match: "), actual.getDataSourceProperties().get().getProperties().size(),
-                    CoreMatchers.is(expected.getDataSourceProperties().size()));
+            assertThat(assertContext.getText("Data source properties size does not match: "), actual.getDataSourceProperties().get().getProperties().size(),
+                    is(expected.getDataSourceProperties().size()));
             for (int i = 0; i < expected.getDataSourceProperties().size(); i++) {
                 assertProperty(assertContext, actual.getDataSourceProperties().get().getProperties().get(i), expected.getDataSourceProperties().get(i));
             }
@@ -90,8 +89,8 @@ public final class DorisAlterRoutineLoadStatementAssert {
     }
     
     private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final PropertyTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
+        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

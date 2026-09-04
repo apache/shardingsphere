@@ -48,7 +48,7 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext && !(((InsertStatementContext) sqlStatementContext).getSqlStatement()).getValues().isEmpty();
+        return sqlStatementContext instanceof InsertStatementContext && !((InsertStatementContext) sqlStatementContext).getSqlStatement().getValues().isEmpty();
     }
     
     @Override

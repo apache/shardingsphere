@@ -84,8 +84,8 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Na
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NullsOrderContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OptOnConflictContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OuterJoinTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
@@ -174,9 +174,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ExpressionLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitValueSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ExpressionLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;

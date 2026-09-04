@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.mode.manager;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader;
+import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
@@ -39,11 +43,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -52,8 +58,8 @@ import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
-import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,12 +75,13 @@ import org.mockito.quality.Strictness;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -84,6 +91,7 @@ import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -309,6 +317,40 @@ class ContextManagerTest {
             contextManager.reloadTable(database, "foo_schema", "foo_ds", "foo_tbl");
         }
         verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
+    }
+    
+    @Test
+    void assertReloadSchemaWithCanonicalSchemaName() throws SQLException {
+        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(storageType);
+        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(protocolType);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        TableMapperRuleAttribute tableMapperRuleAttribute = mock(TableMapperRuleAttribute.class);
+        when(tableMapperRuleAttribute.getLogicTableNames()).thenReturn(Collections.singleton("foo_tbl"));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(tableMapperRuleAttribute));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(database.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("FOO_DB", protocolType)));
+        PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
+        setPersistServiceFacade(persistServiceFacade);
+        TableMetaData tableMetaData = new TableMetaData("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        try (MockedStatic<MetaDataLoader> metaDataLoader = mockStatic(MetaDataLoader.class)) {
+            metaDataLoader.when(() -> MetaDataLoader.load(any())).thenAnswer(invocation -> {
+                Collection<MetaDataLoaderMaterial> loaderMaterials = invocation.getArgument(0);
+                String storageSchemaName = loaderMaterials.iterator().next().getDefaultSchemaName();
+                return Collections.singletonMap(storageSchemaName, new SchemaMetaData(storageSchemaName, Collections.singleton(tableMetaData)));
+            });
+            contextManager.reloadSchema(database, "FOO_DB", "foo_ds");
+        }
+        verify(database).addSchema(argThat(schema -> "FOO_DB".equals(schema.getName()) && 1 == schema.getAllTables().size()));
+        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getSchema()).alterByRefresh(eq("foo_db"),
+                argThat(schema -> "FOO_DB".equals(schema.getName()) && 1 == schema.getAllTables().size()));
     }
     
     @Test

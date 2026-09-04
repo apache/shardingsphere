@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
-import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.util.Map;
 

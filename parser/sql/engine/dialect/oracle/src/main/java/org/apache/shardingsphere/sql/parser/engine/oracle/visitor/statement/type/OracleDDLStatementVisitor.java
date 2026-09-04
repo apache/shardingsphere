@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAttributeDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAuditPolicyContext;
@@ -65,7 +66,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterT
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterViewContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyzeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditContext;
@@ -94,6 +94,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateFlashbackArchiveContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateInmemoryJoinGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateJavaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateLibraryContext;
@@ -200,6 +201,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Packag
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PackageSpecificationItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterDeclarationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PartitionExtendedNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlaceholderContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlFunctionSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlPackageBodySourceContext;
@@ -207,17 +209,16 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlP
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlProcedureSourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlStatementsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlsqlTriggerSourceContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PlaceholderContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureDeclarationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProcedureNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PseudorecordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PurgeContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RelationalPropertyContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RenameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RecordVariableDeclarationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RefCursorTypeDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RelationalPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RenameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RowtypeAttributeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RowtypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
@@ -238,7 +239,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeAt
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VarrayTypeSpecContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexTypeContext;
 import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
@@ -296,10 +296,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pk
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg.DropPackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.AlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.AlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.CreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.DropSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.AlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.CreateSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.DropSynonymStatement;
@@ -332,6 +332,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAuditStat
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateNestedTableTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateObjectTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateSubTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTypeBodyStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateVarrayTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePLSQLBlockStatement;
@@ -384,7 +385,6 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.Oracle
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.OracleCreateLockdownProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.OracleDropLockdownProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleAlterOutlineStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTypeBodyStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleCreateOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleDropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.pkg.OracleCreatePackageStatement;
@@ -557,7 +557,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         } else if (null != ctx.varrayTypeSpec()) {
             VarrayTypeSpecContext varrayTypeSpecContext = ctx.varrayTypeSpec();
             return new OracleCreateVarrayTypeStatement(getDatabaseType(), isReplace, isEditionable,
-                    null == varrayTypeSpecContext.INTEGER_() ? -1 : Integer.parseInt(varrayTypeSpecContext.INTEGER_().getText()),
+                    null == varrayTypeSpecContext.INTEGER_() ? -1 : Integer.parseInt(varrayTypeSpecContext.INTEGER_().getText().trim()),
                     null != varrayTypeSpecContext.typeSpec().NULL(),
                     null == varrayTypeSpecContext.typeSpec().persistableClause() || null == varrayTypeSpecContext.typeSpec().persistableClause().NOT(),
                     typeSegment,
@@ -2019,11 +2019,13 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     : new IdentifierValue(ctx.cursor().getText()).getValue();
             relatedCursorStatement = getCursorStatements().get(cursorName);
         }
+        String recordName = new IdentifierValue(ctx.record().getText()).getValue();
+        getVariableNames().add(recordName.toLowerCase());
         increaseCursorForLoopLevel();
         visitPlsqlStatementList(ctx.plsqlStatements());
         Set<SQLStatement> sqlStatements = getTempCursorForLoopStatements().remove(getCursorForLoopLevel());
         CursorForLoopStatementSegment cursorForLoopStatementSegment = new CursorForLoopStatementSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                new IdentifierValue(ctx.record().getText()).getValue(), cursorName, relatedCursorStatement, null == sqlStatements ? Collections.emptyList() : sqlStatements);
+                recordName, cursorName, relatedCursorStatement, null == sqlStatements ? Collections.emptyList() : sqlStatements);
         getCursorForLoopStatementSegments().add(cursorForLoopStatementSegment);
         decreaseCursorForLoopLevel();
         return defaultResult();

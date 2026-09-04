@@ -38,8 +38,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -76,7 +76,7 @@ class MetaDataImportExecutorTest {
     void assertImportClusterConfigurations() {
         MetaDataManagerPersistService metaDataManagerService = mock(MetaDataManagerPersistService.class);
         when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(metaDataManagerService);
-        ExportedMetaData exportedMetaData = createExportedMetaData();
+        final ExportedMetaData exportedMetaData = createExportedMetaData();
         MetaDataImportExecutor executor = new MetaDataImportExecutor(contextManager);
         setField(executor, "databaseConfigImportExecutor", databaseConfigImportExecutor);
         YamlRuleConfigurationSwapperEngine swapperEngine = mock(YamlRuleConfigurationSwapperEngine.class);

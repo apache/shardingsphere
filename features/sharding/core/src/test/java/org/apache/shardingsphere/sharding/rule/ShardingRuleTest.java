@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
-import org.apache.groovy.util.Maps;
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -77,8 +77,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -608,7 +608,7 @@ class ShardingRuleTest {
     }
     
     private Map<String, DataSource> createDataSources() {
-        return Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "resource0", new MockedDataSource(), "resource1", new MockedDataSource());
+        return ImmutableMap.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "resource0", new MockedDataSource(), "resource1", new MockedDataSource());
     }
     
     private ShardingTableRuleConfiguration createTableRuleConfigWithAllStrategies() {
@@ -741,7 +741,7 @@ class ShardingRuleTest {
     void assertIsAllTablesInSameDataSource() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getTables().add(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0}.table_${0..2}"));
-        ShardingRule shardingRule = new ShardingRule(ruleConfig, Maps.of("resource0", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+        ShardingRule shardingRule = new ShardingRule(ruleConfig, Collections.singletonMap("resource0", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
         assertTrue(shardingRule.isAllTablesInSameDataSource(Collections.singleton("logic_Table")));
     }
     

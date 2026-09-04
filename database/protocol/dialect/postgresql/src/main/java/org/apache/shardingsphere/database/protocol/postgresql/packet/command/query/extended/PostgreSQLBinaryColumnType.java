@@ -20,8 +20,8 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.binary.BinaryColumnType;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.protocol.binary.BinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLBitValueParser;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl.PostgreSQLBoolValueParser;

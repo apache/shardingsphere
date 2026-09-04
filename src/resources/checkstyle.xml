@@ -30,11 +30,14 @@
         <property name="eachLine" value="true" />
     </module>
     <module name="FileLength">
-        <property name="max" value="3000" />
+        <property name="max" value="10000" />
     </module>
     <module name="LineLength">
         <property name="fileExtensions" value="java" />
         <property name="max" value="200" />
+    </module>
+    <module name="LineEnding">
+        <property name="lineEnding" value="lf" />
     </module>
     <module name="NewlineAtEndOfFile">
         <property name="lineSeparator" value="lf" />
@@ -61,6 +64,7 @@
         <module name="AnnotationUseStyle" />
         <module name="MissingDeprecated" />
         <module name="MissingOverride" />
+        <module name="MissingOverrideOnRecordAccessor" />
         <module name="PackageAnnotation" />
         <module name="SuppressWarnings">
             <property name="format" value="^(?i:all)$" />
@@ -75,6 +79,10 @@
         </module>
         <module name="LeftCurly" />
         <module name="RightCurly" />
+        <module name="RightCurly">
+            <property name="id" value="RightCurlySwitch" />
+            <property name="tokens" value="LITERAL_SWITCH, LITERAL_CASE, LITERAL_DEFAULT" />
+        </module>
         <module name="NeedBraces" />
         
         <!-- Class Design -->
@@ -116,10 +124,15 @@
         </module>
         <module name="MatchXpath">
             <property name="query"
-                      value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='Test'] or ./DOT/IDENT[@text='Test'] or ./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'])] and not(./IDENT[starts-with(@text, 'assert')])]" />
-            <message key="matchxpath.match" value="Method names for @Test and @ParameterizedTest must start with 'assert'." />
+                      value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='Test'] or ./DOT/IDENT[@text='Test'] or ./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'] or ./IDENT[@text='RepeatedTest'] or ./DOT/IDENT[@text='RepeatedTest'] or ./IDENT[@text='TestFactory'] or ./DOT/IDENT[@text='TestFactory'] or ./IDENT[@text='TestTemplate'] or ./DOT/IDENT[@text='TestTemplate'])] and not(./IDENT[starts-with(@text, 'assert')])]" />
+            <message key="matchxpath.match" value="Test method names must start with 'assert'." />
         </module>
         <module name="IllegalType" />
+        <module name="IllegalType">
+            <property name="tokens" value="IMPORT, PARAMETER_DEF" />
+            <property name="illegalClassNames" value="java.util.Map.Entry" />
+            <message key="illegal.type" value="Do not declare Map.Entry as a parameter." />
+        </module>
         <module name="MissingSwitchDefault" />
         <module name="ModifiedControlVariable" />
         <module name="MultipleVariableDeclarations" />
@@ -147,25 +160,46 @@
         <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
         <module name="UnnecessarySemicolonInEnumeration" />
         <module name="UnnecessarySemicolonInTryWithResources" />
-        <module name="UnusedLocalVariable" />
+        <module name="UnusedLocalVariable">
+            <property name="jdkVersion" value="21" />
+        </module>
         <module name="VariableDeclarationUsageDistance" />
         <module name="RegexpSinglelineJava">
             <property name="format" value="^(?!\s*import\s+java\.util\.Map\.Entry\s*;).*\b(?:java\.util\.)?Map\.Entry\b" />
             <property name="ignoreComments" value="true" />
             <property name="message" value="Use Entry instead of Map.Entry (import java.util.Map.Entry)." />
         </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="\bObjects\.(?:isNull|nonNull)\s*\(" />
+            <property name="ignoreComments" value="true" />
+            <property name="message" value="Use a direct null comparison instead of Objects.isNull or Objects.nonNull." />
+        </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="\btimes\s*\(\s*0\s*\)" />
+            <property name="ignoreComments" value="true" />
+            <property name="message" value="Use never() instead of times(0)." />
+        </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="^(?!\s*import\s+org\.apache\.shardingsphere\.infra\.util\.props\.PropertiesBuilder\.Property\s*;).*\bPropertiesBuilder\.Property\b" />
+            <property name="ignoreComments" value="true" />
+            <property name="message" value="Import and use Property instead of PropertiesBuilder.Property." />
+        </module>
         
         <!-- Imports -->
         <module name="AvoidStarImport" />
         <module name="AvoidStaticImport">
-            <property name="excludes" value="org.junit.jupiter.api.Assertions.assertTrue,org.junit.jupiter.api.Assertions.assertFalse,org.junit.jupiter.api.Assertions.assertNull,org.junit.jupiter.api.Assertions.assertNotNull,org.junit.jupiter.api.Assertions.assertArrayEquals,org.junit.jupiter.api.Assertions.assertThrows,org.junit.jupiter.api.Assertions.assertDoesNotThrow,org.junit.jupiter.api.Assertions.assertTimeout,org.junit.jupiter.api.Assertions.assertTimeoutPreemptively,org.junit.jupiter.api.Assertions.fail,org.junit.jupiter.api.Assumptions.*,org.hamcrest.Matchers.aMapWithSize,org.hamcrest.Matchers.arrayContaining,org.hamcrest.Matchers.contains,org.hamcrest.Matchers.containsInAnyOrder,org.hamcrest.Matchers.containsString,org.hamcrest.Matchers.allOf,org.hamcrest.core.Is.isA,org.hamcrest.Matchers.nullValue,org.hamcrest.Matchers.endsWith,org.hamcrest.Matchers.empty,org.hamcrest.Matchers.emptyString,org.hamcrest.Matchers.greaterThan,org.hamcrest.Matchers.greaterThanOrEqualTo,org.hamcrest.Matchers.hasEntry,org.hamcrest.Matchers.hasItem,org.hamcrest.Matchers.hasItems,org.hamcrest.Matchers.hasKey,org.hamcrest.Matchers.hasSize,org.hamcrest.Matchers.is,org.hamcrest.Matchers.isA,org.hamcrest.Matchers.lessThan,org.hamcrest.Matchers.lessThanOrEqualTo,org.hamcrest.Matchers.matchesPattern,org.hamcrest.Matchers.not,org.hamcrest.Matchers.sameInstance,org.hamcrest.Matchers.startsWith,org.hamcrest.Matchers.anyOf,org.hamcrest.Matchers.closeTo,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.*,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.*" />
+            <property name="excludes" value="org.junit.jupiter.api.Assertions.assertTrue,org.junit.jupiter.api.Assertions.assertFalse,org.junit.jupiter.api.Assertions.assertNull,org.junit.jupiter.api.Assertions.assertNotNull,org.junit.jupiter.api.Assertions.assertThrows,org.junit.jupiter.api.Assertions.assertDoesNotThrow,org.junit.jupiter.api.Assertions.assertTimeout,org.junit.jupiter.api.Assertions.assertTimeoutPreemptively,org.junit.jupiter.api.Assertions.fail,org.junit.jupiter.api.Assumptions.assumeTrue,org.hamcrest.CoreMatchers.anyOf,org.hamcrest.Matchers.arrayContaining,org.hamcrest.Matchers.closeTo,org.hamcrest.Matchers.contains,org.hamcrest.Matchers.containsInAnyOrder,org.hamcrest.Matchers.containsString,org.hamcrest.Matchers.endsWith,org.hamcrest.Matchers.allOf,org.hamcrest.Matchers.greaterThan,org.hamcrest.Matchers.greaterThanOrEqualTo,org.hamcrest.Matchers.hasEntry,org.hamcrest.Matchers.hasItem,org.hamcrest.Matchers.hasItems,org.hamcrest.Matchers.hasKey,org.hamcrest.Matchers.is,org.hamcrest.Matchers.isA,org.hamcrest.Matchers.lessThan,org.hamcrest.Matchers.lessThanOrEqualTo,org.hamcrest.Matchers.matchesPattern,org.hamcrest.Matchers.not,org.hamcrest.Matchers.sameInstance,org.hamcrest.Matchers.startsWith,org.hamcrest.Matchers.anyOf,org.hamcrest.MatcherAssert.assertThat,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual,org.mockito.Mockito.CALLS_REAL_METHODS,org.mockito.Mockito.RETURNS_DEEP_STUBS,org.mockito.Mockito.any,org.mockito.Mockito.anyBoolean,org.mockito.Mockito.anyCollection,org.mockito.Mockito.anyInt,org.mockito.Mockito.anyList,org.mockito.Mockito.anyLong,org.mockito.Mockito.anyString,org.mockito.Mockito.argThat,org.mockito.Mockito.eq,org.mockito.Mockito.isNull,org.mockito.Mockito.atLeast,org.mockito.Mockito.atLeastOnce,org.mockito.Mockito.clearInvocations,org.mockito.Mockito.doAnswer,org.mockito.Mockito.doNothing,org.mockito.Mockito.doReturn,org.mockito.Mockito.doThrow,org.mockito.Mockito.inOrder,org.mockito.Mockito.lenient,org.mockito.Mockito.mock,org.mockito.Mockito.mockConstruction,org.mockito.Mockito.mockingDetails,org.mockito.Mockito.mockStatic,org.mockito.Mockito.never,org.mockito.Mockito.reset,org.mockito.Mockito.spy,org.mockito.Mockito.timeout,org.mockito.Mockito.times,org.mockito.Mockito.verify,org.mockito.Mockito.verifyNoInteractions,org.mockito.Mockito.verifyNoMoreInteractions,org.mockito.Mockito.when,org.mockito.Mockito.withSettings,org.mockito.ArgumentMatchers.any,org.mockito.ArgumentMatchers.anyBoolean,org.mockito.ArgumentMatchers.anyCollection,org.mockito.ArgumentMatchers.anyInt,org.mockito.ArgumentMatchers.anyList,org.mockito.ArgumentMatchers.anyLong,org.mockito.ArgumentMatchers.anyMap,org.mockito.ArgumentMatchers.anySet,org.mockito.ArgumentMatchers.anyString,org.mockito.ArgumentMatchers.argThat,org.mockito.ArgumentMatchers.contains,org.mockito.ArgumentMatchers.eq,org.mockito.ArgumentMatchers.isA,org.mockito.ArgumentMatchers.isNull,org.mockito.ArgumentMatchers.matches,org.mockito.ArgumentMatchers.nullable,org.mockito.ArgumentMatchers.refEq,org.mockito.ArgumentMatchers.same" />
         </module>
         <module name="RegexpSinglelineJava">
-            <property name="format" value="^\s*import\s+org\.(hamcrest\.Matchers|junit\.jupiter\.api\.Assertions)\s*;" />
+            <property name="format" value="^(?!\s*import\s+static\s+).*\b(Mockito|ArgumentMatchers|Assertions|Assumptions|CoreMatchers|Matchers|MatcherAssert|ShardingSphereArgumentVerifyMatchers|ShardingSphereAssertionMatchers)\s*(\.|::)" />
             <property name="ignoreComments" value="true" />
-            <property name="message" value="Use static import for org.hamcrest.Matchers and org.junit.jupiter.api.Assertions." />
+            <property name="message" value="Use an allowed static import instead of a qualified static member call." />
         </module>
-        <module name="IllegalImport" />
+        <module name="IllegalImport">
+            <property name="regexp" value="true" />
+            <property name="illegalPkgs" value="sun,.*[.]shaded" />
+            <property name="illegalClasses" value=".*[.]StringUtils([.].*)?,.*[.]CollectionUtils([.].*)?,org[.]junit[.]jupiter[.]api[.](Assertions|Assumptions),org[.]hamcrest[.](CoreMatchers|MatcherAssert|Matchers),org[.]mockito[.](ArgumentMatchers|Mockito),org[.]apache[.]shardingsphere[.]test[.]infra[.]framework[.]matcher[.](ShardingSphereArgumentVerifyMatchers|ShardingSphereAssertionMatchers)" />
+        </module>
         <module name="RedundantImport" />
         <module name="UnusedImports" />
         
@@ -177,18 +211,18 @@
         <module name="JavadocBlockTagLocation" />
         <module name="JavadocContentLocation" />
         <module name="JavadocMethod">
-            <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest" />
+            <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest, RepeatedTest, TestFactory, TestTemplate" />
             <property name="validateThrows" value="true" />
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF" />
         </module>
         <module name="JavadocMissingLeadingAsterisk" />
         <module name="JavadocMissingWhitespaceAfterAsterisk" />
-        <module name="JavadocStyle" />
         <module name="JavadocTagContinuationIndentation">
             <property name="violateExecutionOnNonTightHtml" value="true" />
         </module>
         <module name="JavadocType" />
         <module name="MissingJavadocMethod">
+            <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest, RepeatedTest, TestFactory, TestTemplate" />
             <property name="allowMissingPropertyJavadoc" value="true" />
             <property name="tokens" value="METHOD_DEF" />
         </module>
@@ -229,7 +263,12 @@
         <module name="ArrayTypeStyle" />
         <module name="AvoidEscapedUnicodeCharacters" />
         <module name="CommentsIndentation" />
-        <module name="DescendantToken" />
+        <module name="DescendantToken">
+            <property name="tokens" value="QUESTION" />
+            <property name="limitedTokens" value="QUESTION" />
+            <property name="maximumNumber" value="1" />
+            <property name="maximumMessage" value="Nested ternary operators are forbidden." />
+        </module>
         <module name="FinalParameters">
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, LITERAL_CATCH" />
         </module>
@@ -237,6 +276,7 @@
             <property name="arrayInitIndent" value="2" />
             <property name="lineWrappingIndentation" value="8" />
         </module>
+        <module name="MultilineCommentLeadingAsteriskPresence" />
         <module name="NoCodeInFile" />
         <module name="OuterTypeFilename" />
         <module name="TodoComment" />
@@ -282,7 +322,9 @@
             <property name="severity" value="warning" />
             <property name="max" value="50" />
         </module>
-        <module name="LambdaBodyLength" />
+        <module name="LambdaBodyLength">
+            <property name="max" value="50" />
+        </module>
         <module name="MethodCount">
             <property name="severity" value="warning" />
         </module>

@@ -46,13 +46,12 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTypeFactory;
 
@@ -116,25 +115,33 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             processLogin(ctx, request);
             return;
         }
-        switch (request.getType()) {
-            case STREAM_DATA:
-                processStreamDataRequest(ctx, request, connectionContext);
-                break;
-            case ACK_STREAMING:
-                processAckStreamingRequest(request);
-                break;
-            case STOP_STREAMING:
-                processStopStreamingRequest(ctx, request, connectionContext);
-                break;
-            case START_STREAMING:
-                processStartStreamingRequest(ctx, request, connectionContext);
-                break;
-            case DROP_STREAMING:
-                processDropStreamingRequest(ctx, request, connectionContext);
-                break;
-            default:
-                log.warn("can't handle this type of request {}", request);
-                break;
+        try {
+            switch (request.getType()) {
+                case STREAM_DATA:
+                    processStreamDataRequest(ctx, request, connectionContext);
+                    break;
+                case ACK_STREAMING:
+                    processAckStreamingRequest(request);
+                    break;
+                case STOP_STREAMING:
+                    processStopStreamingRequest(ctx, request, connectionContext);
+                    break;
+                case START_STREAMING:
+                    processStartStreamingRequest(ctx, request, connectionContext);
+                    break;
+                case DROP_STREAMING:
+                    processDropStreamingRequest(ctx, request, connectionContext);
+                    break;
+                default:
+                    log.warn("can't handle this type of request {}", request);
+                    break;
+            }
+        } catch (final CDCExceptionWrapper ex) {
+            throw ex;
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            throw new CDCExceptionWrapper(request.getRequestId(), ex);
         }
     }
     
@@ -178,12 +185,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Source schema table is empty"));
         }
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), requestBody.getDatabase());
-        try {
-            CDCResponse response = backendHandler.streamData(request.getRequestId(), requestBody, connectionContext, ctx.channel());
-            ctx.writeAndFlush(response);
-        } catch (final ShardingSphereSQLException ex) {
-            throw new CDCExceptionWrapper(request.getRequestId(), ex);
-        }
+        CDCResponse response = backendHandler.streamData(request.getRequestId(), requestBody, connectionContext, ctx.channel());
+        ctx.writeAndFlush(response);
     }
     
     private void processAckStreamingRequest(final CDCRequest request) {
@@ -205,14 +208,10 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         if (requestBody.getStreamingId().isEmpty()) {
             throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Streaming id is empty"));
         }
-        try {
-            String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
-            checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
-            backendHandler.startStreaming(requestBody.getStreamingId(), connectionContext, ctx.channel());
-            ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
-        } catch (final ShardingSphereSQLException ex) {
-            throw new CDCExceptionWrapper(request.getRequestId(), ex);
-        }
+        String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
+        checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
+        backendHandler.startStreaming(requestBody.getStreamingId(), connectionContext, ctx.channel());
+        ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }
     
     private void processStopStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
@@ -220,7 +219,9 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
         backendHandler.stopStreaming(requestBody.getStreamingId(), ctx.channel().id());
-        connectionContext.setJobId(null);
+        if (Objects.equals(connectionContext.getJobId(), requestBody.getStreamingId())) {
+            connectionContext.setJobId(null);
+        }
         ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }
     
@@ -228,7 +229,9 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         DropStreamingRequestBody requestBody = request.getDropStreamingRequestBody();
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId()));
         backendHandler.dropStreaming(requestBody.getStreamingId());
-        connectionContext.setJobId(null);
+        if (Objects.equals(connectionContext.getJobId(), requestBody.getStreamingId())) {
+            connectionContext.setJobId(null);
+        }
         ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }
 }

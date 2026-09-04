@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Oracle function option.
@@ -32,8 +33,15 @@ public final class OracleFunctionOption implements DialectFunctionOption {
             "CONNECT_BY_ISCYCLE", "CONNECT_BY_ISLEAF", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "CURRVAL", "DBTIMEZONE", "DEFAULT", "LEVEL", "LOCALTIME",
             "LOCALTIMESTAMP", "NEXTVAL", "ORA_ROWSCN", "ROWID", "ROWNUM", "SESSIONTIMEZONE", "SESSION_USER", "SYSDATE", "SYSTIMESTAMP", "UID", "USER"));
     
+    private static final Collection<String> UNPARENTHESIZED_QUALIFIED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Collections.singletonList("DBMS_RANDOM.VALUE"));
+    
     @Override
     public Collection<String> getUnparenthesizedFunctionNames() {
         return UNPARENTHESIZED_FUNCTION_NAMES;
+    }
+    
+    @Override
+    public Collection<String> getUnparenthesizedQualifiedFunctionNames() {
+        return UNPARENTHESIZED_QUALIFIED_FUNCTION_NAMES;
     }
 }

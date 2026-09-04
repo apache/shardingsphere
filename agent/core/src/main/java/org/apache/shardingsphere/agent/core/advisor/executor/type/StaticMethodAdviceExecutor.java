@@ -28,8 +28,8 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
-import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 
 import java.lang.reflect.Method;

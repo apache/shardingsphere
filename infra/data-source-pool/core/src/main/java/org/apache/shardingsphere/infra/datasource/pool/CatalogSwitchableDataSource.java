@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -44,8 +45,16 @@ public final class CatalogSwitchableDataSource implements DataSource, AutoClosea
     @Override
     public Connection getConnection() throws SQLException {
         Connection result = dataSource.getConnection();
-        if (null != catalog && !catalog.equals(result.getCatalog())) {
-            result.setCatalog(catalog);
+        boolean switched = false;
+        try {
+            if (null != catalog && !catalog.equals(result.getCatalog())) {
+                result.setCatalog(catalog);
+            }
+            switched = true;
+        } finally {
+            if (!switched) {
+                QuietlyCloser.close(result);
+            }
         }
         return result;
     }

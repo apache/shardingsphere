@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.error.ExpectedErrorLoggingClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.limit.ExpectedLimitClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.output.ExpectedOutputClause;
@@ -63,4 +64,7 @@ public final class DeleteStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "function-table")
     private ExpectedFunctionTable functionTable;
+    
+    @XmlElement(name = "error-logging")
+    private ExpectedErrorLoggingClause errorLoggingClause;
 }

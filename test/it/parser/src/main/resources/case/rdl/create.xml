@@ -25,6 +25,10 @@
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
     </register-storage-unit>
     
+    <register-storage-unit sql-case-id="register-storage-unit-simple-single-with-escaped-password">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="foo&#10;bar\nbaz qux" />
+    </register-storage-unit>
+
     <register-storage-unit sql-case-id="register-storage-unit-simple-single-with-password-if-not-exists" if-not-exists="true">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
     </register-storage-unit>

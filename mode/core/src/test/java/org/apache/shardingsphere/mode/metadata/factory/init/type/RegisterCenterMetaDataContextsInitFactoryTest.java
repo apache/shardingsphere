@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -102,8 +102,8 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
                         });
                 MockedConstruction<DataSourcePoolDestroyer> destroyerMocked = mockConstruction(DataSourcePoolDestroyer.class)) {
             MetaDataContexts actual = new RegisterCenterMetaDataContextsInitFactory(repository, instanceContext).create(createContextManagerBuilderParameter(databaseConfigs));
-            assertThat(actual.getMetaData().getAllDatabases(), hasSize(2));
-            assertThat(destroyerMocked.constructed(), hasSize(1));
+            assertThat(actual.getMetaData().getAllDatabases().size(), is(2));
+            assertThat(destroyerMocked.constructed().size(), is(1));
             verify(destroyerMocked.constructed().get(0)).asyncDestroy();
         }
     }

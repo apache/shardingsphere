@@ -11,7 +11,7 @@ description: "Implement, fix, refactor, or remove repository code under required
 
 Read every selected reference through EOF before relying on it. Do not substitute catalog metadata, a summary, another Skill, or ordinary coding judgment for a required repository source.
 
-- For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`, `.codex/skills/code-implementation/references/rules/contracts-and-removal.md`, and `.codex/skills/code-implementation/references/rules/non-regression.md`. Apply each contract, impact, or removal rule only when its own trigger matches.
+- For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`, `.codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md`, and `.codex/skills/code-implementation/references/rules/non-regression.md`. Apply each contract, impact, or removal rule only when its own trigger matches.
 - Before deciding whether tests or test support are required, and before creating or changing them, read `.codex/skills/code-implementation/references/rules/testing.md`.
 - Before choosing or running verification and before handoff, read `.codex/skills/code-implementation/references/verification.md`.
 - For every implementation, fix, or refactor, read `.codex/skills/coding-standards/SKILL.md` through EOF and use its Implementation Guidance Mode. Do not run its standalone inventory or physical-line audit unless the user explicitly requests that audit.
@@ -21,11 +21,15 @@ Specialized repository Skills compose with this Skill when they write code. Thei
 ## Workflow
 
 1. Apply the pre-write evidence, acceptance, frozen-boundary, baseline, architecture, and source-line gates in `AGENTS.md`.
+   Before the first write, derive the exact `file -> allowed change intent -> unmet acceptance criterion` write allowlist required by the frozen-boundary gate.
+   When the current request clearly authorizes the inferred allowlist, record and freeze it without asking the user to repeat the request; otherwise obtain confirmation of the exact allowlist, then record and freeze it before writing.
+   Expand the frozen allowlist only after the user explicitly authorizes the exact additional path and change intent.
 2. Map every planned production and test change to one unsatisfied acceptance criterion and identify the supported existing paths that the change can affect.
 3. Classify functional and performance regression risk before the first relevant write. Capture any required behavioral or performance baseline using the protocol in `.codex/skills/code-implementation/references/rules/non-regression.md`.
 4. Implement the smallest clear change under `.codex/skills/code-implementation/references/rules/implementation.md`, and apply `.codex/skills/code-implementation/references/rules/testing.md` to every affected test decision.
 5. After each write, inspect every path and hunk the action may have changed. Stop at the existing scope or authority gate when a required change lies outside the frozen boundary.
-6. Run the narrowest meaningful checks under `.codex/skills/code-implementation/references/verification.md`, then verify functional and performance non-regression with evidence proportionate to the classified risk.
-7. Complete the repository completion loop, fix every safe in-scope required finding, rerun invalidated checks, and hand off only after a complete review finds no new required issue.
+6. After the last implementation write, reapply the Coding Standards Implementation Guidance Mode to affected files and complete its final manual checklist recheck before final verification. Any later write returns the affected files and rules to this step.
+7. Run the narrowest meaningful checks under `.codex/skills/code-implementation/references/verification.md`, then verify functional and performance non-regression with evidence proportionate to the classified risk.
+8. Complete the repository completion loop, fix every safe in-scope required finding, rerun invalidated checks, and hand off only after a complete review finds no new required issue.
 
 Do not treat a passing build, test, formatter, benchmark, or review tool as proof by itself. Judge the requested behavior, supported existing behavior, contracts, architecture, and affected performance paths directly.

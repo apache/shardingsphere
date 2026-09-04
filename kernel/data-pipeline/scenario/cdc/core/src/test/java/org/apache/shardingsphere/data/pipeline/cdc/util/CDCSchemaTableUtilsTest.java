@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -40,12 +39,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -90,6 +89,18 @@ class CDCSchemaTableUtilsTest {
         List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("*").setTable("t_shared").build());
         Map<String, Set<String>> actualResult = CDCSchemaTableUtils.parseTableExpressions(database, schemaTables);
         Map<String, Set<String>> expectedResult = Collections.singletonMap("analytics", Collections.singleton("t_shared"));
+        assertThat(actualResult, is(expectedResult));
+    }
+    
+    @Test
+    void assertParseTableExpressionsWithSchemaWildcardAndQuotedTable() {
+        ShardingSphereSchema fooSchema = mockSchema("foo_schema", "footable", "FooTable");
+        ShardingSphereSchema barSchema = mockSchema("bar_schema", "footable");
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("sharding_db", databaseType, null, null, Arrays.asList(fooSchema, barSchema), new ConfigurationProperties(new Properties()));
+        List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("*").setTable("\"FooTable\"").build());
+        Map<String, Set<String>> actualResult = CDCSchemaTableUtils.parseTableExpressions(database, schemaTables);
+        Map<String, Set<String>> expectedResult = Collections.singletonMap("foo_schema", Collections.singleton("FooTable"));
         assertThat(actualResult, is(expectedResult));
     }
     
@@ -149,6 +160,17 @@ class CDCSchemaTableUtilsTest {
         Map<String, Set<String>> expectedResult = new HashMap<>(2, 1F);
         expectedResult.put("caseschema", Collections.singleton("t_unquoted"));
         expectedResult.put("CaseSchema", Collections.singleton("t_quoted"));
+        assertThat(actualResult, is(expectedResult));
+    }
+    
+    @Test
+    void assertParseTableExpressionsWithQuotedTable() {
+        ShardingSphereSchema schema = mockSchema("foo_schema", "footable", "FooTable");
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("sharding_db", databaseType, null, null, Collections.singleton(schema), new ConfigurationProperties(new Properties()));
+        List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("foo_schema").setTable("\"FooTable\"").build());
+        Map<String, Set<String>> actualResult = CDCSchemaTableUtils.parseTableExpressions(database, schemaTables);
+        Map<String, Set<String>> expectedResult = Collections.singletonMap("foo_schema", Collections.singleton("FooTable"));
         assertThat(actualResult, is(expectedResult));
     }
     

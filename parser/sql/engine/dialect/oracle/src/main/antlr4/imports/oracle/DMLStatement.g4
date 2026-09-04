@@ -510,6 +510,7 @@ dmlTableAlias
     | LENGTH
     | LOG
     | CHILD
+    | CON
     ;
 
 queryTableExprClause
@@ -816,7 +817,7 @@ mergeAssignment
     ;
 
 mergeAssignmentValue
-    : expr | DEFAULT
+    : expr | LP_ selectSubquery RP_ | DEFAULT
     ;
 
 deleteWhereClause
@@ -832,7 +833,7 @@ mergeInsertColumn
     ;
 
 mergeColumnValue
-    : VALUES LP_ (expr | DEFAULT) (COMMA_ (expr | DEFAULT))* RP_
+    : VALUES LP_ mergeAssignmentValue (COMMA_ mergeAssignmentValue)* RP_
     ;
 
 errorLoggingClause

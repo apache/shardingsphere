@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDescFunctionStatementTestCase;
-import org.hamcrest.MatcherAssert;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,7 +50,7 @@ public final class DorisDescFunctionStatementAssert {
     private static void assertFunctionName(final SQLCaseAssertContext assertContext, final DorisDescFunctionStatement actual, final DorisDescFunctionStatementTestCase expected) {
         if (null != expected.getFunctionName()) {
             assertTrue(actual.getFunctionName().isPresent(), assertContext.getText("Function name should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Function name assertion error: "), actual.getFunctionName().get().getIdentifier().getValue(),
+            assertThat(assertContext.getText("Function name assertion error: "), actual.getFunctionName().get().getIdentifier().getValue(),
                     is(expected.getFunctionName().getFunctionName()));
             SQLSegmentAssert.assertIs(assertContext, actual.getFunctionName().get(), expected.getFunctionName());
             if (null == expected.getFunctionName().getOwner()) {

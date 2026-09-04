@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.distsql.handler.update;
 
-import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.NoSuchTableException;
@@ -27,8 +26,10 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
@@ -36,9 +37,10 @@ import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -67,7 +69,7 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
         for (String each : sqlStatement.getTables()) {
             checkTableExist(allTables, each);
             checkIsSingleTable(singleTables, each);
-            checkTableRuleExist(database.getName(), database.getProtocolType(), singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getDataNodesByTableName(each), each);
+            checkTableRuleExist(database.getName(), singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getDataNodesByTableName(each), each);
         }
     }
     
@@ -84,11 +86,27 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
         ShardingSpherePreconditions.checkContains(singleTables, tableName, () -> new SingleTableNotFoundException(tableName));
     }
     
-    private void checkTableRuleExist(final String databaseName, final DatabaseType databaseType, final Collection<DataNode> dataNodes, final String tableName) {
+    private void checkTableRuleExist(final String databaseName, final Collection<DataNode> dataNodes, final String tableName) {
         ShardingSpherePreconditions.checkNotEmpty(dataNodes, () -> new MissingRequiredRuleException("Single", databaseName, tableName));
         DataNode dataNode = dataNodes.iterator().next();
-        String dataNodeString = SingleTableLoadUtils.getDataNodeString(databaseType, dataNode.getDataSourceName(), dataNode.getSchemaName(), dataNode.getTableName());
+        String dataNodeString = getDataNodeString(dataNode);
         ShardingSpherePreconditions.checkContains(rule.getConfiguration().getTables(), dataNodeString, () -> new MissingRequiredRuleException("Single", databaseName, tableName));
+    }
+    
+    private String getDataNodeString(final DataNode dataNode) {
+        DatabaseType storageType = getStorageType(dataNode.getDataSourceName());
+        return SingleTableLoadUtils.getDataNodeString(storageType, dataNode.getDataSourceName(), dataNode.getSchemaName(), dataNode.getTableName());
+    }
+    
+    private DatabaseType getStorageType(final String dataSourceName) {
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
+        StorageUnit storageUnit = storageUnits.get(dataSourceName);
+        if (null != storageUnit) {
+            return storageUnit.getStorageType();
+        }
+        DataSource dataSource = rule.getAttributes().getAttribute(AggregatedDataSourceRuleAttribute.class).getAggregatedDataSources().get(dataSourceName);
+        return storageUnits.values().stream().filter(each -> dataSource == each.getDataSource()).map(StorageUnit::getStorageType).findFirst()
+                .orElseThrow(() -> new IllegalStateException(String.format("Can not find storage type for data source: %s", dataSourceName)));
     }
     
     @Override
@@ -96,7 +114,10 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         if (!sqlStatement.isUnloadAllTables()) {
             result.getTables().addAll(rule.getConfiguration().getTables());
-            result.getTables().removeIf(each -> sqlStatement.getTables().contains(extractTableName(each)));
+            DataNodeRuleAttribute dataNodeRuleAttribute = rule.getAttributes().getAttribute(DataNodeRuleAttribute.class);
+            Collection<String> toBeRemovedDataNodes = sqlStatement.getTables().stream().flatMap(each -> dataNodeRuleAttribute.getDataNodesByTableName(each).stream())
+                    .map(this::getDataNodeString).collect(Collectors.toSet());
+            result.getTables().removeAll(toBeRemovedDataNodes);
         }
         return result;
     }
@@ -109,11 +130,6 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
             return result;
         }
         return null;
-    }
-    
-    private String extractTableName(final String tableNode) {
-        List<String> segments = Splitter.on(".").trimResults().splitToList(tableNode);
-        return segments.get(segments.size() - 1);
     }
     
     @Override

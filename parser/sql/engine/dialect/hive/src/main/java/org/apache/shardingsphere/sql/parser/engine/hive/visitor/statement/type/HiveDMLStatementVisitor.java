@@ -40,8 +40,8 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CombineC
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CompleteRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ConvertFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CteClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DistributeByClauseContext;
@@ -63,16 +63,17 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.Grouping
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveFileSystemInsertStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveInsertStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveSelectTailClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveMultipleInsertsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveSelectTailClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertDataIntoTablesFromQueriesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertOverwriteStandardSyntaxContext;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertSelectColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertSelectClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertSelectColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertingValuesIntoTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JoinedTableContext;
@@ -80,8 +81,6 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JsonFunc
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JsonFunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LateralViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LeadLagInfoContext;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeContext;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeWhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitOffsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitRowCountContext;
@@ -89,8 +88,10 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadData
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LockClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LockClauseListContext;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MatchExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MapReduceClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MatchExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeWhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MultipleInsertsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.NaturalJoinTypeContext;
@@ -149,7 +150,6 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowSp
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WritingDataIntoFileSystemContext;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertingValuesIntoTablesContext;
 import org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
@@ -170,9 +170,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
@@ -188,6 +188,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -232,7 +233,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

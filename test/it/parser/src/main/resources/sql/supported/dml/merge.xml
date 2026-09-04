@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="merge_with_error_logging" value="MERGE INTO t_user target USING t_user_source source ON (target.user_id = source.user_id) WHEN MATCHED THEN UPDATE SET target.email = source.email LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT UNLIMITED" db-types="Oracle" case-types="PLACEHOLDER" />
     <sql-case id="merge_into_table_using_table" value="MERGE INTO people_target USING people_source ON (people_target.person_id = people_source.person_id)" db-types="Oracle" />
     <sql-case id="merge_into_table_using_subquery_alias" value="MERGE INTO bonuses D USING (SELECT employee_id, salary, department_id FROM employees WHERE department_id = 80) S ON (D.employee_id = S.employee_id)" db-types="Oracle" />
     <sql-case id="merge_update_table" value="MERGE INTO people_target pt USING people_source ps ON (pt.person_id = ps.person_id) WHEN MATCHED THEN UPDATE SET pt.first_name = ps.first_name, pt.last_name = ps.last_name, pt.title = ps.title" db-types="Oracle" />

@@ -79,13 +79,27 @@ public final class JDBCDataRowEnumerator implements Enumerator<Object> {
     
     @Override
     public void close() {
-        try {
-            for (Statement each : statements) {
+        SQLException failure = null;
+        for (Statement each : statements) {
+            try {
                 each.close();
+            } catch (final SQLException ex) {
+                failure = appendFailure(failure, ex);
             }
-            currentRow = null;
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
         }
+        currentRow = null;
+        if (null != failure) {
+            throw new SQLWrapperException(failure);
+        }
+    }
+    
+    private SQLException appendFailure(final SQLException previousFailure, final SQLException failure) {
+        if (null == previousFailure) {
+            return failure;
+        }
+        if (previousFailure != failure) {
+            previousFailure.addSuppressed(failure);
+        }
+        return previousFailure;
     }
 }

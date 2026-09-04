@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.par
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.show.DorisShowDataSkewStatementTestCase;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Show data skew statement assert for Doris.

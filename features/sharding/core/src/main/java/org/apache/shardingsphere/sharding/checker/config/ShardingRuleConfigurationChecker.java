@@ -21,10 +21,14 @@ import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -32,10 +36,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
-import org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -45,10 +46,12 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -86,6 +89,7 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getDatabaseShardingStrategy(), shardingAlgorithms);
             checkShardingStrategy(databaseName, each.getTableShardingStrategy(), shardingAlgorithms);
+            checkDataNodeSchemas(each);
         }
         for (ShardingAutoTableRuleConfiguration each : autoTables) {
             checkLogicTable(databaseName, each.getLogicTable());
@@ -150,6 +154,21 @@ public final class ShardingRuleConfigurationChecker implements DatabaseRuleConfi
         ShardingSpherePreconditions.checkNotNull(shardingStrategy.getShardingAlgorithmName(), () -> new MissingRequiredShardingConfigurationException("Sharding algorithm name", databaseName));
         ShardingSpherePreconditions.checkContains(shardingAlgorithms, shardingStrategy.getShardingAlgorithmName(),
                 () -> new UnregisteredAlgorithmException("sharding", shardingStrategy.getShardingAlgorithmName(), new SQLExceptionIdentifier(databaseName)));
+    }
+    
+    private void checkDataNodeSchemas(final ShardingTableRuleConfiguration tableRuleConfig) {
+        Collection<String> actualDataNodes = InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
+        Map<String, String> schemaNamesByDataSource = new HashMap<>(actualDataNodes.size(), 1F);
+        for (String each : actualDataNodes) {
+            DataNode dataNode = new DataNode(each);
+            if (null == dataNode.getSchemaName()) {
+                continue;
+            }
+            String configuredSchemaName = schemaNamesByDataSource.putIfAbsent(dataNode.getDataSourceName(), dataNode.getSchemaName());
+            ShardingSpherePreconditions.checkState(null == configuredSchemaName || configuredSchemaName.equalsIgnoreCase(dataNode.getSchemaName()),
+                    () -> new InvalidRuleConfigurationException("sharding table", Collections.singleton(tableRuleConfig.getLogicTable()),
+                            Collections.singleton(String.format("Multiple schemas are configured for storage unit '%s'.", dataNode.getDataSourceName()))));
+        }
     }
     
     @Override

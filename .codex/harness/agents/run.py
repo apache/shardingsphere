@@ -52,6 +52,8 @@ ACTIONS = [
     "change_public_contract",
     "keep_manual_throw",
     "remove_stale_checked_throw",
+    "remove_unused_parameter",
+    "retain_contract_parameter",
     "add_meaningless_test",
     "run_pre_handoff_review",
     "fix_review_findings",
@@ -113,6 +115,8 @@ REASONS = [
     "output_capture_required",
     "exception_contract",
     "stale_checked_throw",
+    "task_introduced_unused_parameter",
+    "parameter_signature_contract",
     "meaningful_test_required",
     "concise_response_default",
     "layered_response_required",
@@ -239,6 +243,8 @@ def validate_cases(cases: list[dict[str, Any]]) -> None:
             raise ValueError(f"Case ordinary_loop must be a boolean: {each['id']}")
         if "profile" in each and (not isinstance(each["profile"], str) or not each["profile"]):
             raise ValueError(f"Case profile must be a non-empty string: {each['id']}")
+        if "semantic_policy_assertions" in each and type(each["semantic_policy_assertions"]) is not bool:
+            raise ValueError(f"Case semantic_policy_assertions must be a boolean: {each['id']}")
         required_actions = set(each["required_actions"])
         allowed_actions = set(each["allowed_actions"])
         forbidden_actions = set(each["forbidden_actions"])
@@ -264,6 +270,13 @@ def validate_cases(cases: list[dict[str, Any]]) -> None:
             terms = each.get(field)
             if field in each and (not isinstance(terms, list) or not terms or any(not isinstance(term, str) or not term for term in terms)):
                 raise ValueError(f"Summary terms must be a non-empty list of non-empty strings for case: {each['id']}")
+        term_groups = each.get("required_summary_term_groups")
+        if "required_summary_term_groups" in each and (
+                not isinstance(term_groups, list) or not term_groups
+                or any(not isinstance(group, list) or not group for group in term_groups)
+                or any(not isinstance(term, str) or not term for group in term_groups for term in group)
+        ):
+            raise ValueError(f"Summary term groups must contain non-empty lists of non-empty strings for case: {each['id']}")
 
 
 def load_cases(case_ids: list[str] | None) -> list[dict[str, Any]]:
@@ -590,6 +603,21 @@ def normalize_case_policy_bindings(
     return sorted(result, key=lambda each: each["case_id"])
 
 
+def select_semantic_policy_assertions(
+        cases: list[dict[str, Any]], policy_bindings: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    """Select exact bound policy statements for cases that require semantic interpretation."""
+    bindings_by_case_id = {each["case_id"]: each for each in policy_bindings}
+    result = {}
+    for each in cases:
+        if not each.get("semantic_policy_assertions", False):
+            continue
+        binding = bindings_by_case_id.get(each["id"])
+        if binding is None:
+            raise ValueError(f"Semantic policy assertions require a policy binding: {each['id']}")
+        result[each["id"]] = binding["assertions"]
+    return result
+
+
 def compare_policy_bindings(
         bindings: list[dict[str, Any]], baseline: dict[str, Any] | None,
         selected_case_ids: list[str] | None, authorized_changes: set[str]) -> tuple[list[str], list[str]]:
@@ -739,14 +767,52 @@ def run_local_read_traces(
     return results
 
 
-def semantic_evaluation_metadata() -> dict[str, Any]:
-    """Describe the intentionally root-only boundary of synthetic semantic canaries."""
+def semantic_evaluation_metadata(
+        semantic_policy_assertions: dict[str, list[dict[str, Any]]] | None = None,
+        executed: bool = True) -> dict[str, Any]:
+    """Describe the exact policy boundary of synthetic semantic canaries."""
+    semantic_policy_assertions = semantic_policy_assertions or {}
+    case_policy_sources = {
+        case_id: [assertion["source_id"] for assertion in assertions]
+        for case_id, assertions in semantic_policy_assertions.items()
+    }
+    if not executed:
+        return {
+            "executed": False,
+            "evaluated_source": None,
+            "decision_surface": None,
+            "profile_source_contents_included": False,
+            "full_profile_source_contents_included": False,
+            "bound_policy_assertions_configured": bool(semantic_policy_assertions),
+            "bound_policy_assertions_included": False,
+            "case_policy_sources": case_policy_sources,
+            "proves": None,
+            "does_not_prove": "semantic decision behavior because no semantic evaluation was executed",
+        }
+    if not semantic_policy_assertions:
+        return {
+            "executed": True,
+            "evaluated_source": "AGENTS.md",
+            "decision_surface": "root",
+            "profile_source_contents_included": False,
+            "full_profile_source_contents_included": False,
+            "bound_policy_assertions_configured": False,
+            "bound_policy_assertions_included": False,
+            "case_policy_sources": {},
+            "proves": "root decision behavior for the selected synthetic cases",
+            "does_not_prove": "semantic evaluation of non-root profile source contents",
+        }
     return {
-        "evaluated_source": "AGENTS.md",
-        "decision_surface": "root",
-        "profile_source_contents_included": False,
-        "proves": "root decision behavior for the selected synthetic cases",
-        "does_not_prove": "semantic evaluation of non-root profile source contents",
+        "executed": True,
+        "evaluated_source": "AGENTS.md plus exact bound policy assertions",
+        "decision_surface": "root-and-bound-assertions",
+        "profile_source_contents_included": True,
+        "full_profile_source_contents_included": False,
+        "bound_policy_assertions_configured": True,
+        "bound_policy_assertions_included": True,
+        "case_policy_sources": case_policy_sources,
+        "proves": "root decision behavior and interpretation of the exact bound statements supplied to each listed case",
+        "does_not_prove": "semantic interpretation of full non-root sources or content not bound and supplied to a listed case",
     }
 
 
@@ -784,6 +850,10 @@ def normalize_case_contracts(cases: list[dict[str, Any]]) -> list[dict[str, Any]
         for field in ("required_summary_terms", "forbidden_summary_terms"):
             if field in each:
                 contract[field] = sorted(each[field])
+        if "required_summary_term_groups" in each:
+            contract["required_summary_term_groups"] = sorted(sorted(group) for group in each["required_summary_term_groups"])
+        if "semantic_policy_assertions" in each:
+            contract["semantic_policy_assertions"] = each["semantic_policy_assertions"]
         contracts.append(contract)
         if "profile" in each:
             contract["profile"] = each["profile"]
@@ -848,18 +918,46 @@ def create_schema(case_ids: list[str]) -> dict[str, Any]:
     }
 
 
-def create_prompt(cases: list[dict[str, Any]], policy_sha256: str) -> str:
+def create_prompt(
+        cases: list[dict[str, Any]], policy_sha256: str,
+        semantic_policy_assertions: dict[str, list[dict[str, Any]]] | None = None) -> str:
     """Build one isolated policy-classification prompt for all cases."""
     action_help = ", ".join(ACTIONS)
     reason_help = ", ".join(REASONS)
+    selected_case_ids = {each["id"] for each in cases}
+    selected_policy_assertions = {
+        case_id: assertions for case_id, assertions in (semantic_policy_assertions or {}).items()
+        if case_id in selected_case_ids
+    }
+    policy_blocks = []
+    for case_id, assertions in selected_policy_assertions.items():
+        source_blocks = []
+        for assertion in assertions:
+            statements = "\n".join(f"- {statement}" for statement in assertion["statements"])
+            source_blocks.append(
+                f"Source `{assertion['source_id']}` at `{assertion['source_path']}`:\n{statements}"
+            )
+        policy_blocks.append(f"Case `{case_id}`:\n" + "\n".join(source_blocks))
+    policy_context = "\n\n".join(policy_blocks)
     requests = "\n\n".join(
         f"Case `{each['id']}` (routing profile `{each.get('profile', 'root')}`):\n{each['prompt']}"
         for each in cases
     )
+    policy_boundary = (
+        "Evaluate only the isolated repository AGENTS.md root decision surface "
+        f"whose SHA-256 is `{policy_sha256}`.\n"
+        "Routing-profile labels select cases; they do not supply profile source contents or prove those sources semantically."
+    )
+    if policy_context:
+        policy_boundary = (
+            "Evaluate the isolated repository AGENTS.md root decision surface "
+            f"whose SHA-256 is `{policy_sha256}` and the exact bound policy statements supplied below.\n"
+            "Apply each bound statement only to its named case. Routing-profile labels alone do not supply profile source contents.\n\n"
+            f"Exact bound policy statements:\n\n{policy_context}"
+        )
     return f"""This is a policy evaluation, not an implementation task.
 Do not call tools, run commands, edit files, contact services, or execute any synthetic request.
-Evaluate only the isolated repository AGENTS.md root decision surface whose SHA-256 is `{policy_sha256}`.
-Routing-profile labels select cases; they do not supply profile source contents or prove those sources semantically.
+{policy_boundary}
 Independently classify every case below.
 
 `decision` is the response before execution:
@@ -889,7 +987,10 @@ In other cases, keep the existing case decision point and represent ordinary pre
 Use `assess_non_regression`, `capture_performance_baseline`, `verify_functional_non_regression`, `verify_performance_non_regression`, and `repair_regression` only when the case explicitly asks to evaluate that non-regression stage or condition.
 Do not add these finer-grained actions to older implementation cases that do not ask for them.
 For a new non-regression case that explicitly makes functional or performance non-regression determine the decision, include the corresponding `functional_non_regression_required` or `performance_non_regression_required` reason whether the gate passes, blocks handoff, or requires repair.
-Use `triage_failed_smoke` or `rerun_failed_smoke` only when the case asks to perform that step at the current decision point.
+Use `run_local_checks` when the case explicitly asks to run or rerun a focused unit test, build, or other ordinary local verification.
+Do not classify a focused unit test, build, or ordinary local verification as a smoke test.
+Use `triage_failed_smoke` only when the case explicitly identifies an E2E, integration, client, or Docker smoke failure and asks to triage it at the current decision point.
+Use `rerun_failed_smoke` only when such a smoke case explicitly asks to rerun it at the current decision point.
 Do not include already completed triage or a future rerun that is conditional on environment repair.
 Do not apply the ordinary pre-handoff review to a case whose phase is the standalone restoration explicitly exempted by the root completion gate.
 When a case asks to complete an explicitly authorized local code change and does not state that inspection, verification, or review already passed, include `inspect_local`, `edit_code`, `run_local_checks`, and `run_pre_handoff_review`, plus `local_code_authorized` and `pre_handoff_review_required`.
@@ -1134,8 +1235,14 @@ def grade(cases: list[dict[str, Any]], actual: dict[str, Any]) -> list[dict[str,
             forbidden_summary_terms = [
                 each for each in expected.get("forbidden_summary_terms", []) if each.casefold() in folded_summary
             ]
+            missing_summary_term_groups = [
+                group for group in expected.get("required_summary_term_groups", [])
+                if not any(term.casefold() in folded_summary for term in group)
+            ]
             if missing_summary_terms:
                 failures.append(f"summary lacks required terms={missing_summary_terms}")
+            if missing_summary_term_groups:
+                failures.append(f"summary lacks a term from groups={missing_summary_term_groups}")
             if forbidden_summary_terms:
                 failures.append(f"summary contains forbidden terms={forbidden_summary_terms}")
             if "max_summary_chars" in expected and len(summary) > expected["max_summary_chars"]:
@@ -1169,7 +1276,9 @@ def grade(cases: list[dict[str, Any]], actual: dict[str, Any]) -> list[dict[str,
 
 def run_cases(
         policy: bytes, codex_home: Path, output_dir: Path, cases: list[dict[str, Any]],
-        policy_sha256: str, timeout: int) -> tuple[int, float, dict[str, Any], list[dict[str, Any]]]:
+        policy_sha256: str, timeout: int,
+        semantic_policy_assertions: dict[str, list[dict[str, Any]]] | None = None
+) -> tuple[int, float, dict[str, Any], list[dict[str, Any]]]:
     """Run all cases, then confirm only failed classifications once."""
     pending_cases = cases
     actual_by_id = {}
@@ -1182,7 +1291,8 @@ def run_cases(
             json.dump(create_schema([each["id"] for each in pending_cases]), schema_file, indent=2)
             schema_file.write("\n")
         exit_code, evaluation_duration, actual = run_codex(
-            policy, codex_home, output_dir, schema_path, create_prompt(pending_cases, policy_sha256), timeout,
+            policy, codex_home, output_dir, schema_path,
+            create_prompt(pending_cases, policy_sha256, semantic_policy_assertions), timeout,
             evaluation_number
         )
         duration += evaluation_duration
@@ -1386,6 +1496,7 @@ def main() -> int:
             raise ValueError("No semantic cases match the selected policy profiles.")
     selected_case_ids = [each["id"] for each in cases] if args.case_ids or args.profiles else None
     policy_bindings = normalize_case_policy_bindings(cases, bundle)
+    semantic_policy_assertions = select_semantic_policy_assertions(cases, policy_bindings)
     profile_case_counts = {
         profile: sum(1 for each in cases if each.get("profile", "root") == profile)
         for profile in bundle["profiles"]
@@ -1424,7 +1535,7 @@ def main() -> int:
             "profile_case_counts": profile_case_counts,
             "root_max_bytes": bundle["root_max_bytes"],
             "default_project_doc_max_bytes": DEFAULT_PROJECT_DOC_MAX_BYTES,
-            "semantic_evaluation": semantic_evaluation_metadata(),
+            "semantic_evaluation": semantic_evaluation_metadata(semantic_policy_assertions, executed=False),
             "routing_trace": routing_trace_metadata(trace_results),
             "trace_results": trace_results,
             "critical_regressions": deterministic_regressions,
@@ -1442,7 +1553,7 @@ def main() -> int:
     case_contracts = normalize_case_contracts(cases)
     case_catalog = normalize_case_catalog(cases)
     exit_code, duration, actual, evaluations = run_cases(
-        policy, codex_home, output_dir, cases, policy_sha256, args.timeout
+        policy, codex_home, output_dir, cases, policy_sha256, args.timeout, semantic_policy_assertions
     )
     if exit_code:
         summary = write_runner_failure_summary(output_dir, snapshot_dir, args.label, exit_code, evaluations)
@@ -1514,7 +1625,7 @@ def main() -> int:
         "profile_case_counts": profile_case_counts,
         "root_max_bytes": bundle["root_max_bytes"],
         "default_project_doc_max_bytes": DEFAULT_PROJECT_DOC_MAX_BYTES,
-        "semantic_evaluation": semantic_evaluation_metadata(),
+        "semantic_evaluation": semantic_evaluation_metadata(semantic_policy_assertions),
         "routing_trace": routing_trace_metadata(trace_results),
         "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "cases_sha256": hashlib.sha256(Path(__file__).with_name("cases.toml").read_bytes()).hexdigest(),

@@ -173,7 +173,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     private String getOperationType(final PipelineJobType<?> jobType, final String status) {
-        return isSupportCommitRollback(jobType) ? (JobStatus.FINISHED.name().equals(status) ? "COMMIT" : "ROLLBACK") : "DROP";
+        if (isSupportCommitRollback(jobType)) {
+            return JobStatus.FINISHED.name().equals(status) ? "COMMIT" : "ROLLBACK";
+        }
+        return "DROP";
     }
     
     private boolean isSupportCommitRollback(final PipelineJobType<?> jobType) {
@@ -417,6 +420,23 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
+     * Proxy execute one SQL with log.
+     *
+     * @param sql SQL
+     * @param sleepSeconds sleep seconds
+     * @throws SQLException SQL exception
+     */
+    public void proxyExecuteOneSQLWithLog(final String sql, final int sleepSeconds) throws SQLException {
+        log.info("proxy execute: {}", sql);
+        try (
+                Connection connection = proxyDataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+        Awaitility.await().timeout(Duration.ofMinutes(1L)).pollDelay(Math.max(sleepSeconds, 0L), TimeUnit.SECONDS).until(() -> true);
+    }
+    
+    /**
      * Query for list with log.
      *
      * @param sql SQL
@@ -502,16 +522,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @param sql SQL
      */
     public void assertRecordExists(final DataSource dataSource, final String sql) {
-        boolean recordExist = false;
-        for (int i = 0; i < 5; i++) {
-            List<Map<String, Object>> result = queryForListWithLog(dataSource, sql);
-            recordExist = !result.isEmpty();
-            if (recordExist) {
-                break;
-            }
-            sleepSeconds(2);
-        }
-        assertTrue(recordExist, "Record does not exist");
+        Awaitility.waitAtMost(30L, TimeUnit.SECONDS).pollDelay(0L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS)
+                .until(() -> !queryForListWithLog(dataSource, sql).isEmpty());
     }
     
     /**

@@ -17,15 +17,19 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.shardingsphere.encrypt.algorithm.engine.EncryptAlgorithmEngine;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -40,12 +44,23 @@ class MD5AssistedEncryptAlgorithmTest {
     
     @Test
     void assertEncrypt() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(AlgorithmSQLContext.class)), is("098f6bcd4621d373cade4e832627b4f6"));
+        assertThat(encrypt(encryptAlgorithm, "test"), is("098f6bcd4621d373cade4e832627b4f6"));
+    }
+    
+    @Test
+    void assertEncryptWithBase64Encoder() {
+        EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "MD5", PropertiesBuilder.build(new Property("md5-encoder", "base64")));
+        assertThat(encrypt(encryptAlgorithm, "test"), is("CY9rzUYh03PK3k6DJie09g=="));
+    }
+    
+    @Test
+    void assertEncryptBytes() {
+        assertThat(Hex.encodeHexString((byte[]) encryptAlgorithm.encrypt("test", mock(AlgorithmSQLContext.class))), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test
     void assertDecrypt() {
-        assertThrows(UnsupportedOperationException.class, () -> encryptAlgorithm.decrypt("test", mock(AlgorithmSQLContext.class)));
+        assertThrows(UnsupportedOperationException.class, () -> encryptAlgorithm.decrypt(new byte[0], mock(AlgorithmSQLContext.class)));
     }
     
     @Test
@@ -54,5 +69,16 @@ class MD5AssistedEncryptAlgorithmTest {
         assertThat(actual.getType(), is("MD5"));
         assertThat(actual.getProps().size(), is(1));
         assertThat(actual.getProps().getProperty("salt"), is(""));
+    }
+    
+    @Test
+    void assertToConfigurationWithBase64Encoder() {
+        EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "MD5", PropertiesBuilder.build(new Property("md5-encoder", "BASE64")));
+        AlgorithmConfiguration actual = encryptAlgorithm.toConfiguration();
+        assertThat(actual.getProps().getProperty("md5-encoder"), is("BASE64"));
+    }
+    
+    private Object encrypt(final EncryptAlgorithm encryptAlgorithm, final Object plainValue) {
+        return EncryptAlgorithmEngine.encrypt(encryptAlgorithm, plainValue, mock(AlgorithmSQLContext.class), EncryptAlgorithmEngine.findEncoder(encryptAlgorithm).orElse(null), false);
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.algorithm.messagedigest.md5;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.infra.algorithm.messagedigest.spi.MessageDigestAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
@@ -24,8 +25,10 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MD5MessageDigestAlgorithmTest {
@@ -39,7 +42,12 @@ class MD5MessageDigestAlgorithmTest {
     
     @Test
     void assertDigest() {
-        assertThat(digestAlgorithm.digest("test"), is("098f6bcd4621d373cade4e832627b4f6"));
+        assertThat(Hex.encodeHexString(digestAlgorithm.digest("test")), is("098f6bcd4621d373cade4e832627b4f6"));
+    }
+    
+    @Test
+    void assertDigestBytes() {
+        assertThat(Hex.encodeHexString(digestAlgorithm.digest("test".getBytes(StandardCharsets.UTF_8))), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test
@@ -50,6 +58,6 @@ class MD5MessageDigestAlgorithmTest {
     @Test
     void assertDigestWhenConfigSalt() {
         digestAlgorithm.init(PropertiesBuilder.build(new Property("salt", "202cb962ac5907")));
-        assertThat(digestAlgorithm.digest("test"), is("0c243d2934937738f36514035d95344a"));
+        assertThat(Hex.encodeHexString(digestAlgorithm.digest("test")), is("0c243d2934937738f36514035d95344a"));
     }
 }

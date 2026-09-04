@@ -21,8 +21,8 @@ import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfigura
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class YamlSQLFederationRuleConfigurationSwapperTest {
     

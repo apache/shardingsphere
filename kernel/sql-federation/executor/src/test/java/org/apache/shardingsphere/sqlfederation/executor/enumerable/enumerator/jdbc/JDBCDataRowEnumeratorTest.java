@@ -29,8 +29,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -92,5 +92,53 @@ class JDBCDataRowEnumeratorTest {
         JDBCDataRowEnumerator enumerator = new JDBCDataRowEnumerator(mock(MergedResult.class), mock(QueryResultMetaData.class), Collections.singleton(statement));
         SQLWrapperException actualException = assertThrows(SQLWrapperException.class, enumerator::close);
         assertThat(actualException.getCause(), isA(SQLException.class));
+    }
+    
+    @Test
+    void assertCloseClosesRemainingStatementsAfterFailure() throws SQLException {
+        Statement failedStatement = mock(Statement.class);
+        SQLException expectedException = new SQLException("failed to close");
+        doThrow(expectedException).when(failedStatement).close();
+        Statement secondStatement = mock(Statement.class);
+        Statement thirdStatement = mock(Statement.class);
+        JDBCDataRowEnumerator enumerator = new JDBCDataRowEnumerator(
+                mock(MergedResult.class), mock(QueryResultMetaData.class), Arrays.asList(failedStatement, secondStatement, thirdStatement));
+        SQLWrapperException actualException = assertThrows(SQLWrapperException.class, enumerator::close);
+        assertThat(actualException.getCause(), is(expectedException));
+        verify(secondStatement).close();
+        verify(thirdStatement).close();
+        assertNull(enumerator.current());
+    }
+    
+    @Test
+    void assertCloseContinuesWhenTwoStatementsThrowTheSameException() throws SQLException {
+        SQLException sharedException = new SQLException("shared failure");
+        Statement firstStatement = mock(Statement.class);
+        doThrow(sharedException).when(firstStatement).close();
+        Statement secondStatement = mock(Statement.class);
+        doThrow(sharedException).when(secondStatement).close();
+        Statement thirdStatement = mock(Statement.class);
+        JDBCDataRowEnumerator enumerator = new JDBCDataRowEnumerator(
+                mock(MergedResult.class), mock(QueryResultMetaData.class), Arrays.asList(firstStatement, secondStatement, thirdStatement));
+        SQLWrapperException actualException = assertThrows(SQLWrapperException.class, enumerator::close);
+        assertThat(actualException.getCause(), is(sharedException));
+        verify(thirdStatement).close();
+        assertNull(enumerator.current());
+    }
+    
+    @Test
+    void assertCloseSuppressesLaterFailures() throws SQLException {
+        Statement firstStatement = mock(Statement.class);
+        SQLException firstException = new SQLException("first");
+        doThrow(firstException).when(firstStatement).close();
+        Statement secondStatement = mock(Statement.class);
+        SQLException secondException = new SQLException("second");
+        doThrow(secondException).when(secondStatement).close();
+        JDBCDataRowEnumerator enumerator = new JDBCDataRowEnumerator(
+                mock(MergedResult.class), mock(QueryResultMetaData.class), Arrays.asList(firstStatement, secondStatement));
+        SQLWrapperException actualException = assertThrows(SQLWrapperException.class, enumerator::close);
+        assertThat(actualException.getCause(), is(firstException));
+        assertThat(actualException.getCause().getSuppressed().length, is(1));
+        assertThat(actualException.getCause().getSuppressed()[0], is(secondException));
     }
 }

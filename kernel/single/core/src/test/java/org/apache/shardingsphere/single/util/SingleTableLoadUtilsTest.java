@@ -36,14 +36,14 @@ import org.mockito.MockedConstruction;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -91,6 +91,13 @@ class SingleTableLoadUtilsTest {
         DataNode expectedDataNode2 = new DataNode("bar_ds", "foo_db", "bar_tbl");
         assertThat(SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, Arrays.asList("foo_ds.foo_tbl", "bar_ds.bar_tbl")),
                 is(new LinkedList<>(Arrays.asList(expectedDataNode1, expectedDataNode2))));
+    }
+    
+    @Test
+    void assertConvertToDataNodesWithDefaultSchemaName() {
+        Collection<DataNode> expected = Arrays.asList(new DataNode("foo_ds", "foo_schema", "foo_tbl"), new DataNode("bar_ds", "foo_schema", "schema.bar_tbl.part"));
+        assertThat(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName("foo_schema", databaseType, Arrays.asList("foo_ds.foo_tbl", "bar_ds.schema.bar_tbl.part")),
+                is(new LinkedList<>(expected)));
     }
     
     @Test

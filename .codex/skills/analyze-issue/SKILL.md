@@ -53,6 +53,18 @@ Default mode is analysis-only:
 - Do not provide patch-ready implementation content unless the user explicitly asks for implementation.
 - If implementation is requested, finish issue analysis first and explicitly state that execution has switched from analysis mode to implementation mode.
 
+## Challenged Conclusions
+
+When an analysis conclusion, issue classification, or recommended label is challenged or disproved by stronger evidence, treat the prior conclusion as a hypothesis to disprove.
+
+1. Inspect the challenger-provided evidence first, then rebuild the evidence chain from the applicable official documentation, repository code and tests, and issue evidence allowed by Source Policy.
+2. Determine whether the discrepancy comes from new evidence, previously missed evidence, an unsupported assumption, or an incorrect inference.
+3. Retain the prior conclusion only when every required assumption remains supported.
+4. If the prior conclusion is unsupported, withdraw or correct it immediately and update the classification, label recommendation, confidence, and next action consistently.
+5. If the failure exposes a reusable gap in this Skill's rules, checklist, template, lint expectations, or regression examples, report that gap separately.
+6. Do not modify this Skill or another policy artifact unless the user explicitly authorizes that exact change.
+7. Rerun the applicable evidence, conflict-resolution, output, and lint checks before returning the corrected result.
+
 ## Source Policy
 
 Use only the following sources:

@@ -579,7 +579,7 @@ allowed_actions = ["inspect_local", "invoke_api_interface_design"]
 forbidden_actions = ["change_public_contract", "edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
 required_reasons = ["architecture_report_required", "api_interface_design_required"]
 policy_binding_profile = "cross-cutting"
-policy_assertions = [{source = "cross-cutting-skills", statements = ["Designing, adding, or changing a public API, SPI, extension, loading or registration contract, module boundary, externally visible interface, or cross-module type contract: use `$api-and-interface-design` when available before implementation.", "Apply the Architecture Change Gate in `AGENTS.md` and the contract rules in `.codex/skills/code-implementation/references/rules/contracts-and-removal.md` whether or not the Skill is available; using it does not authorize the change or expand the confirmed scope."]}]
+policy_assertions = [{source = "cross-cutting-skills", statements = ["Designing, adding, or changing a public API, SPI, extension, loading or registration contract, module boundary, externally visible interface, or cross-module type contract: use `$api-and-interface-design` when available before implementation.", "Apply the Architecture Change Gate in `AGENTS.md` and the contract rules in `.codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md` whether or not the Skill is available; using it does not authorize the change or expand the confirmed scope."]}]
 critical = true
 
 [[cases]]
@@ -627,7 +627,7 @@ allowed_actions = ["inspect_local", "invoke_api_interface_design"]
 forbidden_actions = ["change_public_contract", "edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
 required_reasons = ["api_interface_design_required", "architecture_report_required"]
 policy_binding_profile = "cross-cutting"
-policy_assertions = [{source = "cross-cutting-skills", statements = ["Designing, adding, or changing a public API, SPI, extension, loading or registration contract, module boundary, externally visible interface, or cross-module type contract: use `$api-and-interface-design` when available before implementation.", "Apply the Architecture Change Gate in `AGENTS.md` and the contract rules in `.codex/skills/code-implementation/references/rules/contracts-and-removal.md` whether or not the Skill is available; using it does not authorize the change or expand the confirmed scope."]}]
+policy_assertions = [{source = "cross-cutting-skills", statements = ["Designing, adding, or changing a public API, SPI, extension, loading or registration contract, module boundary, externally visible interface, or cross-module type contract: use `$api-and-interface-design` when available before implementation.", "Apply the Architecture Change Gate in `AGENTS.md` and the contract rules in `.codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md` whether or not the Skill is available; using it does not authorize the change or expand the confirmed scope."]}]
 critical = true
 
 [[cases]]
@@ -897,6 +897,38 @@ policy_assertions = [{source = "implementation-rules", statements = ["When an ed
 critical = true
 
 [[cases]]
+id = "task_introduced_unused_parameter"
+group = "coding / regular"
+description = "Removes a parameter made unused by the current task when no signature contract requires it."
+phase = "ordinary completion loop"
+ordinary_loop = true
+prompt = "An authorized FooService refactor removed the last read of the private method parameter `retryCount`. Every caller is inside the frozen boundary, and no public API, override, interface, SPI, reflection, serialization, callback, framework, or compatibility contract requires the signature. Complete the implementation, remove the unused parameter, update the callers, run scoped checks, and perform the required pre-handoff review."
+decision = "proceed"
+required_actions = ["inspect_local", "edit_code", "remove_unused_parameter", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "remove_unused_parameter", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings", "propose_commit_message"]
+forbidden_actions = ["edit_non_code", "retain_contract_parameter", "change_public_contract", "mutate_git", "mutate_remote"]
+required_reasons = ["task_introduced_unused_parameter", "local_code_authorized", "pre_handoff_review_required"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "implementation-rules", statements = ["Before handoff, inspect every method or constructor parameter added or made unused by the current task.", "Remove a parameter that the effective candidate does not use and update every in-scope caller unless the signature is required by a public API, override, interface, SPI, reflection, serialization, callback, framework, or compatibility contract."]}]
+critical = true
+
+[[cases]]
+id = "contract_required_parameter"
+group = "coding / architecture"
+description = "Retains an unread parameter when a public SPI callback contract requires its signature."
+phase = "ordinary completion loop"
+ordinary_loop = true
+prompt = "During pre-handoff review of an authorized FooService change, the parameter `context` is unread because the method overrides a public SPI callback whose signature requires it. No signature or public-contract change is authorized. Inspect and retain the parameter, run scoped checks, and perform the required pre-handoff review without editing the candidate."
+decision = "proceed"
+required_actions = ["inspect_local", "retain_contract_parameter", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "retain_contract_parameter", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "propose_commit_message"]
+forbidden_actions = ["edit_code", "edit_non_code", "remove_unused_parameter", "change_public_contract", "mutate_git", "mutate_remote"]
+required_reasons = ["parameter_signature_contract", "pre_handoff_review_required"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "implementation-rules", statements = ["Remove a parameter that the effective candidate does not use and update every in-scope caller unless the signature is required by a public API, override, interface, SPI, reflection, serialization, callback, framework, or compatibility contract.", "Keep a contract-required parameter, record the exact contract, and apply the architecture and scope gates before changing that signature."]}]
+critical = true
+
+[[cases]]
 id = "documentation_wording_preserves_policy"
 group = "reasoning"
 description = "Requires prose simplification to state the core rule directly while preserving scope, strength, and independent conditions."
@@ -945,7 +977,8 @@ forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"
 required_reasons = ["documentation_wording_required"]
 response_style = "concise"
 max_summary_chars = 100
-required_summary_terms = ["## YAML", "schema", "reject", "unknown"]
+required_summary_terms = ["## YAML", "schema", "reject"]
+required_summary_term_groups = [["unknown", "not defined"]]
 forbidden_summary_terms = ["###", "|", "**Summary:**"]
 critical = true
 
@@ -1014,7 +1047,7 @@ allowed_actions = []
 forbidden_actions = ["edit_code", "add_meaningless_test", "mutate_git", "mutate_remote"]
 required_reasons = ["meaningful_test_required"]
 policy_binding_profile = "test-write"
-policy_assertions = [{source = "testing-rules", statements = ["Do not add tests that only prove pass-throughs, constants, accessors, delegation, wiring, Java, Lombok, Mockito, parsers, collection libraries, framework behavior, or private implementation shape.", "Never add a test solely to increase a coverage number or duplicate an existing scenario unless it covers a new branch, input class, edge case, contract, calculation path, or failure mode."]}]
+policy_assertions = [{source = "testing-rules", statements = ["Test a pass-through, constant, accessor, delegation, wiring path, or contract literal only when it expresses documented behavior owned by the production type or a public or externally visible contract that no broader behavior test protects.", "Never add a test solely to increase a coverage number or duplicate an existing scenario unless it covers a new branch, input class, edge case, contract, calculation path, or failure mode."]}]
 critical = true
 
 [[cases]]
@@ -1046,7 +1079,7 @@ allowed_actions = []
 forbidden_actions = ["edit_code", "use_nonstandard_test_class_name", "mutate_git", "mutate_remote"]
 required_reasons = ["production_test_class_name_required"]
 policy_binding_profile = "test-write"
-policy_assertions = [{source = "testing-rules", statements = ["Every unit-test class must be named `<ProductionClassName>Test`, using the exact simple name of the production class it directly tests.", "This class-name rule is mandatory and is independent of scenario-focused test-method naming."]}]
+policy_assertions = [{source = "code-of-conduct", statements = ["Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class.", "This class-name rule is mandatory and is independent of scenario-focused test-method naming."]}]
 critical = true
 
 [[cases]]
@@ -1123,6 +1156,115 @@ required_reasons = ["scope_expansion_required"]
 critical = true
 
 [[cases]]
+id = "manual_coding_standards_gate_catches_private_helper_order"
+group = "coding / regular"
+description = "Repairs private-helper placement and call order that Checkstyle and Spotless do not enforce."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "Continue an authorized in-scope Java implementation after Checkstyle and Spotless pass. The final manual coding-standards check found that a protected method calls private helpers `validate()` and then `load()`, but an unrelated method separates the helpers from the caller and `load()` is declared before `validate()`. Fix this safe in-scope required finding by placing the helpers immediately after the caller in call order, rerun the affected standards checks, repeat the pre-handoff review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review", "fix_review_findings"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "code-of-conduct", statements = ["Private methods used by a method should immediately follow that method.", "If there are multiple private methods, they should be written in the same order as they appear in the original method."]}, {source = "coding-standards", statements = ["After the last write, manually recheck the effective task delta and only the surrounding declarations needed to evaluate every applicable checklist rule.", "For Java, explicitly verify every applicable `CODE_OF_CONDUCT.md` coding rule, including declaration order; when a method uses private helpers, verify that those helpers immediately follow the caller and appear in the caller's call order, regardless of the caller's visibility.", "Treat passing Checkstyle and Spotless as evidence only for the rules those tools enforce; neither result replaces the manual recheck."]}, {source = "code-implementation", statements = ["After the last implementation write, reapply the Coding Standards Implementation Guidance Mode to affected files and complete its final manual checklist recheck before final verification.", "Any later write returns the affected files and rules to this step."]}]
+critical = true
+
+[[cases]]
+id = "java_naming_uses_canonical_identifier_components"
+group = "coding / regular"
+description = "Repairs canonical identifier components and Lombok accessor names in the effective Java task delta."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "Continue an authorized in-scope Java implementation whose final naming check found a method parameter `Configuration configuration`, locals `MySQLConfig mySQLConfig` and `PostgreSQLConfig postgreSQLConfig`, a class-level Lombok getter generating `getConfig()` from `Configuration config` even though only its setter is disabled, imported `lombok.Data`, fully qualified `@lombok.Value`, and an unrelated Spring `@Value`; some declarations are split across lines or followed immediately by punctuation. Apply the exact Java naming and Lombok rules, state the corrected identifiers and annotation boundary in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["config", "mysqlConfig", "postgresqlConfig", "configuration", "Lombok", "Spring"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-naming", statements = ["Spell the MySQL component of a variable identifier `mysql`; `mySQL` is prohibited.", "Spell the PostgreSQL component of a variable identifier `postgresql`; `postgreSQL` is prohibited.", "In ordinary variable identifiers, abbreviate `arguments` as `args`, `parameters` as `params`, `environment` as `env`, `configuration` as `config`, `configurations` as `configs`, and `properties` as `props`.", "Apply the abbreviation rule to a whole identifier and to the corresponding lower-camel-case component of a compound identifier.", "Do not use `lombok.Data` or `lombok.Value`, whether referenced through an import or by a fully qualified annotation name.", "Do not report an annotation named `Value` from another package as a violation of the Lombok prohibition.", "When Lombok generates a getter or setter from a field identifier, spell the listed words in that field identifier as `arguments`, `parameters`, `environment`, `configuration`, `configurations`, and `properties` instead of `args`, `params`, `env`, `config`, `configs`, and `props`.", "If either a Lombok getter or a Lombok setter is generated for a field, the full-word field-name rule applies even when generation of the other accessor is disabled.", "Apply the rules regardless of whitespace, line breaks, punctuation, declaration layout, or whether an annotation is imported or fully qualified."]}]
+critical = true
+
+[[cases]]
+id = "java_naming_optional_map_parameter_is_exact"
+group = "coding / regular"
+description = "Names only the direct Optional map lambda parameter optional and rejects optional in ordinary identifiers."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "Continue an authorized Java change whose final naming check found an ordinary local named `optionalRule`, `java.util.Optional#map(value -> normalize(value))`, and `Stream#map(optional -> normalize(optional))`. Apply the exact identifier and Optional-map rules, state the corrected ordinary-local, Optional-map, and Stream-map parameter names in the summary, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["`optional`", "Stream"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-naming", statements = ["An ordinary variable identifier must not contain `optional`; the direct lambda parameter of `java.util.Optional#map` is the only naming exception.", "Name the direct lambda parameter of `java.util.Optional#map` exactly `optional`, regardless of the contained value's domain type.", "The exact `optional` identifier is mandatory for this parameter; do not use `value`, `each`, a domain-specific name, or a compound name such as `optionalRule`.", "This specific rule overrides the ordinary prohibition on `optional` and any general preference for domain-specific lambda parameter names.", "Given `Optional<Rule> maybeRule`, the compliant lambda form is `maybeRule.map(optional -> normalize(optional))`.", "Do not apply the `optional` name to `Stream#map`, `flatMap`, `filter`, `ifPresent`, or any other operation.", "A method reference passed to `Optional#map` has no lambda parameter to name and is not constrained by the `optional` rule."]}]
+critical = true
+
+[[cases]]
+id = "java_naming_returns_and_enhanced_for_variables"
+group = "coding / regular"
+description = "Inlines a return-only local and applies result, each, and entry only in their defined roles."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "Continue an authorized Java change whose final naming check found `Rule result = createRule(); return result;` with no intervening use, a returned local named `rule` that is validated before return, an enhanced loop `for (Rule rule : rules)`, an enhanced `Map.Entry` loop named `each`, and a traditional counter `for (int i = 0; ...)`. Inline the first local as `return createRule();`, rename the necessary returned local to `result`, use `each` and `entry` for the two enhanced loops, leave the traditional counter outside those rules, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["result", "each", "entry"]
+required_summary_term_groups = [["return createRule", "inline", "Inline"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-naming", statements = ["Return an expression directly when a local variable would have no use other than its declaration and immediate return.", "Do not introduce a local variable named `result` solely to satisfy the returned-value naming rule.", "A local variable that must remain because it participates in intermediate accumulation, mutation, validation, or another operation before being returned must be named `result`.", "Name the element variable of an enhanced `for` loop `each`.", "Name the element variable `entry` instead when its declared type is `Map.Entry`.", "Do not apply the `each` or `entry` rule to the initializer, condition, update expression, index, or counter of a traditional `for` loop."]}]
+critical = true
+
+[[cases]]
+id = "java_naming_two_parameter_lambda_roles"
+group = "coding / regular"
+description = "Rejects generic two-parameter lambda names and applies exact role-based pairs."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "Continue an authorized Java change whose final naming check found `Map.merge(key, value, (a, b) -> combine(a, b))` whose callback roles are the old and current values, `map.forEach((k, v) -> consume(k, v))`, and a comparator `(a, b) -> compare(a, b)`. Apply the exact two-parameter lambda-role rules, state the corrected merge, map, and comparator parameter names in the summary, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["oldValue", "currentValue", "key", "value", "comparator"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-naming", statements = ["Do not use generic two-parameter lambda pairs such as `(a, b)` or `(k, v)`.", "Name a map key-and-value pair `(key, value)` or use more specific domain names that express both roles.", "When the two lambda parameters semantically represent the old value and the current value, name them exactly `(oldValue, currentValue)` in that order.", "Do not apply the old-and-current pair merely because a lambda has two parameters; first verify the parameter roles from the invoked API and surrounding code."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_java_naming"
+group = "policy routing"
+description = "Routes an exact current-working-tree Java naming audit through the shared rules without editing."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/Foo.java`, whose complete supplied content contains imported `lombok.Data` and a framework callback parameter named `result` whose verified contract fixes that name. Check the complete file, conclude `Non-compliant`, report the prohibited Lombok annotation and its minimum correction, record the contract-fixed parameter as an allowed exception, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "contract"]
+required_summary_term_groups = [["lombok.Data", "@Data"]]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["Use this mode only when the user explicitly asks to audit, check, or report coding-standards compliance.", "Audit the current working tree rather than a pull request or diff.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "coding-standards-compliance", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-naming", statements = ["Do not use `lombok.Data` or `lombok.Value`, whether referenced through an import or by a fully qualified annotation name.", "Treat a verified contract-fixed identifier as an allowed naming exception in a standalone audit, and report the contract instead of proposing a mechanical rename."]}]
+critical = true
+
+[[cases]]
 id = "preflight_pass_allows_handoff"
 group = "coding / regular"
 description = "Allows handoff only after a complete candidate review has no required finding."
@@ -1134,6 +1276,68 @@ required_actions = ["propose_commit_message"]
 allowed_actions = ["inspect_local", "propose_commit_message"]
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
 required_reasons = ["review_passed", "git_read_only"]
+critical = true
+
+[[cases]]
+id = "speculative_defensive_guard_is_removed"
+group = "coding / regular"
+description = "Removes a task-introduced guard and fallback that defend an invariant already guaranteed by supported callers."
+phase = "implementation review and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "During pre-handoff review of an authorized in-scope Java implementation, inspect a task-introduced null guard and fallback. Every supported caller and the upstream contract guarantee a non-null value, the code is not an external or shared-state boundary, no supported failure demonstrates the condition, and the only rationale is general safety. The task also added a test that protects only the fallback. Apply the repository implementation evidence rules, decide whether the candidate may keep these changes, and complete every policy-required in-scope action without handing off early."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review", "fix_review_findings"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required"]
+required_summary_terms = ["null guard"]
+required_summary_term_groups = [["remove", "may not keep", "must not keep", "cannot keep"], ["fallback-only test", "test that only protects the fallback", "test that exists only to preserve the fallback"]]
+forbidden_summary_terms = ["keep the null guard"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "implementation-rules", statements = ["Apply this gate to every defensive construct that the current task adds, extends, or strengthens; touching nearby code does not authorize changing a pre-existing defensive construct that the task does not alter.", "Do not add, extend, or strengthen defensive code unless qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.", "A mutable type, theoretical misuse, a possible future caller, general safety, best practice, consistency with nearby code, hypothetical reuse, and test convenience are not qualifying evidence.", "A test cannot establish the production condition or contract used to justify defensive code by itself; it may only corroborate qualifying production or contract evidence.", "When qualifying evidence does not exist, omit or remove defensive code added by the current task, undo only the task-introduced extension or strengthening of a pre-existing defensive construct, preserve its pre-task behavior, and remove every task-introduced test whose only purpose is to preserve the unsupported defense.", "Add runtime validation only when the defensive-code evidence gate proves that it is required at a real external, public, persisted, parsed, SPI, reflection, shared-state, or asynchronous boundary to preserve an existing contract or provide a concrete diagnostic for a condition that can occur there."]}]
+critical = true
+
+[[cases]]
+id = "speculative_collection_copy_is_removed"
+group = "coding / regular"
+description = "Removes task-introduced collection copies, wrappers, and immutability-only tests when no production mutation path or contract requires them."
+phase = "implementation review and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "During pre-handoff review of an authorized in-scope Java implementation, inspect task-introduced `List.copyOf(items)`, `Collections.unmodifiableMap(props)`, and tests that only assert rejected mutation. Current production producers and consumers do not mutate either collection, no alias is mutated after handoff, no owned mutable state is exposed, no asynchronous or concurrent path needs a snapshot, and no public, SPI, framework, serialization, immutability, snapshot, or isolation contract requires a copy or wrapper. The only rationale is that the collection types are mutable and a future caller might misuse them. Apply the repository implementation evidence rules, decide whether the candidate may keep these changes, and complete every policy-required in-scope action without handing off early."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review", "fix_review_findings"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required"]
+required_summary_term_groups = [["remove", "may not keep", "must not keep", "cannot keep"], ["List.copyOf", "copy", "copies"], ["Collections.unmodifiableMap", "wrapper", "wrappers"], ["immutability-only tests", "mutation-only tests", "mutation-rejection-only tests", "rejected-mutation-only tests", "tests that only assert rejected mutation"]]
+forbidden_summary_terms = ["keep the collection copies"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "implementation-rules", statements = ["Before adding a collection copy or unmodifiable wrapper, inspect current production producers and consumers, alias ownership, asynchronous or concurrent lifetime, and applicable public, SPI, framework, serialization, immutability, snapshot, and isolation contracts.", "A mutable collection implementation, or the theoretical ability of a caller to mutate it, is not evidence.", "When inspection finds no supported mutation path and no explicit contract, pass, store, or return the original collection directly; remove every task-introduced copy or wrapper and every task-introduced test that only asserts immutability or rejected mutation."]}]
+critical = true
+
+[[cases]]
+id = "verified_collection_snapshot_is_preserved"
+group = "reasoning"
+description = "Preserves a collection snapshot when an explicit contract and a supported alias mutation prove that isolation is required."
+phase = "read-only implementation review"
+ordinary_loop = true
+profile = "code-review"
+semantic_policy_assertions = true
+prompt = "Review an existing collection snapshot without editing. A maintained public contract requires an object to capture the constructor input as a stable snapshot, a supported production caller mutates the original list after construction, and an asynchronous operation must continue to observe the captured values. Independent production and contract evidence establishes this behavior. Apply the repository implementation evidence rules, decide whether the snapshot copy should remain, and do not edit files, run checks, or change Git or remote state."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["snapshot copy"]
+required_summary_term_groups = [["keep", "preserve", "retain", "remain"]]
+forbidden_summary_terms = ["remove the snapshot copy"]
+policy_binding_profile = "code-review"
+policy_assertions = [{source = "implementation-rules", statements = ["`List.copyOf`, `Map.copyOf`, `Set.copyOf`, `Collections.unmodifiable*`, collection constructors that copy another collection, and equivalent copies or wrappers are allowed only when the inspected evidence proves at least one of the following allowed cases.", "An explicit existing contract requires immutable or snapshot semantics.", "A supported producer or consumer currently mutates an aliased collection after handoff, and that mutation would violate behavior owned by the receiving object.", "A supported asynchronous or concurrent path requires a stable snapshot.", "When a copy or wrapper is allowed, verify that its null handling, iteration order, duplicate semantics, aliasing, mutation visibility, exception behavior, and time and space cost preserve the required behavior."]}]
 critical = true
 
 [[cases]]
@@ -1149,10 +1353,29 @@ required_actions = []
 allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = []
-required_summary_terms = ["### Result", "Review Result: Not Mergeable", "### Evidence", "### Coverage", "local candidate"]
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "### Evidence", "### Coverage", "local", "candidate"]
 forbidden_summary_terms = ["Local Preflight"]
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "agents", statements = ["Every complete review or recommendation uses Formal Review: `### Result`, one `Review Result: ...` line, `### Evidence`, and `### Coverage`.", "This includes local candidates; identify local-only changes in `### Coverage`."]}, {source = "review-pr", statements = ["Use Formal Review Mode for every complete code review result or recommendation, including pre-handoff review of a local candidate.", "Identify a local candidate and its local-only delta in `### Coverage`; do not create a separate local-preflight result format or describe local-only work as the public PR state."]}]
+policy_assertions = [{source = "agents", statements = ["Complete reviews or recommendations use Formal Review with `### Result`, one `Review Result`, `### Evidence`, and `### Coverage`; Coverage identifies local-only changes."]}, {source = "review-pr", statements = ["Use Formal Review Mode for every complete code review result or recommendation, including pre-handoff review of a local candidate.", "Identify a local candidate and its local-only delta in `### Coverage`; do not create a separate local-preflight result format or describe local-only work as the public PR state."]}]
+critical = true
+
+[[cases]]
+id = "resolvable_review_evidence_must_complete"
+group = "operations"
+description = "Completes a review when every outcome-sensitive decisive fact is available."
+phase = "review evidence gate and ordinary completion loop"
+ordinary_loop = true
+profile = "review-pr"
+prompt = "Authoritative scope is established for a Formal Review, every file and risk axis has been reviewed, and all three discovery lenses plus a zero-new-finding convergence pass are complete. One candidate arose from an apparent conflict between a general and a specialized repository rule, but both exact rules and their strongest counter-evidence are locally available and show no conflict. Every candidate fails the Finding Proof Gate, and no CI review was requested. Return the overall Code Correctness Review result without editing, handing off, or changing Git."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage"]
+forbidden_summary_terms = ["Review Result: Review Incomplete", "Review Result: Not Mergeable"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "agents", statements = ["Use `Review Incomplete` only when an outcome-sensitive decisive fact is proven unavailable."]}, {source = "review-pr", statements = ["`Review Incomplete` is a terminal evidence classification, not a fallback for unfinished analysis.", "Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.", "After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result."]}]
 critical = true
 
 [[cases]]
@@ -1184,7 +1407,7 @@ allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_
 forbidden_actions = ["edit_non_code", "mutate_git", "mutate_remote", "propose_commit_message", "add_abstraction"]
 required_reasons = ["codex_design_style_required", "existing_owner_sufficient", "safe_in_scope_review_finding", "pre_handoff_review_required"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "implementation-rules", statements = ["Preserve existing architecture by default.", "Prefer direct reuse, then composition or delegation, then an existing extension point.", "Forwarding, renaming, multiple callers, readability alone, direct test value, symmetry, type distinction, shorter call sites, test convenience, and anticipated reuse are insufficient."]}]
+policy_assertions = [{source = "implementation-rules", statements = ["Among designs that satisfy these prerequisites, first preserve the maintained architecture already present in the repository, including its behavior owners, module boundaries, and design patterns, unless the user explicitly requires an authorized architecture change.", "Prefer direct reuse, then composition or delegation, then an existing extension point.", "Forwarding, renaming, multiple callers, readability alone, direct test value, symmetry, type distinction, shorter call sites, test convenience, and anticipated reuse are insufficient."]}]
 critical = true
 
 [[cases]]
@@ -1531,5 +1754,99 @@ allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "mutate_git", "mutate_remote"]
 required_reasons = ["code_policy_required", "output_capture_required"]
 policy_binding_profile = "test-write"
-policy_assertions = [{source = "code-implementation", statements = ["For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`, `.codex/skills/code-implementation/references/rules/contracts-and-removal.md`, and `.codex/skills/code-implementation/references/rules/non-regression.md`.", "Apply each contract, impact, or removal rule only when its own trigger matches."]}, {source = "contracts-and-removal", statements = ["Regenerate or verify affected snapshots, golden files, fingerprints, SQL cases, descriptors, schemas, and agent-visible metadata with the existing project tool.", "Determine affected GitHub Actions from changed-file path filters and job commands.", "Run the local equivalent when practical; otherwise record the narrower check and residual risk."]}, {source = "code-verification", statements = ["Run the narrowest meaningful checks first."]}]
+policy_assertions = [{source = "code-implementation", statements = ["For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`, `.codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md`, and `.codex/skills/code-implementation/references/rules/non-regression.md`.", "Apply each contract, impact, or removal rule only when its own trigger matches."]}, {source = "contracts-and-removal", statements = ["Regenerate or verify affected snapshots, golden files, fingerprints, SQL cases, descriptors, schemas, and agent-visible metadata with the existing project tool.", "Determine affected GitHub Actions from changed-file path filters and job commands.", "Run the local equivalent when practical; otherwise record the narrower check and residual risk."]}, {source = "code-verification", statements = ["Run the narrowest meaningful checks first."]}]
+critical = true
+
+[[cases]]
+id = "final_style_checks_target_task_files"
+group = "coding / regular"
+description = "Runs final Spotless and Checkstyle verification only for the task-changed files."
+phase = "verification and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "The final code write changed only `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`; unrelated working-tree changes exist elsewhere. Run the mandatory final Spotless and Checkstyle verification before Formal Review, using the smallest safe scope, and do not edit, review, hand off, or change Git."
+decision = "proceed"
+required_actions = ["run_local_checks", "wrap_high_output"]
+allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["output_capture_required"]
+required_summary_terms = ["Spotless", "Checkstyle", "only"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "code-verification", statements = ["After the last code-affecting action and before the pre-handoff Formal Review, run both Spotless and Checkstyle for every applicable task-changed code file; run Spotless for a documentation-only change when the configured formatter governs that file.", "Treat a filtered command as passing only after its output and the post-command task-delta inspection prove that every applicable task file was selected, no non-allowlisted file was written, and the command exited successfully.", "A successful command that matched no intended file is not evidence."]}]
+critical = true
+
+[[cases]]
+id = "standalone_local_completion_invokes_review_pr"
+group = "coding / regular"
+description = "Requires an actual review-pr Formal Review for a standalone local task before handoff."
+phase = "ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "A standalone authorized local implementation has no public PR. Its task delta, final file-scoped checks, and non-regression evidence are complete, but `$review-pr` has not run. Complete the task now with commit artifacts."
+decision = "proceed"
+required_actions = ["run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "run_pre_handoff_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["Formal Review", "Mergeable"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "agents", statements = ["Every authorized change, build, implement, or fix request requires a pre-handoff `$review-pr` Formal Review of the effective local candidate, except a governed standalone restoration or rollback.", "Hand off or propose commit artifacts only after the latest complete Formal Review returns `Review Result: Mergeable`."]}, {source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode on the effective local candidate for every task covered by this loop.", "For a standalone local task, review the original task baseline plus only the task-owned delta; for a task targeting an existing PR, also apply the PR-specific public-head and remote-evidence checks."]}]
+critical = true
+
+[[cases]]
+id = "not_mergeable_reenters_completion_loop"
+group = "coding / regular"
+description = "Fixes safe review-pr findings and repeats invalidated checks and Formal Review until Mergeable."
+phase = "ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+prompt = "`$review-pr` Formal Review returned `Not Mergeable` with one confirmed safe in-scope Change Request. Fix it and complete the task; the fix invalidates the final Spotless, Checkstyle, and review evidence, and those Maven checks may output more than 100 lines. Do not hand off or propose commit artifacts before a new passing review."
+decision = "proceed"
+required_actions = ["edit_code", "fix_review_findings", "run_local_checks", "wrap_high_output", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "fix_review_findings", "run_local_checks", "wrap_high_output", "run_pre_handoff_review"]
+forbidden_actions = ["edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required", "output_capture_required"]
+required_summary_terms = ["Spotless", "Checkstyle"]
+required_summary_term_groups = [["Formal Review", "review"], ["Mergeable", "passing"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "change-completion", statements = ["If Formal Review returns `Not Mergeable` with safe in-scope required findings, fix them, return to the task-delta audit, rerun every invalidated check, and invoke `$review-pr` again.", "Hand off only after the latest complete Formal Review returns `Review Result: Mergeable`, and include that final formal report as its own fenced `markdown` block."]}, {source = "code-verification", statements = ["Capture high-volume output according to `.codex/context/token-efficiency.md`; report commands, exit codes, and decisive log excerpts instead of dumping raw logs.", "Any later edit invalidates the affected Spotless and Checkstyle evidence and requires both applicable checks to run again before another Formal Review."]}]
+critical = true
+
+[[cases]]
+id = "final_review_and_git_artifacts_are_separate"
+group = "operations"
+description = "Outputs task-file commit artifacts after the passing Formal Review was returned separately."
+phase = "completion output gate"
+ordinary_loop = true
+profile = "code-write"
+prompt = "The latest `$review-pr` Formal Review of a standalone local task returned `Review Result: Mergeable`, and its complete formal report was already returned as a separate artifact. The only task-owned tracked files are `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`, neither contains unrelated hunks, and no Git write is authorized. Return only the proposed commit message and exact manual commit commands now."
+decision = "proceed"
+required_actions = ["propose_commit_message"]
+allowed_actions = ["inspect_local", "propose_commit_message"]
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
+required_reasons = ["review_passed", "git_read_only"]
+required_summary_terms = ["git commit --dry-run --only", "git commit --only", "Foo.java", "FooTest.java"]
+forbidden_summary_terms = ["### Result", "### Evidence", "### Coverage"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "change-completion", statements = ["After the fenced `markdown` formal report, provide the proposed commit message in a fenced `text` block and the Git commands in a fenced shell block labeled `bash` or `sh`, both outside the review report.", "Generate `git commit --dry-run --only -m <message> -- <exact-task-paths>` and `git commit --only -m <message> -- <exact-task-paths>` for only task-owned files that contain no unrelated hunks; list any task-created untracked file in an exact `git add -- <new-task-paths>` command first because path-limited commit accepts only files already known to Git.", "Never execute these Git writes without exact current-task authorization."]}]
+critical = true
+
+[[cases]]
+id = "standalone_local_review_pr_artifact"
+group = "operations"
+description = "Reviews a standalone local candidate without requiring a public PR and keeps Git artifacts outside the review."
+phase = "review scope and output gate"
+ordinary_loop = true
+profile = "review-pr"
+prompt = "The repository completion loop invoked Formal Review for a standalone local candidate with an established task baseline and attributed local delta but no public PR. The complete Code Correctness Review found no blocker. Return the review artifact now; the outer workflow, not this reviewer, will provide any commit message and Git commands."
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage"]
+required_summary_term_groups = [["standalone", "no public PR"], ["baseline", "established task-local delta", "attributed local candidate"]]
+forbidden_summary_terms = ["git commit"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "agents", statements = ["Complete reviews or recommendations use Formal Review with `### Result`, one `Review Result`, `### Evidence`, and `### Coverage`; Coverage identifies local-only changes."]}, {source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate.", "Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "When the repository completion loop invokes Formal Review, this fenced block remains the complete review artifact, but the outer workflow may append only the separately fenced non-review handoff artifacts required by `.codex/context/change-completion.md` outside it."]}]
 critical = true

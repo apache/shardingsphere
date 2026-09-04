@@ -26,11 +26,11 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.route.strategy.type.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.hint.HintShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.standard.StandardShardingStrategy;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 /**
  * Sharding strategy factory.

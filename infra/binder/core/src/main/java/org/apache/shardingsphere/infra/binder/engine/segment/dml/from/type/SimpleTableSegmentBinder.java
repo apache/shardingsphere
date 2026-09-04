@@ -132,6 +132,9 @@ public final class SimpleTableSegmentBinder {
         Optional<OwnerSegment> owner = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? segment.getOwner().flatMap(OwnerSegment::getOwner) : segment.getOwner();
         IdentifierValue result = ownerDatabaseName.orElseGet(() -> new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(binderContext.getCurrentDatabaseName())));
         ShardingSpherePreconditions.checkNotNull(result.getValue(), NoDatabaseSelectedException::new);
+        if (binderContext.getHintValueContext().isSkipMetadataValidate() && !binderContext.getMetaData().containsDatabase(result)) {
+            return new IdentifierValue(binderContext.getCurrentDatabaseName());
+        }
         ShardingSpherePreconditions.checkState(binderContext.getMetaData().containsDatabase(result), () -> new UnknownDatabaseException(result.getValue()));
         return result;
     }
@@ -151,8 +154,10 @@ public final class SimpleTableSegmentBinder {
     
     private static Optional<IdentifierValue> getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext, final IdentifierValue databaseName) {
         Optional<IdentifierValue> result = getSchemaNameValue(segment, binderContext, databaseName);
-        result.ifPresent(identifierValue -> ShardingSpherePreconditions.checkState(binderContext.getMetaData().getDatabase(databaseName).containsSchema(identifierValue),
-                () -> new SchemaNotFoundException(identifierValue.getValue())));
+        if (!binderContext.getHintValueContext().isSkipMetadataValidate()) {
+            result.ifPresent(identifierValue -> ShardingSpherePreconditions.checkState(binderContext.getMetaData().getDatabase(databaseName).containsSchema(identifierValue),
+                    () -> new SchemaNotFoundException(identifierValue.getValue())));
+        }
         return result;
     }
     
@@ -383,6 +388,9 @@ public final class SimpleTableSegmentBinder {
         if (binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(tableNameValue)) {
             return;
         }
+        if (binderContext.getHintValueContext().isSkipMetadataValidate()) {
+            return;
+        }
         ShardingSpherePreconditions.checkState(null != schema && schema.containsTable(tableName), () -> new TableNotFoundException(tableNameValue));
     }
     
@@ -450,6 +458,7 @@ public final class SimpleTableSegmentBinder {
             return Optional.of(new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE));
         }
         SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        result.setSkipColumnBind(binderContext.getHintValueContext().isSkipMetadataValidate() && segment.getOwner().isPresent());
         segment.getDbLink().ifPresent(optional -> result.setContainsDBLink(true));
         return Optional.of(result);
     }

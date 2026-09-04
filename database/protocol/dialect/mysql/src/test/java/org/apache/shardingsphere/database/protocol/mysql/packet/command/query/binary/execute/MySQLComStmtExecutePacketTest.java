@@ -39,9 +39,8 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLComStmtExecutePacketTest {
@@ -139,7 +138,7 @@ class MySQLComStmtExecutePacketTest {
         List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
         Object actualValue = actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(parameterColumnType)).get(0);
         assertTrue(actualValue instanceof byte[]);
-        assertArrayEquals(new byte[]{(byte) 0xac, (byte) 0xed, (byte) 0xff}, (byte[]) actualValue);
+        assertThat((byte[]) actualValue, is(new byte[]{(byte) 0xac, (byte) 0xed, (byte) 0xff}));
     }
     
     private static Stream<Arguments> stringParameterTypesBoundToBlobColumnsArguments() {
@@ -173,7 +172,7 @@ class MySQLComStmtExecutePacketTest {
             assertThat(actualValue, is("a"));
             return;
         }
-        assertArrayEquals(new byte[]{0x61}, (byte[]) actualValue);
+        assertThat((byte[]) actualValue, is(new byte[]{0x61}));
     }
     
     private static Stream<Arguments> stringDecodingArguments() {

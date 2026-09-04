@@ -9,7 +9,7 @@ chapter = true
 ## 开发理念
 
  - **用心** 保持责任心和敬畏心，以工匠精神持续雕琢。
- - **可读** 代码无歧义，通过阅读而非调试手段浮现代码意图。
+ - **可读** 代码及其命名必须清晰、无歧义地表达意图，通过阅读即可理解，无需借助调试推断。
  - **整洁** 认同《重构》和《代码整洁之道》的理念，追求整洁优雅代码。
  - **一致** 代码风格、命名以及使用方式保持完全一致。
  - **精简** 极简代码，以最少的代码表达最正确的意思。高度复用，无重复代码和配置。及时删除无用代码。
@@ -18,21 +18,18 @@ chapter = true
 
 ## 代码提交行为规范
 
- - 确保遵守编码规范。
  - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Pcheck`。
  - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 确保覆盖率不低于 master 分支，除去简单的 `getter /setter` 方法，单元测试需全覆盖。
- - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
+ - 每个提交应保持小型、完整且可独立验证。 一个改动包含多个独立目标时，应拆分为多个提交。
  - 如果您使用 IDEA，可导入 `src/resources/idea/code-style.xml`，用于保持代码风格一致性。
  - 如果您使用 IDEA，可导入 `src/resources/idea/inspections.xml`，用于检测代码潜在问题。
 
 ## 编码规范
 
- - 使用 linux 换行符。
  - 每行代码不超过 200 字符无需换行。
  - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
  - 命名规范：
-   - 命名要做到顾名思义。
    - 类、方法名避免使用缩写，部分变量名可以使用缩写。
      - 变量名 `arguments` 缩写为 `args`；
      - 变量名 `parameters` 缩写为 `params`；
@@ -52,35 +49,37 @@ chapter = true
    - 方法入参名禁止使用 `result`、`each`、`entry`。
    - 工具类名称命名为 `xxUtils`。
    - 配置文件使用 `Spinal Case` 命名（一种使用 `-` 分割单词的特殊 `Snake Case`）。
- - 需要注释解释的代码尽量提成小方法，用方法名称解释。
+ - 需要注释解释的代码应提取为小方法，并通过方法名称表达意图。
  - `equals` 和 `==` 条件表达式中，常量在左，变量在右；大于小于等条件表达式中，变量在左，常量在右。
  - 除了构造器入参与全局变量名称相同的赋值语句外，避免使用 `this` 修饰符。
- - 对参数使用 `final` 时，仅用于方法入参、构造器入参以及 `catch` 参数。
- - 局部变量不应设置为 `final`，包括普通局部变量声明、循环变量、增强 `for` 变量和 try-with-resources 资源变量。
- - Lambda 参数不应标记为 `final`，除非周边代码风格或工具明确要求。
- - 除了用于继承的抽象类之外，尽量将类设计为 `final`。
- - 嵌套循环尽量提成方法。
+ - 局部变量不得声明为 `final`，包括普通局部变量、`for` 循环变量、增强 `for` 循环变量和 try-with-resources 资源变量。
+ - Lambda 参数不应标记为 `final`。
+ - 除用于继承的抽象类外，所有类都应声明为 `final`。
+ - 嵌套循环应提取为独立方法。
  - 成员变量定义顺序以及参数传递顺序在各个类和方法中保持一致。
- - 优先使用卫语句。
+ - 对无效输入、缺失状态和异常条件使用卫语句提前返回，使正常执行路径使用正向条件并保持最少嵌套。
  - 类和方法的访问权限控制为最小。
  - 方法所用到的私有方法应紧跟该方法，如果有多个私有方法，书写私有方法应与私有方法在原方法的出现顺序相同。
- - 方法入参和返回值不允许为 `null`。
- - 方法入参禁止使用 `Optional`；应传递普通值（必要时允许为 `null`）。
- - 优先使用 lombok 代替构造器，getter, setter 方法和 log 变量。
- - 禁止内联全限定类名，必须通过 import 引入。
- - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
- - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
- - 优先使用三目运算符代替 if else 的返回和赋值语句。
- - 禁止嵌套使用三目运算符。
- - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
- - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法性能的优化。
-   - 使用 `@HighFrequencyInvocation` 注解的时机：
-     - 请求频繁调用的链路，标注其中高频调用的类、方法或构造器，标注范围精确匹配；
-     - `canBeCached` 属性为 `true` 时，表示该目标为可复用的缓存资源，例如：数据库连接。
-   - 标注 `@HighFrequencyInvocation` 的代码段须严格保证代码性能，以下为标注代码段内的禁止项：
-     - 禁止调用 Java Stream API；
-     - 禁止通过 `+` 拼接字符串；
-     - 禁止调用 LinkedList 的 `get(int index)` 方法。
+ - 方法入参和返回值默认不得为 `null`。
+ - 仅当现有 API、SPI 或框架契约明确使用 `null` 表示缺失值时才允许使用 `null`，并必须通过 `@Nullable` 或 JAVADOC 明确其语义。
+ - 方法入参不得使用 `Optional`。
+ - 仅当 Lombok 生成的签名、可见性和行为与手写代码一致时，才使用 Lombok 消除构造器、getter、setter 和日志变量等样板代码。
+ - 手写成员包含校验、业务逻辑、文档、兼容性或框架语义时，必须保留手写实现。
+ - 创建可变集合前能够确定预计元素数量时，必须通过容量参数或接收已有集合的构造器设置足够的初始容量。
+ - 当 `if`/`else` 分支分别只包含一个返回语句或对同一个变量赋值时，使用三目运算符；其他情况使用 `if`/`else`。
+ - 使用 `@HighFrequencyInvocation` 标注需要重点检查性能行为的高频生产代码。
+   - 代码在以下任一情况中属于高频调用：
+     - 每次 SQL 请求都会重复执行。
+     - 每个 Pipeline 数据单元都会重复执行，包括记录、事件、数据包或批次。即使其所在方法仅调用一次或执行器仅启动一次，只要代码在内部循环中持续处理这些数据单元，仍属于高频调用。
+   - 在能够覆盖高频行为的最小准确范围内标注类、方法或构造器。
+     - 标注类时，规则适用于该类内全部方法和构造器的实现。
+     - 标注方法或构造器时，规则适用于该实现及其调用的同类私有方法。
+   - 仅当被标注目标是可复用的缓存资源时，才设置 `canBeCached = true`。
+   - 高频调用范围内不得执行可以预计算、缓存、复用或移到高频路径之外的高耗时操作。只有操作结果依赖当前 SQL 请求或 Pipeline 数据，并且无法在不改变正确性和生命周期的前提下移出高频路径时，才允许保留。高耗时操作包括重复 I/O、阻塞等待、反射、解析、序列化、全量遍历，以及创建大对象或大量对象。
+   - 高频调用范围内：
+     - 禁止使用 Java Stream API；
+     - 禁止使用 `+` 拼接字符串；
+     - 禁止调用 `LinkedList#get(int)`。
  - 注释 & 日志规范：
    - 日志与注释一律使用英文。
    - 注释只能包含 JAVADOC，TODO 和 FIXME。
@@ -99,28 +98,28 @@ chapter = true
    - 正确性测试（Correct）：通过正确的输入，得到预期结果。
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
- - 使用 `assert` 前缀命名所有的测试用例。
  - 单元测试必须通过公共 API 验证行为，禁止通过反射调用私有成员。 若测试必须通过反射访问字段，应使用 `Plugins.getMemberAccessor()`，且反射仅限于 `Field` 访问。
- - 每个单元测试类必须直接测试一个对应的生产类，测试类必须使用生产类的准确简单类名并命名为 `<ProductionClassName>Test`。
- - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀。
- - 每个公有方法使用一个独立的测试方法，测试方法顺序在可行时与生产方法保持一致。
+ - 测试修改静态状态时，必须在每个测试结束后恢复其原始状态。
+ - 默认通过项目加载器获取 SPI 实现。 如果被测类实现了 `TypedSPI` 或 `DatabaseTypedSPI`，应通过 `TypedSPILoader` 或 `DatabaseTypedSPILoader` 实例化，禁止使用 `new`。
+ - 每个单元测试类必须直接测试一个对应的生产类，测试类必须使用生产类的准确简单类名并命名为 `<ProductionClassName>Test`。 该测试类命名规则为强制要求，与面向场景的测试方法命名规则相互独立。
+ - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀；应优先使用独立测试方法覆盖单个公开的生产方法；可行时，测试方法顺序与对应的生产方法保持一致。
  - 参数化测试需通过参数提供显示名，并使用 `"{0}"` 作为展示名模板。
- - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
- - 准备环境的代码和测试代码分离。
- - 只有 Mockito，junit `Assertions`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
+ - 测试名称应简洁并聚焦场景；避免使用 `ReturnsXXX`，也不要使用仅复述预期结果而未说明场景的措辞。
+ - 断言必须直接表达被测契约。 仅当被测契约是不相等或包含指定子串时，才可使用 `not` 或 `containsString`；可断言完整值或使用更具体的 matcher 时，不得使用这两个 matcher。
+ - 默认直接使用 Mockito mock。 仅对重复的局部准备使用私有辅助方法，仅对稳定的外部测试边界或打包测试边界使用独立测试夹具。 测试夹具应采用实际可行的最小可见性，并放在最近的所属测试包或模块中；不要为了方便而创建跨模块测试 API。 删除或内联内容单薄的 mock 包装器。
  - 数据断言规范应遵循：
     - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
     - 空值断言应使用 `assertNull` 和 `assertNotNull`；
-    - 其他类型断言应使用 `assertThat(actual, is(expected))` 代替 `assertEquals`；
-    - 类型断言使用 `assertThat(..., isA(...))` 代替 `instanceOf`；
-    - 禁用 `assertSame` / `assertNotSame`，使用 `assertThat(actual, is(expected))` 或 `assertThat(actual, not(expected))`；
-    - 使用 Hamcrest 匹配器（如 `is()`、`not()`）来进行精确且可读性高的断言。
+    - 非布尔值、非空值的相等断言必须使用 `assertThat(actual, is(expected))`；
+    - 类型断言必须使用 `assertThat(actual, isA(ExpectedType.class))`；
+    - 引用同一性断言必须使用 `assertThat(actual, sameInstance(expected))`；
+    - 引用非同一性断言必须使用 `assertThat(actual, not(sameInstance(expected)))`；
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
- - 测试类和 `@Test` 标注的方法无需 JAVADOC。
  - 使用 `mock` 应遵循如下规范：
-   - 单元测试需要连接某个环境时，应使用 `mock`；
-   - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
-   - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
+   - 数据库、缓存、注册中心、网络调用、时间以及其他重量级外部依赖应使用 mock，不要连接外部环境。
+   - 与被测行为无关且嵌套超过两层的对象应使用 mock；不要构造深层无关对象图。
+   - 优先使用 `AutoMockExtension` 及其静态 mock 或构造 mock 支持。 只有该扩展无法适用并且记录了原因时，才可直接使用 `mockStatic` 或 `mockConstruction`，并且必须通过 try-with-resources 限定作用域。 如果某个类已列入 `@StaticMockSettings`，不要对它调用 `mockStatic` 或 `mockConstruction`，而应通过 `when(...)` 设置桩行为。
+   - 不要在一次调用中混用 Mockito 参数匹配器和原始参数。
    - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
  - 不得对与当前测试所验证的行为或结果无关的方法进行 stub，也不得 verify 此类交互。当 Mockito 的默认返回值足以满足测试需要时，应省略 stub。
  - 深度链式交互使用 Mockito 的 `RETURNS_DEEP_STUBS`，不要层层手动 mock。

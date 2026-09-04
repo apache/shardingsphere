@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.core.tool.payload.RuntimeDatabaseValidationPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.tool.request.RuntimeDatabaseValidationRequest;

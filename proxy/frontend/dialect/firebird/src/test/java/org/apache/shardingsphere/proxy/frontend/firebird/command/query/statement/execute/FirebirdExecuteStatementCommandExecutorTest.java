@@ -83,7 +83,6 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -309,7 +308,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         executor.execute();
-        assertArrayEquals(new byte[]{5, 6}, (byte[]) queryContextCaptor.getValue().getParameters().get(0));
+        assertThat((byte[]) queryContextCaptor.getValue().getParameters().get(0), is(new byte[]{5, 6}));
     }
     
     @Test

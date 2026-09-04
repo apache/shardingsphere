@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="insert_with_error_logging" value="INSERT INTO t_user VALUES (?) LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT UNLIMITED" db-types="Oracle" case-types="PLACEHOLDER" />
     <sql-case id="insert_into_values1" value="INSERT INTO test_nested VALUES(1)" db-types="MySQL,Presto" />
     <sql-case id="insert_into_values2" value="insert into emp_table values(1,'John',1000.00,'Architect')" db-types="Oracle" />
     <sql-case id="insert_into_values3" value="insert into emp_table values(2,'Robert',900.00,'Developer')" db-types="Oracle" />

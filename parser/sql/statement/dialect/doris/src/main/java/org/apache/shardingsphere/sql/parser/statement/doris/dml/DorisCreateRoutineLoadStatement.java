@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sql.parser.statement.doris.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnMappingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
@@ -31,8 +31,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Datab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
-import java.util.LinkedList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**

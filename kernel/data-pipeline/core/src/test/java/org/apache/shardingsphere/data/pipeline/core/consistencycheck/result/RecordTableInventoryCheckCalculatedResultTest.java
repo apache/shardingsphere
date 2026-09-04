@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class RecordTableInventoryCheckCalculatedResultTest {
     

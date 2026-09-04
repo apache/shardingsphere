@@ -349,4 +349,21 @@
         <valid-statement type="InsertStatement" table-name="t_user" select-table-name="v_std_user_source" />
         <valid-statement type="DeleteStatement" table-name="t_user" />
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_cursor_fetch_and_package_call">
+        <procedure-name name="CRM_CONTACTINFOR" start-index="28" stop-index="43" />
+        <procedure-body-end-names>
+            <procedure-body-end-name name="CRM_CONTACTINFOR" />
+        </procedure-body-end-names>
+        <procedure-calls>
+            <procedure-call name="k_exception.error" />
+        </procedure-calls>
+        <sql-statements>
+            <sql-statement start-index="159" stop-index="332" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="463" stop-index="539" statement-class-simple-name="UpdateStatement" />
+            <sql-statement start-index="569" stop-index="576" statement-class-simple-name="RollbackStatement" />
+        </sql-statements>
+        <valid-statement type="SelectStatement" />
+        <valid-statement type="UpdateStatement" />
+        <valid-statement type="RollbackStatement" />
+    </create-procedure>
 </sql-parser-test-cases>

@@ -75,7 +75,8 @@ class ReadwriteSplittingStaticDataSourceRuleAttributeTest {
         ReadwriteSplittingStaticDataSourceRuleAttribute ruleAttribute = new ReadwriteSplittingStaticDataSourceRuleAttribute(
                 "foo_db", Collections.singletonMap("foo_group", dataSourceGroupRule), computeNodeInstanceContext);
         ruleAttribute.cleanStorageNodeDataSource("foo_group");
-        verify(computeNodeInstanceContext.getEventBusContext()).post(deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
+        verify(computeNodeInstanceContext.getEventBusContext())
+                .post(deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
     }
     
     @Test
@@ -87,6 +88,7 @@ class ReadwriteSplittingStaticDataSourceRuleAttributeTest {
         ReadwriteSplittingStaticDataSourceRuleAttribute ruleAttribute = new ReadwriteSplittingStaticDataSourceRuleAttribute(
                 "foo_db", Collections.singletonMap("foo_group", dataSourceGroupRule), computeNodeInstanceContext);
         ruleAttribute.cleanStorageNodeDataSources();
-        verify(computeNodeInstanceContext.getEventBusContext()).post(deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
+        verify(computeNodeInstanceContext.getEventBusContext())
+                .post(deepEq(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource("foo_db.foo_group.read_ds"))));
     }
 }

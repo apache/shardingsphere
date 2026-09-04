@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mcp.feature.mask;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.feature.mask.completion.MaskAlgorithmCompletionHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 

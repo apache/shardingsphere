@@ -69,6 +69,8 @@ class SchemaMetaDataUtilsTest {
     
     private static final DatabaseType FIXTURE_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
+    private static final DatabaseType H2_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "H2");
+    
     private static final DatabaseType MYSQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     private static final DatabaseType ORACLE_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Oracle");
@@ -112,6 +114,26 @@ class SchemaMetaDataUtilsTest {
         assertThat(new ArrayList<>(actual.get(0).getActualTableNames()), is(Collections.singletonList("foo_tbl")));
         assertThat(actual.get(0).getDefaultSchemaName(), is("foo_db"));
         assertThat(GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get("foo_tbl"), is("foo_db"));
+    }
+    
+    @Test
+    void assertGetMetaDataLoaderMaterialsNormalizesDefaultSchemaWithStorageDataSource() throws SQLException {
+        Map<String, StorageUnit> storageUnits = Collections.singletonMap("ds_0", mockStorageUnit(MYSQL_DATABASE_TYPE, mockMySQLDataSource(1)));
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
+                Collections.singleton(mockDataNodeRule(Collections.emptyList())), createProperties(Boolean.TRUE, null), "Foo_DB", DatabaseIdentifierContextFactory.createDefault());
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, material));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getDefaultSchemaName(), is("foo_db"));
+    }
+    
+    @Test
+    void assertGetMetaDataLoaderMaterialsPreservesLogicalDefaultSchemaForHiddenStorageSchema() {
+        Map<String, StorageUnit> storageUnits = Collections.singletonMap("ds_0", mockStorageUnit(H2_DATABASE_TYPE, mock(DataSource.class)));
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits,
+                Collections.singleton(mockDataNodeRule(Collections.emptyList())), createProperties(Boolean.TRUE, null), "Foo_DB", DatabaseIdentifierContextFactory.createDefault());
+        List<MetaDataLoaderMaterial> actual = new ArrayList<>(SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("foo_tbl"), H2_DATABASE_TYPE, material));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getDefaultSchemaName(), is("Foo_DB"));
     }
     
     @Test

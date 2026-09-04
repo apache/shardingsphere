@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValue;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
 import java.util.List;

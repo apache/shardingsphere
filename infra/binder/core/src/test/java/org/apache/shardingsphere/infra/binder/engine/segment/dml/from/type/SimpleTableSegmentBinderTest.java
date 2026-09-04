@@ -68,6 +68,20 @@ class SimpleTableSegmentBinderTest {
     }
     
     @Test
+    void assertBindUnknownOwnerWithSkipMetadataValidate() {
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(6, 24, new IdentifierValue("zzz_yanyi_100045")));
+        simpleTableSegment.setOwner(new OwnerSegment(0, 4, new IdentifierValue("yanyi")));
+        HintValueContext hintValueContext = new HintValueContext();
+        hintValueContext.setSkipMetadataValidate(true);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(
+                createMetaData(), "foo_db", hintValueContext, SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts);
+        assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalDatabase().getValue(), is("foo_db"));
+        assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("yanyi"));
+        assertTrue(((SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next()).isSkipColumnBind());
+    }
+    
+    @Test
     void assertBindWithDBLinkContainsDBLink() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_not_exists")));
         simpleTableSegment.setDbLink(new IdentifierValue("foo_db_link"));

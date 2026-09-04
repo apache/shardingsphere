@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
@@ -42,7 +43,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CaseWh
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorFunctionContext;
@@ -504,6 +504,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
+        if (isSystemDateTimeFunction(ctx)) {
+            return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.name().getText(), getOriginalText(ctx));
+        }
         if (SequenceFunction.valueFrom(ctx.name().getText()).isPresent()) {
             return createSequenceFunction(ctx);
         }
@@ -521,6 +524,13 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             result.setNestedObjectAttributes(ctx.nestedItem().stream().map(item -> (IdentifierValue) visit(item.identifier())).collect(Collectors.toList()));
         }
         return result;
+    }
+    
+    private boolean isSystemDateTimeFunction(final ColumnNameContext ctx) {
+        if (null != ctx.owner() || null != ctx.nestedItem() && !ctx.nestedItem().isEmpty()) {
+            return false;
+        }
+        return "SYSDATE".equalsIgnoreCase(ctx.name().getText()) || "SYSTIMESTAMP".equalsIgnoreCase(ctx.name().getText());
     }
     
     private FunctionSegment createSequenceFunction(final ColumnNameContext ctx) {

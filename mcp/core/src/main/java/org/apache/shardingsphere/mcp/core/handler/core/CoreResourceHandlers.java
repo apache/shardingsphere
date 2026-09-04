@@ -21,14 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
-import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.RuntimeStatusHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerGuidanceHandler;
-import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.MetadataResourceHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.workflow.WorkflowPlanHandler;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.Collection;
 import java.util.Collections;

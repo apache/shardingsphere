@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
+import com.google.errorprone.annotations.ThreadSafe;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 
-import com.google.errorprone.annotations.ThreadSafe;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**

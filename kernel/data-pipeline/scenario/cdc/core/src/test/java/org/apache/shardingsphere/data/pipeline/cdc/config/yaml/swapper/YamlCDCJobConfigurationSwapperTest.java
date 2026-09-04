@@ -43,10 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -67,7 +65,7 @@ class YamlCDCJobConfigurationSwapperTest {
         assertThat(actual.getSchemaTableNames(), is(Arrays.asList("test.t_order", "t_order_item")));
         assertTrue(actual.isFull());
         assertThat(actual.getTablesFirstDataNodes().marshal(), is("foo_tbl:foo_ds.foo_tbl"));
-        assertThat(actual.getJobShardingDataNodes(), hasSize(1));
+        assertThat(actual.getJobShardingDataNodes().size(), is(1));
         assertThat(actual.getJobShardingDataNodes().get(0).marshal(), is("bar_tbl:bar_ds.bar_tbl"));
         assertThat(actual.getSinkConfig().getSinkType(), is(CDCSinkType.SOCKET));
         assertThat(actual.getSinkConfig().getProps().getProperty("foo_key"), is("foo_value"));
@@ -163,7 +161,7 @@ class YamlCDCJobConfigurationSwapperTest {
         String jobParam = YamlEngine.marshal(yamlConfig);
         CDCJobConfiguration actual = swapper.swapToObject(jobParam);
         assertThat(actual.getJobId(), is("j0302p00007a8bf46da145dc155ba25c710b550220"));
-        assertThat(actual.getJobShardingDataNodes(), empty());
+        assertTrue(actual.getJobShardingDataNodes().isEmpty());
         assertNull(actual.getTablesFirstDataNodes());
         assertThat(actual.getDataSourceConfig(), isA(ShardingSpherePipelineDataSourceConfiguration.class));
         assertThat(actual.getSinkConfig().getProps().getProperty("foo_key"), is("foo_value"));

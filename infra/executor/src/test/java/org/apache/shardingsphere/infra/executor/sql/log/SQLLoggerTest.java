@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.log;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -43,8 +44,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -63,7 +64,7 @@ class SQLLoggerTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @BeforeAll
     static void setupLogger() {
-        ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.apache.shardingsphere.sql");
+        Logger log = (Logger) LoggerFactory.getLogger("org.apache.shardingsphere.sql");
         ListAppender<LoggingEvent> appender = (ListAppender) log.getAppender("SQLLoggerTestAppender");
         appenderList = appender.list;
     }

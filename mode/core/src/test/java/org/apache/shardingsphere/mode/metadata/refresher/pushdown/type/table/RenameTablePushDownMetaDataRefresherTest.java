@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 class RenameTablePushDownMetaDataRefresherTest {
@@ -54,7 +53,7 @@ class RenameTablePushDownMetaDataRefresherTest {
                 new IdentifierValue("foo_tbl"), new IdentifierValue("bar_tbl"))));
         refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         assertThat(persistService.getAlteredTableSchemaName(), is("Foo_Schema"));
-        assertThat(persistService.getAlteredTables(), hasSize(1));
+        assertThat(persistService.getAlteredTables().size(), is(1));
         assertThat(persistService.getAlteredTables().iterator().next().getName(), is("bar_tbl"));
         assertThat(persistService.getDroppedTableSchemaName(), is("Foo_Schema"));
         assertThat(persistService.getDroppedTableNames().iterator().next(), is("Foo_Tbl"));

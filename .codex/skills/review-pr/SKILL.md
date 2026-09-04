@@ -87,7 +87,7 @@ Read each applicable canonical reference directly through EOF before judging the
 
 - Read [implementation rules](../code-implementation/references/rules/implementation.md) for every production, test, script, or other implementation artifact, including build logic, generated source, and behavior-affecting configuration.
 - Read [testing rules](../code-implementation/references/rules/testing.md) when the candidate changes tests or the assessment depends on test validity or coverage.
-- Read [contract and removal rules](../code-implementation/references/rules/contracts-and-removal.md) for every implementation candidate. Apply each contract, impact, or removal rule only when its own trigger matches.
+- Read [artifact removal and contract impact rules](../code-implementation/references/rules/artifact-removal-and-contract-impact.md) for every implementation candidate. Apply each contract, impact, or removal rule only when its own trigger matches.
 - Read [non-regression rules](../code-implementation/references/rules/non-regression.md) for functional or performance regression assessment of any changed code candidate.
 - Read [verification rules](../code-implementation/references/verification.md) before choosing, running, or assessing local verification.
 
@@ -146,6 +146,13 @@ A candidate may become a blocking issue only when all five conditions hold:
 Classify failed candidates as an incomplete-evidence gap, non-blocking
 observation, clarification question, pre-existing issue, or no issue. Do not
 publish non-blocking observations unless they materially help the user.
+
+## Review Incomplete Proof Gate
+
+`Review Incomplete` is a terminal evidence classification, not a fallback for unfinished analysis.
+Classify a gap as incomplete only when a specific outcome-sensitive decisive fact remains unavailable after every admissible evidence route has been attempted; if relevant local or public evidence exists or another allowed route remains, continue the review and classify the candidate.
+After authoritative scope is established, record each incomplete gap in the ledger with the missing fact, unavailable-evidence proof, affected full path, strongest alternatives checked, outcome impact, scope proof, and affected files, then run `scripts/review_ledger.py validate-incomplete --ledger <ledger>` before selecting the result.
+If authoritative scope cannot be established, state the exact unavailable scope fact and attempted routes in `### Required Evidence`; do not fabricate ledger scope.
 
 ## Behavior Clusters and Risk Triage
 
@@ -206,9 +213,8 @@ a previous result to influence the assessment:
    step 5 and repeat. Freeze the canonical assessment only after the Completion
    Gate evaluation, then map it to the selected mode's status.
 
-If the scope cannot be reviewed honestly, return the mode-appropriate incomplete
-result or request a split. Do not produce a complete verdict from a partial
-review.
+If an outcome-sensitive decisive fact passes the Review Incomplete Proof Gate, return the mode-appropriate incomplete result.
+Otherwise continue the review or request a split; do not produce a complete verdict from a partial review.
 
 ## Completion Gate and Scripts
 
@@ -230,19 +236,20 @@ readiness conclusion.
   omission-prone review. It mechanically accounts for files, clusters, risk
   axes, finding classifications, proof fields, and review passes; it does not
   judge semantic correctness.
+- For a standalone local candidate with index or working-tree changes, provide the same exact task-path file to both scripts with `--candidate-files <path>`. The scripts resolve those paths from the computed merge-base through the working tree, include matching untracked files, and fail when a listed path is unchanged.
 - Mutate one ledger sequentially; do not run ledger commands concurrently.
 - Keep temporary ledger data private and remove only the exact ledger created
   for the current review.
 
-If the gate cannot pass in Formal Review, return `Review Incomplete`. In a discussion reply, state the incomplete evidence without a formal verdict. When confirmed blockers coexist with a gap that could hide more blockers, list them as confirmed partial facts but do not present them as the complete change-request set.
+If the gate cannot pass because a gap satisfies the Review Incomplete Proof Gate, return `Review Incomplete` in Formal Review and state the incomplete evidence without a formal verdict in a discussion reply.
+When confirmed blockers coexist with a proven gap that could hide more blockers, list them as confirmed partial facts but do not present them as the complete change-request set.
 
 ## Formal Decision Contract
 
 Map the canonical assessment to Formal Review only after the Completion Gate
 evaluation:
 
-1. If the gate fails, use `Review Incomplete`, even when some blockers are
-   already confirmed.
+1. If the gate fails because a gap satisfies the Review Incomplete Proof Gate, use `Review Incomplete`, even when some blockers are already confirmed.
 2. If admissible evidence disproves the problem model, expected behavior, ownership,
    protocol or SQL semantics, compatibility assumption, or solution direction,
    use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
@@ -257,15 +264,12 @@ unclear.
 
 ## Local Candidate Scope
 
-- Use the latest public PR head plus authorized local commits, index changes,
-  and working-tree changes as the effective candidate.
-- Verify with read-only Git that local `HEAD` equals or descends from the public
-  head. Otherwise return `Review Incomplete`.
-- Review from the public PR merge-base through the working tree. Scope is the
-  union of GitHub files and the authorized local delta; exclude unrelated local
-  changes.
+- First classify the local candidate as standalone or as targeting an existing public PR.
+- For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.
+- For a local candidate targeting an existing PR, use the latest public PR head plus authorized local commits, index changes, and working-tree changes as the effective candidate. Verify with read-only Git that local `HEAD` equals or descends from the public head; if that relationship cannot be established, record the unavailable lineage as an incomplete gap, and if the refs prove divergence, resolve the correct review basis before selecting a verdict.
+- Review a PR-backed local candidate from the public PR merge-base through the working tree, use the union of GitHub files and the authorized local delta, and exclude unrelated local changes.
 - Apply Code Correctness Review through the canonical assessment, including the same proof and completion gates, triggered high-risk criteria, convergence loop, and Formal Decision Contract.
-- State in `### Coverage` that the effective candidate includes authorized local changes, identify their scope separately from the public PR, and never present them as the public PR state.
+- In `### Coverage`, identify whether the candidate is standalone or PR-backed and record its baseline and attributed local delta. For a PR-backed candidate, identify authorized local changes separately from the public PR and never present them as the public PR state.
 - Keep this Skill review-only. The outer active implementation loop fixes safe in-scope findings and reruns Formal Review; scope expansion, architecture choices, and high-risk actions return to their existing authorization gates. This Skill never activates that loop.
 
 ## Multi-Round and Challenged Findings
@@ -282,9 +286,7 @@ latest commits, exposed by the previous fix, or missed in the previous review.
 
 ## Output Contract
 
-Every result returned by this Skill must be exactly one fenced `markdown` block
-with no prose before or after it. The first non-empty line must be
-```` ```markdown ```` and the last non-empty line must be ```` ``` ````.
+Every standalone result returned by this Skill must be exactly one fenced `markdown` block with no prose before or after it. When the repository completion loop invokes Formal Review, this fenced block remains the complete review artifact, but the outer workflow may append only the separately fenced non-review handoff artifacts required by `.codex/context/change-completion.md` outside it. The first non-empty line of the review artifact must be ```` ```markdown ```` and its last non-empty line must be ```` ``` ````.
 
 Use the user's language for formal results. Draft GitHub-facing discussion
 replies in English unless the user requests another language. Use stable labels,
@@ -316,7 +318,7 @@ For each blocking issue include:
 - `Required Change` for Change Request, or `Discussion Needed` for Needs
   Discussion.
 
-Do not add patch-level changes after selecting Needs Discussion. Do not include placeholder headings. In `### Coverage`, report the candidate type, reviewed head, authoritative requirements and files accounted for, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope. For a local candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state. In Code Correctness Review, state that the result is code-scope only and CI was not reviewed.
+Do not add patch-level changes after selecting Needs Discussion. Do not include placeholder headings. In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope. For a standalone local candidate, identify the task baseline and attributed local delta; for a PR-backed candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state. In Code Correctness Review, state that the result is code-scope only and CI was not reviewed.
 
 ### PR Discussion Reply
 

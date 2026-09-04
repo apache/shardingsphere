@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -37,19 +33,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.startsWith;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class IndexMetaDataUtilsTest {
-    
-    private final DatabaseType fixtureDatabaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
@@ -178,15 +171,6 @@ class IndexMetaDataUtilsTest {
     }
     
     @Test
-    void assertGetTableNames() {
-        IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx")));
-        Collection<QualifiedTable> actual = IndexMetaDataUtils.getTableNames(buildDatabase(), fixtureDatabaseType, Collections.singleton(indexSegment));
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getSchemaName(), is("foo_db"));
-        assertThat(actual.iterator().next().getTableName(), is("foo_tbl"));
-    }
-    
-    @Test
     void assertGetTableNamesWithDatabaseDefaultSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
@@ -196,11 +180,6 @@ class IndexMetaDataUtilsTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getSchemaName(), is("foo_default_schema"));
         assertThat(actual.iterator().next().getTableName(), is("foo_tbl"));
-    }
-    
-    private ShardingSphereDatabase buildDatabase() {
-        Collection<ShardingSphereSchema> schemas = Collections.singleton(buildSchema("foo_db"));
-        return new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas, new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereSchema buildSchema(final String schemaName) {

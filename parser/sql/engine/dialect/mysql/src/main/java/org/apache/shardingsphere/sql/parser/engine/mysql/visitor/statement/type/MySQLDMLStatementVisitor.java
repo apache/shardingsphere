@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoState
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HandlerStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ImportStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexHintContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadDataStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LeadLagInfoContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadDataStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadXmlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OverClauseContext;

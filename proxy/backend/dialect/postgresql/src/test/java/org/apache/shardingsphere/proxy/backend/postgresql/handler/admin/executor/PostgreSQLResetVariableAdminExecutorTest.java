@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executo
 import io.netty.util.Attribute;
 import io.netty.util.AttributeMap;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider;
@@ -69,7 +69,7 @@ class PostgreSQLResetVariableAdminExecutorTest {
     
     @Test
     void assertExecuteWithClientEncoding() {
-        PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement(databaseType, "client_encoding"));
+        final PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement(databaseType, "client_encoding"));
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
         AttributeMap attributeMap = mock(AttributeMap.class);

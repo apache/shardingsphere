@@ -110,8 +110,9 @@ public final class MySQLShowTablesExecutor implements DatabaseAdminQueryExecutor
     }
     
     private LocalDataQueryResultRow getQueryResultRow(final ShardingSphereTable table) {
-        return sqlStatement.isContainsFull()
-                ? new LocalDataQueryResultRow(table.getName(), TableType.VIEW == table.getType() ? "VIEW" : "BASE TABLE")
-                : new LocalDataQueryResultRow(table.getName());
+        if (sqlStatement.isContainsFull()) {
+            return new LocalDataQueryResultRow(table.getName(), TableType.VIEW == table.getType() ? "VIEW" : "BASE TABLE");
+        }
+        return new LocalDataQueryResultRow(table.getName());
     }
 }

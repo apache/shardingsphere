@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,19 +36,19 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -95,8 +95,8 @@ class AlterEncryptRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         new DistSQLUpdateExecuteEngine(createSQLStatementWithAssistQueryAndLikeColumns(), "foo_db", contextManager, null).executeUpdate();
-        metaDataManagerPersistService.removeRuleConfigurationItem(any(), ArgumentMatchers.argThat(this::assertToBeDroppedRuleConfiguration));
-        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration)));
+        metaDataManagerPersistService.removeRuleConfigurationItem(any(), argThat(this::assertToBeDroppedRuleConfiguration));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), argThat(this::assertToBeAlteredRuleConfiguration)));
     }
     
     @Test
@@ -107,8 +107,8 @@ class AlterEncryptRuleExecutorTest {
         ContextManager contextManager = mockContextManager(rule);
         new DistSQLUpdateExecuteEngine(createSQLStatementWithoutAssistQueryAndLikeColumns(), "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        metaDataManagerPersistService.removeRuleConfigurationItem(any(), ArgumentMatchers.argThat(this::assertToBeDroppedRuleConfiguration));
-        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration)));
+        metaDataManagerPersistService.removeRuleConfigurationItem(any(), argThat(this::assertToBeDroppedRuleConfiguration));
+        assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), argThat(this::assertToBeAlteredRuleConfiguration)));
     }
     
     private ContextManager mockContextManager(final EncryptRule rule) {

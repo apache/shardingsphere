@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplayerPlayStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisPlanReplayerPlayStatementTestCase;
-import org.hamcrest.MatcherAssert;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -40,6 +40,6 @@ public final class DorisPlanReplayerPlayStatementAssert {
      * @param expected expected plan replayer play statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DorisPlanReplayerPlayStatement actual, final DorisPlanReplayerPlayStatementTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText("Assertion error: dump file path does not match."), actual.getDumpFilePath(), is(expected.getDumpFilePath()));
+        assertThat(assertContext.getText("Assertion error: dump file path does not match."), actual.getDumpFilePath(), is(expected.getDumpFilePath()));
     }
 }

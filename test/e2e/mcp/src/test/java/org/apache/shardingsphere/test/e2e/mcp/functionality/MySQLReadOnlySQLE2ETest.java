@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;

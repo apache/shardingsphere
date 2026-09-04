@@ -22,16 +22,15 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
-import java.util.stream.Stream;
-
 import javax.xml.XMLConstants;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * JDBC repository SQL Loader.

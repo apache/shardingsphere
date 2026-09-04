@@ -36,29 +36,28 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
         }
         boolean result = true;
         for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : value.entrySet()) {
-            result = validateRuntimeDatabase(entry, context) && result;
+            result = validateRuntimeDatabase(entry.getKey(), entry.getValue(), context) && result;
         }
         return result;
     }
     
-    private boolean validateRuntimeDatabase(final Entry<String, YamlRuntimeDatabaseConfiguration> databaseEntry, final ConstraintValidatorContext context) {
-        if (isPlaceholder(databaseEntry.getKey())) {
-            addViolation(context, String.format("contains placeholder database name `%s`", databaseEntry.getKey()));
+    private boolean validateRuntimeDatabase(final String databaseName, final YamlRuntimeDatabaseConfiguration config, final ConstraintValidatorContext context) {
+        if (isPlaceholder(databaseName)) {
+            addViolation(context, String.format("contains placeholder database name `%s`", databaseName));
             return false;
         }
-        if (null == databaseEntry.getValue()) {
-            addViolation(context, String.format("contains null configuration for database `%s`", databaseEntry.getKey()));
+        if (null == config) {
+            addViolation(context, String.format("contains null configuration for database `%s`", databaseName));
             return false;
         }
-        return validateNoPlaceholders(databaseEntry, context);
+        return validateNoPlaceholders(databaseName, config, context);
     }
     
-    private boolean validateNoPlaceholders(final Entry<String, YamlRuntimeDatabaseConfiguration> databaseEntry, final ConstraintValidatorContext context) {
-        YamlRuntimeDatabaseConfiguration config = databaseEntry.getValue();
-        boolean result = validateNoPlaceholder(databaseEntry.getKey(), "jdbcUrl", config.getJdbcUrl(), context);
-        result = validateNoPlaceholder(databaseEntry.getKey(), "username", config.getUsername(), context) && result;
-        result = validateNoPlaceholder(databaseEntry.getKey(), "driverClassName", config.getDriverClassName(), context) && result;
-        return validateNoPasswordPlaceholder(databaseEntry.getKey(), config.getPassword(), context) && result;
+    private boolean validateNoPlaceholders(final String databaseName, final YamlRuntimeDatabaseConfiguration config, final ConstraintValidatorContext context) {
+        boolean result = validateNoPlaceholder(databaseName, "jdbcUrl", config.getJdbcUrl(), context);
+        result = validateNoPlaceholder(databaseName, "username", config.getUsername(), context) && result;
+        result = validateNoPlaceholder(databaseName, "driverClassName", config.getDriverClassName(), context) && result;
+        return validateNoPasswordPlaceholder(databaseName, config.getPassword(), context) && result;
     }
     
     private boolean validateNoPlaceholder(final String databaseName, final String propertyName, final String value, final ConstraintValidatorContext context) {

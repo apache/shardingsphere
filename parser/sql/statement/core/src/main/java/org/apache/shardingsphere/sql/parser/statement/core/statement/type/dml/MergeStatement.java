@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ErrorLoggingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.OptionHintSegment;
@@ -52,6 +53,8 @@ public final class MergeStatement extends DMLStatement {
     
     private final InsertStatement insert;
     
+    private final ErrorLoggingSegment errorLogging;
+    
     private final WithSegment with;
     
     private final WithTableHintSegment withTableHint;
@@ -70,7 +73,7 @@ public final class MergeStatement extends DMLStatement {
     
     @Builder
     private MergeStatement(final DatabaseType databaseType, final TableSegment target, final TableSegment source, final ExpressionWithParamsSegment expression,
-                           final UpdateStatement update, final InsertStatement insert, final WithSegment with, final WithTableHintSegment withTableHint,
+                           final UpdateStatement update, final InsertStatement insert, final ErrorLoggingSegment errorLogging, final WithSegment with, final WithTableHintSegment withTableHint,
                            final Collection<IndexSegment> indexes, final OutputSegment output, final OptionHintSegment optionHint, final ReturningSegment returning,
                            final Collection<MergeWhenAndThenSegment> whenAndThens) {
         super(databaseType);
@@ -79,6 +82,7 @@ public final class MergeStatement extends DMLStatement {
         this.expression = expression;
         this.update = update;
         this.insert = insert;
+        this.errorLogging = errorLogging;
         this.with = with;
         this.withTableHint = withTableHint;
         this.indexes = null == indexes ? new LinkedList<>() : indexes;
@@ -105,6 +109,15 @@ public final class MergeStatement extends DMLStatement {
      */
     public Optional<InsertStatement> getInsert() {
         return Optional.ofNullable(insert);
+    }
+    
+    /**
+     * Get error logging segment.
+     *
+     * @return error logging segment
+     */
+    public Optional<ErrorLoggingSegment> getErrorLogging() {
+        return Optional.ofNullable(errorLogging);
     }
     
     /**

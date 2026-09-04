@@ -5,7 +5,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 ## Development Philosophy
 
 - **Dedication** Maintain responsibility and reverence, continuously crafting with artisanal spirit.
-- **Readability** Code should be unambiguous, revealing its intent through reading rather than debugging.
+- **Readability** Code and names must express their intent clearly and unambiguously so they can be understood by reading rather than debugging.
 - **Cleanliness** Embrace the concepts from "Refactoring" and "Clean Code", pursuing clean and elegant code.
 - **Consistency** Maintain complete consistency in code style, naming, and usage patterns.
 - **Simplicity** Minimalist code, expressing the most correct meaning with the least code. Highly reusable, with no duplicate code or configuration. Delete unused code promptly.
@@ -14,69 +14,58 @@ The following code of conduct is based on full compliance with the [Apache Softw
 
 ## Code Submission Guidelines
 
-- Ensure compliance with coding standards.
 - Ensure all steps in the build process complete successfully, including: Apache license header check, Checkstyle check, compilation, unit tests, etc. Build process command: `./mvnw clean install -B -T1C -Pcheck`.
 - Unify code style through Spotless, execute `./mvnw spotless:apply -Pcheck` to format code.
 - Ensure coverage is not lower than the master branch, except for simple `getter /setter` methods, unit tests need full coverage.
-- Try to refine design with fine-grained splitting; achieve small modifications with multiple commits, but ensure the completeness of each commit.
+- Keep each commit small, complete, and independently verifiable. Split a change into multiple commits when it contains independent objectives.
 - If you use IDEA, you can import `src/resources/idea/code-style.xml` to maintain code style consistency.
 - If you use IDEA, you can import `src/resources/idea/inspections.xml` to detect potential code issues.
 
 ## Coding Standards
 
-- Use Linux line endings.
 - No line breaks are needed if each line of code does not exceed 200 characters.
 - There should be no meaningless blank lines. Please extract private methods instead of using blank line spacing for overly long method bodies or logically closed code segments.
 - Naming conventions:
-   - Naming should be self-explanatory.
    - Class and method names should avoid abbreviations, some variable names can use abbreviations.
-      - Variable name `arguments` abbreviated as `args`;
-      - Variable name `parameters` abbreviated as `params`;
-      - Variable name `environment` abbreviated as `env`;
-      - Variable name `properties` abbreviated as `props`;
-      - Variable name `configuration` abbreviated as `config`.
    - Proper noun abbreviations of three characters or less use uppercase, abbreviations over three characters use camelCase.
       - Examples of class and method name abbreviations with three characters or less: SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator;
       - Examples of class and method name abbreviations over three characters: JdbcUrlAppender, YamlAgentConfigurationSwapper;
       - Variables should use lowercase camelCase: mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
-   - Local variables meeting the following conditions should be named according to these rules:
-      - Except for directly returning method parameters, return variables should be named `result`;
-      - Use `each` to name loop variables in loops;
-      - Use `entry` instead of `each` in maps;
-      - Captured exception names should be named `ex`;
-      - When capturing exceptions and doing nothing, the exception name should be named `ignored`.
-   - Method parameter names are forbidden from using `result`, `each`, `entry`.
+   - Captured exception names should be named `ex`.
+   - When capturing exceptions and doing nothing, the exception name should be named `ignored`.
    - Utility class names should be named `xxUtils`.
    - Configuration files use `Spinal Case` naming (a special `Snake Case` that uses `-` to separate words).
-- Code that needs comments to explain should be extracted into small methods, using method names for explanation.
+- Extract code that requires explanatory comments into small methods, and use method names to express the intent.
 - In `equals` and `==` conditional expressions, constants on the left, variables on the right; in conditional expressions like greater than or less than, variables on the left, constants on the right.
 - Avoid using `this` modifier except for assignment statements where constructor parameters have the same name as global variables.
-- For parameters, use `final` only on method parameters, constructor parameters and `catch` parameters.
-- Local variables should not be set as `final`, including ordinary local declarations, loop variables, enhanced `for` variables and try-with-resources resources.
-- Lambda parameters should not be marked as `final` unless required by surrounding code style or tooling.
-- Try to design classes as `final` except for abstract classes used for inheritance.
-- Nested loops should be extracted into methods.
+- Local variables must not be declared as `final`, including ordinary local variables, `for` loop variables, enhanced `for` loop variables and try-with-resources resources.
+- Lambda parameters should not be marked as `final`.
+- Declare every class `final` unless it is an abstract class intended for inheritance.
+- Extract nested loops into separate methods.
 - The order of member variable definitions and parameter passing should remain consistent across all classes and methods.
-- Prefer guard clauses.
+- Use guard clauses for invalid inputs, missing states and exceptional conditions so that the normal execution path uses positive conditions and minimal nesting.
 - Access control for classes and methods should be minimal.
 - Private methods used by a method should immediately follow that method. If there are multiple private methods, they should be written in the same order as they appear in the original method.
-- Method parameters and return values are not allowed to be `null`.
-- Method parameters must not use `Optional`; pass plain values (nullable when needed).
-- Prefer using lombok instead of constructors, getter, setter methods and log variables.
-- Do not leave fully-qualified class names inline; add import statements instead.
-- Consider using `LinkedList` first, only use `ArrayList` when you need to get element values from the collection by index.
-- Collection types that may cause expansion like `ArrayList`, `HashMap` must specify initial collection size to avoid expansion.
-- Prefer using ternary operators instead of if else return and assignment statements.
-- Nested use of ternary operators is forbidden.
-- In conditional expressions, prefer positive semantics for easier code logic understanding. For example: `if (null == param) {} else {}`.
-- Use `@HighFrequencyInvocation` annotation reasonably to focus on performance optimization of key methods.
-   - When to use `@HighFrequencyInvocation` annotation:
-      - In frequently called request chains, mark the high-frequency called classes, methods or constructors, with precise matching of scope;
-      - When the `canBeCached` attribute is `true`, it indicates the target is a reusable cache resource, for example: database connections.
-   - Code segments marked with `@HighFrequencyInvocation` must strictly guarantee code performance, the following are prohibited items in marked code segments:
-      - Forbidden to call Java Stream API;
-      - Forbidden to concatenate strings through `+`;
-      - Forbidden to call LinkedList's `get(int index)` method.
+- Method parameters and return values must not be `null` by default.
+- Allow `null` only when an existing API, SPI or framework contract explicitly uses it to represent absence, and document its meaning with `@Nullable` or JAVADOC.
+- Method parameters must not use `Optional`.
+- Use Lombok for boilerplate constructors, getters, setters and log variables only when the generated signature, visibility and behavior match the manual implementation.
+- Keep a manual implementation when it contains validation, business logic, documentation, compatibility or framework semantics.
+- When the expected number of elements is known before creating a mutable collection, set a sufficient initial capacity with a capacity argument or a constructor that accepts an existing collection.
+- Use a ternary operator when each `if`/`else` branch contains only a return statement or assigns the same variable; otherwise, use `if`/`else`.
+- Use `@HighFrequencyInvocation` to mark high-frequency production code whose performance behavior requires focused review.
+   - Code is high-frequency in any of the following cases:
+      - It runs repeatedly for every SQL request.
+      - It runs repeatedly for every Pipeline data unit, including a record, event, packet or batch. Code that continuously processes those data units in an internal loop remains high-frequency even if its method is invoked only once or its executor is started only once.
+   - Annotate a class, method or constructor at the smallest accurate scope that covers the high-frequency behavior.
+      - On a class, the rules apply to the implementations of all methods and constructors in that class.
+      - On a method or constructor, the rules apply to that implementation and the same-class private methods it calls.
+   - Set `canBeCached = true` only when the annotated target is a cacheable resource intended for reuse.
+   - Within the high-frequency scope, do not perform expensive operations that can be precomputed, cached, reused or moved out of the high-frequency path. Retain an expensive operation only when its result depends on the current SQL request or Pipeline data and it cannot be moved without changing correctness or lifecycle. Expensive operations include repeated I/O, blocking waits, reflection, parsing, serialization, full scans, and creation of large objects or many objects.
+   - Within the high-frequency scope:
+      - Do not use the Java Stream API;
+      - Do not concatenate strings with `+`;
+      - Do not call `LinkedList#get(int)`.
 - Comments & Logging standards:
    - Logs and comments must be in English.
    - Comments can only contain JAVADOC, TODO and FIXME.
@@ -95,27 +84,28 @@ The following code of conduct is based on full compliance with the [Apache Softw
    - Correctness testing: Get expected results through correct inputs.
    - Reasonable design: Combined with production code design, design high-quality unit tests.
    - Error tolerance testing: Get expected results through incorrect inputs such as illegal data, exception flows, etc.
-- Use `assert` prefix for all test method names.
 - Unit tests must exercise behavior through public APIs only. Reflection-based invocation of private members is forbidden. If tests must access fields via reflection, use `Plugins.getMemberAccessor()` and limit reflection to `Field` access only.
-- Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class.
+- Tests that modify static state must restore the original state after each test.
+- Obtain SPI implementations through the project loader by default. If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it through `TypedSPILoader` or `DatabaseTypedSPILoader`, not with `new`.
+- Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class. This class-name rule is mandatory and is independent of scenario-focused test-method naming.
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
 - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
-- Each test case needs precise assertions, try not to use `not`, `containsString` assertions.
-- Separate environment preparation code from test code.
-- Only Mockito, junit `Assertions`, hamcrest `CoreMatchers` and `MatcherAssert` related can use static import.
+- Keep test names concise and scenario-focused; avoid `ReturnsXXX` and wording that restates the expected result instead of naming the scenario.
+- Assertions must directly express the tested contract. Use `not` or `containsString` only when the contract requires inequality or substring matching; do not use them when an exact value or a more specific matcher is available.
+- Default to direct Mockito mocks. Use a private helper only for repeated local setup and a standalone fixture only for a stable external or packaged test boundary. Give fixtures the narrowest practical visibility, keep them in the nearest owning test package or module, and do not create cross-module test APIs for convenience. Delete or inline thin mock wrappers.
 - Data assertion standards should follow:
    - Boolean type assertions should use `assertTrue` and `assertFalse`;
    - Null value assertions should use `assertNull` and `assertNotNull`;
-   - Other types should use `assertThat(actual, is(expected))` instead of `assertEquals`;
-   - Use `assertThat(..., isA(...))` instead of `instanceOf`;
-   - Do not use `assertSame` / `assertNotSame`; use instead of `assertThat(actual, is(expected))` or `assertThat(actual, not(expected))`;
-   - Use Hamcrest matchers like `is()`, `not()` for precise and readable assertions.
+   - Non-boolean, non-null value equality assertions must use `assertThat(actual, is(expected))`;
+   - Type assertions must use `assertThat(actual, isA(ExpectedType.class))`;
+   - Reference identity assertions must use `assertThat(actual, sameInstance(expected))`;
+   - Reference non-identity assertions must use `assertThat(actual, not(sameInstance(expected)))`;
 - The actual values in test cases should be named actual XXX, and expected values should be named expected XXX.
-- Test classes and methods marked with `@Test` do not need JAVADOC.
 - Using `mock` should follow the following specifications:
-   - When unit tests need to connect to a certain environment, `mock` should be used;
-   - When unit tests contain objects that are not easy to construct, for example: objects with more than two levels of nesting and unrelated to testing, `mock` should be used.
-   - For mocking static methods or constructors, consider using `AutoMockExtension` and `StaticMockSettings` provided by the testing framework for automatic resource release; if using Mockito's `mockStatic` and `mockConstruction` methods, must be paired with `try-with-resource` or closed in cleanup methods to avoid leaks.
+   - Mock databases, caches, registries, network calls, time, and other heavy external dependencies instead of connecting to external environments.
+   - Mock objects with more than two levels of nesting when they are unrelated to the behavior under test; do not construct deep unrelated object graphs.
+   - Prefer `AutoMockExtension` and its static or construction mocking support. Use direct `mockStatic` or `mockConstruction` only when the extension cannot apply and the reason is recorded; scope it with try-with-resources. When a class is listed in `@StaticMockSettings`, do not call `mockStatic` or `mockConstruction` for it; stub it through `when(...)`.
+   - Do not mix Mockito matchers with raw arguments in one invocation.
    - When verifying only one call, there's no need to use `times(1)` parameter, the single-parameter method of `verify` is sufficient.
 - Do not stub methods or verify interactions that do not affect the behavior or result being tested. Omit stubbing when Mockito's default return value is sufficient.
 - For deep chained interactions, use Mockito’s `RETURNS_DEEP_STUBS` instead of layering intermediate mocks.
