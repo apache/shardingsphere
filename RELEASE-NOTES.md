@@ -146,6 +146,7 @@
 1. Fix CVE-2023-39017 [#38039](https://github.com/apache/shardingsphere/pull/38039)
 1. Fix CVE-2024-22399, CVE-2021-32824, CVE-2025-5222, CVE-2016-1000027 [#38040](https://github.com/apache/shardingsphere/pull/38040)
 1. Fix CVE-2023-2976, CVE-2024-29131, CVE-2025-27821 [#38042](https://github.com/apache/shardingsphere/pull/38042)
+1. Fix CVE-2026-42198, CVE-2026-54291
 
 ### Metadata Storage Changes
 
