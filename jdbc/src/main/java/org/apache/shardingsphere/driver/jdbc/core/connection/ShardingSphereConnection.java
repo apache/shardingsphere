@@ -340,4 +340,13 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public void unregisterStatementManager(final StatementManager statementManager) {
         statementManagers.remove(statementManager);
     }
+    
+    /**
+     * Judge whether any statement manager is still registered.
+     *
+     * @return whether any statement manager is still registered
+     */
+    public boolean hasRegisteredStatementManagers() {
+        return !statementManagers.isEmpty();
+    }
 }
