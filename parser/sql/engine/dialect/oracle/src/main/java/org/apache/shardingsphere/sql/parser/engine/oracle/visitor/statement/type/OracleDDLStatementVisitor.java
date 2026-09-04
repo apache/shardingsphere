@@ -557,7 +557,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         } else if (null != ctx.varrayTypeSpec()) {
             VarrayTypeSpecContext varrayTypeSpecContext = ctx.varrayTypeSpec();
             return new OracleCreateVarrayTypeStatement(getDatabaseType(), isReplace, isEditionable,
-                    null == varrayTypeSpecContext.INTEGER_() ? -1 : Integer.parseInt(varrayTypeSpecContext.INTEGER_().getText()),
+                    null == varrayTypeSpecContext.INTEGER_() ? -1 : Integer.parseInt(varrayTypeSpecContext.INTEGER_().getText().trim()),
                     null != varrayTypeSpecContext.typeSpec().NULL(),
                     null == varrayTypeSpecContext.typeSpec().persistableClause() || null == varrayTypeSpecContext.typeSpec().persistableClause().NOT(),
                     typeSegment,
@@ -2019,11 +2019,13 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     : new IdentifierValue(ctx.cursor().getText()).getValue();
             relatedCursorStatement = getCursorStatements().get(cursorName);
         }
+        String recordName = new IdentifierValue(ctx.record().getText()).getValue();
+        getVariableNames().add(recordName.toLowerCase());
         increaseCursorForLoopLevel();
         visitPlsqlStatementList(ctx.plsqlStatements());
         Set<SQLStatement> sqlStatements = getTempCursorForLoopStatements().remove(getCursorForLoopLevel());
         CursorForLoopStatementSegment cursorForLoopStatementSegment = new CursorForLoopStatementSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                new IdentifierValue(ctx.record().getText()).getValue(), cursorName, relatedCursorStatement, null == sqlStatements ? Collections.emptyList() : sqlStatements);
+                recordName, cursorName, relatedCursorStatement, null == sqlStatements ? Collections.emptyList() : sqlStatements);
         getCursorForLoopStatementSegments().add(cursorForLoopStatementSegment);
         decreaseCursorForLoopLevel();
         return defaultResult();

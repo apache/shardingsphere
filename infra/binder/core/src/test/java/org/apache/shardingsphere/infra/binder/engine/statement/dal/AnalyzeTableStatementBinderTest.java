@@ -63,7 +63,6 @@ class AnalyzeTableStatementBinderTest {
         when(metaData.getDatabase(databaseName.getValue())).thenReturn(database);
         when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
         when(database.getDefaultSchemaName()).thenReturn(databaseName.getValue());
-        when(database.containsSchema(eq(databaseName))).thenReturn(true);
         when(database.getSchema(eq(databaseName))).thenReturn(schema);
         AnalyzeTableStatement actual = getAnalyzeTableStatement();
         Collection<SimpleTableSegment> actualTables = actual.getTables();
