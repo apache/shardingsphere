@@ -33,40 +33,10 @@ Apply this file to every production, test, script, or other implementation artif
 - When adding a database, dialect, plugin, or module, reuse the applicable framework and extension mechanisms. Keep derived dialects aligned with shared behavior and isolate only real differences. If no maintained precedent exists, record the search evidence before using the architecture gate.
 - Reuse or create an SPI only when its contract matches the required production behavior. One caller, one implementation, code sharing, type distinction, symmetry, anticipated reuse, or test convenience does not establish an SPI contract.
 
-## Evidence Required for Defensive Code
-
-Defensive code is a guard, repeated validation, copy, wrapper, fallback, default value, exception catch, retry, or mutation restriction added to prevent misuse or failure rather than implement requested production behavior.
-
-- Apply this gate to every defensive construct that the current task adds, extends, or strengthens; touching nearby code does not authorize changing a pre-existing defensive construct that the task does not alter.
-- Do not add, extend, or strengthen defensive code unless qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.
-- Qualifying evidence is limited to user-required behavior, an explicit public, internal, SPI, framework, serialization, concurrency, or lifecycle contract, a maintained production consumer, or an observed failure on a supported path.
-- Before adding or keeping defensive code, record in the task analysis or review the exact defended condition, the supported producer, consumer, or boundary that can trigger it, the behavior or contract being protected, and the qualifying evidence source.
-- A mutable type, theoretical misuse, a possible future caller, general safety, best practice, consistency with nearby code, hypothetical reuse, and test convenience are not qualifying evidence.
-- A test cannot establish the production condition or contract used to justify defensive code by itself; it may only corroborate qualifying production or contract evidence.
-- When qualifying evidence does not exist, omit or remove defensive code added by the current task, undo only the task-introduced extension or strengthening of a pre-existing defensive construct, preserve its pre-task behavior, and remove every task-introduced test whose only purpose is to preserve the unsupported defense.
-
-### Collection Copies and Mutation Restrictions
-
-- Before adding a collection copy or unmodifiable wrapper, inspect current production producers and consumers, alias ownership, asynchronous or concurrent lifetime, and applicable public, SPI, framework, serialization, immutability, snapshot, and isolation contracts.
-- `List.copyOf`, `Map.copyOf`, `Set.copyOf`, `Collections.unmodifiable*`, collection constructors that copy another collection, and equivalent copies or wrappers are allowed only when the inspected evidence proves at least one of the following allowed cases.
-  - An explicit existing contract requires immutable or snapshot semantics.
-  - A supported producer or consumer currently mutates an aliased collection after handoff, and that mutation would violate behavior owned by the receiving object.
-  - A supported path exposes owned mutable state, and an existing contract forbids the consumer from mutating it.
-  - A supported asynchronous or concurrent path requires a stable snapshot.
-- A mutable collection implementation, or the theoretical ability of a caller to mutate it, is not evidence.
-- When inspection finds no supported mutation path and no explicit contract, pass, store, or return the original collection directly; remove every task-introduced copy or wrapper and every task-introduced test that only asserts immutability or rejected mutation.
-- When a copy or wrapper is allowed, verify that its null handling, iteration order, duplicate semantics, aliasing, mutation visibility, exception behavior, and time and space cost preserve the required behavior.
-
-## Validation and Exceptions
-
-- Add runtime validation only when the defensive-code evidence gate proves that it is required at a real external, public, persisted, parsed, SPI, reflection, shared-state, or asynchronous boundary to preserve an existing contract or provide a concrete diagnostic for a condition that can occur there. Do not recheck invariants guaranteed by callers or upstream contracts.
-- Prefer `ShardingSpherePreconditions` with lazy exception suppliers when the module can use it and the resulting control flow preserves the required exception type, message, timing, and cause.
-- Keep a manual throw when the module cannot depend on `infra/exception`, the code is inside `ShardingSpherePreconditions`, a caller-facing exception contract requires it, or a precondition wrapper would obscure necessary control flow. Do not replace manual throws mechanically, and record the concrete reason for keeping one.
-- When an edit removes the last checked-exception source from a private or internal method, remove the stale `throws` declaration and update callers. Keep checked exceptions on public or overridden methods only when a caller-facing, framework, external API, or compatibility contract requires them. Never widen to generic `Exception` or `Throwable`.
-
 ## Repository Style
 
-- Apply the `CODE_OF_CONDUCT.md` Lombok preference to touched boilerplate when generated semantics are equivalent, and follow `.codex/skills/coding-standards/references/java-naming.md` for the absolute Lombok annotation prohibitions and generated-accessor field names. Use only narrow annotations. Before replacing a public constructor or accessor, verify its generated signature, access, parameter order, annotations, and reflection or serialization behavior. Keep a manual member when Lombok would change or obscure logic, documentation, validation, defaults, side effects, compatibility, framework semantics, or a public contract.
+- Follow `.codex/skills/coding-standards/references/rules/defensive-code.md` for guards, validation, copies, wrappers, fallbacks, exception handling, retries, concurrency protection, lifecycle protection, and tests that exist only to preserve unsupported defenses.
+- Apply the `CODE_OF_CONDUCT.md` Lombok preference to touched boilerplate when generated semantics are equivalent, and follow `.codex/skills/coding-standards/references/rules/java-naming.md` for the absolute Lombok annotation prohibitions and generated-accessor field names. Use only narrow annotations. Before replacing a public constructor or accessor, verify its generated signature, access, parameter order, annotations, and reflection or serialization behavior. Keep a manual member when Lombok would change or obscure logic, documentation, validation, defaults, side effects, compatibility, framework semantics, or a public contract.
 - Keep public API and SPI Javadocs required by the code of conduct. Beyond that, document only caller or implementer obligations not expressed by code. Do not restate names, signatures, visible collection properties, or inherited contracts unless an override adds a new obligation.
 - Keep declarations near first use. Do not mark local, loop, resource, or lambda variables `final`; use `final` only for method, constructor, and `catch` parameters when applicable.
 - Declare collections by the least-specific required contract. Use `Collection` for common iteration, size, or emptiness operations; use `List` only for positional, ordered, duplicate-preserving, or required API semantics; use `Set` only for uniqueness or set semantics. Do not declare a concrete collection type unless its implementation-specific API is required. In tests, create a mutable copy only when that instance is mutated or mutability is the scenario.
