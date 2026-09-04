@@ -27,22 +27,12 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - There should be no meaningless blank lines. Please extract private methods instead of using blank line spacing for overly long method bodies or logically closed code segments.
 - Naming conventions:
    - Class and method names should avoid abbreviations, some variable names can use abbreviations.
-      - Variable name `arguments` abbreviated as `args`;
-      - Variable name `parameters` abbreviated as `params`;
-      - Variable name `environment` abbreviated as `env`;
-      - Variable name `properties` abbreviated as `props`;
-      - Variable name `configuration` abbreviated as `config`.
    - Proper noun abbreviations of three characters or less use uppercase, abbreviations over three characters use camelCase.
       - Examples of class and method name abbreviations with three characters or less: SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator;
       - Examples of class and method name abbreviations over three characters: JdbcUrlAppender, YamlAgentConfigurationSwapper;
       - Variables should use lowercase camelCase: mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
-   - Local variables meeting the following conditions should be named according to these rules:
-      - Except for directly returning method parameters, return variables should be named `result`;
-      - Use `each` to name loop variables in loops;
-      - Use `entry` instead of `each` in maps;
-      - Captured exception names should be named `ex`;
-      - When capturing exceptions and doing nothing, the exception name should be named `ignored`.
-   - Method parameter names are forbidden from using `result`, `each`, `entry`.
+   - Captured exception names should be named `ex`.
+   - When capturing exceptions and doing nothing, the exception name should be named `ignored`.
    - Utility class names should be named `xxUtils`.
    - Configuration files use `Spinal Case` naming (a special `Snake Case` that uses `-` to separate words).
 - Extract code that requires explanatory comments into small methods, and use method names to express the intent.
