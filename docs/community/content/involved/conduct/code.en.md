@@ -18,7 +18,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 
 ## Code Submission Guidelines
 
-- Ensure compliance with coding standards.
 - Ensure all steps in the build process complete successfully, including: Apache license header check, Checkstyle check, compilation, unit tests, etc. Build process command: `./mvnw clean install -B -T1C -Pcheck`.
 - Unify code style through Spotless, execute `./mvnw spotless:apply -Pcheck` to format code.
 - Ensure coverage is not lower than the master branch, except for simple `getter /setter` methods, unit tests need full coverage.
@@ -103,7 +102,6 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Tests that modify static state must restore the original state after each test.
 - Obtain SPI implementations through the project loader by default. If the class under test implements `TypedSPI` or `DatabaseTypedSPI`, instantiate it through `TypedSPILoader` or `DatabaseTypedSPILoader`, not with `new`.
 - Every unit-test class must directly test a corresponding production class and be named `<ProductionClassName>Test`, using the exact simple name of the production class. This class-name rule is mandatory and is independent of scenario-focused test-method naming.
-- Except for simple `getter /setter` methods, unit tests need full coverage.
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
 - For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
 - Keep test names concise and scenario-focused; avoid `ReturnsXXX` and wording that restates the expected result instead of naming the scenario.
