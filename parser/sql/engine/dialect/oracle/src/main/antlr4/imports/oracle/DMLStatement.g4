@@ -510,6 +510,7 @@ dmlTableAlias
     | LENGTH
     | LOG
     | CHILD
+    | CON
     ;
 
 queryTableExprClause

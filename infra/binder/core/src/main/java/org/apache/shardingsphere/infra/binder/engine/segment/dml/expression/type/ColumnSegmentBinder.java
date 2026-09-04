@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -155,9 +156,20 @@ public final class ColumnSegmentBinder {
     }
     
     private static boolean isUnparenthesizedFunction(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext) {
-        return QuoteCharacter.NONE == segment.getIdentifier().getQuoteCharacter() && !COLUMN_ONLY_SEGMENT_TYPES.contains(parentSegmentType)
-                && new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType())
-                        .getDialectDatabaseMetaData().getFunctionOption().getUnparenthesizedFunctionNames().contains(segment.getIdentifier().getValue());
+        if (QuoteCharacter.NONE != segment.getIdentifier().getQuoteCharacter() || COLUMN_ONLY_SEGMENT_TYPES.contains(parentSegmentType)) {
+            return false;
+        }
+        DialectFunctionOption functionOption = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getFunctionOption();
+        return functionOption.getUnparenthesizedFunctionNames().contains(segment.getIdentifier().getValue()) || isUnparenthesizedQualifiedFunction(segment, functionOption);
+    }
+    
+    private static boolean isUnparenthesizedQualifiedFunction(final ColumnSegment segment, final DialectFunctionOption functionOption) {
+        if (!segment.getOwner().isPresent() || segment.getOwner().get().getOwner().isPresent()
+                || QuoteCharacter.NONE != segment.getOwner().get().getIdentifier().getQuoteCharacter()) {
+            return false;
+        }
+        return functionOption.getUnparenthesizedQualifiedFunctionNames()
+                .contains(segment.getOwner().get().getIdentifier().getValue() + "." + segment.getIdentifier().getValue());
     }
     
     private static OwnerSegment bindOwnerTableContext(final OwnerSegment owner, final ColumnSegment inputColumnSegment) {
@@ -210,6 +222,10 @@ public final class ColumnSegmentBinder {
     private static ColumnSegmentInfo getColumnSegmentInfo(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
                                                           final SQLStatementBinderContext binderContext) {
+        Optional<ColumnSegment> valueVariableColumnSegment = findInputColumnSegmentByValueVariables(segment, parentSegmentType, binderContext.getSqlStatement().getVariableNames());
+        if (valueVariableColumnSegment.isPresent()) {
+            return new ColumnSegmentInfo(valueVariableColumnSegment.get(), TableSourceType.TEMPORARY_TABLE);
+        }
         ColumnSegmentInfo result = isModelProjectionColumn(segment, parentSegmentType, binderContext.getModelColumnNames())
                 ? new ColumnSegmentInfo(findInputColumnSegmentByModelColumns(segment, binderContext.getModelColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE)
                 : getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
@@ -231,6 +247,11 @@ public final class ColumnSegmentBinder {
             result = new ColumnSegmentInfo(findInputColumnSegmentByModelColumns(segment, binderContext.getModelColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         return result;
+    }
+    
+    private static Optional<ColumnSegment> findInputColumnSegmentByValueVariables(final ColumnSegment segment, final SegmentType parentSegmentType,
+                                                                                  final Collection<String> variableNames) {
+        return SegmentType.VALUES == parentSegmentType && !segment.getOwner().isPresent() ? findInputColumnSegmentByVariables(segment, variableNames) : Optional.empty();
     }
     
     private static boolean isModelProjectionColumn(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<String> modelColumnNames) {
@@ -365,7 +386,8 @@ public final class ColumnSegmentBinder {
                 return true;
             }
             if (each instanceof SimpleTableSegmentBinderContext) {
-                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
+                SimpleTableSegmentBinderContext binderContext = (SimpleTableSegmentBinderContext) each;
+                return binderContext.isContainsDBLink() || binderContext.isSkipColumnBind();
             }
         }
         for (TableSegmentBinderContext each : outerBinderContexts) {
@@ -373,7 +395,8 @@ public final class ColumnSegmentBinder {
                 return true;
             }
             if (each instanceof SimpleTableSegmentBinderContext) {
-                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
+                SimpleTableSegmentBinderContext binderContext = (SimpleTableSegmentBinderContext) each;
+                return binderContext.isContainsDBLink() || binderContext.isSkipColumnBind();
             }
         }
         return false;
