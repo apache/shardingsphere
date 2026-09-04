@@ -71,7 +71,12 @@ class PostgreSQLProjectionIdentifierExtractorTest {
     
     @Test
     void assertGetColumnNameFromFunctionExpression() {
-        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "SUM(ID)", new FunctionSegment(0, 0, "SUM", "SUM(ID)"))), is("SUM"));
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "SUM(ID)", new FunctionSegment(0, 0, "SUM", "SUM(ID)"))), is("sum"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromQuotedFunctionExpression() {
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "\"MyFunc\"(ID)", new FunctionSegment(0, 0, "\"MyFunc\"", "\"MyFunc\"(ID)"))), is("MyFunc"));
     }
     
     @Test
