@@ -33,8 +33,8 @@ public final class IntegerPositionHandler implements DataTypePositionHandler<Big
     
     @Override
     public BigInteger readColumnValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        BigDecimal decimal = resultSet.getBigDecimal(columnIndex);
-        return null == decimal ? null : decimal.toBigInteger();
+        String value = resultSet.getString(columnIndex);
+        return null == value ? null : new BigDecimal(value).toBigInteger();
     }
     
     @Override
