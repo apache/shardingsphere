@@ -88,8 +88,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     
     private final AtomicBoolean canceling = new AtomicBoolean(false);
     
-    public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final TransmissionProcessContext processContext,
-                                           final ConsistencyCheckJobItemProgressContext progressContext) {
+    public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final TransmissionProcessContext processContext, final ConsistencyCheckJobItemProgressContext progressContext) {
         this.jobConfig = jobConfig;
         readRateLimitAlgorithm = processContext.getReadRateLimitAlgorithm();
         this.progressContext = progressContext;
