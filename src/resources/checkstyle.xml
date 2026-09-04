@@ -128,6 +128,11 @@
             <message key="matchxpath.match" value="Test method names must start with 'assert'." />
         </module>
         <module name="IllegalType" />
+        <module name="IllegalType">
+            <property name="tokens" value="IMPORT, PARAMETER_DEF" />
+            <property name="illegalClassNames" value="java.util.Map.Entry" />
+            <message key="illegal.type" value="Do not declare Map.Entry as a parameter." />
+        </module>
         <module name="MissingSwitchDefault" />
         <module name="ModifiedControlVariable" />
         <module name="MultipleVariableDeclarations" />
@@ -163,6 +168,21 @@
             <property name="format" value="^(?!\s*import\s+java\.util\.Map\.Entry\s*;).*\b(?:java\.util\.)?Map\.Entry\b" />
             <property name="ignoreComments" value="true" />
             <property name="message" value="Use Entry instead of Map.Entry (import java.util.Map.Entry)." />
+        </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="\bObjects\.(?:isNull|nonNull)\s*\(" />
+            <property name="ignoreComments" value="true" />
+            <property name="message" value="Use a direct null comparison instead of Objects.isNull or Objects.nonNull." />
+        </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="\btimes\s*\(\s*0\s*\)" />
+            <property name="ignoreComments" value="true" />
+            <property name="message" value="Use never() instead of times(0)." />
+        </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="^(?!\s*import\s+org\.apache\.shardingsphere\.infra\.util\.props\.PropertiesBuilder\.Property\s*;).*\bPropertiesBuilder\.Property\b" />
+            <property name="ignoreComments" value="true" />
+            <property name="message" value="Import and use Property instead of PropertiesBuilder.Property." />
         </module>
         
         <!-- Imports -->
