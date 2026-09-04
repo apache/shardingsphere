@@ -53,6 +53,20 @@ class MySQLDateBinlogProtocolValueTest {
     }
     
     @Test
+    void assertReadDateWithZeroMonth() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(2023 * 16 * 32 + 15);
+        assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is("2023-00-15"));
+    }
+    
+    @Test
+    void assertReadDateWithZeroDay() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(2023 * 16 * 32 + 5 * 32);
+        assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is("2023-05-00"));
+    }
+    
+    @Test
     void assertReadNullDate() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedMediumLE()).thenReturn(0);
