@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Outpu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.error.ErrorLoggingClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
@@ -70,6 +71,7 @@ public final class MergeStatementAssert {
         assertWithTableHintClause(assertContext, actual, expected);
         assertOutputClause(assertContext, actual, expected);
         assertReturningClause(assertContext, actual, expected);
+        ErrorLoggingClauseAssert.assertIs(assertContext, actual.getErrorLogging(), expected.getErrorLoggingClause());
         assertWhenAndThenSegments(assertContext, actual, expected);
         assertIndexes(assertContext, actual, expected);
     }

@@ -20,17 +20,24 @@ package org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.typ
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ErrorLoggingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class OracleDMLStatementVisitorTest {
     
@@ -89,6 +96,48 @@ class OracleDMLStatementVisitorTest {
         assertThat(actual.getAssignment().get().getAssignments().iterator().next().getColumns().size(), is(1));
     }
     
+    @Test
+    void assertVisitInsertErrorLogging() {
+        InsertStatement actual = (InsertStatement) parse("INSERT INTO t_user VALUES (?) LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT UNLIMITED");
+        assertThat(actual.getParameterCount(), is(2));
+        assertErrorLogging(actual.getErrorLogging().get(), "ERR$_T_USER", 1, "UNLIMITED");
+    }
+    
+    @Test
+    void assertVisitMultiTableInsertErrorLogging() {
+        InsertStatement actual = (InsertStatement) parse("INSERT ALL INTO t_order VALUES (?) LOG ERRORS INTO ERR$_T_ORDER (?) REJECT LIMIT 1 "
+                + "INTO t_order VALUES (2) LOG ERRORS REJECT LIMIT UNLIMITED SELECT 1 FROM dual");
+        Iterator<InsertStatement> insertStatements = actual.getMultiTableInsertInto().get().getInsertStatements().iterator();
+        assertErrorLogging(insertStatements.next().getErrorLogging().get(), "ERR$_T_ORDER", 1, "1");
+        ErrorLoggingSegment actualErrorLogging = insertStatements.next().getErrorLogging().get();
+        assertNull(actualErrorLogging.getTable());
+        assertNull(actualErrorLogging.getTag());
+        assertThat(actualErrorLogging.getRejectLimit(), is("UNLIMITED"));
+        assertThat(actual.getParameterCount(), is(2));
+    }
+    
+    @Test
+    void assertVisitUpdateErrorLogging() {
+        UpdateStatement actual = parseUpdate("UPDATE t_user SET email = ? WHERE user_id = ? LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT 2");
+        assertThat(actual.getParameterCount(), is(3));
+        assertErrorLogging(actual.getErrorLogging().get(), "ERR$_T_USER", 2, "2");
+    }
+    
+    @Test
+    void assertVisitDeleteErrorLogging() {
+        DeleteStatement actual = (DeleteStatement) parse("DELETE FROM t_user WHERE user_id = ? LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT UNLIMITED");
+        assertThat(actual.getParameterCount(), is(2));
+        assertErrorLogging(actual.getErrorLogging().get(), "ERR$_T_USER", 1, "UNLIMITED");
+    }
+    
+    @Test
+    void assertVisitMergeErrorLogging() {
+        MergeStatement actual = parseMerge("MERGE INTO t_user target USING t_user source ON (target.user_id = source.user_id) "
+                + "WHEN MATCHED THEN UPDATE SET target.email = source.email LOG ERRORS INTO ERR$_T_USER (?) REJECT LIMIT 3");
+        assertThat(actual.getParameterCount(), is(1));
+        assertErrorLogging(actual.getErrorLogging().get(), "ERR$_T_USER", 0, "3");
+    }
+    
     private MergeStatement parseMerge(final String sql) {
         return (MergeStatement) parse(sql);
     }
@@ -99,5 +148,12 @@ class OracleDMLStatementVisitorTest {
     
     private Object parse(final String sql) {
         return new SQLStatementVisitorEngine("Oracle").visit(new SQLParserEngine("Oracle", CACHE_OPTION).parse(sql, false));
+    }
+    
+    private void assertErrorLogging(final ErrorLoggingSegment actual, final String expectedTable, final int expectedParameterIndex, final String expectedRejectLimit) {
+        assertThat(actual.getTable().getTableName().getIdentifier().getValue(), is(expectedTable));
+        assertThat(actual.getTag(), isA(ParameterMarkerExpressionSegment.class));
+        assertThat(((ParameterMarkerExpressionSegment) actual.getTag()).getParameterMarkerIndex(), is(expectedParameterIndex));
+        assertThat(actual.getRejectLimit(), is(expectedRejectLimit));
     }
 }

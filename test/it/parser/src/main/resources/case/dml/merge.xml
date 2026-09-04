@@ -18,6 +18,38 @@
 
 
 <sql-parser-test-cases>
+    <merge sql-case-id="merge_with_error_logging">
+        <target>
+            <simple-table name="t_user" alias="target" start-index="11" stop-index="23" />
+        </target>
+        <source>
+            <simple-table name="t_user_source" alias="source" start-index="31" stop-index="50" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="56" stop-index="86">
+                <left>
+                    <column name="user_id" start-index="56" stop-index="69">
+                        <owner name="target" start-index="56" stop-index="61" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="user_id" start-index="73" stop-index="86">
+                        <owner name="source" start-index="73" stop-index="78" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <error-logging reject-limit="UNLIMITED" start-index="146" stop-index="199">
+            <table>
+                <simple-table name="ERR$_T_USER" start-index="162" stop-index="172" />
+            </table>
+            <tag>
+                <parameter-marker-expression parameter-index="0" start-index="175" stop-index="175" />
+            </tag>
+        </error-logging>
+    </merge>
+
     <merge sql-case-id="merge_into_table_using_table" >
         <target>
             <simple-table name="people_target" start-index="11" stop-index="23" />
