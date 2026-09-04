@@ -110,6 +110,7 @@
 1. SQL Parser: Support Oracle full width SQL symbols parsing - [#39349](https://github.com/apache/shardingsphere/pull/39349)
 1. SQL Parser: Support Oracle pseudo-record collection index parsing - [#39566](https://github.com/apache/shardingsphere/pull/39566)
 1. SQL Parser: Support Oracle DML error logging parser model and binder - [#39711](https://github.com/apache/shardingsphere/pull/39711)
+1. SQL Parser: Support Oracle PL/SQL syntax parsing and binding - [#39723](https://github.com/apache/shardingsphere/pull/39723)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. SQL Binder: Support PostgreSQL whole-row projection binding - [#39276](https://github.com/apache/shardingsphere/pull/39276)
