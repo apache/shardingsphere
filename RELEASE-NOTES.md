@@ -10,6 +10,10 @@
 
 1. MCP: Add standalone ShardingSphere-MCP Server - [#38541](https://github.com/apache/shardingsphere/pull/38541)
 
+### CVE
+
+1. Fix CVE-2026-42198, CVE-2026-54291 [#39724](https://github.com/apache/shardingsphere/pull/39724)
+
 ### Bug Fixes
 
 1. Infra: Avoid retaining transient multi-object lookup keys in `OrderedSPILoader` - [#38980](https://github.com/apache/shardingsphere/pull/38980)
