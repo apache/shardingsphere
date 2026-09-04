@@ -106,7 +106,6 @@ public final class CDCBackendHandler {
         boolean isDecodeWithTransaction = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getTransactionOption().isSupportGlobalCSN();
         StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), new ArrayList<>(schemaTableNames), requestBody.getFull(), tableAndDataNodesMap, isDecodeWithTransaction);
         String jobId = jobAPI.create(parameter, CDCSinkType.SOCKET, new Properties());
-        connectionContext.setJobId(jobId);
         log.info("Stream data, jobId={}, database={}, schemaTableNames={}, full={}", jobId, requestBody.getDatabase(), schemaTableNames, requestBody.getFull());
         startStreaming(jobId, connectionContext, channel);
         log.info("Stream data, started, jobId={}", jobId);
