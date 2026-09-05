@@ -42,6 +42,7 @@
 1. Metadata: Fix wrong logic table metadata when config same actual table name in different storage unit - [#39157](https://github.com/apache/shardingsphere/pull/39157)
 1. DistSQL: Fix case-sensitive storage unit matching in `SHOW RULES USED STORAGE UNIT` - [#38848](https://github.com/apache/shardingsphere/pull/38848)
 1. DistSQL: Use case-insensitive table name matching in broadcast create and drop executors - [#39200](https://github.com/apache/shardingsphere/pull/39200)
+1. DistSQL: Fix empty rows returned by SHOW SHADOW TABLE RULE for specified table - [#39739](https://github.com/apache/shardingsphere/pull/39739)
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
 1. JDBC: Fix MySQL-compatible typed string conversion for `ResultSet#getObject(index, Class<T>)` - [#38444](https://github.com/apache/shardingsphere/pull/38444)
 1. JDBC: Fix statement close invalidating live result sets of other statements on the same connection - [#39503](https://github.com/apache/shardingsphere/pull/39503)

@@ -22,6 +22,9 @@
             <expected-query-result-row>
                 t_order|shadowAlgorithmName_1,shadowAlgorithmName_2
             </expected-query-result-row>
+            <expected-query-result-row>
+                t_order_item|shadowAlgorithmName_1
+            </expected-query-result-row>
         </expected-query-result-rows>
     </test-case>
     <test-case dist-sql="SHOW SHADOW TABLE RULE t_order FROM foo_db" current-rule-config-yaml-file="cases/show-shadow-table-rules-current-config.yaml">

@@ -22,6 +22,9 @@ rules:
         shadowAlgorithmNames:
           - shadowAlgorithmName_1
           - shadowAlgorithmName_2
+      t_order_item:
+        shadowAlgorithmNames:
+          - shadowAlgorithmName_1
     shadowAlgorithms:
       shadowAlgorithmName_1:
         type: SQL_HINT
