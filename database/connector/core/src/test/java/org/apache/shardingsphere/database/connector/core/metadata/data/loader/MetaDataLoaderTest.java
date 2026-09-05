@@ -17,14 +17,20 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.data.loader;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Constructor;
@@ -34,11 +40,13 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -51,7 +59,22 @@ import static org.mockito.Mockito.when;
 
 class MetaDataLoaderTest {
     
+    private static List<LoggingEvent> appenderList;
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @BeforeAll
+    static void setupLogger() {
+        ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.apache.shardingsphere.database.connector.core.metadata.data.loader");
+        ListAppender<LoggingEvent> appender = (ListAppender) log.getAppender("MetaDataLoaderTestAppender");
+        appenderList = appender.list;
+    }
+    
+    @BeforeEach
+    void setUp() {
+        appenderList.clear();
+    }
     
     @Test
     void assertLoadWithDialectLoader() throws Exception {
@@ -137,6 +160,59 @@ class MetaDataLoaderTest {
         MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("t_order"), "foo_ds", dataSource, databaseType, "foo_db");
         SQLException ex = assertThrows(SQLException.class, () -> MetaDataLoader.load(Collections.singleton(material)));
         assertThat(ex.getCause().getCause(), isA(IllegalStateException.class));
+    }
+    
+    @Test
+    void assertMissingTableWarning() throws SQLException {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("t_order"), "foo_ds", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        MetaDataLoader.load(Collections.singleton(material));
+        assertThat(appenderList.size(), is(1));
+        LoggingEvent event = appenderList.get(0);
+        assertThat(event.getLevel(), is(Level.WARN));
+        assertThat(event.getFormattedMessage(), containsString("foo_ds.t_order"));
+        assertThat(event.getFormattedMessage(), containsString("missing from loaded metadata"));
+    }
+    
+    @Test
+    void assertNoMissingTableWarningWhenLoaded() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "dialect_success", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(material)).thenReturn(Collections.singleton(
+                new SchemaMetaData("foo_db", Collections.singleton(new TableMetaData("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            MetaDataLoader.load(Collections.singleton(material));
+            assertTrue(appenderList.isEmpty());
+        }
+    }
+    
+    @Test
+    void assertDialectSQLExceptionProducesWarn() throws Exception {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "dialect_sql_exception", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(any(MetaDataLoaderMaterial.class))).thenThrow(SQLException.class);
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
+            assertThat(actual.size(), is(1));
+            assertTrue(actual.get("foo_db").getTables().isEmpty());
+            assertThat(appenderList.size(), is(1));
+            LoggingEvent event = appenderList.get(0);
+            assertThat(event.getLevel(), is(Level.WARN));
+            assertThat(event.getFormattedMessage(), containsString("Dialect load schema meta data error, load by default."));
+        }
+    }
+    
+    @Test
+    void assertMultiBatchAccumulation() throws SQLException {
+        MetaDataLoaderMaterial firstMaterial = new MetaDataLoaderMaterial(Collections.singleton("t_order"), "foo_ds", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        MetaDataLoaderMaterial secondMaterial = new MetaDataLoaderMaterial(Collections.singleton("t_order_item"), "foo_ds", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
+        MetaDataLoader.load(Arrays.asList(firstMaterial, secondMaterial));
+        assertThat(appenderList.size(), is(1));
+        LoggingEvent event = appenderList.get(0);
+        assertThat(event.getLevel(), is(Level.WARN));
+        assertThat(event.getFormattedMessage(), containsString("foo_ds.t_order"));
+        assertThat(event.getFormattedMessage(), containsString("foo_ds.t_order_item"));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
