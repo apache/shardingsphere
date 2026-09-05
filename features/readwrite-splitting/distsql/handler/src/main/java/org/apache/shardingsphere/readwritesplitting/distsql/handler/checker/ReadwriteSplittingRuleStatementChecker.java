@@ -67,10 +67,20 @@ public final class ReadwriteSplittingRuleStatementChecker {
                                      final ReadwriteSplittingRuleConfiguration currentRuleConfig, final boolean ifNotExists) {
         checkDuplicateRuleNames(database, segments, currentRuleConfig, ifNotExists);
         String databaseName = database.getName();
-        checkDataSourcesExist(databaseName, segments, database);
-        checkDuplicatedDataSourceNames(databaseName, segments, currentRuleConfig, true);
-        checkTransactionalReadQueryStrategy(segments);
-        checkLoadBalancers(segments);
+        Collection<ReadwriteSplittingRuleSegment> toBeCreatedSegments = ifNotExists ? getNotExistedSegments(segments, currentRuleConfig) : segments;
+        checkDataSourcesExist(databaseName, toBeCreatedSegments, database);
+        checkDuplicatedDataSourceNames(databaseName, toBeCreatedSegments, currentRuleConfig, true);
+        checkTransactionalReadQueryStrategy(toBeCreatedSegments);
+        checkLoadBalancers(toBeCreatedSegments);
+    }
+    
+    private static Collection<ReadwriteSplittingRuleSegment> getNotExistedSegments(final Collection<ReadwriteSplittingRuleSegment> segments,
+                                                                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
+            return segments;
+        }
+        Collection<String> currentRuleNames = currentRuleConfig.getDataSourceGroups().stream().map(ReadwriteSplittingDataSourceGroupRuleConfiguration::getName).collect(Collectors.toSet());
+        return segments.stream().filter(each -> !currentRuleNames.contains(each.getName())).collect(Collectors.toList());
     }
     
     /**
@@ -100,7 +110,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
     private static void checkDuplicateRuleNames(final ShardingSphereDatabase database,
                                                 final Collection<ReadwriteSplittingRuleSegment> segments, final ReadwriteSplittingRuleConfiguration currentRuleConfig, final boolean ifNotExists) {
         checkDuplicateRuleNamesWithSelf(database.getName(), segments);
-        checkDuplicateRuleNamesWithExistsDataSources(database, segments);
+        checkDuplicateRuleNamesWithExistsDataSources(database, ifNotExists ? getNotExistedSegments(segments, currentRuleConfig) : segments);
         if (!ifNotExists) {
             checkDuplicateRuleNamesWithRuleConfiguration(database.getName(), currentRuleConfig, segments);
         }
