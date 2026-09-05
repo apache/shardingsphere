@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingReq
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredStrategyException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
@@ -39,7 +38,6 @@ import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingRuleExceptionIdentifier;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 
 import java.util.Arrays;
@@ -112,7 +110,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
     private static void checkDuplicateRuleNames(final ShardingSphereDatabase database,
                                                 final Collection<ReadwriteSplittingRuleSegment> segments, final ReadwriteSplittingRuleConfiguration currentRuleConfig, final boolean ifNotExists) {
         checkDuplicateRuleNamesWithSelf(database.getName(), segments);
-        checkDuplicateRuleNamesWithExistsDataSources(database, segments);
+        checkDuplicateRuleNamesWithExistsDataSources(database, ifNotExists ? getNotExistedSegments(segments, currentRuleConfig) : segments);
         if (!ifNotExists) {
             checkDuplicateRuleNamesWithRuleConfiguration(database.getName(), currentRuleConfig, segments);
         }
@@ -160,11 +158,8 @@ public final class ReadwriteSplittingRuleStatementChecker {
     
     private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
         Collection<String> result = new LinkedHashSet<>();
-        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            if (each instanceof ReadwriteSplittingRule) {
-                continue;
-            }
-            each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class).ifPresent(optional -> result.addAll(optional.getDataSourceMapper().keySet()));
+        for (DataSourceMapperRuleAttribute each : database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)) {
+            result.addAll(each.getDataSourceMapper().keySet());
         }
         return result;
     }

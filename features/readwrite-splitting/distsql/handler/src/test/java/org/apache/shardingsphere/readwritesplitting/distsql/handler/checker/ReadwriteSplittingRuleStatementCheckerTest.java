@@ -52,6 +52,8 @@ import org.mockito.Mock;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -156,6 +158,18 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     }
     
     @Test
+    void assertCheckCreationWithIfNotExistsWhenRuleNameExistsInExpandedLogicDataSources() {
+        RuleMetaData ruleMetaData = mockRuleMetaDataWithLogicDataSources(ReadwriteSplittingRule.class, Arrays.asList("rw_0", "rw_1"));
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("rw_0", "write_ds_0", Collections.singletonList("read_ds_0"), null, null);
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Collections.singleton(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("rw_${0..1}", "write_ds_9", Collections.singletonList("read_ds_9"), "RANDOM"));
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
+        assertThrows(InvalidRuleConfigurationException.class,
+                () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), currentRuleConfig, true));
+    }
+    
+    @Test
     void assertCheckCreationWithIfNotExistsWhenRuleNameExistsInOwnLogicDataSources() {
         RuleMetaData ruleMetaData = mockRuleMetaDataWithLogicDataSource(ReadwriteSplittingRule.class, "foo_rule_0");
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
@@ -220,6 +234,17 @@ class ReadwriteSplittingRuleStatementCheckerTest {
                 new ReadwriteSplittingDataSourceGroupRuleConfiguration("bar_rule_0", "write_ds_9", Collections.singletonList("read_ds_9"), "RANDOM"));
         ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
         assertThrows(MissingRequiredRuleException.class, () -> ReadwriteSplittingRuleStatementChecker.checkAlteration(database, Collections.singleton(segment), currentRuleConfig));
+    }
+    
+    private RuleMetaData mockRuleMetaDataWithLogicDataSources(final Class<? extends ShardingSphereRule> ruleClass, final Collection<String> logicDataSourceNames) {
+        ShardingSphereRule rule = mock(ruleClass);
+        Map<String, Collection<String>> dataSourceMapper = new LinkedHashMap<>(logicDataSourceNames.size(), 1F);
+        for (String each : logicDataSourceNames) {
+            dataSourceMapper.put(each, Collections.singleton("actual_ds_0"));
+        }
+        DataSourceMapperRuleAttribute ruleAttribute = () -> dataSourceMapper;
+        lenient().when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        return new RuleMetaData(Collections.singleton(rule));
     }
     
     private RuleMetaData mockRuleMetaDataWithLogicDataSource(final Class<? extends ShardingSphereRule> ruleClass, final String logicDataSourceName) {
