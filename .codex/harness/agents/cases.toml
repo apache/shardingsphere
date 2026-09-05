@@ -1314,6 +1314,27 @@ policy_assertions = [{source = "coding-standards", statements = ["For every affe
 critical = true
 
 [[cases]]
+id = "java_test_code_uses_actual_and_member_accessor"
+group = "coding / regular"
+description = "Uses actual-value naming and Mockito member access without adding an unnecessary local variable."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "test-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized Java test change whose final coding-standards check found `Object result = service.execute(); assertThat(result, is(expected));`, a direct `assertThat(service.status(), is(expectedStatus));`, and `field.setAccessible(true); field.set(target, value);`. Rename the asserted local and all its references, keep the direct assertion without introducing a local variable, replace the reflective field write with the repository member accessor, state all decisions in the summary, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["actual", "Plugins.getMemberAccessor"]
+required_summary_term_groups = [["direct assertion", "direct status assertion", "without introducing a local", "without adding a local", "Keep `assertThat(service.status()", "Keep assertThat(service.status()"]]
+forbidden_summary_terms = ["MemberAccessor#newInstance", "MemberAccessor#invoke"]
+policy_binding_profile = "test-write"
+policy_assertions = [{source = "coding-standards", statements = ["For every affected Java test file, read the [Java test code rules](references/rules/java-testing.md) through EOF and add each applicable rule to the checklist.", "For Java tests, explicitly verify every applicable Java test code rule against the effective task delta and the declarations and member types needed to resolve semantic applicability."]}, {source = "java-testing", statements = ["Name a local variable that stores the value produced by the operation under test with the `actual` prefix; use `actual` when no additional domain distinction is needed.", "Do not name that local variable `result` when it supplies the actual value to an assertion.", "Keep a direct assertion when the tested expression is clear; do not introduce an `actual` local whose only purpose is to satisfy the naming rule.", "When the `CODE_OF_CONDUCT.md` field-access exception applies, use `Plugins.getMemberAccessor().get` or `Plugins.getMemberAccessor().set` instead of changing a `Field` object's accessibility and calling `Field#get` or `Field#set` directly."]}]
+critical = true
+
+[[cases]]
 id = "standalone_coding_standards_audits_named_constant_order"
 group = "policy routing"
 description = "Reports a proven named-constant ordering violation without treating an uppercase variable as a constant."
@@ -1332,6 +1353,69 @@ required_summary_term_groups = [["uppercase spelling", "uppercase name", "upperc
 forbidden_summary_terms = ["LIMIT is a constant", "LIMIT == size is a violation"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java, read the [Java expression rules](references/rules/java-expressions.md) through EOF.", "Remain read-only throughout the audit."]}, {source = "java-expressions", statements = ["Place a resolved named constant on the left and a variable or other non-constant expression on the right when they are operands of `==` or `!=`.", "Do not classify an identifier as a constant from uppercase spelling alone.", "When both operands are constants, both operands are non-constant expressions, or accessible evidence cannot resolve the roles, do not report a confirmed standalone-audit violation."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_java_test_code"
+group = "policy routing"
+description = "Audits actual-value naming and reflective test access without editing the current working tree."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree Java test file `module-a/src/test/java/example/FooTest.java`. Its complete supplied content contains `Object result = service.execute(); assertThat(result, is(expected));`, a reflective field write through `field.setAccessible(true); field.set(target, value);`, and a private constructor invocation through `Plugins.getMemberAccessor().newInstance(constructor)`. Check the complete file, conclude `Non-compliant`, report the actual-value name, reflective field access, and private-constructor access violations with their minimum corrections, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "actual", "Plugins.getMemberAccessor", "public API"]
+required_summary_term_groups = [["field", "Field"], ["constructor", "newInstance"]]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java tests, read the [Java test code rules](references/rules/java-testing.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "java-testing", statements = ["Do not name that local variable `result` when it supplies the actual value to an assertion.", "Do not call `AccessibleObject#setAccessible` in Java test code.", "When the `CODE_OF_CONDUCT.md` field-access exception applies, use `Plugins.getMemberAccessor().get` or `Plugins.getMemberAccessor().set` instead of changing a `Field` object's accessibility and calling `Field#get` or `Field#set` directly.", "Do not use core reflection or `MemberAccessor#invoke` or `MemberAccessor#newInstance` to test private methods or constructors; exercise that behavior through a public API.", "Before reporting a `setAccessible` violation, resolve the receiver as `Field`, `Method`, `Constructor`, or another `AccessibleObject`; a custom method with the same name is not a violation."]}]
+critical = true
+
+[[cases]]
+id = "java_test_empty_assertion_requires_collection_or_map"
+group = "coding / regular"
+description = "Rewrites an empty Collection assertion without treating every size method as a Collection or Map contract."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "test-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized Java test change whose final coding-standards check found `List<String> actualItems = service.load(); assertThat(actualItems.size(), is(0));` and `PreparedStatementCacheContext cacheContext = createCacheContext(); assertThat(cacheContext.size(), is(0));`. The supplied declarations prove that `actualItems` is a `java.util.List` and that `PreparedStatementCacheContext` is a project type that does not implement `Collection` or `Map`. Correct only the applicable empty assertion, state why the cache-context assertion is outside this rule, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["assertTrue", "isEmpty", "PreparedStatementCacheContext"]
+required_summary_term_groups = [["outside", "not a Collection", "not a Map", "unchanged", "neither `Collection`", "does not trigger"]]
+forbidden_summary_terms = ["add isEmpty", "implement Collection", "implement Map"]
+policy_binding_profile = "test-write"
+policy_assertions = [{source = "java-testing", statements = ["When a Java test verifies that a `Collection`, `Map`, or one of their subtypes is empty, use `assertTrue(expression.isEmpty())` instead of `assertThat(expression.size(), is(0))`.", "Resolve the receiver's declared type or the invoked method's return contract before applying this rule; the presence of a `size()` method alone does not prove that the receiver is a `Collection` or `Map`.", "Do not report or rewrite an assertion on another type merely because that type provides `size()`; when the receiver type cannot be proved, do not report a confirmed violation."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_empty_collection_assertions_semantically"
+group = "policy routing"
+description = "Audits empty assertions only when the receiver is proved to be a Collection or Map."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree Java test file `module-a/src/test/java/example/FooTest.java`. Its complete supplied content declares `List<String> actualItems`, declares a project type `PreparedStatementCacheContext` that does not implement `Collection` or `Map`, and asserts `assertThat(actualItems.size(), is(0));` and `assertThat(cacheContext.size(), is(0));`. Conclude `Non-compliant`, report only the List assertion under the empty Collection and Map assertion rule, explain why the cache-context assertion is not a violation of that rule, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "actualItems", "assertTrue", "isEmpty", "PreparedStatementCacheContext"]
+required_summary_term_groups = [["not a Collection", "not a Map", "outside", "neither Collection", "neither `Collection`"]]
+forbidden_summary_terms = ["Strictly compliant", "add isEmpty", "implement Collection", "implement Map"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java tests, read the [Java test code rules](references/rules/java-testing.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "java-testing", statements = ["When a Java test verifies that a `Collection`, `Map`, or one of their subtypes is empty, use `assertTrue(expression.isEmpty())` instead of `assertThat(expression.size(), is(0))`.", "Resolve the receiver's declared type or the invoked method's return contract before applying this rule; the presence of a `size()` method alone does not prove that the receiver is a `Collection` or `Map`.", "Do not report or rewrite an assertion on another type merely because that type provides `size()`; when the receiver type cannot be proved, do not report a confirmed violation."]}]
 critical = true
 
 [[cases]]
@@ -1369,8 +1453,8 @@ required_actions = ["inspect_local"]
 allowed_actions = ["inspect_local"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["read_only_request"]
-required_summary_terms = ["Non-compliant", "null", "Collections.unmodifiableList"]
-required_summary_term_groups = [["remove", "minimum correction", "pass, store, or return the original collection"]]
+required_summary_terms = ["Non-compliant", "null"]
+required_summary_term_groups = [["remove", "minimum correction", "pass, store, or return the original collection"], ["Collections.unmodifiableList", "unmodifiable wrapper"]]
 forbidden_summary_terms = ["Strictly compliant"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "standalone-audit", statements = ["For defensive-code rules, inspect the relevant contracts, producers, consumers, callers, aliases, failures, concurrency, and lifecycle paths. Do not infer that an existing defense is unnecessary merely because a text search did not find its justification.", "An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every defensive-code violation, also report the production and contract evidence proving that no qualifying condition applies."]}, {source = "defensive-code", statements = ["A defensive construct is compliant only when qualifying evidence proves that the defended condition occurs on a supported production path or an explicit existing contract requires the defense.", "Do not add or retain a null guard, `Objects.requireNonNull`, `Optional.ofNullable`, null fallback, or null-triggered early return when supported callers and upstream contracts already guarantee a non-null value and no explicit existing boundary or diagnostic contract requires local validation.", "A mutable collection implementation, or the theoretical ability of a caller to mutate it, is not evidence.", "When inspection finds no supported mutation path and no explicit contract, pass, store, or return the original collection directly; remove every task-introduced copy or wrapper and every task-introduced test that only asserts immutability or rejected mutation.", "In Standalone Compliance Audit Mode, inspect all accessible contracts and supported producers, consumers, and paths before reporting an existing defensive construct as non-compliant."]}]
