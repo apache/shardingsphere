@@ -110,6 +110,24 @@ class AlterMaskRuleExecutorTest {
     }
     
     @Test
+    void assertBuildToBeDroppedRuleConfigurationWithCaseChangedTableName() {
+        Map<String, AlgorithmConfiguration> currentAlgorithms = new LinkedHashMap<>(3, 1F);
+        currentAlgorithms.put("old_order_mask", new AlgorithmConfiguration("MD5", new Properties()));
+        currentAlgorithms.put("user_mask", new AlgorithmConfiguration("MD5", new Properties()));
+        currentAlgorithms.put("unused_mask", new AlgorithmConfiguration("SM3", new Properties()));
+        executor.setRule(createRule(new MaskRuleConfiguration(Arrays.asList(
+                new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "old_order_mask"))),
+                new MaskTableRuleConfiguration("t_user", Collections.singleton(new MaskColumnRuleConfiguration("user_id", "user_mask")))), currentAlgorithms)));
+        MaskTableRuleConfiguration toBeAlteredTable = new MaskTableRuleConfiguration("T_ORDER", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "new_order_mask")));
+        MaskRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new MaskRuleConfiguration(Collections.singleton(toBeAlteredTable), Collections.emptyMap()));
+        assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getTables().iterator().next().getName(), is("t_order"));
+        assertThat(actual.getMaskAlgorithms().size(), is(2));
+        assertTrue(actual.getMaskAlgorithms().containsKey("unused_mask"));
+        assertTrue(actual.getMaskAlgorithms().containsKey("old_order_mask"));
+    }
+    
+    @Test
     void assertGetRuleClass() {
         assertThat(executor.getRuleClass(), is(MaskRule.class));
     }
@@ -122,7 +140,9 @@ class AlterMaskRuleExecutorTest {
                         createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class),
                 Arguments.of("one table exists and one missing",
                         new AlterMaskRuleStatement(Arrays.asList(createRuleSegment("t_order", "order_id", "MD5"), createRuleSegment("t_missing", "user_id", "AES"))),
-                        createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class));
+                        createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class),
+                Arguments.of("case-insensitive table match", new AlterMaskRuleStatement(Collections.singleton(createRuleSegment("T_ORDER", "order_id", "MD5"))),
+                        createCurrentRuleConfiguration(Collections.singleton("t_order")), null));
     }
     
     private static MaskRuleSegment createRuleSegment(final String tableName, final String columnName, final String algorithmType) {
