@@ -1195,6 +1195,25 @@ policy_assertions = [{source = "java-naming", statements = ["Spell the MySQL com
 critical = true
 
 [[cases]]
+id = "java_lombok_prefers_required_constructor"
+group = "coding / regular"
+description = "Uses RequiredArgsConstructor for required state without replacing a verified complete-state constructor."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized in-scope Java implementation whose final Lombok check found three classes. `Equivalent` has only uninitialized final fields and uses `@AllArgsConstructor`. `OptionalState` has an uninitialized final dependency and a default-initialized mutable timeout, uses `@AllArgsConstructor`, and has no caller, framework, builder, or compatibility contract requiring the timeout constructor parameter. `CompleteStateFactory` uses a private `@AllArgsConstructor`, and a verified builder contract requires every generated parameter. Apply the exact Lombok constructor rules: use `@RequiredArgsConstructor` for `Equivalent` and `OptionalState`, preserve the justified constructor for `CompleteStateFactory`, state all three decisions in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["Equivalent", "OptionalState", "CompleteStateFactory", "RequiredArgsConstructor", "AllArgsConstructor", "builder"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-naming", statements = ["Use `lombok.RequiredArgsConstructor` instead of `lombok.AllArgsConstructor` when it generates the required constructor without changing its signature, visibility, constructor annotations, static factory behavior, or null-check behavior.", "Do not use `lombok.AllArgsConstructor` when it exposes a field that is not required to create a valid instance as a constructor parameter.", "Use `lombok.AllArgsConstructor` only when every parameter it generates belongs to a verified construction, compatibility, serialization, reflection, framework, or builder contract that `lombok.RequiredArgsConstructor` cannot satisfy.", "Write a manual constructor when neither Lombok constructor annotation expresses the exact required parameter set or behavior.", "Before choosing or replacing a Lombok constructor annotation, inspect field initialization, `final` and `lombok.NonNull` fields, explicit constructors, `access`, `staticName`, `onConstructor`, builders, constructor callers, and applicable framework or compatibility contracts."]}]
+critical = true
+
+[[cases]]
 id = "java_naming_optional_map_parameter_is_exact"
 group = "coding / regular"
 description = "Names only the direct Optional map lambda parameter optional and rejects optional in ordinary identifiers."
@@ -1272,6 +1291,25 @@ required_summary_terms = ["Non-compliant", "contract"]
 required_summary_term_groups = [["lombok.Data", "@Data"]]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "coding-standards", statements = ["Use this mode only when the user explicitly asks to audit, check, or report coding-standards compliance.", "Audit the current working tree rather than a pull request or diff.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-naming", statements = ["Do not use `lombok.Data` or `lombok.Value`, whether referenced through an import or by a fully qualified annotation name.", "Treat a verified contract-fixed identifier as an allowed naming exception in a standalone audit, and report the contract instead of proposing a mechanical rename."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_lombok_constructors"
+group = "policy routing"
+description = "Audits excessive AllArgsConstructor use without rejecting a verified complete-state constructor."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/Constructors.java`. Its complete supplied content contains `Equivalent`, whose uninitialized final fields make `@RequiredArgsConstructor` equivalent to its current `@AllArgsConstructor`, and `CompleteStateFactory`, whose private `@AllArgsConstructor` is required by a verified builder contract that includes every generated parameter. Check the complete file, conclude `Non-compliant`, report `Equivalent` and its minimum correction, record `CompleteStateFactory` as allowed, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "Equivalent", "CompleteStateFactory", "RequiredArgsConstructor", "builder", "allowed"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["Use this mode only when the user explicitly asks to audit, check, or report coding-standards compliance.", "Remain read-only throughout the audit."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-naming", statements = ["Use `lombok.RequiredArgsConstructor` instead of `lombok.AllArgsConstructor` when it generates the required constructor without changing its signature, visibility, constructor annotations, static factory behavior, or null-check behavior.", "Use `lombok.AllArgsConstructor` only when every parameter it generates belongs to a verified construction, compatibility, serialization, reflection, framework, or builder contract that `lombok.RequiredArgsConstructor` cannot satisfy.", "Treat annotation searches as candidate discovery only; report a violation only after proving equivalent `lombok.RequiredArgsConstructor` behavior or an unnecessary generated parameter."]}]
 critical = true
 
 [[cases]]
