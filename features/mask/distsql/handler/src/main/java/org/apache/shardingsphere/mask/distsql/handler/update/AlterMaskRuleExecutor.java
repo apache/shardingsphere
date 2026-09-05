@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -51,7 +53,19 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
     
     @Override
     public void checkBeforeUpdate(final AlterMaskRuleStatement sqlStatement) {
+        checkDuplicatedRuleNames(sqlStatement);
         checkToBeAlteredRules(sqlStatement);
+    }
+    
+    private void checkDuplicatedRuleNames(final AlterMaskRuleStatement sqlStatement) {
+        Collection<String> uniqueTableNames = new CaseInsensitiveSet<>();
+        Collection<String> duplicatedTableNames = new LinkedList<>();
+        for (String each : getToBeAlteredMaskTableNames(sqlStatement)) {
+            if (!uniqueTableNames.add(each)) {
+                duplicatedTableNames.add(each);
+            }
+        }
+        ShardingSpherePreconditions.checkMustEmpty(duplicatedTableNames, () -> new DuplicateRuleException("mask", database.getName(), duplicatedTableNames));
     }
     
     private void checkToBeAlteredRules(final AlterMaskRuleStatement sqlStatement) {

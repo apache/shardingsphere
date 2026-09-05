@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mask.distsql.handler.update;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -82,6 +83,15 @@ class AlterMaskRuleExecutorTest {
         }
         when(database.getName()).thenReturn("foo_db");
         assertThrows(expectedException, () -> executor.checkBeforeUpdate(sqlStatement));
+    }
+    
+    @Test
+    void assertCheckBeforeUpdateWithCaseCollidingTablesInOneStatement() {
+        executor.setRule(mock(MaskRule.class));
+        when(database.getName()).thenReturn("foo_db");
+        AlterMaskRuleStatement sqlStatement = new AlterMaskRuleStatement(
+                Arrays.asList(createRuleSegment("t_order", "order_id", "MD5"), createRuleSegment("T_ORDER", "user_id", "MD5")));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
