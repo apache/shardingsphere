@@ -61,7 +61,7 @@ public final class FirebirdBatchRegistry {
      */
     public void registerBatchStatement(final int connectionId, final int statementId, final FirebirdBatchStatement batchStatement) {
         Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
-        if (statements == null) {
+        if (null == statements) {
             throw new IllegalStateException("Connection [" + connectionId + "] is not registered.");
         }
         statements.put(statementId, batchStatement);
@@ -76,7 +76,7 @@ public final class FirebirdBatchRegistry {
      */
     public FirebirdBatchStatement getBatchStatement(final int connectionId, final int statementId) {
         Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
-        if (statements == null) {
+        if (null == statements) {
             return null;
         }
         return statements.get(statementId);
@@ -90,7 +90,7 @@ public final class FirebirdBatchRegistry {
      */
     public void unregisterBatchStatement(final int connectionId, final int statementId) {
         Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
-        if (statements != null) {
+        if (null != statements) {
             statements.remove(statementId);
         }
     }
