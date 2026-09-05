@@ -73,11 +73,12 @@
         <sonar.exclusions>**/autogen/**/*</sonar.exclusions>
         
         <!-- 3rd party library versions -->
-        <guava.version>33.4.6-jre</guava.version>
+        <guava.version>33.4.8-jre</guava.version>
         <checker-qual.version>3.39.0</checker-qual.version>
         <error_prone_annotations.version>2.22.0</error_prone_annotations.version>
         <java-util.version>4.103.0</java-util.version>
-        <calcite.version>1.40.0</calcite.version>
+        <calcite.version>1.42.0</calcite.version>
+        <joou.version>0.9.5</joou.version>
         
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-codec.version>1.16.0</commons-codec.version>
@@ -92,11 +93,11 @@
         <antlr4.version>4.13.2</antlr4.version>
         <snakeyaml.version>2.2</snakeyaml.version>
         <gson.version>2.10.1</gson.version>
-        <jackson.version>2.16.1</jackson.version>
-        <json-path.version>2.9.0</json-path.version>
-        <json-smart.version>2.4.10</json-smart.version>
-        <accessors-smart.version>2.4.9</accessors-smart.version>
-        <asm.version>9.3</asm.version>
+        <jackson.version>2.18.6</jackson.version>
+        <json-path.version>2.10.0</json-path.version>
+        <json-smart.version>2.6.0</json-smart.version>
+        <accessors-smart.version>2.6.0</accessors-smart.version>
+        <asm.version>9.7.1</asm.version>
         <groovy.version>4.0.22</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
         <bytebuddy.version>1.18.8</bytebuddy.version>
@@ -420,6 +421,11 @@
                         <artifactId>json-path</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>joou-java-6</artifactId>
+                <version>${joou.version}</version>
             </dependency>
             
             <dependency>
