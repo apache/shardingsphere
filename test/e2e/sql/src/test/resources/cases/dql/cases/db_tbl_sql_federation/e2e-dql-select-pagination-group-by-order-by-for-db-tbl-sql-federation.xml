@@ -85,6 +85,11 @@
                scenario-comments="Test select inner join fetch statement when use sharding feature and federation executor engine.">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT * FROM t_order ORDER BY order_id OFFSET 1 ROW FETCH NEXT 3 ROWS ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
+               scenario-comments="Verify that OFFSET and FETCH are both applied during SQL federation.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
     
     <!--<test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > ? ORDER BY p.product_id FETCH NEXT 3 ROW ONLY" db-types="openGauss" scenario-types="db_tbl_sql_federation"
                scenario-comments="Test select natural join fetch statement when use sharding feature and federation executor engine.">

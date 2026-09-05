@@ -215,6 +215,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Statement visitor for openGauss.
@@ -229,10 +231,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        if (null == ctx.DOLLAR_()) {
-            return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
-        }
-        return new ParameterMarkerValue(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue() - 1, ParameterMarkerType.DOLLAR);
+        return null == ctx.DOLLAR_()
+                ? new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION)
+                : new ParameterMarkerValue(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue() - 1, ParameterMarkerType.DOLLAR);
     }
     
     @Override
@@ -463,16 +464,13 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     private ASTNode appendWindow(final FuncExprContext ctx, final ASTNode node) {
         WindowItemSegment window = (WindowItemSegment) visit(ctx.overClause());
         if (node instanceof AggregationDistinctProjectionSegment) {
-            AggregationDistinctProjectionSegment result = createAggregationDistinctSegmentWithWindow(ctx, (AggregationDistinctProjectionSegment) node, window);
-            return result;
+            return createAggregationDistinctSegmentWithWindow(ctx, (AggregationDistinctProjectionSegment) node, window);
         }
         if (node instanceof AggregationProjectionSegment) {
-            AggregationProjectionSegment result = createAggregationSegmentWithWindow(ctx, (AggregationProjectionSegment) node, window);
-            return result;
+            return createAggregationSegmentWithWindow(ctx, (AggregationProjectionSegment) node, window);
         }
         if (node instanceof FunctionSegment) {
-            FunctionSegment result = createFunctionSegmentWithWindow(ctx, (FunctionSegment) node, window);
-            return result;
+            return createFunctionSegmentWithWindow(ctx, (FunctionSegment) node, window);
         }
         return node;
     }
@@ -676,23 +674,15 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
         IdentifierContext identifierContext = ctx.identifier();
-        if (null != identifierContext) {
-            return new KeywordValue(identifierContext.getText());
-        }
-        Collection<String> dataTypeNames = new LinkedList<>();
-        for (int i = 0; i < ctx.getChildCount(); i++) {
-            dataTypeNames.add(ctx.getChild(i).getText());
-        }
-        return new KeywordValue(String.join(" ", dataTypeNames));
+        return new KeywordValue(null == identifierContext
+                ? IntStream.range(0, ctx.getChildCount()).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining(" "))
+                : identifierContext.getText());
     }
     
     @Override
     public final ASTNode visitSortClause(final SortClauseContext ctx) {
-        Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (SortbyContext each : ctx.sortbyList().sortby()) {
-            items.add((OrderByItemSegment) visit(each));
-        }
-        return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ctx.sortbyList().sortby().stream().map(each -> (OrderByItemSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -733,8 +723,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {
-            DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
-            result.setDataLength(dataTypeLengthSegment);
+            result.setDataLength((DataTypeLengthSegment) visit(ctx.dataTypeLength()));
         }
         return result;
     }
@@ -1528,17 +1517,27 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         LimitValueSegment rowCount = null;
         LimitValueSegment offset = null;
         if (astNode0 instanceof LimitClauseContext) {
-            rowCount = null == ctx.limitClause().selectLimitValue() ? null : (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
+            rowCount = createRowCountValueSegment(ctx.limitClause());
         } else {
             offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         }
         ParseTree astNode1 = ctx.getChild(1);
         if (astNode1 instanceof LimitClauseContext) {
-            rowCount = null == ctx.limitClause().selectLimitValue() ? null : (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
+            rowCount = createRowCountValueSegment(ctx.limitClause());
         } else {
             offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         }
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    private LimitValueSegment createRowCountValueSegment(final LimitClauseContext ctx) {
+        if (null != ctx.selectFetchValue()) {
+            return (LimitValueSegment) visit(ctx.selectFetchValue());
+        }
+        if (null != ctx.selectLimitValue()) {
+            return (LimitValueSegment) visit(ctx.selectLimitValue());
+        }
+        return null;
     }
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {
