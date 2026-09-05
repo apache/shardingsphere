@@ -18,16 +18,16 @@ root_max_bytes = 26000
 
 [profiles]
 root = ["agents"]
-code-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
-test-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
-code-review = ["agents", "code-of-conduct", "coding-standards", "java-naming", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification"]
+code-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-expressions", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
+test-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-expressions", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
+code-review = ["agents", "code-of-conduct", "coding-standards", "java-naming", "java-expressions", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification"]
 code-design = ["agents", "implementation-rules", "testing-rules", "contracts-and-removal", "cross-cutting-skills"]
-coding-standards-audit = ["agents", "code-of-conduct", "coding-standards", "standalone-audit", "java-naming", "defensive-code"]
+coding-standards-audit = ["agents", "code-of-conduct", "coding-standards", "standalone-audit", "java-naming", "java-expressions", "defensive-code"]
 runtime-diagnosis = ["agents", "runtime-triage", "code-verification"]
 command-execution = ["agents", "token-efficiency", "code-verification"]
 cross-cutting = ["agents", "cross-cutting-skills"]
-gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
-review-pr = ["agents", "code-of-conduct", "coding-standards", "java-naming", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
+gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-expressions", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
+review-pr = ["agents", "code-of-conduct", "coding-standards", "java-naming", "java-expressions", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
 policy-maintenance = ["agents", "policy-maintenance", "policy-source-manifest"]
 
 [[sources]]
@@ -126,7 +126,7 @@ id = "coding-standards"
 path = ".codex/skills/coding-standards/SKILL.md"
 kind = "skill"
 semantic = true
-references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/standalone-audit.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/defensive-code.md"]
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/standalone-audit.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/java-expressions.md", ".codex/skills/coding-standards/references/rules/defensive-code.md"]
 
 [[sources]]
 id = "coding-standards-metadata"
@@ -145,6 +145,13 @@ references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards
 [[sources]]
 id = "java-naming"
 path = ".codex/skills/coding-standards/references/rules/java-naming.md"
+kind = "rules"
+semantic = true
+references = []
+
+[[sources]]
+id = "java-expressions"
+path = ".codex/skills/coding-standards/references/rules/java-expressions.md"
 kind = "rules"
 semantic = true
 references = []

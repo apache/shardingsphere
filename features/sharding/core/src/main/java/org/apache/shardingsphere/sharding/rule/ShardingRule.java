@@ -520,7 +520,7 @@ public final class ShardingRule implements DatabaseRule {
     }
     
     private Optional<ColumnKeyGenerateStrategiesRuleConfiguration> findColumnKeyGenerateStrategies(final String tableName) {
-        return null != columnKeyGenerateStrategies.get(tableName) ? Optional.of(columnKeyGenerateStrategies.get(tableName)) : Optional.empty();
+        return null == columnKeyGenerateStrategies.get(tableName) ? Optional.empty() : Optional.of(columnKeyGenerateStrategies.get(tableName));
     }
     
     /**

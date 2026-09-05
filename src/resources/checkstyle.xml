@@ -131,6 +131,14 @@
             <property name="query" value="//VARIABLE_DEF[./MODIFIERS/FINAL and (parent::FOR_INIT or parent::FOR_EACH_CLAUSE)]" />
             <message key="matchxpath.match" value="Do not declare for-loop variables as final." />
         </module>
+        <module name="MatchXpath">
+            <property name="query" value="//*[self::EQUAL or self::NOT_EQUAL][./*[last()][self::LITERAL_NULL]]" />
+            <message key="matchxpath.match" value="Place null on the left side of == and != comparisons." />
+        </module>
+        <module name="MatchXpath">
+            <property name="query" value="//QUESTION[./*[1][self::NOT_EQUAL and ./*[1][self::LITERAL_NULL]]]" />
+            <message key="matchxpath.match" value="Use null == value and put the null-result branch first in ternary expressions." />
+        </module>
         <module name="IllegalType" />
         <module name="IllegalType">
             <property name="tokens" value="IMPORT, PARAMETER_DEF" />

@@ -1953,9 +1953,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             visit(each);
         }
         SQLStatement sqlStatement = visitSelect0(ctx.select());
-        getCursorStatements().put(null != ctx.variableName().identifier()
-                ? new IdentifierValue(ctx.variableName().getText()).getValue()
-                : new StringLiteralValue(ctx.variableName().getText()).getValue(), sqlStatement);
+        getCursorStatements().put(null == ctx.variableName().identifier()
+                ? new StringLiteralValue(ctx.variableName().getText()).getValue()
+                : new IdentifierValue(ctx.variableName().getText()).getValue(), sqlStatement);
         return defaultResult();
     }
     

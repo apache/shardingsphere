@@ -62,7 +62,7 @@ public final class DataConsistencyCheckUtils {
             Object thatColumnValue = thatRecordIterator.next().getValue();
             if (!isMatched(equalsBuilder, thisColumnValue, thatColumnValue)) {
                 log.warn("Record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}.", columnIndex, thisColumnValue, thatColumnValue,
-                        null != thisColumnValue ? thisColumnValue.getClass().getName() : "", null == thatColumnValue ? "" : thatColumnValue.getClass().getName());
+                        null == thisColumnValue ? "" : thisColumnValue.getClass().getName(), null == thatColumnValue ? "" : thatColumnValue.getClass().getName());
                 return false;
             }
         }

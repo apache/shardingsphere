@@ -519,7 +519,7 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
         if (null != ctx.PLUS_()) {
             return ctx.PLUS_().getText();
         }
-        return null != ctx.MINUS_() ? ctx.MINUS_().getText() : ctx.TILDE_().getText();
+        return null == ctx.MINUS_() ? ctx.TILDE_().getText() : ctx.MINUS_().getText();
     }
     
     private FunctionSegment createSubscriptExpression(final SimpleExprContext ctx) {

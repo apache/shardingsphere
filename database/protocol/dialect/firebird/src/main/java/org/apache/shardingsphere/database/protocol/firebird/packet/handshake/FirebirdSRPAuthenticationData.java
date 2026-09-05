@@ -215,7 +215,7 @@ public final class FirebirdSRPAuthenticationData {
      * @return normalized login
      */
     static String normalizeLogin(final String login) {
-        if (login == null || login.isEmpty()) {
+        if (null == login || login.isEmpty()) {
             return login;
         }
         if (login.length() > 2 && login.charAt(0) == '"' && login.charAt(login.length() - 1) == '"') {

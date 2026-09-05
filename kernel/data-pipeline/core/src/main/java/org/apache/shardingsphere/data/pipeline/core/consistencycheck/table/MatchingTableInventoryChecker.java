@@ -77,7 +77,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
         TableInventoryCalculateParameter sourceParam = new TableInventoryCalculateParameter(param.getSourceDataSource(), param.getSourceTable(),
                 param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
         TableCheckRangePosition checkRangePosition = param.getProgressContext().getTableCheckRangePositions().get(param.getSplittingItem());
-        sourceParam.setRange(Range.closed(null != checkRangePosition.getSourcePosition() ? checkRangePosition.getSourcePosition() : checkRangePosition.getSourceRange().getLowerBound(),
+        sourceParam.setRange(Range.closed(null == checkRangePosition.getSourcePosition() ? checkRangePosition.getSourceRange().getLowerBound() : checkRangePosition.getSourcePosition(),
                 checkRangePosition.getSourceRange().getUpperBound()));
         TableInventoryCalculateParameter targetParam = getTableInventoryCalculateParameter(param, checkRangePosition);
         TableInventoryCalculator<TableInventoryCheckCalculatedResult> sourceCalculator = buildSingleTableInventoryCalculator();
@@ -132,7 +132,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
     private TableInventoryCalculateParameter getTableInventoryCalculateParameter(final TableInventoryCheckParameter param, final TableCheckRangePosition checkRangePosition) {
         TableInventoryCalculateParameter result = new TableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
                 param.getTargetColumnNames(), param.getTargetUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
-        result.setRange(Range.closed(null != checkRangePosition.getTargetPosition() ? checkRangePosition.getTargetPosition() : checkRangePosition.getTargetRange().getLowerBound(),
+        result.setRange(Range.closed(null == checkRangePosition.getTargetPosition() ? checkRangePosition.getTargetRange().getLowerBound() : checkRangePosition.getTargetPosition(),
                 checkRangePosition.getTargetRange().getUpperBound()));
         return result;
     }

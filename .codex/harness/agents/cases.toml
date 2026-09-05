@@ -941,8 +941,10 @@ allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
 required_reasons = ["documentation_wording_required"]
 response_style = "concise"
-max_summary_chars = 110
-required_summary_prefix = "Parser adapters must not reference LegacyNode. Before invoking an adapter, verify that strict mode is enabled."
+max_summary_chars = 130
+required_summary_prefix = "Parser adapters must not reference"
+required_summary_terms = ["LegacyNode", "Before invoking an adapter", "strict mode", "enabled"]
+forbidden_summary_terms = ["may be ignored", "migrations", "future compatibility"]
 critical = true
 
 [[cases]]
@@ -977,7 +979,7 @@ forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"
 required_reasons = ["documentation_wording_required"]
 response_style = "concise"
 max_summary_chars = 100
-required_summary_terms = ["## YAML", "schema", "reject"]
+required_summary_terms = ["YAML", "schema", "reject"]
 required_summary_term_groups = [["unknown", "not defined"]]
 forbidden_summary_terms = ["###", "|", "**Summary:**"]
 critical = true
@@ -1030,8 +1032,9 @@ allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
 required_reasons = ["documentation_wording_required"]
 response_style = "concise"
-max_summary_chars = 280
-required_summary_terms = ["Parser adapters must not reference LegacyNode", "Migration-test fixtures may reference", "only while reading archived v1 snapshots", "Before release", "inspect every parser adapter and migration-test fixture", "no other LegacyNode reference remains"]
+max_summary_chars = 300
+required_summary_terms = ["Parser adapters must not reference LegacyNode", "Migration-test fixtures may reference", "only while reading archived v1 snapshots", "Before release", "inspect every parser adapter and migration-test fixture"]
+required_summary_term_groups = [["no other LegacyNode reference remains", "no LegacyNode reference remains outside that exception", "no LegacyNode reference remains outside this exception"]]
 critical = true
 
 [[cases]]
@@ -1205,7 +1208,9 @@ required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
 allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
 forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["pre_handoff_review_required"]
-required_summary_terms = ["`optional`", "Stream"]
+required_summary_terms = ["Optional#map", "Stream#map"]
+required_summary_term_groups = [["optional -> normalize(optional)", "`optional` exactly", "exactly `optional`", "to optional", "use `optional`", "named `optional`"]]
+forbidden_summary_terms = ["Optional#map(value ->", "Optional#map(each ->", "Optional#map parameter to value", "Optional#map lambda parameter to value", "Optional#map parameter to each", "Optional#map lambda parameter to each", "Stream#map(optional ->", "Stream#map parameter to optional", "Stream#map lambda parameter to optional", "Stream#map` parameter to `optional", "Stream#map` lambda parameter to `optional"]
 policy_binding_profile = "code-write"
 policy_assertions = [{source = "java-naming", statements = ["An ordinary variable identifier must not contain `optional`; the direct lambda parameter of `java.util.Optional#map` is the only naming exception.", "Name the direct lambda parameter of `java.util.Optional#map` exactly `optional`, regardless of the contained value's domain type.", "The exact `optional` identifier is mandatory for this parameter; do not use `value`, `each`, a domain-specific name, or a compound name such as `optionalRule`.", "This specific rule overrides the ordinary prohibition on `optional` and any general preference for domain-specific lambda parameter names.", "Given `Optional<Rule> maybeRule`, the compliant lambda form is `maybeRule.map(optional -> normalize(optional))`.", "Do not apply the `optional` name to `Stream#map`, `flatMap`, `filter`, `ifPresent`, or any other operation.", "A method reference passed to `Optional#map` has no lambda parameter to name and is not constrained by the `optional` rule."]}]
 critical = true
@@ -1270,6 +1275,46 @@ policy_assertions = [{source = "coding-standards", statements = ["Use this mode 
 critical = true
 
 [[cases]]
+id = "java_expressions_resolve_named_constants"
+group = "coding / regular"
+description = "Places proven named constants before non-constant operands without inferring constant status from uppercase spelling."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized in-scope Java implementation whose final expression check found `size == MAX_SIZE` where a static import resolves `MAX_SIZE` to a constant, `status != Status.ACTIVE` where `ACTIVE` is an enum constant, and `LIMIT == size` where the supplied declaration proves that uppercase `LIMIT` is an ordinary method parameter. Apply the named-constant comparison rule, state the corrected expressions and the unchanged uppercase-variable expression in the summary, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["MAX_SIZE == size", "Status.ACTIVE != status", "LIMIT == size"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "java-expressions", statements = ["Place a resolved named constant on the left and a variable or other non-constant expression on the right when they are operands of `==` or `!=`.", "Apply this rule only when a declaration, enum membership, static import, or qualified-member resolution proves that the operand is a constant.", "Do not classify an identifier as a constant from uppercase spelling alone.", "In implementation mode, inspect the accessible declaration before changing comparison order; if the roles remain unresolved, preserve the expression instead of guessing."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_named_constant_order"
+group = "policy routing"
+description = "Reports a proven named-constant ordering violation without treating an uppercase variable as a constant."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/Foo.java`. Its complete supplied declarations prove that `MAX_SIZE` is a statically imported constant, `size` is a local variable, and uppercase `LIMIT` is an ordinary method parameter. The complete file contains `size == MAX_SIZE` and `LIMIT == size`. Check the complete file, conclude `Non-compliant`, report only the proven named-constant ordering violation with `MAX_SIZE == size` as the minimum correction, explain why uppercase spelling does not make `LIMIT` a constant, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "MAX_SIZE == size", "LIMIT"]
+required_summary_term_groups = [["uppercase spelling", "uppercase name", "uppercase identifier"]]
+forbidden_summary_terms = ["LIMIT is a constant", "LIMIT == size is a violation"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java, read the [Java expression rules](references/rules/java-expressions.md) through EOF.", "Remain read-only throughout the audit."]}, {source = "java-expressions", statements = ["Place a resolved named constant on the left and a variable or other non-constant expression on the right when they are operands of `==` or `!=`.", "Do not classify an identifier as a constant from uppercase spelling alone.", "When both operands are constants, both operands are non-constant expressions, or accessible evidence cannot resolve the roles, do not report a confirmed standalone-audit violation."]}]
+critical = true
+
+[[cases]]
 id = "standalone_coding_standards_audits_defensive_code"
 group = "policy routing"
 description = "Reports proven unnecessary guards and collection wrappers in a read-only standalone coding-standards audit."
@@ -1304,8 +1349,8 @@ required_actions = ["inspect_local"]
 allowed_actions = ["inspect_local"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["read_only_request"]
-required_summary_terms = ["Partial audit", "Blocked", "SPI contract", "external consumer"]
-required_summary_term_groups = [["not a confirmed violation", "do not report the wrapper as a confirmed violation", "do not classify the unmodifiable wrapper as a confirmed violation", "do not report the unmodifiable wrapper as a confirmed violation"]]
+required_summary_terms = ["Partial audit", "Blocked", "SPI contract"]
+required_summary_term_groups = [["external consumer", "supported consumer"], ["not a confirmed violation", "not a confirmed wrapper violation", "prevents a confirmed wrapper violation", "do not report the wrapper as a confirmed violation", "do not classify the unmodifiable wrapper as a confirmed violation", "do not report the unmodifiable wrapper as a confirmed violation"]]
 forbidden_summary_terms = ["Non-compliant", "The wrapper is a confirmed violation"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "standalone-audit", statements = ["When material rules conflict or their applicability cannot be determined, do not choose the stricter interpretation. Mark the affected files or checks as `Blocked`.", "`Partial audit`: At least one file, physical line, applicable rule, or required verification was unchecked or blocked. Confirmed violations may also be reported, but the remainder of the scope must not be described as compliant."]}, {source = "defensive-code", statements = ["Failure to find qualifying evidence does not prove that an existing defensive construct is unnecessary when an outcome-sensitive external contract or supported path remains unavailable.", "Mark the affected standalone check as blocked when unavailable evidence could change its conclusion; report a violation only when the completed evidence proves that no qualifying condition applies."]}]
@@ -1477,7 +1522,7 @@ profile = "review-pr"
 prompt = "Authoritative scope is established for a Formal Review, every file and risk axis has been reviewed, and all three discovery lenses plus a zero-new-finding convergence pass are complete. One candidate arose from an apparent conflict between a general and a specialized repository rule, but both exact rules and their strongest counter-evidence are locally available and show no conflict. Every candidate fails the Finding Proof Gate, and no CI review was requested. Return the overall Code Correctness Review result without editing, handing off, or changing Git."
 decision = "proceed"
 required_actions = []
-allowed_actions = []
+allowed_actions = ["inspect_local"]
 forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = []
 required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage"]
@@ -1878,7 +1923,8 @@ required_actions = ["run_local_checks", "wrap_high_output"]
 allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["output_capture_required"]
-required_summary_terms = ["Spotless", "Checkstyle", "only"]
+required_summary_terms = ["Spotless", "Checkstyle", "Foo.java", "FooTest.java"]
+required_summary_term_groups = [["only", "smallest safe scope", "limited to", "restricted to", "scoped to", "exact task paths"]]
 policy_binding_profile = "code-write"
 policy_assertions = [{source = "code-verification", statements = ["After the last code-affecting action and before the pre-handoff Formal Review, run both Spotless and Checkstyle for every applicable task-changed code file; run Spotless for a documentation-only change when the configured formatter governs that file.", "Treat a filtered command as passing only after its output and the post-command task-delta inspection prove that every applicable task file was selected, no non-allowlisted file was written, and the command exited successfully.", "A successful command that matched no intended file is not evidence."]}]
 critical = true

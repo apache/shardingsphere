@@ -48,7 +48,7 @@ public final class OrderedSPILoader {
         
         @Override
         protected OrderedSPIRegistry<?> computeValue(final Class<?> clazz) {
-            return null != clazz.getAnnotation(SingletonSPI.class) ? new CachedSingletonOrderedSPIRegistry<>(clazz) : new NoCachePrototypeOrderedSPIRegistry<>(clazz);
+            return null == clazz.getAnnotation(SingletonSPI.class) ? new NoCachePrototypeOrderedSPIRegistry<>(clazz) : new CachedSingletonOrderedSPIRegistry<>(clazz);
         }
     };
     

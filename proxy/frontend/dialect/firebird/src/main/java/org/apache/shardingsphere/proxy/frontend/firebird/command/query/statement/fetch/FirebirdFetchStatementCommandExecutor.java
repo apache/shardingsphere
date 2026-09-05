@@ -50,7 +50,7 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        if (proxyBackendHandler == null) {
+        if (null == proxyBackendHandler) {
             fetchCount = -1;
             return Collections.singletonList(FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket());
         }

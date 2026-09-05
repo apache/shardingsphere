@@ -111,7 +111,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
      * @return error code
      */
     public int getErrorCode() {
-        return statusVector == null ? -1 : statusVector.getGdsCode();
+        return null == statusVector ? -1 : statusVector.getGdsCode();
     }
     
     /**
@@ -120,7 +120,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
      * @return error message
      */
     public String getErrorMessage() {
-        return statusVector == null ? "" : statusVector.getErrorMessage();
+        return null == statusVector ? "" : statusVector.getErrorMessage();
     }
     
     /**

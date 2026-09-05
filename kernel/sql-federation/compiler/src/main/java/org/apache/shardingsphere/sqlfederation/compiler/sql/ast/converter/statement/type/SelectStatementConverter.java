@@ -51,7 +51,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     public SqlNode convert(final SelectStatement selectStatement) {
         SqlSelect sqlSelect = convertSelect(selectStatement);
         SqlNode sqlWith = convertWith(sqlSelect, selectStatement);
-        SqlNode sqlCombine = convertCombine(null != sqlWith ? sqlWith : sqlSelect, selectStatement);
+        SqlNode sqlCombine = convertCombine(null == sqlWith ? sqlSelect : sqlWith, selectStatement);
         SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = selectStatement.getLimit();
         if (limit.isPresent()) {
