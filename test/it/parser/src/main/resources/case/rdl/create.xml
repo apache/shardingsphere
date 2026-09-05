@@ -752,6 +752,14 @@
             </column>
         </rule>
     </create-mask-rule>
+    
+    <create-mask-rule sql-case-id="create-mask-rule-named-as-removed-keyword">
+        <rule name="address_random_replace">
+            <column name="phone_number">
+                <algorithm algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </create-mask-rule>
 
     <create-sharding-key-generate-strategy sql-case-id="create-sharding-key-generate-strategy-with-algorithm" name="order_id_strategy">
         <strategy type="COLUMN" table-name="t_order" column-name="order_id">
