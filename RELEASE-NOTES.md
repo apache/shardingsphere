@@ -49,6 +49,7 @@
 1. DistSQL: Fix empty rows returned by SHOW SHADOW TABLE RULE for specified table - [#39739](https://github.com/apache/shardingsphere/pull/39739)
 1. DistSQL: Fix `CREATE READWRITE_SPLITTING RULE IF NOT EXISTS` failing for an existing rule name - [#39371](https://github.com/apache/shardingsphere/pull/39371)
 1. DistSQL: Match mask table names case-insensitively in create and alter executors - [#39361](https://github.com/apache/shardingsphere/pull/39361)
+1. DistSQL: Fix shadow DistSQL rejecting unquoted `SQL_HINT` algorithm type - [#39873](https://github.com/apache/shardingsphere/pull/39873)
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
 1. JDBC: Fix MySQL-compatible typed string conversion for `ResultSet#getObject(index, Class<T>)` - [#38444](https://github.com/apache/shardingsphere/pull/38444)
 1. JDBC: Fix statement close invalidating live result sets of other statements on the same connection - [#39503](https://github.com/apache/shardingsphere/pull/39503)

@@ -144,7 +144,7 @@ REGEX_MATCH
     ;
 
 SQL_HINT
-    : S I M P L E UL_ H I N T
+    : S Q L UL_ H I N T
     ;
 
 NOT
