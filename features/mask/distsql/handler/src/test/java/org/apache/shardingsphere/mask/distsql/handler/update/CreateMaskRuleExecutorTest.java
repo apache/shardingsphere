@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
@@ -89,6 +91,22 @@ class CreateMaskRuleExecutorTest {
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         assertDoesNotThrow(() -> metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertRuleConfiguration)));
+    }
+    
+    @Test
+    void assertBuildToBeCreatedRuleConfigurationWithIfNotExistsWhenTableNameCaseDiffers() {
+        CreateMaskRuleExecutor executor = (CreateMaskRuleExecutor) TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, CreateMaskRuleStatement.class);
+        executor.setDatabase(mock(ShardingSphereDatabase.class));
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfiguration());
+        executor.setRule(rule);
+        CreateMaskRuleStatement sqlStatement = createDuplicatedSQLStatement(true, "MD5", "T_ORDER", "t_new");
+        executor.checkBeforeUpdate(sqlStatement);
+        MaskRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
+        assertThat(actual.getTables().size(), is(1));
+        assertThat(actual.getTables().iterator().next().getName(), is("t_new"));
+        assertThat(actual.getMaskAlgorithms().size(), is(1));
+        assertTrue(actual.getMaskAlgorithms().containsKey("t_new_order_id_md5"));
     }
     
     private CreateMaskRuleStatement createSQLStatement(final boolean ifNotExists, final String algorithmType) {
