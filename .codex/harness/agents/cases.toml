@@ -1294,6 +1294,26 @@ policy_assertions = [{source = "java-expressions", statements = ["Place a resolv
 critical = true
 
 [[cases]]
+id = "java_line_wrapping_uses_200_character_boundary"
+group = "coding / regular"
+description = "Joins an unnecessary Java wrap and uses the required operator-led continuation when wrapping is necessary."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized Java change whose final line-wrapping check found a method invocation split across two physical lines even though its normal one-line form, including indentation, contains 184 characters, and a 248-character logical expression that was wrapped after `&&`. Join the 184-character invocation, move `&&` to the start of the continuation line in the 248-character expression, use eight additional spaces for the expression continuation, state both corrections in the summary, rerun affected checks and Formal Review, and do not hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["184", "248", "&&"]
+required_summary_term_groups = [["single line", "one line", "join"], ["eight additional spaces", "8 additional spaces", "eight spaces", "8 spaces"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "coding-standards", statements = ["For every affected Java file, read the [Java line-wrapping rules](references/rules/java-line-wrapping.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable Java line-wrapping rule against each declaration header, statement, and expression added or modified by the task."]}, {source = "java-line-wrapping", statements = ["Keep the reconstructed form on one physical line when it contains no more than 200 characters.", "Wrap the reconstructed form only when it would contain more than 200 characters.", "Indent expression continuations by eight additional spaces unless a declaration rule below requires alignment with the first parameter.", "For a wrapped logical expression, break before `&&` or `||` and place the operator at the start of the continuation line.", "In Implementation Guidance Mode, apply these rules to every declaration header, statement, or expression added or modified by the task, but do not reformat untouched surrounding code."]}]
+critical = true
+
+[[cases]]
 id = "standalone_coding_standards_audits_named_constant_order"
 group = "policy routing"
 description = "Reports a proven named-constant ordering violation without treating an uppercase variable as a constant."
@@ -1312,6 +1332,27 @@ required_summary_term_groups = [["uppercase spelling", "uppercase name", "upperc
 forbidden_summary_terms = ["LIMIT is a constant", "LIMIT == size is a violation"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java, read the [Java expression rules](references/rules/java-expressions.md) through EOF.", "Remain read-only throughout the audit."]}, {source = "java-expressions", statements = ["Place a resolved named constant on the left and a variable or other non-constant expression on the right when they are operands of `==` or `!=`.", "Do not classify an identifier as a constant from uppercase spelling alone.", "When both operands are constants, both operands are non-constant expressions, or accessible evidence cannot resolve the roles, do not report a confirmed standalone-audit violation."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_java_line_wrapping"
+group = "policy routing"
+description = "Audits both unnecessary and required Java wrapping without editing the current working tree."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/Foo.java`. Its complete supplied content contains a method invocation split across two physical lines whose normal one-line form, including indentation, contains 184 characters; a 248-character logical expression wrapped after `&&`; and a 230-character conditional expression correctly wrapped before `?` and `:` with eight additional spaces. Check the complete file, conclude `Non-compliant`, report the 184-character invocation and the operator position in the 248-character expression as violations, recognize the 230-character conditional expression as compliant, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "184", "248", "230"]
+required_summary_term_groups = [["single line", "one line", "one physical line", "join"], ["before `&&`", "before &&", "start of the continuation"], ["compliant", "allowed"]]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java, read the [Java line-wrapping rules](references/rules/java-line-wrapping.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "java-line-wrapping", statements = ["Keep the reconstructed form on one physical line when it contains no more than 200 characters.", "Wrap the reconstructed form only when it would contain more than 200 characters.", "For a wrapped logical expression, break before `&&` or `||` and place the operator at the start of the continuation line.", "For a wrapped conditional expression, break before `?` and `:` and place each operator at the start of its continuation line.", "In Standalone Compliance Audit Mode, apply these rules to every Java declaration header, statement, and expression in the exact audit scope."]}]
 critical = true
 
 [[cases]]
