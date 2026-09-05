@@ -1,0 +1,236 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: all_tab_columns
+columns:
+  OWNER:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OWNER
+    primaryKey: false
+    visible: true
+  TABLE_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_NAME
+    primaryKey: false
+    visible: true
+  COLUMN_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLUMN_NAME
+    primaryKey: false
+    visible: true
+  DATA_TYPE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DATA_TYPE
+    primaryKey: false
+    visible: true
+  DATA_TYPE_MOD:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DATA_TYPE_MOD
+    primaryKey: false
+    visible: true
+  DATA_TYPE_OWNER:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DATA_TYPE_OWNER
+    primaryKey: false
+    visible: true
+  DATA_LENGTH:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: DATA_LENGTH
+    primaryKey: false
+    visible: true
+  DATA_PRECISION:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: DATA_PRECISION
+    primaryKey: false
+    visible: true
+  DATA_SCALE:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: DATA_SCALE
+    primaryKey: false
+    visible: true
+  NULLABLE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: NULLABLE
+    primaryKey: false
+    visible: true
+  COLUMN_ID:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: COLUMN_ID
+    primaryKey: false
+    visible: true
+  DEFAULT_LENGTH:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: DEFAULT_LENGTH
+    primaryKey: false
+    visible: true
+  DATA_DEFAULT:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: DATA_DEFAULT
+    primaryKey: false
+    visible: true
+  NUM_DISTINCT:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: NUM_DISTINCT
+    primaryKey: false
+    visible: true
+  LOW_VALUE:
+    caseSensitive: false
+    dataType: -3
+    generated: false
+    name: LOW_VALUE
+    primaryKey: false
+    visible: true
+  HIGH_VALUE:
+    caseSensitive: false
+    dataType: -3
+    generated: false
+    name: HIGH_VALUE
+    primaryKey: false
+    visible: true
+  DENSITY:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: DENSITY
+    primaryKey: false
+    visible: true
+  NUM_NULLS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: NUM_NULLS
+    primaryKey: false
+    visible: true
+  NUM_BUCKETS:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: NUM_BUCKETS
+    primaryKey: false
+    visible: true
+  LAST_ANALYZED:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_ANALYZED
+    primaryKey: false
+    visible: true
+  SAMPLE_SIZE:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: SAMPLE_SIZE
+    primaryKey: false
+    visible: true
+  CHARACTER_SET_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHARACTER_SET_NAME
+    primaryKey: false
+    visible: true
+  CHAR_COL_DECL_LENGTH:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: CHAR_COL_DECL_LENGTH
+    primaryKey: false
+    visible: true
+  GLOBAL_STATS:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: GLOBAL_STATS
+    primaryKey: false
+    visible: true
+  USER_STATS:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: USER_STATS
+    primaryKey: false
+    visible: true
+  AVG_COL_LEN:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: AVG_COL_LEN
+    primaryKey: false
+    visible: true
+  CHAR_LENGTH:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: CHAR_LENGTH
+    primaryKey: false
+    visible: true
+  CHAR_USED:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHAR_USED
+    primaryKey: false
+    visible: true
+  V80_FMT_IMAGE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: V80_FMT_IMAGE
+    primaryKey: false
+    visible: true
+  DATA_UPGRADED:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DATA_UPGRADED
+    primaryKey: false
+    visible: true
+  HISTOGRAM:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: HISTOGRAM
+    primaryKey: false
+    visible: true
