@@ -127,6 +127,10 @@
                       value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='Test'] or ./DOT/IDENT[@text='Test'] or ./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'] or ./IDENT[@text='RepeatedTest'] or ./DOT/IDENT[@text='RepeatedTest'] or ./IDENT[@text='TestFactory'] or ./DOT/IDENT[@text='TestFactory'] or ./IDENT[@text='TestTemplate'] or ./DOT/IDENT[@text='TestTemplate'])] and not(./IDENT[starts-with(@text, 'assert')])]" />
             <message key="matchxpath.match" value="Test method names must start with 'assert'." />
         </module>
+        <module name="MatchXpath">
+            <property name="query" value="//VARIABLE_DEF[./MODIFIERS/FINAL and (parent::FOR_INIT or parent::FOR_EACH_CLAUSE)]" />
+            <message key="matchxpath.match" value="Do not declare for-loop variables as final." />
+        </module>
         <module name="IllegalType" />
         <module name="IllegalType">
             <property name="tokens" value="IMPORT, PARAMETER_DEF" />
