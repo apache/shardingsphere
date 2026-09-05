@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import java.util.Collection;
 
 /**
- * Precise hint of shadow in SQL comment.
+ * Hint shadow algorithm.
  *
  * @param <T> class type of hint value
  */
