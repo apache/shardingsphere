@@ -1026,9 +1026,13 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public ASTNode visitCommonTableExpr(final CommonTableExprContext ctx) {
-        return new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
+        CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
                 new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.preparableStmt().select()),
                         getOriginalText(ctx.preparableStmt().select())));
+        if (null != ctx.optNameList().nameList()) {
+            result.getColumns().addAll(generateUsingColumn(ctx.optNameList().nameList()));
+        }
+        return result;
     }
     
     @Override
