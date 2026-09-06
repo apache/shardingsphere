@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -39,6 +40,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -124,6 +126,8 @@ class FirebirdFetchStatementCommandExecutorTest {
         when(proxyBackendHandler.next()).thenReturn(true);
         QueryResponseRow responseRow = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
         when(proxyBackendHandler.getRowData()).thenReturn(responseRow);
+        List<FirebirdBinaryColumnType> parameterTypes = Collections.singletonList(FirebirdBinaryColumnType.LONG);
+        when(packet.getParameterTypes()).thenReturn(parameterTypes);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         executor.execute();
         assertTrue(executor.next());
@@ -137,6 +141,8 @@ class FirebirdFetchStatementCommandExecutorTest {
         QueryResponseRow responseRow = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
         when(proxyBackendHandler.next()).thenReturn(true);
         when(proxyBackendHandler.getRowData()).thenReturn(responseRow);
+        List<FirebirdBinaryColumnType> parameterTypes = Collections.singletonList(FirebirdBinaryColumnType.LONG);
+        when(packet.getParameterTypes()).thenReturn(parameterTypes);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));

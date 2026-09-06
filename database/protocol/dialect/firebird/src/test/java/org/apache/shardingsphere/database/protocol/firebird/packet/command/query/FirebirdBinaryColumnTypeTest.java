@@ -20,7 +20,12 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -29,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class FirebirdBinaryColumnTypeTest {
     
     @Test
-    void assertValueOfJDBCAndBLR() {
+    void assertValueOfJDBCAndBLRAndJava() {
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.TINYINT), is(FirebirdBinaryColumnType.SHORT));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.SMALLINT), is(FirebirdBinaryColumnType.SHORT));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.INTEGER), is(FirebirdBinaryColumnType.LONG));
@@ -41,7 +46,8 @@ class FirebirdBinaryColumnTypeTest {
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.DECIMAL), is(FirebirdBinaryColumnType.DECIMAL));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.CHAR), is(FirebirdBinaryColumnType.VARYING));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.VARCHAR), is(FirebirdBinaryColumnType.VARYING));
-        assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.LONGVARCHAR), is(FirebirdBinaryColumnType.BLOB));
+        assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.LONGVARCHAR), is(FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT));
+        assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.CLOB), is(FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.DATE), is(FirebirdBinaryColumnType.DATE));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.TIME), is(FirebirdBinaryColumnType.TIME));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.TIMESTAMP), is(FirebirdBinaryColumnType.TIMESTAMP));
@@ -54,6 +60,7 @@ class FirebirdBinaryColumnTypeTest {
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.ARRAY), is(FirebirdBinaryColumnType.ARRAY));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.TIME_WITH_TIMEZONE), is(FirebirdBinaryColumnType.TIME_TZ));
         assertThat(FirebirdBinaryColumnType.valueOfJDBCType(Types.TIMESTAMP_WITH_TIMEZONE), is(FirebirdBinaryColumnType.TIMESTAMP_TZ));
+        assertThat(FirebirdBinaryColumnType.valueOfJDBCType(-6001), is(FirebirdBinaryColumnType.DEC34));
         
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_varying2), is(FirebirdBinaryColumnType.VARYING));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_text2), is(FirebirdBinaryColumnType.TEXT));
@@ -77,6 +84,23 @@ class FirebirdBinaryColumnTypeTest {
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_sql_time_tz), is(FirebirdBinaryColumnType.TIME_TZ));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_ex_timestamp_tz), is(FirebirdBinaryColumnType.TIMESTAMP_TZ_EX));
         assertThat(FirebirdBinaryColumnType.valueOfBLRType(BlrConstants.blr_ex_time_tz), is(FirebirdBinaryColumnType.TIME_TZ_EX));
+        
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType("test"), is(FirebirdBinaryColumnType.VARYING));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(Byte.valueOf("123")), is(FirebirdBinaryColumnType.SHORT));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(Short.valueOf("123")), is(FirebirdBinaryColumnType.SHORT));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(Integer.valueOf("123")), is(FirebirdBinaryColumnType.LONG));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(Long.valueOf("123")), is(FirebirdBinaryColumnType.INT64));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(Double.valueOf("123")), is(FirebirdBinaryColumnType.DOUBLE));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(Float.valueOf("123")), is(FirebirdBinaryColumnType.FLOAT));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(BigInteger.valueOf(123)), is(FirebirdBinaryColumnType.INT128));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(BigDecimal.valueOf(123)), is(FirebirdBinaryColumnType.NUMERIC));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(new byte[]{}), is(FirebirdBinaryColumnType.BLOB));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(true), is(FirebirdBinaryColumnType.BOOLEAN));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(LocalDate.now()), is(FirebirdBinaryColumnType.DATE));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(LocalTime.now()), is(FirebirdBinaryColumnType.TIME));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(LocalDateTime.now()), is(FirebirdBinaryColumnType.TIMESTAMP));
+        assertThat(FirebirdBinaryColumnType.valueOfJavaType(null), is(FirebirdBinaryColumnType.NULL));
+        
     }
     
     @Test
@@ -87,6 +111,11 @@ class FirebirdBinaryColumnTypeTest {
     @Test
     void assertValueOfBLRTypeIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> FirebirdBinaryColumnType.valueOfBLRType(-100));
+    }
+    
+    @Test
+    void assertValueOfJavaTypeIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> FirebirdBinaryColumnType.valueOfJavaType(Object.class));
     }
     
     @Test
