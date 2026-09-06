@@ -877,7 +877,7 @@ allowed_actions = ["inspect_local", "edit_code", "keep_manual_throw", "run_local
 forbidden_actions = ["mutate_git", "mutate_remote"]
 required_reasons = ["exception_contract", "local_code_authorized", "pre_handoff_review_required"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "defensive-code", statements = ["Keep a manual throw when the module cannot depend on `infra/exception`, the code is inside `ShardingSpherePreconditions`, a caller-facing exception contract requires it, or a precondition wrapper would obscure necessary control flow.", "Do not replace manual throws mechanically, and record the concrete reason for keeping one."]}]
+policy_assertions = [{source = "java-preconditions", statements = ["Keep a manual throw when the module cannot depend on `infra/exception`, the code is inside `ShardingSpherePreconditions`, a caller-facing exception contract requires it, or a precondition wrapper would obscure necessary control flow.", "Do not replace manual throws mechanically, and record the concrete reason for keeping one."]}]
 critical = true
 
 [[cases]]
@@ -2244,4 +2244,43 @@ required_summary_term_groups = [["standalone", "no public PR"], ["baseline", "es
 forbidden_summary_terms = ["git commit"]
 policy_binding_profile = "review-pr"
 policy_assertions = [{source = "agents", statements = ["Complete reviews or recommendations use Formal Review with `### Result`, one `Review Result`, `### Evidence`, and `### Coverage`; Coverage identifies local-only changes."]}, {source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate.", "Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "When the repository completion loop invokes Formal Review, this fenced block remains the complete review artifact, but the outer workflow may append only the separately fenced non-review handoff artifacts required by `.codex/context/change-completion.md` outside it."]}]
+critical = true
+
+[[cases]]
+id = "java_preconditions_use_specialized_methods"
+group = "coding / regular"
+description = "Uses ShardingSpherePreconditions and its specialized methods without replacing exception flows that are not preconditions."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized in-scope Java implementation. In modules that already use `infra/exception`, `Ready` has a guard-only throw for `!ready`, `Config` uses `checkState(null != config, supplier)`, `Name` uses `checkState(!Strings.isNullOrEmpty(name), supplier)`, and `Items` uses `checkState(!items.isEmpty(), supplier)`. `Translator` wraps a caught `SQLException` and preserves its cause, while `Fixture` throws `SQLException` from a test double. Report `Ready` as `checkState`, `Config` as `checkNotNull`, `Name` and `Items` as `checkNotEmpty`, and preserve `Translator` and `Fixture`. Make only those changes, run affected checks and Formal Review, and do not hand off."
+decision = "proceed"
+required_actions = ["edit_code", "keep_manual_throw", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "keep_manual_throw", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["Ready", "Config", "Name", "Items", "Translator", "Fixture", "checkState", "checkNotNull", "checkNotEmpty", "preserve"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "coding-standards", statements = ["Before adding or changing a Java `throw` statement, a conditional branch that throws, a validation or precondition call, or a call to `ShardingSpherePreconditions`, read the [Java precondition rules](references/rules/java-preconditions.md) through EOF and add each applicable rule to the checklist."]}, {source = "java-preconditions", statements = ["When a conditional branch does nothing except construct and throw an exception because a required condition is false, replace the branch with the equivalent `ShardingSpherePreconditions` call if the module can use `infra/exception` and the replacement preserves behavior.", "Use `checkState` for a required boolean condition only when no specialized `ShardingSpherePreconditions` method expresses the complete condition.", "Replace `checkState(null != value, supplier)` with `checkNotNull(value, supplier)`.", "Replace `checkState(!Strings.isNullOrEmpty(value), supplier)` with `checkNotEmpty(value, supplier)`; this rejects null and empty strings but does not reject a non-empty whitespace-only string.", "Replace `checkState(!values.isEmpty(), supplier)` and `checkState(!map.isEmpty(), supplier)` with the applicable `checkNotEmpty` overload.", "Keep a direct throw for an unconditional failure, exception translation, exception wrapping, rethrowing, or a test double or fixture that deliberately simulates a failure."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_java_preconditions"
+group = "policy routing"
+description = "Audits generic preconditions and conditional throws while preserving justified direct exception flows."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Audit the complete current-working-tree file `module-a/src/main/java/example/Preconditions.java` without editing it. The module already uses `infra/exception`. The file has a guard-only throw for `!ready`; generic `checkState` calls for `values.isEmpty()`, `values.contains(element)`, `!values.contains(element)`, and `map.containsKey(key)`; an unconditional unsupported-operation throw; and a catch block that wraps the caught cause. Report `Non-compliant`, give `checkState`, `checkMustEmpty`, `checkContains`, `checkNotContains`, and `checkContainsKey` as the minimum corrections, and mark both justified direct throws as allowed. Do not generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "checkState", "checkMustEmpty", "checkContains", "checkNotContains", "checkContainsKey", "unconditional", "wrap", "allowed"]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java `throw` statements, conditional exception paths, validation or precondition calls, or calls to `ShardingSpherePreconditions`, read the [Java precondition rules](references/rules/java-preconditions.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance."]}, {source = "java-preconditions", statements = ["When a conditional branch does nothing except construct and throw an exception because a required condition is false, replace the branch with the equivalent `ShardingSpherePreconditions` call if the module can use `infra/exception` and the replacement preserves behavior.", "Replace `checkState(values.isEmpty(), supplier)` and `checkState(map.isEmpty(), supplier)` with the applicable `checkMustEmpty` overload.", "Replace `checkState(values.contains(element), supplier)` with `checkContains(values, element, supplier)`.", "Replace `checkState(!values.contains(element), supplier)` with `checkNotContains(values, element, supplier)`.", "Replace `checkState(map.containsKey(key), supplier)` with `checkContainsKey(map, key, supplier)`.", "Keep a direct throw for an unconditional failure, exception translation, exception wrapping, rethrowing, or a test double or fixture that deliberately simulates a failure."]}]
 critical = true
