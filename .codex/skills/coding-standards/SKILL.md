@@ -36,7 +36,9 @@ Use this mode when implementing, fixing, refactoring, or reviewing code unless t
 
 - Before starting a read-only code review or making the first write in an implementation task, read the portions of `CODE_OF_CONDUCT.md`, repository-level and path-level `AGENTS.md`, Checkstyle, Spotless, and other written repository standards that actually apply to every affected file.
 - Before the first write, record a compact applicable-rule checklist; group files governed by the same rules instead of repeating the checklist.
-- For every affected Java file, read the [Java naming and Lombok rules](references/rules/java-naming.md) through EOF and add each applicable rule to the checklist.
+- For every affected Java file, read the [Java naming rules](references/rules/java-naming.md) through EOF and add each applicable rule to the checklist.
+- Before adding or changing a Java type declaration or its type-level annotations, read the [Java type rules](references/rules/java-types.md) through EOF and add each applicable rule to the checklist.
+- Before adding, changing, or removing an explicit or generated constructor, or changing an instance field that may alter a generated constructor's signature or behavior, read the [Java constructor rules](references/rules/java-constructors.md) through EOF and add each applicable rule to the checklist.
 - For every affected Java file, read the [Java expression rules](references/rules/java-expressions.md) through EOF and add each applicable rule to the checklist.
 - For every affected Java file, read the [Java line-wrapping rules](references/rules/java-line-wrapping.md) through EOF and add each applicable rule to the checklist.
 - For every affected Java test file, read the [Java test code rules](references/rules/java-testing.md) through EOF and add each applicable rule to the checklist.
@@ -45,7 +47,9 @@ Use this mode when implementing, fixing, refactoring, or reviewing code unless t
 - Apply every applicable rule to each modified file within the task's authorized scope.
 - After the last write, manually recheck the effective task delta and only the surrounding declarations needed to evaluate every applicable checklist rule.
 - For Java, explicitly verify every applicable `CODE_OF_CONDUCT.md` coding rule, including declaration order; when a method uses private helpers, verify that those helpers immediately follow the caller and appear in the caller's call order, regardless of the caller's visibility.
-- For Java, explicitly verify every applicable Java naming and Lombok rule against the effective task delta and the surrounding declarations needed to resolve semantic applicability.
+- For Java, explicitly verify every applicable Java naming rule against the effective task delta and the surrounding declarations needed to resolve semantic applicability.
+- For Java, explicitly verify every applicable Java type rule against each type declaration and type-level annotation added or modified by the task.
+- For Java, explicitly verify every applicable Java constructor rule against each explicit or generated constructor added, modified, removed, or affected by an instance-field change in the task.
 - For Java, explicitly verify every applicable Java expression rule against the effective task delta and the declarations needed to resolve named constants.
 - For Java, explicitly verify every applicable Java line-wrapping rule against each declaration header, statement, and expression added or modified by the task.
 - For Java tests, explicitly verify every applicable Java test code rule against the effective task delta and the declarations and member types needed to resolve semantic applicability.
@@ -68,7 +72,9 @@ Use this mode only when the user explicitly asks to audit, check, or report codi
 - Audit the current working tree rather than a pull request or diff.
 - Remain read-only throughout the audit. Do not edit code, generate patches, run formatting, or change Git or external state.
 - Read the [standalone compliance audit workflow](references/standalone-audit.md) through EOF.
-- When the scope contains Java, read the [Java naming and Lombok rules](references/rules/java-naming.md) through EOF.
+- When the scope contains Java, read the [Java naming rules](references/rules/java-naming.md) through EOF.
+- When the scope contains Java, read the [Java type rules](references/rules/java-types.md) through EOF.
+- When the scope contains Java, read the [Java constructor rules](references/rules/java-constructors.md) through EOF.
 - When the scope contains Java, read the [Java expression rules](references/rules/java-expressions.md) through EOF.
 - When the scope contains Java, read the [Java line-wrapping rules](references/rules/java-line-wrapping.md) through EOF.
 - When the scope contains Java tests, read the [Java test code rules](references/rules/java-testing.md) through EOF.
