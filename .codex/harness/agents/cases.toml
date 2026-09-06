@@ -1457,6 +1457,45 @@ policy_assertions = [{source = "coding-standards", statements = ["When the scope
 critical = true
 
 [[cases]]
+id = "java_test_prefers_mocked_data_source_when_equivalent"
+group = "coding / regular"
+description = "Uses MockedDataSource for an equivalent test double while preserving Mockito-only DataSource behavior."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "test-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized Java test change whose final coding-standards check found four direct `javax.sql.DataSource` Mockito mocks across two test modules. `Simple`, `Failure`, and `NonCloseable` belong to a module where `MockedDataSource` is already available. `Simple` passes its mock through without stubbing, verification, custom mock settings, type checks, or behavior that the fixture lacks. `Failure` stubs `getConnection()` to throw `SQLException`, which `MockedDataSource` cannot express. `NonCloseable` exercises a production branch that requires the data source not to implement `AutoCloseable`, while `MockedDataSource` implements it. `Unavailable` belongs to the other module, which has no fixture dependency. Replace only the equivalent `Simple` test double, preserve the justified mocks in `Failure`, `NonCloseable`, and `Unavailable` without adding a dependency, state all four decisions in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["Simple", "Failure", "NonCloseable", "Unavailable", "MockedDataSource", "SQLException", "AutoCloseable", "dependency"]
+policy_binding_profile = "test-write"
+policy_assertions = [{source = "java-testing", statements = ["Use the repository-provided `MockedDataSource` instead of a direct Mockito mock when it is already available to the test module and provides every behavior required by the test.", "Keep a direct Mockito mock when `MockedDataSource` is unavailable to the test module or cannot express the required behavior without changing the scenario, such as interaction verification, a required return or failure that the fixture cannot produce, or a `DataSource` that must not implement `AutoCloseable`.", "Do not add or widen a module dependency solely to replace a direct `DataSource` mock with `MockedDataSource`.", "Before choosing or replacing a test double, inspect the resolved type, test-module dependencies, `MockedDataSource` constructors and properties, mock settings, stubbing, verification, type checks, and downstream use."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_data_source_test_doubles"
+group = "policy routing"
+description = "Audits DataSource test doubles semantically without rejecting justified Mockito behavior."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree Java test files `module-a/src/test/java/example/DataSourceTest.java` and `module-b/src/test/java/example/UnavailableDataSourceTest.java`. The complete supplied content of the module-a file contains `Simple`, `Failure`, and `NonCloseable`, and `MockedDataSource` is already available to that module. `Simple` passes its direct `javax.sql.DataSource` Mockito mock through without stubbing, verification, custom mock settings, type checks, or behavior that the fixture lacks. `Failure` stubs `getConnection()` to throw `SQLException`, which `MockedDataSource` cannot express. `NonCloseable` verifies a production branch requiring the data source not to implement `AutoCloseable`, while `MockedDataSource` implements it. The complete supplied module-b file contains `Unavailable`, whose module has no fixture dependency. Check both complete files, conclude `Non-compliant`, report only `Simple` with `MockedDataSource` as the minimum correction, record `Failure`, `NonCloseable`, and `Unavailable` as allowed without adding a dependency, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "Simple", "Failure", "NonCloseable", "Unavailable", "MockedDataSource", "SQLException", "AutoCloseable", "dependency", "allowed"]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java tests, read the [Java test code rules](references/rules/java-testing.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-testing", statements = ["Use the repository-provided `MockedDataSource` instead of a direct Mockito mock when it is already available to the test module and provides every behavior required by the test.", "Keep a direct Mockito mock when `MockedDataSource` is unavailable to the test module or cannot express the required behavior without changing the scenario, such as interaction verification, a required return or failure that the fixture cannot produce, or a `DataSource` that must not implement `AutoCloseable`.", "Do not add or widen a module dependency solely to replace a direct `DataSource` mock with `MockedDataSource`.", "Treat text searches for `mock(DataSource.class)` as candidate discovery only; report a standalone-audit violation only after proving that `MockedDataSource` provides equivalent behavior, and mark the check as blocked when outcome-sensitive evidence is unavailable."]}]
+critical = true
+
+[[cases]]
 id = "standalone_coding_standards_audits_java_line_wrapping"
 group = "policy routing"
 description = "Audits both unnecessary and required Java wrapping without editing the current working tree."
