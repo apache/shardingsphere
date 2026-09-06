@@ -38,8 +38,7 @@ Defensive code is a guard, repeated validation, copy, wrapper, fallback, default
 - Do not add or retain a null guard, `Objects.requireNonNull`, `Optional.ofNullable`, null fallback, or null-triggered early return when supported callers and upstream contracts already guarantee a non-null value and no explicit existing boundary or diagnostic contract requires local validation.
 - Do not repeat empty collection, empty string, range, type, capability, or state checks whose invariants are guaranteed by supported callers, parsers, constructors, frameworks, or state machines unless an explicit existing boundary or diagnostic contract requires local validation.
 - Add runtime validation only when the defensive-code evidence gate proves that it is required at a real external, public, persisted, parsed, SPI, reflection, shared-state, or asynchronous boundary to preserve an existing contract or provide a concrete diagnostic for a condition that can occur there. Do not recheck invariants guaranteed by callers or upstream contracts.
-- Prefer `ShardingSpherePreconditions` with lazy exception suppliers when the module can use it and the resulting control flow preserves the required exception type, message, timing, and cause.
-- Keep a manual throw when the module cannot depend on `infra/exception`, the code is inside `ShardingSpherePreconditions`, a caller-facing exception contract requires it, or a precondition wrapper would obscure necessary control flow. Do not replace manual throws mechanically, and record the concrete reason for keeping one.
+- After the evidence gate establishes that validation is required, follow `.codex/skills/coding-standards/references/rules/java-preconditions.md` for exception-throwing conditions and precondition method selection.
 
 ## Collection Copies and Mutation Restrictions
 
