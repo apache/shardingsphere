@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 
-# Java Naming and Lombok Rules
+# Java Naming Rules
 
 Apply these rules to fields, local variables, method and constructor parameters, and lambda parameters in Java source governed by this Skill.
 
@@ -28,24 +28,11 @@ Apply these rules to fields, local variables, method and constructor parameters,
 - An ordinary variable identifier must not contain `optional`; the direct lambda parameter of `java.util.Optional#map` is the only naming exception.
 - Method parameters must not be named `result`, `each`, or `entry` unless a verified contract fixes the parameter name.
 
-## Lombok-Generated Accessors
+## Generated Accessor Field Names
 
-- Do not use `lombok.Data` or `lombok.Value`, whether referenced through an import or by a fully qualified annotation name.
-- Do not report an annotation named `Value` from another package as a violation of the Lombok prohibition.
-- Use only the narrow Lombok annotations whose generated members are required.
 - When Lombok generates a getter or setter from a field identifier, spell the listed words in that field identifier as `arguments`, `parameters`, `environment`, `configuration`, `configurations`, and `properties` instead of `args`, `params`, `env`, `config`, `configs`, and `props`.
 - An abbreviated field name is allowed when neither a Lombok getter nor a Lombok setter is generated for that field; account for class-level annotations and field-level `AccessLevel.NONE` overrides before deciding.
 - If either a Lombok getter or a Lombok setter is generated for a field, the full-word field-name rule applies even when generation of the other accessor is disabled.
-
-## Lombok-Generated Constructors
-
-- Use `lombok.RequiredArgsConstructor` instead of `lombok.AllArgsConstructor` when it generates the required constructor without changing its signature, visibility, constructor annotations, static factory behavior, or null-check behavior.
-- Do not use `lombok.AllArgsConstructor` when it exposes a field that is not required to create a valid instance as a constructor parameter.
-- Use `lombok.AllArgsConstructor` only when every parameter it generates belongs to a verified construction, compatibility, serialization, reflection, framework, or builder contract that `lombok.RequiredArgsConstructor` cannot satisfy.
-- Write a manual constructor when neither Lombok constructor annotation expresses the exact required parameter set or behavior.
-- Before choosing or replacing a Lombok constructor annotation, inspect field initialization, `final` and `lombok.NonNull` fields, explicit constructors, `access`, `staticName`, `onConstructor`, builders, constructor callers, and applicable framework or compatibility contracts.
-- Treat annotation searches as candidate discovery only; report a violation only after proving equivalent `lombok.RequiredArgsConstructor` behavior or an unnecessary generated parameter.
-- If the required constructor contract cannot be determined, preserve the existing annotation in implementation mode and mark the affected check as blocked in standalone audit mode.
 
 ## Returned Values
 
@@ -91,7 +78,6 @@ return result;
 - Inspect parsed declarations, resolved receiver and annotation types, generated Lombok accessors, and lambda roles when those facts determine whether a rule applies.
 - Treat text searches and regular expressions only as candidate discovery; they cannot prove compliance with semantic rules.
 - Ignore matching text in comments, string literals, type names, method names, and unrelated annotation types.
-- Apply the rules regardless of whitespace, line breaks, punctuation, declaration layout, or whether an annotation is imported or fully qualified.
+- Apply the naming rules regardless of whitespace, line breaks, punctuation, or declaration layout.
 - When a public API, override, interface, SPI, framework, serialization, reflection, or compatibility contract fixes an identifier that would otherwise violate a naming rule, record the exact contract and keep the identifier unless the authorized task includes changing that contract.
 - Treat a verified contract-fixed identifier as an allowed naming exception in a standalone audit, and report the contract instead of proposing a mechanical rename.
-- The contract exception does not permit `lombok.Data` or `lombok.Value`.
