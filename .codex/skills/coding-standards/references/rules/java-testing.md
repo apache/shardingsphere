@@ -34,6 +34,16 @@ Apply these rules only to Java test code.
 - Do not use core reflection or `MemberAccessor#invoke` or `MemberAccessor#newInstance` to test private methods or constructors; exercise that behavior through a public API.
 - Before reporting a `setAccessible` violation, resolve the receiver as `Field`, `Method`, `Constructor`, or another `AccessibleObject`; a custom method with the same name is not a violation.
 
+## DataSource Test Doubles
+
+Apply these rules when Java test code creates, changes, or evaluates a test double whose resolved type is `javax.sql.DataSource`.
+
+- Use the repository-provided `MockedDataSource` instead of a direct Mockito mock when it is already available to the test module and provides every behavior required by the test.
+- Keep a direct Mockito mock when `MockedDataSource` is unavailable to the test module or cannot express the required behavior without changing the scenario, such as interaction verification, a required return or failure that the fixture cannot produce, or a `DataSource` that must not implement `AutoCloseable`.
+- Do not add or widen a module dependency solely to replace a direct `DataSource` mock with `MockedDataSource`.
+- Before choosing or replacing a test double, inspect the resolved type, test-module dependencies, `MockedDataSource` constructors and properties, mock settings, stubbing, verification, type checks, and downstream use.
+- Treat text searches for `mock(DataSource.class)` as candidate discovery only; report a standalone-audit violation only after proving that `MockedDataSource` provides equivalent behavior, and mark the check as blocked when outcome-sensitive evidence is unavailable.
+
 ## Empty Collection and Map Assertions
 
 - When a Java test verifies that a `Collection`, `Map`, or one of their subtypes is empty, use `assertTrue(expression.isEmpty())` instead of `assertThat(expression.size(), is(0))`.
