@@ -1235,6 +1235,45 @@ policy_assertions = [{source = "java-naming", statements = ["An ordinary variabl
 critical = true
 
 [[cases]]
+id = "java_collection_declarations_use_collection_when_sufficient"
+group = "coding / regular"
+description = "Uses Collection unless a specialized collection declaration is required by operations or contracts."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized in-scope Java implementation whose final collection-declaration check found six declarations. `names` is declared as `List<String>` and only iterated, `keys` is declared as `Set<String>` and only passed to an API accepting `Collection<String>`, and `jobs` is declared as `Queue<String>` and only checked with `isEmpty()`. `indexedNames` is declared as `List<String>` and accessed with `get(0)`, `uniqueNames` is returned through an interface method whose contract requires `Set<String>`, and `pendingJobs` uses `poll()`. Change only `names`, `keys`, and `jobs` to `Collection<String>`, preserve `indexedNames`, `uniqueNames`, and `pendingJobs`, state all six decisions in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["names", "keys", "jobs", "indexedNames", "uniqueNames", "pendingJobs", "Collection", "get(0)", "Set", "poll"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "coding-standards", statements = ["Before adding or changing a Java declaration whose type is a `java.util.Collection` interface or implementation, read the [Java collection declaration rules](references/rules/java-collections.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable Java collection declaration rule against the effective task delta and the operations, callers, callees, overrides, and contracts needed to determine the least-specific required declaration type."]}, {source = "java-collections", statements = ["Declare a collection as `Collection<E>` when every required operation and applicable contract can be expressed by `Collection`.", "Use `List<E>` only when an applicable caller, callee, override, SPI, framework, or compatibility contract requires `List`, or when the implementation requires a `List`-specific operation such as positional access through `get(int)`.", "Use `Set<E>` only when an applicable caller, callee, override, SPI, framework, or compatibility contract requires `Set`, or when the declaration must express uniqueness or set semantics.", "Use `Queue<E>` only when an applicable caller, callee, override, SPI, framework, or compatibility contract requires `Queue`, or when the implementation requires queue operations such as `offer`, `poll`, or `peek`.", "Do not infer the declaration type from the concrete implementation that creates the value; a declaration may use `Collection<E>` while its value is created by `ArrayList`, `HashSet`, `ArrayDeque`, or another suitable implementation.", "Before choosing or auditing a declaration type, inspect its assignments and uses together with applicable callers, callees, overrides, interfaces, SPIs, framework contracts, and compatibility contracts."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_java_collection_declarations"
+group = "policy routing"
+description = "Audits collection declarations semantically without rejecting required specialized contracts."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/Collections.java`. Its complete supplied content declares `names` as `List<String>` although it is only iterated, `keys` as `Set<String>` although it is only passed to an API accepting `Collection<String>`, and `jobs` as `Queue<String>` although it is only checked with `isEmpty()`. It also declares `indexedNames` as `List<String>` and accesses it with `get(0)`, returns `uniqueNames` through an interface method whose verified contract requires `Set<String>`, and calls `poll()` on `pendingJobs`. Check the complete file, conclude `Non-compliant`, report only `names`, `keys`, and `jobs` with `Collection<String>` as their minimum correction, record the other three declarations as allowed, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "names", "keys", "jobs", "indexedNames", "uniqueNames", "pendingJobs", "Collection", "allowed"]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java collection declarations, read the [Java collection declaration rules](references/rules/java-collections.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-collections", statements = ["Declare a collection as `Collection<E>` when every required operation and applicable contract can be expressed by `Collection`.", "Use `List<E>` only when an applicable caller, callee, override, SPI, framework, or compatibility contract requires `List`, or when the implementation requires a `List`-specific operation such as positional access through `get(int)`.", "Use `Set<E>` only when an applicable caller, callee, override, SPI, framework, or compatibility contract requires `Set`, or when the declaration must express uniqueness or set semantics.", "Use `Queue<E>` only when an applicable caller, callee, override, SPI, framework, or compatibility contract requires `Queue`, or when the implementation requires queue operations such as `offer`, `poll`, or `peek`.", "Treat searches for `List`, `Set`, `Queue`, or concrete collection classes as candidate discovery only; report a violation only after proving that `Collection` provides every required operation and satisfies every applicable contract."]}]
+critical = true
+
+[[cases]]
 id = "java_naming_returns_and_enhanced_for_variables"
 group = "coding / regular"
 description = "Inlines a return-only local and applies result, each, and entry only in their defined roles."

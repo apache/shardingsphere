@@ -39,6 +39,7 @@ Use this mode when implementing, fixing, refactoring, or reviewing code unless t
 - For every affected Java file, read the [Java naming rules](references/rules/java-naming.md) through EOF and add each applicable rule to the checklist.
 - Before adding or changing a Java type declaration or its type-level annotations, read the [Java type rules](references/rules/java-types.md) through EOF and add each applicable rule to the checklist.
 - Before adding, changing, or removing an explicit or generated constructor, or changing an instance field that may alter a generated constructor's signature or behavior, read the [Java constructor rules](references/rules/java-constructors.md) through EOF and add each applicable rule to the checklist.
+- Before adding or changing a Java declaration whose type is a `java.util.Collection` interface or implementation, read the [Java collection declaration rules](references/rules/java-collections.md) through EOF and add each applicable rule to the checklist.
 - For every affected Java file, read the [Java expression rules](references/rules/java-expressions.md) through EOF and add each applicable rule to the checklist.
 - For every affected Java file, read the [Java line-wrapping rules](references/rules/java-line-wrapping.md) through EOF and add each applicable rule to the checklist.
 - For every affected Java test file, read the [Java test code rules](references/rules/java-testing.md) through EOF and add each applicable rule to the checklist.
@@ -50,6 +51,7 @@ Use this mode when implementing, fixing, refactoring, or reviewing code unless t
 - For Java, explicitly verify every applicable Java naming rule against the effective task delta and the surrounding declarations needed to resolve semantic applicability.
 - For Java, explicitly verify every applicable Java type rule against each type declaration and type-level annotation added or modified by the task.
 - For Java, explicitly verify every applicable Java constructor rule against each explicit or generated constructor added, modified, removed, or affected by an instance-field change in the task.
+- For Java, explicitly verify every applicable Java collection declaration rule against the effective task delta and the operations, callers, callees, overrides, and contracts needed to determine the least-specific required declaration type.
 - For Java, explicitly verify every applicable Java expression rule against the effective task delta and the declarations needed to resolve named constants.
 - For Java, explicitly verify every applicable Java line-wrapping rule against each declaration header, statement, and expression added or modified by the task.
 - For Java tests, explicitly verify every applicable Java test code rule against the effective task delta and the declarations and member types needed to resolve semantic applicability.
@@ -75,6 +77,7 @@ Use this mode only when the user explicitly asks to audit, check, or report codi
 - When the scope contains Java, read the [Java naming rules](references/rules/java-naming.md) through EOF.
 - When the scope contains Java, read the [Java type rules](references/rules/java-types.md) through EOF.
 - When the scope contains Java, read the [Java constructor rules](references/rules/java-constructors.md) through EOF.
+- When the scope contains Java collection declarations, read the [Java collection declaration rules](references/rules/java-collections.md) through EOF.
 - When the scope contains Java, read the [Java expression rules](references/rules/java-expressions.md) through EOF.
 - When the scope contains Java, read the [Java line-wrapping rules](references/rules/java-line-wrapping.md) through EOF.
 - When the scope contains Java tests, read the [Java test code rules](references/rules/java-testing.md) through EOF.
