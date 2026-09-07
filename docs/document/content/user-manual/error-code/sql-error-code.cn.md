@@ -152,55 +152,56 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 数据分片
 
-| Vendor Code | SQL State | 错误信息                                                                                                                                |
-|-------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------|
-| 20000       | 42S02     | %s configuration does not exist in database '%s'.                                                                                   |
-| 20001       | 42S02     | Can not find table rule with logic tables '%s'.                                                                                     |
-| 20002       | 42S02     | Can not find data source in sharding rule, invalid actual data node '%s'.                                                           |
-| 20003       | 42S02     | Data nodes is required for sharding table '%s'.                                                                                     |
-| 20004       | 42S02     | Actual table '%s.%s' is not in table rule configuration.                                                                            |
-| 20005       | 42S02     | Can not find binding actual table, data source is '%s', logic table is '%s', other actual table is '%s'.                            |
-| 20006       | 44000     | Actual tables '%s' are in use.                                                                                                      |
-| 20009       | 42S01     | View name has to bind to %s tables.                                                                                                 |
-| 20010       | 44000     | Invalid binding table configuration.                                                                                                |
-| 20011       | 44000     | Only allowed 0 or 1 sharding strategy configuration.                                                                                |
-| 20012       | 42S01     | Same actual data node cannot be configured in multiple logic tables in same database, logical table '%s', actual data node '%s.%s'. |
-| 20020       | 44000     | Sharding value can not be null in SQL statement.                                                                                    |
-| 20021       | HY004     | Found different types for sharding value '%s'.                                                                                      |
-| 20022       | HY004     | Invalid %s, datetime pattern should be '%s', value is '%s'.                                                                         |
-| 20023       | 44000     | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                     |
-| 20024       | 44000     | %s value '%s' must implements Comparable.                                                                                           |
-| 20030       | 0A000     | Can not support operation '%s' with sharding table '%s'.                                                                            |
-| 20031       | 44000     | Can not update sharding value for table '%s'.                                                                                       |
-| 20032       | 0A000     | The CREATE VIEW statement contains unsupported query statement.                                                                     |
-| 20033       | 44000     | PREPARE statement can not support sharding tables route to same data sources.                                                       |
-| 20034       | 44000     | The table inserted and the table selected must be the same or bind tables.                                                          |
-| 20035       | 0A000     | Can not support DML operation with multiple tables '%s'.                                                                            |
-| 20036       | 42000     | %s ... LIMIT can not support route to multiple data nodes.                                                                          |
-| 20037       | 44000     | Can not find actual data source intersection for logic tables '%s'.                                                                 |
-| 20038       | 42000     | INSERT INTO ... SELECT can not support applying key generator with absent generate key column.                                      |
-| 20039       | 0A000     | Alter view rename .. to .. statement should have same config for '%s' and '%s'.                                                     |
-| 20040       | HY000     | '%s %s' can not route correctly for %s '%s'.                                                                                        |
-| 20041       | 42S02     | Can not get route result, please check your sharding rule configuration.                                                            |
-| 20042       | 34000     | Can not get cursor name from fetch statement.                                                                                       |
-| 20050       | HY000     | Sharding algorithm class '%s' should be implement '%s'.                                                                             |
-| 20051       | HY000     | Routed target '%s' does not exist, available targets are '%s'.                                                                      |
-| 20052       | 44000     | Inline sharding algorithms expression '%s' and sharding column '%s' do not match.                                                   |
-| 20053       | 44000     | Complex inline algorithm need %d sharding columns, but only found %d.                                                               |
-| 20054       | 44000     | No sharding database route info, actual data source names: `%s`, sharding condition values: `%s`.                                   |
-| 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s', sharding condition values '%s'.          |
-| 20056       | 44000     | Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.                       |
-| 20057       | 44000     | Can not find routing table factor, data source '%s', actual table '%s'.                                                             |
-| 20060       | HY000     | Invalid %s strategy '%s', strategy does not match data nodes.                                                                       |
-| 20090       | 42000     | Not allow DML operation without sharding conditions.                                                                                |
+| Vendor Code | SQL State | 错误信息                                                                                                                                                       |
+|-------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 20000       | 42S02     | %s configuration does not exist in database '%s'.                                                                                                          |
+| 20001       | 42S02     | Can not find table rule with logic tables '%s'.                                                                                                            |
+| 20002       | 42S02     | Can not find data source in sharding rule, invalid actual data node '%s'.                                                                                  |
+| 20003       | 42S02     | Data nodes is required for sharding table '%s'.                                                                                                            |
+| 20004       | 42S02     | Actual table '%s.%s' is not in table rule configuration.                                                                                                   |
+| 20005       | 42S02     | Can not find binding actual table, data source is '%s', logic table is '%s', other actual table is '%s'.                                                   |
+| 20006       | 44000     | Actual tables '%s' are in use.                                                                                                                             |
+| 20009       | 42S01     | View name has to bind to %s tables.                                                                                                                        |
+| 20010       | 44000     | Invalid binding table configuration.                                                                                                                       |
+| 20011       | 44000     | Only allowed 0 or 1 sharding strategy configuration.                                                                                                       |
+| 20012       | 42S01     | Same actual data node cannot be configured in multiple logic tables in same database, logical table '%s', actual data node '%s.%s'.                        |
+| 20020       | 44000     | Sharding value can not be null in SQL statement.                                                                                                           |
+| 20021       | HY004     | Found different types for sharding value '%s'.                                                                                                             |
+| 20022       | HY004     | Invalid %s, datetime pattern should be '%s', value is '%s'.                                                                                                |
+| 20023       | 44000     | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                                            |
+| 20024       | 44000     | %s value '%s' must implements Comparable.                                                                                                                  |
+| 20030       | 0A000     | Can not support operation '%s' with sharding table '%s'.                                                                                                   |
+| 20031       | 44000     | Can not update sharding value for table '%s'.                                                                                                              |
+| 20032       | 0A000     | The CREATE VIEW statement contains unsupported query statement.                                                                                            |
+| 20033       | 44000     | PREPARE statement can not support sharding tables route to same data sources.                                                                              |
+| 20034       | 44000     | The table inserted and the table selected must be the same or bind tables.                                                                                 |
+| 20035       | 0A000     | Can not support DML operation with multiple tables '%s'.                                                                                                   |
+| 20036       | 42000     | %s ... LIMIT can not support route to multiple data nodes.                                                                                                 |
+| 20037       | 44000     | Can not find actual data source intersection for logic tables '%s'.                                                                                        |
+| 20038       | 42000     | INSERT INTO ... SELECT can not support applying key generator with absent generate key column.                                                             |
+| 20039       | 0A000     | Alter view rename .. to .. statement should have same config for '%s' and '%s'.                                                                            |
+| 20040       | HY000     | '%s %s' can not route correctly for %s '%s'.                                                                                                               |
+| 20041       | 42S02     | Can not get route result, please check your sharding rule configuration.                                                                                   |
+| 20042       | 34000     | Can not get cursor name from fetch statement.                                                                                                              |
+| 20043       | 42000     | SELECT ... %s can not support route to multiple data sources.                                                                                              |
+| 20050       | HY000     | Sharding algorithm class '%s' should be implement '%s'.                                                                                                    |
+| 20051       | HY000     | Routed target '%s' does not exist, available targets are '%s'.                                                                                             |
+| 20052       | 44000     | Inline sharding algorithms expression '%s' and sharding column '%s' do not match.                                                                          |
+| 20053       | 44000     | Complex inline algorithm need %d sharding columns, but only found %d.                                                                                      |
+| 20054       | 44000     | No sharding database route info, actual data source names: `%s`, sharding condition values: `%s`.                                                          |
+| 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s', sharding condition values '%s'. |
+| 20056       | 44000     | Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.                                              |
+| 20057       | 44000     | Can not find routing table factor, data source '%s', actual table '%s'.                                                                                    |
+| 20060       | HY000     | Invalid %s strategy '%s', strategy does not match data nodes.                                                                                              |
+| 20090       | 42000     | Not allow DML operation without sharding conditions.                                                                                                       |
 
 ### 联邦查询
 
-| Vendor Code | SQL State | 错误信息                                                    |
-|-------------|-----------|---------------------------------------------------------|
-| 20100       | 42000     | Unsupported SQL node conversion for SQL statement '%s'. |
-| 20101       | 42000     | SQL federation does not support SQL '%s'.               |
-| 20102       | 42S02     | SQL federation schema '%s' not found in SQL '%s'.       |
+| Vendor Code | SQL State | 错误信息                                                                        |
+|-------------|-----------|-----------------------------------------------------------------------------|
+| 20100       | 42000     | Unsupported SQL node conversion for SQL statement '%s'.                     |
+| 20101       | 42000     | SQL federation does not support SQL '%s'.                                   |
+| 20102       | 42S02     | SQL federation schema '%s' not found in SQL '%s'.                           |
 | 20108       | HY000     | Invalid execution plan cache config: `%s`=`%s`, the value must be positive. |
 
 ### 读写分离
@@ -233,7 +234,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 21005       | HY000     | Column '%s' of table '%s' is not configured with %s query algorithm.                         |
 | 21010       | 44000     | Altered column '%s' must use same encrypt algorithm with previous column '%s' in table '%s'. |
 | 21020       | 0A000     | The SQL clause '%s' is unsupported in encrypt feature.                                       |
-| 21030       | 22000     | Failed to decrypt the ciphertext '%s' in '%s'.                                             |
+| 21030       | 22000     | Failed to decrypt the ciphertext '%s' in '%s'.                                               |
 
 ### 影子库
 
