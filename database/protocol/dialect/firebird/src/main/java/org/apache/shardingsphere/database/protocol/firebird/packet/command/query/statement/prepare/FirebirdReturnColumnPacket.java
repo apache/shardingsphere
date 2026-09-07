@@ -74,7 +74,7 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SCALE, 0, payload);
                     break;
                 case LENGTH:
-                    if (columnLength != null
+                    if (null != columnLength
                             && (columnType == FirebirdBinaryColumnType.VARYING
                                     || columnType == FirebirdBinaryColumnType.LEGACY_VARYING
                                     || columnType == FirebirdBinaryColumnType.TEXT

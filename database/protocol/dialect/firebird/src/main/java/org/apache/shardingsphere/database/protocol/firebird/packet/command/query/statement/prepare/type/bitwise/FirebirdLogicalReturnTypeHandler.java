@@ -68,7 +68,7 @@ public final class FirebirdLogicalReturnTypeHandler implements FirebirdFunctionR
     }
     
     private FirebirdBinaryColumnType compare(final FirebirdBinaryColumnType current, final FirebirdBinaryColumnType compareTo) {
-        if (current == null) {
+        if (null == current) {
             return compareTo;
         }
         if (compareTo == FirebirdBinaryColumnType.NUMERIC || compareTo == FirebirdBinaryColumnType.DECIMAL) {
