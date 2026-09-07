@@ -327,6 +327,11 @@
         <module name="RecordTypeParameterName" />
         <module name="StaticVariableName" />
         <module name="TypeName" />
+        <module name="TypeName">
+            <property name="id" value="UtilityTypeName" />
+            <property name="format" value="^(?!.*Util$).*$" />
+            <message key="name.invalidPattern" value="Use the Utils suffix instead of Util for type name ''{0}''." />
+        </module>
         
         <!-- Size Violations -->
         <module name="AnonInnerLength" />
