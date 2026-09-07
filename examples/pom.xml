@@ -198,7 +198,7 @@
                         <exclude>**/.github/**</exclude>
                         <!-- document files -->
                         <exclude>**/*.md</exclude>
-                        <excldue>**/*.MD</excldue>
+                        <exclude>**/*.MD</exclude>
                         <exclude>**/*.txt</exclude>
                         <exclude>**/docs/**</exclude>
                     </excludes>

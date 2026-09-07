@@ -172,9 +172,11 @@ Optional cross-cutting Skills remain governed by `.codex/context/cross-cutting-s
 
 ## Change Completion Gate
 
-A pre-handoff review is required for every authorized change, build, implement, or fix request, excluding a standalone restoration or rollback governed by its existing gates. After the last write, audit the task delta, complete the applicable verification, and review the effective local candidate against the same code-correctness gates used by `$review-pr`: root-cause and fix mapping, affected behavior, side effects and regressions, contracts and architecture, test validity, and adversarial cases.
+Every authorized change, build, implement, or fix request requires a pre-handoff `$review-pr` Formal Review of the effective local candidate, except a governed standalone restoration or rollback. After the last write, audit the task delta and complete verification. Review root-cause and fix mapping, affected behavior, side effects and regressions, contracts and architecture, test validity, and adversarial cases.
 
-Fix every safe in-scope required finding, rerun every invalidated check, and repeat the applicable review. If a finding requires scope expansion, an unresolved architecture choice, or a high-risk action, stop at its existing authorization gate instead of fixing it automatically. Hand off or propose a commit message only after one complete applicable review pass finds zero new required issues.
+Fix every safe in-scope required finding, rerun invalidated checks, and invoke `$review-pr` again. Stop at the applicable gate for scope expansion, unresolved architecture, or a high-risk action. Hand off or propose commit artifacts only after the latest complete Formal Review returns `Review Result: Mergeable`.
+
+After Mergeable, output the formal report, commit message, and exact task-file `git commit --dry-run --only` and `git commit --only` commands in individual fenced blocks.
 
 ## Functional and Performance Non-Regression Gate
 

@@ -66,6 +66,7 @@
             <artifactId>HikariCP</artifactId>
         </dependency>
         
+        <!-- Keep the project-managed SLF4J API before hive-jdbc on the test classpath because its standalone JAR bundles SLF4J classes. -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

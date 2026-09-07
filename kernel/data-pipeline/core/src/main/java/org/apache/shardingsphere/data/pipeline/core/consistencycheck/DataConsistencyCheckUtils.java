@@ -62,7 +62,7 @@ public final class DataConsistencyCheckUtils {
             Object thatColumnValue = thatRecordIterator.next().getValue();
             if (!isMatched(equalsBuilder, thisColumnValue, thatColumnValue)) {
                 log.warn("Record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}.", columnIndex, thisColumnValue, thatColumnValue,
-                        null != thisColumnValue ? thisColumnValue.getClass().getName() : "", null == thatColumnValue ? "" : thatColumnValue.getClass().getName());
+                        null == thisColumnValue ? "" : thisColumnValue.getClass().getName(), null == thatColumnValue ? "" : thatColumnValue.getClass().getName());
                 return false;
             }
         }
@@ -107,12 +107,16 @@ public final class DataConsistencyCheckUtils {
          * strategies with different database types could be considered.
          */
         if (thisColumnValue instanceof Timestamp && thatColumnValue instanceof Timestamp) {
-            return ((Timestamp) thisColumnValue).getTime() / 1000L * 1000L == ((Timestamp) thatColumnValue).getTime() / 1000L * 1000L;
+            return toFlooredSeconds((Timestamp) thisColumnValue) == toFlooredSeconds((Timestamp) thatColumnValue);
         }
         if (thisColumnValue instanceof Array && thatColumnValue instanceof Array) {
             return Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
         }
         return equalsBuilder.append(thisColumnValue, thatColumnValue).isEquals();
+    }
+    
+    private static long toFlooredSeconds(final Timestamp timestamp) {
+        return Math.floorDiv(timestamp.getTime(), 1000L);
     }
     
     private static boolean isNumberEquals(final Number one, final Number another) {

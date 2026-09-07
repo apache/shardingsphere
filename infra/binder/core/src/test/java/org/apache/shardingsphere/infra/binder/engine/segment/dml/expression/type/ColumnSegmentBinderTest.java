@@ -20,7 +20,10 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.typ
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
@@ -32,13 +35,16 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
 import java.util.Collections;
 
@@ -49,6 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 class ColumnSegmentBinderTest {
@@ -105,6 +112,38 @@ class ColumnSegmentBinderTest {
         assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_schema"));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order_item"));
         assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+    }
+    
+    @Test
+    void assertBindParameterMarkerProjectionFromExternalTable() {
+        IdentifierValue sourceTableName = new IdentifierValue("\"Source\"");
+        IdentifierValue sourceColumnName = new IdentifierValue("\"NewEmail\"");
+        ParameterMarkerExpressionSegment sourceProjection = new ParameterMarkerExpressionSegment(0, 11, 0);
+        sourceProjection.setAlias(new AliasSegment(2, 11, sourceColumnName));
+        sourceProjection.setBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue(""), new IdentifierValue("")),
+                sourceTableName, sourceColumnName, TableSourceType.TEMPORARY_TABLE));
+        SQLStatementBinderContext binderContext = createBinderContext();
+        binderContext.getExternalTableBinderContexts().put(CaseInsensitiveString.of(sourceTableName.getValue()),
+                new SimpleTableSegmentBinderContext(Collections.singleton(sourceProjection), TableSourceType.TEMPORARY_TABLE));
+        ColumnSegment actual = ColumnSegmentBinder.bind(new ColumnSegment(20, 29, sourceColumnName), SegmentType.SET_ASSIGNMENT,
+                binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalTable(), is(sourceTableName));
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn(), is(sourceColumnName));
+        assertThat(actual.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+    }
+    
+    @Test
+    void assertBindParameterMarkerProjectionWithoutBoundInfoFromExternalTable() {
+        IdentifierValue sourceColumnName = new IdentifierValue("\"NewEmail\"");
+        ParameterMarkerExpressionSegment sourceProjection = new ParameterMarkerExpressionSegment(0, 11, 0);
+        sourceProjection.setAlias(new AliasSegment(2, 11, sourceColumnName));
+        SQLStatementBinderContext binderContext = createBinderContext();
+        binderContext.getExternalTableBinderContexts().put(CaseInsensitiveString.of("foo_cte"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(sourceProjection), TableSourceType.TEMPORARY_TABLE));
+        ColumnSegment actual = ColumnSegmentBinder.bind(new ColumnSegment(20, 29, sourceColumnName), SegmentType.SET_ASSIGNMENT,
+                binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertNotNull(actual.getColumnBoundInfo());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn(), is(sourceColumnName));
     }
     
     @Test
@@ -242,12 +281,48 @@ class ColumnSegmentBinderTest {
     }
     
     @Test
+    void assertBindValueVariableBeforeTargetTableColumn() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(TypedSPILoader.getService(DatabaseType.class, "MySQL")).build();
+        selectStatement.getVariableNames().add("sensitive_a");
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        ColumnSegment targetColumn = new ColumnSegment(0, 0, new IdentifierValue("sensitive_a"));
+        targetColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
+                new IdentifierValue("t_sensitive"), new IdentifierValue("sensitive_a"), TableSourceType.PHYSICAL_TABLE));
+        tableBinderContexts.put(CaseInsensitiveString.of("t_sensitive"),
+                new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(targetColumn)), TableSourceType.PHYSICAL_TABLE));
+        ColumnSegment actual = ColumnSegmentBinder.bind(new ColumnSegment(0, 10, new IdentifierValue("sensitive_a")),
+                SegmentType.VALUES, binderContext, tableBinderContexts, LinkedHashMultimap.create());
+        assertTrue(actual.isVariable());
+        assertThat(actual.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.TEMPORARY_TABLE));
+    }
+    
+    @Test
     void assertBindUnparenthesizedFunction() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("CURRENT_DATE"));
         ColumnSegment actual = ColumnSegmentBinder.bind(
                 columnSegment, SegmentType.PROJECTION, createBinderContext(), LinkedHashMultimap.create(), LinkedHashMultimap.create());
         assertThat(actual, is(columnSegment));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is(""));
+    }
+    
+    @Test
+    void assertBindUnparenthesizedQualifiedFunction() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).build();
+        DialectFunctionOption functionOption = mock(DialectFunctionOption.class);
+        when(functionOption.getUnparenthesizedFunctionNames()).thenReturn(Collections.emptyList());
+        when(functionOption.getUnparenthesizedQualifiedFunctionNames()).thenReturn(Collections.singleton("DBMS_RANDOM.VALUE"));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getFunctionOption()).thenReturn(functionOption);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        ColumnSegment columnSegment = new ColumnSegment(0, 16, new IdentifierValue("VALUE"));
+        columnSegment.setOwner(new OwnerSegment(0, 10, new IdentifierValue("DBMS_RANDOM")));
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(
+                        DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData))) {
+            ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+            assertThat(actual, is(columnSegment));
+        }
     }
     
     @Test

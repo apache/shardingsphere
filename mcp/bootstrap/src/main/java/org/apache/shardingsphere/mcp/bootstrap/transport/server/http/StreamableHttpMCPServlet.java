@@ -31,6 +31,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
@@ -56,6 +57,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.StampedLock;
 
+@Slf4j
 final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamableServerTransportProvider {
     
     private static final long serialVersionUID = -2320345528569140021L;
@@ -141,6 +143,13 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
         try {
             super.service(request, response);
+        } catch (final IOException | ServletException ex) {
+            if (response.isCommitted()) {
+                throw ex;
+            }
+            log.error("Unexpected MCP HTTP request failure.", ex);
+            response.reset();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
             lifecycleLock.unlockRead(lifecycleStamp);
         }

@@ -25,17 +25,21 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
 import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,6 +52,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -69,13 +75,17 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class UnloadSingleTableExecutorTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    private final DatabaseType protocolDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private final DatabaseType storageDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     private final UnloadSingleTableExecutor executor = (UnloadSingleTableExecutor) TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, UnloadSingleTableStatement.class);
     
@@ -91,14 +101,32 @@ class UnloadSingleTableExecutorTest {
     @Mock
     private DataNodeRuleAttribute dataNodeRuleAttribute;
     
+    @Mock
+    private DataSource dataSource;
+    
     @BeforeEach
     void setUp() {
         executor.setDatabase(database);
         executor.setRule(rule);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getProtocolType()).thenReturn(databaseType);
+        when(database.getProtocolType()).thenReturn(protocolDatabaseType);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(storageDatabaseType);
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(tableMapperRuleAttribute, dataNodeRuleAttribute));
+        Map<String, DataSource> aggregatedDataSources = new HashMap<>(3, 1F);
+        aggregatedDataSources.put("foo_ds", dataSource);
+        aggregatedDataSources.put("bar_ds", dataSource);
+        aggregatedDataSources.put("readwrite_ds", dataSource);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(tableMapperRuleAttribute, dataNodeRuleAttribute, new AggregatedDataSourceRuleAttribute(aggregatedDataSources)));
+    }
+    
+    @AfterEach
+    void assertStorageIsNotProbed() throws SQLException {
+        verify(dataSource, never()).getConnection();
     }
     
     @ParameterizedTest(name = "{0}")
@@ -116,12 +144,7 @@ class UnloadSingleTableExecutorTest {
     void assertCheckBeforeUpdate(final String name, final boolean schemaAvailable, final UnloadSingleTableStatement sqlStatement, final Collection<String> allTables,
                                  final Collection<String> singleTables, final Map<String, Collection<DataNode>> tableDataNodes, final Collection<String> configuredTables) {
         prepareCheckBeforeUpdateContext(allTables, singleTables, tableDataNodes, configuredTables);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("foo_schema"));
-        when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
-        try (
-                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(
-                        DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData))) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDatabaseTypeRegistry(schemaAvailable)) {
             assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
         }
     }
@@ -134,11 +157,15 @@ class UnloadSingleTableExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertBuildToBeAlteredRuleConfigurationArguments")
-    void assertBuildToBeAlteredRuleConfiguration(final String name, final Collection<String> currentTables,
-                                                 final UnloadSingleTableStatement sqlStatement, final Collection<String> expectedTables) {
+    void assertBuildToBeAlteredRuleConfiguration(final String name, final boolean schemaAvailable, final Collection<String> currentTables,
+                                                 final Map<String, Collection<DataNode>> tableDataNodes, final UnloadSingleTableStatement sqlStatement,
+                                                 final Collection<String> expectedTables) {
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(new LinkedList<>(currentTables), null));
-        SingleRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        assertThat(new HashSet<>(actual.getTables()), is(new HashSet<>(expectedTables)));
+        when(dataNodeRuleAttribute.getDataNodesByTableName(anyString())).thenAnswer(invocation -> tableDataNodes.getOrDefault(invocation.getArgument(0), Collections.emptyList()));
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDatabaseTypeRegistry(schemaAvailable)) {
+            SingleRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
+            assertThat(new HashSet<>(actual.getTables()), is(new HashSet<>(expectedTables)));
+        }
     }
     
     @ParameterizedTest(name = "{0}")
@@ -159,6 +186,15 @@ class UnloadSingleTableExecutorTest {
     @Test
     void assertGetRuleClass() {
         assertThat(executor.getRuleClass(), is(SingleRule.class));
+    }
+    
+    private MockedConstruction<DatabaseTypeRegistry> mockDatabaseTypeRegistry(final boolean storageSchemaAvailable) {
+        DialectDatabaseMetaData protocolMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(protocolMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(true);
+        DialectDatabaseMetaData storageMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(storageMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(storageSchemaAvailable);
+        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData())
+                .thenReturn(storageDatabaseType == context.arguments().get(0) ? storageMetaData : protocolMetaData));
     }
     
     private void prepareCheckBeforeUpdateContext(final Collection<String> allTables, final Collection<String> singleTables,
@@ -205,13 +241,22 @@ class UnloadSingleTableExecutorTest {
     }
     
     private static Stream<Arguments> assertBuildToBeAlteredRuleConfigurationArguments() {
+        Map<String, Collection<DataNode>> twoSegmentTableNodes = Collections.singletonMap("foo_tbl", Collections.singleton(new DataNode("foo_ds.foo_tbl")));
+        Map<String, Collection<DataNode>> schemaTableNodes = Collections.singletonMap("bar_tbl", Collections.singleton(new DataNode("foo_ds.foo_schema.bar_tbl")));
+        Map<String, Collection<DataNode>> dottedTableNodes = Collections.singletonMap(
+                "foo.bar", Arrays.asList(new DataNode("readwrite_ds", "foo_schema", "foo.bar"), new DataNode("bar_ds", "foo_schema", "foo.bar")));
+        Map<String, Collection<DataNode>> suffixTableNodes = Collections.singletonMap("bar", Collections.singleton(new DataNode("foo_ds", "foo_schema", "bar")));
         return Stream.of(
-                Arguments.of("unload all tables keeps altered config empty", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), new UnloadSingleTableStatement(true, Collections.emptyList()),
-                        Collections.emptyList()),
-                Arguments.of("unload one table removes matching two-segment node", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"),
+                Arguments.of("unload all tables keeps altered config empty", false, Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), Collections.emptyMap(),
+                        new UnloadSingleTableStatement(true, Collections.emptyList()), Collections.emptyList()),
+                Arguments.of("unload one table removes matching two-segment node", false, Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), twoSegmentTableNodes,
                         new UnloadSingleTableStatement(false, Collections.singletonList("foo_tbl")), Collections.singleton("foo_ds.bar_tbl")),
-                Arguments.of("unload one table removes matching three-segment node", Arrays.asList("foo_ds.foo_schema.bar_tbl", "foo_ds.foo_tbl"),
-                        new UnloadSingleTableStatement(false, Collections.singletonList("bar_tbl")), Collections.singleton("foo_ds.foo_tbl")));
+                Arguments.of("unload one table removes matching three-segment node", true, Arrays.asList("foo_ds.foo_schema.bar_tbl", "foo_ds.foo_tbl"), schemaTableNodes,
+                        new UnloadSingleTableStatement(false, Collections.singletonList("bar_tbl")), Collections.singleton("foo_ds.foo_tbl")),
+                Arguments.of("unload dotted table removes all exact nodes", false, Arrays.asList("readwrite_ds.foo.bar", "bar_ds.foo.bar", "foo_ds.bar"), dottedTableNodes,
+                        new UnloadSingleTableStatement(false, Collections.singletonList("foo.bar")), Collections.singleton("foo_ds.bar")),
+                Arguments.of("unload suffix table preserves dotted table", false, Arrays.asList("foo_ds.bar", "foo_ds.foo.bar"), suffixTableNodes,
+                        new UnloadSingleTableStatement(false, Collections.singletonList("bar")), Collections.singleton("foo_ds.foo.bar")));
     }
     
     private static Stream<Arguments> assertBuildToBeDroppedRuleConfigurationArguments() {

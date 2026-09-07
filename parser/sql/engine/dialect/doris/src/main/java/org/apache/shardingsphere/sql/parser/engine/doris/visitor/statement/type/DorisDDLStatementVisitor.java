@@ -410,7 +410,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.NUMBER_()) {
             return parseQuotaNumber(ctx.NUMBER_());
         }
-        TerminalNode token = null != ctx.FILESIZE_LITERAL() ? ctx.FILESIZE_LITERAL() : ctx.IDENTIFIER_();
+        TerminalNode token = null == ctx.FILESIZE_LITERAL() ? ctx.IDENTIFIER_() : ctx.FILESIZE_LITERAL();
         String text = token.getText();
         int unitIndex = 0;
         while (unitIndex < text.length() && Character.isDigit(text.charAt(unitIndex))) {
@@ -482,9 +482,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.PROPERTIES()) {
             for (int i = 0; i < ctx.properties().property().size(); i++) {
-                String key = null != ctx.properties().property(i).SINGLE_QUOTED_TEXT()
-                        ? SQLUtils.getExactlyValue(ctx.properties().property(i).SINGLE_QUOTED_TEXT().getText())
-                        : SQLUtils.getExactlyValue(ctx.properties().property(i).identifier().getText());
+                String key = null == ctx.properties().property(i).SINGLE_QUOTED_TEXT()
+                        ? SQLUtils.getExactlyValue(ctx.properties().property(i).identifier().getText())
+                        : SQLUtils.getExactlyValue(ctx.properties().property(i).SINGLE_QUOTED_TEXT().getText());
                 String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
                 result.getProperties().put(key, value);
             }
@@ -668,7 +668,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
                         SQLUtils.getExactlyValue(ctx.timestampValue(0).getText())));
             }
             if (null != ctx.ENDS()) {
-                int endsTimestampIndex = null != ctx.STARTS() ? 1 : 0;
+                int endsTimestampIndex = null == ctx.STARTS() ? 0 : 1;
                 result.setEndsTimestamp(new JobScheduleTimestampSegment(ctx.timestampValue(endsTimestampIndex).start.getStartIndex(), ctx.timestampValue(endsTimestampIndex).stop.getStopIndex(),
                         SQLUtils.getExactlyValue(ctx.timestampValue(endsTimestampIndex).getText())));
             }
@@ -1579,7 +1579,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             return new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, true);
         }
         ModifyPartitionDefinitionSegment result = new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, false);
-        if (null != ctx.identifier() && ctx.identifierList() == null) {
+        if (null != ctx.identifier() && null == ctx.identifierList()) {
             PartitionSegment partition = new PartitionSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
             result.getPartitions().add(partition);
         } else if (null != ctx.identifierList()) {

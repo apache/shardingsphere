@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.assignment.ValueReferenceSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.error.ErrorLoggingClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.DerivedInsertColumnsAssert;
@@ -86,6 +87,7 @@ public final class InsertStatementAssert {
         assertMultiTableInsertIntoClause(assertContext, actual, expected);
         assertMultiTableConditionalIntoClause(assertContext, actual, expected);
         assertReturningClause(assertContext, actual, expected);
+        ErrorLoggingClauseAssert.assertIs(assertContext, actual.getErrorLogging(), expected.getErrorLoggingClause());
         assertInsertExecClause(assertContext, actual, expected);
         assertWithTableHintClause(assertContext, actual, expected);
         assertRowSetFunctionClause(assertContext, actual, expected);

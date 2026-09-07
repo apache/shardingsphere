@@ -152,9 +152,9 @@ class GenericSchemaBuilderTest {
     void assertBuildTranslatesSchemaWhenProtocolSchemaUnavailable() throws SQLException {
         when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("public", createSchemaMetaData("public", "foo_tbl")));
         Map<String, ShardingSphereSchema> actual =
-                GenericSchemaBuilder.build(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, createMaterial(POSTGRESQL_DATABASE_TYPE, "foo_db"));
+                GenericSchemaBuilder.build(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, createMaterial(POSTGRESQL_DATABASE_TYPE, "FOO_DB"));
         assertThat(actual.size(), is(1));
-        assertSchemaTable(actual, "foo_db", "foo_tbl");
+        assertSchemaTable(actual, "FOO_DB", "foo_tbl");
     }
     
     @Test
@@ -170,7 +170,7 @@ class GenericSchemaBuilderTest {
     void assertBuildTranslatesSchemaWithStorageDataSourcePolicy() throws SQLException {
         mockLoadedSchemaWithMaterialDefault("foo_tbl");
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE,
-                createMaterial(MYSQL_DATABASE_TYPE, "Foo_DB", mockMySQLDataSource(1)));
+                createMaterial(MYSQL_DATABASE_TYPE, "public", mockMySQLDataSource(1)));
         assertThat(actual.size(), is(1));
         assertSchemaTable(actual, "public", "foo_tbl");
     }
@@ -179,7 +179,7 @@ class GenericSchemaBuilderTest {
     void assertBuildTranslatesSchemaWithHiddenStorageSchema() throws SQLException {
         mockLoadedSchemaWithMaterialDefault("foo_tbl");
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(
-                Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, createMaterial(H2_DATABASE_TYPE, "Foo_DB"));
+                Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, createMaterial(H2_DATABASE_TYPE, "public"));
         assertThat(actual.size(), is(1));
         assertSchemaTable(actual, "public", "foo_tbl");
     }

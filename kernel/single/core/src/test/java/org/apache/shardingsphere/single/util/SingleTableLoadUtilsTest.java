@@ -94,6 +94,13 @@ class SingleTableLoadUtilsTest {
     }
     
     @Test
+    void assertConvertToDataNodesWithDefaultSchemaName() {
+        Collection<DataNode> expected = Arrays.asList(new DataNode("foo_ds", "foo_schema", "foo_tbl"), new DataNode("bar_ds", "foo_schema", "schema.bar_tbl.part"));
+        assertThat(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName("foo_schema", databaseType, Arrays.asList("foo_ds.foo_tbl", "bar_ds.schema.bar_tbl.part")),
+                is(new LinkedList<>(expected)));
+    }
+    
+    @Test
     void assertGetAllTablesNodeStr() {
         assertThat(SingleTableLoadUtils.getAllTablesNodeStr(databaseType), is("*.*"));
     }

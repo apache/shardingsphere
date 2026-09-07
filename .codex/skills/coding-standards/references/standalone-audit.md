@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 
-# Strict Coding Standards Compliance
+# Standalone Coding Standards Audit
 
 ## Audit Targets
 
@@ -59,7 +59,7 @@ Run `scripts/build_audit_inventory.py` to create the initial inventory.
 4. Record each file as `Pending`, `Checked`, `Blocked`, or `Not constrained by written standards`, together with its checked line count and rules. Do not sample files, infer one file from another, or substitute representative files for complete coverage.
 5. Rebuild the affected inventory when target content changes during the audit. Do not use a stale inventory for the compliance conclusion.
 
-## Use Checkers and Manual Inspection
+## Use Checkers and Semantic Inspection
 
 Run Checkstyle, Spotless, and other repository checkers only in check mode. Do not run `apply`, `format`, or another correction mode.
 
@@ -69,11 +69,17 @@ If a required checker cannot be run safely and no other method can determine the
 
 A passing checker proves only the rules that the checker actually covers. Continue physical-line inspection for naming, ordering, conditional, semantic, and file-category rules that the tool does not cover. Do not replace a required checker with manual inspection when the checker determines strict formatting compliance.
 
+For Java naming, type, and constructor rules, resolve receiver types, annotation types, generated accessors and constructors, declaration roles, field initialization, constructor contracts, and lambda parameter roles whenever those facts determine applicability; text searches are candidate discovery only.
+
+For defensive-code rules, inspect the relevant contracts, producers, consumers, callers, aliases, failures, concurrency, and lifecycle paths. Do not infer that an existing defense is unnecessary merely because a text search did not find its justification.
+
 ## Violations and Conclusions
 
 An existing-code violation of an applicable written standard is sufficient to report non-compliance. Do not require an additional semantic consequence and do not assign a severity label.
 
-For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction. Violations with the same rule and correction may be grouped only when every violating location is listed rather than sampled.
+For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction.
+
+For every defensive-code violation, also report the production and contract evidence proving that no qualifying condition applies. Violations with the same rule and correction may be grouped only when every violating location is listed rather than sampled.
 
 Use exactly one compliance conclusion:
 

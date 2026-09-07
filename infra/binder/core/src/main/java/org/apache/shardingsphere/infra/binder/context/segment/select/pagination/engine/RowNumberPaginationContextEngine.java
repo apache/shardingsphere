@@ -133,7 +133,7 @@ public final class RowNumberPaginationContextEngine {
         int startIndex = expression.getStartIndex();
         int stopIndex = expression.getStopIndex();
         if (expression instanceof LiteralExpressionSegment) {
-            return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, Long.parseLong(((LiteralExpressionSegment) expression).getLiterals().toString()), boundOpened);
+            return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, Long.parseLong(((LiteralExpressionSegment) expression).getLiterals().toString().trim()), boundOpened);
         }
         if (expression instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex(), boundOpened);

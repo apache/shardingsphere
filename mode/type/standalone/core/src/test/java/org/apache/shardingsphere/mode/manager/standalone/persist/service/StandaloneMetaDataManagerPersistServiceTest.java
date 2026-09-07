@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.Data
 import org.apache.shardingsphere.mode.node.path.version.MetaDataVersion;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +52,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -176,25 +177,33 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().persist("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(new MetaDataVersion(databaseRuleNodePath)));
         when(metaDataPersistFacade.getRepository().query("/metadata/foo_db/rules/fixture/unique/active_version")).thenReturn("0");
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(ShardingSphereArgumentVerifyMatchers.deepEq(databaseRuleNodePath));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(deepEq(databaseRuleNodePath));
     }
     
     @Test
     void assertAlterRuleConfigurationWithSingleRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
-        SingleRule singleRule = mock(SingleRule.class);
-        when(singleRule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.singleton("foo_ds.foo_tbl"), null));
-        when(singleRule.getAttributes()).thenReturn(new RuleAttributes());
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(singleRule)));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
+        TableMapperRuleAttribute originalTableMapperRuleAttribute = mock(TableMapperRuleAttribute.class);
+        when(originalTableMapperRuleAttribute.getLogicTableNames()).thenReturn(Collections.singleton("foo_tbl"));
+        SingleRule originalSingleRule = mock(SingleRule.class);
+        when(originalSingleRule.getAttributes()).thenReturn(new RuleAttributes(originalTableMapperRuleAttribute));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(originalSingleRule)));
+        ShardingSphereDatabase refreshedDatabase = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(refreshedDatabase.getName()).thenReturn("foo_db");
+        when(refreshedDatabase.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        when(refreshedDatabase.getDefaultSchemaName()).thenReturn("foo_default_schema");
+        TableMapperRuleAttribute refreshedTableMapperRuleAttribute = mock(TableMapperRuleAttribute.class);
+        when(refreshedTableMapperRuleAttribute.getLogicTableNames()).thenReturn(Arrays.asList("foo_tbl", "foo_order.foo_item"));
+        SingleRule refreshedSingleRule = mock(SingleRule.class);
+        when(refreshedSingleRule.getAttributes()).thenReturn(new RuleAttributes(refreshedTableMapperRuleAttribute));
+        when(refreshedDatabase.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(refreshedSingleRule)));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(refreshedDatabase), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), null);
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("foo_ds.foo_tbl", "foo_ds.foo_order.foo_item"), null);
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
         verify(metaDataPersistFacade.getDatabaseRuleService()).persist("foo_db", Collections.singleton(ruleConfig));
-        verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistAlteredTables(eq("foo_db"), any(), eq(Collections.singletonList("bar_tbl")));
+        verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistAlteredTables(eq("foo_db"), any(), eq(Collections.singletonList("foo_order.foo_item")));
     }
     
     @Test
@@ -221,8 +230,8 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Arrays.asList(
                 new MetaDataVersion(uniqueDatabaseRuleNodePath), new MetaDataVersion(namedDatabaseRuleNodePath)));
         metaDataManagerPersistService.removeRuleConfigurationItem(database, ruleConfig);
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(ShardingSphereArgumentVerifyMatchers.deepEq(uniqueDatabaseRuleNodePath));
-        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(ShardingSphereArgumentVerifyMatchers.deepEq(namedDatabaseRuleNodePath));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(uniqueDatabaseRuleNodePath));
+        verify(metaDataContextManager.getDatabaseRuleItemManager()).drop(deepEq(namedDatabaseRuleNodePath));
     }
     
     @Test

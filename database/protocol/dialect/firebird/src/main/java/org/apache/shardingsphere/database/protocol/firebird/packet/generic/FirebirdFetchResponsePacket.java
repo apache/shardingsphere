@@ -50,7 +50,7 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
     }
     
     static void writeRowData(final FirebirdPacketPayload payload, final BinaryRow row) {
-        if (row == null) {
+        if (null == row) {
             return;
         }
         int nullBitsStartIndex = payload.getByteBuf().writerIndex();

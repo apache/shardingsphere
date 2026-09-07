@@ -181,9 +181,12 @@ class MCPDatabaseCapabilityProviderTest {
     
     private RuntimeDatabaseProfile createDatabaseProfile(final String databaseName, final String databaseType, final CapabilityFixture capabilityFixture,
                                                          final IdentifierCasePolicySet identifierCasePolicySet) {
-        TransactionCapability transactionCapability = capabilityFixture.transactionSupported
-                ? capabilityFixture.savepointSupported ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL
-                : TransactionCapability.NONE;
+        TransactionCapability transactionCapability;
+        if (capabilityFixture.transactionSupported) {
+            transactionCapability = capabilityFixture.savepointSupported ? TransactionCapability.LOCAL_WITH_SAVEPOINT : TransactionCapability.LOCAL;
+        } else {
+            transactionCapability = TransactionCapability.NONE;
+        }
         return new RuntimeDatabaseProfile(databaseName, databaseType, "", transactionCapability, new DatabaseIdentifierContext(identifierCasePolicySet));
     }
     

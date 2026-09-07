@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -69,11 +70,8 @@ public final class DataNode {
      * @param dataNode data node use {@code .} to split schema name and table name
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
-        this(databaseName, new DatabaseTypeRegistry(databaseType), dataNode);
-    }
-    
-    private DataNode(final String databaseName, final DatabaseTypeRegistry registry, final String dataNode) {
-        this(registry.getDefaultSchemaName(databaseName), registry.getDialectDatabaseMetaData().getSchemaOption(), dataNode);
+        this(DefaultSchemaNameResolver.resolveProtocol(databaseType, databaseName),
+                new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption(), dataNode);
     }
     
     private DataNode(final String defaultSchemaName, final DialectSchemaOption schemaOption, final String dataNode) {

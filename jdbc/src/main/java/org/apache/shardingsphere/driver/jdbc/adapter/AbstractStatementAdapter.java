@@ -83,7 +83,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     }
     
     protected final void handleAutoCommitAfterExecution(final ShardingSphereConnection connection) throws SQLException {
-        if (connection.getAutoCommit()) {
+        if (connection.getAutoCommit() && !connection.hasRegisteredStatementManagers()) {
             connection.getDatabaseConnectionManager().clearCachedConnections();
         }
     }

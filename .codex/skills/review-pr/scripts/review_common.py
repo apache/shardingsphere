@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import subprocess
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
 
@@ -61,6 +61,30 @@ def parse_name_status(output: str) -> list[ChangedFile]:
         else:
             result.append(ChangedFile(status=status, path=parts[-1]))
     return result
+
+
+def resolve_candidate_changes(repo_root: Path, baseline_ref: str, candidate_files_path: str) -> list[ChangedFile]:
+    candidate_paths = [line.strip() for line in Path(candidate_files_path).read_text(encoding="utf-8").splitlines() if line.strip()]
+    if not candidate_paths:
+        raise RuntimeError("Candidate file list is empty")
+    if len(candidate_paths) != len(set(candidate_paths)):
+        raise RuntimeError("Candidate file list contains duplicate paths")
+    invalid_paths = [each for each in candidate_paths
+                     if PurePosixPath(each).is_absolute() or "." == each or ".." in PurePosixPath(each).parts]
+    if invalid_paths:
+        raise RuntimeError(f"Candidate file list contains invalid repository-relative paths: {', '.join(invalid_paths)}")
+    literal_paths = [f":(literal){each}" for each in candidate_paths]
+    tracked_changes = parse_name_status(run_git(["diff", "--name-status", baseline_ref, "--", *literal_paths], repo_root))
+    untracked_paths = run_git(["ls-files", "--others", "--exclude-standard", "--", *literal_paths],
+                              repo_root, allow_empty=True).splitlines()
+    changed_files = [*tracked_changes, *(ChangedFile(status="A", path=each) for each in untracked_paths if each)]
+    changed_by_path = {each.path: each for each in changed_files}
+    if len(changed_by_path) != len(changed_files):
+        raise RuntimeError("Candidate scope resolves the same final path more than once")
+    unchanged_paths = [each for each in candidate_paths if each not in changed_by_path]
+    if unchanged_paths:
+        raise RuntimeError(f"Candidate file list contains paths that are not changed from the baseline: {', '.join(unchanged_paths)}")
+    return [changed_by_path[each] for each in candidate_paths]
 
 
 def categorize(path: str) -> str:

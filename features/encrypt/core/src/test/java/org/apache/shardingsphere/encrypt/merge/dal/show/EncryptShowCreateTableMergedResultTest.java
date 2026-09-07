@@ -24,6 +24,9 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -47,8 +50,11 @@ import org.mockito.quality.Strictness;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -195,8 +201,26 @@ class EncryptShowCreateTableMergedResultTest {
     
     private EncryptRule mockEncryptRule(final Collection<EncryptColumnRuleConfiguration> encryptColumnRuleConfigs) {
         EncryptRule result = mock(EncryptRule.class);
-        EncryptTable encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("foo_tbl", encryptColumnRuleConfigs), Collections.emptyMap());
+        EncryptTable encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("foo_tbl", encryptColumnRuleConfigs), createEncryptors(encryptColumnRuleConfigs));
         when(result.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
+        return result;
+    }
+    
+    private Map<String, EncryptAlgorithm> createEncryptors(final Collection<EncryptColumnRuleConfiguration> encryptColumnRuleConfigs) {
+        Map<String, EncryptAlgorithm> result = new HashMap<>(encryptColumnRuleConfigs.size() * 3, 1F);
+        for (EncryptColumnRuleConfiguration each : encryptColumnRuleConfigs) {
+            result.put(each.getCipher().getEncryptorName(), mockEncryptAlgorithm());
+            each.getAssistedQuery().ifPresent(optional -> result.put(optional.getEncryptorName(), mockEncryptAlgorithm()));
+            each.getLikeQuery().ifPresent(optional -> result.put(optional.getEncryptorName(), mockEncryptAlgorithm()));
+        }
+        return result;
+    }
+    
+    private EncryptAlgorithm mockEncryptAlgorithm() {
+        EncryptAlgorithm result = mock(EncryptAlgorithm.class);
+        when(result.getMetaData()).thenReturn(new EncryptAlgorithmMetaData(true, true, true, String.class));
+        when(result.getEncoder()).thenReturn(Optional.empty());
+        when(result.toConfiguration()).thenReturn(new AlgorithmConfiguration("FIXTURE", new Properties()));
         return result;
     }
 }

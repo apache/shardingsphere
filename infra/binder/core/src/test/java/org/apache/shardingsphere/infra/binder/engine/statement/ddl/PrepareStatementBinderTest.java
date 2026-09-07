@@ -71,7 +71,6 @@ class PrepareStatementBinderTest {
         when(metaData.getDatabase(databaseName.getValue())).thenReturn(database);
         when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
         when(database.getDefaultSchemaName()).thenReturn(databaseName.getValue());
-        when(database.containsSchema(eq(databaseName))).thenReturn(true);
         when(database.getSchema(eq(databaseName))).thenReturn(schema);
         when(schema.containsTable(eq(tableName))).thenReturn(true);
         when(schema.getTable(eq(tableName))).thenReturn(table);

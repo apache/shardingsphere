@@ -17,6 +17,41 @@
   -->
 
 <sql-parser-test-cases>
+    <update sql-case-id="update_with_error_logging" parameters="'email', 1, 'update_tag'">
+        <table start-index="7" stop-index="12">
+            <simple-table name="t_user" start-index="7" stop-index="12" />
+        </table>
+        <set start-index="14" stop-index="26">
+            <assignment start-index="18" stop-index="26">
+                <column name="email" start-index="18" stop-index="22" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="26" stop-index="26" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="28" stop-index="44">
+            <expr>
+                <binary-operation-expression start-index="34" stop-index="44">
+                    <left>
+                        <column name="user_id" start-index="34" stop-index="40" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="1" start-index="44" stop-index="44" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <error-logging reject-limit="2" start-index="46" stop-index="91">
+            <table>
+                <simple-table name="ERR$_T_USER" start-index="62" stop-index="72" />
+            </table>
+            <tag>
+                <parameter-marker-expression parameter-index="2" start-index="75" stop-index="75" />
+            </tag>
+        </error-logging>
+    </update>
+
     <update sql-case-id="update_cast_assignment_hive" parameters="1, 2">
         <table start-index="7" stop-index="22">
             <simple-table name="t_product_detail" start-index="7" stop-index="22" />

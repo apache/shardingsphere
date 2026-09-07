@@ -84,16 +84,17 @@ public final class MigrationJobExecutorCallback implements DistributedPipelineJo
         Map<String, DataSourcePoolProperties> sourceDataSourcePoolProps = new PipelineDataSourcePersistService().load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), JOB_TYPE);
         Map<String, StorageUnit> targetStorageUnits = PipelineContextManager.getProxyContext().getStorageUnits(jobConfig.getTargetDatabaseName());
         for (Entry<String, PipelineDataSourceConfiguration> entry : jobConfig.getSources().entrySet()) {
-            entry.setValue(transformSourceDataSourceConfiguration(jobConfig, entry, sourceDataSourcePoolProps));
+            entry.setValue(transformSourceDataSourceConfiguration(jobConfig, entry.getKey(), entry.getValue(), sourceDataSourcePoolProps));
         }
         PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobConfig.getJobId(), jobConfig.getTarget(), targetStorageUnits);
     }
     
-    private PipelineDataSourceConfiguration transformSourceDataSourceConfiguration(final MigrationJobConfiguration jobConfig, final Entry<String, PipelineDataSourceConfiguration> entry,
+    private PipelineDataSourceConfiguration transformSourceDataSourceConfiguration(final MigrationJobConfiguration jobConfig, final String sourceName,
+                                                                                   final PipelineDataSourceConfiguration sourceConfig,
                                                                                    final Map<String, DataSourcePoolProperties> sourceDataSourcePoolProps) {
-        return sourceDataSourcePoolProps.containsKey(entry.getKey())
-                ? PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobConfig.getJobId(), entry.getKey(), entry.getValue(), sourceDataSourcePoolProps.get(entry.getKey()))
-                : entry.getValue();
+        return sourceDataSourcePoolProps.containsKey(sourceName)
+                ? PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobConfig.getJobId(), sourceName, sourceConfig, sourceDataSourcePoolProps.get(sourceName))
+                : sourceConfig;
     }
     
     private MigrationTaskConfiguration buildTaskConfiguration(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration processConfig,

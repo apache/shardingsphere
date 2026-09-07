@@ -45,6 +45,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamin
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
@@ -149,6 +150,7 @@ class CDCChannelInboundHandlerTest {
         assertNull(channel.attr(CONNECTION_CONTEXT_KEY).get());
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertChannelInactiveWithConnectionContextWithoutJob() {
         Attribute<CDCConnectionContext> attribute = mock(Attribute.class);
@@ -243,6 +245,7 @@ class CDCChannelInboundHandlerTest {
         assertThat(channel.attr(CONNECTION_CONTEXT_KEY).get().getCurrentUser().getGrantee().getUsername(), is("root"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertLoginWithNonInetSocketAddress() {
         Channel channelMock = mock(Channel.class, RETURNS_DEEP_STUBS);
@@ -266,6 +269,7 @@ class CDCChannelInboundHandlerTest {
         verify(attribute).set(any(CDCConnectionContext.class));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertLoginUsesInetSocketAddressHost() {
         Channel channelMock = mock(Channel.class, RETURNS_DEEP_STUBS);
@@ -470,6 +474,20 @@ class CDCChannelInboundHandlerTest {
     }
     
     @Test
+    void assertStopStreamingRequestForDifferentJob() {
+        CDCConnectionContext connectionContext = new CDCConnectionContext(user);
+        connectionContext.setJobId("job-1");
+        channel.attr(CONNECTION_CONTEXT_KEY).set(connectionContext);
+        when(backendHandler.getDatabaseNameByJobId("job-2")).thenReturn("logic_db");
+        StopStreamingRequestBody requestBody = StopStreamingRequestBody.newBuilder().setStreamingId("job-2").build();
+        channel.writeInbound(CDCRequest.newBuilder().setType(Type.STOP_STREAMING).setRequestId("stop-request").setStopStreamingRequestBody(requestBody).build());
+        CDCResponse response = readResponseSkippingGreeting();
+        verify(backendHandler).stopStreaming("job-2", channel.id());
+        assertThat(connectionContext.getJobId(), is("job-1"));
+        assertThat(response.getStatus(), is(Status.SUCCEED));
+    }
+    
+    @Test
     void assertDropStreamingRequestSucceed() {
         CDCConnectionContext connectionContext = new CDCConnectionContext(user);
         connectionContext.setJobId("job-1");
@@ -482,6 +500,35 @@ class CDCChannelInboundHandlerTest {
         verify(backendHandler).dropStreaming("job-1");
         assertNull(connectionContext.getJobId());
         assertThat(response.getStatus(), is(Status.SUCCEED));
+    }
+    
+    @Test
+    void assertDropStreamingRequestForDifferentJob() {
+        CDCConnectionContext connectionContext = new CDCConnectionContext(user);
+        connectionContext.setJobId("job-1");
+        channel.attr(CONNECTION_CONTEXT_KEY).set(connectionContext);
+        when(backendHandler.getDatabaseNameByJobId("job-2")).thenReturn("logic_db");
+        DropStreamingRequestBody requestBody = DropStreamingRequestBody.newBuilder().setStreamingId("job-2").build();
+        channel.writeInbound(CDCRequest.newBuilder().setType(Type.DROP_STREAMING).setRequestId("drop-request").setDropStreamingRequestBody(requestBody).build());
+        CDCResponse response = readResponseSkippingGreeting();
+        verify(backendHandler).dropStreaming("job-2");
+        assertThat(connectionContext.getJobId(), is("job-1"));
+        assertThat(response.getStatus(), is(Status.SUCCEED));
+    }
+    
+    @Test
+    void assertDropStreamingRequestFailed() {
+        CDCConnectionContext connectionContext = new CDCConnectionContext(user);
+        connectionContext.setJobId("job-1");
+        channel.attr(CONNECTION_CONTEXT_KEY).set(connectionContext);
+        when(backendHandler.getDatabaseNameByJobId("job-1")).thenReturn("logic_db");
+        doThrow(new PipelineInternalException("failed")).when(backendHandler).dropStreaming("job-1");
+        DropStreamingRequestBody requestBody = DropStreamingRequestBody.newBuilder().setStreamingId("job-1").build();
+        channel.writeInbound(CDCRequest.newBuilder().setType(Type.DROP_STREAMING).setRequestId("drop-request").setDropStreamingRequestBody(requestBody).build());
+        CDCResponse response = readResponseSkippingGreeting();
+        assertThat(response.getStatus(), is(Status.FAILED));
+        assertThat(response.getRequestId(), is("drop-request"));
+        assertThat(connectionContext.getJobId(), is("job-1"));
     }
     
     @Test

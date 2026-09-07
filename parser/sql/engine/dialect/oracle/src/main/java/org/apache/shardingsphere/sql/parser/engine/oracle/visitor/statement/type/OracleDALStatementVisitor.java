@@ -107,7 +107,12 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
         VariableSegment variable = null == ctx.systemVariable()
                 ? new VariableSegment(ctx.start.getStartIndex(), ctx.start.getStopIndex(), ctx.start.getText())
                 : new VariableSegment(ctx.systemVariable().start.getStartIndex(), ctx.systemVariable().stop.getStopIndex(), ctx.systemVariable().getText());
-        String value = null != ctx.DBID() ? ctx.numberLiterals().getText() : null == ctx.setVariableValue() ? null : ctx.setVariableValue().getText();
+        String value;
+        if (null != ctx.DBID()) {
+            value = ctx.numberLiterals().getText();
+        } else {
+            value = null == ctx.setVariableValue() ? null : ctx.setVariableValue().getText();
+        }
         return new VariableAssignSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), variable, value);
     }
     

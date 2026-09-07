@@ -112,6 +112,18 @@ public final class SingleTableLoadUtils {
     }
     
     /**
+     * Convert tables to data nodes with resolved default schema name.
+     *
+     * @param defaultSchemaName resolved default schema name
+     * @param databaseType database type
+     * @param dataNodes data nodes
+     * @return data nodes
+     */
+    public static Collection<DataNode> convertToDataNodesWithDefaultSchemaName(final String defaultSchemaName, final DatabaseType databaseType, final Collection<String> dataNodes) {
+        return dataNodes.stream().map(each -> DataNode.createWithDefaultSchemaName(defaultSchemaName, databaseType, each)).collect(Collectors.toCollection(LinkedList::new));
+    }
+    
+    /**
      * Get all tables node string.
      *
      * @param databaseType database type
