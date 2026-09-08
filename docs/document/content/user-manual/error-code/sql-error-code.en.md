@@ -25,6 +25,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10008       | HY000     | Unexpected variable value of '%s', required '%s', now is '%s'.                      |
 | 10010       | HY000     | Rule and storage meta data mismatched, reason is: %s.                               |
 | 10012       | HY000     | Load table meta data failed for database '%s' and tables '%s'.                      |
+| 10013       | 42S01     | Duplicate column name '%s'.                                                         |
+| 10014       | 42S01     | Index '%s' already exists.                                                          |
+| 10016       | HY000     | Cluster repository persist error.                                                   |
 | 10023       | HY000     | Identifier '%s' is ambiguous, matched actual identifiers: %s.                       |
 | 10024       | HY000     | Can not resolve prepared statement metadata because %s.                             |
 | 10100       | HY000     | Can not %s storage units '%s'.                                                      |
