@@ -30,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -37,6 +38,8 @@ import java.util.Set;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowArtifactMaskUtils {
+    
+    private static final String MASKED_VALUE = "******";
     
     /**
      * Create masked rule artifact map.
@@ -69,8 +72,8 @@ public final class WorkflowArtifactMaskUtils {
             if (each.isEmpty()) {
                 continue;
             }
-            result = result.replace(each, "******");
-            result = result.replace(WorkflowSQLUtils.escapeLiteral(each), "******");
+            result = result.replace(each, MASKED_VALUE);
+            result = result.replace(WorkflowSQLUtils.escapeLiteral(each), MASKED_VALUE);
         }
         return result;
     }
@@ -83,9 +86,7 @@ public final class WorkflowArtifactMaskUtils {
      * @return masked property values
      */
     public static Map<String, String> maskPropertyMap(final Map<String, String> properties, final List<AlgorithmPropertyRequirement> propertyRequirements) {
-        Map<String, String> result = new LinkedHashMap<>(properties.size(), 1F);
-        properties.forEach((key, value) -> result.put(key, isSecretProperty(propertyRequirements, key) || isSecretReferencePlaceholder(value) ? "******" : value));
-        return result;
+        return maskPropertyMap(properties, propertyRequirements, Set.of());
     }
     
     /**
@@ -99,9 +100,14 @@ public final class WorkflowArtifactMaskUtils {
      */
     public static Map<String, String> maskPropertyMap(final Map<String, String> properties, final List<AlgorithmPropertyRequirement> propertyRequirements,
                                                       final WorkflowRequest request, final String algorithmRole) {
+        return maskPropertyMap(properties, propertyRequirements, null == request ? Set.of() : request.getSecretReferences(algorithmRole).keySet());
+    }
+    
+    private static Map<String, String> maskPropertyMap(final Map<String, String> properties, final List<AlgorithmPropertyRequirement> propertyRequirements,
+                                                       final Set<String> secretReferencePropertyKeys) {
         Map<String, String> result = new LinkedHashMap<>(properties.size(), 1F);
-        properties.forEach((key, value) -> result.put(key, isSecretProperty(propertyRequirements, key) || isSecretReferenceProperty(request, algorithmRole, key)
-                || isSecretReferencePlaceholder(value) ? "******" : value));
+        properties.forEach((key, value) -> result.put(key, isSecretProperty(propertyRequirements, key) || secretReferencePropertyKeys.contains(key)
+                || SecretReferenceValue.isPlaceholder(Objects.toString(value, "")) ? MASKED_VALUE : value));
         return result;
     }
     
@@ -125,7 +131,7 @@ public final class WorkflowArtifactMaskUtils {
         List<String> redactedProperties = collectSecretPropertyNames(request, propertyRequirements).stream().toList();
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("applied", !redactedProperties.isEmpty());
-        result.put("marker", "******");
+        result.put("marker", MASKED_VALUE);
         result.put("redacted_properties", redactedProperties);
         result.put("redacted_count", redactedProperties.size());
         result.put("categories", redactedProperties.stream().map(WorkflowArtifactMaskUtils::createRedactedCategory).distinct().toList());
@@ -185,11 +191,4 @@ public final class WorkflowArtifactMaskUtils {
                 || actualPropertyKey.contains("_key") || actualPropertyKey.contains("key_");
     }
     
-    private static boolean isSecretReferencePlaceholder(final String value) {
-        return null != value && value.startsWith("secret_reference:");
-    }
-    
-    private static boolean isSecretReferenceProperty(final WorkflowRequest request, final String algorithmRole, final String propertyKey) {
-        return null != request && request.getSecretReferences(algorithmRole).containsKey(propertyKey);
-    }
 }

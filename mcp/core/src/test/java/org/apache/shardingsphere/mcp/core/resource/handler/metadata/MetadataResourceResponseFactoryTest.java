@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
 import org.apache.shardingsphere.mcp.support.descriptor.ShardingSphereMCPResourceMetadata;
@@ -79,6 +79,17 @@ class MetadataResourceResponseFactoryTest {
                 expectedSelfUri + "/single-table/default-storage-unit")));
         List<String> nextResourceKinds = ((List<?>) actual.get("next_resources")).stream().map(each -> (String) ((Map<?, ?>) each).get("resource_kind")).toList();
         assertThat(nextResourceKinds, is(List.of("schema", "storage-unit", "single-table", "single-table")));
+    }
+    
+    @Test
+    void assertCreateDefaultStorageUnitResponsePreservesNavigationResourceKinds() {
+        MCPResourceURIVariables uriVariables = new MCPResourceURIVariables(Map.of("database", "logic_db"));
+        Map<String, Object> actual = createResponse("shardingsphere://databases/{database}/single-table/default-storage-unit", uriVariables,
+                List.of(Map.of("storage_unit", "ds_0"))).toPayload();
+        assertThat(((Map<?, ?>) actual.get("self_resource")).get("resource_kind"), is("single-table"));
+        Map<?, ?> actualParentResource = (Map<?, ?>) actual.get("parent_resource");
+        assertThat(actualParentResource.get("uri"), is("shardingsphere://databases/logic_db/single-table"));
+        assertThat(actualParentResource.get("resource_kind"), is("logical-database"));
     }
     
     @Test

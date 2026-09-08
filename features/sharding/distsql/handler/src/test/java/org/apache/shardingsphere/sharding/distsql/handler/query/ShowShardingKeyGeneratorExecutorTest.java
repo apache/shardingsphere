@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +59,6 @@ class ShowShardingKeyGeneratorExecutorTest {
         ShowShardingKeyGeneratorExecutor executor = new ShowShardingKeyGeneratorExecutor();
         executor.setRule(rule);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingKeyGeneratorsStatement("snowflake", null), null);
-        assertThat(actual, hasSize(1));
+        assertThat(actual.size(), is(1));
     }
 }

@@ -33,6 +33,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPUriTemplateTest {
     
     @Test
+    void assertCreateWithUnsupportedScheme() {
+        assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate("unsupported://capabilities"));
+    }
+    
+    @Test
     void assertGetVariableNames() {
         List<String> actualVariableNames = new MCPUriTemplate("shardingsphere://databases/{database}/schemas/{schema}").getVariableNames();
         assertThat(actualVariableNames, is(List.of("database", "schema")));
@@ -54,13 +59,24 @@ class MCPUriTemplateTest {
     
     @Test
     void assertParse() {
-        Optional<MCPResourceURIVariables> actual = new MCPUriTemplate("shardingsphere://databases/{database}").parse("shardingsphere://databases/logic%20db");
-        assertThat(actual.orElseThrow().getValue("database"), is("logic db"));
+        Optional<MCPResourceURIVariables> actual = new MCPUriTemplate("shardingsphere://databases/{database}/tables/{table}")
+                .parse("shardingsphere://databases/logic_db/tables/orders%20archive%2F2026+raw%3F");
+        assertThat(actual.orElseThrow().getValue("table"), is("orders archive/2026+raw?"));
+    }
+    
+    @Test
+    void assertParseWithMalformedPercentEncoding() {
+        assertFalse(new MCPUriTemplate("shardingsphere://databases/{database}").parse("shardingsphere://databases/logic%ZZdb").isPresent());
     }
     
     @Test
     void assertParseWithUnexpandedVariable() {
         assertFalse(new MCPUriTemplate("shardingsphere://databases/{database}").parse("shardingsphere://databases/{database}").isPresent());
+    }
+    
+    @Test
+    void assertParseWithUnmatchedURI() {
+        assertFalse(new MCPUriTemplate("shardingsphere://capabilities").parse("unsupported://capabilities").isPresent());
     }
     
     @Test
@@ -71,5 +87,10 @@ class MCPUriTemplateTest {
     @Test
     void assertCreateWithEmbeddedVariable() {
         assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate("shardingsphere://databases/prefix-{database}"));
+    }
+    
+    @Test
+    void assertCreateWithInvalidTemplate() {
+        assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate("invalid-template"));
     }
 }

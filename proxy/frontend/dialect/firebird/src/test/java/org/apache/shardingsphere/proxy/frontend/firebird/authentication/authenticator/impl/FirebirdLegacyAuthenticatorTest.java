@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

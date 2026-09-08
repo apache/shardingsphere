@@ -172,7 +172,16 @@ parenthesisSelectSubquery
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    : unquotedTextQueryBlock
+    | withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    ;
+
+unquotedTextQueryBlock
+    : {isUnquotedHanTextQueryBlock()}? SELECT unquotedTextProjection FROM tableName
+    ;
+
+unquotedTextProjection
+    : IDENTIFIER_ (COMMA_ IDENTIFIER_)* AS alias
     ;
 
 selectIntoClause
@@ -499,7 +508,9 @@ dmlTableAlias
     | SINGLE_H
     | V1
     | LENGTH
+    | LOG
     | CHILD
+    | CON
     ;
 
 queryTableExprClause
@@ -806,7 +817,7 @@ mergeAssignment
     ;
 
 mergeAssignmentValue
-    : expr | DEFAULT
+    : expr | LP_ selectSubquery RP_ | DEFAULT
     ;
 
 deleteWhereClause
@@ -822,7 +833,7 @@ mergeInsertColumn
     ;
 
 mergeColumnValue
-    : VALUES LP_ (expr | DEFAULT) (COMMA_ (expr | DEFAULT))* RP_
+    : VALUES LP_ mergeAssignmentValue (COMMA_ mergeAssignmentValue)* RP_
     ;
 
 errorLoggingClause

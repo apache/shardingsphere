@@ -20,8 +20,8 @@ package org.apache.shardingsphere.database.protocol.firebird.constant;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdValueFormatTest {

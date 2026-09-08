@@ -22,14 +22,18 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.plsql.RoutineNameAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureCallNameSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.trigger.CreateTriggerStatementTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Create trigger statement assert.
@@ -45,8 +49,24 @@ public final class CreateTriggerStatementAssert {
      * @param expected expected create trigger statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateTriggerStatement actual, final CreateTriggerStatementTestCase expected) {
+        if (null != expected.getTriggerName()) {
+            assertTrue(actual.getTriggerName().isPresent(), assertContext.getText("Actual trigger name should exist."));
+            RoutineNameAssert.assertIs(assertContext, actual.getTriggerName().get(), expected.getTriggerName());
+        }
         if (null != expected.getProcedureCalls()) {
             assertProcedureCallNames(assertContext, actual.getProcedureCallNames(), expected.getProcedureCalls());
+        }
+        if (null != expected.getSqlStatementCount()) {
+            assertThat(assertContext.getText("Trigger SQL statements size assertion error: "), actual.getSqlStatements().size(), is(expected.getSqlStatementCount()));
+        }
+        if (null != expected.getDisableClauseStartIndex()) {
+            assertThat(assertContext.getText("Trigger disable clause start index assertion error: "), actual.getDisableClauseStartIndex(), is(expected.getDisableClauseStartIndex()));
+        }
+        if (!expected.getTables().isEmpty()) {
+            TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+        }
+        if (!expected.getPseudoColumns().isEmpty()) {
+            ColumnAssert.assertIs(assertContext, actual.getTriggerPseudoColumns(), expected.getPseudoColumns());
         }
     }
     

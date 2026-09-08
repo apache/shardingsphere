@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.database;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
@@ -49,7 +48,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -83,7 +81,6 @@ import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -322,17 +319,45 @@ class ShardingSphereDatabaseTest {
     }
     
     @Test
-    void assertGetDefaultSchemaName() {
+    void assertGetDefaultSchemaNameWithFixedDefaultSchema() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                "foo_db", postgreSQLDatabaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
                 new ConfigurationProperties(new Properties()));
-        try (
-                MockedConstruction<DatabaseTypeRegistry> mockedConstruction = mockConstruction(DatabaseTypeRegistry.class,
-                        (mock, context) -> when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_schema"))) {
-            assertThat(database.getDefaultSchemaName(), is("foo_schema"));
-            assertThat(mockedConstruction.constructed().size(), is(1));
-            verify(mockedConstruction.constructed().get(0)).getDefaultSchemaName("foo_db");
-        }
+        assertThat(database.getDefaultSchemaName(), is("public"));
+    }
+    
+    @Test
+    void assertGetDefaultSchemaNameWithNormalizedDatabaseName() {
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", oracleDatabaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
+        assertThat(database.getDefaultSchemaName(), is("FOO_DB"));
+    }
+    
+    @Test
+    void assertGetDefaultSchemaNameWithMatchedSchema() {
+        ShardingSphereSchema schema = new ShardingSphereSchema("FOO_DB", mySQLDatabaseType);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", mySQLDatabaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
+        assertThat(database.getDefaultSchemaName(), is("FOO_DB"));
+    }
+    
+    @Test
+    void assertFindDefaultSchema() {
+        ShardingSphereSchema schema = new ShardingSphereSchema("FOO_DB", oracleDatabaseType);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", oracleDatabaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
+        assertThat(database.findDefaultSchema(), is(Optional.of(schema)));
+    }
+    
+    @Test
+    void assertFindDefaultSchemaWhenMissing() {
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", oracleDatabaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
+        assertThat(database.findDefaultSchema(), is(Optional.empty()));
     }
     
     private static Stream<Arguments> containsSchemaArguments() {

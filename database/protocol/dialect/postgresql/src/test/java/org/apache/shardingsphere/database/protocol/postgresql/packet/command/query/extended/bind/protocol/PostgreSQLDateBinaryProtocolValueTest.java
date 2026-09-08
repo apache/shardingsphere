@@ -30,9 +30,9 @@ import org.postgresql.util.PSQLState;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mockConstruction;

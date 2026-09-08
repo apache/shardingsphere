@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
@@ -67,10 +69,11 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     
     private void dropTable(final Connection connection, final String databaseName) throws SQLException {
         Map<String, List<String>> schemaAndTableMapper = getSchemaAndTableMapper(connection, databaseName);
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
         try (Statement statement = connection.createStatement()) {
             for (Entry<String, List<String>> entry : schemaAndTableMapper.entrySet()) {
                 for (String each : entry.getValue()) {
-                    statement.executeUpdate(String.format("DROP TABLE %s.%s", entry.getKey(), each));
+                    statement.executeUpdate(String.format("DROP TABLE %s.%s", quoteCharacter.wrap(entry.getKey()), quoteCharacter.wrap(each)));
                 }
             }
             Optional<String> dropSchemaSQL = dropTableOption.getDropSchemaSQL();

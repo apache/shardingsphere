@@ -33,6 +33,11 @@
             <artifactId>shardingsphere-infra-algorithm-cryptographic-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-algorithm-cryptographic-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>commons-codec</groupId>

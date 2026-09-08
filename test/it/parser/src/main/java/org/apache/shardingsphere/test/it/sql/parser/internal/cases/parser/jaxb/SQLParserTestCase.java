@@ -44,6 +44,9 @@ public abstract class SQLParserTestCase {
     @XmlAttribute
     private String parameters;
     
+    @XmlAttribute(name = "parameter-marker-count")
+    private Integer parameterMarkerCount;
+    
     @XmlElement(name = "comment")
     private final List<ExpectedComment> comments = new LinkedList<>();
     

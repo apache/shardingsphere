@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.spi.type.ordered.fixture;
 
-import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 
 @SingletonSPI
 public interface OrderedSPIFixture<T extends OrderedInterfaceFixture> extends OrderedSPI<T> {

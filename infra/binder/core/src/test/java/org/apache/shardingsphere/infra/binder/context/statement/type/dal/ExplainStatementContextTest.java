@@ -33,8 +33,8 @@ import org.mockito.Mock;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)

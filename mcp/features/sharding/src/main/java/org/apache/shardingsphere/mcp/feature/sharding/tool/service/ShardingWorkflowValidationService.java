@@ -20,10 +20,7 @@ package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.mcp.feature.sharding.ShardingFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.sharding.tool.model.ShardingWorkflowRequest;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -32,7 +29,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 
@@ -51,31 +47,16 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
     
     private final ShardingInspectionService inspectionService = new ShardingInspectionService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
-            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
-    
     @Override
-    public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
-                                        final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
-                                        final WorkflowContextSnapshot snapshot) {
-        return validationSupport.validateAndFinalize(workflowSessionContext, sessionId, snapshot, () -> createValidationReport(snapshot, queryFacade));
-    }
-    
-    @Override
-    public void synchronize(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
-                            final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
-        workflowSynchronizationSupport.synchronize(() -> createValidationReport(snapshot, queryFacade));
-    }
-    
-    private String normalizeStrategyType(final ShardingWorkflowRequest request) {
-        return request.getStrategyType().isEmpty() ? "standard" : request.getStrategyType().toLowerCase(Locale.ENGLISH);
-    }
-    
-    private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
+    public ValidationReport validate(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
         ValidationReport result = new ValidationReport();
         result.setRuleValidation(validateByWorkflowKind(snapshot, queryFacade, result));
         result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
         return result;
+    }
+    
+    private String normalizeStrategyType(final ShardingWorkflowRequest request) {
+        return request.getStrategyType().isEmpty() ? "standard" : request.getStrategyType().toLowerCase(Locale.ENGLISH);
     }
     
     private ValidationSection validateByWorkflowKind(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade, final ValidationReport validationReport) {

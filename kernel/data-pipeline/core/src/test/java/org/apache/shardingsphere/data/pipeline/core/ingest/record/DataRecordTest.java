@@ -21,8 +21,8 @@ import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperatio
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class DataRecordTest {
     

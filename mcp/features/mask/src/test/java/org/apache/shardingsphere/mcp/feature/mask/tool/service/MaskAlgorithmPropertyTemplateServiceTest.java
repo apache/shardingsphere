@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyReq
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -52,13 +51,4 @@ class MaskAlgorithmPropertyTemplateServiceTest {
         assertTrue(actual.isEmpty());
     }
     
-    @Test
-    void assertMaskProperties() {
-        List<AlgorithmPropertyRequirement> requirements = List.of(
-                new AlgorithmPropertyRequirement("primary", "special-chars", true, false, "anchor", ""),
-                new AlgorithmPropertyRequirement("primary", "secret-key", true, true, "secret", ""));
-        Map<String, String> actual = service.maskProperties(requirements, Map.of("special-chars", "@", "secret-key", "abc"));
-        assertThat(actual.get("special-chars"), is("@"));
-        assertThat(actual.get("secret-key"), is("******"));
-    }
 }

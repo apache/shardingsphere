@@ -19,16 +19,16 @@ package org.apache.shardingsphere.database.protocol.postgresql.payload;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.ByteBufTestUtils;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class PostgreSQLPacketPayloadTest {
     

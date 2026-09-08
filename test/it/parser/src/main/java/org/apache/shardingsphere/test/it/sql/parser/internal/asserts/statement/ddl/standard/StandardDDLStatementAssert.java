@@ -19,6 +19,9 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEncryptKeyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFileStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
@@ -26,16 +29,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.alter.CancelAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.catalog.AlterCatalogStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.AlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.BuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CancelBuildIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.alter.CancelAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg.AlterPackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg.DropPackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.CreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.AlterSynonymStatement;
@@ -44,36 +51,38 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.AlterTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.RefreshMatViewStmtStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFileStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEncryptKeyStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFileStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.database.OracleAlterPluggableDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.AlterCatalogStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateDatabaseStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.AlterDatabaseStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.AlterIndexStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.AlterSynonymStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.AlterTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.AlterTablespaceStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.AlterViewStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.BuildIndexStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CancelAlterTableStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CancelBuildIndexStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CloseStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CommentStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateDatabaseStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateFileStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateIndexStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.DropDatabaseStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateProcedureStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateSequenceStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateTriggerStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateViewStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CreateFileStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CursorStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.DropDatabaseStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.DropEncryptKeyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.DropFileStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CursorStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.DropIndexStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.DropTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.DropViewStatementAssert;
@@ -81,28 +90,33 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.MoveStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.RefreshMatViewStmtStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.RenameTableStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.RoutineDDLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.TruncateStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.AlterDatabaseStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.BuildIndexStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CancelBuildIndexStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.standard.type.CancelAlterTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateFileStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropEncryptKeyStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropFileStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleDropPackageStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.database.OracleAlterPluggableDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.AlterPackageStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.CloseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.CommentStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.CursorStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.FetchStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.MoveStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.TruncateStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.alter.CancelAlterTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.database.AlterDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.database.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.database.DropDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.AlterFunctionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.AlterIndexStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CreateIndexStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.BuildIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CancelBuildIndexStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.alter.CancelAlterTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CreateIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.sequence.CreateSequenceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.synonym.AlterSynonymStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.AlterTableStatementTestCase;
@@ -110,14 +124,13 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.DropTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.tablespace.AlterTablespaceStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.trigger.AlterTriggerStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.trigger.CreateTriggerStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.trigger.DropTriggerStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view.AlterViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view.CreateViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view.DropViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view.RefreshMatViewStmtStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateFileStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropEncryptKeyStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropFileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.plsql.CreateProcedureTestCase;
 
 /**
@@ -178,6 +191,18 @@ public final class StandardDDLStatementAssert {
             CreateProcedureStatementAssert.assertIs(assertContext, (CreateProcedureStatement) actual, (CreateProcedureTestCase) expected);
         } else if (actual instanceof CreateTriggerStatement) {
             CreateTriggerStatementAssert.assertIs(assertContext, (CreateTriggerStatement) actual, (CreateTriggerStatementTestCase) expected);
+        } else if (actual instanceof AlterPackageStatement && expected instanceof AlterPackageStatementTestCase) {
+            RoutineDDLStatementAssert.assertAlterPackage(assertContext, (AlterPackageStatement) actual, (AlterPackageStatementTestCase) expected);
+        } else if (actual instanceof DropPackageStatement && expected instanceof OracleDropPackageStatementTestCase) {
+            RoutineDDLStatementAssert.assertDropPackage(assertContext, (DropPackageStatement) actual, (OracleDropPackageStatementTestCase) expected);
+        } else if (actual instanceof AlterFunctionStatement && expected instanceof AlterFunctionStatementTestCase) {
+            RoutineDDLStatementAssert.assertAlterFunction(assertContext, (AlterFunctionStatement) actual, (AlterFunctionStatementTestCase) expected);
+        } else if (actual instanceof DropFunctionStatement && expected instanceof DropFunctionStatementTestCase) {
+            RoutineDDLStatementAssert.assertDropFunction(assertContext, (DropFunctionStatement) actual, (DropFunctionStatementTestCase) expected);
+        } else if (actual instanceof AlterTriggerStatement && expected instanceof AlterTriggerStatementTestCase) {
+            RoutineDDLStatementAssert.assertAlterTrigger(assertContext, (AlterTriggerStatement) actual, (AlterTriggerStatementTestCase) expected);
+        } else if (actual instanceof DropTriggerStatement && expected instanceof DropTriggerStatementTestCase) {
+            RoutineDDLStatementAssert.assertDropTrigger(assertContext, (DropTriggerStatement) actual, (DropTriggerStatementTestCase) expected);
         } else if (actual instanceof AlterCatalogStatement) {
             AlterCatalogStatementAssert.assertIs(assertContext, (AlterCatalogStatement) actual, (AlterCatalogStatementTestCase) expected);
         } else if (actual instanceof AlterDatabaseStatement) {

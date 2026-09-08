@@ -25,6 +25,7 @@ import org.apache.calcite.util.TimeString;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -35,8 +36,8 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -141,7 +142,7 @@ class LiteralExpressionConverterTest {
     
     @Test
     void assertConvertUtilDate() {
-        java.sql.Date date = java.sql.Date.valueOf("2020-01-01");
+        Date date = java.sql.Date.valueOf("2020-01-01");
         SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, date), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.DATE));

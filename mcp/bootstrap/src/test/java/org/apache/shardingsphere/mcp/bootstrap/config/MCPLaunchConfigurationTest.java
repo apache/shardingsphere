@@ -36,6 +36,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MCPLaunchConfigurationTest {
     
     @Test
+    void assertCreateHttpConfigurationWithNullTransport() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new MCPLaunchConfiguration(null, Map.of()));
+        assertThat(actual.getMessage(), is("HTTP transport configuration cannot be null."));
+    }
+    
+    @Test
+    void assertGetHttpTransportWithStdioTransport() {
+        MCPLaunchConfiguration config = new MCPLaunchConfiguration(Map.of());
+        IllegalStateException actual = assertThrows(IllegalStateException.class, config::getHttpTransport);
+        assertThat(actual.getMessage(), is("HTTP transport configuration is unavailable for STDIO transport."));
+    }
+    
+    @Test
     void assertValidateWhenHttpTransportSelected() {
         assertDoesNotThrow(() -> validate(createYamlConfig(MCPTransportType.HTTP, createYamlHttpTransportConfiguration())));
     }

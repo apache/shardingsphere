@@ -22,8 +22,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterDefaultShardingStrategyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingKeyGeneratorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingKeyGenerateStrategyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingKeyGeneratorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableReferenceRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AuditDefinitionContext;
@@ -31,8 +31,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ColumnKeyGenerateStrategyDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CountShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateDefaultShardingStrategyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingKeyGeneratorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingKeyGenerateStrategyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingKeyGeneratorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingTableReferenceRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DataNodesContext;
@@ -87,13 +87,13 @@ import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSeg
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterDefaultShardingStrategyStatement;
-import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingKeyGenerateStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateDefaultShardingStrategyStatement;
-import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingKeyGenerateStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.DropDefaultShardingStrategyStatement;

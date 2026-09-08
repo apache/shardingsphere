@@ -25,8 +25,8 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class PrometheusMetricsCounterCollectorTest {
     

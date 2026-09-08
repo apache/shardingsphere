@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
-import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlSessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.support.configuration.MCPConfigurationValidator;
+
 import java.util.Objects;
 
 /**

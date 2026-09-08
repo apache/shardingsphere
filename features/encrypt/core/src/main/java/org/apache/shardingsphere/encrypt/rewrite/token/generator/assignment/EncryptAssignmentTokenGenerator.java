@@ -71,7 +71,7 @@ public final class EncryptAssignmentTokenGenerator {
     public Collection<SQLToken> generateSQLTokens(final TablesContext tablesContext, final SetAssignmentSegment setAssignmentSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
-        String schemaName = tablesContext.getSchemaName().orElseGet(() -> databaseTypeRegistry.getDefaultSchemaName(database.getName()));
+        String schemaName = tablesContext.getSchemaName().orElseGet(database::getDefaultSchemaName);
         QuoteCharacter quoteCharacter = databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter();
         for (ColumnAssignmentSegment each : setAssignmentSegment.getAssignments()) {
             ColumnSegment assignedColumn = getAssignedColumn(each);

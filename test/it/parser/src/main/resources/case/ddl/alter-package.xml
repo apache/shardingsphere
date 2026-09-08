@@ -20,4 +20,9 @@
     <alter-package sql-case-id="alter_package" />
     <alter-package sql-case-id="alter_package_with_schemaname" />
     <alter-package sql-case-id="alter_package_owner" />
+    <alter-package sql-case-id="alter_package_with_owner_visitor_oracle">
+        <package name="foo_pkg" start-index="14" stop-index="31">
+            <owner name="foo_schema" start-index="14" stop-index="23" />
+        </package>
+    </alter-package>
 </sql-parser-test-cases>

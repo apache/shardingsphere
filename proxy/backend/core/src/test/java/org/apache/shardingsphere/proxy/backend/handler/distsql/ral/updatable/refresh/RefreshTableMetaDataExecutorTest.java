@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.refresh;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
@@ -36,23 +31,18 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class RefreshTableMetaDataExecutorTest {
-    
-    private final DatabaseType databaseType = mock(DatabaseType.class);
     
     private final RefreshTableMetaDataExecutor executor = (RefreshTableMetaDataExecutor) TypedSPILoader.getService(DistSQLUpdateExecutor.class, RefreshTableMetaDataStatement.class);
     
@@ -83,65 +73,46 @@ class RefreshTableMetaDataExecutorTest {
     
     @Test
     void assertExecuteUpdateWithReloadTableWithoutStorageUnit() {
-        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement(new IdentifierValue("t_order"), null, null);
         ShardingSphereDatabase database = mockDatabase(true);
-        when(database.getProtocolType()).thenReturn(databaseType);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData();
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getName()).thenReturn("public");
+        when(schema.getName()).thenReturn("foo_default_schema");
         when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(true);
-        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        when(database.getSchema(new IdentifierValue("foo_default_schema"))).thenReturn(schema);
         ContextManager contextManager = mock(ContextManager.class);
         executor.setDatabase(database);
-        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-            executor.executeUpdate(sqlStatement, contextManager);
-        }
-        verify(contextManager).reloadTable(database, "public", new IdentifierValue("t_order"));
+        executor.executeUpdate(new RefreshTableMetaDataStatement(new IdentifierValue("t_order"), null, null), contextManager);
+        verify(contextManager).reloadTable(database, "foo_default_schema", new IdentifierValue("t_order"));
     }
     
     @Test
     void assertExecuteUpdateWithReloadDatabase() {
-        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement(null, null, null);
         ShardingSphereDatabase database = mockDatabase(true);
-        when(database.getProtocolType()).thenReturn(databaseType);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData();
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
         ContextManager contextManager = mock(ContextManager.class);
         executor.setDatabase(database);
-        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-            executor.executeUpdate(sqlStatement, contextManager);
-        }
+        executor.executeUpdate(new RefreshTableMetaDataStatement(null, null, null), contextManager);
         verify(contextManager).reloadDatabase(database);
     }
     
     @Test
     void assertExecuteUpdateWithEmptyStorageUnits() {
-        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement(null, null, null);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("logic_db");
-        when(database.getProtocolType()).thenReturn(databaseType);
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData();
         executor.setDatabase(database);
-        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-            assertThrows(EmptyStorageUnitException.class, () -> executor.executeUpdate(sqlStatement, mock(ContextManager.class)));
-        }
+        assertThrows(EmptyStorageUnitException.class, () -> executor.executeUpdate(new RefreshTableMetaDataStatement(null, null, null), mock(ContextManager.class)));
     }
     
     @Test
     void assertExecuteUpdateWithMissingStorageUnit() {
         RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement(null, "miss_ds", null);
         ShardingSphereDatabase database = mockDatabase(true);
-        when(database.getProtocolType()).thenReturn(databaseType);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData();
+        when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
         executor.setDatabase(database);
-        try (MockedStatic<DatabaseTypedSPILoader> mockedStatic = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-            assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.executeUpdate(sqlStatement, mock(ContextManager.class)));
-        }
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.executeUpdate(sqlStatement, mock(ContextManager.class)));
     }
     
     @Test
@@ -169,15 +140,6 @@ class RefreshTableMetaDataExecutorTest {
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         when(result.containsSchema(anyString())).thenReturn(schemaExists);
         when(result.containsSchema(any(IdentifierValue.class))).thenReturn(schemaExists);
-        return result;
-    }
-    
-    private DialectDatabaseMetaData mockDialectDatabaseMetaData() {
-        DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
-        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
-        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("public"));
-        when(result.getSchemaOption()).thenReturn(schemaOption);
-        when(result.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
         return result;
     }
 }

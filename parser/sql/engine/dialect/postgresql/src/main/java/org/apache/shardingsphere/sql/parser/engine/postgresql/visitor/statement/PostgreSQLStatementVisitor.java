@@ -75,14 +75,17 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MergeMatchedThenClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MergeWhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NaturalJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NullsOrderContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OptOnConflictContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OuterJoinTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OverClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
@@ -143,6 +146,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
@@ -163,15 +167,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ExpressionLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitValueSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ExpressionLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
@@ -196,6 +201,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
@@ -216,6 +222,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Statement visitor for PostgreSQL.
@@ -230,10 +238,9 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        if (null == ctx.DOLLAR_()) {
-            return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
-        }
-        return new ParameterMarkerValue(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue() - 1, ParameterMarkerType.DOLLAR);
+        return null == ctx.DOLLAR_()
+                ? new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION)
+                : new ParameterMarkerValue(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue() - 1, ParameterMarkerType.DOLLAR);
     }
     
     @Override
@@ -472,16 +479,13 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     private ASTNode appendWindow(final FuncExprContext ctx, final ASTNode node) {
         WindowItemSegment window = (WindowItemSegment) visit(ctx.overClause());
         if (node instanceof AggregationDistinctProjectionSegment) {
-            AggregationDistinctProjectionSegment result = createAggregationDistinctSegmentWithWindow(ctx, (AggregationDistinctProjectionSegment) node, window);
-            return result;
+            return createAggregationDistinctSegmentWithWindow(ctx, (AggregationDistinctProjectionSegment) node, window);
         }
         if (node instanceof AggregationProjectionSegment) {
-            AggregationProjectionSegment result = createAggregationSegmentWithWindow(ctx, (AggregationProjectionSegment) node, window);
-            return result;
+            return createAggregationSegmentWithWindow(ctx, (AggregationProjectionSegment) node, window);
         }
         if (node instanceof FunctionSegment) {
-            FunctionSegment result = createFunctionSegmentWithWindow(ctx, (FunctionSegment) node, window);
-            return result;
+            return createFunctionSegmentWithWindow(ctx, (FunctionSegment) node, window);
         }
         return node;
     }
@@ -681,23 +685,15 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
         IdentifierContext identifierContext = ctx.identifier();
-        if (null != identifierContext) {
-            return new KeywordValue(identifierContext.getText());
-        }
-        Collection<String> dataTypeNames = new LinkedList<>();
-        for (int i = 0; i < ctx.getChildCount(); i++) {
-            dataTypeNames.add(ctx.getChild(i).getText());
-        }
-        return new KeywordValue(String.join(" ", dataTypeNames));
+        return new KeywordValue(null == identifierContext
+                ? IntStream.range(0, ctx.getChildCount()).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining(" "))
+                : identifierContext.getText());
     }
     
     @Override
     public final ASTNode visitSortClause(final SortClauseContext ctx) {
-        Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (SortbyContext each : ctx.sortbyList().sortby()) {
-            items.add((OrderByItemSegment) visit(each));
-        }
-        return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ctx.sortbyList().sortby().stream().map(each -> (OrderByItemSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -738,8 +734,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.dataTypeLength()) {
-            DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
-            result.setDataLength(dataTypeLengthSegment);
+            result.setDataLength((DataTypeLengthSegment) visit(ctx.dataTypeLength()));
         }
         return result;
     }
@@ -983,6 +978,51 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     @Override
+    public ASTNode visitMerge(final MergeContext ctx) {
+        MergeStatement.MergeStatementBuilder result = MergeStatement.builder().databaseType(databaseType).target((TableSegment) visit(ctx.relationExprOptAlias()));
+        if (null != ctx.withClause()) {
+            result.with((WithSegment) visit(ctx.withClause()));
+        }
+        result.source((TableSegment) visit(ctx.mergeUsingClause().tableReference()));
+        result.expression(new ExpressionWithParamsSegment(ctx.mergeUsingClause().aExpr().start.getStartIndex(), ctx.mergeUsingClause().aExpr().stop.getStopIndex(),
+                (ExpressionSegment) visit(ctx.mergeUsingClause().aExpr())));
+        Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
+        for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
+            whenAndThens.add((MergeWhenAndThenSegment) visit(each));
+        }
+        result.whenAndThens(whenAndThens);
+        if (null != ctx.returningClause()) {
+            result.returning((ReturningSegment) visit(ctx.returningClause()));
+        }
+        return result.build();
+    }
+    
+    @Override
+    public ASTNode visitMergeWhenClause(final MergeWhenClauseContext ctx) {
+        MergeWhenAndThenSegment result = new MergeWhenAndThenSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
+        if (null != ctx.aExpr()) {
+            result.setAndExpr((ExpressionSegment) visit(ctx.aExpr()));
+        }
+        if (null != ctx.mergeMatchedThenClause()) {
+            fillMatchedThenClause(result, ctx.mergeMatchedThenClause());
+        }
+        if (null != ctx.mergeNotMatchedThenClause() && null != ctx.mergeNotMatchedThenClause().insertRest()) {
+            InsertRestContext insertRest = ctx.mergeNotMatchedThenClause().insertRest();
+            result.setInsert(null == insertRest.select() ? InsertStatement.builder().databaseType(databaseType).build() : (InsertStatement) visit(insertRest));
+        }
+        return result;
+    }
+    
+    private void fillMatchedThenClause(final MergeWhenAndThenSegment mergeWhenAndThen, final MergeMatchedThenClauseContext ctx) {
+        if (null != ctx.DELETE()) {
+            mergeWhenAndThen.setDelete(DeleteStatement.builder().databaseType(databaseType).build());
+        }
+        if (null != ctx.setClauseList()) {
+            mergeWhenAndThen.setUpdate(UpdateStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setClauseList())).build());
+        }
+    }
+    
+    @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.selectNoParens());
@@ -1020,9 +1060,13 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitCommonTableExpr(final CommonTableExprContext ctx) {
-        return new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
+        CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
                 new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.preparableStmt().select()),
                         getOriginalText(ctx.preparableStmt().select())));
+        if (null != ctx.optNameList().nameList()) {
+            result.getColumns().addAll(generateUsingColumn(ctx.optNameList().nameList()));
+        }
+        return result;
     }
     
     @Override
@@ -1521,17 +1565,27 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         LimitValueSegment rowCount = null;
         LimitValueSegment offset = null;
         if (astNode0 instanceof LimitClauseContext) {
-            rowCount = null == ctx.limitClause().selectLimitValue() ? null : (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
+            rowCount = createRowCountValueSegment(ctx.limitClause());
         } else {
             offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         }
         ParseTree astNode1 = ctx.getChild(1);
         if (astNode1 instanceof LimitClauseContext) {
-            rowCount = null == ctx.limitClause().selectLimitValue() ? null : (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
+            rowCount = createRowCountValueSegment(ctx.limitClause());
         } else {
             offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         }
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    private LimitValueSegment createRowCountValueSegment(final LimitClauseContext ctx) {
+        if (null != ctx.selectFetchValue()) {
+            return (LimitValueSegment) visit(ctx.selectFetchValue());
+        }
+        if (null != ctx.selectLimitValue()) {
+            return (LimitValueSegment) visit(ctx.selectLimitValue());
+        }
+        return null;
     }
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {

@@ -93,7 +93,8 @@ public final class ContainerComposerRegistry implements AutoCloseable {
                 closeTargetDataSource(each);
             }
             for (ContainerComposer each : containerComposers.values()) {
-                closeActualDataSourceMap(each.getActualDataSourceMap());
+                closeDataSourceMap(each.getActualDataSourceMap());
+                closeDataSourceMap(each.getExpectedDataSourceMap());
                 closeContainer(each);
             }
             targetDataSources.clear();
@@ -108,9 +109,9 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     }
     
     @SneakyThrows(Exception.class)
-    private void closeActualDataSourceMap(final Map<String, DataSource> actualDataSourceMap) {
-        for (DataSource each : actualDataSourceMap.values()) {
-            Preconditions.checkState(each instanceof AutoCloseable, "actual data source is not implement AutoCloseable");
+    private void closeDataSourceMap(final Map<String, DataSource> dataSourceMap) {
+        for (DataSource each : dataSourceMap.values()) {
+            Preconditions.checkState(each instanceof AutoCloseable, "data source is not implement AutoCloseable");
             ((AutoCloseable) each).close();
         }
     }

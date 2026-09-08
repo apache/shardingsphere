@@ -35,6 +35,6 @@ public class LiteralExpressionSegment implements SimpleExpressionSegment {
     
     @Override
     public String getText() {
-        return null != literals ? literals.toString() : null;
+        return null == literals ? null : literals.toString();
     }
 }

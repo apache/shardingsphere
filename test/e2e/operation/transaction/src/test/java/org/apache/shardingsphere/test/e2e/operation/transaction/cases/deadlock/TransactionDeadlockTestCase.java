@@ -25,17 +25,21 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.constants
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Transaction deadlock test case.
@@ -71,74 +75,87 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
     @Override
     protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         long startTime = System.currentTimeMillis();
-        executeTransfers();
-        log.info("The deadlock test case execution time is: {}", System.currentTimeMillis() - startTime);
-        executor.shutdown();
-        try (Connection connection = getDataSource().getConnection()) {
-            assertAccountRowCount(connection, 4);
+        try {
+            executeAndAssertTransfers();
+        } finally {
+            executor.shutdown();
         }
+        log.info("The deadlock test case execution time is: {}", System.currentTimeMillis() - startTime);
     }
     
-    private void executeTransfers() {
-        Collection<Future<Void>> futures = new LinkedList<>();
-        futures.add(executor.submit(this::executeTransfer1));
-        futures.add(executor.submit(this::executeTransfer2));
-        for (Future<Void> each : futures) {
-            try {
-                each.get();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                assertThat(ex.getMessage(),
-                        anyOf(containsString("Lock wait timeout exceeded; try restarting transaction"), containsString("Deadlock found when trying to get lock; try restarting transaction")));
+    private void executeAndAssertTransfers() throws SQLException {
+        Future<Void> transfer1 = executor.submit(() -> executeTransfer(1, 2));
+        Future<Void> transfer2 = executor.submit(() -> executeTransfer(2, 1));
+        boolean transfer1Successful = isTransferSuccessful(transfer1);
+        boolean transfer2Successful = isTransferSuccessful(transfer2);
+        assertFalse(transfer1Successful && transfer2Successful, "At least one transfer should fail because of the deadlock.");
+        try (Connection connection = getDataSource().getConnection()) {
+            assertAccountRowCount(connection, 4);
+            if (transfer1Successful) {
+                assertAccountBalances(connection, 0, 3, 3, 4);
+            } else if (transfer2Successful) {
+                assertAccountBalances(connection, 2, 1, 3, 4);
+            } else {
+                assertAccountBalances(connection, 1, 2, 3, 4);
             }
         }
     }
     
-    private Void executeTransfer1() throws SQLException {
-        Connection connection = getDataSource().getConnection();
+    private boolean isTransferSuccessful(final Future<Void> future) {
         try {
-            connection.setAutoCommit(false);
-            assertAccountRowCount(connection, 4);
-            executeWithLog(connection, "UPDATE account SET balance = balance - 1 WHERE id = 1");
-            await();
-            executeWithLog(connection, "UPDATE account SET balance = balance + 1 WHERE id = 2");
-            await();
-            connection.commit();
-        } catch (final SQLException ex) {
-            await();
-            connection.rollback();
-            throw ex;
-        } finally {
-            connection.close();
+            future.get();
+            return true;
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return fail("Interrupted while waiting for a transfer result.", ex);
+        } catch (final ExecutionException ex) {
+            assertTrue(ex.getCause() instanceof SQLException);
+            SQLException actualException = (SQLException) ex.getCause();
+            assertThat(actualException.getMessage(),
+                    anyOf(containsString("Lock wait timeout exceeded; try restarting transaction"), containsString("Deadlock found when trying to get lock; try restarting transaction")));
+            return false;
+        }
+    }
+    
+    private Void executeTransfer(final int sourceId, final int targetId) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            try {
+                connection.setAutoCommit(false);
+                assertAccountRowCount(connection, 4);
+                executeWithLog(connection, String.format("UPDATE account SET balance = balance - 1 WHERE id = %d", sourceId));
+                await();
+                executeWithLog(connection, String.format("UPDATE account SET balance = balance + 1 WHERE id = %d", targetId));
+                await();
+                connection.commit();
+            } catch (final SQLException ex) {
+                rollback(connection, ex);
+                throw ex;
+            }
         }
         return null;
     }
     
-    private Void executeTransfer2() throws SQLException {
-        Connection connection = getDataSource().getConnection();
+    private void rollback(final Connection connection, final SQLException cause) {
         try {
-            connection.setAutoCommit(false);
-            assertAccountRowCount(connection, 4);
-            executeWithLog(connection, "UPDATE account SET balance = balance - 1 WHERE id = 2");
             await();
-            executeWithLog(connection, "UPDATE account SET balance = balance + 1 WHERE id = 1");
-            await();
-            connection.commit();
         } catch (final SQLException ex) {
-            await();
-            connection.rollback();
-            throw ex;
-        } finally {
-            connection.close();
+            cause.addSuppressed(ex);
         }
-        return null;
+        try {
+            connection.rollback();
+        } catch (final SQLException ex) {
+            cause.addSuppressed(ex);
+        }
     }
     
-    private void await() {
+    private void await() throws SQLException {
         try {
-            barrier.await();
-        } catch (final InterruptedException | BrokenBarrierException ignored) {
+            barrier.await(10L, TimeUnit.SECONDS);
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new SQLException("Interrupted while coordinating deadlock transfers.", ex);
+        } catch (final BrokenBarrierException | TimeoutException ex) {
+            throw new SQLException("Failed to coordinate deadlock transfers.", ex);
         }
     }
 }

@@ -47,6 +47,7 @@ class MySQLBitCountFunctionTest {
                 Arguments.of(null, null),
                 Arguments.of(new byte[]{(byte) 0b00001111}, 4L),
                 Arguments.of("7", 3),
+                Arguments.of("", 0),
                 Arguments.of("abc", 0),
                 Arguments.of(new BigInteger("15"), 4),
                 Arguments.of(3, 2),

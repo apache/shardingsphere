@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.node.path.type.database.statistics;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class StatisticsJobNodePathTest {
     

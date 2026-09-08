@@ -36,8 +36,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -73,6 +73,21 @@ class ShardingStandardRouteEngineTest {
         assertThat(routeUnits.get(3).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(3).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
         assertThat(routeUnits.get(3).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+    }
+    
+    @Test
+    void assertRouteToAllTablesByNonConditionsUnderRangeAlgorithm() {
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_order",
+                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class), new HintValueContext());
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createVolumeRangeShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(5));
+        for (int i = 0; i < 5; i++) {
+            assertThat(routeUnits.get(i).getDataSourceMapper().getActualName(), is("ds_0"));
+            assertThat(routeUnits.get(i).getTableMappers().size(), is(1));
+            assertThat(routeUnits.get(i).getTableMappers().iterator().next().getActualName(), is("t_order_" + i));
+            assertThat(routeUnits.get(i).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+        }
     }
     
     @Test

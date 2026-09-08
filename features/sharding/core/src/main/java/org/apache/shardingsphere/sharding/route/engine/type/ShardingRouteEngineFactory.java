@@ -119,9 +119,8 @@ public final class ShardingRouteEngineFactory {
                 && !"*".equals(sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
     }
     
-    private static ShardingRouteEngine getDQLRouteEngine(final ShardingRule rule, final SQLStatementContext sqlStatementContext,
-                                                         final QueryContext queryContext, final ShardingConditions shardingConditions, final Collection<String> logicTableNames,
-                                                         final ConfigurationProperties props) {
+    private static ShardingRouteEngine getDQLRouteEngine(final ShardingRule rule, final SQLStatementContext sqlStatementContext, final QueryContext queryContext,
+                                                         final ShardingConditions shardingConditions, final Collection<String> logicTableNames, final ConfigurationProperties props) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRouteEngine(sqlStatementContext.getSqlStatement(), tableNames, queryContext.getConnectionContext());

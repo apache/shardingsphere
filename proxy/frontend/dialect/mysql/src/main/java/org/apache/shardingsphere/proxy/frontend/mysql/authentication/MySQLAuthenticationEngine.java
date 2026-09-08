@@ -32,7 +32,6 @@ import org.apache.shardingsphere.database.exception.core.exception.connection.Ac
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.database.exception.mysql.exception.HandshakeException;
-import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConnectionPhase;
@@ -50,6 +49,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset.MySQLSessionCharsetContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticatorType;
@@ -144,8 +144,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     
     private void setCharacterSet(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {
         MySQLCharacterSets characterSet = MySQLCharacterSets.findById(handshakeResponsePacket.getCharacterSet());
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(characterSet.getCharset());
-        context.channel().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
+        MySQLSessionCharsetContext.create(characterSet).apply(context.channel());
     }
     
     private void setConnectionAttributes(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {

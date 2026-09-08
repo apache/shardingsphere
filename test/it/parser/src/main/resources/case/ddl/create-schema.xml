@@ -20,4 +20,6 @@
     <create-schema sql-case-id="create_schema" />
     <create-schema sql-case-id="create_schema_with_grant_permissions" />
     <create-schema sql-case-id="create_schema_with_if_not_exists" />
+    <create-schema sql-case-id="create_schema_authorization" />
+    <create-schema sql-case-id="create_schema_authorization_with_elements" />
 </sql-parser-test-cases>

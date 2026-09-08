@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.decorator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
@@ -75,7 +76,10 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(isSchemaAvailable, actualDataNodes);
         }
-        Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, splitTables);
+        String defaultSchemaName = dataSources.isEmpty()
+                ? DefaultSchemaNameResolver.resolveProtocol(databaseType, databaseName)
+                : DefaultSchemaNameResolver.resolveStorage(databaseType, dataSources.values().iterator().next(), databaseName);
+        Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName(defaultSchemaName, databaseType, splitTables);
         return loadSpecifiedTables(isSchemaAvailable, actualDataNodes, builtRules, configuredDataNodes);
     }
     
@@ -159,7 +163,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
             if (expectedDataNodes.containsKey(entry.getKey())) {
                 DataNode dataNode = expectedDataNodes.get(entry.getKey());
                 String tableNodeStr = getTableNodeString(isSchemaAvailable, physicalDataNode);
-                ShardingSpherePreconditions.checkState(physicalDataNode.equals(dataNode),
+                ShardingSpherePreconditions.checkState(isMatchedDataNode(isSchemaAvailable, physicalDataNode, dataNode),
                         () -> new InvalidSingleRuleConfigurationException(String.format("Single table `%s` is found that does not match %s", tableNodeStr,
                                 getTableNodeString(isSchemaAvailable, dataNode))));
                 result.add(tableNodeStr);
@@ -175,11 +179,18 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
             ShardingSpherePreconditions.checkContainsKey(actualDataNodes, each.getTableName(), () -> new SingleTableNotFoundException(getTableNodeString(isSchemaAvailable, each)));
             DataNode actualDataNode = actualDataNodes.get(each.getTableName()).iterator().next();
             String tableNodeStr = getTableNodeString(isSchemaAvailable, actualDataNode);
-            ShardingSpherePreconditions.checkState(actualDataNode.equals(each), () -> new InvalidSingleRuleConfigurationException(
+            ShardingSpherePreconditions.checkState(isMatchedDataNode(isSchemaAvailable, actualDataNode, each), () -> new InvalidSingleRuleConfigurationException(
                     String.format("Single table '%s' is found that does not match %s", tableNodeStr, getTableNodeString(isSchemaAvailable, each))));
             result.add(tableNodeStr);
         }
         return result;
+    }
+    
+    private boolean isMatchedDataNode(final boolean isSchemaAvailable, final DataNode actualDataNode, final DataNode configuredDataNode) {
+        if (isSchemaAvailable || !SingleTableConstants.ASTERISK.equals(configuredDataNode.getSchemaName())) {
+            return actualDataNode.equals(configuredDataNode);
+        }
+        return actualDataNode.getDataSourceName().equals(configuredDataNode.getDataSourceName()) && actualDataNode.getTableName().equals(configuredDataNode.getTableName());
     }
     
     @Override

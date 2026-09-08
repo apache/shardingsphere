@@ -24,6 +24,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.Attribute;
 import lombok.SneakyThrows;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.authentication.result.AuthenticationResult;
@@ -81,6 +82,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.SSLEngine;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Collections;
@@ -88,8 +90,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -402,7 +404,7 @@ class OpenGaussAuthenticationEngineTest {
         return "md5" + new String(Hex.encodeHex(messageDigest.digest(), true));
     }
     
-    @SneakyThrows
+    @SneakyThrows({GeneralSecurityException.class, DecoderException.class})
     private String createScramDigest(final String password, final OpenGaussAuthenticationHexData authHexData, final int serverIteration) {
         PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), Hex.decodeHex(authHexData.getSalt()), serverIteration, 32 * 8);
         byte[] secretKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(keySpec).getEncoded();

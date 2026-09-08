@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.mcp.feature.sharding.tool.service;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -29,6 +31,8 @@ import java.util.Map;
  * Sharding inspection service.
  */
 public final class ShardingInspectionService {
+    
+    private final ShardingAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new ShardingAlgorithmPropertyTemplateService();
     
     /**
      * Query DistSQL-visible sharding algorithm plugins.
@@ -295,14 +299,11 @@ public final class ShardingInspectionService {
     }
     
     private String resolveShardingAlgorithmGuidance(final String algorithmType) {
-        String actualType = algorithmType.trim().toUpperCase(Locale.ENGLISH);
-        if (actualType.contains("INLINE")) {
-            return "Usually requires algorithm-expression.";
-        }
-        if ("MOD".equals(actualType)) {
-            return "Usually requires sharding-count.";
-        }
-        return "Read the plugin documentation for required properties before planning.";
+        Collection<String> requiredProperties = algorithmPropertyTemplateService.findAlgorithmRequirements(algorithmType).stream()
+                .filter(AlgorithmPropertyRequirement::isRequired).map(AlgorithmPropertyRequirement::getPropertyKey).toList();
+        return requiredProperties.isEmpty()
+                ? "Read the plugin documentation for required properties before planning."
+                : String.format("Usually requires %s.", String.join(", ", requiredProperties));
     }
     
     private String resolveKeyGeneratorGuidance(final String algorithmType) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.mcp.functionality;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.DockerRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyWorkflowRuntimeTestSupport.ProxyWorkflowRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
@@ -72,9 +72,7 @@ abstract class AbstractHttpProxyWorkflowE2ETest extends AbstractTransportParamet
     
     @Override
     protected final void prepareRuntimeFixture() throws IOException {
-        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the Proxy-backed workflow E2E tests."));
-        }
+        DockerRuntimeTestSupport.requireAvailable("Docker is required for the Proxy-backed workflow E2E tests.");
         try {
             if (sharedRuntimeFixtureSelected) {
                 prepareSharedRuntimeFixture();

@@ -32,8 +32,8 @@ import java.util.OptionalLong;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -90,6 +90,7 @@ class FirebirdBlobWriteCacheTest {
         OptionalInt actualSizeAfterClose = CACHE.closeWrite(connectionId, blobHandle);
         assertTrue(actualSizeAfterClose.isPresent());
         assertThat(actualSizeAfterClose.getAsInt(), is(3));
+        assertFalse(CACHE.getBlobId(connectionId, blobHandle).isPresent());
         assertTrue(CACHE.isClosed(connectionId, blobId));
         Optional<byte[]> actualBlobData = CACHE.getBlobData(connectionId, blobId);
         assertTrue(actualBlobData.isPresent());
@@ -97,6 +98,22 @@ class FirebirdBlobWriteCacheTest {
         CACHE.removeWrite(connectionId, blobId);
         assertFalse(getHandleCache().get(connectionId).containsKey(blobHandle));
         assertFalse(getIdCache().get(connectionId).containsKey(blobId));
+    }
+    
+    @Test
+    void assertRemoveWriteDoesNotRemoveReusedHandle() {
+        int connectionId = 12;
+        int blobHandle = 8;
+        long oldBlobId = 9L;
+        long expectedBlobId = 10L;
+        CACHE.registerConnection(connectionId);
+        CACHE.registerBlob(connectionId, blobHandle, oldBlobId);
+        CACHE.closeWrite(connectionId, blobHandle);
+        CACHE.registerBlob(connectionId, blobHandle, expectedBlobId);
+        CACHE.removeWrite(connectionId, oldBlobId);
+        OptionalLong actualBlobId = CACHE.getBlobId(connectionId, blobHandle);
+        assertTrue(actualBlobId.isPresent());
+        assertThat(actualBlobId.getAsLong(), is(expectedBlobId));
     }
     
     @Test

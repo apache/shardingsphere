@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
-
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
-import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata.Nullability;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
@@ -43,6 +43,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
@@ -61,6 +62,52 @@ import static org.mockito.Mockito.when;
 class WorkflowPlanningSupportTest {
     
     private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+            "explicit operation, drop, '', drop, false",
+            "default operation, '', '', create, true",
+            "natural-language intent, '', 'create a rule', '', false"
+    })
+    void assertCreateOperationIntent(final String name, final String operationType, final String naturalLanguageIntent,
+                                     final String expectedOperationType, final boolean expectedInferred) {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setOperationType(operationType);
+        request.setNaturalLanguageIntent(naturalLanguageIntent);
+        ClarifiedIntent actual = planningSupport.createOperationIntent(request, WorkflowLifecycle.OPERATION_CREATE);
+        assertThat(actual.getOperationType(), is(expectedOperationType));
+        assertThat(actual.getInferredValues().containsKey(WorkflowFieldNames.OPERATION_TYPE), is(expectedInferred));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+            "explicit operation, drop, '', drop, false",
+            "fixed default with natural-language intent, '', 'remove unused algorithms', drop, true"
+    })
+    void assertCreateFixedOperationIntent(final String name, final String operationType, final String naturalLanguageIntent,
+                                          final String expectedOperationType, final boolean expectedInferred) {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setOperationType(operationType);
+        request.setNaturalLanguageIntent(naturalLanguageIntent);
+        ClarifiedIntent actual = planningSupport.createFixedOperationIntent(request, WorkflowLifecycle.OPERATION_DROP);
+        assertThat(actual.getOperationType(), is(expectedOperationType));
+        assertThat(actual.getInferredValues().containsKey(WorkflowFieldNames.OPERATION_TYPE), is(expectedInferred));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+            "failed planning, failed, failed",
+            "clarifying planning, clarifying, clarifying"
+    })
+    void assertPersistPlanningInterruption(final String name, final String status, final String expectedCurrentStep) {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setStatus(status);
+        snapshot.setInteractionPlan(new InteractionPlan());
+        WorkflowContextSnapshot actual = planningSupport.persistPlanningInterruption(new TestWorkflowSessionContext(), snapshot);
+        assertThat(actual.getStatus(), is(status));
+        assertThat(actual.getInteractionPlan().getCurrentStep(), is(expectedCurrentStep));
+    }
     
     @Test
     void assertEnsurePlanningContextRejectsMissingDatabase() {

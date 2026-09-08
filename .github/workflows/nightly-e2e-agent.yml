@@ -36,7 +36,7 @@ jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
-  
+
   build-e2e-image:
     if: github.repository == 'apache/shardingsphere'
     name: Build E2E Image
@@ -76,7 +76,7 @@ jobs:
           name: jdbc-e2e-image
           path: /tmp/apache-shardingsphere-jdbc-agent-test.tar
           retention-days: 10
-          
+
   agent-mysql:
     name: E2E - Agent with MySQL
     if: github.repository == 'apache/shardingsphere'

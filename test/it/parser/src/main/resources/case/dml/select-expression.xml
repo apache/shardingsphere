@@ -2969,6 +2969,17 @@
         </from>
     </select>
 
+    <select sql-case-id="select_cluster_set_function">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="CLUSTER_SET(km_sh_clus_sample, 2, 0.1 USING *)" start-index="7" stop-index="52">
+                <function function-name="CLUSTER_SET" text="CLUSTER_SET(km_sh_clus_sample, 2, 0.1 USING *)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="mining_data_apply_v" start-index="59" stop-index="77" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_multiset_except_expression">
         <from>
             <simple-table name="customers_demo" start-index="103" stop-index="116" />
@@ -3895,5 +3906,43 @@
         <from>
             <simple-table name="employees" start-index="54" stop-index="62" />
         </from>
+    </select>
+
+    <select sql-case-id="select_window_funnel_doris">
+        <projections start-index="7" stop-index="63">
+            <column-projection name="k" start-index="7" stop-index="7" />
+            <expression-projection text="WINDOW_FUNNEL(300, 'default', v, k = 'login')" start-index="10" stop-index="63" alias="level">
+                <expr>
+                    <function function-name="WINDOW_FUNNEL" start-index="10" stop-index="54" text="WINDOW_FUNNEL(300, 'default', v, k = 'login')">
+                        <parameter>
+                            <literal-expression start-index="24" stop-index="26" value="300" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="29" stop-index="37" value="default" />
+                        </parameter>
+                        <parameter>
+                            <column name="v" start-index="40" stop-index="40" />
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="43" stop-index="53">
+                                <left>
+                                    <column name="k" start-index="43" stop-index="43" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression start-index="47" stop-index="53" value="login" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="70" stop-index="76" />
+        </from>
+        <group-by>
+            <column-item name="k" start-index="87" stop-index="87" />
+        </group-by>
     </select>
 </sql-parser-test-cases>

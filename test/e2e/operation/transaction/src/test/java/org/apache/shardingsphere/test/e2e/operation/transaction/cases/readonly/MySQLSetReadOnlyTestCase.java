@@ -24,9 +24,9 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.constants
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * MySQL set read only transaction integration test.
@@ -51,18 +51,14 @@ public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setReadOnly(true);
             assertQueryBalance(connection);
-            executeWithLog(connection, "UPDATE account SET balance = 100 WHERE id = 2;");
-            fail("Update ran successfully, should failed.");
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Connection is read-only. Queries leading to data modification are not allowed."));
+            SQLException actualException = assertThrows(SQLException.class, () -> executeWithLog(connection, "UPDATE account SET balance = 100 WHERE id = 2;"));
+            assertThat(actualException.getMessage(), is("Connection is read-only. Queries leading to data modification are not allowed."));
         }
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             connection.setReadOnly(true);
-            executeWithLog(connection, "UPDATE account SET balance = 100 WHERE id = 2;");
-            fail("Update ran successfully, should failed.");
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Connection is read-only. Queries leading to data modification are not allowed."));
+            SQLException actualException = assertThrows(SQLException.class, () -> executeWithLog(connection, "UPDATE account SET balance = 100 WHERE id = 2;"));
+            assertThat(actualException.getMessage(), is("Connection is read-only. Queries leading to data modification are not allowed."));
         }
     }
 }

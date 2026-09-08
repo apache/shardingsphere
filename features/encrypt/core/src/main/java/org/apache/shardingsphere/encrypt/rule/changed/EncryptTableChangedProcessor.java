@@ -24,8 +24,8 @@ import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleCo
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.YamlEncryptTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -49,13 +49,13 @@ public final class EncryptTableChangedProcessor implements RuleItemConfiguration
     @Override
     public void changeRuleItemConfiguration(final String itemName, final EncryptRuleConfiguration currentRuleConfig, final EncryptTableRuleConfiguration toBeChangedItemConfig) {
         // TODO refactor DistSQL to only persist config
-        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(toBeChangedItemConfig.getName()));
+        currentRuleConfig.getTables().removeIf(each -> each.getName().equalsIgnoreCase(toBeChangedItemConfig.getName()));
         currentRuleConfig.getTables().add(toBeChangedItemConfig);
     }
     
     @Override
     public void dropRuleItemConfiguration(final String itemName, final EncryptRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getTables().removeIf(each -> each.getName().equals(itemName));
+        currentRuleConfig.getTables().removeIf(each -> each.getName().equalsIgnoreCase(itemName));
     }
     
     @Override

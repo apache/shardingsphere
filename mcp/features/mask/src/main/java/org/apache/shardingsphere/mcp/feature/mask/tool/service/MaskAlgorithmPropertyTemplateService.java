@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -50,25 +49,6 @@ public final class MaskAlgorithmPropertyTemplateService {
             result.add(new AlgorithmPropertyRequirement("primary", each.getPropertyKey(), each.isRequired(), each.isSecret(), each.getDescription(), each.getDefaultValue()));
         }
         return result;
-    }
-    
-    /**
-     * Mask properties for review.
-     *
-     * @param requirements requirements
-     * @param actualProperties actual properties
-     * @return masked properties
-     */
-    public Map<String, String> maskProperties(final List<AlgorithmPropertyRequirement> requirements, final Map<String, String> actualProperties) {
-        Map<String, String> result = new LinkedHashMap<>(actualProperties.size(), 1F);
-        for (Entry<String, String> entry : actualProperties.entrySet()) {
-            result.put(entry.getKey(), isSecret(requirements, entry.getKey()) ? "******" : entry.getValue());
-        }
-        return result;
-    }
-    
-    private boolean isSecret(final List<AlgorithmPropertyRequirement> requirements, final String propertyKey) {
-        return requirements.stream().filter(each -> each.getPropertyKey().equals(propertyKey)).findFirst().map(AlgorithmPropertyRequirement::isSecret).orElse(false);
     }
     
     private static Map<String, List<AlgorithmPropertyRequirement>> createMaskTemplates() {

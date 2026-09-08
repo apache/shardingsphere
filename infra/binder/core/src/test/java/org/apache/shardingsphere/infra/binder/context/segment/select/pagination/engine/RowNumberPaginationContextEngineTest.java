@@ -37,8 +37,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -114,6 +114,19 @@ class RowNumberPaginationContextEngineTest {
         assertTrue(offSetSegmentPaginationValue.isPresent());
         assertThat(offSetSegmentPaginationValue.get(), isA(ParameterMarkerRowNumberValueSegment.class));
         assertFalse(paginationContext.getRowCountSegment().isPresent());
+    }
+    
+    @Test
+    void assertCreatePaginationContextWhenNumberLiteralContainsTrailingSpace() {
+        Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS, mock(DatabaseType.class));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 10, "100 ");
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "<", null);
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.emptyList());
+        Optional<PaginationValueSegment> paginationValueSegment = paginationContext.getRowCountSegment();
+        assertTrue(paginationValueSegment.isPresent());
+        assertThat(((NumberLiteralRowNumberValueSegment) paginationValueSegment.get()).getValue(), is(100L));
     }
     
     private void assertCreatePaginationContextWhenRowNumberAliasPresentAndRowNumberPredicatedNotEmptyWithGivenOperator(final String operator) {

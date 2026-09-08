@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
-import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
 
 /**

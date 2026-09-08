@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.DockerRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.AfterAll;
@@ -80,10 +81,7 @@ abstract class AbstractMySQLRuntimeE2ETest extends AbstractTransportParameterize
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage(
-                    "Docker is required for the MySQL-backed MCP Functionality E2E test."));
-        }
+        DockerRuntimeTestSupport.requireAvailable("Docker is required for the MySQL-backed MCP Functionality E2E test.");
         if (useSharedRuntimeFixture()) {
             prepareSharedRuntimeFixture();
             return;

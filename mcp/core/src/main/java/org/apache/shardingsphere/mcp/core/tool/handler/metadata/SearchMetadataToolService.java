@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
+import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.core.tool.payload.MetadataSearchResult;
-import org.apache.shardingsphere.mcp.core.metadata.GovernanceMetadataQueryService;
+import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;

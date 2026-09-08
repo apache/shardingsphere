@@ -107,11 +107,13 @@ public final class FirebirdBlobWriteCache {
      * @return optional current size of buffered data
      */
     public OptionalInt closeWrite(final int connectionId, final int blobHandle) {
-        FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
+        Map<Integer, FirebirdBlobWrite> handleMap = getHandleMap(connectionId);
+        FirebirdBlobWrite write = handleMap.get(blobHandle);
         if (null == write) {
             return OptionalInt.empty();
         }
         write.markClosed();
+        handleMap.remove(blobHandle, write);
         return OptionalInt.of(write.getSize());
     }
     
@@ -178,7 +180,7 @@ public final class FirebirdBlobWriteCache {
     public void removeWrite(final int connectionId, final long blobId) {
         FirebirdBlobWrite write = getIdMap(connectionId).remove(blobId);
         if (null != write) {
-            getHandleMap(connectionId).remove(write.getBlobHandle());
+            getHandleMap(connectionId).remove(write.getBlobHandle(), write);
         }
     }
     

@@ -49,7 +49,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -63,14 +62,14 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -382,7 +381,7 @@ class ProxyBackendTransactionManagerTest {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(transactionRule)));
         when(contextManager.getExclusiveOperatorEngine()).thenReturn(exclusiveOperatorEngine);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(OrderedSPILoader.getServices(eq(TransactionHook.class), ArgumentMatchers.<Collection<ShardingSphereRule>>any())).thenReturn(transactionHooks);
+        when(OrderedSPILoader.<ShardingSphereRule, TransactionHook>getServices(eq(TransactionHook.class), anyCollection())).thenReturn(transactionHooks);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

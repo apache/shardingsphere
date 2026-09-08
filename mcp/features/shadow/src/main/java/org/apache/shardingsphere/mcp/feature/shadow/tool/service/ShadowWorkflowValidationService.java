@@ -21,10 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowAlgorithmCleanupWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowDefaultAlgorithmWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.shadow.tool.model.ShadowRuleWorkflowRequest;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -34,7 +31,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowAlgorithmU
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle.ExecutableWorkflowArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplyArtifactValidator;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
@@ -55,14 +51,13 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
     
     private final ShadowInspectionService inspectionService = new ShadowInspectionService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport(
-            WorkflowSynchronizationSupport.DEFAULT_SYNCHRONIZATION_WINDOW, WorkflowSynchronizationSupport.DEFAULT_POLL_INTERVAL);
-    
     @Override
-    public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
-                                        final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
-                                        final WorkflowContextSnapshot snapshot) {
-        return validationSupport.validateAndFinalize(workflowSessionContext, sessionId, snapshot, () -> createValidationReport(snapshot, queryFacade));
+    public ValidationReport validate(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
+        ValidationReport result = new ValidationReport();
+        queryFacade.checkDatabaseCapability(snapshot.getRequest().getDatabase());
+        result.setRuleValidation(validateByRequestType(snapshot, queryFacade, result));
+        result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
+        return result;
     }
     
     @Override
@@ -72,12 +67,6 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
             addRuleDistSQLIssues(result, snapshot, each.sql(), each.displaySql());
         }
         return result;
-    }
-    
-    @Override
-    public void synchronize(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
-                            final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
-        workflowSynchronizationSupport.synchronize(() -> createValidationReport(snapshot, queryFacade));
     }
     
     private void addRuleDistSQLIssues(final List<Map<String, Object>> issues, final WorkflowContextSnapshot snapshot, final String sql, final String displaySql) {
@@ -108,14 +97,6 @@ public final class ShadowWorkflowValidationService implements MCPWorkflowRuntime
             issues.add(validationSupport.createSQLExecutabilityIssue(String.format("Generated shadow DistSQL references algorithm `%s`, but it cannot be loaded or initialized by ShadowAlgorithm SPI.",
                     algorithmType), displaySql));
         }
-    }
-    
-    private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade) {
-        ValidationReport result = new ValidationReport();
-        queryFacade.checkDatabaseCapability(snapshot.getRequest().getDatabase());
-        result.setRuleValidation(validateByRequestType(snapshot, queryFacade, result));
-        result.setOverallStatus(validationSupport.resolveOverallStatus(result.getRuleValidation()));
-        return result;
     }
     
     private ValidationSection validateByRequestType(final WorkflowContextSnapshot snapshot, final MCPFeatureQueryFacade queryFacade,

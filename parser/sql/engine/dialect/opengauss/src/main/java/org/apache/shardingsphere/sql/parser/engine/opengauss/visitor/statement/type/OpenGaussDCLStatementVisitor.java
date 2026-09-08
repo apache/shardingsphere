@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.type;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
@@ -55,7 +56,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.us
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
 import java.util.Collections;

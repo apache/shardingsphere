@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.it.sql.binder;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
@@ -102,7 +102,7 @@ public abstract class SQLBinderIT {
     
     private Collection<ShardingSphereSchema> mockSchemas(final DatabaseType databaseType, final String databaseName) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
-        String defaultSchemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
+        String defaultSchemaName = DefaultSchemaNameResolver.resolveProtocol(databaseType, databaseName);
         Collection<ShardingSphereTable> tables = "foo_db_1".equalsIgnoreCase(databaseName) ? mockFooDB1Tables() : mockFooDB2Tables();
         result.add(new ShardingSphereSchema(defaultSchemaName, databaseType, tables, Collections.emptyList()));
         return result;
@@ -139,6 +139,8 @@ public abstract class SQLBinderIT {
                 new ShardingSphereColumn("business_code", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("telephone", Types.CHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        result.add(new ShardingSphereTable("t_system_user", Collections.singletonList(
+                new ShardingSphereColumn("SYSTEM_USER", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_order_view", Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.BIGINT, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lo
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class LockClusterOperationTest {
     

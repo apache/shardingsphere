@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.yaml.snakeyaml.Yaml;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -65,7 +65,7 @@ final class MCPDescriptorYamlKeyValidator {
         if (yamlContent.isBlank()) {
             return;
         }
-        Map<?, ?> root = asMap(resourceName, "$", new Yaml().load(yamlContent));
+        Map<?, ?> root = asMap(resourceName, "$", YamlEngine.unmarshal(yamlContent, Object.class));
         validateKeys(resourceName, "$", root, ROOT_KEYS);
         validateResources(resourceName, root.get("resources"));
         validateResourceTemplates(resourceName, root.get("resourceTemplates"));

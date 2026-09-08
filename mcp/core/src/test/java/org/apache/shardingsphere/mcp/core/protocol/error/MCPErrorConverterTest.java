@@ -264,9 +264,11 @@ class MCPErrorConverterTest {
     }
     
     @Test
-    void assertConvertUnsupportedMessageWithoutRecovery() {
-        Map<String, Object> actual = MCPErrorConverter.convert(new MCPUnsupportedException(
-                "database_gateway_execute_query only supports parser-approved QUERY statements.")).toPayload();
+    void assertConvertUnsupportedWithSyntaxCauseWithoutRecovery() {
+        String expectedMessage = "The configured runtime does not support rule inspection DistSQL.";
+        MCPDatabaseQueryFailedException cause = new MCPDatabaseQueryFailedException(MCPJDBCErrorCategory.SYNTAX, new SQLException("syntax error", "42601"));
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPUnsupportedException(expectedMessage, cause)).toPayload();
+        assertThat(actual.get("summary"), is(expectedMessage));
         assertFalse(actual.containsKey("recovery"));
     }
     

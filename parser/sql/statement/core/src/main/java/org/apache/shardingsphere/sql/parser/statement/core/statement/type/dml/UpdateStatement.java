@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ErrorLoggingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.OptionHintSegment;
@@ -59,6 +60,8 @@ public final class UpdateStatement extends DMLStatement {
     
     private final ReturningSegment returning;
     
+    private final ErrorLoggingSegment errorLogging;
+    
     private final WithTableHintSegment withTableHint;
     
     private final OptionHintSegment optionHint;
@@ -72,7 +75,8 @@ public final class UpdateStatement extends DMLStatement {
     @Builder
     private UpdateStatement(final DatabaseType databaseType, final TableSegment table, final SetAssignmentSegment setAssignment, final WhereSegment where,
                             final OrderBySegment orderBy, final LimitSegment limit, final TableSegment from, final WhereSegment deleteWhere, final WithSegment with,
-                            final ReturningSegment returning, final WithTableHintSegment withTableHint, final OptionHintSegment optionHint, final OutputSegment output,
+                            final ReturningSegment returning, final ErrorLoggingSegment errorLogging, final WithTableHintSegment withTableHint, final OptionHintSegment optionHint,
+                            final OutputSegment output,
                             final boolean targetTableIsFromAlias) {
         super(databaseType);
         this.table = table;
@@ -84,6 +88,7 @@ public final class UpdateStatement extends DMLStatement {
         this.deleteWhere = deleteWhere;
         this.with = with;
         this.returning = returning;
+        this.errorLogging = errorLogging;
         this.withTableHint = withTableHint;
         this.optionHint = optionHint;
         this.output = output;
@@ -179,6 +184,15 @@ public final class UpdateStatement extends DMLStatement {
      */
     public Optional<ReturningSegment> getReturning() {
         return Optional.ofNullable(returning);
+    }
+    
+    /**
+     * Get error logging segment.
+     *
+     * @return error logging segment
+     */
+    public Optional<ErrorLoggingSegment> getErrorLogging() {
+        return Optional.ofNullable(errorLogging);
     }
     
     /**

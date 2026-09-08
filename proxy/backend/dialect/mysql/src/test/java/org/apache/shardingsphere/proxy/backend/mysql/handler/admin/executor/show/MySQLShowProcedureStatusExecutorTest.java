@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -32,12 +31,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)

@@ -17,12 +17,17 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_not_scalar_subquery_postgresql" value="select 1 from t17 as ref_0 where not ((ref_0.c59) &lt; (select ref_1.c36 as c_0 from t23 as ref_1 join t22 as ref_2 on(ref_1.colocated_key = ref_2.colocated_key)))" db-types="PostgreSQL" />
+    <sql-case id="select_values_derived_table_aliases_postgresql" value="SELECT * FROM (VALUES ('k1', 'v1', 1)) AS t(pk, col_a, col_a_type)" db-types="PostgreSQL" />
     <sql-case id="select_with_comment" value="/*FORCE_IMCI_NODES*/ select /*+ SET_VAR(cost_threshold_for_imci=0) */ * from t_order" db-types="MySQL" />
     <sql-case id="select_position_function" value="select position(&quot;0&quot; in &quot;baaa&quot; in (1)),position(&quot;0&quot; in &quot;1&quot; in (1,2,3)),position(&quot;sql&quot; in (&quot;mysql&quot;))" db-types="MySQL" />
     <sql-case id="select_extract_function_with_day_hour" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />
     <sql-case id="select_with_latin1" value="select _latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" db-types="MySQL" />
     <sql-case id="select_with_default_str" value="select * from t1 where str &lt;&gt; default(str)" db-types="MySQL" />
     <sql-case id="select_three_part_column_doris" value="SELECT db1.t1.c1 FROM db1.t1" db-types="Doris" />
+    <sql-case id="select_digit_leading_column_doris" value="SELECT 1GB FROM t" db-types="Doris" />
+    <sql-case id="select_workload_keyword_column_doris" value="SELECT workload FROM t" db-types="Doris" />
+    <sql-case id="select_external_keyword_column_doris" value="SELECT external FROM t" db-types="Doris" />
     <sql-case id="select_subquery_excpet" value="select * from (select * from t1 except all select * from t1 limit 2) a" db-types="MySQL" />
     <sql-case id="select_point_function_with_in" value="SELECT point(1,1) IN ('1',1,'1') AS res" db-types="MySQL" />
     <sql-case id="select_with_in" value="SELECT b, b IN ('20161213'), b in ('20161213', 0) FROM t2" db-types="MySQL" />
@@ -201,6 +206,7 @@
     <sql-case id="select_xmlcolattval_function" value="SELECT XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary) 'Emp Element' FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
     <sql-case id="select_xmlexists_function" value="SELECT id, XMLEXISTS('//student[@age=20]' PASSING BY VALUE xcol AS x) FROM x_table;" db-types="Oracle" />
     <sql-case id="select_xmlforest_function" value="SELECT XMLFOREST(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary) FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
+    <sql-case id="select_xmlforest_function_without_as" value="SELECT XMLFOREST(e.employee_id &quot;ID&quot;, e.last_name, e.salary) FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
     <sql-case id="select_xmlparse_function" value="SELECT XMLPARSE(DOCUMENT 'DEPTXML' WELLFORMED) AS dept FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlpi_function" value="SELECT XMLPI(NAME &quot;Order analysisComp&quot;, 'imported, reconfigured, disassembled') AS 'XMLPI' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlpi_evalname_function" value="SELECT XMLPI(EVALNAME 'target', 'value') FROM dual;" db-types="Oracle" />
@@ -217,7 +223,8 @@
     <sql-case id="select_positional_parameter_type_cast_money" value="SELECT $1::money" db-types="PostgreSQL,openGauss" case-types="Placeholder" />
     <sql-case id="select_string_constant_type_cast" value="SELECT int4 '1', money '2'" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_constant_with_nested_type_cast" value="SELECT CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" db-types="PostgreSQL,openGauss"  />
-    <sql-case id="select_projection_with_parameter" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Oracle,Firebird" case-types="PLACEHOLDER" />
+    <sql-case id="select_projection_with_parameter_oracle" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Oracle" case-types="PLACEHOLDER" />
+    <sql-case id="select_projection_with_parameter_firebird" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Firebird" case-types="PLACEHOLDER" />
     <sql-case id="select_with_chinese_comma" value="SELECT 1， 2，3 FROM DUAL" db-types="Oracle"  />
     <sql-case id="select_with_chinese_whitespace" value="SELECT 1， 2，3 FROM　DUAL" db-types="Oracle"  />
     <sql-case id="select_with_auto_keyword" value="SELECT * FROM t_auto WHERE auto = ?" db-types="MySQL"/>
@@ -252,7 +259,6 @@
     <sql-case id="select_with_lead_and_lag_function" value="SELECT hire_date, LAG(hire_date, 1) OVER (ORDER BY hire_date) AS LAG1, LEAD(hire_date, 1) OVER (ORDER BY hire_date) AS LEAD1 FROM employees WHERE department_id = 30 ORDER BY hire_date;" db-types="Oracle,MySQL" />
     <sql-case id="select_with_connect_by_root" value="SELECT CONNECT_BY_ROOT last_name 'Manager' FROM employees CONNECT BY PRIOR employee_id = manager_id" db-types="Oracle" />
     <sql-case id="select_with_ntile_function" value="SELECT NTILE(4) OVER (ORDER BY salary DESC) AS quartile FROM employees WHERE department_id = 100 ORDER BY last_name" db-types="Oracle,MySQL,Doris" />
-    <sql-case id="select_window_named_partition_doris" value="SELECT SUM(sales) OVER w AS total_sales FROM orders WINDOW w AS (PARTITION BY region ORDER BY order_id)" db-types="Doris" />
     <sql-case id="select_window_frame_lag_doris" value="SELECT LAG(amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY tx_time ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) AS lag_amt FROM payments" db-types="Doris" />
     <sql-case id="select_first_value_doris" value="SELECT FIRST_VALUE(price) OVER (ORDER BY created_at) AS first_price FROM product_prices" db-types="Doris" />
     <sql-case id="select_nth_value_doris" value="SELECT NTH_VALUE(score, 2) OVER (ORDER BY score) AS second_score FROM rankings" db-types="Doris" />
@@ -453,7 +459,6 @@
     <sql-case id="select_cast_literal_firebird" value="SELECT CAST(1 AS VARCHAR(10)) FROM t_order" db-types="Firebird"/>
     <sql-case id="select_variable_identifier_firebird" value="SELECT LOCAL.var FROM t_order" db-types="Firebird"/>
     <sql-case id="select_comma_join_firebird" value="SELECT * FROM t_order a, t_order_item b" db-types="Firebird"/>
-    <sql-case id="select_union_firebird" value="SELECT 1 UNION SELECT 2" db-types="Firebird"/>
     <sql-case id="select_subquery_table_firebird" value="SELECT * FROM (SELECT 1) sub" db-types="Firebird"/>
     <sql-case id="select_subquery_with_with_firebird" value="SELECT * FROM (WITH t AS (SELECT 1) SELECT * FROM t) sub" db-types="Firebird"/>
     <sql-case id="select_not_expression_sql92" value="SELECT NOT (1=1) FROM t_order" db-types="SQL92" />
@@ -462,6 +467,7 @@
     <sql-case id="select_where_is_not_null_sql92" value="SELECT * FROM t_order WHERE status IS NOT NULL" db-types="SQL92" />
     <sql-case id="select_compare_subquery_sql92" value="SELECT * FROM t_order WHERE order_id = (SELECT 1)" db-types="SQL92" />
     <sql-case id="select_distinct_simple_sql92" value="SELECT DISTINCT user_id FROM t_order" db-types="SQL92" />
+    <sql-case id="select_system_user_sql92" value="SELECT SYSTEM_USER" db-types="SQL92" />
     <sql-case id="select_distinct_with_count_sql92" value="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" db-types="SQL92" />
     <sql-case id="select_having_sql92" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) &gt; 1" db-types="SQL92" />
     <sql-case id="select_cast_int_sql92" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="SQL92" />
@@ -533,7 +539,9 @@
     <sql-case id="select_limit_parameter" value="SELECT * FROM t4 LIMIT ?;" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_limit_complex_expr" value="SELECT * FROM t4 LIMIT (CASE WHEN true THEN 10 ELSE 20 END);" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_func" value="select public.int4range(400, 500, '[]');" db-types="PostgreSQL" />
-    <sql-case id="select_ltrim_function" value="SELECT LTRIM('  barbar')" db-types="MySQL" />
+    <sql-case id="select_ltrim_function" value="SELECT LTRIM('  barbar')" db-types="MySQL,Doris" />
+    <sql-case id="select_element_at" value="SELECT element_at(k1, 1) FROM t_order" db-types="Doris" />
+    <sql-case id="select_array_subscript" value="SELECT k1[1] FROM t_order" db-types="Doris" />
     <sql-case id="select_ltrim_as_column_alias" value="SELECT id AS ltrim FROM t" db-types="MySQL" />
     <sql-case id="select_ltrim_as_qualified_column" value="SELECT t.ltrim FROM t" db-types="MySQL" />
     <sql-case id="select_make_set_single" value="SELECT MAKE_SET(1,'a','b','c')" db-types="MySQL" />
@@ -561,5 +569,12 @@
     <sql-case id="select_oracle_percentile_cont_window" value="SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price) OVER (PARTITION BY status) AS median_price FROM t_product" db-types="Oracle" />
     <sql-case id="select_oracle_first_value_ignore_nulls_window" value="SELECT FIRST_VALUE(price) IGNORE NULLS OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
     <sql-case id="select_oracle_first_value_window" value="SELECT FIRST_VALUE(price) OVER (ORDER BY product_id) AS first_price FROM t_product" db-types="Oracle" />
+    <sql-case id="select_with_log_table_alias_oracle" value="SELECT * FROM t_order LOG" db-types="Oracle" />
+    <sql-case id="select_unquoted_text_with_chinese_comma_from_dual" value="SELECT 图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_unquoted_text_without_comma_from_dual" value="SELECT 欢迎使用测试系统 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_dummy_with_alias_from_dual" value="SELECT DUMMY AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_quoted_chinese_column_from_dual" value="SELECT &quot;中文列名&quot; AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_chinese_columns_with_ascii_comma_from_dual" value="SELECT 中文列一, 中文列二 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_chinese_columns_from_table" value="SELECT 中文列一，中文列二 AS RESULT FROM t_order" db-types="Oracle" />
     <sql-case id="select_for_system_version_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_VERSION AS OF 1234567;" db-types="Hive" />
 </sql-cases>

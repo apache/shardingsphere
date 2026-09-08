@@ -60,7 +60,7 @@ jobs:
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
       - uses: ./.github/workflows/resources/actions/upload-source-snapshot
       - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
-  
+
   e2e-sql:
     name: E2E - SQL
     needs: [ prepare-e2e-artifacts, global-environment ]

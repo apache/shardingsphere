@@ -25,6 +25,8 @@ import org.apache.shardingsphere.database.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
+import java.util.Optional;
+
 /**
  * COM_QUERY command packet for MySQL.
  *
@@ -34,6 +36,8 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQL
     
     private final String sql;
     
+    private final byte[] originalSQLBytes;
+    
     @Getter
     private final HintValueContext hintValueContext;
     
@@ -41,13 +45,16 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQL
         super(MySQLCommandPacketType.COM_QUERY);
         hintValueContext = SQLHintUtils.extractHint(sql);
         this.sql = SQLHintUtils.removeHint(sql);
+        originalSQLBytes = null;
     }
     
     public MySQLComQueryPacket(final MySQLPacketPayload payload) {
         super(MySQLCommandPacketType.COM_QUERY);
-        String originSQL = payload.readStringEOF();
+        byte[] sqlBytes = payload.readStringEOFByBytes();
+        String originSQL = new String(sqlBytes, payload.getCharset());
         hintValueContext = SQLHintUtils.extractHint(originSQL);
         sql = SQLHintUtils.removeHint(originSQL);
+        originalSQLBytes = sqlBytes;
     }
     
     @Override
@@ -58,5 +65,14 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQL
     @Override
     public String getSQL() {
         return sql;
+    }
+    
+    /**
+     * Find original SQL bytes received from packet payload.
+     *
+     * @return original SQL bytes if constructed from packet payload
+     */
+    public Optional<byte[]> findOriginalSQLBytes() {
+        return Optional.ofNullable(originalSQLBytes);
     }
 }

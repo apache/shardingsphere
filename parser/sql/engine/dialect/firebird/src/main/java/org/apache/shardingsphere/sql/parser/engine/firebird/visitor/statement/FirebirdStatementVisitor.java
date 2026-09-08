@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementBaseVisitor
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.BitValueLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.BlobDataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.BooleanPrimaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CastFunctionContext;
@@ -41,7 +42,6 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CteC
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.BlobDataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GenIdFunctionContext;

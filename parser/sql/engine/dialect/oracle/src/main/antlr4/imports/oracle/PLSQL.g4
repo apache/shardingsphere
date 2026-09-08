@@ -20,6 +20,25 @@ grammar PLSQL;
 import Keyword, BaseRule, DDLStatement, DMLStatement, TCLStatement;
 
 @parser::members {
+    private boolean isUnquotedHanTextQueryBlock() {
+        if (SELECT != _input.LA(1) || IDENTIFIER_ != _input.LA(2) || !containsHanCharacter(_input.LT(2).getText())) {
+            return false;
+        }
+        int offset = 3;
+        while (COMMA_ == _input.LA(offset)) {
+            if (!"\uFF0C".equals(_input.LT(offset).getText()) || IDENTIFIER_ != _input.LA(++offset) || !containsHanCharacter(_input.LT(offset).getText())) {
+                return false;
+            }
+            offset++;
+        }
+        return AS == _input.LA(offset) && FROM == _input.LA(offset + 2) && IDENTIFIER_ == _input.LA(offset + 3)
+                && "DUAL".equalsIgnoreCase(_input.LT(offset + 3).getText());
+    }
+
+    private boolean containsHanCharacter(final String value) {
+        return value.codePoints().anyMatch(each -> Character.UnicodeScript.HAN == Character.UnicodeScript.of(each));
+    }
+
     private boolean isNotPlsqlBlockTerminator() {
         switch (_input.LA(1)) {
             case END:
@@ -96,6 +115,21 @@ packageInitialization
     : BEGIN plsqlStatements (EXCEPTION exceptionHandler+)?
     ;
 
+createTypeBody
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE BODY plsqlTypeBodySource
+    ;
+
+plsqlTypeBodySource
+    : typeName (IS | AS) typeBodyElement+ END typeName? SEMI_?
+    ;
+
+typeBodyElement
+    : (MEMBER | STATIC)? FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? returnDateType (IS | AS) declareSection? body
+    | (MEMBER | STATIC)? PROCEDURE procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? (IS | AS) declareSection? body
+    | (FINAL | INSTANTIABLE)? CONSTRUCTOR FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN SELF AS RESULT (IS | AS) declareSection? body
+    | (MAP | ORDER) MEMBER FUNCTION function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? returnDateType (IS | AS) declareSection? body
+    ;
+
 plsqlProcedureSource
     : (schemaName DOT_)? procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? sharingClause?
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
@@ -135,7 +169,8 @@ plsqlStatements
 
 statement
     : {isNotPlsqlBlockTerminator()}? (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_) *)?
-        (assignStatement
+        (plsqlBlock
+        | assignStatement
         | basicLoopStatement
         | caseStatement
         | closeStatement
@@ -155,7 +190,6 @@ statement
         | openStatement
         | openForStatement
         | pipeRowStatement
-        | plsqlBlock
         | raiseStatement
         | returnStatement
         | selectIntoStatement
@@ -732,7 +766,7 @@ referencingItem
     ;
 
 triggerEditionClause
-    : (FORWARD | REVERSE) CROSSEDITION
+    : (FORWARD | REVERSE)? CROSSEDITION
     ;
 
 triggerOrderingClause

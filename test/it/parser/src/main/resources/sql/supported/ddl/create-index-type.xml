@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_index_type_with_system_managed_storage" value="CREATE INDEXTYPE TextIndexType FOR Contains (VARCHAR2, VARCHAR2) USING TextIndexMethods WITH SYSTEM MANAGED STORAGE TABLES" db-types="Oracle" />
+    <sql-case id="create_index_type_basic" value="CREATE INDEXTYPE position_indextype FOR position_between(NUMBER, NUMBER, NUMBER) USING position_im" db-types="Oracle" />
+    <sql-case id="create_index_type_with_single_operators" value="CREATE INDEXTYPE indtype FOR userOp(NUMBER) USING imptype WITH SYSTEM MANAGED STORAGE TABLES" db-types="Oracle" />
+    <sql-case id="create_index_type_with_multiple_operators" value="CREATE INDEXTYPE indtype FOR userOp(NUMBER), anotherOp(VARCHAR2, NUMBER) USING imptype WITH SYSTEM MANAGED STORAGE TABLES" db-types="Oracle" />
+</sql-cases>

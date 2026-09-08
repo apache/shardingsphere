@@ -52,15 +52,13 @@ public final class ShardingSphereDatabasesFactory {
      */
     public static Collection<ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
                                                             final Map<String, Collection<ShardingSphereSchema>> schemas,
-                                                            final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext,
-                                                            final DatabaseType protocolType) {
+                                                            final ConfigurationProperties props, final ComputeNodeInstanceContext instanceContext, final DatabaseType protocolType) {
         return databaseConfigMap.entrySet().stream()
                 .map(entry -> create(entry.getKey(), entry.getValue(), protocolType, schemas.get(entry.getKey()), props, instanceContext)).collect(Collectors.toList());
     }
     
     private static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig, final DatabaseType protocolType,
-                                                 final Collection<ShardingSphereSchema> schemas, final ConfigurationProperties props,
-                                                 final ComputeNodeInstanceContext computeNodeInstanceContext) {
+                                                 final Collection<ShardingSphereSchema> schemas, final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         return databaseConfig.getStorageUnits().isEmpty()
                 ? ShardingSphereDatabaseFactory.create(databaseName, protocolType, props)
                 : ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, props, computeNodeInstanceContext, schemas);

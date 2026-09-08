@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin;
 
-import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.engine.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
 import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.ZipkinSpanAssert;

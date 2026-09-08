@@ -21,8 +21,8 @@ import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;

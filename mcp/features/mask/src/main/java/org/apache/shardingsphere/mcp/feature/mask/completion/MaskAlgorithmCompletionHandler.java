@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.completion;
 
-import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionCandidate;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandler;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionHandlerResult;
 import org.apache.shardingsphere.mcp.api.capability.completion.MCPCompletionRequest;
+import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
+import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 
 import java.util.Map;

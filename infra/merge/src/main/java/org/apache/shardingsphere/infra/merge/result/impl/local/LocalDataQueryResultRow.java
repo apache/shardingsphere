@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.result.impl.local;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -58,15 +58,15 @@ public final class LocalDataQueryResultRow {
             return ((Enum<?>) data).name();
         }
         if (data instanceof Properties) {
-            return ((Properties) data).isEmpty() ? "" : JsonUtils.toJsonString(convert((Properties) data));
+            return ((Properties) data).isEmpty() ? "" : JsonEngine.marshal(convert((Properties) data));
         }
         if (data instanceof Map) {
-            return ((Map<?, ?>) data).isEmpty() ? "" : JsonUtils.toJsonString(data);
+            return ((Map<?, ?>) data).isEmpty() ? "" : JsonEngine.marshal(data);
         }
         if (data instanceof Collection) {
-            return ((Collection<?>) data).isEmpty() ? "" : JsonUtils.toJsonString(data);
+            return ((Collection<?>) data).isEmpty() ? "" : JsonEngine.marshal(data);
         }
-        return JsonUtils.toJsonString(data);
+        return JsonEngine.marshal(data);
     }
     
     private Map<Object, Object> convert(final Properties props) {

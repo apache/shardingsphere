@@ -39,6 +39,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
@@ -341,7 +342,7 @@ class ZookeeperRepositoryTest {
             }
         }
         
-        private final class CreateInvocationHandler implements java.lang.reflect.InvocationHandler {
+        private final class CreateInvocationHandler implements InvocationHandler {
             
             private CreateMode createMode = CreateMode.PERSISTENT;
             

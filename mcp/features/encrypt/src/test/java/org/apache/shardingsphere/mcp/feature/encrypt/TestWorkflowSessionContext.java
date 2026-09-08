@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
 import java.util.List;
 import java.util.Map;

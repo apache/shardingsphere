@@ -202,21 +202,12 @@ public final class ShardingTable {
                 throw new DataNodeGenerateException(each);
             }
             result.add(dataNode);
-            dataNodeIndexMap.put(dataNode, index);
+            dataNodeIndexMap.put(new DataNode(dataNode.getDataSourceName(), (String) null, dataNode.getTableName()), index);
             actualDataSourceNames.add(dataNode.getDataSourceName());
             addActualTable(dataNode.getDataSourceName(), dataNode.getTableName());
             index++;
         }
         return result;
-    }
-    
-    /**
-     * Get data node groups.
-     *
-     * @return data node groups, key is data source name, values are data nodes belong to this data source
-     */
-    public Map<String, List<DataNode>> getDataNodeGroups() {
-        return DataNodeUtils.getDataNodeGroups(actualDataNodes);
     }
     
     /**
@@ -248,6 +239,18 @@ public final class ShardingTable {
      */
     public boolean isExisted(final String actualTableName) {
         return actualTables.contains(actualTableName);
+    }
+    
+    /**
+     * Whether contains data node with specified data source name and actual table name.
+     *
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return contains or not
+     */
+    public boolean containsDataNode(final String dataSourceName, final String actualTableName) {
+        Collection<String> tables = dataSourceToTablesMap.get(dataSourceName);
+        return null != tables && tables.contains(actualTableName);
     }
     
     private void checkRule(final Collection<String> dataNodes) {

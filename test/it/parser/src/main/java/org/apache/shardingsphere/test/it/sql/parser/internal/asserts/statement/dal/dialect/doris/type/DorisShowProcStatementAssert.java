@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowProcStatementTestCase;
-import org.hamcrest.MatcherAssert;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -40,6 +40,6 @@ public final class DorisShowProcStatementAssert {
      * @param expected expected show proc statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DorisShowProcStatement actual, final DorisShowProcStatementTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText("Assertion error: proc path does not match."), actual.getProcPath(), is(expected.getProcPath()));
+        assertThat(assertContext.getText("Assertion error: proc path does not match."), actual.getProcPath(), is(expected.getProcPath()));
     }
 }

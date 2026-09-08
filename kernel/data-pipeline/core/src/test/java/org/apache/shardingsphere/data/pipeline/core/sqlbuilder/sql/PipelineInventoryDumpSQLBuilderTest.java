@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class PipelineInventoryDumpSQLBuilderTest {
     
@@ -37,5 +37,12 @@ class PipelineInventoryDumpSQLBuilderTest {
         assertThat(actual, is("SELECT order_id,user_id,status FROM t_order"));
         actual = sqlBuilder.buildFetchAllSQL(null, "t_order", Collections.singletonList("*"));
         assertThat(actual, is("SELECT * FROM t_order"));
+    }
+    
+    @Test
+    void assertBuildFetchAllSQLWithActualIdentifiers() {
+        PipelineInventoryDumpSQLBuilder postgresqlSQLBuilder = new PipelineInventoryDumpSQLBuilder(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        assertThat(postgresqlSQLBuilder.buildFetchAllSQL("TEST", "T_ORDER", Arrays.asList("ID", "STATUS", "*")),
+                is("SELECT \"ID\",\"STATUS\",* FROM \"TEST\".\"T_ORDER\""));
     }
 }

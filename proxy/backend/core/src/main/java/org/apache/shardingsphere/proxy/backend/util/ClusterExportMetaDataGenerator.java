@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -62,7 +62,7 @@ public final class ClusterExportMetaDataGenerator {
         ExportedClusterInfo exportedClusterInfo = new ExportedClusterInfo();
         exportedClusterInfo.setMetaData(exportedMetaData);
         generateSnapshotInfo(metaData, exportedClusterInfo);
-        return JsonUtils.toJsonString(exportedClusterInfo);
+        return JsonEngine.marshal(exportedClusterInfo);
     }
     
     private Map<String, String> generatorDatabasesExportData() {

@@ -25,7 +25,13 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Multiple jdbc connections in one thread test case.
@@ -39,15 +45,19 @@ public final class MultiJDBCConnectionsTestCase extends BaseTransactionTestCase 
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        try (Connection connection = getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO account(id, balance, transaction_id) VALUES(?, ?, ?)");
+        try (
+                Connection connection = getDataSource().getConnection();
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO account(id, balance, transaction_id) VALUES(?, ?, ?)")) {
             connection.setAutoCommit(false);
             statement.setLong(1, 1L);
             statement.setFloat(2, 1F);
             statement.setInt(3, 1);
-            statement.execute();
-            try (Connection connection2 = getDataSource().getConnection()) {
-                connection2.createStatement().executeQuery("SELECT * FROM account");
+            assertThat(statement.executeUpdate(), is(1));
+            try (
+                    Connection connection2 = getDataSource().getConnection();
+                    Statement queryStatement = connection2.createStatement();
+                    ResultSet resultSet = queryStatement.executeQuery("SELECT * FROM account")) {
+                assertFalse(resultSet.next());
             }
             connection.commit();
             assertAccountRowCount(connection, 1);

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.env.container.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -42,6 +41,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.stream.IntStream;
 
 /**
  * SQL script utility class.
@@ -101,7 +101,7 @@ public final class SQLScriptUtils {
                 if (null == sql) {
                     break;
                 }
-                if (!StringUtils.isBlank(sql)) {
+                if (containsNonWhitespace(sql)) {
                     result.add(sql);
                 }
             }
@@ -112,6 +112,10 @@ public final class SQLScriptUtils {
     private static Reader getReader(final String scriptFilePath) throws FileNotFoundException {
         InputStream resourceAsStream = SQLScriptUtils.class.getClassLoader().getResourceAsStream(Strings.CS.removeStart(scriptFilePath, "/"));
         return null == resourceAsStream ? new FileReader(scriptFilePath) : new BufferedReader(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8));
+    }
+    
+    private static boolean containsNonWhitespace(final String value) {
+        return IntStream.range(0, value.length()).anyMatch(each -> !Character.isWhitespace(value.charAt(each)));
     }
     
     private static void executeBatch(final Connection connection, final Collection<String> sqls) throws SQLException {

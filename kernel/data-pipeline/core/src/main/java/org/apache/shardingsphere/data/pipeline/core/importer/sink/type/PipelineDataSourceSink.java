@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.Pipeli
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -222,11 +222,11 @@ public final class PipelineDataSourceSink implements PipelineSink {
             int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {
                 log.warn("Update failed, update count: {}, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}",
-                        updateCount, sql, setColumns, JsonUtils.toJsonString(shardingColumns), JsonUtils.toJsonString(conditionColumns));
+                        updateCount, sql, setColumns, JsonEngine.marshal(shardingColumns), JsonEngine.marshal(conditionColumns));
             }
         } catch (final SQLException ex) {
             log.error("execute update failed, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}, error message: {}, data record: {}",
-                    sql, setColumns, JsonUtils.toJsonString(shardingColumns), JsonUtils.toJsonString(conditionColumns), ex.getMessage(), dataRecord);
+                    sql, setColumns, JsonEngine.marshal(shardingColumns), JsonEngine.marshal(conditionColumns), ex.getMessage(), dataRecord);
             throw ex;
         } finally {
             runningStatement.set(null);

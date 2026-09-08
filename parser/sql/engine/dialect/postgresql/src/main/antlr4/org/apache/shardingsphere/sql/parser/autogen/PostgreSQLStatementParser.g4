@@ -28,6 +28,7 @@ execute
     | insert
     | update
     | delete
+    | merge
     | createIndex
     | alterIndex
     | dropIndex

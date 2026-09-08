@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ad
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AllContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterAggregateContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterCollationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterConversionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDefaultPrivilegesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDomainContext;
@@ -99,6 +99,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTextSearchContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CursorNameContext;
@@ -198,6 +199,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Cu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -250,6 +252,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.CreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.AlterTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.type.AlterTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.type.CreateTypeStatement;
@@ -358,13 +361,19 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                 }
             }
         }
-        return CreateTableStatement.builder()
+        SelectStatement selectStatement = null == ctx.select() ? null : (SelectStatement) visit(ctx.select());
+        CreateTableStatement result = CreateTableStatement.builder()
                 .databaseType(getDatabaseType())
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .ifNotExists(null != ctx.ifNotExists())
+                .selectStatement(selectStatement)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
                 .build();
+        if (null != selectStatement) {
+            result.addParameterMarkers(selectStatement.getParameterMarkers());
+        }
+        return result;
     }
     
     @Override
@@ -573,8 +582,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.columnConstraint().stream().anyMatch(each -> null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey());
-        // TODO parse not null
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false, getText(ctx));
+        boolean isNotNull = ctx.columnConstraint().stream().anyMatch(each -> null != each.columnConstraintOption().NOT() && null != each.columnConstraintOption().NULL());
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull, getText(ctx));
         for (ColumnConstraintContext each : ctx.columnConstraint()) {
             if (null != each.columnConstraintOption().tableName()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.columnConstraintOption().tableName()));
@@ -620,7 +629,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         // TODO visit pk and table ref
         ColumnSegment column = (ColumnSegment) visit(ctx.modifyColumn().columnName());
         DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
-        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false, getText(ctx));
+        boolean isNotNull = null != ctx.SET() && null != ctx.NOT() && null != ctx.NULL();
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, isNotNull, getText(ctx));
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     
@@ -808,6 +818,18 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
         return new CreateProcedureStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
+        CreateTriggerStatement result = new CreateTriggerStatement(getDatabaseType());
+        if (null != ctx.name()) {
+            result.setTriggerName(new FunctionNameSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), new IdentifierValue(ctx.name().getText())));
+        }
+        if (null != ctx.qualifiedName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
+        }
+        return result;
     }
     
     @Override
@@ -1179,9 +1201,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         }
         if (nameSegmentIterator.hasNext()) {
             NameSegment databaseName = nameSegmentIterator.next();
-            if (null != owner) {
-                owner.setOwner(new OwnerSegment(databaseName.getStartIndex(), databaseName.getStopIndex(), databaseName.getIdentifier()));
-            }
+            owner.setOwner(new OwnerSegment(databaseName.getStartIndex(), databaseName.getStopIndex(), databaseName.getIdentifier()));
         }
         return result;
     }
@@ -1232,8 +1252,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCursorName(final CursorNameContext ctx) {
-        return null != ctx.name() ? new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.name()))
-                : new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.hostVariable()));
+        return null == ctx.name() ? new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.hostVariable()))
+                : new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.name()));
     }
     
     @Override

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Ind
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -40,7 +41,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,6 +74,15 @@ class SQLServerMetaDataLoaderTest {
             + " LEFT JOIN sys.objects obj ON idx.object_id = obj.object_id"
             + " LEFT JOIN sys.columns col ON obj.object_id = col.object_id"
             + " WHERE idx.index_id NOT IN (0, 255) AND obj.name IN ('tbl') ORDER BY idx.index_id";
+    
+    private static final String LOAD_COLUMN_META_DATA_WITH_VIEW = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
+            + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, col.is_nullable AS IS_NULLABLE,"
+            + "  (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
+            + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
+            + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id"
+            + " WHERE obj.name IN ('tbl','tbl_view') ORDER BY col.column_id";
+    
+    private static final String LOAD_VIEW_META_DATA = "SELECT name AS TABLE_NAME FROM sys.objects WHERE type = 'V' AND name IN ('tbl_view','tbl')";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
@@ -107,6 +119,27 @@ class SQLServerMetaDataLoaderTest {
         assertTableMetaData(actual, expectedSecondColumnVisible, expectedIndexColumns);
     }
     
+    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
+    @Test
+    void assertLoadWithView() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        ResultSet tableMetaDataResultSet = mockTableAndViewMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITH_VIEW).executeQuery()).thenReturn(tableMetaDataResultSet);
+        ResultSet viewMetaDataResultSet = mockViewMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(LOAD_VIEW_META_DATA).executeQuery()).thenReturn(viewMetaDataResultSet);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
+        DataTypeRegistry.load(dataSource, "SQLServer");
+        Collection<SchemaMetaData> schemaMetaDataList = dialectMetaDataLoader.load(
+                new MetaDataLoaderMaterial(Arrays.asList("tbl", "tbl_view"), "foo_ds", dataSource, databaseType, "sharding_db"));
+        assertThat(schemaMetaDataList.size(), is(1));
+        Map<String, TableType> actualTableTypes = new HashMap<>();
+        for (TableMetaData each : schemaMetaDataList.iterator().next().getTables()) {
+            actualTableTypes.put(each.getName(), each.getType());
+        }
+        assertThat(actualTableTypes.get("tbl"), is(TableType.TABLE));
+        assertThat(actualTableTypes.get("tbl_view"), is(TableType.VIEW));
+    }
+    
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
@@ -134,6 +167,22 @@ class SQLServerMetaDataLoaderTest {
         when(result.getString("IS_HIDDEN")).thenReturn("0", "1");
         when(result.getString("COLLATION_NAME")).thenReturn("SQL_Latin1_General_CP1_CS_AS", secondColumnCollationName);
         when(result.getString("IS_NULLABLE")).thenReturn("0", "1");
+        return result;
+    }
+    
+    private ResultSet mockTableAndViewMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "tbl_view");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "id");
+        when(result.getString("DATA_TYPE")).thenReturn("int", "int");
+        return result;
+    }
+    
+    private ResultSet mockViewMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl_view");
         return result;
     }
     

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
-import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
 import java.sql.SQLException;
 import java.util.Collection;

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.fixture;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 
 import static org.mockito.Mockito.mock;
 

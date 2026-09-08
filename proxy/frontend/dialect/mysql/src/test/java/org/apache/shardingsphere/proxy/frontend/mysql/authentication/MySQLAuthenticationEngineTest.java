@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.epoll.EpollDomainSocketChannel;
-import io.netty.util.Attribute;
+import io.netty.util.DefaultAttributeMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authentication.Authenticator;
 import org.apache.shardingsphere.authentication.AuthenticatorFactory;
@@ -39,7 +37,6 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.database.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.database.exception.mysql.vendor.MySQLVendorError;
-import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConnectionPhase;
@@ -48,6 +45,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErr
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -59,6 +57,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset.MySQLSessionCharsetContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.ssl.MySQLSSLRequestHandler;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -79,8 +78,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -139,21 +138,17 @@ class MySQLAuthenticationEngineTest {
         assertThat(arguments.get(1), is(new Object[0]));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertAuthenticationMethodMismatch() {
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
-        ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         Channel channel = mock(Channel.class);
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
-        when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        mockAttributes(channel);
+        ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(payload.readInt1()).thenReturn(1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
@@ -318,6 +313,7 @@ class MySQLAuthenticationEngineTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         authenticationEngine.authenticate(context, getPayload("root", null, authResponse));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
+        assertThat(MySQLSessionCharsetContext.get(context.channel()).getClientCharacterSetName(), is("big5"));
     }
     
     @Test
@@ -326,7 +322,7 @@ class MySQLAuthenticationEngineTest {
         setAuthenticationResult();
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         when(payload.readStringEOFByBytes()).thenReturn(authResponse);
-        ChannelHandlerContext context = mockDomainSocketChannelHandlerContext();
+        final ChannelHandlerContext context = mockDomainSocketChannelHandlerContext();
         AuthorityRule rule = mock(AuthorityRule.class);
         ShardingSphereUser user = new ShardingSphereUser("root", "", "local_host");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
@@ -372,34 +368,29 @@ class MySQLAuthenticationEngineTest {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private ChannelHandlerContext mockDomainSocketChannelHandlerContext() {
-        ChannelHandlerContext result = mock(ChannelHandlerContext.class);
         EpollDomainSocketChannel channel = mock(EpollDomainSocketChannel.class, RETURNS_DEEP_STUBS);
         Channel parentChannel = mock(Channel.class);
         SocketAddress socketAddress = mock(SocketAddress.class);
         when(socketAddress.toString()).thenReturn("local_host");
         when(parentChannel.localAddress()).thenReturn(socketAddress);
         when(channel.parent()).thenReturn(parentChannel);
-        when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(channel.attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        mockAttributes(channel);
+        ChannelHandlerContext result = mock(ChannelHandlerContext.class);
         doReturn(channel).when(result).channel();
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private Channel getChannel() {
         Channel result = mock(Channel.class);
         doReturn(getRemoteAddress()).when(result).remoteAddress();
-        when(result.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        when(result.attr(MySQLConstants.CONNECTION_ATTRIBUTES_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        mockAttributes(result);
         return result;
+    }
+    
+    private void mockAttributes(final Channel channel) {
+        DefaultAttributeMap attributes = new DefaultAttributeMap();
+        when(channel.attr(any())).thenAnswer(invocation -> attributes.attr(invocation.getArgument(0)));
     }
     
     private SocketAddress getRemoteAddress() {

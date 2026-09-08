@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.task.progress;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class IncrementalTaskProgressTest {

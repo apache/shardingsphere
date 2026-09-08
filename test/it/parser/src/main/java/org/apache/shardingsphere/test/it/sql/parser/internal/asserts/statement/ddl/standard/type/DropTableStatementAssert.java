@@ -24,6 +24,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.DropTableStatementTestCase;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 /**
  * Drop table statement assert.
  */
@@ -38,6 +41,9 @@ public final class DropTableStatementAssert {
      * @param expected expected drop table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropTableStatement actual, final DropTableStatementTestCase expected) {
+        if (null != expected.getTemporary()) {
+            assertThat(assertContext.getText("Temporary table assertion error: "), actual.isTemporary(), is(expected.getTemporary()));
+        }
         assertTables(assertContext, actual, expected);
     }
     

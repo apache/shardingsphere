@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.external.env.ExternalEnvironmentContext;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.ExternalTestParameterLoadStrategy;
@@ -82,7 +81,7 @@ public final class ExternalTestParameterLoader {
         Collection<FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI);
         Map<String, FileSummary> resultFileSummaryMap =
                 resultFileSummaries.stream().collect(Collectors.toMap(fileSummary -> Files.getNameWithoutExtension(fileSummary.getFileName()), Function.identity()));
-        return sqlCaseFileSummaries.stream().filter(each -> StringUtils.isEmpty(caseRegex) || each.getFileName().matches(caseRegex)).flatMap(each -> {
+        return sqlCaseFileSummaries.stream().filter(each -> Strings.isNullOrEmpty(caseRegex) || each.getFileName().matches(caseRegex)).flatMap(each -> {
             List<String> sqlCaseFileContent = loadContent(URI.create(each.getAccessURI()));
             String fileName = Files.getNameWithoutExtension(each.getFileName());
             Optional<FileSummary> resultFileSummary = Optional.ofNullable(resultFileSummaryMap.get(fileName));

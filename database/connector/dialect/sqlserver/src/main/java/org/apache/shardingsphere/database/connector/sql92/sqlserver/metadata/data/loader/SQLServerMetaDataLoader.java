@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Ind
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -61,6 +62,8 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
             + " LEFT JOIN sys.columns col ON obj.object_id = col.object_id"
             + " WHERE idx.index_id NOT IN (0, 255) AND obj.name IN (%s) ORDER BY idx.index_id";
     
+    private static final String VIEW_META_DATA_SQL = "SELECT name AS TABLE_NAME FROM sys.objects WHERE type = 'V' AND name IN (%s)";
+    
     private static final int HIDDEN_COLUMN_START_MAJOR_VERSION = 15;
     
     @Override
@@ -68,13 +71,33 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(material.getDataSource(), material.getActualTableNames());
         if (!columnMetaDataMap.isEmpty()) {
+            Collection<String> viewNames = loadViewNames(material.getDataSource(), columnMetaDataMap.keySet());
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaData(material.getDataSource(), columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
                 Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
-                tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
+                tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList(),
+                        viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE));
             }
         }
         return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaDataList));
+    }
+    
+    private Collection<String> loadViewNames(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(getViewMetaDataSQL(tableNames))) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    result.add(resultSet.getString("TABLE_NAME"));
+                }
+            }
+        }
+        return result;
+    }
+    
+    private String getViewMetaDataSQL(final Collection<String> tableNames) {
+        return String.format(VIEW_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {

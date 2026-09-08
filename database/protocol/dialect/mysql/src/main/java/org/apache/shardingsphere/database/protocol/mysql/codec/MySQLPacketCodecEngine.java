@@ -86,7 +86,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
     
     @Override
     public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
-        MySQLPacketPayload payload = new MySQLPacketPayload(prepareMessageHeader(out).markWriterIndex(), context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
+        MySQLPacketPayload payload = new MySQLPacketPayload(prepareMessageHeader(out).markWriterIndex(), getResultCharset(context));
         try {
             message.write(payload);
             // CHECKSTYLE:OFF
@@ -101,6 +101,11 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
                 writeMultiPackets(context, out);
             }
         }
+    }
+    
+    private Charset getResultCharset(final ChannelHandlerContext context) {
+        Charset result = context.channel().attr(MySQLConstants.RESULT_CHARSET_ATTRIBUTE_KEY).get();
+        return null == result ? context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get() : result;
     }
     
     private ByteBuf prepareMessageHeader(final ByteBuf out) {

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -38,6 +37,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -66,8 +66,8 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         SetDefaultSingleTableStorageUnitStatement sqlStatement = new SetDefaultSingleTableStorageUnitStatement(null);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        verify(metaDataManagerPersistService).removeRuleConfigurationItem(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("foo_ds"))));
-        verify(metaDataManagerPersistService).alterRuleConfiguration(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> !x.getDefaultDataSource().isPresent()));
+        verify(metaDataManagerPersistService).removeRuleConfigurationItem(any(), argThat((SingleRuleConfiguration x) -> x.getDefaultDataSource().equals(Optional.of("foo_ds"))));
+        verify(metaDataManagerPersistService).alterRuleConfiguration(any(), argThat((SingleRuleConfiguration x) -> !x.getDefaultDataSource().isPresent()));
     }
     
     @Test
@@ -83,7 +83,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         SetDefaultSingleTableStorageUnitStatement sqlStatement = new SetDefaultSingleTableStorageUnitStatement("bar_ds");
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        verify(metaDataManagerPersistService).alterRuleConfiguration(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("bar_ds"))));
+        verify(metaDataManagerPersistService).alterRuleConfiguration(any(), argThat((SingleRuleConfiguration x) -> x.getDefaultDataSource().equals(Optional.of("bar_ds"))));
     }
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database, final SingleRule rule, final String defaultDataSource) {

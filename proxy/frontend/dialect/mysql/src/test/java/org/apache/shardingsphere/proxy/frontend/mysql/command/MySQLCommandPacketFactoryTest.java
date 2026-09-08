@@ -48,6 +48,8 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -81,7 +83,8 @@ class MySQLCommandPacketFactoryTest {
     
     @Test
     void assertNewInstanceWithComQueryPacket() {
-        when(payload.readStringEOF()).thenReturn("SHOW TABLES");
+        when(payload.readStringEOFByBytes()).thenReturn("SHOW TABLES".getBytes(StandardCharsets.UTF_8));
+        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_QUERY, payload, connectionSession), isA(MySQLComQueryPacket.class));
     }
     

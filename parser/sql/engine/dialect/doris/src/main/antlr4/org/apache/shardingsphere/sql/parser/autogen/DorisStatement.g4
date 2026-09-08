@@ -54,7 +54,9 @@ execute
     | dropTrigger
     | alterResourceGroup
     | alterResource
+    | createResource
     | createResourceGroup
+    | createWorkloadGroup
     | dropResourceGroup
     | prepare
     | executeStmt
@@ -140,6 +142,7 @@ execute
     | delimiter
     | startReplica
     | createMaterializedView
+    | refreshMaterializedView
     | resumeJob
     | pauseJob
     | dropJob
@@ -152,7 +155,14 @@ execute
     | adminSetReplicaStatus
     | adminSetReplicaVersion
     | adminCopyTablet
+    | adminCheckTablet
+    | adminSetPartitionVersion
+    | adminSetTableStatus
     | adminCleanTrash
+    | adminRebalanceDisk
+    | adminCancelRebalanceDisk
+    | adminRepair
+    | adminCancelRepair
     | createSqlBlockRule
     | alterSqlBlockRule
     | dropSqlBlockRule
@@ -174,6 +184,7 @@ execute
     | cancelLoadStatement
     | cleanAllProfile
     | planReplayerPlay
+    | recover
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

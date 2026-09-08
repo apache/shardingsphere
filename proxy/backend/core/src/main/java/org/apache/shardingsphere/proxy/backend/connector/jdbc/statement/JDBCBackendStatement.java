@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,8 +35,8 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * JDBC backend statement.

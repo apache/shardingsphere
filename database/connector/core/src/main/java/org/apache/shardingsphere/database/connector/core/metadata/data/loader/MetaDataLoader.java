@@ -82,14 +82,23 @@ public final class MetaDataLoader {
     
     private static Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         Optional<DialectMetaDataLoader> dialectLoader = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, material.getStorageType());
+        Collection<SchemaMetaData> result;
         if (dialectLoader.isPresent()) {
             try {
-                return dialectLoader.get().load(material);
+                result = dialectLoader.get().load(material);
             } catch (final SQLException ex) {
                 log.debug("{} Dialect load schema meta data error, load by default.", material.getStorageType(), ex);
+                result = loadByDefault(material);
+            }
+        } else {
+            result = loadByDefault(material);
+        }
+        for (SchemaMetaData each : result) {
+            for (TableMetaData table : each.getTables()) {
+                table.setStorageUnitName(material.getStorageUnitName());
             }
         }
-        return loadByDefault(material);
+        return result;
     }
     
     private static Collection<SchemaMetaData> loadByDefault(final MetaDataLoaderMaterial material) throws SQLException {

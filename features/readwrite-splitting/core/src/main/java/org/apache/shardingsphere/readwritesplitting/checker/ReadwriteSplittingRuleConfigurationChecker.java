@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlg
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
+import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingO
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -64,7 +66,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements Databas
             }
             LoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
             ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new UnregisteredAlgorithmException("Load balancer", each.getLoadBalancerName(), new SQLExceptionIdentifier(databaseName)));
-            loadBalancer.check(databaseName, each.getReadDataSourceNames());
+            loadBalancer.check(databaseName, getActualDataSourceNames(each.getReadDataSourceNames()));
         }
     }
     
@@ -73,12 +75,16 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements Databas
         Collection<String> result = new LinkedHashSet<>();
         for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : ruleConfig.getDataSourceGroups()) {
             if (null != each.getWriteDataSourceName()) {
-                result.add(each.getWriteDataSourceName());
+                result.addAll(getActualDataSourceNames(Collections.singleton(each.getWriteDataSourceName())));
             }
-            if (!each.getReadDataSourceNames().isEmpty()) {
-                result.addAll(each.getReadDataSourceNames());
-            }
+            result.addAll(getActualDataSourceNames(each.getReadDataSourceNames()));
         }
+        return result;
+    }
+    
+    private Collection<String> getActualDataSourceNames(final Collection<String> dataSourceNames) {
+        Collection<String> result = new LinkedHashSet<>();
+        dataSourceNames.forEach(each -> result.addAll(InlineExpressionParserFactory.newInstance(each).splitAndEvaluate()));
         return result;
     }
     

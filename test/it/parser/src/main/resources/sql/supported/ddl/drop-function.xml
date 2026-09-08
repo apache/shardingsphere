@@ -28,4 +28,5 @@
     <sql-case id="drop_function_mysql" value="DROP FUNCTION func1" db-types="MySQL" />
     <sql-case id="drop_global_function_doris" value="DROP GLOBAL FUNCTION my_add(INT, INT)" db-types="Doris" />
     <sql-case id="drop_function_with_params_doris" value="DROP FUNCTION my_add(INT, INT)" db-types="Doris" />
+    <sql-case id="drop_function_with_owner_visitor_oracle" value="DROP FUNCTION foo_schema.foo_func" db-types="Oracle" />
 </sql-cases>

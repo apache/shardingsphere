@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode.OpenGaussLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position.slot.PostgreSQLSlotManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALPosition;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position.slot.PostgreSQLSlotManager;
 import org.opengauss.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;

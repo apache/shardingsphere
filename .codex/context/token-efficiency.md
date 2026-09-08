@@ -24,6 +24,19 @@ Before emitting any command, classify it first:
 - The visible output for `Must Wrap` commands must contain only a filtered summary, log path, and exit code.
 - IDE/MCP tool calls do not need shell redirection. For run or execution tools that support `fullOutputPath`, prefer a mode that returns it for potentially high-output runs.
 
+### Execution Environment and Retry Gate
+
+Before execution, determine the command's expected writes, network use, required task authority, command-bound platform approval, log and output paths, timeout, and success evidence in addition to its output risk.
+
+When a required command needs network access that the current sandbox is known to deny, invoke its command-bound platform approval with the first execution attempt.
+Do not make a knowingly blocked trial run, and do not repeat already granted task authority when requesting platform approval.
+
+After a nonzero exit, timeout, or missing expected result, inspect the exit code and the smallest relevant stdout, stderr, event, result, and summary evidence before deciding the next action.
+If the expected output directory is empty, inspect the parent command result and launcher stderr; do not classify the candidate from the empty directory alone.
+Classify the failure as command syntax, permission or sandbox, network or external service, timeout, runner or tool, or candidate behavior.
+Until evidence supports that classification, do not rerun the command unchanged or in parallel and do not edit the candidate, canary, or runner to hide the failure.
+Retry only after correcting the identified cause, and stop to report the evidence when the same cause repeats.
+
 ### Core Rules
 
 Do not print full high-output command logs directly into the conversation context.

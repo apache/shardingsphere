@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +54,7 @@ class FirebirdBatchCreateCommandPacketTest {
         ByteBuf blrBuffer = mock(ByteBuf.class);
         when(payload.readBuffer()).thenReturn(blrBuffer);
         when(blrBuffer.isReadable()).thenReturn(false);
-        assertThrows(FirebirdProtocolException.class, () -> new FirebirdBatchCreateCommandPacket(payload));
+        assertThrows(DatabaseProtocolException.class, () -> new FirebirdBatchCreateCommandPacket(payload));
         verify(payload).skipReserved(4);
     }
     

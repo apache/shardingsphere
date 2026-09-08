@@ -35,7 +35,6 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
     void assertRollbackToSavepoint() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
-            assertAccountRowCount(connection, 0);
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1);");
             Savepoint savepoint = connection.setSavepoint("point1");
             executeSQLInSavepoint(connection);
@@ -46,6 +45,8 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
             connection.rollback(savepointWithoutName);
             assertAccountRowCount(connection, 1);
             connection.commit();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
             assertAccountRowCount(connection, 1);
         }
     }
@@ -76,6 +77,9 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
             executeWithLog(connection, "RELEASE SAVEPOINT point1");
             assertAccountRowCount(connection, 5);
             connection.commit();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            assertAccountRowCount(connection, 5);
         }
     }
     

@@ -18,17 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
 import lombok.Getter;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.MultiStatementsUpdateResponseHeader;
@@ -38,11 +33,6 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExe
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.util.MultiSQLSplitter;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -64,31 +54,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.connectionSession = connectionSession;
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), databaseType, connectionSession);
-        proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSQL())
-                ? new MySQLMultiStatementsProxyBackendHandler(connectionSession, sqlStatement, packet.getSQL())
-                : ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
+        proxyBackendHandler = MySQLComQueryBackendHandlerFactory.newInstance(packet, connectionSession);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
-    }
-    
-    private boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {
-        return isMultiStatementsEnabled(connectionSession)
-                && isSuitableMultiStatementsSQLStatement(sqlStatement)
-                && MultiSQLSplitter.hasSameTypeMultiStatements(sqlStatement, MultiSQLSplitter.split(sql));
-    }
-    
-    private boolean isMultiStatementsEnabled(final ConnectionSession connectionSession) {
-        return connectionSession.getAttributeMap().hasAttr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)
-                && MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON == connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY).get();
-    }
-    
-    private boolean isSuitableMultiStatementsSQLStatement(final SQLStatement sqlStatement) {
-        return containsInsertOnDuplicateKey(sqlStatement) || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement;
-    }
-    
-    private boolean containsInsertOnDuplicateKey(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).getOnDuplicateKeyColumns().isPresent();
     }
     
     @Override

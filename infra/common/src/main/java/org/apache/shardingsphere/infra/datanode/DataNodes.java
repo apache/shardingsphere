@@ -61,6 +61,22 @@ public final class DataNodes {
         return result;
     }
     
+    /**
+     * Whether data node table names are loaded from storage metadata.
+     *
+     * @param tableName table name
+     * @return whether data node table names are loaded from storage metadata
+     */
+    public boolean isDataNodeTableNameLoadedFromStorage(final String tableName) {
+        for (ShardingSphereRule each : rules) {
+            Optional<DataNodeRuleAttribute> attribute = each.getAttributes().findAttribute(DataNodeRuleAttribute.class);
+            if (attribute.isPresent() && !attribute.get().getDataNodesByTableName(tableName).isEmpty()) {
+                return attribute.get().isDataNodeTableNameLoadedFromStorage();
+            }
+        }
+        return false;
+    }
+    
     private Collection<DataNode> getDataNodesByTableName(final String tableName) {
         for (ShardingSphereRule each : rules) {
             Collection<DataNode> dataNodes = getDataNodesByTableName(each, tableName);

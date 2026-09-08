@@ -47,7 +47,7 @@ public final class DataSourcePoolDestroyer {
         executor.shutdown();
     }
     
-    @SneakyThrows
+    @SneakyThrows(Exception.class)
     private void graceDestroy() {
         waitUntilActiveConnectionComplete();
         ((AutoCloseable) dataSource).close();

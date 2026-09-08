@@ -22,8 +22,15 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.Tran
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.TransactionTestCase;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TransactionTestCase
 public final class TransactionReadOperationTestCase extends BaseTransactionTestCase {
@@ -47,42 +54,42 @@ public final class TransactionReadOperationTestCase extends BaseTransactionTestC
     }
     
     private void assertStandardReadInTransactionTestCase() throws SQLException {
-        Connection queryConnection = getDataSource().getConnection();
-        try (Connection connection = getDataSource().getConnection()) {
-            connection.setAutoCommit(false);
-            executeQueryWithLog(connection, "SELECT * FROM account");
-            executeQueryWithLog(connection, "SELECT * FROM account");
-            connection.rollback();
-            connection.setAutoCommit(true);
+        try (Connection queryConnection = getDataSource().getConnection()) {
+            try (Connection connection = getDataSource().getConnection()) {
+                connection.setAutoCommit(false);
+                assertAccountBalances(connection);
+                assertAccountBalances(connection);
+                connection.rollback();
+                connection.setAutoCommit(true);
+            }
+            try (Connection connection = getDataSource().getConnection()) {
+                connection.setAutoCommit(false);
+                assertAccountBalances(connection);
+                assertAccountBalances(connection);
+                connection.commit();
+                connection.setAutoCommit(true);
+            }
+            assertAccountRowCount(queryConnection, 0);
+            try (Connection connection = getDataSource().getConnection()) {
+                connection.setAutoCommit(false);
+                assertAccountBalances(connection);
+                executeWithLog(connection, "INSERT INTO account VALUES (1, 1, 1)");
+                assertAccountBalances(connection, 1);
+                connection.rollback();
+                connection.setAutoCommit(true);
+            }
+            assertAccountRowCount(queryConnection, 0);
+            try (Connection connection = getDataSource().getConnection()) {
+                connection.setAutoCommit(false);
+                assertAccountBalances(connection);
+                executeWithLog(connection, "INSERT INTO account VALUES (1, 1, 1)");
+                assertAccountBalances(connection, 1);
+                connection.commit();
+                connection.setAutoCommit(true);
+            }
+            assertAccountBalances(queryConnection, 1);
+            assertThat(executeUpdateWithLog(queryConnection, "DELETE FROM account"), is(1));
         }
-        try (Connection connection = getDataSource().getConnection()) {
-            connection.setAutoCommit(false);
-            executeQueryWithLog(connection, "SELECT * FROM account");
-            executeQueryWithLog(connection, "SELECT * FROM account");
-            connection.commit();
-            connection.setAutoCommit(true);
-        }
-        assertAccountRowCount(queryConnection, 0);
-        try (Connection connection = getDataSource().getConnection()) {
-            connection.setAutoCommit(false);
-            executeQueryWithLog(connection, "SELECT * FROM account");
-            executeWithLog(connection, "INSERT INTO account VALUES (1, 1, 1)");
-            executeQueryWithLog(connection, "SELECT * FROM account");
-            connection.rollback();
-            connection.setAutoCommit(true);
-        }
-        assertAccountRowCount(queryConnection, 0);
-        try (Connection connection = getDataSource().getConnection()) {
-            connection.setAutoCommit(false);
-            executeQueryWithLog(connection, "SELECT * FROM account");
-            executeWithLog(connection, "INSERT INTO account VALUES (1, 1, 1)");
-            executeQueryWithLog(connection, "SELECT * FROM account");
-            connection.commit();
-            connection.setAutoCommit(true);
-        }
-        assertAccountBalances(queryConnection, 1);
-        executeWithLog(queryConnection, "DELETE FROM account");
-        queryConnection.close();
     }
     
     private void assertEmptyBeginAndCommit(final Connection connection) throws SQLException {
@@ -95,49 +102,57 @@ public final class TransactionReadOperationTestCase extends BaseTransactionTestC
     private void assertReadQueryTransaction(final Connection connection, final Connection queryConnection) throws SQLException {
         connection.setAutoCommit(false);
         assertAccountRowCount(queryConnection, 0);
-        executeQueryWithLog(connection, "SELECT * FROM account");
+        assertAccountBalances(connection);
         connection.commit();
         connection.setAutoCommit(false);
-        executeQueryWithLog(connection, "SELECT * FROM account");
+        assertAccountBalances(connection);
         connection.rollback();
         assertAccountRowCount(queryConnection, 0);
         connection.setAutoCommit(false);
-        executeQueryWithLog(connection, "SELECT * FROM account");
-        executeQueryWithLog(connection, "SELECT * FROM account");
+        assertAccountBalances(connection);
+        assertAccountBalances(connection);
         connection.commit();
         assertAccountRowCount(queryConnection, 0);
         connection.setAutoCommit(false);
-        executeQueryWithLog(connection, "SELECT * FROM account FOR UPDATE");
+        try (ResultSet resultSet = executeQueryWithLog(connection, "SELECT * FROM account FOR UPDATE")) {
+            assertFalse(resultSet.next());
+        }
         connection.commit();
     }
     
     private void assertReadWriteTransaction(final Connection connection, final Connection queryConnection) throws SQLException {
         connection.setAutoCommit(false);
-        executeQueryWithLog(connection, "SELECT * FROM account");
+        assertAccountBalances(connection);
         executeWithLog(connection, "INSERT INTO account VALUES (1, 1, 1)");
         assertAccountRowCount(queryConnection, 0);
-        executeQueryWithLog(connection, "SELECT * FROM account");
+        assertAccountBalances(connection, 1);
         connection.commit();
         assertAccountBalances(queryConnection, 1);
         connection.setAutoCommit(false);
-        executeQueryWithLog(connection, "SELECT * FROM account");
+        assertAccountBalances(connection, 1);
         executeWithLog(connection, "INSERT INTO account VALUES (2, 2, 2)");
+        assertAccountBalances(connection, 1, 2);
         assertAccountBalances(queryConnection, 1);
         connection.rollback();
         assertAccountBalances(queryConnection, 1);
         connection.setAutoCommit(false);
-        executeQueryWithLog(connection, "SELECT * FROM account");
+        assertAccountBalances(connection, 1);
         connection.setAutoCommit(true);
         connection.setAutoCommit(false);
-        executeQueryWithLog(connection, "SELECT * FROM account");
+        assertAccountBalances(connection, 1);
         Savepoint savepoint = connection.setSavepoint("savepoint1");
         executeWithLog(connection, "INSERT INTO account VALUES (3, 3, 3)");
-        executeQueryWithLog(connection, "SELECT * FROM account");
+        assertAccountBalances(connection, 1, 3);
         connection.rollback(savepoint);
+        assertAccountBalances(connection, 1);
         connection.commit();
         assertAccountBalances(queryConnection, 1);
         connection.setAutoCommit(false);
-        executeQueryWithLog(connection, "SELECT now()");
+        try (ResultSet resultSet = executeQueryWithLog(connection, "SELECT now()")) {
+            assertTrue(resultSet.next());
+            assertNotNull(resultSet.getObject(1));
+            assertFalse(resultSet.next());
+        }
         connection.commit();
     }
 }

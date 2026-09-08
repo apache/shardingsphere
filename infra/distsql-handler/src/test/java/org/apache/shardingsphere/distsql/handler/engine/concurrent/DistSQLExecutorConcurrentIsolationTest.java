@@ -36,9 +36,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class DistSQLExecutorConcurrentIsolationTest {
     

@@ -96,16 +96,16 @@ class LoadSingleTableExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCheckBeforeUpdateWithPreValidationFailureArguments")
-    void assertCheckBeforeUpdateWithPreValidationFailure(final String name, final boolean schemaSupported, final SingleTableSegment tableSegment,
+    void assertCheckBeforeUpdateWithPreValidationFailure(final String name, final boolean schemaAvailable, final SingleTableSegment tableSegment,
                                                          final boolean tableExists, final Class<? extends RuntimeException> expectedException) {
         prepareStorageUnits();
-        prepareSchema(tableExists, schemaSupported ? "foo_schema" : "foo_db");
-        if (schemaSupported) {
+        prepareSchema(tableExists, schemaAvailable ? "foo_schema" : "foo_db");
+        if (schemaAvailable) {
             when(database.getDefaultSchemaName()).thenReturn("foo_schema");
         }
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(tableSegment));
-        if (schemaSupported) {
-            try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaSupportedDatabaseTypeRegistry()) {
+        if (schemaAvailable) {
+            try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaDatabaseTypeRegistry(true)) {
                 assertThrows(expectedException, () -> executor.checkBeforeUpdate(sqlStatement));
             }
         } else {
@@ -132,7 +132,7 @@ class LoadSingleTableExecutorTest {
     void assertCheckBeforeUpdateWithSchemaSupportedDatabaseType() {
         prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("foo_schema", Collections.singleton("foo_tbl")));
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Arrays.asList(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl"), new SingleTableSegment("*", "*")));
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaSupportedDatabaseTypeRegistry()) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaDatabaseTypeRegistry(true)) {
             when(database.getDefaultSchemaName()).thenReturn("foo_schema");
             prepareSchema(false, "foo_schema");
             assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
@@ -147,10 +147,26 @@ class LoadSingleTableExecutorTest {
     }
     
     @Test
+    void assertCheckBeforeUpdateRejectsNonDefaultSchemaWhenSchemaUnavailable() {
+        when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("bar_schema", Collections.singleton("foo_tbl")));
+        assertThrows(TableNotFoundException.class,
+                () -> executor.checkBeforeUpdate(new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("foo_ds", "foo_tbl")))));
+    }
+    
+    @Test
+    void assertCheckBeforeUpdateWithDefaultSchemaWhenSchemaUnavailable() {
+        prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("bar_schema", Collections.singleton("foo_tbl")));
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaDatabaseTypeRegistry(false)) {
+            assertDoesNotThrow(() -> executor.checkBeforeUpdate(new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("foo_ds", "foo_tbl")))));
+        }
+    }
+    
+    @Test
     void assertCheckBeforeUpdateWithExplicitSchemaAndDifferentProtocolAndStorageTypes() {
         when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("foo_schema", Collections.singleton("foo_tbl")));
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaSupportedDatabaseTypeRegistry()) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaDatabaseTypeRegistry(true)) {
             assertDoesNotThrow(() -> executor.checkBeforeUpdate(new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl")))));
         }
     }
@@ -159,7 +175,7 @@ class LoadSingleTableExecutorTest {
     void assertCheckBeforeUpdateWithMismatchedExplicitSchemaAndDifferentProtocolAndStorageTypes() {
         when(DatabaseTypeEngine.getStorageType(any(DataSource.class))).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         prepareActualTableValidationScenario(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singletonMap("FOO_SCHEMA", Collections.singleton("foo_tbl")));
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaSupportedDatabaseTypeRegistry()) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaDatabaseTypeRegistry(true)) {
             assertThrows(TableNotFoundException.class,
                     () -> executor.checkBeforeUpdate(new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl")))));
         }
@@ -214,11 +230,11 @@ class LoadSingleTableExecutorTest {
         }
     }
     
-    private MockedConstruction<DatabaseTypeRegistry> mockSchemaSupportedDatabaseTypeRegistry() {
+    private MockedConstruction<DatabaseTypeRegistry> mockSchemaDatabaseTypeRegistry(final boolean schemaAvailable) {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("foo_schema"));
+        when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
         return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
-            when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_schema");
             when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
         });
     }

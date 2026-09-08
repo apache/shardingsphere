@@ -28,7 +28,7 @@
     
     <properties>
         <mcp-java-sdk.version>1.1.2</mcp-java-sdk.version>
-        <tomcat-embed.version>11.0.22</tomcat-embed.version>
+        <tomcat-embed.version>11.0.25</tomcat-embed.version>
     </properties>
     
     <dependencies>
@@ -74,6 +74,10 @@
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.dataformat</groupId>
+                    <artifactId>jackson-dataformat-yaml</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

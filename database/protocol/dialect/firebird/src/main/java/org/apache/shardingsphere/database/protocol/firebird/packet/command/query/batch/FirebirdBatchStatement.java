@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,16 +39,18 @@ public final class FirebirdBatchStatement {
     
     private final boolean recordCounts;
     
+    private final boolean multiError;
+    
     private final List<List<Object>> parameterValues = new ArrayList<>();
     
     private long accumulatedSize;
     
     public FirebirdBatchStatement(final int statementHandle) {
-        this(statementHandle, Collections.emptyList(), 0L, false);
+        this(statementHandle, Collections.emptyList(), 0L, false, false);
     }
     
     public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final long bufferSize) {
-        this(statementHandle, columnDescriptors, bufferSize, false);
+        this(statementHandle, columnDescriptors, bufferSize, false, false);
     }
     
     /**

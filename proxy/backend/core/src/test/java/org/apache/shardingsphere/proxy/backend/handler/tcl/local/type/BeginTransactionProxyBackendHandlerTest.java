@@ -69,7 +69,7 @@ class BeginTransactionProxyBackendHandlerTest {
     
     @Test
     void assertBeginWithNestedTransactionCommit() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true, "public");
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(true, "public");
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -89,7 +89,7 @@ class BeginTransactionProxyBackendHandlerTest {
     
     @Test
     void assertThrowWhenNestedTransactionUnsupportedWithDefaultSchema() {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false, "public");
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false, "public");
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -106,7 +106,7 @@ class BeginTransactionProxyBackendHandlerTest {
     
     @Test
     void assertBeginWhenDefaultSchemaNotPresent() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false, null);
+        final DialectDatabaseMetaData dialectDatabaseMetaData = mockDialectDatabaseMetaData(false, null);
         TransactionStatus transactionStatus = new TransactionStatus();
         transactionStatus.setInTransaction(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);

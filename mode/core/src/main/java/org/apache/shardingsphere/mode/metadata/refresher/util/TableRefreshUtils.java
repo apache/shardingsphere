@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Table refresh utility class.
@@ -266,7 +267,7 @@ public final class TableRefreshUtils {
     
     private static String getActualObjectName(final ShardingSphereDatabase database, final String schemaName,
                                               final IdentifierValue objectIdentifierValue,
-                                              final IdentifierScope scope, final Function<ShardingSphereSchema, java.util.stream.Stream<String>> actualNameStream) {
+                                              final IdentifierScope scope, final Function<ShardingSphereSchema, Stream<String>> actualNameStream) {
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName));
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null != schema) {

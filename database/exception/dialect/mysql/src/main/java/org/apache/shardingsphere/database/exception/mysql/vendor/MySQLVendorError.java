@@ -68,7 +68,11 @@ public enum MySQLVendorError implements VendorError {
     
     ER_GLOBAL_VARIABLE(XOpenSQLState.GENERAL_ERROR, 1229, "Variable '%s' is a GLOBAL variable and should be set with SET GLOBAL"),
     
+    ER_WRONG_VALUE_FOR_VAR(XOpenSQLState.SYNTAX_ERROR, 1231, "Variable '%s' can't be set to the value of '%s'"),
+    
     ER_INCORRECT_GLOBAL_LOCAL_VAR(XOpenSQLState.GENERAL_ERROR, 1238, "Variable '%s' is a %s variable"),
+    
+    ER_COLLATION_CHARSET_MISMATCH(XOpenSQLState.SYNTAX_ERROR, 1253, "COLLATION '%s' is not valid for CHARACTER SET '%s'"),
     
     ER_UNKNOWN_COLLATION(XOpenSQLState.GENERAL_ERROR, 1273, "Unknown collation: '%s'"),
     

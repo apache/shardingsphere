@@ -22,4 +22,9 @@
     <alter-trigger sql-case-id="alter_trigger_extension" />
     <alter-trigger sql-case-id="alter_trigger_disable" />
     <alter-trigger sql-case-id="alter_trigger_enable" />
+    <alter-trigger sql-case-id="alter_trigger_with_owner_visitor_oracle">
+        <trigger-name name="foo_trigger" start-index="14" stop-index="35">
+            <owner name="foo_schema" start-index="14" stop-index="23" />
+        </trigger-name>
+    </alter-trigger>
 </sql-parser-test-cases>

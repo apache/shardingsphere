@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.firebirdsql.gds.BlrConstants;
 
@@ -50,7 +50,7 @@ public final class FirebirdParseBatchBlr {
      * @param blrLength BLR length
      * @return parsed message format
      * @throws IllegalArgumentException when BLR format is structurally invalid
-     * @throws FirebirdProtocolException when BLR contains a field type that batch operations do not support yet
+     * @throws DatabaseProtocolException when BLR contains a field type that batch operations do not support yet
      */
     public static FirebirdParseBatchBlr parse(final ByteBuf blr, final int blrLength) {
         FirebirdParseBatchBlr result = parseForFraming(blr, blrLength);
@@ -112,7 +112,7 @@ public final class FirebirdParseBatchBlr {
         for (FirebirdBatchColumnDescriptor each : fields) {
             if (FirebirdBinaryColumnType.BLOB == each.getType()) {
                 // TODO Implement BATCH_REGBLOB, BATCH_BLOB_STREAM and BATCH_SET_BPB before accepting BLOB fields.
-                throw new FirebirdProtocolException("BLOB fields are not supported in Firebird batch operations");
+                throw new DatabaseProtocolException("BLOB fields are not supported in Firebird batch operations");
             }
         }
     }

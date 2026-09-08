@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segme
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Migration source target segment.
@@ -28,11 +29,60 @@ import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 @Getter
 public final class MigrationSourceTargetSegment implements DistSQLSegment {
     
-    private final String sourceDatabaseName;
+    private final IdentifierValue sourceDatabaseIdentifier;
     
-    private final String sourceSchemaName;
+    private final IdentifierValue sourceSchemaIdentifier;
     
-    private final String sourceTableName;
+    private final IdentifierValue sourceTableIdentifier;
     
-    private final String targetTableName;
+    private final IdentifierValue targetTableIdentifier;
+    
+    /**
+     * Construct a migration source target segment from textual identifiers.
+     *
+     * @param sourceDatabaseName source database name
+     * @param sourceSchemaName source schema name
+     * @param sourceTableName source table name
+     * @param targetTableName target table name
+     */
+    public MigrationSourceTargetSegment(final String sourceDatabaseName, final String sourceSchemaName, final String sourceTableName, final String targetTableName) {
+        this(new IdentifierValue(sourceDatabaseName), null == sourceSchemaName ? null : new IdentifierValue(sourceSchemaName),
+                new IdentifierValue(sourceTableName), new IdentifierValue(targetTableName));
+    }
+    
+    /**
+     * Get source database name.
+     *
+     * @return source database name
+     */
+    public String getSourceDatabaseName() {
+        return sourceDatabaseIdentifier.getValue();
+    }
+    
+    /**
+     * Get source schema name.
+     *
+     * @return source schema name
+     */
+    public String getSourceSchemaName() {
+        return null == sourceSchemaIdentifier ? null : sourceSchemaIdentifier.getValue();
+    }
+    
+    /**
+     * Get source table name.
+     *
+     * @return source table name
+     */
+    public String getSourceTableName() {
+        return sourceTableIdentifier.getValue();
+    }
+    
+    /**
+     * Get target table name.
+     *
+     * @return target table name
+     */
+    public String getTargetTableName() {
+        return targetTableIdentifier.getValue();
+    }
 }

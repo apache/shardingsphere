@@ -52,16 +52,6 @@ public final class DatabaseTypeRegistry {
     }
     
     /**
-     * Get default schema name.
-     *
-     * @param databaseName database name
-     * @return default schema name
-     */
-    public String getDefaultSchemaName(final String databaseName) {
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse(null == databaseName ? null : formatIdentifierPattern(databaseName));
-    }
-    
-    /**
      * Format identifier pattern.
      *
      * @param identifierPattern identifier pattern

@@ -41,16 +41,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPToolDescriptorCatalogValidator {
     
-    private static final String SEARCH_METADATA = "database_gateway_search_metadata";
-    
-    private static final String EXECUTE_QUERY = "database_gateway_execute_query";
-    
-    private static final String EXECUTE_EXPLAIN = "database_gateway_execute_explain_query";
-    
-    private static final String EXECUTE_UPDATE = "database_gateway_execute_update";
-    
-    private static final String VALIDATE_RUNTIME_DATABASE = "database_gateway_validate_runtime_database";
-    
     private static final Collection<String> SECRET_WORKFLOW_OUTPUT_FIELDS = List.of("masked_property_preview", "secret_reference_summary");
     
     /**
@@ -89,23 +79,23 @@ public final class MCPToolDescriptorCatalogValidator {
     }
     
     private static void validateToolDescriptorContract(final MCPToolDescriptor descriptor, final MCPToolRuntimeDescriptor runtimeDescriptor) {
-        if (SEARCH_METADATA.equals(descriptor.getName())) {
+        if (CoreToolNames.SEARCH_METADATA.equals(descriptor.getName())) {
             validateSearchMetadataDescriptor(descriptor);
             return;
         }
-        if (EXECUTE_QUERY.equals(descriptor.getName())) {
+        if (CoreToolNames.EXECUTE_QUERY.equals(descriptor.getName())) {
             validateExecuteQueryDescriptor(descriptor);
             return;
         }
-        if (EXECUTE_EXPLAIN.equals(descriptor.getName())) {
+        if (CoreToolNames.EXECUTE_EXPLAIN_QUERY.equals(descriptor.getName())) {
             validateExecuteExplainDescriptor(descriptor);
             return;
         }
-        if (EXECUTE_UPDATE.equals(descriptor.getName())) {
+        if (CoreToolNames.EXECUTE_UPDATE.equals(descriptor.getName())) {
             validateExecuteUpdateDescriptor(descriptor);
             return;
         }
-        if (VALIDATE_RUNTIME_DATABASE.equals(descriptor.getName())) {
+        if (CoreToolNames.VALIDATE_RUNTIME_DATABASE.equals(descriptor.getName())) {
             validateRuntimeDatabaseDescriptor(descriptor);
             return;
         }

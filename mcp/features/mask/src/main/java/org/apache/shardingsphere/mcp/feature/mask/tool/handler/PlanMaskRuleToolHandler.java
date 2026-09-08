@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowFieldNames;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRequestBinder;
 
 import java.util.List;
@@ -65,8 +66,9 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPFeatureR
     private Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
         WorkflowRequest request = snapshot.getRequest();
         Map<String, Object> result = WorkflowPlanPayloadBuilder.buildWithArtifacts(snapshot, request);
-        result.put("masked_property_preview", Map.of(
-                "primary", propertyTemplateService.maskProperties(createPropertyRequirements(snapshot, request), request.getAlgorithmProperties("primary"))));
+        Map<String, String> maskedProperties = WorkflowArtifactMaskUtils.maskPropertyMap(
+                request.getAlgorithmProperties("primary"), createPropertyRequirements(snapshot, request), request, "primary");
+        result.put("masked_property_preview", Map.of("primary", maskedProperties));
         return result;
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.generic;
 
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -50,5 +51,17 @@ class FirebirdBatchCompletionStateResponseTest {
         verify(payload, atLeastOnce()).writeInt4(argumentCaptor.capture());
         assertThat(argumentCaptor.getAllValues(),
                 is(Arrays.asList(FirebirdCommandPacketType.BATCH_CS.getValue(), 0, 0, 0, 0, 0)));
+    }
+    
+    @Test
+    void assertWriteWithDetailedError() {
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        FirebirdStatusVector statusVector = mock(FirebirdStatusVector.class);
+        new FirebirdBatchCompletionStateResponse().setHandle(7).setRecordsCount(3L).setUpdateCounts(new int[]{1}).addDetailedError(0, statusVector).write(payload);
+        ArgumentCaptor<Integer> argumentCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(payload, atLeastOnce()).writeInt4(argumentCaptor.capture());
+        assertThat(argumentCaptor.getAllValues(),
+                is(Arrays.asList(FirebirdCommandPacketType.BATCH_CS.getValue(), 7, 3, 1, 1, 0, 1, 0)));
+        verify(statusVector).write(payload);
     }
 }

@@ -19,19 +19,21 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.exec
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLComStmtSendLongDataPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLNullBitmap;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
@@ -56,6 +58,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLComStmtSendLongDataExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -71,14 +74,16 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -91,8 +96,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -100,6 +105,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -164,6 +170,22 @@ class MySQLComStmtExecuteExecutorTest {
                 .databaseType(databaseType)
                 .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(columnAssignmentSegment)))
                 .build();
+    }
+    
+    private MySQLServerPreparedStatement prepareLongDataStatement(final MySQLBinaryColumnType columnType) {
+        MySQLServerPreparedStatement result = new MySQLServerPreparedStatement("SELECT ?", prepareSelectStatementContext(), new HintValueContext());
+        result.getParameterTypes().add(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.STRING, 0));
+        result.getParameterColumnTypes().add(columnType);
+        return result;
+    }
+    
+    private void sendLongData(final MySQLServerPreparedStatement preparedStatement, final int paramIndex, final byte[] data) {
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(4)).thenReturn(preparedStatement);
+        MySQLComStmtSendLongDataPacket packet = mock(MySQLComStmtSendLongDataPacket.class);
+        when(packet.getStatementId()).thenReturn(4);
+        when(packet.getParamId()).thenReturn(paramIndex);
+        when(packet.getData()).thenReturn(data);
+        new MySQLComStmtSendLongDataExecutor(packet, connectionSession).execute();
     }
     
     @Test
@@ -351,5 +373,74 @@ class MySQLComStmtExecuteExecutorTest {
         ArgumentCaptor<List<MySQLPreparedStatementParameterType>> parameterTypesCaptor = ArgumentCaptor.forClass(List.class);
         verify(packet).readParameters(parameterTypesCaptor.capture(), any(), anyList());
         assertThat(parameterTypesCaptor.getValue(), contains(expectedType));
+    }
+    
+    @Test
+    void assertExecuteWithCharacterLongData() throws SQLException {
+        MySQLServerPreparedStatement preparedStatement = prepareLongDataStatement(MySQLBinaryColumnType.VAR_STRING);
+        byte[] value = "中".getBytes(StandardCharsets.UTF_8);
+        sendLongData(preparedStatement, 0, Arrays.copyOfRange(value, 0, 1));
+        sendLongData(preparedStatement, 0, Arrays.copyOfRange(value, 1, value.length));
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(4);
+        when(packet.readParameters(anyList(), any(), anyList())).thenReturn(new ArrayList<>(Collections.singletonList(null)));
+        MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
+        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        when(packet.getPayload()).thenReturn(payload);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(prepareSelectStatement()));
+        AtomicReference<QueryContext> actualQueryContext = new AtomicReference<>();
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenAnswer(invocation -> {
+            actualQueryContext.set(invocation.getArgument(1));
+            return proxyBackendHandler;
+        });
+        new MySQLComStmtExecuteExecutor(packet, connectionSession).execute();
+        assertThat(actualQueryContext.get().getParameters(), contains("中"));
+        assertTrue(preparedStatement.getLongDataIndexes().isEmpty());
+    }
+    
+    @Test
+    void assertClearLongDataWhenReadingParametersFails() throws SQLException {
+        MySQLServerPreparedStatement preparedStatement = prepareLongDataStatement(MySQLBinaryColumnType.BLOB);
+        sendLongData(preparedStatement, 0, "foo_data".getBytes(StandardCharsets.UTF_8));
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(4);
+        SQLException expected = new SQLException("expected");
+        when(packet.readParameters(anyList(), any(), anyList())).thenThrow(expected);
+        SQLException actual = assertThrows(SQLException.class, () -> new MySQLComStmtExecuteExecutor(packet, connectionSession).execute());
+        assertThat(actual, is(expected));
+        assertTrue(preparedStatement.getLongDataIndexes().isEmpty());
+    }
+    
+    @Test
+    void assertClearLongDataBeforeBackendFailure() throws SQLException {
+        MySQLServerPreparedStatement preparedStatement = prepareLongDataStatement(MySQLBinaryColumnType.BLOB);
+        sendLongData(preparedStatement, 0, "foo_data".getBytes(StandardCharsets.UTF_8));
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(4);
+        when(packet.readParameters(anyList(), any(), anyList())).thenReturn(new ArrayList<>(Collections.singletonList(null)));
+        MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
+        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        when(packet.getPayload()).thenReturn(payload);
+        SQLException expected = new SQLException("expected");
+        when(proxyBackendHandler.execute()).thenThrow(expected);
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        SQLException actual = assertThrows(SQLException.class, () -> new MySQLComStmtExecuteExecutor(packet, connectionSession).execute());
+        assertThat(actual, is(expected));
+        assertTrue(preparedStatement.getLongDataIndexes().isEmpty());
+    }
+    
+    @Test
+    void assertKeepTooLargeLongDataErrorAfterExecute() throws SQLException {
+        MySQLServerPreparedStatement preparedStatement = prepareLongDataStatement(MySQLBinaryColumnType.BLOB);
+        byte[] chunk = new byte[1024 * 1024];
+        for (int i = 0; i < 64; i++) {
+            sendLongData(preparedStatement, 0, chunk);
+        }
+        sendLongData(preparedStatement, 0, new byte[1]);
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(4);
+        assertThrows(SQLException.class, () -> new MySQLComStmtExecuteExecutor(packet, connectionSession).execute());
+        assertThrows(SQLException.class, preparedStatement::getLongDataIndexes);
+        verify(packet, never()).readParameters(anyList(), any(), anyList());
     }
 }

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
-import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
@@ -46,6 +46,8 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -56,8 +58,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -75,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -90,9 +93,9 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.OptionalInt;
-import java.util.Locale;
 
 /**
  * Firebird prepare transaction command executor.
@@ -111,7 +114,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(packet.getSQL(), true);
+        SQLStatement sqlStatement = resolveCurrentDatabase(sqlParserRule.getSQLParserEngine(databaseType).parse(packet.getSQL(), true));
         SQLStatementContext sqlStatementContext = new SQLBindEngine(
                 metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
         int statementId = getStatementId();
@@ -121,6 +124,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         return createResponse(sqlStatementContext, metaDataContexts);
+    }
+    
+    private SQLStatement resolveCurrentDatabase(final SQLStatement sqlStatement) {
+        if (!(sqlStatement instanceof DropDatabaseStatement) || null != ((DropDatabaseStatement) sqlStatement).getDatabaseName()) {
+            return sqlStatement;
+        }
+        String currentDatabaseName = connectionSession.getUsedDatabaseName();
+        ShardingSpherePreconditions.checkNotNull(currentDatabaseName, NoDatabaseSelectedException::new);
+        return new DropDatabaseStatement(sqlStatement.getDatabaseType(), currentDatabaseName, ((DropDatabaseStatement) sqlStatement).isIfExists());
     }
     
     private int getStatementId() {
@@ -150,7 +162,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                     }
                     break;
                 default:
-                    throw new FirebirdProtocolException("Unknown statement info request type %d", packet.getCurrentItem());
+                    throw new DatabaseProtocolException("Unknown statement info request type %d", packet.getCurrentItem());
             }
         }
         return Collections.singleton(new FirebirdGenericResponsePacket().setData(returnPacket));
@@ -226,15 +238,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void processReturnValues(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                      final Collection<FirebirdSQLInfoPacketType> requestedItems) {
         String databaseName = connectionSession.getCurrentDatabaseName();
-        String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName);
-        ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        ShardingSphereSchema schema = database.findDefaultSchema().orElse(null);
         Collection<Projection> projections = getProjections(sqlStatementContext, schema);
         int columnCount = 0;
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
                 String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
                 ShardingSphereTable table = schema.getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
-                if (table == null) {
+                if (null == table) {
                     table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema("system_tables")
                             .getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
                 }
@@ -271,7 +283,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
             return subqueryProjections;
         }
-        if (returningSegment == null) {
+        if (null == returningSegment) {
             return Collections.emptyList();
         }
         ProjectionEngine projectionEngine = new ProjectionEngine(sqlStatementContext.getSqlStatement().getDatabaseType());
@@ -315,10 +327,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Collection<ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
         int parametersCount = sqlStatementContext.getSqlStatement().getParameterMarkers().size();
         String databaseName = connectionSession.getCurrentDatabaseName();
-        String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName);
+        ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).findDefaultSchema().orElse(null);
         int columnCount = 0;
         for (ColumnSegment columnSegment : affectedColumns) {
-            ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
+            ShardingSphereTable table = schema.getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
             ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
             processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
         }
@@ -335,10 +347,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             affectedColumns.addAll(processInsertValueContext(sqlStatementContext, context));
         }
         String databaseName = connectionSession.getCurrentDatabaseName();
-        String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName);
+        ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).findDefaultSchema().orElse(null);
         int columnCount = 0;
         for (String tableName : tableNames) {
-            ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName);
+            ShardingSphereTable table = schema.getTable(tableName);
             for (String columnName : affectedColumns) {
                 ShardingSphereColumn column = table.getColumn(columnName);
                 processColumn(describeColumns, requestedItems, table, column, null, null, ++columnCount);

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.resource;
 
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

@@ -85,12 +85,10 @@ public final class EncryptWorkflowPlanningService {
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
         if (!planningSupport.ensureSupportedOperationType(clarifiedIntent, SUPPORTED_OPERATION_TYPES, result)) {
-            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
-            return workflowSessionContext.persist(result, currentStep, result.getStatus());
+            return planningSupport.persistPlanningInterruption(workflowSessionContext, result);
         }
         if (!planningSupport.ensurePlanningContext(metadataQueryFacade, queryFacade, mergedRequest, clarifiedIntent, result)) {
-            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
-            return workflowSessionContext.persist(result, currentStep, result.getStatus());
+            return planningSupport.persistPlanningInterruption(workflowSessionContext, result);
         }
         queryFacade.checkDatabaseCapability(mergedRequest.getDatabase());
         List<Map<String, Object>> existingRules = ruleInspectionService.queryEncryptRules(queryFacade, mergedRequest.getDatabase(), mergedRequest.getTable());
@@ -118,23 +116,13 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private ClarifiedIntent resolveIntent(final EncryptWorkflowRequest request) {
-        ClarifiedIntent result = new ClarifiedIntent();
-        resolveOperationType(request, result);
+        ClarifiedIntent result = planningSupport.createOperationIntent(request, WorkflowLifecycle.OPERATION_CREATE);
         if (WorkflowLifecycle.OPERATION_CREATE.equalsIgnoreCase(result.getOperationType())) {
             addMissingRequirement(result, WorkflowFieldNames.REQUIRES_DECRYPT, request.getOptions().getRequiresDecrypt(), "Do you need reversible decryption?");
             addMissingRequirement(result, WorkflowFieldNames.REQUIRES_EQUALITY_FILTER, request.getOptions().getRequiresEqualityFilter(), "Do you need equality query?");
             addMissingRequirement(result, WorkflowFieldNames.REQUIRES_LIKE_QUERY, request.getOptions().getRequiresLikeQuery(), "Do you need LIKE query?");
         }
         return result;
-    }
-    
-    private void resolveOperationType(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-        if (!request.getOperationType().isEmpty()) {
-            clarifiedIntent.setOperationType(request.getOperationType());
-        } else if (request.getNaturalLanguageIntent().isEmpty()) {
-            clarifiedIntent.setOperationType(WorkflowLifecycle.OPERATION_CREATE);
-            clarifiedIntent.getInferredValues().put(WorkflowFieldNames.OPERATION_TYPE, WorkflowLifecycle.OPERATION_CREATE);
-        }
     }
     
     private void addMissingRequirement(final ClarifiedIntent clarifiedIntent, final String fieldName, final Boolean value, final String message) {

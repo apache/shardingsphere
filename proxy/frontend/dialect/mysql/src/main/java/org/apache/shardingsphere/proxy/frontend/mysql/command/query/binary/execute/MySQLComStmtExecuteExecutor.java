@@ -54,6 +54,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * COM_STMT_EXECUTE command executor for MySQL.
@@ -73,9 +74,18 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
-        List<MySQLPreparedStatementParameterType> parameterTypes = getParameterTypes(preparedStatement);
-        List<Object> params = packet.readParameters(parameterTypes, preparedStatement.getLongData().keySet(), preparedStatement.getParameterColumnTypes());
-        preparedStatement.getLongData().forEach(params::set);
+        Set<Integer> longDataIndexes = preparedStatement.getLongDataIndexes();
+        List<Object> params;
+        if (longDataIndexes.isEmpty()) {
+            params = readParameters(preparedStatement, longDataIndexes);
+        } else {
+            try {
+                params = readParameters(preparedStatement, longDataIndexes);
+                preparedStatement.applyLongData(params, packet.getPayload().getCharset());
+            } finally {
+                preparedStatement.clearLongData();
+            }
+        }
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).bindParameters(params);
@@ -85,6 +95,10 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "MySQL"), queryContext, connectionSession, true);
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader);
+    }
+    
+    private List<Object> readParameters(final MySQLServerPreparedStatement preparedStatement, final Set<Integer> longDataIndexes) throws SQLException {
+        return packet.readParameters(getParameterTypes(preparedStatement), longDataIndexes, preparedStatement.getParameterColumnTypes());
     }
     
     private List<MySQLPreparedStatementParameterType> getParameterTypes(final MySQLServerPreparedStatement preparedStatement) {

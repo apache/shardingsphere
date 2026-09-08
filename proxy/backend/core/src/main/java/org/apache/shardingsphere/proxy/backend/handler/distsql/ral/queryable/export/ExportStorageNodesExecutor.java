@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNode;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNodes;
@@ -74,7 +74,7 @@ public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<Ex
         storageNodes.setStorageNodes(null == sqlStatement.getDatabaseName()
                 ? getAllStorageNodes(metaData)
                 : generateDatabaseExportStorageNodesData(metaData.getDatabase(sqlStatement.getDatabaseName())));
-        return JsonUtils.toJsonString(storageNodes);
+        return JsonEngine.marshal(storageNodes);
     }
     
     private Map<String, Collection<ExportedStorageNode>> getAllStorageNodes(final ShardingSphereMetaData metaData) {

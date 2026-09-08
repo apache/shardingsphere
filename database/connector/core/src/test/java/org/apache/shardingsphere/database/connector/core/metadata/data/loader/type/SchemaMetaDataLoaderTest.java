@@ -18,36 +18,39 @@
 package org.apache.shardingsphere.database.connector.core.metadata.data.loader.type;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyProvider;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
-import org.mockito.MockedStatic;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,9 +73,9 @@ class SchemaMetaDataLoaderTest {
         when(schemaOption.getSchema(any())).thenReturn("public");
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(IdentifierCasePolicyProvider.class, databaseType)).thenReturn(Optional.empty());
             try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
                 typedSPILoader.when(() -> TypedSPILoader.getService(DialectDatabaseMetaData.class, null)).thenReturn(dialectDatabaseMetaData);
                 Connection connection = dataSourceWithoutDefaultSchema.getConnection();
@@ -90,15 +93,17 @@ class SchemaMetaDataLoaderTest {
     }
     
     @Test
-    void assertLoadSchemaTableNamesNormalizesDatabaseNameWithoutDefaultSchema() throws SQLException {
+    void assertLoadSchemaTableNamesUsesStorageIdentifierPolicyWithoutDefaultSchema() throws SQLException {
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
         when(schemaOption.getDefaultSchema()).thenReturn(Optional.empty());
         when(schemaOption.getSchema(any())).thenReturn("public");
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.UPPER_CASE);
+        IdentifierCasePolicyProvider identifierCasePolicyProvider = mock(IdentifierCasePolicyProvider.class);
+        when(identifierCasePolicyProvider.provide(any())).thenReturn(IdentifierCasePolicyFactory.newUpperCasePolicySet());
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(IdentifierCasePolicyProvider.class, databaseType)).thenReturn(Optional.of(identifierCasePolicyProvider));
             try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
                 typedSPILoader.when(() -> TypedSPILoader.getService(DialectDatabaseMetaData.class, null)).thenReturn(dialectDatabaseMetaData);
                 Connection connection = dataSourceWithoutDefaultSchema.getConnection();
@@ -111,6 +116,7 @@ class SchemaMetaDataLoaderTest {
                         .loadSchemaTableNames("logic_db", dataSourceWithoutDefaultSchema, Collections.emptySet(), Collections.emptySet());
                 Map<String, Collection<String>> expected = Collections.singletonMap("LOGIC_DB", new LinkedHashSet<>(Collections.singleton("tbl")));
                 assertThat(actual, is(expected));
+                verify(identifierCasePolicyProvider).provide(argThat(each -> dataSourceWithoutDefaultSchema == each.getDataSource()));
             }
         }
     }
@@ -122,9 +128,9 @@ class SchemaMetaDataLoaderTest {
         when(schemaOption.getSchema(any())).thenReturn("public");
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(IdentifierCasePolicyProvider.class, databaseType)).thenReturn(Optional.empty());
             try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
                 typedSPILoader.when(() -> TypedSPILoader.getService(DialectDatabaseMetaData.class, null)).thenReturn(dialectDatabaseMetaData);
                 Connection connection = dataSourceWithoutDefaultSchema.getConnection();
@@ -148,9 +154,9 @@ class SchemaMetaDataLoaderTest {
         when(schemaOption.getSchema(any())).thenReturn("public");
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(IdentifierCasePolicyProvider.class, databaseType)).thenReturn(Optional.empty());
             try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
                 typedSPILoader.when(() -> TypedSPILoader.getService(DialectDatabaseMetaData.class, null)).thenReturn(dialectDatabaseMetaData);
                 Connection connection = dataSourceWithoutDefaultSchema.getConnection();

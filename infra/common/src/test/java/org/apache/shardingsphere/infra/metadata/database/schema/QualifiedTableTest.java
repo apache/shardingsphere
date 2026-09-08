@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.metadata.database.schema;
 
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class QualifiedTableTest {
     

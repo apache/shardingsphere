@@ -20,9 +20,10 @@ package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executo
 import io.netty.util.Attribute;
 import io.netty.util.AttributeMap;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset.PostgreSQLCharsetVariableProvider;
@@ -52,7 +53,9 @@ class PostgreSQLResetVariableAdminExecutorTest {
         PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement(databaseType, "key"));
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(requiredSessionVariableRecorder);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(CharsetVariableProvider.class, databaseType)).thenReturn(Optional.empty());
             ReplayedSessionVariableProvider replayedSessionVariableProvider = mock(ReplayedSessionVariableProvider.class);
@@ -60,12 +63,13 @@ class PostgreSQLResetVariableAdminExecutorTest {
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType)).thenReturn(Optional.of(replayedSessionVariableProvider));
             executor.execute(connectionSession, mock());
             verify(requiredSessionVariableRecorder).setVariable("key", "DEFAULT");
+            verify(databaseConnectionManager).markSessionVariablesDirty();
         }
     }
     
     @Test
     void assertExecuteWithClientEncoding() {
-        PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement(databaseType, "client_encoding"));
+        final PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement(databaseType, "client_encoding"));
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
         AttributeMap attributeMap = mock(AttributeMap.class);

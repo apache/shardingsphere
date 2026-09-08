@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.orderby.engine;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -41,8 +41,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

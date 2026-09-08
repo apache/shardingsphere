@@ -34,8 +34,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class OnDuplicateUpdateContextTest {
     

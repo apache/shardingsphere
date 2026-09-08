@@ -67,7 +67,7 @@ public final class PipelinePrepareSQLBuilder {
      * @return count SQL
      */
     public String buildCountSQL(final String schemaName, final String tableName) {
-        return String.format("SELECT COUNT(*) FROM %s", sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+        return String.format("SELECT COUNT(*) FROM %s", sqlSegmentBuilder.getQualifiedActualTableName(schemaName, tableName));
     }
     
     /**
@@ -79,7 +79,7 @@ public final class PipelinePrepareSQLBuilder {
      * @return estimated count SQL
      */
     public Optional<String> buildEstimatedCountSQL(final String catalogName, final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildEstimatedCountSQL(catalogName, sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+        return dialectSQLBuilder.buildEstimatedCountSQL(catalogName, sqlSegmentBuilder.getQualifiedActualTableName(schemaName, tableName));
     }
     
     /**
@@ -91,8 +91,8 @@ public final class PipelinePrepareSQLBuilder {
      * @return min max unique key SQL
      */
     public String buildUniqueKeyMinMaxValuesSQL(final String schemaName, final String tableName, final String uniqueKey) {
-        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT MIN(%s), MAX(%s) FROM %s", escapedUniqueKey, escapedUniqueKey, sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+        String escapedUniqueKey = sqlSegmentBuilder.getEscapedActualIdentifier(uniqueKey);
+        return String.format("SELECT MIN(%s), MAX(%s) FROM %s", escapedUniqueKey, escapedUniqueKey, sqlSegmentBuilder.getQualifiedActualTableName(schemaName, tableName));
     }
     
     /**
@@ -103,7 +103,7 @@ public final class PipelinePrepareSQLBuilder {
      * @return check SQL
      */
     public String buildCheckEmptyTableSQL(final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildCheckEmptyTableSQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+        return dialectSQLBuilder.buildCheckEmptyTableSQL(sqlSegmentBuilder.getQualifiedActualTableName(schemaName, tableName));
     }
     
     /**
@@ -116,8 +116,8 @@ public final class PipelinePrepareSQLBuilder {
      * @return split SQL
      */
     public String buildSplitByUniqueKeyRangedSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean hasLowerBound) {
-        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        String subQueryClause = dialectSQLBuilder.buildSplitByUniqueKeyRangedSubqueryClause(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), escapedUniqueKey, hasLowerBound);
+        String escapedUniqueKey = sqlSegmentBuilder.getEscapedActualIdentifier(uniqueKey);
+        String subQueryClause = dialectSQLBuilder.buildSplitByUniqueKeyRangedSubqueryClause(sqlSegmentBuilder.getQualifiedActualTableName(schemaName, tableName), escapedUniqueKey, hasLowerBound);
         return String.format("SELECT MAX(%s), COUNT(1), MIN(%s) FROM (%s) t", escapedUniqueKey, escapedUniqueKey, subQueryClause);
     }
 }

@@ -219,7 +219,11 @@ distinct
     ;
 
 specialFunction
-    : castFunction | convertFunction | positionFunction | substringFunction | extractFunction | trimFunction
+    : castFunction | convertFunction | positionFunction | substringFunction | extractFunction | trimFunction | systemUserFunction
+    ;
+
+systemUserFunction
+    : SYSTEM_USER
     ;
 
 castFunction

@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration.RuntimeMode;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.DockerRuntimeTestSupport;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
@@ -135,10 +135,7 @@ public final class LLMRuntimeSupport {
     }
     
     private static void requireDockerAvailable() {
-        if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage(
-                    "Docker is required to start the prepackaged llama.cpp server for MCP LLM E2E."));
-        }
+        DockerRuntimeTestSupport.requireAvailable("Docker is required to start the prepackaged llama.cpp server for MCP LLM E2E.");
     }
     
     private static ScoreImage requireScoreImageAvailable(final LLME2EConfiguration config) {

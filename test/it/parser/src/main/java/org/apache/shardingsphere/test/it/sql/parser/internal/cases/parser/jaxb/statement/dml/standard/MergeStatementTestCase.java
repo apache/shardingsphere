@@ -20,10 +20,12 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.error.ExpectedErrorLoggingClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMergeWhenAndThenSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hint.ExpectedWithTableHintClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedReturningClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.output.ExpectedOutputClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedWithClause;
@@ -54,6 +56,9 @@ public final class MergeStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "insert")
     private InsertStatementTestCase insertClause;
     
+    @XmlElement(name = "error-logging")
+    private ExpectedErrorLoggingClause errorLoggingClause;
+    
     @XmlElement(name = "merge-items")
     private List<ExpectedMergeWhenAndThenSegment> mergeWhenAndThenSegments = new LinkedList<>();
     
@@ -68,4 +73,7 @@ public final class MergeStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "index")
     private List<ExpectedIndex> indexes = new LinkedList<>();
+    
+    @XmlElement(name = "returning")
+    private ExpectedReturningClause returningClause;
 }

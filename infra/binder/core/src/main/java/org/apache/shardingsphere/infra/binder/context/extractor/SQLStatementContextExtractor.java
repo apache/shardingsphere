@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.binder.context.extractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
@@ -64,12 +63,12 @@ public final class SQLStatementContextExtractor {
             return tableNames;
         }
         return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(IndexSQLStatementAttribute.class)
-                .map(optional -> getTableNames(database, sqlStatementContext.getSqlStatement().getDatabaseType(), optional.getIndexes())).orElse(Collections.emptyList());
+                .map(optional -> getTableNames(database, optional.getIndexes())).orElse(Collections.emptyList());
     }
     
-    private static Collection<String> getTableNames(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<IndexSegment> indexes) {
+    private static Collection<String> getTableNames(final ShardingSphereDatabase database, final Collection<IndexSegment> indexes) {
         Collection<String> result = new LinkedList<>();
-        for (QualifiedTable each : IndexMetaDataUtils.getTableNames(database, databaseType, indexes)) {
+        for (QualifiedTable each : IndexMetaDataUtils.getTableNames(database, indexes)) {
             result.add(each.getTableName());
         }
         return result;

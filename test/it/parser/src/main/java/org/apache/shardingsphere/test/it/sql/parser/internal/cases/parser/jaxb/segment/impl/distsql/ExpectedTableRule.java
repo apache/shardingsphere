@@ -46,6 +46,9 @@ public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegmen
     @XmlAttribute(name = "key-generate-strategy-column")
     private String keyGenerateStrategyColumn;
     
+    @XmlAttribute(name = "key-generator-name")
+    private String keyGeneratorName;
+    
     @XmlElement(name = "key-generate-strategy")
     private ExpectedAlgorithm keyGenerateStrategy;
     

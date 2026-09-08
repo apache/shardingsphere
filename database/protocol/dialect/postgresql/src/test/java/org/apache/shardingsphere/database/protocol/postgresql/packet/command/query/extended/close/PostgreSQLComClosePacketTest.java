@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.close;
 
-import org.apache.shardingsphere.database.protocol.postgresql.exception.PostgreSQLProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,7 @@ class PostgreSQLComClosePacketTest {
     
     @Test
     void assertInvalidType() {
-        assertThrows(PostgreSQLProtocolException.class, () -> new PostgreSQLComClosePacket(payload));
+        assertThrows(DatabaseProtocolException.class, () -> new PostgreSQLComClosePacket(payload));
     }
     
     private PostgreSQLComClosePacket newPacket(final char type, final String name) {

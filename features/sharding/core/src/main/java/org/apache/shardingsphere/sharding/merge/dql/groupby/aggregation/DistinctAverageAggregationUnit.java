@@ -21,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Distinct average aggregation unit.
@@ -35,30 +35,28 @@ public final class DistinctAverageAggregationUnit implements AggregationUnit {
     
     private BigDecimal sum;
     
-    private final Collection<Comparable<?>> countValues = new LinkedHashSet<>();
-    
-    private final Collection<Comparable<?>> sumValues = new LinkedHashSet<>();
+    private final Set<Comparable<?>> distinctValues = new LinkedHashSet<>();
     
     @Override
     public void merge(final List<Comparable<?>> values) {
         if (null == values || null == values.get(0) || null == values.get(1)) {
             return;
         }
-        if (countValues.add(values.get(0)) && sumValues.add(values.get(0))) {
+        if (distinctValues.add(values.get(0))) {
             if (null == count) {
                 count = BigDecimal.ZERO;
             }
             if (null == sum) {
                 sum = BigDecimal.ZERO;
             }
-            count = count.add(new BigDecimal(values.get(0).toString()));
+            count = count.add(BigDecimal.ONE);
             sum = sum.add(new BigDecimal(values.get(1).toString()));
         }
     }
     
     @Override
     public Comparable<?> getResult() {
-        if (null == count || BigDecimal.ZERO.compareTo(count) == 0) {
+        if (null == count) {
             return count;
         }
         // TODO use metadata to fetch float number precise for database field

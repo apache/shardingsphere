@@ -20,10 +20,10 @@ package org.apache.shardingsphere.transaction.distsql.handler.update;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLGlobalRuleDefinitionExecutorAssert;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLRuleDefinitionExecutorSettings;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLRuleDefinitionExecutorTestCaseArgumentsProvider;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 

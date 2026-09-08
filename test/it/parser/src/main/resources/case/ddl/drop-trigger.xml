@@ -23,4 +23,9 @@
     <drop-trigger sql-case-id="drop_trigger_cascade" />
     <drop-trigger sql-case-id="drop_trigger_restrict" />
     <drop-trigger sql-case-id="drop_trigger_doris_simple" />
+    <drop-trigger sql-case-id="drop_trigger_with_owner_visitor_oracle">
+        <trigger-name name="foo_trigger" start-index="13" stop-index="34">
+            <owner name="foo_schema" start-index="13" stop-index="22" />
+        </trigger-name>
+    </drop-trigger>
 </sql-parser-test-cases>

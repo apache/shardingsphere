@@ -30,7 +30,23 @@ import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
 @Getter
 public enum FirebirdState implements SQLState {
     
-    UNAVAILABLE_DATABASE("08001");
+    UNAVAILABLE_DATABASE("08001"),
+    
+    INVALID_BATCH_HANDLE("08003"),
+    
+    BATCH_TOO_BIG("54000"),
+    
+    CHARSET_NOT_FOUND("2C000"),
+    
+    INVALID_STATEMENT_HANDLE("26000"),
+    
+    INVALID_TRANSACTION_HANDLE("08003"),
+    
+    BATCH_ALREADY_OPENED("08002"),
+    
+    BATCH_PARAMETERS_REQUIRED("07001"),
+    
+    SQLDA_ERROR("07002");
     
     private final String value;
 }

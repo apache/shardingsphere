@@ -36,14 +36,14 @@ import org.mockito.MockedConstruction;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -94,14 +94,30 @@ class SingleTableLoadUtilsTest {
     }
     
     @Test
+    void assertConvertToDataNodesWithDefaultSchemaName() {
+        Collection<DataNode> expected = Arrays.asList(new DataNode("foo_ds", "foo_schema", "foo_tbl"), new DataNode("bar_ds", "foo_schema", "schema.bar_tbl.part"));
+        assertThat(SingleTableLoadUtils.convertToDataNodesWithDefaultSchemaName("foo_schema", databaseType, Arrays.asList("foo_ds.foo_tbl", "bar_ds.schema.bar_tbl.part")),
+                is(new LinkedList<>(expected)));
+    }
+    
+    @Test
     void assertGetAllTablesNodeStr() {
         assertThat(SingleTableLoadUtils.getAllTablesNodeStr(databaseType), is("*.*"));
     }
     
     @Test
     void assertGetAllTablesNodeStrWithSchema() {
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry()) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
             assertThat(SingleTableLoadUtils.getAllTablesNodeStr(databaseType), is("*.*.*"));
+        }
+    }
+    
+    @Test
+    void assertFormatBySchemaAvailabilityWhenDefaultSchemaExists() {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(false)) {
+            assertThat(SingleTableLoadUtils.getAllTablesNodeStr(databaseType), is("*.*.*"));
+            assertThat(SingleTableLoadUtils.getAllTablesNodeStrFromDataSource(databaseType, "foo_ds", "foo_schema"), is("foo_ds.*"));
+            assertThat(SingleTableLoadUtils.getDataNodeString(databaseType, "foo_ds", "foo_schema", "foo_tbl"), is("foo_ds.foo_tbl"));
         }
     }
     
@@ -112,7 +128,7 @@ class SingleTableLoadUtilsTest {
     
     @Test
     void assertGetAllTablesNodeStrFromDataSourceWithSchema() {
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry()) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
             assertThat(SingleTableLoadUtils.getAllTablesNodeStrFromDataSource(databaseType, "foo_ds", "foo_schema"), is("foo_ds.foo_schema.*"));
         }
     }
@@ -124,14 +140,15 @@ class SingleTableLoadUtilsTest {
     
     @Test
     void assertGetDataNodeStringWithSchema() {
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry()) {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
             assertThat(SingleTableLoadUtils.getDataNodeString(databaseType, "foo_ds", "foo_schema", "foo_tbl"), is("foo_ds.foo_schema.foo_tbl"));
         }
     }
     
-    private MockedConstruction<DatabaseTypeRegistry> mockSchemaRegistry() {
+    private MockedConstruction<DatabaseTypeRegistry> mockSchemaRegistry(final boolean schemaAvailable) {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("foo_schema"));
+        when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
         return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
     }
     

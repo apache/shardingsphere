@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
-import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
 import org.apache.shardingsphere.mcp.api.MCPRequestContext;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceURIVariables;
+import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorCatalogIndex;
-import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
 
 import java.util.Set;
 

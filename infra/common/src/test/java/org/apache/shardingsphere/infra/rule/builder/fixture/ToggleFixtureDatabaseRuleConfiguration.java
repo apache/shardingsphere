@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.rule.builder.fixture;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
 @AllArgsConstructor
 public final class ToggleFixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {

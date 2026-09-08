@@ -23,12 +23,12 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.type.SQLServerDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.type.SQLServerDCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.type.SQLServerDDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.type.SQLServerDMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.type.SQLServerTCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
 /**
  * Statement visitor facade for SQLServer.

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.ExplainSQLSyntaxE
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.RuleDistSQLExecutionException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -42,7 +43,7 @@ final class MCPSQLRecoveryPayloadFactory {
     
     static Map<String, Object> createSQLToolMismatchRecovery(final SQLToolMismatchException cause) {
         Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(createSQLToolMismatchCategory(cause),
-                "database_gateway_execute_update".equals(cause.getTargetTool())
+                CoreToolNames.EXECUTE_UPDATE.equals(cause.getTargetTool())
                         ? "Use database_gateway_execute_update in preview mode, then execute only when the requested side effect is still intended."
                         : "Use database_gateway_execute_query for this read-only SQL.");
         result.put("source_tool", cause.getSourceTool());
@@ -67,7 +68,7 @@ final class MCPSQLRecoveryPayloadFactory {
         result.put(MCPPayloadFieldNames.NEXT_ACTIONS, MCPNextActionUtils.ordered(
                 MCPNextActionUtils.readResource(createDatabaseCapabilityUri(cause.getDatabase()),
                         "Read the target database type before regenerating database-native explain_sql."),
-                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_execute_explain_query",
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(CoreToolNames.EXECUTE_EXPLAIN_QUERY,
                         "Regenerate explain_sql from sql without changing sql, then retry the explain tool with the generated explain_sql.",
                         createExplainRetryArguments(cause)), 1)));
         return result;
@@ -174,11 +175,11 @@ final class MCPSQLRecoveryPayloadFactory {
                 String.valueOf(resource.get(MCPPayloadFieldNames.URI)), String.valueOf(resource.get(MCPPayloadFieldNames.REASON)));
         if (List.of("storage_unit").equals(suggestedArguments.get("object_types"))) {
             return MCPNextActionUtils.ordered(readResource,
-                    MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_search_metadata",
+                    MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(CoreToolNames.SEARCH_METADATA,
                             "Search storage units with an explicit database or query scope instead of executing metadata SQL.", suggestedArguments), 1));
         }
         return MCPNextActionUtils.ordered(readResource,
-                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("database_gateway_search_metadata",
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(CoreToolNames.SEARCH_METADATA,
                         "Search metadata with an explicit database, schema, query, or object_types scope instead of executing metadata SQL.", suggestedArguments), 1));
     }
     
@@ -215,11 +216,11 @@ final class MCPSQLRecoveryPayloadFactory {
     }
     
     private static String createSQLToolMismatchCategory(final SQLToolMismatchException cause) {
-        return "database_gateway_execute_update".equals(cause.getTargetTool()) ? "unsafe_sql_attempted" : "read_only_sql_sent_to_update_tool";
+        return CoreToolNames.EXECUTE_UPDATE.equals(cause.getTargetTool()) ? "unsafe_sql_attempted" : "read_only_sql_sent_to_update_tool";
     }
     
     private static String createSQLToolMismatchActionReason(final SQLToolMismatchException cause) {
-        return "database_gateway_execute_update".equals(cause.getTargetTool())
+        return CoreToolNames.EXECUTE_UPDATE.equals(cause.getTargetTool())
                 ? "Retry side-effecting SQL in preview mode with the normalized SQL and preserved context."
                 : "Retry the read-only SQL with database_gateway_execute_query using the normalized SQL and preserved context.";
     }

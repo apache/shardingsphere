@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.exception.external.server;
 import org.apache.shardingsphere.infra.exception.external.server.fixture.ShardingSphereFixtureServerException;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class ShardingSphereServerExceptionTest {
     

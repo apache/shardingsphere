@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.database.connector.firebird.metadata.data;
 
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_workload_group_max_cpu_percent" value="ALTER WORKLOAD GROUP g2 PROPERTIES(&quot;max_cpu_percent&quot; = &quot;10%&quot;)" db-types="Doris" />
+    <sql-case id="alter_workload_group_read_bytes_per_second" value="ALTER WORKLOAD GROUP g2 PROPERTIES(&quot;read_bytes_per_second&quot; = &quot;104857600&quot;)" db-types="Doris" />
+    <sql-case id="alter_workload_group_multiple_properties" value="ALTER WORKLOAD GROUP g3 PROPERTIES(&quot;cpu_share&quot; = &quot;1024&quot;, &quot;memory_limit&quot; = &quot;30%&quot;)" db-types="Doris" />
+</sql-cases>

@@ -47,7 +47,8 @@ public final class OracleProjectionIdentifierExtractor implements DialectProject
                 return String.format("'%s'", literal.toString().replace("'", "''"));
             }
         }
-        return expressionSegment.getText().replace(" ", "").toUpperCase();
+        String text = expressionSegment.getText();
+        return null == text ? "" : text.replace(" ", "").toUpperCase();
     }
     
     @Override

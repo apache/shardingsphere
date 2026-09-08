@@ -28,7 +28,6 @@
     
     <properties>
         <prometheus-simpleclient.version>0.11.0</prometheus-simpleclient.version>
-        <prometheus-jmx.version>0.16.1</prometheus-jmx.version>
     </properties>
     
     <dependencyManagement>
@@ -39,11 +38,6 @@
                 <version>${prometheus-simpleclient.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.prometheus.jmx</groupId>
-                <artifactId>collector</artifactId>
-                <version>${prometheus-jmx.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -68,10 +62,6 @@
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_httpserver</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.prometheus.jmx</groupId>
-            <artifactId>collector</artifactId>
-        </dependency>
     </dependencies>
     
     <build>
@@ -92,10 +82,6 @@
                                 <relocation>
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.yaml.snakeyaml</pattern>
-                                    <shadedPattern>${shade.package}.org.yaml.snakeyaml</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>io.prometheus.client</pattern>

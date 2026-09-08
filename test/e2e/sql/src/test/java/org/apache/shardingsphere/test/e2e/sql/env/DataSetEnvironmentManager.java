@@ -375,7 +375,7 @@ public final class DataSetEnvironmentManager {
         private void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
             for (SQLValue each : sqlValueGroup.getValues()) {
                 if ("Hive".equalsIgnoreCase(databaseType.getType()) && each.getValue() instanceof Date) {
-                    preparedStatement.setDate(each.getIndex(), (java.sql.Date) each.getValue());
+                    preparedStatement.setDate(each.getIndex(), (Date) each.getValue());
                 } else {
                     preparedStatement.setObject(each.getIndex(), each.getValue());
                 }

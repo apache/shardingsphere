@@ -10,8 +10,8 @@ All references to Seata integration in this article refer to Seata AT mode.
 
 ## Prerequisites
 
-ShardingSphere's Seata integration is only available in `apache/incubator-seata:v2.6.0` or higher.
-For Seata Client corresponding to the `org.apache.seata:seata-all` Maven module, this limitation applies to both HotSpot VM and GraalVM Native Image.
+This document targets Apache Seata 2.6.0.
+Use `org.apache.seata:seata-all:2.6.0` as the Seata Client dependency for both HotSpot VM and GraalVM Native Image.
 Introduce Maven dependencies and exclude the outdated Maven dependency of `org.antlr:antlr4-runtime:4.8` in `org.apache.seata:seata-all`.
 
 ```xml
@@ -37,10 +37,7 @@ Introduce Maven dependencies and exclude the outdated Maven dependency of `org.a
 </project>
 ```
 
-When using ShardingSphere's Seata integration module, 
-the database instance connected to ShardingSphere should implement both ShardingSphere's dialect parsing support and Seata AT mode's dialect parsing support.
-This type of database includes but is not limited to `mysql`, `gvenzl/oracle-free`, `gvenzl/oracle-xe`, `postgres`, 
-`mcr.microsoft.com/mssql/server` and other Docker Images.
+The database must be supported by both ShardingSphere and Seata AT mode.
 
 ### `undo_log` table restrictions
 
@@ -302,27 +299,31 @@ transaction:
    providerType: Seata
 ```
 
-### Enjoy integration
+### Verify transaction rollback
 
-You can start enjoying integration on ShardingSphere’s data source.
+The following example verifies that an unsuccessful transaction is rolled back on the ShardingSphere data source.
 
 ```java
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-@SuppressWarnings({"SqlNoDataSourceInspection", "AssertWithSideEffects"})
+
+@SuppressWarnings("SqlNoDataSourceInspection")
 public class ExampleTest {
     void test() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:shardingsphere:classpath:demo.yaml");
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         try (HikariDataSource dataSource = new HikariDataSource(config)) {
-            try (Connection conn = dataSource.getConnection()) {
+            try (Connection conn = dataSource.getConnection(); Statement statement = conn.createStatement()) {
+                conn.setAutoCommit(false);
+                statement.executeUpdate("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (2024, 1, 2024, 'INSERT_TEST')");
                 try {
-                    conn.setAutoCommit(false);
-                    conn.createStatement().executeUpdate("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (2024, 1, 2024, 'INSERT_TEST')");
-                    conn.createStatement().executeUpdate("INSERT INTO t_order_does_not_exist (test_id_does_not_exist) VALUES (2024)");
+                    statement.executeUpdate("INSERT INTO t_order_does_not_exist (test_id_does_not_exist) VALUES (2024)");
                     conn.commit();
                 } catch (final SQLException ignored) {
                     conn.rollback();
@@ -330,8 +331,11 @@ public class ExampleTest {
                     conn.setAutoCommit(true);
                 }
             }
-            try (Connection conn = dataSource.getConnection()) {
-                assert !conn.createStatement().executeQuery("SELECT * FROM t_order_item WHERE user_id = 2024").next();
+            try (Connection conn = dataSource.getConnection(); Statement statement = conn.createStatement();
+                    ResultSet resultSet = statement.executeQuery("SELECT * FROM t_order WHERE user_id = 2024")) {
+                if (resultSet.next()) {
+                    throw new IllegalStateException("Transaction rollback failed.");
+                }
             }
         }
     }
@@ -342,12 +346,10 @@ public class ExampleTest {
 
 ShardingSphere's Seata integration does not support isolation levels.
 
-ShardingSphere's Seata integration places the obtained Seata global transaction into the thread's local variables.
-And `org.apache.seata.spring.annotation.GlobalTransactionScanner` uses Dynamic Proxy to enhance the method.
-This means that when using ShardingSphere's Seata integration, users should avoid using the Java API of `org.apache.seata:seata-all`, 
-unless the user is mixing ShardingSphere's Seata integration with the TCC mode feature of Seata Client.
+ShardingSphere manages the Seata global transaction for its JDBC data source.
+Do not use another global transaction entry point to manage transactions on the same data source.
 
-For ShardingSphere data source, 7 situations are discussed.
+The following rules apply to ShardingSphere data sources.
 
 1. Manually obtain the `java.sql.Connection` instance created from the ShardingSphere data source and manually call the `setAutoCommit()`, `commit()` and `rollback()` methods.
 This is allowed.
@@ -412,266 +414,18 @@ seata:
    enable-auto-data-source-proxy: false
 ```
 
-### Mixed use with Seata TCC mode features
+### Mixing with other Seata transaction modes
 
-For the case of setting up ShardingSphere's Seata integration,
-In business functions unrelated to ShardingSphere JDBC DataSource, if you need to use Seata Client's Seata TCC mode-related features in business functions,
-you can instantiate a non-proxy ordinary TCC interface implementation class, and then use `org.apache.integration.tx.api.util.ProxyUtil` to create a proxy TCC interface class,
-and call the functions corresponding to the three stages of the TCC interface implementation class `Try`, `Confirm`, and `Cancel`.
+ShardingSphere's Seata integration supports AT mode only.
 
-For the `org.apache.seata.spring.annotation.GlobalTransactional` annotation introduced by the Seata TCC mode or the business functions involved in the Seata TCC mode that need to interact with the database instance, 
-ShardingSphere JDBC DataSource should not be used in the business functions marked by this annotation. Instead, 
-a `javax.sql.DataSource` instance should be created manually or obtained from a custom Spring Bean.
+If an application uses Seata TCC, use a separate data source that is not managed by ShardingSphere JDBC and follow the Apache Seata documentation for TCC configuration and APIs.
 
-### Transactional propagation across service calls
+### Transaction propagation across service calls
 
-Transactional propagationn in cross-service call scenarios is not as out-of-the-box as transaction operations within a single microservice.
-For Seata Server, transactional propagation in cross-service call scenarios requires passing XID to the service provider through service calls and binding it to `org.apache.seata.core.context.RootContext`.
-Refer to https://seata.apache.org/docs/user/api/ . This requires discussing two situations,
+ShardingSphere JDBC's Seata AT integration makes database operations on the current ShardingSphere data source participate in a Seata global transaction.
+It does not propagate the Seata XID between services.
 
-1. In the scenario of using ShardingSphere JDBC, 
-transaction scenarios across multiple microservices need to consider using `org.apache.seata.core.context.RootContext.getXID()` to obtain Seata XID in the context of the starting microservice,
-and passing it to the end microservice through HTTP or RPC, and processing it in the Filter or Spring WebMVC HandlerInterceptor of the end microservice.
-Spring WebMVC HandlerInterceptor is only applicable to Spring Boot microservices and is invalid for Quarkus, Micronaut Framework and Helidon.
+When a transaction crosses an HTTP, RPC, messaging, or other service boundary, the application framework and Seata Client are responsible for propagating, binding, and clearing the XID.
+Follow the Apache Seata documentation for the Seata version and communication framework in use.
 
-2. In the scenario of using ShardingSphere Proxy, multiple microservices operate local transactions against the logical data source of ShardingSphere Proxy.
-This will be converted into distributed transaction operations on the server side of ShardingSphere Proxy, without considering additional Seata XID.
-
-Introduce a simple scenario to continue discussing the transactional propagation across service calls in the scenario of using ShardingSphere JDBC.
-
-1. MySQL database instance `a-mysql`, all databases have created `UNDO_LOG` table and business table.
-2. MySQL database instance `b-mysql`, all databases have created `UNDO_LOG` table and business table.
-3. Seata Server instance `a-seata-server` using `file` as configuration center and registration center.
-4. Microservice instance `a-service`. This microservice creates a ShardingSphere JDBC DataSource that only configures the database instance `a-mysql`.
-This ShardingSphere JDBC DataSource configuration uses the Seata AT integration connected to the Seata Server instance `a-seata-server`, 
-whose Seata Application Id is `service-a`, whose Seata transaction group is `default_tx_group`, 
-and the Seata Transaction Coordinator cluster group pointed to by its `Virtual Group Mapping` is `default`.
-This microservice instance `a-service` exposes a single Restful API GET endpoint as `/hello`,
-and the business function `aMethod` of this Restful API endpoint uses a common local transaction annotation.
-If this microservice is based on Spring Boot 2,
-
-```java
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class DemoController {
-   @Transactional
-   @GetMapping("/hello")
-   public String aMethod() {
-      // ... Perform an UPDATE operation on the database instance `a-mysql`
-      return "Hello World!";
-   }
-}
-```
-
-5. Microservice instance `b-service`. This microservice creates a ShardingSphere JDBC DataSource that only configures the database instance `b-mysql`.
-This ShardingSphere JDBC DataSource configuration uses the Seata AT integration connected to the Seata Server instance `a-seata-server`, 
-whose Seata Application Id is `service-b`, whose Seata transaction group is `default_tx_group`, 
-and whose `Virtual Group Mapping` points to the Seata Transaction Coordinator cluster group as `default`.
-The business function `bMethod` of this microservice instance `b-service` uses a normal local transaction annotation, 
-and calls the `/hello` Restful API endpoint of the microservice instance `a-service` through the HTTP Client in `bMethod`.
-If this microservice is based on Spring Boot 2,
-
-```java
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-@Service
-public class DemoService {
-   @Transactional
-   public void bMethod() {
-      RestTemplate restTemplate = new RestTemplateBuilder().build();
-      restTemplate.getForEntity("http://a-service/hello", String.class);
-      // ... Perform an UPDATE operation on the database instance `b-mysql`
-   }
-}
-```
-
-For this simple scenario, there is a single Seata Server Cluster, which contains a single `Virtual Group` as `default`. 
-This `Virtual Group` contains a single Seata Server instance as `a-seata-server`.
-
-Discuss transaction propagation for single service calls. When the business function `aMethod` of the microservice instance `a-service` throws an exception, 
-the changes to the MySQL database instance `a-mysql` in the business function will be rolled back normally.
-
-Discuss transaction propagation for cross-service calls. When the business function `bMethod` of the microservice instance `b-service` throws an exception, 
-the changes to the MySQL database instance `b-mysql` in the business function will be rolled back normally,
-and the `org.apache.seata.core.context.RootContext` of the microservice instance `a-service` is not bound to the Seata XID of the business function `bMethod` of the microservice instance `b-service`,
-so the changes to the MySQL database instance `a-mysql` in the business function will not be rolled back.
-
-In order to achieve that when the business function `bMethod` of the microservice instance `b-service` throws an exception, 
-the changes to the MySQL database instances `a-mysql` and `b-mysql` in the business function are rolled back normally,
-discuss the common processing solutions in different scenarios.
-
-1. The microservice instances `a-service` and `b-service` are both Spring Boot 2 microservices based on Jakarta EE 8.
-Users can use `org.springframework.web.client.RestTemplate` in the business function `bMethod` of the microservice instance `b-service` to pass the XID to the microservice instance `a-service` through the service call.
-The possible transformation logic is as follows.
-
-```java
-import org.apache.seata.core.context.RootContext;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-@Service
-public class DemoService {
-    @Transactional
-    public void bMethod() {
-        RestTemplate restTemplate = new RestTemplateBuilder().additionalInterceptors((request, body, execution) -> {
-                    String xid = RootContext.getXID();
-                    if (null != xid) {
-                        request.getHeaders().add(RootContext.KEY_XID, xid);
-                    }
-                    return execution.execute(request, body);
-                })
-                .build();
-        restTemplate.getForEntity("http://a-service/hello", String.class);
-        // ... Perform an UPDATE operation on the database instance `b-mysql`
-    }
-}
-```
-
-At this time, a custom `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` implementation needs to be added to the microservice instance `a-service`.
-
-```java
-import org.apache.seata.integration.http.TransactionPropagationInterceptor;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-@Configuration
-public class CustomWebMvcConfigurer implements WebMvcConfigurer {
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TransactionPropagationInterceptor());
-    }
-}
-```
-
-At this time, when the business function `bMethod` of the microservice instance `b-service` throws an exception, 
-the changes to the MySQL database instances `a-mysql` and `b-mysql` in the business function are rolled back normally.
-
-2. The microservice instances `a-service` and `b-service` are both Spring Boot 3 microservices based on Jakarta EE 9/10.
-Users can use `org.springframework.web.client.RestClient` in the business function `bMethod` of the microservice instance `b-service` to pass the XID to the microservice instance `a-service` through a service call.
-The possible transformation logic is as follows.
-
-```java
-import org.apache.seata.core.context.RootContext;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
-
-@Service
-public class DemoService {
-    @Transactional
-    public void bMethod() {
-        RestClient restClient = RestClient.builder().requestInterceptor((request, body, execution) -> {
-                    String xid = RootContext.getXID();
-                    if (null != xid) {
-                        request.getHeaders().add(RootContext.KEY_XID, xid);
-                    }
-                    return execution.execute(request, body);
-                })
-                .build();
-        restClient.get().uri("http://a-service/hello").retrieve().body(String.class);
-        // ... Perform an UPDATE operation on the database instance `b-mysql`
-    }
-}
-```
-
-At this time, 
-a custom `org.springframework.web.servlet.config.annotation.WebMvcConfigurer` implementation needs to be added to the microservice instance `a-service`.
-
-```java
-import org.apache.seata.integration.http.JakartaTransactionPropagationInterceptor;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-@Configuration
-public class CustomWebMvcConfigurer implements WebMvcConfigurer {
-
-   @Override
-   public void addInterceptors(InterceptorRegistry registry) {
-      registry.addInterceptor(new JakartaTransactionPropagationInterceptor());
-   }
-}
-```
-
-At this time, when the business function `bMethod` of the microservice instance `b-service` throws an exception, 
-the changes to the MySQL database instances `a-mysql` and `b-mysql` in the business function are rolled back normally.
-
-3. The microservice instances `a-service` and `b-service` are both Spring Boot microservices, 
-but the API gateway middleware used blocks all HTTP requests containing the HTTP Header of `TX_XID`.
-The user needs to consider changing the HTTP Header used to pass XID to the microservice instance `a-service` through service calls, 
-or use the RPC framework to pass XID to the microservice instance `a-service` through service calls.
-Refer to https://github.com/apache/incubator-seata/tree/v2.6.0/extensions/rpc .
-
-4. The microservice instances `a-service` and `b-service` are both microservices such as Quarkus, 
-Micronaut Framework and Helidon. In this case, Spring WebMVC HandlerInterceptor cannot be used.
-You can refer to the following Spring Boot 3 custom WebMvcConfigurer implementation to implement Filter.
-
-```java
-import org.apache.seata.common.util.StringUtils;
-import org.apache.seata.core.context.RootContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.NonNull;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-@Configuration
-public class CustomWebMvcConfigurer implements WebMvcConfigurer {
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new HandlerInterceptor() {
-            @Override
-            public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
-                String rpcXid = request.getHeader(RootContext.KEY_XID);
-                String xid = RootContext.getXID();
-                if (StringUtils.isBlank(xid) && StringUtils.isNotBlank(rpcXid)) {
-                    RootContext.bind(rpcXid);
-                }
-                return true;
-            }
-            @Override
-            public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, Exception ex) {
-                if (RootContext.inGlobalTransaction()) {
-                    String rpcXid = request.getHeader(RootContext.KEY_XID);
-                    String xid = RootContext.getXID();
-                    if (StringUtils.isNotBlank(xid)) {
-                        String unbindXid = RootContext.unbind();
-                        if (!StringUtils.equalsIgnoreCase(rpcXid, unbindXid)) {
-                            if (StringUtils.isNotBlank(unbindXid)) {
-                                RootContext.bind(unbindXid);
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-}
-```
-
-5. Both microservice instances `a-service` and `b-service` are Spring Boot microservices, but the components used are Spring WebFlux instead of Spring WebMVC.
-ShardingSphere JDBC cannot handle R2DBC DataSource under the reactive programming API, only JDBC DataSource.
-Avoid creating ShardingSphere JDBC DataSource in Spring Boot microservices using WebFlux components.
-
-### Log Configuration
-
-After starting Seata Client in a business project, you may see the following Error Log.
-
-```shell
-[ERROR] 2024-12-20 11:46:43.878 [ForkJoinPool.commonPool-worker-1] o.a.s.config.ConfigurationFactory - failed to load non-spring configuration :not found service provider for : org.apache.seata.config.ConfigurationProvider
-org.apache.seata.common.loader.EnhancedServiceNotFoundException: not found service provider for : org.apache.seata.config.ConfigurationProvider
-```
-
-According to https://github.com/apache/incubator-seata/issues/6886 , throwing this exception is the expected behavior of Seata Client.
-If logback is used as the implementation of SLF4J, users can configure the Seata Client's logging by placing `logback.xml` in the classpath of their business project.
+ShardingSphere does not prescribe transport headers, framework filters or interceptors, or manual XID context operations.

@@ -40,8 +40,8 @@ import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttri
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
@@ -63,9 +63,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -390,7 +390,8 @@ class SingleRuleTest {
         SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mockDatabase();
-        String defaultSchemaName = database.getName();
+        String defaultSchemaName = "foo_default_schema";
+        when(database.getDefaultSchemaName()).thenReturn(defaultSchemaName);
         if (useSimpleTableSegments) {
             Collection<SimpleTableSegment> simpleTableSegments = createSimpleTableSegments();
             when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(simpleTableSegments);

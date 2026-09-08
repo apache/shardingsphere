@@ -84,8 +84,7 @@ public final class ShardingSphereDatabase {
     }
     
     private ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                   final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas,
-                                   final DatabaseIdentifierContext identifierContext) {
+                                   final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas, final DatabaseIdentifierContext identifierContext) {
         this.name = name;
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
@@ -307,6 +306,21 @@ public final class ShardingSphereDatabase {
      * @return default schema name
      */
     public String getDefaultSchemaName() {
-        return new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name);
+        String defaultSchemaIdentifier = getDefaultSchemaIdentifier();
+        return findSchema(new IdentifierValue(defaultSchemaIdentifier)).map(ShardingSphereSchema::getName).orElse(defaultSchemaIdentifier);
+    }
+    
+    private String getDefaultSchemaIdentifier() {
+        return new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema()
+                .orElseGet(() -> identifierContext.normalizeProtocol(IdentifierScope.SCHEMA, new IdentifierValue(name)));
+    }
+    
+    /**
+     * Find default schema.
+     *
+     * @return default schema
+     */
+    public Optional<ShardingSphereSchema> findDefaultSchema() {
+        return findSchema(new IdentifierValue(getDefaultSchemaIdentifier()));
     }
 }

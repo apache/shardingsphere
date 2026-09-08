@@ -38,8 +38,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -104,7 +104,7 @@ class EncryptTableChangedProcessorTest {
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
-        EncryptTableRuleConfiguration toBeChangedItemConfig = new EncryptTableRuleConfiguration("foo_tbl",
+        EncryptTableRuleConfiguration toBeChangedItemConfig = new EncryptTableRuleConfiguration("FOO_TBL",
                 Collections.singleton(new EncryptColumnRuleConfiguration("foo_col", new EncryptColumnItemRuleConfiguration("foo_col_cipher", "foo_algo"))));
         return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(toBeChangedItemConfig)), Collections.emptyMap());
     }

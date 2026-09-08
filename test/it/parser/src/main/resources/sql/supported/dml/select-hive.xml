@@ -95,6 +95,13 @@
     <sql-case id="hive_select_tablesample_filesize" value="SELECT sampled_order.order_id FROM t_order TABLESAMPLE(100M) sampled_order" db-types="Hive" />
     <sql-case id="hive_select_transform" value="SELECT transformed_user_id FROM (SELECT TRANSFORM(user_id) USING 'cat' AS (transformed_user_id INT) FROM t_user) transformed_user" db-types="Hive" />
     <sql-case id="hive_select_map_transform" value="SELECT transformed_user_id FROM (FROM t_user MAP user_id USING 'cat' AS transformed_user_id) transformed_user" db-types="Hive" />
+    <sql-case id="hive_select_transform_default_output" value="SELECT TRANSFORM(user_id) USING 'cat' FROM t_user" db-types="Hive" />
+    <sql-case id="hive_select_map_transform_multiple_inputs" value="FROM t_user MAP user_id, user_name USING 'cat' AS transformed_user_id, transformed_user_name" db-types="Hive" />
+    <sql-case id="hive_select_grouping_with_cube_multiple_items" value="SELECT status, merchant_id, grouping__id, count(*) FROM t_order GROUP BY status, merchant_id WITH CUBE" db-types="Hive" />
+    <sql-case id="hive_select_system_column_variable" value="SELECT `INPUT__FILE__NAME` FROM t_user" db-types="Hive" />
+    <sql-case id="hive_select_row_number_window" value="SELECT ROW_NUMBER() OVER (PARTITION BY merchant_id, telephone ORDER BY creation_date DESC) AS row_number_value FROM t_merchant" db-types="Hive" />
+    <sql-case id="hive_select_avg_window" value="SELECT avg(quantity) OVER (PARTITION BY order_id ORDER BY item_id ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS avg_quantity FROM t_order_item" db-types="Hive" />
+    <sql-case id="hive_select_count_distinct_window" value="SELECT count(DISTINCT product_id) OVER (PARTITION BY order_id) AS distinct_product_count FROM t_order_item" db-types="Hive" />
     <sql-case id="hive_select_cluster_by" value="SELECT order_id FROM t_order CLUSTER BY user_id" db-types="Hive" />
     <sql-case id="hive_select_order_by_nulls" value="SELECT order_id FROM t_order ORDER BY remark ASC NULLS FIRST" db-types="Hive" />
     <sql-case id="hive_select_sort_by" value="SELECT order_id FROM t_order SORT BY order_id DESC" db-types="Hive" />

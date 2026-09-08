@@ -42,9 +42,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -81,7 +80,7 @@ class CreateViewFederationMetaDataRefresherTest {
         verify(metaDataManagerPersistService).alterViews(eq(database), eq(schemaName), alteredViewsCaptor.capture());
         verify(metaDataManagerPersistService, never()).dropViews(eq(database), anyString(), anyCollection());
         Collection<ShardingSphereView> alteredViews = alteredViewsCaptor.getValue();
-        assertThat(alteredViews, hasSize(1));
+        assertThat(alteredViews.size(), is(1));
         ShardingSphereView actualView = alteredViews.iterator().next();
         assertThat(actualView.getName(), is("foo_view"));
         assertThat(actualView.getViewDefinition(), is(expectedViewDefinition));

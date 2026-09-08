@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
@@ -181,8 +180,9 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     
     private String createConfigurationContent(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         RuntimeTransport transport = getTransport();
-        MCPTransportType transportType = RuntimeTransport.HTTP == transport ? MCPTransportType.HTTP : MCPTransportType.STDIO;
-        return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(
-                new MCPLaunchConfiguration(transportType, new HttpTransportConfiguration(LOOPBACK_BIND_HOST, 0, ENDPOINT_PATH), runtimeDatabases)));
+        MCPLaunchConfiguration launchConfig = RuntimeTransport.HTTP == transport
+                ? new MCPLaunchConfiguration(new HttpTransportConfiguration(LOOPBACK_BIND_HOST, 0, ENDPOINT_PATH), runtimeDatabases)
+                : new MCPLaunchConfiguration(runtimeDatabases);
+        return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(launchConfig));
     }
 }

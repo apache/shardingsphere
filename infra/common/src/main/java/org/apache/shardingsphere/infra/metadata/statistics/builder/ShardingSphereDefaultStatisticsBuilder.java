@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.builder;
 
-import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.statistics.DatabaseStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.RowStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.SchemaStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
 
 import java.util.Collections;
 

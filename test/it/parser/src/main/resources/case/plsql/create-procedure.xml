@@ -27,6 +27,22 @@
             <sql-statement start-index="1403" stop-index="1445" statement-class-simple-name="RollbackStatement" />
         </sql-statements>
         <procedure-calls>
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
             <procedure-call name="DBMS_OUTPUT.PUT_LINE" />
             <procedure-call name="DBMS_OUTPUT.PUT_LINE" />
         </procedure-calls>
@@ -44,6 +60,22 @@
             <sql-statement start-index="1403" stop-index="1445" statement-class-simple-name="RollbackStatement" />
         </sql-statements>
         <procedure-calls>
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
+            <procedure-call name="TRUNC" />
             <procedure-call name="DBMS_OUTPUT.PUT_LINE" />
             <procedure-call name="DBMS_OUTPUT.PUT_LINE" />
         </procedure-calls>

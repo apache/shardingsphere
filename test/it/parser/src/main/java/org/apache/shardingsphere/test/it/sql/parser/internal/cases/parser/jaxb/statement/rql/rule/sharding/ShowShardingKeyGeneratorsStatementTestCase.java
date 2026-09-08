@@ -17,10 +17,19 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Show sharding key generators statement test case.
  */
+@Getter
+@Setter
 public final class ShowShardingKeyGeneratorsStatementTestCase extends DatabaseContainedTestCase {
+    
+    @XmlAttribute
+    private String name;
 }

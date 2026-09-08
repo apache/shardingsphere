@@ -18,4 +18,8 @@
 
 <sql-parser-test-cases>
     <common sql-case-id="analyze_table_doris" />
+    <common sql-case-id="analyze_table_with_sample_percent" />
+    <common sql-case-id="analyze_table_with_sample_rows" />
+    <common sql-case-id="analyze_table_with_sync" />
+    <common sql-case-id="analyze_table_with_columns_and_sample_percent" />
 </sql-parser-test-cases>

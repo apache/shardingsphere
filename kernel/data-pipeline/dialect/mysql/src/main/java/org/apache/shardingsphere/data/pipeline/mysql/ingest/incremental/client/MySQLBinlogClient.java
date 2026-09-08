@@ -51,7 +51,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErr
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.proxy.frontend.netty.ChannelAttrInitializer;
 
 import java.net.InetSocketAddress;
@@ -363,7 +363,7 @@ public final class MySQLBinlogClient {
         
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-            log.error("MySQLBinlogEventHandler protocol resolution error, channel: {}, lastBinlogEvent: {}", ctx.channel(), JsonUtils.toJsonString(lastBinlogEvent.get()), cause);
+            log.error("MySQLBinlogEventHandler protocol resolution error, channel: {}, lastBinlogEvent: {}", ctx.channel(), JsonEngine.marshal(lastBinlogEvent.get()), cause);
             continuousFailureCount.incrementAndGet();
             closeChannel(false);
         }
@@ -378,7 +378,7 @@ public final class MySQLBinlogClient {
         private synchronized void reconnect() {
             log.info("Reconnect failure count: {}", continuousFailureCount.get());
             if (continuousFailureCount.get() >= 5) {
-                log.error("MySQL binlog client failed permanently, lastBinlogEvent: {}", JsonUtils.toJsonString(lastBinlogEvent.get()));
+                log.error("MySQL binlog client failed permanently, lastBinlogEvent: {}", JsonEngine.marshal(lastBinlogEvent.get()));
                 closeChannel(true);
                 return;
             }
@@ -388,7 +388,7 @@ public final class MySQLBinlogClient {
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
-                log.error("Reconnect failed permanently, lastBinlogEvent: {}", JsonUtils.toJsonString(lastBinlogEvent.get()), ex);
+                log.error("Reconnect failed permanently, lastBinlogEvent: {}", JsonEngine.marshal(lastBinlogEvent.get()), ex);
                 closeChannel(true);
                 return;
             }

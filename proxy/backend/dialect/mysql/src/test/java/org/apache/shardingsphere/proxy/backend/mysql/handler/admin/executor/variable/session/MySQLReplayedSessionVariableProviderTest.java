@@ -20,10 +20,14 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.var
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.stream.Stream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class MySQLReplayedSessionVariableProviderTest {
     
@@ -31,9 +35,16 @@ class MySQLReplayedSessionVariableProviderTest {
     
     private final ReplayedSessionVariableProvider provider = TypedSPILoader.getService(ReplayedSessionVariableProvider.class, databaseType);
     
-    @Test
-    void assertIsNeedToReplay() {
-        assertTrue(provider.isNeedToReplay("@@tx_isolation"));
-        assertFalse(provider.isNeedToReplay("tx_isolation"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("replayArguments")
+    void assertIsNeedToReplay(final String name, final String variableName, final boolean expected) {
+        assertThat(provider.isNeedToReplay(variableName), is(expected));
+    }
+    
+    private static Stream<Arguments> replayArguments() {
+        return Stream.of(
+                Arguments.of("user variable", "@@tx_isolation", true),
+                Arguments.of("connection collation", "COLLATION_CONNECTION", true),
+                Arguments.of("discarded system variable", "tx_isolation", false));
     }
 }

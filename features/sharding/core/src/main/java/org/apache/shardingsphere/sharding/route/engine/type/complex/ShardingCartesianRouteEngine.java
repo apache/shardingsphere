@@ -74,12 +74,15 @@ public final class ShardingCartesianRouteEngine implements ShardingRouteEngine {
     
     private Collection<String> getIntersectionDataSources() {
         Collection<String> result = new HashSet<>();
+        boolean initialized = false;
         for (RouteContext each : routeContexts) {
             Collection<String> actualDataSourceNames = each.getActualDataSourceNames();
-            if (result.isEmpty()) {
+            if (!initialized) {
                 result.addAll(actualDataSourceNames);
+                initialized = true;
+            } else {
+                result.retainAll(actualDataSourceNames);
             }
-            result.retainAll(actualDataSourceNames);
         }
         return result;
     }

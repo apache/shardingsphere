@@ -95,7 +95,7 @@
             <parameter name="extra_float_digits" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_names">
+    <set-parameter sql-case-id="set_names_mysql">
         <parameter-assign value="'utf8'">
             <parameter name="character_set_client" />
         </parameter-assign>
@@ -104,6 +104,53 @@
         </parameter-assign>
         <parameter-assign value="'utf8'">
             <parameter name="character_set_connection" />
+        </parameter-assign>
+        <parameter-assign value="'utf8_general_ci'">
+            <parameter name="collation_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_names_doris">
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_names_default_mysql">
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_character_set_mysql">
+        <parameter-assign value="latin1">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="latin1">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="@@collation_database">
+            <parameter name="collation_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_character_set_default_mysql">
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="DEFAULT">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="@@collation_database">
+            <parameter name="collation_connection" />
         </parameter-assign>
     </set-parameter>
     <set-parameter sql-case-id="set_character_set_doris">
@@ -167,5 +214,65 @@
             <parameter name="max_connections" scope="GLOBAL" />
         </parameter-assign>
         <comment start-index="0" stop-index="41" text="/*!80029 SET GLOBAL max_connections=456 */" />
+    </set-parameter>
+    <set-parameter sql-case-id="set_extproc_dlls_oracle">
+        <parameter-assign value="ANY">
+            <parameter name="EXTPROC_DLLS" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_linesize_oracle">
+        <parameter-assign value="130">
+            <parameter name="LINESIZE" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_pagesize_oracle">
+        <parameter-assign value="0">
+            <parameter name="PAGESIZE" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_logsource_quoted_oracle">
+        <parameter-assign value="&quot;/tmp&quot;">
+            <parameter name="LOGSOURCE" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_logsource_unquoted_oracle">
+        <parameter-assign value="/tmp">
+            <parameter name="LOGSOURCE" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_dbid_oracle">
+        <parameter-assign value="1625818158">
+            <parameter name="DBID" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_dbid_with_equal_oracle">
+        <parameter-assign value="1625818158">
+            <parameter name="DBID" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_decryption_oracle">
+        <parameter-assign value="password">
+            <parameter name="DECRYPTION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_decryption_single_quoted_oracle">
+        <parameter-assign value="'my_bkup_pwd'">
+            <parameter name="DECRYPTION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_decryption_double_quoted_oracle">
+        <parameter-assign value="&quot;N0Way!&quot;">
+            <parameter name="DECRYPTION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_extproc_dlls_empty_oracle">
+        <parameter-assign>
+            <parameter name="EXTPROC_DLLS" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_extproc_dlls_list_oracle">
+        <parameter-assign value="DLL1:DLL2">
+            <parameter name="EXTPROC_DLLS" />
+        </parameter-assign>
     </set-parameter>
 </sql-parser-test-cases>

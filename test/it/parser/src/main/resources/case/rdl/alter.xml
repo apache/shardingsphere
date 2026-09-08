@@ -377,4 +377,21 @@
             </column>
         </rule>
     </alter-mask-rule>
+
+    <alter-sharding-key-generate-strategy sql-case-id="alter-sharding-key-generate-strategy-with-generator" name="order_id_strategy">
+        <strategy type="COLUMN" table-name="t_order" column-name="order_id" key-generator-name="snowflake_generator" />
+    </alter-sharding-key-generate-strategy>
+
+    <alter-sharding-key-generator sql-case-id="alter-sharding-key-generator" name="snowflake_generator">
+        <algorithm algorithm-name="UUID" />
+    </alter-sharding-key-generator>
+
+    <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule-with-key-generator">
+        <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="order_id" key-generator-name="snowflake_generator">
+            <data-source>ds_0</data-source>
+            <table-strategy algorithm-name="hash_mod">
+                <property key="sharding-count" value="2" />
+            </table-strategy>
+        </rule>
+    </alter-sharding-auto-table-rule>
 </sql-parser-test-cases>

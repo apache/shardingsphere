@@ -35,11 +35,13 @@ import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.mode.persist.mode.ModePersistServiceFacade;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import java.util.Arrays;
 
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -123,8 +125,9 @@ class DropDatabaseRuleOperatorTest {
             mockedStatic.when(() -> TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, TestDatabaseRuleConfiguration.class)).thenReturn(emptyChecker);
             ruleOperator.operate(sqlStatement, database, currentRuleConfig);
         }
-        verify(metaDataManagerPersistService).removeRuleConfigurationItem(database, toBeDroppedRuleItemConfig);
-        verify(metaDataManagerPersistService).alterRuleConfiguration(database, toBeAlteredRuleConfig);
+        InOrder actual = inOrder(metaDataManagerPersistService);
+        actual.verify(metaDataManagerPersistService).removeRuleConfigurationItem(database, toBeDroppedRuleItemConfig);
+        actual.verify(metaDataManagerPersistService).alterRuleConfiguration(database, toBeAlteredRuleConfig);
         verify(metaDataManagerPersistService, never()).removeRuleConfiguration(database, currentRuleConfig, "test_rule");
     }
     
@@ -149,8 +152,9 @@ class DropDatabaseRuleOperatorTest {
             mockedStatic.when(() -> TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, TestDatabaseRuleConfiguration.class)).thenReturn(emptyChecker);
             ruleOperator.operate(sqlStatement, database, currentRuleConfig);
         }
-        verify(metaDataManagerPersistService).removeRuleConfigurationItem(database, toBeDroppedRuleItemConfig);
-        verify(metaDataManagerPersistService).removeRuleConfiguration(database, currentRuleConfig, "test_rule");
+        InOrder actual = inOrder(metaDataManagerPersistService);
+        actual.verify(metaDataManagerPersistService).removeRuleConfigurationItem(database, toBeDroppedRuleItemConfig);
+        actual.verify(metaDataManagerPersistService).removeRuleConfiguration(database, currentRuleConfig, "test_rule");
         verify(metaDataManagerPersistService, never()).alterRuleConfiguration(database, toBeAlteredRuleConfig);
     }
     

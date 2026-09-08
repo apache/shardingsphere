@@ -25,8 +25,8 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.PriorityQueue;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class CSNRecordsComparatorTest {

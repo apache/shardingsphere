@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-table sql-case-id="drop_table">
+    <drop-table sql-case-id="drop_table" temporary="false">
         <table name="t_log" start-index="11" stop-index="15" />
     </drop-table>
     
@@ -60,7 +60,7 @@
         <table name="t_order" start-index="25" stop-index="31" />
     </drop-table>
     
-    <drop-table sql-case-id="drop_temporary_table">
+    <drop-table sql-case-id="drop_temporary_table" temporary="true">
         <table name="t_order" start-index="21" stop-index="27" />
     </drop-table>
     

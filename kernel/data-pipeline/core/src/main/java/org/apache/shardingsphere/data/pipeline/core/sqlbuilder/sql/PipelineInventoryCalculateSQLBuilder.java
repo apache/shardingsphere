@@ -62,10 +62,10 @@ public final class PipelineInventoryCalculateSQLBuilder {
     
     private String buildRangeQueryOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final Range<?> range,
                                                final List<String> shardingColumnsNames) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable);
-        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedActualTableName(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
+        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedActualIdentifier).collect(Collectors.joining(","));
         String firstUniqueKey = uniqueKeys.get(0);
-        String orderByColumns = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + " ASC").collect(Collectors.joining(", "));
+        String orderByColumns = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedActualIdentifier(each) + " ASC").collect(Collectors.joining(", "));
         if (null != range.getLowerBound() && null != range.getUpperBound()) {
             return String.format("SELECT %s FROM %s WHERE %s AND %s ORDER BY %s", queryColumns, qualifiedTableName,
                     buildRangeQueryLowerCondition(range.isLowerInclusive(), firstUniqueKey),
@@ -84,11 +84,11 @@ public final class PipelineInventoryCalculateSQLBuilder {
     
     private String buildRangeQueryLowerCondition(final boolean inclusive, final String firstUniqueKey) {
         String delimiter = inclusive ? ">=?" : ">?";
-        return sqlSegmentBuilder.getEscapedIdentifier(firstUniqueKey) + delimiter;
+        return sqlSegmentBuilder.getEscapedActualIdentifier(firstUniqueKey) + delimiter;
     }
     
     private String buildRangeQueryUpperCondition(final String firstUniqueKey) {
-        return sqlSegmentBuilder.getEscapedIdentifier(firstUniqueKey) + "<=?";
+        return sqlSegmentBuilder.getEscapedActualIdentifier(firstUniqueKey) + "<=?";
     }
     
     /**
@@ -101,9 +101,9 @@ public final class PipelineInventoryCalculateSQLBuilder {
      * @return built SQL
      */
     public String buildPointQuerySQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final List<String> shardingColumnsNames) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable);
-        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
-        String equalsConditions = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + "=?").collect(Collectors.joining(" AND "));
+        String qualifiedTableName = sqlSegmentBuilder.getQualifiedActualTableName(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
+        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedActualIdentifier).collect(Collectors.joining(","));
+        String equalsConditions = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedActualIdentifier(each) + "=?").collect(Collectors.joining(" AND "));
         return String.format("SELECT %s FROM %s WHERE %s", queryColumns, qualifiedTableName, equalsConditions);
     }
     

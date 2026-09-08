@@ -118,10 +118,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.DeclareVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.DeclareVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service.SQLServerAlterServiceStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service.SQLServerCreateServiceStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service.SQLServerDropServiceStatement;
@@ -184,8 +184,8 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = isPrimaryKey(ctx);
-        // TODO parse not null
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false, getText(ctx));
+        boolean isNotNull = ctx.columnDefinitionOption().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull, getText(ctx));
         for (ColumnDefinitionOptionContext each : ctx.columnDefinitionOption()) {
             for (ColumnConstraintContext columnConstraint : each.columnConstraint()) {
                 if (null != columnConstraint.columnForeignKeyConstraint()) {
@@ -309,7 +309,8 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
         // TODO visit pk and table ref
         ColumnSegment column = (ColumnSegment) visit(ctx.alterColumnOperation().columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
-        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false, getText(ctx));
+        boolean isNotNull = null != ctx.NOT() && null != ctx.NULL();
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, isNotNull, getText(ctx));
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     

@@ -46,8 +46,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
@@ -85,10 +85,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -335,6 +334,7 @@ class ProxyDatabaseConnectionManagerTest {
     @Test
     void assertGetConnectionsAndReplaySessionVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         ProxyContext proxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance()).thenReturn(proxyContext);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
@@ -343,6 +343,69 @@ class ProxyDatabaseConnectionManagerTest {
         List<Connection> actualConnections = databaseConnectionManager.getConnections("foo_db", "", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         Connection actualConnection = actualConnections.get(0);
         verify(actualConnection.createStatement()).execute("SET key=value");
+    }
+    
+    @Test
+    void assertGetConnectionsWithoutReplayingVariablesForDifferentDatabaseType() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("collation_connection", "'utf8mb4_unicode_ci'");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(connection)));
+        verify(connection, never()).createStatement();
+    }
+    
+    @Test
+    void assertGetConnectionsAndReplaySessionVariablesForBranchProtocol() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("collation_connection", "'utf8mb4_unicode_ci'");
+        DatabaseType branchProtocolType = mock(DatabaseType.class);
+        when(branchProtocolType.getTrunkDatabaseType()).thenReturn(Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
+        when(connectionSession.getProtocolType()).thenReturn(branchProtocolType);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn("MySQL");
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(connection)));
+        verify(connection.createStatement()).execute("SET collation_connection='utf8mb4_unicode_ci'");
+    }
+    
+    @Test
+    void assertGetConnectionsWithoutReplaySQL() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        when(connectionSession.getProtocolType()).thenReturn(databaseType);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn(databaseType.getType());
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(connection)));
+        verify(connection, never()).createStatement();
+    }
+    
+    @Test
+    void assertGetCachedConnectionsAndReplayDirtySessionVariables() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+        databaseConnectionManager.getCachedConnections().put("foo_db.ds1", connection);
+        databaseConnectionManager.markSessionVariablesDirty();
+        assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(connection)));
+        verify(connection.createStatement()).execute("SET key=value");
+    }
+    
+    @Test
+    void assertGetCachedConnectionsAndFailedToReplayDirtySessionVariables() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+        SQLException expectedException = new SQLException("");
+        when(connection.createStatement().execute("SET key=value")).thenThrow(expectedException);
+        databaseConnectionManager.getCachedConnections().put("foo_db.ds1", connection);
+        databaseConnectionManager.markSessionVariablesDirty();
+        assertThat(assertThrows(SQLException.class,
+                () -> databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY)), is(expectedException));
+        verify(connection).close();
+        assertThat(databaseConnectionManager.getConnectionSize(), is(0));
     }
     
     @Test
@@ -356,6 +419,7 @@ class ProxyDatabaseConnectionManagerTest {
     @Test
     void assertGetConnectionsAndFailedToReplaySessionVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         Connection connection = null;
         SQLException expectedException = new SQLException("");
         try {
@@ -370,10 +434,23 @@ class ProxyDatabaseConnectionManagerTest {
         }
     }
     
+    @Test
+    void assertGetConnectionsAndFailedToGetReplayDatabaseType() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        SQLException expectedException = new SQLException("");
+        when(connection.getMetaData().getDatabaseProductName()).thenThrow(expectedException);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        assertThat(assertThrows(SQLException.class,
+                () -> databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY)), is(expectedException));
+        verify(connection).close();
+    }
+    
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertGetConnectionsAndFailedToReleaseConnection() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         SQLException expectedException = new SQLException("");
         SQLException expectedNextException = new SQLException("");
         Connection firstConnection = mock(Connection.class, RETURNS_DEEP_STUBS);
@@ -406,7 +483,7 @@ class ProxyDatabaseConnectionManagerTest {
         Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) Plugins.getMemberAccessor()
                 .get(ProxyDatabaseConnectionManager.class.getDeclaredField("cachedConnections"), databaseConnectionManager);
         assertTrue(cachedConnections.containsKey(dataSourceName));
-        assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), connections.toArray());
+        assertThat(connections.toArray(), is(cachedConnections.get(dataSourceName).toArray()));
     }
     
     @Test
@@ -616,12 +693,37 @@ class ProxyDatabaseConnectionManagerTest {
     @Test
     void assertCloseConnectionsAndResetVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
         databaseConnectionManager.getCachedConnections().put("", connection);
         databaseConnectionManager.closeConnections(false);
         verify(connection.createStatement()).execute("RESET ALL");
         assertTrue(connectionSession.getRequiredSessionVariableRecorder().isEmpty());
+    }
+    
+    @Test
+    void assertCloseConnectionsWithoutResettingVariablesForDifferentDatabaseType() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("collation_connection", "'utf8mb4_unicode_ci'");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+        databaseConnectionManager.getCachedConnections().put("", connection);
+        databaseConnectionManager.closeConnections(false);
+        verify(connection, never()).createStatement();
+        verify(connection).close();
+    }
+    
+    @Test
+    void assertCloseConnectionsWithoutResetSQL() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        when(connectionSession.getProtocolType()).thenReturn(databaseType);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn(databaseType.getType());
+        databaseConnectionManager.getCachedConnections().put("", connection);
+        databaseConnectionManager.closeConnections(false);
+        verify(connection, never()).createStatement();
+        verify(connection).close();
     }
     
     @Test
@@ -638,6 +740,7 @@ class ProxyDatabaseConnectionManagerTest {
     @Test
     void assertCloseConnectionsAndFailedToResetVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
         SQLException expectedException = new SQLException("");

@@ -266,22 +266,30 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>dockerfile-maven-plugin</artifactId>
-                        <configuration>
-                            <repository>apache/shardingsphere-proxy-test</repository>
-                            <tag>${project.version}</tag>
-                            <tag>latest</tag>
-                            <buildArgs>
-                                <APP_NAME>${project.build.finalName}</APP_NAME>
-                            </buildArgs>
-                        </configuration>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>shardingsphere-proxy-bin</id>
                                 <goals>
-                                    <goal>build</goal>
+                                    <goal>exec</goal>
                                 </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>build</argument>
+                                        <argument>--pull</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>APP_NAME=${project.build.finalName}</argument>
+                                        <argument>.</argument>
+                                        <argument>-t</argument>
+                                        <argument>apache/shardingsphere-proxy-test:${project.version}</argument>
+                                        <argument>-t</argument>
+                                        <argument>apache/shardingsphere-proxy-test:latest</argument>
+                                    </arguments>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

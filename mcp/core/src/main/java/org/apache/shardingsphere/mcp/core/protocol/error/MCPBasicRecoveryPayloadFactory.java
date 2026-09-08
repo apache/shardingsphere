@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidMetadataO
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentContractViolationException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPPayloadFieldNames;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
@@ -131,7 +132,7 @@ final class MCPBasicRecoveryPayloadFactory {
         result.put(MCPPayloadFieldNames.FIELD, "object_types");
         result.put(MCPPayloadFieldNames.ALLOWED_VALUES, cause.getAllowedValues());
         result.put("suggested_arguments", Map.of("object_types", cause.getAllowedValues()));
-        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.retryTool("database_gateway_search_metadata",
+        result.put(MCPPayloadFieldNames.NEXT_ACTIONS, List.of(MCPNextActionUtils.retryTool(CoreToolNames.SEARCH_METADATA,
                 "Retry database_gateway_search_metadata with allowed object_types values, or omit object_types to search every supported metadata type.",
                 Map.of("object_types", cause.getAllowedValues()))));
         return result;

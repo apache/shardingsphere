@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Comm
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ConstraintDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CreateCollationContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CreateDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CreateDomainContext;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Crea
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DataTypeOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DropConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ExecuteStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ModifyColumnSpecificationContext;
@@ -67,6 +69,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.collation.CreateCollationStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.domain.AlterDomainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.domain.CreateDomainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
@@ -140,7 +144,8 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.dataTypeOption().stream().anyMatch(each -> null != each.primaryKey());
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false, getText(ctx));
+        boolean isNotNull = ctx.dataTypeOption().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull, getText(ctx));
         for (DataTypeOptionContext each : ctx.dataTypeOption()) {
             if (null != each.referenceDefinition()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.referenceDefinition().tableName()));
@@ -247,7 +252,8 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
         // TODO visit pk and table ref
         ColumnSegment column = (ColumnSegment) visit(ctx.modifyColumn().columnName());
         DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
-        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false, getText(ctx));
+        boolean isNotNull = null != ctx.SET() && null != ctx.NOT() && null != ctx.NULL();
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, isNotNull, getText(ctx));
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     
@@ -260,6 +266,24 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue(), false, false);
+    }
+    
+    @Override
+    public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
+        return new CreateDatabaseStatement(getDatabaseType(), extractDatabaseName(ctx.STRING_().getText()), false);
+    }
+    
+    @Override
+    public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
+        return new DropDatabaseStatement(getDatabaseType(), null, false);
+    }
+    
+    private String extractDatabaseName(final String filespec) {
+        String result = filespec.substring(1, filespec.length() - 1);
+        int separatorIndex = Math.max(Math.max(result.lastIndexOf('/'), result.lastIndexOf('\\')), result.lastIndexOf(':'));
+        result = separatorIndex >= 0 ? result.substring(separatorIndex + 1) : result;
+        int extensionIndex = result.lastIndexOf('.');
+        return extensionIndex > 0 ? result.substring(0, extensionIndex) : result;
     }
     
     @Override

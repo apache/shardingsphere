@@ -108,4 +108,5 @@
     <lock sql-case-id="lock_hs1">
         <table name="hs1" start-index="5" stop-index="7" />
     </lock>
+    <lock sql-case-id="lock_table_partition_for_share_mode" />
 </sql-parser-test-cases>

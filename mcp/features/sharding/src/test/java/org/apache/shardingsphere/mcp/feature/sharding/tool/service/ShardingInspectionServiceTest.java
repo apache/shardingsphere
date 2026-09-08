@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
@@ -48,12 +47,13 @@ class ShardingInspectionServiceTest {
         verify(queryFacade).query(eq("logic_db"), eq(expectedSQL));
     }
     
-    @Test
-    void assertQueryAlgorithmPlugins() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertQueryAlgorithmPluginsArguments")
+    void assertQueryAlgorithmPlugins(final String name, final String algorithmType, final String expectedPropertyGuidance) {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW SHARDING ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "INLINE")));
+        when(queryFacade.queryWithAnyDatabase("SHOW SHARDING ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", algorithmType)));
         List<Map<String, Object>> actual = new ShardingInspectionService().queryAlgorithmPlugins(queryFacade);
-        assertThat(actual.getFirst().get("property_guidance").toString(), containsString("algorithm-expression"));
+        assertThat(actual.getFirst().get("property_guidance").toString(), is(expectedPropertyGuidance));
     }
     
     @Test
@@ -82,6 +82,14 @@ class ShardingInspectionServiceTest {
         when(queryFacade.queryWithAnyDatabase("SHOW KEY GENERATE ALGORITHM PLUGINS")).thenThrow(expected);
         MCPQueryFailedException actual = assertThrows(MCPQueryFailedException.class, () -> new ShardingInspectionService().queryKeyGenerateAlgorithmPlugins(queryFacade));
         assertThat(actual, is(expected));
+    }
+    
+    private static Stream<Arguments> assertQueryAlgorithmPluginsArguments() {
+        return Stream.of(
+                Arguments.of("inline", "INLINE", "Usually requires algorithm-expression."),
+                Arguments.of("mod", "MOD", "Usually requires sharding-count."),
+                Arguments.of("hash mod", "HASH_MOD", "Usually requires sharding-count."),
+                Arguments.of("unknown inline", "CUSTOM_INLINE", "Read the plugin documentation for required properties before planning."));
     }
     
     private static Stream<Arguments> assertDatabaseScopedQueryArguments() {

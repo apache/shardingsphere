@@ -31,9 +31,9 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConne
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.transaction.savepoint.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.savepoint.ConnectionSavepointManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -198,6 +198,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         for (Connection each : getCachedConnections()) {
             ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepoint.getSavepointName());
         }
+        connectionContext.getTransactionContext().setExceptionOccur(false);
     }
     
     private void clear() {

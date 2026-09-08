@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ErrorLoggingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -66,6 +67,8 @@ public final class InsertStatement extends DMLStatement {
     
     private final ReturningSegment returning;
     
+    private final ErrorLoggingSegment errorLogging;
+    
     private final OutputSegment output;
     
     private final WithSegment with;
@@ -99,7 +102,7 @@ public final class InsertStatement extends DMLStatement {
     @Builder
     private InsertStatement(final DatabaseType databaseType, final SimpleTableSegment table, final InsertColumnsSegment insertColumns,
                             final SubquerySegment insertSelect, final SetAssignmentSegment setAssignment, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumns,
-                            final ValueReferenceSegment valueReference, final ReturningSegment returning, final OutputSegment output, final WithSegment with,
+                            final ValueReferenceSegment valueReference, final ReturningSegment returning, final ErrorLoggingSegment errorLogging, final OutputSegment output, final WithSegment with,
                             final MultiTableInsertType multiTableInsertType, final MultiTableInsertIntoSegment multiTableInsertInto,
                             final MultiTableConditionalIntoSegment multiTableConditionalInto, final WhereSegment where, final ExecSegment exec,
                             final WithTableHintSegment withTableHint, final FunctionSegment rowSetFunction, final boolean ignore, final boolean replace,
@@ -112,6 +115,7 @@ public final class InsertStatement extends DMLStatement {
         this.onDuplicateKeyColumns = onDuplicateKeyColumns;
         this.valueReference = valueReference;
         this.returning = returning;
+        this.errorLogging = errorLogging;
         this.output = output;
         this.with = with;
         this.multiTableInsertType = multiTableInsertType;
@@ -244,6 +248,15 @@ public final class InsertStatement extends DMLStatement {
      */
     public Optional<ReturningSegment> getReturning() {
         return Optional.ofNullable(returning);
+    }
+    
+    /**
+     * Get error logging segment.
+     *
+     * @return error logging segment
+     */
+    public Optional<ErrorLoggingSegment> getErrorLogging() {
+        return Optional.ofNullable(errorLogging);
     }
     
     /**

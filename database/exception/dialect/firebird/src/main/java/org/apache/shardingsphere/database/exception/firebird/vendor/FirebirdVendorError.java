@@ -28,12 +28,9 @@ import org.firebirdsql.gds.ISCConstants;
 /**
  * Firebird vendor error.
  *
- * <p>The vendor code carries the native Firebird GDSCODE, which the client (Jaybird) uses to look up both the message
- * template and the SQL state from its own catalog. The status vector transmits the GDSCODE plus a single string
- * argument, so the reason here holds only that argument. With Jaybird's current message rendering a {@code {0}}
- * placeholder is filled by the argument and a template without placeholders is followed by the argument; an empty reason
- * sends no argument, leaving the catalog message as-is. GDSCODEs whose templates require multiple arguments are avoided
- * until the status vector can carry them.</p>
+ * <p>Kernel {@code ShardingSphereSQLException} types, such as metadata column-not-found errors from the binder, are
+ * converted before the Firebird SQL dialect mapper is reached. They need a separate Firebird remapping path instead of
+ * enum entries here.</p>
  *
  * @see <a href="https://www.firebirdsql.org/file/documentation/chunk/en/refdocs/fblangref40/fblangref40-appx02-sqlcodes.html">SQLCODE and GDSCODE Error Codes</a>
  */
@@ -43,7 +40,33 @@ public enum FirebirdVendorError implements VendorError {
     
     UNAVAILABLE_DATABASE(FirebirdState.UNAVAILABLE_DATABASE, ISCConstants.isc_unavailable, "%s"),
     
-    LOGIN_FAILED(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, ISCConstants.isc_login, "");
+    DATABASE_ALREADY_EXISTS(XOpenSQLState.GENERAL_ERROR, ISCConstants.isc_db_or_file_exists, "%s"),
+    
+    INVALID_BATCH_HANDLE(FirebirdState.INVALID_BATCH_HANDLE, ISCConstants.isc_bad_batch_handle, ""),
+    
+    BATCH_TOO_BIG(FirebirdState.BATCH_TOO_BIG, ISCConstants.isc_batch_too_big, ""),
+    
+    DYNAMIC_SQL_ERROR(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_dsql_error, "%s"),
+    
+    TABLE_ALREADY_EXISTS(XOpenSQLState.DUPLICATE, ISCConstants.isc_dyn_dup_table, "%s"),
+    
+    LOGIN_FAILED(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, ISCConstants.isc_login, ""),
+    
+    CHARSET_NOT_FOUND(FirebirdState.CHARSET_NOT_FOUND, ISCConstants.isc_charset_not_found, "CHARACTER SET %s is not defined"),
+    
+    INVALID_STATEMENT_HANDLE(FirebirdState.INVALID_STATEMENT_HANDLE, ISCConstants.isc_bad_stmt_handle, ""),
+    
+    INVALID_TRANSACTION_HANDLE(FirebirdState.INVALID_TRANSACTION_HANDLE, ISCConstants.isc_bad_trans_handle, ""),
+    
+    EXCESS_TRANSACTIONS(XOpenSQLState.GENERAL_ERROR, ISCConstants.isc_excess_trans, "attempt to start more than %d transactions"),
+    
+    BATCH_ALREADY_OPENED(FirebirdState.BATCH_ALREADY_OPENED, ISCConstants.isc_batch_open, ""),
+    
+    INVALID_BATCH_PARAMETER_VERSION(XOpenSQLState.DATA_EXCEPTION, ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block %d, should be %d"),
+    
+    BATCH_PARAMETERS_REQUIRED(FirebirdState.BATCH_PARAMETERS_REQUIRED, ISCConstants.isc_batch_param, "Statement used in batch must have parameters"),
+    
+    SQLDA_ERROR(FirebirdState.SQLDA_ERROR, ISCConstants.isc_dsql_sqlda_err, "");
     
     private final SQLState sqlState;
     

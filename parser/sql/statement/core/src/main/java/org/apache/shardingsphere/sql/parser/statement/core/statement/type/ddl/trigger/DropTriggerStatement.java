@@ -17,15 +17,31 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger;
 
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+
+import java.util.Optional;
 
 /**
  * Drop trigger statement.
  */
+@Setter
 public final class DropTriggerStatement extends DDLStatement {
+    
+    private FunctionNameSegment triggerName;
     
     public DropTriggerStatement(final DatabaseType databaseType) {
         super(databaseType);
+    }
+    
+    /**
+     * Get trigger name segment.
+     *
+     * @return trigger name segment
+     */
+    public Optional<FunctionNameSegment> getTriggerName() {
+        return Optional.ofNullable(triggerName);
     }
 }

@@ -34,7 +34,7 @@ public final class PostgreSQLPipelineNativeContainerDropTableOption implements D
     
     @Override
     public String getQueryAllSchemaAndTableMapperSQL(final String databaseName) {
-        return "SELECT schemaname, tablename FROM pg_tables WHERE schemaname='public' OR schemaname='test'";
+        return "SELECT schemaname, tablename FROM pg_tables WHERE schemaname NOT LIKE 'pg_%' AND schemaname <> 'information_schema'";
     }
     
     @Override

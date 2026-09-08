@@ -17,6 +17,55 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_not_scalar_subquery_postgresql" where-expression-type="NotExpression">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t17" alias="ref_0" start-index="14" stop-index="25" />
+        </from>
+        <rewrite-table-name>t17</rewrite-table-name>
+        <rewrite-table-name>t23</rewrite-table-name>
+        <rewrite-table-name>t22</rewrite-table-name>
+    </select>
+
+    <select sql-case-id="select_values_derived_table_aliases_postgresql">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="65">
+            <subquery-table alias="t" start-index="14" stop-index="65">
+                <subquery start-index="14" stop-index="37">
+                    <select>
+                        <projections start-index="15" stop-index="36">
+                            <expression-projection text="k1" start-index="23" stop-index="26">
+                                <expr>
+                                    <literal-expression value="k1" start-index="23" stop-index="26" />
+                                </expr>
+                            </expression-projection>
+                            <expression-projection text="v1" start-index="29" stop-index="32">
+                                <expr>
+                                    <literal-expression value="v1" start-index="29" stop-index="32" />
+                                </expr>
+                            </expression-projection>
+                            <expression-projection text="1" start-index="35" stop-index="35">
+                                <expr>
+                                    <literal-expression value="1" start-index="35" stop-index="35" />
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                    </select>
+                </subquery>
+                <column-alias>pk</column-alias>
+                <column-alias>col_a</column-alias>
+                <column-alias>col_a_type</column-alias>
+            </subquery-table>
+        </from>
+    </select>
     <select sql-case-id="select_with_comment">
         <projections start-index="70" stop-index="70">
             <shorthand-projection start-index="70" stop-index="70" />
@@ -187,6 +236,33 @@
             <simple-table name="t1" start-index="22" stop-index="27">
                 <owner start-index="22" stop-index="24" name="db1" />
             </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_digit_leading_column_doris">
+        <projections start-index="7" stop-index="9">
+            <column-projection name="1GB" start-index="7" stop-index="9" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="16" stop-index="16" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_workload_keyword_column_doris">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="workload" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="21" stop-index="21" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_external_keyword_column_doris">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="external" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="21" stop-index="21" />
         </from>
     </select>
 
@@ -6098,7 +6174,7 @@
                         <parameter>
                             <binary-operation-expression start-index="50" stop-index="66" literal-start-index="50" literal-stop-index="66">
                                 <left>
-                                    <column name="SYSDATE" start-index="50" stop-index="56" literal-start-index="50" literal-stop-index="56" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="50" stop-index="56" literal-start-index="50" literal-stop-index="56" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6120,7 +6196,7 @@
                         <parameter>
                             <binary-operation-expression start-index="126" stop-index="142" literal-start-index="126" literal-stop-index="142">
                                 <left>
-                                    <column name="SYSDATE" start-index="126" stop-index="132" literal-start-index="126" literal-stop-index="132" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="126" stop-index="132" literal-start-index="126" literal-stop-index="132" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6142,7 +6218,7 @@
                         <parameter>
                             <binary-operation-expression start-index="196" stop-index="212" literal-start-index="196" literal-stop-index="212">
                                 <left>
-                                    <column name="SYSDATE" start-index="196" stop-index="202" literal-start-index="196" literal-stop-index="202" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="196" stop-index="202" literal-start-index="196" literal-stop-index="202" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6164,7 +6240,7 @@
                         <parameter>
                             <binary-operation-expression start-index="267" stop-index="283" literal-start-index="267" literal-stop-index="283">
                                 <left>
-                                    <column name="SYSDATE" start-index="267" stop-index="273" literal-start-index="267" literal-stop-index="273" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="267" stop-index="273" literal-start-index="267" literal-stop-index="273" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6186,7 +6262,7 @@
                         <parameter>
                             <binary-operation-expression start-index="338" stop-index="354" literal-start-index="338" literal-stop-index="354">
                                 <left>
-                                    <column name="SYSDATE" start-index="338" stop-index="344" literal-start-index="338" literal-stop-index="344" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="338" stop-index="344" literal-start-index="338" literal-stop-index="344" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6208,7 +6284,7 @@
                         <parameter>
                             <binary-operation-expression start-index="408" stop-index="424" literal-start-index="408" literal-stop-index="424">
                                 <left>
-                                    <column name="SYSDATE" start-index="408" stop-index="414" literal-start-index="408" literal-stop-index="414" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="408" stop-index="414" literal-start-index="408" literal-stop-index="414" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -6440,6 +6516,28 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="204" start-index="117" stop-index="119" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_xmlforest_function_without_as">
+        <projections start-index="7" stop-index="58">
+            <expression-projection text="XMLFOREST(e.employee_id &quot;ID&quot;, e.last_name, e.salary)" start-index="7" stop-index="58" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="65" stop-index="75" alias="e" />
+        </from>
+        <where start-index="77" stop-index="99">
+            <expr>
+                <binary-operation-expression start-index="83" stop-index="99">
+                    <left>
+                        <column name="employee_id" start-index="83" stop-index="93" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="204" start-index="97" stop-index="99" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -6682,7 +6780,35 @@
         </projections>
     </select>
 
-    <select sql-case-id="select_projection_with_parameter" parameters="'OK'">
+    <select sql-case-id="select_projection_with_parameter_oracle" parameters="'OK'">
+        <projections start-index="7" stop-index="81" literal-stop-index="84">
+            <expression-projection text="1" start-index="7" stop-index="13" alias="id">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+            <parameter-marker-expression parameter-index="0" start-index="16" stop-index="26" literal-stop-index="29" />
+            <expression-projection text="SYSDATE" start-index="29" stop-index="50" literal-start-index="32" literal-stop-index="53" alias="create_time">
+                <expr>
+                    <function function-name="SYSDATE" text="SYSDATE" start-index="29" stop-index="35" literal-start-index="32" literal-stop-index="38" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRUNC(SYSDATE)" start-index="53" stop-index="81" literal-start-index="56" literal-stop-index="84" alias="create_date">
+                <expr>
+                    <function function-name="TRUNC" start-index="53" stop-index="66" literal-start-index="56" literal-stop-index="69" text="TRUNC(SYSDATE)">
+                        <parameter>
+                            <function function-name="SYSDATE" text="SYSDATE" start-index="59" stop-index="65" literal-start-index="62" literal-stop-index="68" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="88" stop-index="91" literal-start-index="91" literal-stop-index="94" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_projection_with_parameter_firebird" parameters="'OK'">
         <projections start-index="7" stop-index="81" literal-stop-index="84">
             <expression-projection text="1" start-index="7" stop-index="13" alias="id">
                 <expr>
@@ -7209,30 +7335,6 @@
         </order-by>
     </select>
 
-    <select sql-case-id="select_window_named_partition_doris">
-        <projections start-index="7" stop-index="38" literal-start-index="7" literal-stop-index="38">
-            <aggregation-projection type="SUM" expression="SUM(sales) OVER w" alias="total_sales" start-index="7" stop-index="23" literal-start-index="7" literal-stop-index="23" />
-        </projections>
-        <from>
-            <simple-table name="orders" start-index="45" stop-index="50" literal-start-index="45" literal-stop-index="50" />
-        </from>
-        <window start-index="52" stop-index="102">
-            <window-item start-index="59" stop-index="102">
-                <window-name>w</window-name>
-                <partition-by>
-                    <expression-projection text="region" start-index="78" stop-index="83" literal-start-index="78" literal-stop-index="83">
-                        <expr>
-                            <column name="region" start-index="78" stop-index="83" literal-start-index="78" literal-stop-index="83" />
-                        </expr>
-                    </expression-projection>
-                </partition-by>
-                <order-by>
-                    <column-item name="order_id" order-direction="ASC" start-index="94" stop-index="101" literal-start-index="94" literal-stop-index="101" />
-                </order-by>
-            </window-item>
-        </window>
-    </select>
-
     <select sql-case-id="select_window_frame_lag_doris">
         <projections start-index="7" stop-index="124" literal-start-index="7" literal-stop-index="124">
             <expression-projection text="LAG(amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY tx_time ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" alias="lag_amt" start-index="7" stop-index="124" literal-start-index="7" literal-stop-index="124">
@@ -7349,7 +7451,7 @@
                         <parameter>
                             <binary-operation-expression start-index="25" stop-index="43" literal-start-index="25" literal-stop-index="43">
                                 <left>
-                                    <column name="SYSDATE" start-index="25" stop-index="31" literal-start-index="25" literal-stop-index="31" />
+                                    <function function-name="SYSDATE" text="SYSDATE" start-index="25" stop-index="31" literal-start-index="25" literal-stop-index="31" />
                                 </left>
                                 <operator>-</operator>
                                 <right>
@@ -9143,6 +9245,16 @@
                             </binary-operation-expression>
                         </expr>
                     </not-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_system_user_sql92">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="SYSTEM_USER" start-index="7" stop-index="17">
+                <expr>
+                    <function function-name="SYSTEM_USER" start-index="7" stop-index="17" text="SYSTEM_USER" />
                 </expr>
             </expression-projection>
         </projections>
@@ -10981,7 +11093,7 @@
                                                 <column name="END_TIME" start-index="51" stop-index="58" />
                                             </parameter>
                                             <parameter>
-                                                <column name="sysdate" start-index="61" stop-index="67" />
+                                                <function function-name="sysdate" text="sysdate" start-index="61" stop-index="67" />
                                             </parameter>
                                         </function>
                                     </left>
@@ -13492,16 +13604,6 @@
         </from>
     </select>
 
-    <select sql-case-id="select_union_firebird">
-        <projections start-index="7" stop-index="7">
-            <expression-projection text="1" start-index="7" stop-index="7">
-                <expr>
-                    <literal-expression value="1" start-index="7" stop-index="7" />
-                </expr>
-            </expression-projection>
-        </projections>
-    </select>
-
     <select sql-case-id="select_subquery_table_firebird">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -14711,6 +14813,35 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_element_at">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="element_at(k1, 1)" start-index="7" stop-index="23">
+                <expr>
+                    <function start-index="7" stop-index="23" text="element_at(k1, 1)" function-name="element_at">
+                        <parameter>
+                            <column name="k1" start-index="18" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="22" stop-index="22" value="1" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="30" stop-index="36" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_array_subscript">
+        <projections start-index="7" stop-index="11">
+            <column-projection name="k1" start-index="7" stop-index="11" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="18" stop-index="24" />
+        </from>
+    </select>
+
     <select sql-case-id="select_ltrim_as_column_alias">
         <projections start-index="7" stop-index="17">
             <column-projection name="id" alias="ltrim" start-index="7" stop-index="17" />
@@ -15099,6 +15230,74 @@
         </projections>
         <from>
             <simple-table name="t_product" start-index="73" stop-index="81" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_log_table_alias_oracle">
+        <from>
+            <simple-table name="t_order" alias="LOG" start-index="14" stop-index="24" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_unquoted_text_with_chinese_comma_from_dual">
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅" start-index="7" stop-index="47" alias="RESULT">
+                <expr>
+                    <literal-expression value="图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅" start-index="7" stop-index="37" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="54" stop-index="57" />
+        </from>
+    </select>
+    <select sql-case-id="select_unquoted_text_without_comma_from_dual">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="欢迎使用测试系统" start-index="7" stop-index="24" alias="RESULT">
+                <expr>
+                    <literal-expression value="欢迎使用测试系统" start-index="7" stop-index="14" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="31" stop-index="34" />
+        </from>
+    </select>
+    <select sql-case-id="select_dummy_with_alias_from_dual">
+        <projections start-index="7" stop-index="21">
+            <column-projection name="DUMMY" alias="RESULT" start-index="7" stop-index="21" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="28" stop-index="31" />
+        </from>
+    </select>
+    <select sql-case-id="select_quoted_chinese_column_from_dual">
+        <projections start-index="7" stop-index="22">
+            <column-projection name="中文列名" alias="RESULT" start-delimiter="&quot;" end-delimiter="&quot;" start-index="7" stop-index="22" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="29" stop-index="32" />
+        </from>
+    </select>
+    <select sql-case-id="select_chinese_columns_with_ascii_comma_from_dual">
+        <projections start-index="7" stop-index="26">
+            <column-projection name="中文列一" start-index="7" stop-index="10" />
+            <column-projection name="中文列二" alias="RESULT" start-index="13" stop-index="26" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="33" stop-index="36" />
+        </from>
+    </select>
+    <select sql-case-id="select_chinese_columns_from_table">
+        <projections start-index="7" stop-index="25">
+            <column-projection name="中文列一" start-index="7" stop-index="10" />
+            <column-projection name="中文列二" alias="RESULT" start-index="12" stop-index="25" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="32" stop-index="38" />
         </from>
     </select>
 

@@ -62,6 +62,8 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     public void check(final String databaseName, final Collection<String> configuredTargetNames) {
         weightConfigMap.keySet().forEach(each -> ShardingSpherePreconditions.checkContains(configuredTargetNames, each,
                 () -> new AlgorithmInitializationException(this, "Target `%s` is required in database `%s`.", each, databaseName)));
+        configuredTargetNames.forEach(each -> ShardingSpherePreconditions.checkContains(weightConfigMap.keySet(), each,
+                () -> new AlgorithmInitializationException(this, "Weight of target `%s` is required in database `%s`.", each, databaseName)));
     }
     
     @HighFrequencyInvocation

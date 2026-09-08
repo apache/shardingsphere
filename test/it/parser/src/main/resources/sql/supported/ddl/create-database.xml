@@ -158,4 +158,8 @@
     <sql-case id="create_remote_schema_with_all_options" value="CREATE REMOTE SCHEMA lusiadas COMMENT 'Remote test schema' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
     <sql-case id="create_database_doris_with_properties" value="CREATE DATABASE `db_test` PROPERTIES (&quot;storage_vault_name&quot; = &quot;hdfs_demo_vault&quot;)" db-types="Doris" />
     <sql-case id="create_database_doris_if_not_exists_with_properties" value="CREATE DATABASE IF NOT EXISTS `db_test` PROPERTIES (&quot;storage_vault_name&quot; = &quot;hdfs_demo_vault&quot;)" db-types="Doris" />
+    <sql-case id="create_database_with_filespec" value="CREATE DATABASE 'C:\dbs\sales.fdb'" db-types="Firebird" />
+    <sql-case id="create_schema_with_filespec" value="CREATE SCHEMA '/opt/dbs/sales.fdb'" db-types="Firebird" />
+    <sql-case id="create_database_with_remote_filespec" value="CREATE DATABASE 'baseserver:test'" db-types="Firebird" />
+    <sql-case id="create_database_with_inet_filespec" value="CREATE DATABASE 'inet://baseserver:3050/dbs/sales.fdb'" db-types="Firebird" />
 </sql-cases>

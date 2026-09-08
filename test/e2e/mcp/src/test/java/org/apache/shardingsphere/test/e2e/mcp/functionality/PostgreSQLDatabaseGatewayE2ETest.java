@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.functionality;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.DockerRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.PostgreSQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
@@ -57,9 +58,7 @@ class PostgreSQLDatabaseGatewayE2ETest extends AbstractTransportParameterizedE2E
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        if (!PostgreSQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException("Docker is required for the PostgreSQL-backed MCP Functionality E2E test.");
-        }
+        DockerRuntimeTestSupport.requireAvailable("Docker is required for the PostgreSQL-backed MCP Functionality E2E test.");
         if (null != container) {
             return;
         }

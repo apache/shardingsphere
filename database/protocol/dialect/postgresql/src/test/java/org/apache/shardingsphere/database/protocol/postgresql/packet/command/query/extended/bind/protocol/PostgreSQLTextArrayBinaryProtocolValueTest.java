@@ -29,8 +29,8 @@ import org.postgresql.util.PGobject;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -64,6 +64,56 @@ class PostgreSQLTextArrayBinaryProtocolValueTest {
         PGobject expected = new PGobject();
         expected.setType("text[]");
         expected.setValue("{\"a\",\"b\"}");
+        assertThat(new PostgreSQLTextArrayBinaryProtocolValue().read(payload, parameterValueLength), is(expected));
+        assertThat(byteBuf.readerIndex(), is(parameterValueLength));
+    }
+    
+    @Test
+    void assertReadWithNullElement() throws SQLException {
+        int parameterValueLength = 34;
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(parameterValueLength, parameterValueLength + 10);
+        byteBuf.writeZero(20);
+        byteBuf.writeInt(1);
+        byteBuf.writeCharSequence("a", StandardCharsets.UTF_8);
+        byteBuf.writeInt(-1);
+        byteBuf.writeInt(1);
+        byteBuf.writeCharSequence("b", StandardCharsets.UTF_8);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        PGobject expected = new PGobject();
+        expected.setType("text[]");
+        expected.setValue("{\"a\",NULL,\"b\"}");
+        assertThat(new PostgreSQLTextArrayBinaryProtocolValue().read(payload, parameterValueLength), is(expected));
+        assertThat(byteBuf.readerIndex(), is(parameterValueLength));
+    }
+    
+    @Test
+    void assertReadWithLiteralNullElement() throws SQLException {
+        int parameterValueLength = 28;
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(parameterValueLength, parameterValueLength + 10);
+        byteBuf.writeZero(20);
+        byteBuf.writeInt(4);
+        byteBuf.writeCharSequence("NULL", StandardCharsets.UTF_8);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        PGobject expected = new PGobject();
+        expected.setType("text[]");
+        expected.setValue("{\"NULL\"}");
+        assertThat(new PostgreSQLTextArrayBinaryProtocolValue().read(payload, parameterValueLength), is(expected));
+        assertThat(byteBuf.readerIndex(), is(parameterValueLength));
+    }
+    
+    @Test
+    void assertReadWithEscapedElements() throws SQLException {
+        int parameterValueLength = 34;
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(parameterValueLength, parameterValueLength + 10);
+        byteBuf.writeZero(20);
+        byteBuf.writeInt(3);
+        byteBuf.writeCharSequence("a\\b", StandardCharsets.UTF_8);
+        byteBuf.writeInt(3);
+        byteBuf.writeCharSequence("a\"b", StandardCharsets.UTF_8);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        PGobject expected = new PGobject();
+        expected.setType("text[]");
+        expected.setValue("{\"a\\\\b\",\"a\\\"b\"}");
         assertThat(new PostgreSQLTextArrayBinaryProtocolValue().read(payload, parameterValueLength), is(expected));
         assertThat(byteBuf.readerIndex(), is(parameterValueLength));
     }

@@ -82,25 +82,6 @@ public final class MySQLRuntimeTestSupport {
     }
     
     /**
-     * Check whether Docker is available for Testcontainers-backed tests.
-     *
-     * @return whether Docker is available
-     */
-    public static boolean isDockerAvailable() {
-        return MySQLRuntimeDockerSupport.isDockerAvailable();
-    }
-    
-    /**
-     * Create Docker-required message with bounded readiness diagnostics.
-     *
-     * @param scenarioMessage scenario message
-     * @return Docker-required message
-     */
-    public static String createDockerRequiredMessage(final String scenarioMessage) {
-        return MySQLRuntimeDockerSupport.createDockerRequiredMessage(scenarioMessage);
-    }
-    
-    /**
      * Create runtime databases for the MySQL-backed runtime.
      *
      * @param container running container

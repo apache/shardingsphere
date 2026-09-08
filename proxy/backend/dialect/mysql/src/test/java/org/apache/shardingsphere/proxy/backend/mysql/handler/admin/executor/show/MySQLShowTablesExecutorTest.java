@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.show;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -50,8 +51,8 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -85,8 +86,18 @@ class MySQLShowTablesExecutorTest {
     void assertShowTablesExecutorWithFull() throws SQLException {
         MySQLShowTablesStatement sqlStatement = new MySQLShowTablesStatement(databaseType, null, mock(), true);
         MySQLShowTablesExecutor executor = new MySQLShowTablesExecutor(sqlStatement);
-        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases()));
+        Collection<ShardingSphereTable> tables = new LinkedList<>();
+        tables.add(new ShardingSphereTable("t_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("v_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.VIEW));
+        executor.execute(mockConnectionSession(), mockMetaData(mockDatabases(tables)));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        executor.getMergedResult().next();
+        assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account"));
+        assertThat(executor.getMergedResult().getValue(2, Object.class), is("BASE TABLE"));
+        executor.getMergedResult().next();
+        assertThat(executor.getMergedResult().getValue(1, Object.class), is("v_account"));
+        assertThat(executor.getMergedResult().getValue(2, Object.class), is("VIEW"));
+        assertFalse(executor.getMergedResult().next());
     }
     
     @Test
@@ -167,6 +178,10 @@ class MySQLShowTablesExecutorTest {
         tables.add(new ShardingSphereTable("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_account_detail", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("T_TEST", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return mockDatabases(tables);
+    }
+    
+    private Collection<ShardingSphereDatabase> mockDatabases(final Collection<ShardingSphereTable> tables) {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, tables, Collections.emptyList());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(String.format(DATABASE_PATTERN, 0));

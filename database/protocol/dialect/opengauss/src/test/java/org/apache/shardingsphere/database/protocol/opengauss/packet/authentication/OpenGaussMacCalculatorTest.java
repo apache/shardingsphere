@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.util.string.HexStringUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class OpenGaussMacCalculatorTest {

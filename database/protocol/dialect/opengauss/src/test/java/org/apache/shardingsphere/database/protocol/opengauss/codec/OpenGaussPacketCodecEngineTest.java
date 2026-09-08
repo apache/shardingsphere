@@ -132,7 +132,7 @@ class OpenGaussPacketCodecEngineTest {
         OpenGaussPacketCodecEngine codecEngine = new OpenGaussPacketCodecEngine();
         DatabasePacket message = createPacket(identifierPacket);
         if (writeException) {
-            doThrow(new RuntimeException("Error")).when(message).write(any(PostgreSQLPacketPayload.class));
+            doThrow(new RuntimeException("foo_error")).when(message).write(any(PostgreSQLPacketPayload.class));
         }
         ByteBuf out = Unpooled.buffer();
         codecEngine.encode(context, message, out);
@@ -141,6 +141,11 @@ class OpenGaussPacketCodecEngineTest {
         if (expectedHeader) {
             assertThat((char) out.getByte(0), is(expectedIdentifier));
             assertThat(out.getInt(1), is(out.readableBytes() - 1));
+        }
+        if (writeException) {
+            String expectedPayload = "SERROR\0C58000\0Mfoo_error\0c0\0\0";
+            String actualPayload = out.toString(Byte.BYTES + Integer.BYTES, out.readableBytes() - Byte.BYTES - Integer.BYTES, StandardCharsets.UTF_8);
+            assertThat(actualPayload, is(expectedPayload));
         }
     }
     

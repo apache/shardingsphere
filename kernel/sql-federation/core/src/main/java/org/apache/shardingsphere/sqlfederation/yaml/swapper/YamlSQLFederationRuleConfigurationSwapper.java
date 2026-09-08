@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
+import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
 
 /**
@@ -41,7 +42,9 @@ public final class YamlSQLFederationRuleConfigurationSwapper implements YamlRule
     
     @Override
     public SQLFederationRuleConfiguration swapToObject(final YamlSQLFederationRuleConfiguration yamlConfig) {
-        SQLFederationCacheOption executionPlanCacheConfig = executionPlanCacheConfigSwapper.swapToObject(yamlConfig.getExecutionPlanCache());
+        SQLFederationCacheOption executionPlanCacheConfig = null == yamlConfig.getExecutionPlanCache()
+                ? DefaultSQLFederationRuleConfigurationBuilder.DEFAULT_EXECUTION_PLAN_CACHE_OPTION
+                : executionPlanCacheConfigSwapper.swapToObject(yamlConfig.getExecutionPlanCache());
         return new SQLFederationRuleConfiguration(yamlConfig.isSqlFederationEnabled(), yamlConfig.isAllQueryUseSQLFederation(), executionPlanCacheConfig);
     }
     

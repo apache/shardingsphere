@@ -17,6 +17,8 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_bare_system_user_sql92" value="SELECT SYSTEM_USER" db-types="SQL92"/>
+    <sql-case id="select_quoted_system_user_column_sql92" value="SELECT t.&quot;SYSTEM_USER&quot; FROM t_system_user t" db-types="SQL92"/>
     <sql-case id="select_with_shorthand_projection" value="SELECT * FROM t_order o" db-types="MySQL"/>
     <sql-case id="select_with_group_by_order_by" value="SELECT order_id, COUNT(1) count FROM t_order o GROUP BY order_id HAVING count > 1 ORDER BY order_id" db-types="MySQL"/>
     <sql-case id="select_with_with_clause" value="WITH t_order_tmp AS (SELECT * FROM t_order o) SELECT * FROM t_order_tmp" db-types="MySQL"/>
@@ -33,4 +35,6 @@
     <sql-case id="select_with_left_join_having_outer_column" value="SELECT COUNT(*) AS count FROM t_order o LEFT JOIN t_user u ON o.user_id = u.user_id GROUP BY u.user_id HAVING u.user_id IS NOT NULL" db-types="MySQL"/>
     <sql-case id="select_with_outer_join_operator" value="SELECT o.order_id FROM t_order o, t_order_item i WHERE o.order_id = i.order_id(+)" db-types="Oracle"/>
     <sql-case id="select_with_top_and_delimited_row_number_alias" value="SELECT row_.[rownum_] FROM (SELECT TOP (?) ROW_NUMBER() OVER (ORDER BY o.order_id) AS [rownum_] FROM t_order o) row_ WHERE row_.[rownum_] &gt; ?" db-types="SQLServer" case-types="PLACEHOLDER"/>
+    <sql-case id="select_unquoted_text_with_chinese_comma_from_dual" value="SELECT 图书馆本月新增3000册文学书籍、15套历史丛书，下月开放借阅 AS RESULT FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_unquoted_text_without_comma_from_dual" value="SELECT 欢迎使用测试系统 AS RESULT FROM DUAL" db-types="Oracle" />
 </sql-cases>
