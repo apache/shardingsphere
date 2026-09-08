@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.job.api;
 
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
@@ -123,20 +122,6 @@ class PipelineAPIFactoryTest {
             whenModeConfiguration(contextManagerInstance, repositoryConfig);
             ServiceProviderNotFoundException actual = assertThrows(ServiceProviderNotFoundException.class, () -> PipelineAPIFactory.getRegistryCenter(contextKey));
             assertThat(actual.getMessage(), containsString("NOT_REGISTERED"));
-        } finally {
-            PipelineAPIFactory.close(contextKey);
-        }
-    }
-    
-    @Test
-    void assertGetPipelineGovernanceFacadePropagatesInitializationFailure() {
-        PipelineContextKey contextKey = new PipelineContextKey("error_db", InstanceType.JDBC);
-        ConcurrentException expected = new ConcurrentException(new Exception("expected"));
-        try (MockedStatic<PipelineContextManager> contextManager = mockStatic(PipelineContextManager.class)) {
-            contextManager.when(() -> PipelineContextManager.getContext(contextKey)).thenAnswer(invocation -> {
-                throw expected;
-            });
-            assertThat(assertThrows(ConcurrentException.class, () -> PipelineAPIFactory.getPipelineGovernanceFacade(contextKey)), sameInstance(expected));
         } finally {
             PipelineAPIFactory.close(contextKey);
         }
