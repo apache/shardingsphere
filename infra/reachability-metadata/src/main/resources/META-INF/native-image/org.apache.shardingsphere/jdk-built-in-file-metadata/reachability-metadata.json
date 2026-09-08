@@ -2,6 +2,12 @@
   "reflection": [
     {
       "condition": {
+        "typeReached": "com.facebook.presto.jdbc.internal.guava.reflect.TypeResolver"
+      },
+      "type": "int[][]"
+    },
+    {
+      "condition": {
         "typeReached": "com.sun.jmx.mbeanserver.MBeanIntrospector"
       },
       "type": "com.oracle.svm.core.jdk.management.SubstrateRuntimeMXBean"
@@ -164,6 +170,12 @@
     },
     {
       "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.introspect.TypeResolutionContext"
+      },
+      "type": "java.util.Iterator"
+    },
+    {
+      "condition": {
         "typeReached": "org.yaml.snakeyaml.constructor.BaseConstructor"
       },
       "type": "java.util.LinkedHashSet",
@@ -187,6 +199,24 @@
         "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"
       },
       "type": "java.util.RandomAccess"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.deser.DeserializerCache"
+      },
+      "type": "java.util.SequencedMap"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.deser.DeserializerCache"
+      },
+      "type": "java.util.SequencedCollection"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.introspect.BasicBeanDescription"
+      },
+      "type": "java.util.Spliterator"
     },
     {
       "condition": {
@@ -220,6 +250,18 @@
     },
     {
       "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.introspect.TypeResolutionContext"
+      },
+      "type": "java.util.stream.BaseStream"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.introspect.BasicBeanDescription"
+      },
+      "type": "java.util.stream.Stream"
+    },
+    {
+      "condition": {
         "typeReached": "org.h2.value.ValueUuid"
       },
       "type": "sun.security.provider.SecureRandom"
@@ -234,5 +276,35 @@
         ]
       }
     }
-  ]
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.mysql.cj.jdbc.AbandonedConnectionCleanupThread"
+      },
+      "glob": ""
+    }
+  ],
+  "foreign": {
+    "downcalls": [
+      {
+        "condition": {
+          "typeReached": "io.netty.util.internal.CleanerJava24Linker"
+        },
+        "returnType": "jlong",
+        "parameterTypes": [
+          "jlong"
+        ]
+      },
+      {
+        "condition": {
+          "typeReached": "io.netty.util.internal.CleanerJava24Linker"
+        },
+        "returnType": "void",
+        "parameterTypes": [
+          "jlong"
+        ]
+      }
+    ]
+  }
 }
