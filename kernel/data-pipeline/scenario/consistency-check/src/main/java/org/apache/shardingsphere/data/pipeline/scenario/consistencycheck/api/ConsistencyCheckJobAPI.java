@@ -209,7 +209,7 @@ public final class ConsistencyCheckJobAPI {
             result.setInventoryFinishedPercentage(Math.min(100, (int) (checkedRecordsCount * 100L / recordsCount)));
             LocalDateTime stopTime = jobConfigPOJO.isDisabled() ? LocalDateTime.from(DateTimeFormatterFactory.getDatetimeFormatter().parse(jobConfigPOJO.getProps().getProperty("stop_time")))
                     : null;
-            long durationMillis = (null != stopTime ? Timestamp.valueOf(stopTime).getTime() : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
+            long durationMillis = (null == stopTime ? System.currentTimeMillis() : Timestamp.valueOf(stopTime).getTime()) - jobItemProgress.getCheckBeginTimeMillis();
             result.setDurationSeconds(TimeUnit.MILLISECONDS.toSeconds(durationMillis));
             if (null != stopTime) {
                 result.setCheckEndTime(jobConfigPOJO.getProps().getProperty("stop_time"));

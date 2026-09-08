@@ -132,7 +132,7 @@ public final class PipelineExecuteEngine {
                 future.get();
             } catch (final ExecutionException ex) {
                 Throwable cause = ex.getCause();
-                executeCallback.onFailure(null != cause ? cause : ex);
+                executeCallback.onFailure(null == cause ? ex : cause);
                 throw new PipelineInternalException(ex);
             }
         }

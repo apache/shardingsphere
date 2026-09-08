@@ -31,10 +31,6 @@ Exclude a file only when ignore rules, repository instructions, or generation co
 
 Before checking physical lines, read `CODE_OF_CONDUCT.md`, every `AGENTS.md` that applies to the target path, Checkstyle, Spotless, and any other standard explicitly referenced for the target category.
 
-When the scope contains Java, read the [Java naming and Lombok rules](rules/java-naming.md) through EOF and include each applicable rule in the audit.
-
-When the scope contains implementation artifacts, read the [defensive-code rules](rules/defensive-code.md) through EOF and include each applicable rule in the audit.
-
 For each rule, record its source, exact requirement, constrained files, exceptions, and inspection method. Classify the rule as mandatory, prohibited, conditional, or advisory.
 
 ## Determine Applicability
@@ -73,7 +69,7 @@ If a required checker cannot be run safely and no other method can determine the
 
 A passing checker proves only the rules that the checker actually covers. Continue physical-line inspection for naming, ordering, conditional, semantic, and file-category rules that the tool does not cover. Do not replace a required checker with manual inspection when the checker determines strict formatting compliance.
 
-For Java naming and Lombok rules, resolve receiver types, annotation types, generated accessors, declaration roles, and lambda parameter roles whenever those facts determine applicability; text searches are candidate discovery only.
+For Java naming, type, and constructor rules, resolve receiver types, annotation types, generated accessors and constructors, declaration roles, field initialization, constructor contracts, and lambda parameter roles whenever those facts determine applicability; text searches are candidate discovery only.
 
 For defensive-code rules, inspect the relevant contracts, producers, consumers, callers, aliases, failures, concurrency, and lifecycle paths. Do not infer that an existing defense is unnecessary merely because a text search did not find its justification.
 

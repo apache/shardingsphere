@@ -215,13 +215,13 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is the standard Apache 2.0 license.
 
-    accessors-smart 2.4.9: https://www.minidev.net/, Apache 2.0
+    accessors-smart 2.6.0: https://www.minidev.net/, Apache 2.0
     aggdesigner-algorithm 6.1: Apache 2.0
     audience-annotations 0.12.0: https://github.com/apache/yetus, Apache 2.0
-    avatica-core 1.26.0: https://calcite.apache.org/avatica, Apache 2.0
+    avatica-core 1.28.0: https://calcite.apache.org/avatica, Apache 2.0
     caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
-    calcite-core 1.40.0: https://calcite.apache.org, Apache 2.0
-    calcite-linq4j 1.40.0: https://calcite.apache.org, Apache 2.0
+    calcite-core 1.42.0: https://calcite.apache.org, Apache 2.0
+    calcite-linq4j 1.42.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.16.0: https://github.com/apache/commons-codec, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
     commons-io 2.20.0: https://github.com/apache/commons-io, Apache 2.0
@@ -247,13 +247,13 @@ The text of each license is the standard Apache 2.0 license.
     grpc-stub 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-util 1.75.0: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.10.1: https://github.com/google/gson, Apache 2.0
-    guava 33.4.6-jre: https://github.com/google/guava, Apache 2.0
+    guava 33.4.8-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
-    jackson-annotations 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-core 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-databind 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-datatype-jdk8 2.16.1: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
-    jackson-datatype-jsr310 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-annotations 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-core 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-databind 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-datatype-jdk8 2.18.6: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
+    jackson-datatype-jsr310 2.18.6: http://github.com/FasterXML/jackson, Apache 2.0
     javassist 3.29.2-GA: https://www.javassist.org/, Apache 2.0
     jcl-over-slf4j 2.0.17: https://github.com/qos-ch/slf4j, Apache 2.0
     jctools-core 4.0.5: https://github.com/JCTools/JCTools, Apache 2.0
@@ -261,8 +261,9 @@ The text of each license is the standard Apache 2.0 license.
     jetcd-common 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-core 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-grpc 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
-    json-path 2.9.0: https://github.com/jayway/JsonPath, Apache 2.0
-    json-smart 2.4.10: https://www.minidev.net/, Apache 2.0
+    joou-java-6 0.9.5: https://github.com/jOOQ/jOOU, Apache 2.0
+    json-path 2.10.0: https://github.com/jayway/JsonPath, Apache 2.0
+    json-smart 2.6.0: https://www.minidev.net/, Apache 2.0
     json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jspecify 1.0.0: https://jspecify.dev/, Apache 2.0
     listenablefuture 1.0: https://github.com/google/guava, Apache 2.0
@@ -323,7 +324,7 @@ The following components are provided under a BSD license. See project link for 
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     antlr4-runtime 4.13.2: https://github.com/antlr/antlr4, BSD-3-Clause
-    asm 9.3: https://github.com/llbit/ow2-asm, BSD-3-Clause
+    asm 9.7.1: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.1.12: https://github.com/janino-compiler/janino, BSD-3-Clause
     janino 3.1.12: https://github.com/janino-compiler/janino, BSD-3-Clause
     opengauss-jdbc 3.1.0-og: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause

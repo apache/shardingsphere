@@ -57,9 +57,9 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
     @Override
     public SQLException convert(final SQLDialectException sqlDialectException) {
         if (sqlDialectException instanceof UnknownDatabaseException) {
-            return null != ((UnknownDatabaseException) sqlDialectException).getDatabaseName()
-                    ? toSQLException(MySQLVendorError.ER_BAD_DB_ERROR, ((UnknownDatabaseException) sqlDialectException).getDatabaseName())
-                    : toSQLException(MySQLVendorError.ER_NO_DB_ERROR);
+            return null == ((UnknownDatabaseException) sqlDialectException).getDatabaseName()
+                    ? toSQLException(MySQLVendorError.ER_NO_DB_ERROR)
+                    : toSQLException(MySQLVendorError.ER_BAD_DB_ERROR, ((UnknownDatabaseException) sqlDialectException).getDatabaseName());
         }
         if (sqlDialectException instanceof NoDatabaseSelectedException) {
             return toSQLException(MySQLVendorError.ER_NO_DB_ERROR);

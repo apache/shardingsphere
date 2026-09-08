@@ -79,7 +79,7 @@ class MySQLReadOnlySQLE2ETest extends AbstractMySQLRuntimeE2ETest {
     void assertExecuteQueryTimeout() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("database_gateway_execute_query",
-                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT SLEEP(2)", "timeout_ms", 1));
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT 1 FROM orders WHERE SLEEP(2)", "timeout_ms", 1000));
             assertRecoveryResponse(actual);
         }
     }

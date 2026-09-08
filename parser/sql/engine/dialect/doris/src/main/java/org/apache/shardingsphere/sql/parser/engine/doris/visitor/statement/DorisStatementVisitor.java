@@ -438,7 +438,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     @Override
     public final ASTNode visitViewColumnDefinition(final ViewColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        String comment = null != ctx.COMMENT() ? SQLUtils.getExactlyValue(ctx.string_().getText()) : null;
+        String comment = null == ctx.COMMENT() ? null : SQLUtils.getExactlyValue(ctx.string_().getText());
         return new ViewColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, comment);
     }
     

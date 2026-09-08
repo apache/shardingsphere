@@ -138,7 +138,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 return;
             }
             int readerIndex = buffer.readerIndex();
-            FirebirdCommandPacketType commandType = (pendingPacketType != null) ? pendingPacketType : FirebirdCommandPacketType.valueOf(buffer.getInt(readerIndex));
+            FirebirdCommandPacketType commandType = (null == pendingPacketType) ? FirebirdCommandPacketType.valueOf(buffer.getInt(readerIndex)) : pendingPacketType;
             if (FirebirdCommandPacketType.VOID == commandType) {
                 buffer.skipBytes(MESSAGE_TYPE_LENGTH);
                 continue;

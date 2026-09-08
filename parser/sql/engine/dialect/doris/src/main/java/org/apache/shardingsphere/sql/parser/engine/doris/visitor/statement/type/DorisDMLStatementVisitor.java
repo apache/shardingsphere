@@ -187,7 +187,7 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
             result.setMergeType("MERGE");
         } else if (null != ctx.APPEND()) {
             result.setMergeType("APPEND");
-        } else if (ctx.DELETE().size() > (null != ctx.ON() ? 1 : 0)) {
+        } else if (ctx.DELETE().size() > (null == ctx.ON() ? 0 : 1)) {
             result.setMergeType("DELETE");
         }
         for (String_Context each : ctx.string_()) {
@@ -296,7 +296,7 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.loadDataIgnoreLines()) {
             LoadDataIgnoreLinesContext ignoreCtx = ctx.loadDataIgnoreLines();
             long number = Long.parseLong(ignoreCtx.numberLiterals().getText().replaceAll("^[+]", ""));
-            String unit = null != ignoreCtx.LINES() ? "LINES" : "ROWS";
+            String unit = null == ignoreCtx.LINES() ? "ROWS" : "LINES";
             result.setIgnoreLines(new IgnoreLinesSegment(ignoreCtx.start.getStartIndex(), ignoreCtx.stop.getStopIndex(), number, unit));
         }
         if (null != ctx.fieldOrVarSpec() && null != ctx.fieldOrVarSpec().userVariable()) {
