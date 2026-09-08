@@ -741,6 +741,18 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.util.yaml.YamlConfiguration"
+      },
+      "type": "org.apache.shardingsphere.infra.util.yaml.YamlConfiguration"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.node.path.engine.generator.NodePathSegment"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.database.DatabaseListenerCoordinatorNodePath",
@@ -925,6 +937,24 @@
         "typeReached": "org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"
       },
       "glob": "schema/**/*.yaml"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader"
+      },
+      "glob": "schema/*"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader"
+      },
+      "glob": "sql"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader"
+      },
+      "glob": "sql/*.xml"
     }
   ]
 }

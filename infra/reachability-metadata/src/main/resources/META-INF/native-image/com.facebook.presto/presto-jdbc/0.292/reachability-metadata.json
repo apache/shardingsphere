@@ -243,7 +243,7 @@
     },
     {
       "condition": {
-        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.deser.std.MapDeserializer"
+        "typeReached": "com.facebook.presto.jdbc.internal.jackson.databind.introspect.BasicBeanDescription"
       },
       "type": "com.facebook.presto.jdbc.internal.common.RuntimeMetric",
       "allDeclaredFields": true,
