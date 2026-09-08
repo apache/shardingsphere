@@ -1266,7 +1266,6 @@
                                     <buildArg>-H:+AddAllCharsets</buildArg>
                                     <buildArg>-H:+IncludeAllLocales</buildArg>
                                     <buildArg>--exact-reachability-metadata</buildArg>
-                                    <buildArg>-H:+TreatAllTypeReachableConditionsAsTypeReached</buildArg>
                                 </buildArgs>
                                 <runtimeArgs>
                                     <runtimeArg>-XX:MissingRegistrationReportingMode=Warn</runtimeArg>

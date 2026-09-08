@@ -84,11 +84,7 @@ jobs:
         run: ./test/native/src/test/resources/test-native/ps1/config-rdctl.ps1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          java-version: '25.0.2'
-          distribution: 'graalvm'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-          cache-suffix: 'native-test'
+          distribution: 'graalvm-community'
       # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
       - name: Run test with GraalVM CE
         if: matrix.os == 'windows-latest'
