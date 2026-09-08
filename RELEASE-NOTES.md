@@ -69,7 +69,7 @@
 1. Proxy: Fix MySQL BLOB result set handling in text and binary protocols - [#39340](https://github.com/apache/shardingsphere/pull/39340)
 1. Proxy: Fix silently dropped backslashes and rejected NULL elements in PostgreSQL text array binary parameters - [#39395](https://github.com/apache/shardingsphere/pull/39395)
 1. Proxy: Fix MySQL COM_QUERY binary string literal corruption - [#39433](https://github.com/apache/shardingsphere/pull/39433)
-1. Proxy: Add error handling for unknown or closed BLOB handles and ids in Firebird - [#39052](https://github.com/apache/shardingsphere/issues/39052)
+1. Proxy: Add error handling for unknown or closed BLOB handles and ids in Firebird - [#39773](https://github.com/apache/shardingsphere/pull/39773)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. Mode: Fix rule metadata not removed from memory after dropping rules in Etcd cluster mode - [#38561](https://github.com/apache/shardingsphere/pull/38561)
 1. Agent: Fix wrong target class name in StaticMethodAdviceExecutor error logs - [#39077](https://github.com/apache/shardingsphere/pull/39077)
