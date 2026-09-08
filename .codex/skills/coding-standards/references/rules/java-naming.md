@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 
-# Java Naming and Lombok Rules
+# Java Naming Rules
 
 Apply these rules to fields, local variables, method and constructor parameters, and lambda parameters in Java source governed by this Skill.
 
@@ -28,11 +28,8 @@ Apply these rules to fields, local variables, method and constructor parameters,
 - An ordinary variable identifier must not contain `optional`; the direct lambda parameter of `java.util.Optional#map` is the only naming exception.
 - Method parameters must not be named `result`, `each`, or `entry` unless a verified contract fixes the parameter name.
 
-## Lombok-Generated Accessors
+## Generated Accessor Field Names
 
-- Do not use `lombok.Data` or `lombok.Value`, whether referenced through an import or by a fully qualified annotation name.
-- Do not report an annotation named `Value` from another package as a violation of the Lombok prohibition.
-- Use only the narrow Lombok annotations whose generated members are required.
 - When Lombok generates a getter or setter from a field identifier, spell the listed words in that field identifier as `arguments`, `parameters`, `environment`, `configuration`, `configurations`, and `properties` instead of `args`, `params`, `env`, `config`, `configs`, and `props`.
 - An abbreviated field name is allowed when neither a Lombok getter nor a Lombok setter is generated for that field; account for class-level annotations and field-level `AccessLevel.NONE` overrides before deciding.
 - If either a Lombok getter or a Lombok setter is generated for a field, the full-word field-name rule applies even when generation of the other accessor is disabled.
@@ -81,7 +78,6 @@ return result;
 - Inspect parsed declarations, resolved receiver and annotation types, generated Lombok accessors, and lambda roles when those facts determine whether a rule applies.
 - Treat text searches and regular expressions only as candidate discovery; they cannot prove compliance with semantic rules.
 - Ignore matching text in comments, string literals, type names, method names, and unrelated annotation types.
-- Apply the rules regardless of whitespace, line breaks, punctuation, declaration layout, or whether an annotation is imported or fully qualified.
+- Apply the naming rules regardless of whitespace, line breaks, punctuation, or declaration layout.
 - When a public API, override, interface, SPI, framework, serialization, reflection, or compatibility contract fixes an identifier that would otherwise violate a naming rule, record the exact contract and keep the identifier unless the authorized task includes changing that contract.
 - Treat a verified contract-fixed identifier as an allowed naming exception in a standalone audit, and report the contract instead of proposing a mechanical rename.
-- The contract exception does not permit `lombok.Data` or `lombok.Value`.

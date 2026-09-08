@@ -139,6 +139,10 @@
             <property name="query" value="//QUESTION[./*[1][self::NOT_EQUAL and ./*[1][self::LITERAL_NULL]]]" />
             <message key="matchxpath.match" value="Use null == value and put the null-result branch first in ternary expressions." />
         </module>
+        <module name="MatchXpath">
+            <property name="query" value="//ANNOTATION[((./IDENT[@text='SneakyThrows'] and ancestor::COMPILATION_UNIT/IMPORT/DOT[./IDENT[@text='lombok'] and ./IDENT[@text='SneakyThrows']]) or ./DOT[./IDENT[@text='lombok'] and ./IDENT[@text='SneakyThrows']]) and not(.//LITERAL_CLASS)]" />
+            <message key="matchxpath.match" value="Specify exception types in @SneakyThrows or remove the annotation." />
+        </module>
         <module name="IllegalType" />
         <module name="IllegalType">
             <property name="tokens" value="IMPORT, PARAMETER_DEF" />
@@ -327,6 +331,11 @@
         <module name="RecordTypeParameterName" />
         <module name="StaticVariableName" />
         <module name="TypeName" />
+        <module name="TypeName">
+            <property name="id" value="UtilityTypeName" />
+            <property name="format" value="^(?!.*Util$).*$" />
+            <message key="name.invalidPattern" value="Use the Utils suffix instead of Util for type name ''{0}''." />
+        </module>
         
         <!-- Size Violations -->
         <module name="AnonInnerLength" />

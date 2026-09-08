@@ -18,16 +18,16 @@ root_max_bytes = 26000
 
 [profiles]
 root = ["agents"]
-code-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-expressions", "java-line-wrapping", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
-test-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-expressions", "java-line-wrapping", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
-code-review = ["agents", "code-of-conduct", "coding-standards", "java-naming", "java-expressions", "java-line-wrapping", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification"]
-code-design = ["agents", "implementation-rules", "testing-rules", "contracts-and-removal", "cross-cutting-skills"]
-coding-standards-audit = ["agents", "code-of-conduct", "coding-standards", "standalone-audit", "java-naming", "java-expressions", "java-line-wrapping", "defensive-code"]
+code-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-types", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
+test-write = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-types", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "change-completion"]
+code-review = ["agents", "code-of-conduct", "coding-standards", "java-naming", "java-types", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification"]
+code-design = ["agents", "implementation-rules", "java-collections", "testing-rules", "contracts-and-removal", "cross-cutting-skills"]
+coding-standards-audit = ["agents", "code-of-conduct", "coding-standards", "standalone-audit", "java-naming", "java-types", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code"]
 runtime-diagnosis = ["agents", "runtime-triage", "code-verification"]
 command-execution = ["agents", "token-efficiency", "code-verification"]
 cross-cutting = ["agents", "cross-cutting-skills"]
-gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-expressions", "java-line-wrapping", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
-review-pr = ["agents", "code-of-conduct", "coding-standards", "java-naming", "java-expressions", "java-line-wrapping", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
+gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "java-naming", "java-types", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
+review-pr = ["agents", "code-of-conduct", "coding-standards", "java-naming", "java-types", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
 policy-maintenance = ["agents", "policy-maintenance", "policy-source-manifest"]
 
 [[sources]]
@@ -126,7 +126,7 @@ id = "coding-standards"
 path = ".codex/skills/coding-standards/SKILL.md"
 kind = "skill"
 semantic = true
-references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/standalone-audit.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/java-expressions.md", ".codex/skills/coding-standards/references/rules/java-line-wrapping.md", ".codex/skills/coding-standards/references/rules/defensive-code.md"]
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/standalone-audit.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/java-types.md", ".codex/skills/coding-standards/references/rules/java-constructors.md", ".codex/skills/coding-standards/references/rules/java-preconditions.md", ".codex/skills/coding-standards/references/rules/java-exceptions.md", ".codex/skills/coding-standards/references/rules/java-collections.md", ".codex/skills/coding-standards/references/rules/java-expressions.md", ".codex/skills/coding-standards/references/rules/java-line-wrapping.md", ".codex/skills/coding-standards/references/rules/java-testing.md", ".codex/skills/coding-standards/references/rules/defensive-code.md"]
 
 [[sources]]
 id = "coding-standards-metadata"
@@ -140,11 +140,46 @@ id = "standalone-audit"
 path = ".codex/skills/coding-standards/references/standalone-audit.md"
 kind = "reference"
 semantic = true
-references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/defensive-code.md"]
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md"]
 
 [[sources]]
 id = "java-naming"
 path = ".codex/skills/coding-standards/references/rules/java-naming.md"
+kind = "rules"
+semantic = true
+references = []
+
+[[sources]]
+id = "java-types"
+path = ".codex/skills/coding-standards/references/rules/java-types.md"
+kind = "rules"
+semantic = true
+references = []
+
+[[sources]]
+id = "java-constructors"
+path = ".codex/skills/coding-standards/references/rules/java-constructors.md"
+kind = "rules"
+semantic = true
+references = []
+
+[[sources]]
+id = "java-preconditions"
+path = ".codex/skills/coding-standards/references/rules/java-preconditions.md"
+kind = "rules"
+semantic = true
+references = []
+
+[[sources]]
+id = "java-exceptions"
+path = ".codex/skills/coding-standards/references/rules/java-exceptions.md"
+kind = "rules"
+semantic = true
+references = []
+
+[[sources]]
+id = "java-collections"
+path = ".codex/skills/coding-standards/references/rules/java-collections.md"
 kind = "rules"
 semantic = true
 references = []
@@ -164,18 +199,25 @@ semantic = true
 references = []
 
 [[sources]]
+id = "java-testing"
+path = ".codex/skills/coding-standards/references/rules/java-testing.md"
+kind = "rules"
+semantic = true
+references = ["CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/rules/java-naming.md"]
+
+[[sources]]
 id = "defensive-code"
 path = ".codex/skills/coding-standards/references/rules/defensive-code.md"
 kind = "rules"
 semantic = true
-references = []
+references = [".codex/skills/coding-standards/references/rules/java-preconditions.md"]
 
 [[sources]]
 id = "implementation-rules"
 path = ".codex/skills/code-implementation/references/rules/implementation.md"
 kind = "rules"
 semantic = true
-references = ["CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/defensive-code.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md"]
+references = ["CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/java-types.md", ".codex/skills/coding-standards/references/rules/java-constructors.md", ".codex/skills/coding-standards/references/rules/java-collections.md", ".codex/skills/coding-standards/references/rules/defensive-code.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md"]
 
 [[sources]]
 id = "testing-rules"

@@ -34,11 +34,11 @@ AFTER_LOAD="indexCreates buildFinish"
 
 **Note: None of the parameters mentioned in this section are absolute values and need to be adjusted based on actual test results.**
 
-### It is recommended to run ShardingSphere using Java 17
+### It is recommended to run ShardingSphere using Java 21
 
-ShardingSphere can be compiled using Java 8.
+ShardingSphere can be compiled using Java 21.
 
-When using Java 17, maximize the ShardingSphere performance by default.
+When using Java 21, maximize the ShardingSphere performance by default.
 
 ### ShardingSphere data sharding recommendations
 

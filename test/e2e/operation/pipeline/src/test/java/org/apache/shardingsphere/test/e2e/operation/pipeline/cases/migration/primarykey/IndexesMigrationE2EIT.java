@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.primarykey;
 
-import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType;
@@ -108,7 +107,6 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         }
     }
     
-    @SneakyThrows
     private void doCreateUpdateDelete(final PipelineContainerComposer containerComposer, final Object orderId) {
         String updatedStatus = "updated" + System.currentTimeMillis();
         insertOneOrder(containerComposer, orderId);
