@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -215,7 +216,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
     }
     
     @Test
-    void assertSkipUnclosedBlobParameter() throws SQLException {
+    void assertRejectUnclosedBlobParameter() {
         int blobHandle = 7;
         long blobId = 11L;
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
@@ -224,13 +225,17 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
         when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(blobId)));
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
-        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
-        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
-        executor.execute();
-        List<Object> actualParams = queryContextCaptor.getValue().getParameters();
-        assertThat(actualParams.size(), is(1));
-        assertNull(actualParams.get(0));
+        assertThrows(InvalidSegstrIdException.class, () -> executor.execute());
+    }
+    
+    @Test
+    void assertRejectUnknownBlobParameter() {
+        long blobId = 13L;
+        when(packet.getStatementId()).thenReturn(2);
+        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
+        when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(blobId)));
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        assertThrows(InvalidSegstrIdException.class, () -> executor.execute());
     }
     
     @Test

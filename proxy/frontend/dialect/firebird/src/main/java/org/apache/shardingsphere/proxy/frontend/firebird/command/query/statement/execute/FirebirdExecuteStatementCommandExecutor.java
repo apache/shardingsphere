@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
@@ -144,10 +145,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
                 params.set(i, FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), blobId));
                 continue;
             }
-            if (!FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId)) {
-                params.set(i, null);
-                continue;
-            }
+            ShardingSpherePreconditions.checkState(FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId), () -> new InvalidSegstrIdException(blobId));
             Optional<byte[]> blobData = FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
             byte[] bytes = blobData.get();
             params.set(i, bytes);

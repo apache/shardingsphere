@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -38,6 +39,7 @@ import java.util.Collection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -99,5 +101,25 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         assertThat(actual.size(), is(1));
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getId(), is(blobId));
         assertThat(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(segment.length));
+    }
+    
+    @Test
+    void assertExecuteWithUnknownBlobHandle() {
+        when(packet.getBlobHandle()).thenReturn(4);
+        when(packet.getSegment()).thenReturn(new byte[]{1, 2});
+        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        assertThrows(InvalidSegstrHandleException.class, executor::execute);
+    }
+    
+    @Test
+    void assertExecuteAfterClose() {
+        int blobHandle = 4;
+        long blobId = 12L;
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, blobHandle);
+        when(packet.getBlobHandle()).thenReturn(blobHandle);
+        when(packet.getSegment()).thenReturn(new byte[]{1, 2});
+        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        assertThrows(InvalidSegstrHandleException.class, executor::execute);
     }
 }
