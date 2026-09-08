@@ -335,7 +335,7 @@ decision = "proceed"
 required_actions = []
 allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "expand_frozen_boundary", "mutate_git", "mutate_remote"]
-required_reasons = ["explicit_non_code_authorization"]
+required_reasons = []
 required_summary_terms = ["platform approval", "task authority", "already complete", "not expand"]
 forbidden_summary_terms = ["AGENTS.md", ".codex/harness/agents/cases.toml", "policy harness upload"]
 response_style = "concise"
@@ -1274,6 +1274,46 @@ policy_assertions = [{source = "coding-standards", statements = ["When the scope
 critical = true
 
 [[cases]]
+id = "java_collection_mutable_copy_requires_mutability"
+group = "coding / regular"
+description = "Removes mutable copies of fixed collection values unless supported operations or contracts require mutability."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized in-scope Java implementation whose final collection check found four mutable-copy constructions. `names` uses `new ArrayList<>(Collections.singleton(\"foo\"))` but is only read through a `List` contract. `replaceableNames` uses `new ArrayList<>(Arrays.asList(first, second))` but only calls `set(0, replacement)`. `pendingJobs` uses `new LinkedList<>(Arrays.asList(first, second))` and calls `poll()`. `orderedProps` uses `new LinkedHashMap<>(Collections.singletonMap(\"first\", value))`, then calls `put` and exposes insertion order through a verified contract. Replace the first two with the least complex non-mutable or fixed-size forms, preserve the last two, state all four decisions in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["names", "replaceableNames", "pendingJobs", "orderedProps", "Collections.singletonList", "Arrays.asList", "poll", "put"]
+required_summary_term_groups = [["remove", "replace"], ["preserve", "keep", "retain"], ["insertion order", "insertion-order"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "coding-standards", statements = ["Before adding or changing a Java expression that copies `Collections.singleton`, `Collections.singletonMap`, or `Arrays.asList` into `ArrayList`, `LinkedList`, `HashMap`, or `LinkedHashMap`, read the [Java collection rules](references/rules/java-collections.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable mutable-collection construction rule against the effective task delta and the operations, aliases, callers, callees, and contracts needed to determine whether mutability is required."]}, {source = "java-collections", statements = ["Keep the mutable-copy construction only when a supported operation mutates the constructed value or an explicit existing contract requires that value to be mutable.", "When no mutation requirement exists, remove the outer mutable-copy constructor and use the source value or the least complex non-mutable factory that satisfies the required collection or map contract.", "Preserve the required collection abstraction when removing a mutable copy; for example, use `Collections.singletonList(value)` when a `List` is required instead of retaining `Collections.singleton(value)`, which is a `Set`.", "Do not retain an `ArrayList` or `LinkedList` copy of `Arrays.asList` solely for element replacement because `Arrays.asList` supports `set`; size-changing operations such as `add` or `remove` require another mutable list implementation.", "Before replacing a candidate, verify the required abstraction and preserve null handling, iteration order, duplicate behavior, alias visibility, mutation behavior, exception behavior, and supported caller and callee contracts."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_mutable_collection_copies"
+group = "policy routing"
+description = "Audits mutable copies of fixed collection values semantically without rejecting required mutation."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/CollectionCopies.java`. Its complete supplied content contains `names`, created with `new ArrayList<>(Collections.singleton(\"foo\"))` and only read through a `List` contract; `props`, created with `new HashMap<>(Collections.singletonMap(\"key\", value))` and only queried; and `pendingJobs`, created with `new LinkedList<>(Arrays.asList(first, second))` and consumed through `poll()`. Check the complete file and supplied contracts, conclude `Non-compliant`, report only `names` and `props` with the minimum non-mutable corrections, record `pendingJobs` as allowed, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "names", "props", "pendingJobs", "Collections.singletonList", "Collections.singletonMap", "poll", "allowed"]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java expressions that copy `Collections.singleton`, `Collections.singletonMap`, or `Arrays.asList` into `ArrayList`, `LinkedList`, `HashMap`, or `LinkedHashMap`, read the [Java collection rules](references/rules/java-collections.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-collections", statements = ["Before adding, retaining, or auditing a candidate, trace the constructed collection or map through its local operations, aliases, callers, callees, overrides, SPIs, framework behavior, and compatibility contracts.", "Keep the mutable-copy construction only when a supported operation mutates the constructed value or an explicit existing contract requires that value to be mutable.", "When no mutation requirement exists, remove the outer mutable-copy constructor and use the source value or the least complex non-mutable factory that satisfies the required collection or map contract.", "Preserve the required collection abstraction when removing a mutable copy; for example, use `Collections.singletonList(value)` when a `List` is required instead of retaining `Collections.singleton(value)`, which is a `Set`.", "When an outcome-sensitive mutation or contract fact cannot be determined, preserve the existing construction in implementation mode and mark the affected check as blocked in standalone audit mode."]}]
+critical = true
+
+[[cases]]
 id = "java_naming_returns_and_enhanced_for_variables"
 group = "coding / regular"
 description = "Inlines a return-only local and applies result, each, and entry only in their defined roles."
@@ -1468,7 +1508,7 @@ allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_
 forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["pre_handoff_review_required"]
 required_summary_terms = ["assertTrue", "isEmpty", "PreparedStatementCacheContext"]
-required_summary_term_groups = [["outside", "not a Collection", "not a Map", "unchanged", "neither `Collection`", "does not trigger"]]
+required_summary_term_groups = [["outside", "not a Collection", "not a Map", "unchanged", "neither Collection", "neither `Collection`", "does not trigger"]]
 forbidden_summary_terms = ["add isEmpty", "implement Collection", "implement Map"]
 policy_binding_profile = "test-write"
 policy_assertions = [{source = "java-testing", statements = ["When a Java test verifies that a `Collection`, `Map`, or one of their subtypes is empty, use `assertTrue(expression.isEmpty())` instead of `assertThat(expression.size(), is(0))`.", "Resolve the receiver's declared type or the invoked method's return contract before applying this rule; the presence of a `size()` method alone does not prove that the receiver is a `Collection` or `Map`.", "Do not report or rewrite an assertion on another type merely because that type provides `size()`; when the receiver type cannot be proved, do not report a confirmed violation."]}]
@@ -1549,7 +1589,7 @@ allowed_actions = ["inspect_local"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["read_only_request"]
 required_summary_terms = ["Non-compliant", "184", "248", "230"]
-required_summary_term_groups = [["single line", "one line", "one physical line", "join"], ["before `&&`", "before &&", "start of the continuation"], ["compliant", "allowed"]]
+required_summary_term_groups = [["single line", "one line", "one physical line", "join"], ["before `&&`", "before &&", "start of the continuation", "start of its continuation", "continuation's start", "continuation’s start"], ["compliant", "allowed"]]
 forbidden_summary_terms = ["Strictly compliant"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java, read the [Java line-wrapping rules](references/rules/java-line-wrapping.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "java-line-wrapping", statements = ["Keep the reconstructed form on one physical line when it contains no more than 200 characters.", "Wrap the reconstructed form only when it would contain more than 200 characters.", "For a wrapped logical expression, break before `&&` or `||` and place the operator at the start of the continuation line.", "For a wrapped conditional expression, break before `?` and `:` and place each operator at the start of its continuation line.", "In Standalone Compliance Audit Mode, apply these rules to every Java declaration header, statement, and expression in the exact audit scope."]}]
