@@ -190,6 +190,18 @@
     },
     {
       "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.deser.DeserializerCache"
+      },
+      "type": "java.util.SequencedMap"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.deser.DeserializerCache"
+      },
+      "type": "java.util.SequencedCollection"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.calcite.linq4j.tree.Types"
       },
       "type": "java.util.TimeZone"
@@ -233,6 +245,14 @@
           "java.lang.reflect.TypeVariable"
         ]
       }
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.mysql.cj.jdbc.AbandonedConnectionCleanupThread"
+      },
+      "glob": ""
     }
   ]
 }
