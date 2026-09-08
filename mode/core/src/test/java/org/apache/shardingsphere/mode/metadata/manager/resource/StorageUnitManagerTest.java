@@ -208,7 +208,7 @@ class StorageUnitManagerTest {
         return new StorageUnitManager(metaDataContexts, mock(ComputeNodeInstanceContext.class), resourceSwitchManager, metaDataPersistFacade);
     }
     
-    @SneakyThrows
+    @SneakyThrows(Exception.class)
     private void verifyClosableRuleInvoked(final MetaDataContexts metaDataContexts) {
         verify((AutoCloseable) metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData().getRules().iterator().next()).close();
     }

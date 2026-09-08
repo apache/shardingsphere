@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -58,11 +60,16 @@ public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<
     }
     
     private void checkDuplicatedRuleNames(final CreateMaskRuleStatement sqlStatement) {
-        if (null != rule) {
-            Collection<String> currentRuleNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
-            Collection<String> duplicatedRuleNames = sqlStatement.getRules().stream().map(MaskRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
-            ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("mask", database.getName(), duplicatedRuleNames));
+        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
+        ShardingSpherePreconditions.checkMustEmpty(duplicatedRuleNames, () -> new DuplicateRuleException("mask", database.getName(), duplicatedRuleNames));
+    }
+    
+    private Collection<String> getDuplicatedRuleNames(final CreateMaskRuleStatement sqlStatement) {
+        if (null == rule) {
+            return Collections.emptyList();
         }
+        Collection<String> currentRuleNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
+        return sqlStatement.getRules().stream().map(MaskRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
     }
     
     private void checkAlgorithms(final CreateMaskRuleStatement sqlStatement) {
@@ -73,7 +80,15 @@ public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<
     
     @Override
     public MaskRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateMaskRuleStatement sqlStatement) {
-        return MaskRuleStatementConverter.convert(sqlStatement.getRules());
+        return MaskRuleStatementConverter.convert(getToBeCreatedRuleSegments(sqlStatement));
+    }
+    
+    private Collection<MaskRuleSegment> getToBeCreatedRuleSegments(final CreateMaskRuleStatement sqlStatement) {
+        if (!ifNotExists) {
+            return sqlStatement.getRules();
+        }
+        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
+        return sqlStatement.getRules().stream().filter(each -> !duplicatedRuleNames.contains(each.getTableName())).collect(Collectors.toList());
     }
     
     @Override

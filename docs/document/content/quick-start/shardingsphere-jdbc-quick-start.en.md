@@ -15,7 +15,7 @@ Currently only Java language is supported.
 
 ## Requirements
 
-The development environment requires Java JRE 8 or later.
+Compiling ShardingSphere requires JDK 21 or later. Running applications that depend on ShardingSphere requires Java JRE 8 or later.
 
 ## Procedure
 

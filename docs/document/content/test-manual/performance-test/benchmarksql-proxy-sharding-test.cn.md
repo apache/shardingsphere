@@ -34,11 +34,11 @@ AFTER_LOAD="indexCreates buildFinish"
 
 **注意：本节中提到的任何参数都不是绝对值，都需要根据实际测试结果进行调整或取舍。**
 
-### 建议使用 Java 17 运行 ShardingSphere
+### 建议使用 Java 21 运行 ShardingSphere
 
-编译 ShardingSphere 可以使用 Java 8。
+编译 ShardingSphere 可以使用 Java 21。
 
-使用 Java 17 可以在默认情况下尽量提升 ShardingSphere 的性能。
+使用 Java 21 可以在默认情况下尽量提升 ShardingSphere 的性能。
 
 ### ShardingSphere 数据分片建议
 

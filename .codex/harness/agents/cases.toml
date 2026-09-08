@@ -335,7 +335,7 @@ decision = "proceed"
 required_actions = []
 allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "expand_frozen_boundary", "mutate_git", "mutate_remote"]
-required_reasons = ["explicit_non_code_authorization"]
+required_reasons = []
 required_summary_terms = ["platform approval", "task authority", "already complete", "not expand"]
 forbidden_summary_terms = ["AGENTS.md", ".codex/harness/agents/cases.toml", "policy harness upload"]
 response_style = "concise"
@@ -1214,6 +1214,26 @@ policy_assertions = [{source = "java-constructors", statements = ["Use `lombok.R
 critical = true
 
 [[cases]]
+id = "java_sneaky_throws_uses_actual_exception_types"
+group = "coding / regular"
+description = "Uses explicit SneakyThrows values that match the method's checked-exception behavior without requiring the annotation."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized in-scope Java implementation whose final exception check found four methods. `read` uses `@SneakyThrows(Exception.class)` although its only checked exception is `IOException`. `invoke` uses `@SneakyThrows(Exception.class)` because it calls an API whose verified contract declares `Exception`, and its method contract intentionally omits a `throws` clause. `advice` uses `@SneakyThrows(Throwable.class)` because it catches and rethrows a value statically typed as `Throwable`. `parse` declares `throws SQLException` and does not use `@SneakyThrows`. Replace only the overly broad annotation on `read`, preserve the other three methods, name the exact resulting annotation or `throws` form for all four methods in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["read", "IOException.class", "invoke", "Exception.class", "advice", "Throwable.class", "parse", "throws SQLException"]
+required_summary_term_groups = [["change", "replace", "narrow"], ["preserve", "keep", "retain"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "coding-standards", statements = ["Before adding or changing a Java method annotated with `lombok.SneakyThrows` or changing the checked-exception behavior of such a method, read the [Java exception handling rules](references/rules/java-exceptions.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable Java exception handling rule against each added or modified `lombok.SneakyThrows` annotation and the method bodies, invoked signatures, rethrown values, and contracts needed to resolve its exception types."]}, {source = "java-exceptions", statements = ["Do not require `lombok.SneakyThrows`; code that handles or declares its checked exceptions without the annotation is compliant with these rules.", "When using `lombok.SneakyThrows`, specify the narrowest stable checked exception type or types that cover the checked exceptions intentionally propagated without a `throws` clause.", "Use `Exception.class` only when the method body explicitly throws `Exception` or calls an API whose applicable checked-exception contract is `Exception`, and the current method intentionally omits `throws Exception` from its signature.", "Do not use `Exception.class` when the method's checked exceptions can be expressed with more specific stable types.", "Use `Throwable.class` only when the method body actually rethrows a value statically typed as `Throwable` and preserving that propagation is required; do not use it as a catch-all for unresolved exceptions."]}]
+critical = true
+
+[[cases]]
 id = "java_naming_optional_map_parameter_is_exact"
 group = "coding / regular"
 description = "Names only the direct Optional map lambda parameter optional and rejects optional in ordinary identifiers."
@@ -1271,6 +1291,46 @@ required_summary_terms = ["Non-compliant", "names", "keys", "jobs", "indexedName
 forbidden_summary_terms = ["Strictly compliant"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java collection declarations, read the [Java collection declaration rules](references/rules/java-collections.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-collections", statements = ["Declare a collection as `Collection<E>` when every required operation and applicable contract can be expressed by `Collection`.", "Use `List<E>` only when an applicable caller, callee, override, SPI, framework, or compatibility contract requires `List`, or when the implementation requires a `List`-specific operation such as positional access through `get(int)`.", "Use `Set<E>` only when an applicable caller, callee, override, SPI, framework, or compatibility contract requires `Set`, or when the declaration must express uniqueness or set semantics.", "Use `Queue<E>` only when an applicable caller, callee, override, SPI, framework, or compatibility contract requires `Queue`, or when the implementation requires queue operations such as `offer`, `poll`, or `peek`.", "Treat searches for `List`, `Set`, `Queue`, or concrete collection classes as candidate discovery only; report a violation only after proving that `Collection` provides every required operation and satisfies every applicable contract."]}]
+critical = true
+
+[[cases]]
+id = "java_collection_mutable_copy_requires_mutability"
+group = "coding / regular"
+description = "Removes mutable copies of fixed collection values unless supported operations or contracts require mutability."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized in-scope Java implementation whose final collection check found four mutable-copy constructions. `names` uses `new ArrayList<>(Collections.singleton(\"foo\"))` but is only read through a `List` contract. `replaceableNames` uses `new ArrayList<>(Arrays.asList(first, second))` but only calls `set(0, replacement)`. `pendingJobs` uses `new LinkedList<>(Arrays.asList(first, second))` and calls `poll()`. `orderedProps` uses `new LinkedHashMap<>(Collections.singletonMap(\"first\", value))`, then calls `put` and exposes insertion order through a verified contract. Replace the first two with the least complex non-mutable or fixed-size forms, preserve the last two, state all four decisions in the summary, rerun affected checks and Formal Review, and do not edit unrelated code or hand off yet."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["names", "replaceableNames", "pendingJobs", "orderedProps", "Collections.singletonList", "Arrays.asList", "poll", "put"]
+required_summary_term_groups = [["remove", "replace"], ["preserve", "keep", "retain"], ["insertion order", "insertion-order"]]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "coding-standards", statements = ["Before adding or changing a Java expression that copies `Collections.singleton`, `Collections.singletonMap`, or `Arrays.asList` into `ArrayList`, `LinkedList`, `HashMap`, or `LinkedHashMap`, read the [Java collection rules](references/rules/java-collections.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable mutable-collection construction rule against the effective task delta and the operations, aliases, callers, callees, and contracts needed to determine whether mutability is required."]}, {source = "java-collections", statements = ["Keep the mutable-copy construction only when a supported operation mutates the constructed value or an explicit existing contract requires that value to be mutable.", "When no mutation requirement exists, remove the outer mutable-copy constructor and use the source value or the least complex non-mutable factory that satisfies the required collection or map contract.", "Preserve the required collection abstraction when removing a mutable copy; for example, use `Collections.singletonList(value)` when a `List` is required instead of retaining `Collections.singleton(value)`, which is a `Set`.", "Do not retain an `ArrayList` or `LinkedList` copy of `Arrays.asList` solely for element replacement because `Arrays.asList` supports `set`; size-changing operations such as `add` or `remove` require another mutable list implementation.", "Before replacing a candidate, verify the required abstraction and preserve null handling, iteration order, duplicate behavior, alias visibility, mutation behavior, exception behavior, and supported caller and callee contracts."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_mutable_collection_copies"
+group = "policy routing"
+description = "Audits mutable copies of fixed collection values semantically without rejecting required mutation."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/CollectionCopies.java`. Its complete supplied content contains `names`, created with `new ArrayList<>(Collections.singleton(\"foo\"))` and only read through a `List` contract; `props`, created with `new HashMap<>(Collections.singletonMap(\"key\", value))` and only queried; and `pendingJobs`, created with `new LinkedList<>(Arrays.asList(first, second))` and consumed through `poll()`. Check the complete file and supplied contracts, conclude `Non-compliant`, report only `names` and `props` with the minimum non-mutable corrections, record `pendingJobs` as allowed, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "names", "props", "pendingJobs", "Collections.singletonList", "Collections.singletonMap", "poll", "allowed"]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java expressions that copy `Collections.singleton`, `Collections.singletonMap`, or `Arrays.asList` into `ArrayList`, `LinkedList`, `HashMap`, or `LinkedHashMap`, read the [Java collection rules](references/rules/java-collections.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-collections", statements = ["Before adding, retaining, or auditing a candidate, trace the constructed collection or map through its local operations, aliases, callers, callees, overrides, SPIs, framework behavior, and compatibility contracts.", "Keep the mutable-copy construction only when a supported operation mutates the constructed value or an explicit existing contract requires that value to be mutable.", "When no mutation requirement exists, remove the outer mutable-copy constructor and use the source value or the least complex non-mutable factory that satisfies the required collection or map contract.", "Preserve the required collection abstraction when removing a mutable copy; for example, use `Collections.singletonList(value)` when a `List` is required instead of retaining `Collections.singleton(value)`, which is a `Set`.", "When an outcome-sensitive mutation or contract fact cannot be determined, preserve the existing construction in implementation mode and mark the affected check as blocked in standalone audit mode."]}]
 critical = true
 
 [[cases]]
@@ -1349,6 +1409,26 @@ required_reasons = ["read_only_request"]
 required_summary_terms = ["Non-compliant", "Equivalent", "CompleteStateFactory", "RequiredArgsConstructor", "builder", "allowed"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "coding-standards", statements = ["Use this mode only when the user explicitly asks to audit, check, or report coding-standards compliance.", "Remain read-only throughout the audit."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-constructors", statements = ["Use `lombok.RequiredArgsConstructor` instead of `lombok.AllArgsConstructor` when it generates the required constructor without changing its signature, visibility, constructor annotations, static factory behavior, or null-check behavior.", "Use `lombok.AllArgsConstructor` only when every parameter it generates belongs to a verified construction, compatibility, serialization, reflection, framework, or builder contract that `lombok.RequiredArgsConstructor` cannot satisfy.", "Treat annotation searches as candidate discovery only; report a violation only after proving equivalent `lombok.RequiredArgsConstructor` behavior or an unnecessary generated parameter."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_sneaky_throws_exception_types"
+group = "policy routing"
+description = "Audits SneakyThrows values against resolved checked exceptions without requiring the annotation."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a standalone coding-standards audit of the exact current-working-tree file `module-a/src/main/java/example/ExceptionMethods.java`. Its complete supplied content contains `read`, annotated with `@SneakyThrows(Exception.class)` although its only checked exception is `IOException`; `invoke`, annotated with `@SneakyThrows(Exception.class)` because it calls a verified API that declares `Exception` and its method contract intentionally omits a `throws` clause; `advice`, annotated with `@SneakyThrows(Throwable.class)` because it rethrows a value statically typed as `Throwable`; and `parse`, which declares `throws SQLException` without `@SneakyThrows`. Check the complete file, conclude `Non-compliant`, report only `read` with the minimum correction, record the other three methods as allowed, name the exact annotation or `throws` form for all four methods in the summary, and do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "read", "IOException.class", "invoke", "Exception.class", "advice", "Throwable.class", "parse", "allowed"]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java methods annotated with `lombok.SneakyThrows`, read the [Java exception handling rules](references/rules/java-exceptions.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance.", "For every violation, report the rule source, exact requirement, applicability conditions, exceptions, all violating locations, the way each location violates the rule, and the minimum correction."]}, {source = "java-exceptions", statements = ["Do not require `lombok.SneakyThrows`; code that handles or declares its checked exceptions without the annotation is compliant with these rules.", "Use `Exception.class` only when the method body explicitly throws `Exception` or calls an API whose applicable checked-exception contract is `Exception`, and the current method intentionally omits `throws Exception` from its signature.", "Do not use `Exception.class` when the method's checked exceptions can be expressed with more specific stable types.", "Use `Throwable.class` only when the method body actually rethrows a value statically typed as `Throwable` and preserving that propagation is required; do not use it as a catch-all for unresolved exceptions.", "Treat annotation searches as candidate discovery only; report a semantic violation only after resolving the checked exceptions that the method can propagate."]}]
 critical = true
 
 [[cases]]
@@ -1468,7 +1548,7 @@ allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_
 forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["pre_handoff_review_required"]
 required_summary_terms = ["assertTrue", "isEmpty", "PreparedStatementCacheContext"]
-required_summary_term_groups = [["outside", "not a Collection", "not a Map", "unchanged", "neither `Collection`", "does not trigger"]]
+required_summary_term_groups = [["outside", "not a Collection", "not a Map", "unchanged", "neither Collection", "neither `Collection`", "does not trigger"]]
 forbidden_summary_terms = ["add isEmpty", "implement Collection", "implement Map"]
 policy_binding_profile = "test-write"
 policy_assertions = [{source = "java-testing", statements = ["When a Java test verifies that a `Collection`, `Map`, or one of their subtypes is empty, use `assertTrue(expression.isEmpty())` instead of `assertThat(expression.size(), is(0))`.", "Resolve the receiver's declared type or the invoked method's return contract before applying this rule; the presence of a `size()` method alone does not prove that the receiver is a `Collection` or `Map`.", "Do not report or rewrite an assertion on another type merely because that type provides `size()`; when the receiver type cannot be proved, do not report a confirmed violation."]}]
@@ -1549,7 +1629,7 @@ allowed_actions = ["inspect_local"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["read_only_request"]
 required_summary_terms = ["Non-compliant", "184", "248", "230"]
-required_summary_term_groups = [["single line", "one line", "one physical line", "join"], ["before `&&`", "before &&", "start of the continuation"], ["compliant", "allowed"]]
+required_summary_term_groups = [["single line", "one line", "one physical line", "join"], ["before `&&`", "before &&", "start of the continuation", "start of its continuation", "continuation's start", "continuation’s start"], ["compliant", "allowed"]]
 forbidden_summary_terms = ["Strictly compliant"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java, read the [Java line-wrapping rules](references/rules/java-line-wrapping.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "java-line-wrapping", statements = ["Keep the reconstructed form on one physical line when it contains no more than 200 characters.", "Wrap the reconstructed form only when it would contain more than 200 characters.", "For a wrapped logical expression, break before `&&` or `||` and place the operator at the start of the continuation line.", "For a wrapped conditional expression, break before `?` and `:` and place each operator at the start of its continuation line.", "In Standalone Compliance Audit Mode, apply these rules to every Java declaration header, statement, and expression in the exact audit scope."]}]
