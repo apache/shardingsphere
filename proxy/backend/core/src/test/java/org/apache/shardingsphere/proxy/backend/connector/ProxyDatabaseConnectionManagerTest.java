@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -167,7 +168,7 @@ class ProxyDatabaseConnectionManagerTest {
     @Test
     void assertGetConnectionCacheIsEmpty() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
         List<Connection> actualConnections = databaseConnectionManager.getConnections("foo_db", "ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(databaseConnectionManager.getConnectionSize(), is(2));
@@ -194,7 +195,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertGetConnectionSizeGreaterThanCache() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         MockConnectionUtils.setCachedConnections(databaseConnectionManager, "ds1", 10);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
         List<Connection> actualConnections = databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), "ds1", 0, 12, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(12));
         assertThat(databaseConnectionManager.getConnectionSize(), is(12));
@@ -205,7 +206,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertGetConnectionWithConnectionPostProcessors() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         connectionSession.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.LOCAL.name(), null);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
         setConnectionPostProcessors();
         List<Connection> actualConnections = databaseConnectionManager.getConnections("foo_db", "ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
         verify(databaseConnectionManager.getConnectionPostProcessors().iterator().next(), times(2)).process(any());
@@ -219,27 +220,23 @@ class ProxyDatabaseConnectionManagerTest {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         TransactionHook transactionHook = mock(TransactionHook.class);
         setTransactionHooks(Collections.singletonMap(rule, transactionHook));
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
         databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         verify(transactionHook).afterCreateConnections(eq(rule), any(), anyList(), any());
     }
     
     @Test
-    void assertGetConnectionWithReplayTransactionOption() throws SQLException {
+    void assertGetConnectionWithReplayTransactionOptions() throws SQLException {
         when(connectionSession.isReadOnly()).thenReturn(true);
         when(connectionSession.getIsolationLevel()).thenReturn(Optional.of(TransactionIsolationLevel.READ_UNCOMMITTED));
         Connection connection = mock(Connection.class);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenAnswer(invocation -> {
+            invocation.getArgument(4, TransactionOptionReplayCallback.class).replay(connection);
+            return Collections.singletonList(connection);
+        });
         databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         verify(connection).setReadOnly(true);
         verify(connection).setTransactionIsolation(anyInt());
-    }
-    
-    @Test
-    void assertGetConnectionWithNullConnection() throws SQLException {
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(null));
-        List<Connection> actualConnections = databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actualConnections, is(Collections.singletonList(null)));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -339,7 +336,7 @@ class ProxyDatabaseConnectionManagerTest {
         when(ProxyContext.getInstance()).thenReturn(proxyContext);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
-        when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class), any())).thenReturn(Collections.singletonList(connection));
         List<Connection> actualConnections = databaseConnectionManager.getConnections("foo_db", "", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         Connection actualConnection = actualConnections.get(0);
         verify(actualConnection.createStatement()).execute("SET key=value");
@@ -351,7 +348,7 @@ class ProxyDatabaseConnectionManagerTest {
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.singletonList(connection));
         assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(connection)));
         verify(connection, never()).createStatement();
     }
@@ -364,7 +361,7 @@ class ProxyDatabaseConnectionManagerTest {
         when(connectionSession.getProtocolType()).thenReturn(branchProtocolType);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("MySQL");
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.singletonList(connection));
         assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(connection)));
         verify(connection.createStatement()).execute("SET collation_connection='utf8mb4_unicode_ci'");
     }
@@ -375,7 +372,7 @@ class ProxyDatabaseConnectionManagerTest {
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn(databaseType.getType());
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.singletonList(connection));
         assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(connection)));
         verify(connection, never()).createStatement();
     }
@@ -411,7 +408,7 @@ class ProxyDatabaseConnectionManagerTest {
     @Test
     void assertGetConnectionsWithEmptyConnectionAndSessionVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.emptyList());
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.emptyList());
         assertThrows(IndexOutOfBoundsException.class, () -> databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY));
     }
     
@@ -426,7 +423,8 @@ class ProxyDatabaseConnectionManagerTest {
             connection = mock(Connection.class, RETURNS_DEEP_STUBS);
             when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
             when(connection.createStatement().execute("SET key=value")).thenThrow(expectedException);
-            when(ProxyContext.getInstance().getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+            when(ProxyContext.getInstance().getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class), any()))
+                    .thenReturn(Collections.singletonList(connection));
             databaseConnectionManager.getConnections("foo_db", "", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         } catch (final SQLException ex) {
             assertThat(ex, is(expectedException));
@@ -440,7 +438,7 @@ class ProxyDatabaseConnectionManagerTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         SQLException expectedException = new SQLException("");
         when(connection.getMetaData().getDatabaseProductName()).thenThrow(expectedException);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.singletonList(connection));
         assertThat(assertThrows(SQLException.class,
                 () -> databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY)), is(expectedException));
         verify(connection).close();
@@ -459,7 +457,7 @@ class ProxyDatabaseConnectionManagerTest {
         when(firstConnection.createStatement().execute("SET key=value")).thenThrow(expectedException);
         when(secondConnection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
         doThrow(expectedNextException).when(secondConnection).close();
-        when(ProxyContext.getInstance().getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class)))
+        when(ProxyContext.getInstance().getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class), any()))
                 .thenReturn(Arrays.asList(firstConnection, secondConnection));
         SQLException actualException = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections("foo_db", "", 0, 2, ConnectionMode.CONNECTION_STRICTLY));
         assertThat(actualException, is(expectedException));
@@ -470,7 +468,7 @@ class ProxyDatabaseConnectionManagerTest {
     void assertGetConnectionsWithoutTransactions() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(false);
         List<Connection> connections = MockConnectionUtils.mockNewConnections(1);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connections);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(connections);
         List<Connection> fetchedConnections = databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), "ds1", 0, 1, null);
         assertThat(fetchedConnections.size(), is(1));
         assertTrue(fetchedConnections.contains(connections.get(0)));
@@ -488,13 +486,13 @@ class ProxyDatabaseConnectionManagerTest {
     
     @Test
     void assertGetConnectionWithConnectionOffset() throws SQLException {
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
         assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY),
                 is(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
         assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 1, 1, ConnectionMode.MEMORY_STRICTLY),
                 is(databaseConnectionManager.getConnections("foo_db", "ds1", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
         assertThat(databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY),
                 not(databaseConnectionManager.getConnections("foo_db", "ds1", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
     }

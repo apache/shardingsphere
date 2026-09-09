@@ -35,6 +35,7 @@ import org.apache.seata.rm.datasource.ConnectionProxy;
 import org.apache.seata.rm.datasource.DataSourceProxy;
 import org.apache.seata.tm.api.GlobalTransactionContext;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
@@ -64,6 +65,8 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class SeataATShardingSphereTransactionManagerTest {
     
@@ -74,6 +77,8 @@ class SeataATShardingSphereTransactionManagerTest {
     private static ExecutorService executorService;
     
     private final SeataATShardingSphereTransactionManager seataTransactionManager = new SeataATShardingSphereTransactionManager();
+    
+    private MockedMysqlDataSource dataSource;
     
     private final Queue<Object> requestQueue = MOCK_SEATA_SERVER.getMessageHandler().getRequestQueue();
     
@@ -99,8 +104,9 @@ class SeataATShardingSphereTransactionManagerTest {
     
     @BeforeEach
     void setUp() {
+        dataSource = new MockedMysqlDataSource();
         seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "MySQL")),
-                Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedMysqlDataSource()), "Seata");
+                Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, dataSource), "Seata");
     }
     
     @AfterEach
@@ -124,8 +130,19 @@ class SeataATShardingSphereTransactionManagerTest {
     
     @Test
     void assertGetConnection() throws SQLException {
-        Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0");
+        TransactionOptionReplayCallback transactionOptionReplayCallback = mock(TransactionOptionReplayCallback.class);
+        Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0", transactionOptionReplayCallback);
         assertThat(actual, isA(ConnectionProxy.class));
+        verify(transactionOptionReplayCallback).replay(actual);
+    }
+    
+    @Test
+    void assertCloseConnectionWhenTransactionOptionReplayFailed() throws SQLException {
+        SQLException expectedException = new SQLException("replay transaction option failed");
+        assertThat(assertThrows(SQLException.class, () -> seataTransactionManager.getConnection("sharding_db", "ds_0", connection -> {
+            throw expectedException;
+        })), is(expectedException));
+        assertTrue(dataSource.getOpenedConnections().isEmpty());
     }
     
     @Test
