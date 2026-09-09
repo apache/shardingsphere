@@ -40,8 +40,8 @@ import java.util.Properties;
 /**
  * Pipeline data source configuration for standard JDBC.
  */
-@EqualsAndHashCode(of = "parameter")
 @Getter
+@EqualsAndHashCode(of = "parameter")
 public final class StandardPipelineDataSourceConfiguration implements PipelineDataSourceConfiguration {
     
     public static final String TYPE = "JDBC";

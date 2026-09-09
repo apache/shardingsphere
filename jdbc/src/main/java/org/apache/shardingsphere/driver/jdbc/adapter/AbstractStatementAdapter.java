@@ -44,8 +44,8 @@ import java.util.Collection;
 /**
  * Adapter for {@code Statement}.
  */
-@Slf4j
 @Getter
+@Slf4j
 public abstract class AbstractStatementAdapter extends WrapperAdapter implements Statement {
     
     @Getter(AccessLevel.NONE)

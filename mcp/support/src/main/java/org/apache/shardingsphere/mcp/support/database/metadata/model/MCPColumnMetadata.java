@@ -44,8 +44,8 @@ public final class MCPColumnMetadata {
     /**
      * JDBC column nullability.
      */
-    @Getter
     @RequiredArgsConstructor
+    @Getter
     public enum Nullability {
         
         NULLABLE("nullable"),

@@ -198,8 +198,8 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         return SingleRuleConfiguration.class;
     }
     
-    @Getter
     @RequiredArgsConstructor
+    @Getter
     private static class DataNodeClassification {
         
         private final Collection<String> expandDataSources;

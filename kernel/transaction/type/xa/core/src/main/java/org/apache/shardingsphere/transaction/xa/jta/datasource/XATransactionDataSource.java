@@ -125,9 +125,11 @@ public final class XATransactionDataSource implements AutoCloseable {
     }
     
     private void enlistResource(final Connection connection, final Transaction transaction) throws SQLException, RollbackException, SystemException {
+        boolean originalAutoCommit = connection.getAutoCommit();
         XAConnection xaConnection = xaConnectionWrapper.wrap(xaDataSource, connection);
+        boolean restoreAutoCommit = originalAutoCommit && !connection.getAutoCommit();
         transaction.enlistResource(new SingleXAResource(resourceName, String.valueOf(uniqueName.get().getAndIncrement()), xaConnection.getXAResource()));
-        registerSynchronization(transaction);
+        registerSynchronization(transaction, connection, restoreAutoCommit);
         enlistedTransactions.get().computeIfAbsent(transaction, key -> new LinkedList<>());
         enlistedTransactions.get().get(transaction).add(connection);
     }
@@ -142,7 +144,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         }
     }
     
-    private void registerSynchronization(final Transaction transaction) throws RollbackException, SystemException {
+    private void registerSynchronization(final Transaction transaction, final Connection connection, final boolean restoreAutoCommit) throws RollbackException, SystemException {
         transaction.registerSynchronization(new Synchronization() {
             
             @Override
@@ -153,6 +155,13 @@ public final class XATransactionDataSource implements AutoCloseable {
             
             @Override
             public void afterCompletion(final int status) {
+                if (restoreAutoCommit) {
+                    try {
+                        connection.setAutoCommit(true);
+                    } catch (final SQLException ex) {
+                        log.warn("Failed to restore auto-commit after transaction completion. Resource: {}", resourceName, ex);
+                    }
+                }
                 enlistedTransactions.get().clear();
             }
         });
