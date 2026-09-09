@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -41,10 +43,16 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -73,23 +81,55 @@ class XATransactionDataSourceTest {
     void assertGetAtomikosConnection() throws SQLException, RollbackException, SystemException {
         DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
-        try (Connection ignored = transactionDataSource.getConnection()) {
+        try (Connection ignored = transactionDataSource.getConnection(mock())) {
             verify(xaTransactionManagerProvider, never()).getTransactionManager();
         }
+    }
+    
+    @Test
+    void assertCloseAtomikosConnectionWhenTransactionOptionReplayFailed() throws SQLException {
+        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds12");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds12", dataSource, xaTransactionManagerProvider);
+        AtomicReference<Connection> actualConnection = new AtomicReference<>();
+        SQLException expectedException = new SQLException("replay transaction option failed");
+        SQLException actualException = assertThrows(SQLException.class, () -> transactionDataSource.getConnection(actual -> {
+            actualConnection.set(actual);
+            throw expectedException;
+        }));
+        assertThat(actualException, sameInstance(expectedException));
+        assertTrue(actualConnection.get().isClosed());
     }
     
     @Test
     void assertGetHikariConnection() throws SQLException, RollbackException, SystemException {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
-        try (Connection ignored = transactionDataSource.getConnection()) {
-            verify(transaction).enlistResource(any(SingleXAResource.class));
+        TransactionOptionReplayCallback transactionOptionReplayCallback = mock(TransactionOptionReplayCallback.class);
+        try (Connection actual = transactionDataSource.getConnection(transactionOptionReplayCallback)) {
+            InOrder ordered = inOrder(transactionOptionReplayCallback, transaction);
+            ordered.verify(transactionOptionReplayCallback).replay(actual);
+            ordered.verify(transaction).enlistResource(any(SingleXAResource.class));
             verify(transaction).registerSynchronization(any(Synchronization.class));
         }
-        try (Connection ignored = transactionDataSource.getConnection()) {
+        try (Connection ignored = transactionDataSource.getConnection(mock())) {
             verify(transaction, times(2)).enlistResource(any(SingleXAResource.class));
             verify(transaction, times(2)).registerSynchronization(any(Synchronization.class));
         }
+    }
+    
+    @Test
+    void assertCloseConnectionWhenTransactionOptionReplayFailed() throws SQLException, RollbackException, SystemException {
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        AtomicReference<Connection> actualConnection = new AtomicReference<>();
+        SQLException expectedException = new SQLException("replay transaction option failed");
+        SQLException actualException = assertThrows(SQLException.class, () -> transactionDataSource.getConnection(actual -> {
+            actualConnection.set(actual);
+            throw expectedException;
+        }));
+        assertThat(actualException, sameInstance(expectedException));
+        assertTrue(actualConnection.get().isClosed());
+        verify(transaction, never()).enlistResource(any());
     }
     
     @Test
@@ -113,7 +153,7 @@ class XATransactionDataSourceTest {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         when(transaction.enlistResource(any())).thenThrow(new SystemException("enlist resource failed"));
-        assertThrows(SystemException.class, transactionDataSource::getConnection);
+        assertThrows(SystemException.class, () -> transactionDataSource.getConnection(mock()));
         verify(transaction).enlistResource(any(SingleXAResource.class));
     }
     
@@ -122,7 +162,7 @@ class XATransactionDataSourceTest {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         when(transaction.enlistResource(any())).thenThrow(new RollbackException("enlist resource failed"));
-        assertThrows(RollbackException.class, transactionDataSource::getConnection);
+        assertThrows(RollbackException.class, () -> transactionDataSource.getConnection(mock()));
         verify(transaction).enlistResource(any(SingleXAResource.class));
     }
     
@@ -131,7 +171,7 @@ class XATransactionDataSourceTest {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         when(transaction.enlistResource(any())).thenThrow(new RuntimeException("enlist resource failed"));
-        assertThrows(RuntimeException.class, transactionDataSource::getConnection);
+        assertThrows(RuntimeException.class, () -> transactionDataSource.getConnection(mock()));
         verify(transaction).enlistResource(any(SingleXAResource.class));
     }
 }

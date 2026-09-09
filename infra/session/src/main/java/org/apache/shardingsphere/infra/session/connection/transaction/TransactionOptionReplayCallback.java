@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
-
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
+package org.apache.shardingsphere.infra.session.connection.transaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
- * Backend data source.
+ * Transaction option replay callback.
  */
-public interface BackendDataSource {
+@FunctionalInterface
+public interface TransactionOptionReplayCallback {
     
     /**
-     * Get connections.
+     * Replay transaction options on a newly acquired connection.
+     * ShardingSphere-controlled transaction enlistment must occur after replay.
      *
-     * @param databaseName database name
-     * @param dataSourceName data source name
-     * @param connectionSize connection size
-     * @param connectionMode connection mode
-     * @param transactionOptionReplayCallback transaction option replay callback
-     * @return connections
+     * @param connection physical connection
      * @throws SQLException SQL exception
      */
-    List<Connection> getConnections(String databaseName, String dataSourceName, int connectionSize, ConnectionMode connectionMode,
-                                    TransactionOptionReplayCallback transactionOptionReplayCallback) throws SQLException;
+    void replay(Connection connection) throws SQLException;
 }
