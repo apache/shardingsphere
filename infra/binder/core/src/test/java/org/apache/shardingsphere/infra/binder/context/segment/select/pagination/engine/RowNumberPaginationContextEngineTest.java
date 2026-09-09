@@ -129,6 +129,18 @@ class RowNumberPaginationContextEngineTest {
         assertThat(((NumberLiteralRowNumberValueSegment) paginationValueSegment.get()).getValue(), is(100L));
     }
     
+    @Test
+    void assertCreatePaginationContextWhenRowNumberValueIsNull() {
+        Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS, mock(DatabaseType.class));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 3, null);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "<", null);
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.emptyList());
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
+    }
+    
     private void assertCreatePaginationContextWhenRowNumberAliasPresentAndRowNumberPredicatedNotEmptyWithGivenOperator(final String operator) {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS, mock(DatabaseType.class));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));

@@ -705,7 +705,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             ColumnSegment column = (ColumnSegment) expr;
             return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderType);
         }
-        if (expr instanceof LiteralExpressionSegment) {
+        if (expr instanceof LiteralExpressionSegment && !((LiteralExpressionSegment) expr).isNullLiteral()) {
             LiteralExpressionSegment index = (LiteralExpressionSegment) expr;
             return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection, nullsOrderType);
         }
@@ -1247,7 +1247,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             if (astNode instanceof ColumnSegment) {
                 return new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC, null);
             }
-            if (astNode instanceof LiteralExpressionSegment) {
+            if (astNode instanceof LiteralExpressionSegment && !((LiteralExpressionSegment) astNode).isNullLiteral()) {
                 LiteralExpressionSegment index = (LiteralExpressionSegment) astNode;
                 return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
                         Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC, null);

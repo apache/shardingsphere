@@ -52,6 +52,18 @@ class TopPaginationContextEngineTest {
     }
     
     @Test
+    void assertCreatePaginationContextWhenRowNumberValueIsNull() {
+        String name = "rowNumberAlias";
+        ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(name));
+        LiteralExpressionSegment right = new LiteralExpressionSegment(0, 3, null);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, ">", null);
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(
+                new TopProjectionSegment(0, 10, null, name), Collections.singletonList(expression), Collections.emptyList());
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
+    }
+    
+    @Test
     void assertCreatePaginationContextWhenRowNumberPredicatePresentAndOperatorIsGreatThan() {
         assertCreatePaginationContextWhenRowNumberPredicatePresentAndWithGivenOperator(">");
     }

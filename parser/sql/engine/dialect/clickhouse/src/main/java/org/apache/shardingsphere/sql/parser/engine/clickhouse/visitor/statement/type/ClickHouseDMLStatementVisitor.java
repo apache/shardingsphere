@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -324,8 +325,13 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
             return projection;
         }
         ExpressionSegment column = (ExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), column.getText(), column)
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getText()), column);
+        ExpressionProjectionSegment result;
+        if (null == alias) {
+            String expressionText = column instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) column).isNullLiteral() ? getOriginalText(ctx.expr()) : column.getText();
+            result = new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), expressionText, column);
+        } else {
+            result = new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getText()), column);
+        }
         result.setAlias(alias);
         return result;
     }
