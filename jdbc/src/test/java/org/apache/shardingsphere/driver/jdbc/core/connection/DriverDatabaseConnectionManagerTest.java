@@ -22,10 +22,13 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +49,8 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -143,6 +148,40 @@ class DriverDatabaseConnectionManagerTest {
     void assertGetConnectionsWhenEmptyCache() throws SQLException {
         List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
+    }
+    
+    @Test
+    void assertReplayTransactionOptionInDistributedTransaction() throws SQLException {
+        Connection expectedConnection = mock(Connection.class);
+        ShardingSphereDistributedTransactionManager transactionManager = mock(ShardingSphereDistributedTransactionManager.class);
+        when(transactionManager.isInTransaction()).thenReturn(true);
+        when(transactionManager.getConnection(eq("foo_db"), eq("ds"), any(TransactionOptionReplayCallback.class))).thenAnswer(invocation -> {
+            invocation.getArgument(2, TransactionOptionReplayCallback.class).replay(expectedConnection);
+            return expectedConnection;
+        });
+        databaseConnectionManager.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        databaseConnectionManager.setReadOnly(true);
+        databaseConnectionManager.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.XA.name(), transactionManager);
+        List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual, is(Collections.singletonList(expectedConnection)));
+        verify(expectedConnection).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        verify(expectedConnection).setReadOnly(true);
+    }
+    
+    @Test
+    void assertCloseConnectionWhenTransactionOptionReplayFailed() throws SQLException {
+        Connection connection = mock(Connection.class);
+        SQLException expectedException = new SQLException("replay transaction option failed");
+        doThrow(expectedException).when(connection).setReadOnly(true);
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        ContextManager contextManager = mockContextManager();
+        StorageUnit storageUnit = mockStorageUnit(dataSource);
+        when(contextManager.getStorageUnits("foo_db")).thenReturn(Collections.singletonMap("ds", storageUnit));
+        DriverDatabaseConnectionManager connectionManager = new DriverDatabaseConnectionManager("foo_db", contextManager);
+        connectionManager.setReadOnly(true);
+        assertThat(assertThrows(SQLException.class, () -> connectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)), is(expectedException));
+        verify(connection).close();
     }
     
     @Test

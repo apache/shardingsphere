@@ -25,18 +25,17 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobB
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.operate.JobOperateAPIImpl;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.database.statistics.StatisticsJobNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.schedule.spi.CoordinatorRegistryCenterProvider;
 import org.quartz.CronExpression;
 
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -63,46 +62,33 @@ public final class StatisticsCollectJobWorker {
      */
     public void initialize(final ContextManager contextManager) {
         if (WORKER_INITIALIZED.compareAndSet(false, true)) {
-            ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
-            if (!"ZooKeeper".equals(modeConfig.getRepository().getType())) {
-                log.warn("Can not collect statistics because of unsupported cluster type: {}", modeConfig.getRepository().getType());
-                return;
+            try {
+                ModeConfiguration modeConfig = contextManager.getComputeNodeInstanceContext().getModeConfiguration();
+                Optional<CoordinatorRegistryCenterProvider> provider = TypedSPILoader.findService(CoordinatorRegistryCenterProvider.class, modeConfig.getRepository().getType());
+                if (!provider.isPresent()) {
+                    log.warn("Can not collect statistics because of unsupported cluster type: {}", modeConfig.getRepository().getType());
+                    WORKER_INITIALIZED.set(false);
+                    return;
+                }
+                StatisticsCollectJobWorker.contextManager = contextManager;
+                ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
+                registryCenter = provider.get().create(repositoryConfig, NodePathGenerator.toPath(new StatisticsJobNodePath()));
+                scheduleJobBootstrap = new ScheduleJobBootstrap(registryCenter, new StatisticsCollectJob(contextManager), createJobConfiguration());
+                scheduleJobBootstrap.schedule();
+                new JobOperateAPIImpl(registryCenter).trigger(JOB_NAME);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                try {
+                    destroy();
+                    // CHECKSTYLE:OFF
+                } catch (final RuntimeException cleanupEx) {
+                    // CHECKSTYLE:ON
+                    ex.addSuppressed(cleanupEx);
+                }
+                throw ex;
             }
-            StatisticsCollectJobWorker.contextManager = contextManager;
-            registryCenter = createRegistryCenter(modeConfig);
-            scheduleJobBootstrap = new ScheduleJobBootstrap(registryCenter, new StatisticsCollectJob(contextManager), createJobConfiguration());
-            scheduleJobBootstrap.schedule();
-            new JobOperateAPIImpl(registryCenter).trigger(JOB_NAME);
         }
-    }
-    
-    private CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig) {
-        ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
-        String namespace = repositoryConfig.getNamespace() + NodePathGenerator.toPath(new StatisticsJobNodePath());
-        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfiguration(repositoryConfig, namespace));
-        result.init();
-        return result;
-    }
-    
-    private ZookeeperConfiguration getZookeeperConfiguration(final ClusterPersistRepositoryConfiguration repositoryConfig, final String namespace) {
-        // TODO Merge registry center code in ElasticJob and ShardingSphere mode; Use SPI to load impl
-        ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), namespace);
-        Properties props = repositoryConfig.getProps();
-        int retryIntervalMilliseconds = props.containsKey("retryIntervalMilliseconds") ? Integer.parseInt(props.get("retryIntervalMilliseconds").toString()) : 500;
-        int maxRetries = props.containsKey("maxRetries") ? Integer.parseInt(props.get("maxRetries").toString()) : 3;
-        result.setBaseSleepTimeMilliseconds(retryIntervalMilliseconds);
-        result.setMaxRetries(maxRetries);
-        result.setMaxSleepTimeMilliseconds(retryIntervalMilliseconds * maxRetries);
-        int timeToLiveSeconds = props.containsKey("timeToLiveSeconds") ? Integer.parseInt(props.get("timeToLiveSeconds").toString()) : 60;
-        if (0 != timeToLiveSeconds) {
-            result.setSessionTimeoutMilliseconds(timeToLiveSeconds * 1000);
-        }
-        int operationTimeoutMilliseconds = props.containsKey("operationTimeoutMilliseconds") ? Integer.parseInt(props.get("operationTimeoutMilliseconds").toString()) : 500;
-        if (0 != operationTimeoutMilliseconds) {
-            result.setConnectionTimeoutMilliseconds(operationTimeoutMilliseconds);
-        }
-        result.setDigest(props.getProperty("digest"));
-        return result;
     }
     
     private JobConfiguration createJobConfiguration() {
@@ -139,11 +125,17 @@ public final class StatisticsCollectJobWorker {
      */
     public void destroy() {
         if (WORKER_INITIALIZED.compareAndSet(true, false)) {
-            Optional.ofNullable(scheduleJobBootstrap).ifPresent(ScheduleJobBootstrap::shutdown);
-            scheduleJobBootstrap = null;
-            Optional.ofNullable(registryCenter).ifPresent(CoordinatorRegistryCenter::close);
-            registryCenter = null;
-            contextManager = null;
+            try {
+                Optional.ofNullable(scheduleJobBootstrap).ifPresent(ScheduleJobBootstrap::shutdown);
+            } finally {
+                scheduleJobBootstrap = null;
+                try {
+                    Optional.ofNullable(registryCenter).ifPresent(CoordinatorRegistryCenter::close);
+                } finally {
+                    registryCenter = null;
+                    contextManager = null;
+                }
+            }
         }
     }
 }

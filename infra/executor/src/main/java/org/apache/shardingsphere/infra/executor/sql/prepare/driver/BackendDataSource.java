@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,8 +36,10 @@ public interface BackendDataSource {
      * @param dataSourceName data source name
      * @param connectionSize connection size
      * @param connectionMode connection mode
+     * @param transactionOptionReplayCallback transaction option replay callback
      * @return connections
      * @throws SQLException SQL exception
      */
-    List<Connection> getConnections(String databaseName, String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
+    List<Connection> getConnections(String databaseName, String dataSourceName, int connectionSize, ConnectionMode connectionMode,
+                                    TransactionOptionReplayCallback transactionOptionReplayCallback) throws SQLException;
 }

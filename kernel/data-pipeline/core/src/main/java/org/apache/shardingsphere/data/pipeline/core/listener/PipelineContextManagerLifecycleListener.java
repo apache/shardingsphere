@@ -32,9 +32,11 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerModeRequired;
+import org.apache.shardingsphere.schedule.spi.CoordinatorRegistryCenterProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +56,11 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         }
         PipelineContextKey contextKey = new PipelineContextKey(preSelectedDatabaseName, contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType());
         PipelineContextManager.putContext(contextKey, contextManager);
+        String repositoryType = contextManager.getComputeNodeInstanceContext().getModeConfiguration().getRepository().getType();
+        if (!TypedSPILoader.findService(CoordinatorRegistryCenterProvider.class, repositoryType).isPresent()) {
+            log.warn("Can not resume pipeline jobs because coordinator registry center provider is unavailable for repository type: {}", repositoryType);
+            return;
+        }
         PipelineMetaDataNodeWatcher.init(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
         try {
@@ -98,7 +105,12 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
     
     @Override
     public void onDestroyed(final ContextManager contextManager) {
-        PipelineContextManager.removeContext(
-                new PipelineContextKey(contextManager.getPreSelectedDatabaseName(), contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()));
+        PipelineContextKey contextKey = new PipelineContextKey(
+                contextManager.getPreSelectedDatabaseName(), contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType());
+        try {
+            PipelineAPIFactory.close(contextKey);
+        } finally {
+            PipelineContextManager.removeContext(contextKey);
+        }
     }
 }

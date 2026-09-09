@@ -497,6 +497,11 @@
                 <version>${elasticjob.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.shardingsphere.elasticjob</groupId>
+                <artifactId>elasticjob-registry-center-zookeeper-curator</artifactId>
+                <version>${elasticjob.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
                 <version>${quartz.version}</version>
