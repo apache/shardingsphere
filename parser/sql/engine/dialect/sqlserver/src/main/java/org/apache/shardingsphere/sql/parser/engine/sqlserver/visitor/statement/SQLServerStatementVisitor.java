@@ -1419,7 +1419,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             ColumnSegment column = (ColumnSegment) expression;
             return new ColumnOrderByItemSegment(column, OrderDirection.ASC, null);
         }
-        if (expression instanceof LiteralExpressionSegment) {
+        if (expression instanceof LiteralExpressionSegment && !((LiteralExpressionSegment) expression).isNullLiteral()) {
             LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) expression;
             return new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
                     SQLUtils.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC, null);
