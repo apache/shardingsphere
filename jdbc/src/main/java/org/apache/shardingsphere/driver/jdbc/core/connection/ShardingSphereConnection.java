@@ -50,8 +50,8 @@ import java.util.concurrent.Executor;
 /**
  * ShardingSphere connection.
  */
-@Slf4j
 @HighFrequencyInvocation
+@Slf4j
 public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private final ProcessEngine processEngine = new ProcessEngine();

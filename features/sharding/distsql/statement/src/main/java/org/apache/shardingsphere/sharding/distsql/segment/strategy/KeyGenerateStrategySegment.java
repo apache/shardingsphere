@@ -27,8 +27,8 @@ import java.util.Optional;
 /**
  * Key generate strategy segment.
  */
-@Getter
 @AllArgsConstructor
+@Getter
 public final class KeyGenerateStrategySegment implements DistSQLSegment {
     
     private final String keyGenerateColumn;

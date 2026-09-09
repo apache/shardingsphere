@@ -27,8 +27,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.Uniq
 /**
  * Table check range position.
  */
-@RequiredArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString

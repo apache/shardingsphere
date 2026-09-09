@@ -94,8 +94,8 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
     
-    @Getter
     @RequiredArgsConstructor
+    @Getter
     static final class BatchParameters {
         
         private final int version;
