@@ -28,7 +28,6 @@
     
     <properties>
         <seata.version>2.6.0</seata.version>
-        <commons-lang.version>2.6</commons-lang.version>
         <httpcore5.version>5.4.3</httpcore5.version>
     </properties>
     
@@ -39,11 +38,6 @@
                 <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents.core5</groupId>
@@ -70,10 +64,6 @@
         <dependency>
             <groupId>org.apache.seata</groupId>
             <artifactId>seata-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents.core5</groupId>
