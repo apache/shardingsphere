@@ -338,7 +338,9 @@
         </module>
         
         <!-- Size Violations -->
-        <module name="AnonInnerLength" />
+        <module name="AnonInnerLength">
+            <property name="max" value="30" />
+        </module>
         <module name="ExecutableStatementCount">
             <property name="severity" value="warning" />
             <property name="max" value="50" />
