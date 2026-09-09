@@ -114,11 +114,10 @@ context, relevant earlier review, and affected production or test paths. Fetch
 the complete file list when scope is disputed or the reply changes an overall
 readiness conclusion.
 
-Before the first GitHub request, read and complete `GitHub Access Preflight` in
-[evidence-access.md](references/evidence-access.md). Do not invoke a browser,
-search, connector, `gh`, or anonymous HTTP route before the preflight selects
-the read route. Read the remaining reference whenever CI, Actions, or
-third-party behavior evidence is required.
+Before the first GitHub request, read and complete `GitHub Access Preflight` in [evidence-access.md](references/evidence-access.md).
+Do not invoke a browser, search, connector, `gh`, or anonymous HTTP route before the preflight selects the read route.
+Read `Local Style Verification Evidence` in that reference for every public-PR or PR-backed local-candidate Formal Review, regardless of Review Focus.
+Read the remaining reference whenever CI, Actions, or third-party behavior evidence is required.
 
 AI-assistance disclosure is a mergeability concern, not a code-correctness
 signal. In Mergeability Review or an explicit policy-compliance review, apply
@@ -127,6 +126,31 @@ assistance. Verify that the PR description names the tool and affected files or
 scope. Never infer AI use from code, prose style, metadata, or an automated
 classifier; without explicit public evidence, missing disclosure is neither a
 finding nor an evidence gap.
+
+## Mandatory Style Verification Gate
+
+Apply this gate to every Formal Review of a public PR and every PR-backed local candidate.
+This gate is local candidate verification rather than a GitHub CI query, so every Review Focus must complete it even when Code Correctness Review does not read GitHub Actions, checks, workflow runs, or Actions logs.
+
+1. Derive the applicable PR-impact files and their owning Maven modules from the authoritative changed-file list for the effective candidate.
+2. Treat production and test Java files as applicable to both Checkstyle and Spotless unless repository configuration proves that a check does not govern a file.
+3. Run both checks against the latest public PR head or an accurate PR-backed local candidate that contains the latest public head and only its authorized local delta.
+4. Invalidate all prior Checkstyle and Spotless evidence immediately when the public PR head or authorized local delta changes.
+5. Use a whole-repository check, complete affected-module checks, or an exact-file check only when the command output and file inventory prove that the selected scope covers every applicable PR-impact file.
+6. Expand verification to the complete rule impact, normally the whole repository, when the PR changes global Checkstyle or Spotless configuration, a parent POM, or another cross-module style rule.
+7. Treat an exit code of zero as passing evidence only when the output also proves that every applicable PR-impact file was selected; a successful command that matched no intended file is not evidence.
+8. Do not use passing CI, required checks, commit statuses, a PR comment summary, or evidence from an older candidate to satisfy or waive this gate.
+9. Do not run `spotless:apply` or another file-modifying formatter during review.
+
+Map the gate result before applying the remaining Formal Decision Contract.
+
+- If Checkstyle or Spotless fails on an applicable PR-impact file, return `Not Mergeable` with `Feedback Mode: Change Request`.
+- A style-check failure result must include `Feedback Mode: Change Request` and the blocking-issue count in `### Result`, then identify each failed check and affected PR-impact file in `### Blocking Issues`.
+- A style-check failure result must also include `### Coverage` with the effective candidate SHA, authoritative files accounted for, failed command, exit code, and affected PR-impact file.
+- If environment, dependency, candidate-materialization, tool, or coverage-proof failure leaves any applicable PR-impact file unverified, return `Review Incomplete`.
+- If a module-scoped command fails only on unchanged files, narrow the check reliably or compare the base and effective candidate before attribution; do not classify the PR from that module failure alone.
+- If a check has no applicable PR-impact file, record `Not Applicable` and the repository-configuration basis in `### Coverage`.
+- Only successful current-candidate evidence for both checks, or an explicit not-applicable determination for either check, permits the remaining Formal Decision Contract to select `Mergeable`.
 
 ## Finding Proof Gate
 
@@ -206,9 +230,10 @@ a previous result to influence the assessment:
      documentation, rollout, and rollback.
 5. Apply the Finding Proof Gate to every candidate. Keep discovery notes
    private and classify every candidate before publication.
-6. Consolidate confirmed findings by independent fix boundary and identify any
+6. Complete the Mandatory Style Verification Gate for a public PR or PR-backed local candidate.
+7. Consolidate confirmed findings by independent fix boundary and identify any
    evidence or coverage gap that could still change the blocker set.
-7. Review the latest delta and run a full-scope convergence pass after the most
+8. Review the latest delta and run a full-scope convergence pass after the most
    recent candidate change. If it finds a new independent candidate, return to
    step 5 and repeat. Freeze the canonical assessment only after the Completion
    Gate evaluation, then map it to the selected mode's status.
@@ -225,6 +250,7 @@ readiness conclusion.
 - Complete the behavior-cluster mapping and risk triage for every authoritative
   file; classify churn-only files explicitly.
 - Finish all three discovery lenses and classify every candidate.
+- Complete the Mandatory Style Verification Gate against the latest effective candidate for every public PR or PR-backed local candidate.
 - Leave no unresolved evidence or coverage gap that could change the blocker
   set.
 - Require a full-scope convergence pass after the latest candidate change with
@@ -250,12 +276,14 @@ Map the canonical assessment to Formal Review only after the Completion Gate
 evaluation:
 
 1. If the gate fails because a gap satisfies the Review Incomplete Proof Gate, use `Review Incomplete`, even when some blockers are already confirmed.
-2. If admissible evidence disproves the problem model, expected behavior, ownership,
+2. If the Mandatory Style Verification Gate is incomplete for any applicable PR-impact file, use `Review Incomplete`, even when some blockers are already confirmed.
+3. If Checkstyle or Spotless fails on an applicable PR-impact file, use `Not Mergeable` with `Feedback Mode: Change Request`.
+4. If admissible evidence disproves the problem model, expected behavior, ownership,
    protocol or SQL semantics, compatibility assumption, or solution direction,
    use `Not Mergeable` with `Feedback Mode: Needs Discussion`.
-3. If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`
+5. If at least one candidate passes the Finding Proof Gate, use `Not Mergeable`
    with `Feedback Mode: Change Request`.
-4. Otherwise use `Mergeable` for the selected focus.
+6. Otherwise use `Mergeable` for the selected focus.
 
 `Mergeable` in Code Correctness Review means code-scope readiness only. Required
 pending CI prevents Mergeable in Mergeability Review. A relevant CI failure is
@@ -318,7 +346,12 @@ For each blocking issue include:
 - `Required Change` for Change Request, or `Discussion Needed` for Needs
   Discussion.
 
-Do not add patch-level changes after selecting Needs Discussion. Do not include placeholder headings. In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope. For a standalone local candidate, identify the task baseline and attributed local delta; for a PR-backed candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state. In Code Correctness Review, state that the result is code-scope only and CI was not reviewed.
+Do not add patch-level changes after selecting Needs Discussion.
+Do not include placeholder headings.
+In `### Coverage`, report the candidate type, reviewed baseline or head, authoritative requirements and files accounted for, behavior clusters, completed discovery lenses, unresolved gaps, and CI scope.
+For every public PR or PR-backed local candidate, also report the effective candidate SHA, each style-verification scope and command, each exit code, every covered applicable PR-impact file, and every `Not Applicable` check with its basis.
+For a standalone local candidate, identify the task baseline and attributed local delta; for a PR-backed candidate, identify authorized local commits, index changes, or working-tree changes separately from the public PR state.
+In Code Correctness Review, state that the result is code-scope only and CI was not reviewed while distinguishing the completed local style verification from CI.
 
 ### PR Discussion Reply
 
