@@ -28,15 +28,18 @@ import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.postgresql.core.BaseConnection;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -50,10 +53,13 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -114,6 +120,45 @@ class XATransactionDataSourceTest {
         try (Connection ignored = transactionDataSource.getConnection(mock())) {
             verify(transaction, times(2)).enlistResource(any(SingleXAResource.class));
             verify(transaction, times(2)).registerSynchronization(any(Synchronization.class));
+        }
+    }
+    
+    @Test
+    void assertGetPostgreSQLHikariConnection() throws SQLException, RollbackException, SystemException {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        DataSource dataSource = spy(DataSourceUtils.build(HikariDataSource.class, databaseType, "ds1"));
+        Connection connection = mock(Connection.class);
+        when(connection.getAutoCommit()).thenReturn(true, true, false);
+        when(connection.unwrap(BaseConnection.class)).thenReturn(mock(BaseConnection.class));
+        doReturn(connection).when(dataSource).getConnection();
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(databaseType, "ds1", dataSource, xaTransactionManagerProvider);
+        TransactionOptionReplayCallback transactionOptionReplayCallback = mock(TransactionOptionReplayCallback.class);
+        try (Connection actualConnection = transactionDataSource.getConnection(transactionOptionReplayCallback)) {
+            assertThat(actualConnection, sameInstance(connection));
+            InOrder ordered = inOrder(connection, transactionOptionReplayCallback, transaction);
+            ordered.verify(transactionOptionReplayCallback).replay(connection);
+            ordered.verify(connection).setAutoCommit(false);
+            ordered.verify(transaction).enlistResource(any(SingleXAResource.class));
+            ArgumentCaptor<Synchronization> synchronizationCaptor = ArgumentCaptor.forClass(Synchronization.class);
+            ordered.verify(transaction).registerSynchronization(synchronizationCaptor.capture());
+            synchronizationCaptor.getValue().afterCompletion(Status.STATUS_COMMITTED);
+            ordered.verify(connection).setAutoCommit(true);
+        }
+    }
+    
+    @Test
+    void assertGetPostgreSQLHikariConnectionWithAutoCommitDisabled() throws SQLException, RollbackException, SystemException {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        DataSource dataSource = spy(DataSourceUtils.build(HikariDataSource.class, databaseType, "ds1"));
+        Connection connection = mock(Connection.class);
+        when(connection.unwrap(BaseConnection.class)).thenReturn(mock(BaseConnection.class));
+        doReturn(connection).when(dataSource).getConnection();
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(databaseType, "ds1", dataSource, xaTransactionManagerProvider);
+        try (Connection ignored = transactionDataSource.getConnection(mock())) {
+            ArgumentCaptor<Synchronization> synchronizationCaptor = ArgumentCaptor.forClass(Synchronization.class);
+            verify(transaction).registerSynchronization(synchronizationCaptor.capture());
+            synchronizationCaptor.getValue().afterCompletion(Status.STATUS_COMMITTED);
+            verify(connection, never()).setAutoCommit(anyBoolean());
         }
     }
     
