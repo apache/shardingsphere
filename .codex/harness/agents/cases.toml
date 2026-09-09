@@ -2364,3 +2364,42 @@ forbidden_summary_terms = ["Strictly compliant"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java `throw` statements, conditional exception paths, validation or precondition calls, or calls to `ShardingSpherePreconditions`, read the [Java precondition rules](references/rules/java-preconditions.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance."]}, {source = "java-preconditions", statements = ["When a conditional branch does nothing except construct and throw an exception because a required condition is false, replace the branch with the equivalent `ShardingSpherePreconditions` call if the module can use `infra/exception` and the replacement preserves behavior.", "Replace `checkState(values.isEmpty(), supplier)` and `checkState(map.isEmpty(), supplier)` with the applicable `checkMustEmpty` overload.", "Replace `checkState(values.contains(element), supplier)` with `checkContains(values, element, supplier)`.", "Replace `checkState(!values.contains(element), supplier)` with `checkNotContains(values, element, supplier)`.", "Replace `checkState(map.containsKey(key), supplier)` with `checkContainsKey(map, key, supplier)`.", "Keep a direct throw for an unconditional failure, exception translation, exception wrapping, rethrowing, or a test double or fixture that deliberately simulates a failure."]}]
 critical = true
+
+[[cases]]
+id = "java_annotation_order_is_relative_and_declaration_scoped"
+group = "coding / regular"
+description = "Orders only recognized declaration annotations while preserving unrecognized and type-use annotations."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized in-scope Java implementation. A changed type declares `@Slf4j`, `@JsonDeserialize`, `@HighFrequencyInvocation`, `@Getter`, and `@RequiredArgsConstructor` in that order; a changed field declares `@Setter`, `@JsonProperty`, `@HighFrequencyInvocation`, and `@Getter`; and a changed method declares `@Builder`, `@Transactional`, and `@HighFrequencyInvocation`. State the corrected recognized subsequence for each declaration, then correct only the covered declaration-annotation order, preserve the position of each unrecognized annotation, leave Java modifiers and `final @Nullable String` `TYPE_USE` placement to their own rules, run affected checks and Formal Review, and do not change annotation semantics or unrelated code."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["HighFrequencyInvocation", "RequiredArgsConstructor", "Getter", "Setter", "Builder", "Slf4j", "unrecognized", "TYPE_USE"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "coding-standards", statements = ["Before adding, changing, or reordering a covered declaration annotation, or when a Java declaration added or modified by the task contains at least two covered annotations, read the [Java declaration annotation order rules](references/rules/java-annotation-order.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable Java declaration annotation order rule against each declaration added or modified by the task."]}, {source = "java-annotation-order", statements = ["The canonical relative order is `org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation`, `lombok.AllArgsConstructor`, `lombok.RequiredArgsConstructor`, `lombok.NoArgsConstructor`, `lombok.Builder`, `lombok.Getter`, `lombok.Setter`, `lombok.EqualsAndHashCode`, `lombok.ToString`, and `lombok.extern.slf4j.Slf4j`.", "Filter the declaration's annotations to the recognized fully qualified types and report a violation only when that filtered sequence is not in canonical order.", "Annotations outside the canonical list may remain before, between, or after recognized annotations and do not need to be contiguous with them.", "A declaration annotation annotates the declaration itself, while a `TYPE_USE` annotation annotates a use of a type and does not participate in this rule.", "This rule governs only the position of `HighFrequencyInvocation`; do not infer, add, remove, or validate high-frequency scope, cacheability, or performance behavior from this file."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_java_annotation_order"
+group = "policy routing"
+description = "Audits relative declaration-annotation order without treating unrelated annotations as ordering barriers."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Audit the complete current-working-tree file `module-a/src/main/java/example/AnnotatedType.java` without editing it. Its type annotations are `@Slf4j`, `@JsonDeserialize`, `@HighFrequencyInvocation`, `@Getter`, and `@RequiredArgsConstructor`; its field has a valid `final @Nullable String` type-use annotation; and its test method has `@Test` and `@ParameterizedTest`. Report `Non-compliant`, give the minimum relative-order correction for only the four recognized type declaration annotations, allow `@JsonDeserialize` to remain between them, and do not report the type-use or test-framework annotations as part of this order. Do not generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "HighFrequencyInvocation", "RequiredArgsConstructor", "Getter", "Slf4j", "JsonDeserialize", "TYPE_USE", "Test", "ParameterizedTest"]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains a Java declaration with at least two covered declaration annotations, read the [Java declaration annotation order rules](references/rules/java-annotation-order.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance."]}, {source = "java-annotation-order", statements = ["The canonical relative order is `org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation`, `lombok.AllArgsConstructor`, `lombok.RequiredArgsConstructor`, `lombok.NoArgsConstructor`, `lombok.Builder`, `lombok.Getter`, `lombok.Setter`, `lombok.EqualsAndHashCode`, `lombok.ToString`, and `lombok.extern.slf4j.Slf4j`.", "Filter the declaration's annotations to the recognized fully qualified types and report a violation only when that filtered sequence is not in canonical order.", "Test-framework, dependency-injection, framework, and serialization annotations are outside this order unless their fully qualified type appears in the canonical list.", "A declaration annotation annotates the declaration itself, while a `TYPE_USE` annotation annotates a use of a type and does not participate in this rule."]}]
+critical = true

@@ -29,9 +29,9 @@ import java.util.LinkedList;
 /**
  * Partition values segment.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class PartitionValuesSegment implements SQLSegment {
     
     private final int startIndex;

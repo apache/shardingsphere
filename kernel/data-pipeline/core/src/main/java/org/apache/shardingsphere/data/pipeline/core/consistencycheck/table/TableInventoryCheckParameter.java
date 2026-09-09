@@ -30,8 +30,8 @@ import java.util.List;
 /**
  * Table inventory check parameter.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class TableInventoryCheckParameter {
     
     private final String jobId;

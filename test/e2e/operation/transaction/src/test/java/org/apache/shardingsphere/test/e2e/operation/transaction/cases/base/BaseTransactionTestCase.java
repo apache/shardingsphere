@@ -148,8 +148,8 @@ public abstract class BaseTransactionTestCase {
         return testCaseParam.getTransactionType();
     }
     
-    @Getter
     @RequiredArgsConstructor
+    @Getter
     public static final class TransactionTestCaseParameter {
         
         private final TransactionBaseE2EIT baseTransactionITCase;

@@ -29,6 +29,7 @@ description: >-
 # Coding Standards
 
 Use this Skill in exactly one of the following modes. Both modes derive compliance only from written standards that actually apply to the target files.
+For routing purposes, covered declaration annotations are `HighFrequencyInvocation`, `AllArgsConstructor`, `RequiredArgsConstructor`, `NoArgsConstructor`, `Builder`, `Getter`, `Setter`, `EqualsAndHashCode`, `ToString`, and `Slf4j`.
 
 ## Implementation Guidance Mode
 
@@ -38,6 +39,7 @@ Use this mode when implementing, fixing, refactoring, or reviewing code unless t
 - Before the first write, record a compact applicable-rule checklist; group files governed by the same rules instead of repeating the checklist.
 - For every affected Java file, read the [Java naming rules](references/rules/java-naming.md) through EOF and add each applicable rule to the checklist.
 - Before adding or changing a Java type declaration or its type-level annotations, read the [Java type rules](references/rules/java-types.md) through EOF and add each applicable rule to the checklist.
+- Before adding, changing, or reordering a covered declaration annotation, or when a Java declaration added or modified by the task contains at least two covered annotations, read the [Java declaration annotation order rules](references/rules/java-annotation-order.md) through EOF and add each applicable rule to the checklist.
 - Before adding, changing, or removing an explicit or generated constructor, or changing an instance field that may alter a generated constructor's signature or behavior, read the [Java constructor rules](references/rules/java-constructors.md) through EOF and add each applicable rule to the checklist.
 - Before adding or changing a Java `throw` statement, a conditional branch that throws, a validation or precondition call, or a call to `ShardingSpherePreconditions`, read the [Java precondition rules](references/rules/java-preconditions.md) through EOF and add each applicable rule to the checklist.
 - Before adding or changing a Java method annotated with `lombok.SneakyThrows` or changing the checked-exception behavior of such a method, read the [Java exception handling rules](references/rules/java-exceptions.md) through EOF and add each applicable rule to the checklist.
@@ -53,6 +55,7 @@ Use this mode when implementing, fixing, refactoring, or reviewing code unless t
 - For Java, explicitly verify every applicable `CODE_OF_CONDUCT.md` coding rule, including declaration order; when a method uses private helpers, verify that those helpers immediately follow the caller and appear in the caller's call order, regardless of the caller's visibility.
 - For Java, explicitly verify every applicable Java naming rule against the effective task delta and the surrounding declarations needed to resolve semantic applicability.
 - For Java, explicitly verify every applicable Java type rule against each type declaration and type-level annotation added or modified by the task.
+- For Java, explicitly verify every applicable Java declaration annotation order rule against each declaration added or modified by the task.
 - For Java, explicitly verify every applicable Java constructor rule against each explicit or generated constructor added, modified, removed, or affected by an instance-field change in the task.
 - For Java, explicitly verify every applicable Java precondition rule against each added or modified exception-throwing condition and precondition call, including whether a specialized `ShardingSpherePreconditions` method can express the condition without changing exception or control-flow semantics.
 - For Java, explicitly verify every applicable Java exception handling rule against each added or modified `lombok.SneakyThrows` annotation and the method bodies, invoked signatures, rethrown values, and contracts needed to resolve its exception types.
@@ -82,6 +85,7 @@ Use this mode only when the user explicitly asks to audit, check, or report codi
 - Read the [standalone compliance audit workflow](references/standalone-audit.md) through EOF.
 - When the scope contains Java, read the [Java naming rules](references/rules/java-naming.md) through EOF.
 - When the scope contains Java, read the [Java type rules](references/rules/java-types.md) through EOF.
+- When the scope contains a Java declaration with at least two covered declaration annotations, read the [Java declaration annotation order rules](references/rules/java-annotation-order.md) through EOF.
 - When the scope contains Java, read the [Java constructor rules](references/rules/java-constructors.md) through EOF.
 - When the scope contains Java `throw` statements, conditional exception paths, validation or precondition calls, or calls to `ShardingSpherePreconditions`, read the [Java precondition rules](references/rules/java-preconditions.md) through EOF.
 - When the scope contains Java methods annotated with `lombok.SneakyThrows`, read the [Java exception handling rules](references/rules/java-exceptions.md) through EOF.
