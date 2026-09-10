@@ -1853,6 +1853,127 @@ policy_assertions = [{source = "agents", statements = ["Use `Review Incomplete` 
 critical = true
 
 [[cases]]
+id = "public_pr_missing_style_verification_cannot_merge"
+group = "review-pr style verification"
+description = "Prevents a public PR with applicable Java changes from receiving Mergeable before current-candidate Checkstyle and Spotless verification."
+phase = "review-pr mandatory style verification"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "A public PR Formal Review changes `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`. The latest head and authoritative file list are available, and code, test, risk, and convergence review found no issue, but neither Checkstyle nor Spotless has run on this candidate. Complete the Code Correctness Review now without querying CI, editing files, or changing Git or remote state."
+decision = "proceed"
+required_actions = ["inspect_local", "run_local_checks"]
+allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["Checkstyle", "Spotless"]
+forbidden_summary_terms = ["Review Result: Mergeable"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Apply this gate to every Formal Review of a public PR and every PR-backed local candidate.", "This gate is local candidate verification rather than a GitHub CI query, so every Review Focus must complete it even when Code Correctness Review does not read GitHub Actions, checks, workflow runs, or Actions logs.", "Treat production and test Java files as applicable to both Checkstyle and Spotless unless repository configuration proves that a check does not govern a file.", "Only successful current-candidate evidence for both checks, or an explicit not-applicable determination for either check, permits the remaining Formal Decision Contract to select `Mergeable`."]}, {source = "review-pr-evidence", statements = ["Read `Local Style Verification Evidence` for every Formal Review of a public PR or PR-backed local candidate, even when no CI or Actions evidence is requested.", "Keep review read-only by using `spotless:check`; never run `spotless:apply` or another file-modifying formatter."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_spotless_failure_not_mergeable"
+group = "review-pr style verification"
+description = "Maps a Spotless failure on a PR-added Java file to Not Mergeable and Change Request."
+phase = "review-pr mandatory style verification"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "A public PR Formal Review is complete on latest head `spot123`. Checkstyle passes, but `spotless:check` exits 1 on the PR-added Java file `module-a/src/main/java/example/Foo.java` because of indentation. All other review work found no issue. Return the Code Correctness Review result without editing, rerunning checks, querying CI, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "Feedback Mode", "Change Request", "Blocking Issues", "Spotless", "### Coverage", "spot123", "exit"]
+forbidden_summary_terms = ["Review Result: Mergeable", "Review Result: Review Incomplete"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["If Checkstyle or Spotless fails on an applicable PR-impact file, return `Not Mergeable` with `Feedback Mode: Change Request`.", "A style-check failure result must include `Feedback Mode: Change Request` and the blocking-issue count in `### Result`, then identify each failed check and affected PR-impact file in `### Blocking Issues`.", "A style-check failure result must also include `### Coverage` with the effective candidate SHA, authoritative files accounted for, failed command, exit code, and affected PR-impact file.", "If Checkstyle or Spotless fails on an applicable PR-impact file, use `Not Mergeable` with `Feedback Mode: Change Request`."]}, {source = "review-pr-evidence", statements = ["Attribute a Checkstyle or Spotless failure to the PR when the failing path is a PR-impact file governed by that check."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_checkstyle_failure_not_mergeable"
+group = "review-pr style verification"
+description = "Maps a Checkstyle failure on a PR-modified Java file to Not Mergeable and Change Request."
+phase = "review-pr mandatory style verification"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "A public PR Formal Review is complete on latest head `check123`. Spotless passes and all tests pass, but `checkstyle:check` exits 1 on the PR-modified Java file `module-a/src/test/java/example/FooTest.java`. All other review work found no issue. Return the Code Correctness Review result without editing, rerunning checks, querying CI, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Not Mergeable", "Feedback Mode", "Change Request", "Blocking Issues", "Checkstyle", "### Coverage", "check123", "exit"]
+forbidden_summary_terms = ["Review Result: Mergeable", "Review Result: Review Incomplete"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["If Checkstyle or Spotless fails on an applicable PR-impact file, return `Not Mergeable` with `Feedback Mode: Change Request`.", "A style-check failure result must include `Feedback Mode: Change Request` and the blocking-issue count in `### Result`, then identify each failed check and affected PR-impact file in `### Blocking Issues`.", "A style-check failure result must also include `### Coverage` with the effective candidate SHA, authoritative files accounted for, failed command, exit code, and affected PR-impact file.", "If Checkstyle or Spotless fails on an applicable PR-impact file, use `Not Mergeable` with `Feedback Mode: Change Request`."]}, {source = "review-pr-evidence", statements = ["Attribute a Checkstyle or Spotless failure to the PR when the failing path is a PR-impact file governed by that check."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_complete_module_style_checks_satisfy_gate"
+group = "review-pr style verification"
+description = "Accepts complete affected-module Checkstyle and Spotless evidence without requiring duplicate whole-repository checks."
+phase = "review-pr mandatory style verification"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "A public PR at head `abc123` changes only `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`. The authoritative inventory proves both files belong only to Maven module `module-a`; module-scoped `checkstyle:check` and `spotless:check` selected both files and each exited 0. All other Formal Review gates are complete with no finding or gap. Return the Code Correctness Review result and Coverage without querying CI, rerunning whole-repository checks, editing, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage", "abc123", "module-a", "checkstyle:check", "spotless:check", "exit", "Foo.java", "FooTest.java"]
+forbidden_summary_terms = ["Review Result: Not Mergeable", "Review Result: Review Incomplete"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Use a whole-repository check, complete affected-module checks, or an exact-file check only when the command output and file inventory prove that the selected scope covers every applicable PR-impact file.", "Only successful current-candidate evidence for both checks, or an explicit not-applicable determination for either check, permits the remaining Formal Decision Contract to select `Mergeable`."]}, {source = "review-pr-evidence", statements = ["Run `checkstyle:check` and `spotless:check` over the whole repository, every complete affected module, or a reliable exact-file scope that covers the inventory.", "Treat a zero exit code without selection proof as inconclusive, including when a filter matches no intended file."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_new_head_invalidates_style_evidence"
+group = "review-pr style verification"
+description = "Requires Checkstyle and Spotless to rerun after a new public PR head invalidates old evidence."
+phase = "review-pr mandatory style verification"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "Checkstyle and Spotless passed for public PR head `aaa111`. The PR then added a commit, and the latest authoritative head is now `bbb222`; the accurate new candidate is available and the remaining review found no issue. Complete the Code Correctness Review without querying CI, editing, or changing Git or remote state."
+decision = "proceed"
+required_actions = ["inspect_local", "run_local_checks"]
+allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["bbb222", "Checkstyle", "Spotless"]
+forbidden_summary_terms = ["Review Result: Mergeable"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["Invalidate all prior Checkstyle and Spotless evidence immediately when the public PR head or authorized local delta changes."]}, {source = "review-pr-evidence", statements = ["Record the effective candidate SHA before each command and invalidate both Checkstyle and Spotless results when the public head or authorized local delta changes.", "Passing GitHub Actions, required checks, commit statuses, PR comments, or results from an older candidate neither satisfy nor waive this local evidence requirement."]}]
+critical = true
+
+[[cases]]
+id = "public_pr_unchanged_style_failure_is_not_pr_blocker"
+group = "review-pr style verification"
+description = "Keeps an unchanged-file historical failure from blocking a PR after all applicable PR-impact files pass reliable exact checks."
+phase = "review-pr mandatory style verification"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = "A module check for a public PR fails only on unchanged `module-a/src/main/java/example/Legacy.java`. The exact base and effective candidate fail on that same unchanged file. Reliable exact-file `checkstyle:check` and `spotless:check` selected the PR-modified `module-a/src/main/java/example/Foo.java` and every other applicable PR-impact file, and both commands exited 0. All other Formal Review gates are complete with no finding or gap. Return the Code Correctness Review result without querying CI, rerunning checks, editing, or changing Git or remote state."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = []
+required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidence", "### Coverage", "Legacy.java", "Checkstyle", "Spotless", "Foo.java"]
+required_summary_term_groups = [["pre-existing", "historical", "baseline"]]
+forbidden_summary_terms = ["Review Result: Not Mergeable", "Review Result: Review Incomplete"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "review-pr", statements = ["If a module-scoped command fails only on unchanged files, narrow the check reliably or compare the base and effective candidate before attribution; do not classify the PR from that module failure alone."]}, {source = "review-pr-evidence", statements = ["When a module check fails only on unchanged files, use a reliable narrower scope or compare the same scope on the exact base and effective candidate before classifying the PR.", "If the exact base and effective candidate fail on the same unchanged file, record a pre-existing issue but still obtain separate passing evidence for every applicable PR-impact file."]}]
+critical = true
+
+[[cases]]
 id = "layered_response_when_details_needed"
 group = "operations"
 description = "Separates a concise answer from necessary requested detail."
@@ -2363,4 +2484,43 @@ required_summary_terms = ["Non-compliant", "checkState", "checkMustEmpty", "chec
 forbidden_summary_terms = ["Strictly compliant"]
 policy_binding_profile = "coding-standards-audit"
 policy_assertions = [{source = "coding-standards", statements = ["When the scope contains Java `throw` statements, conditional exception paths, validation or precondition calls, or calls to `ShardingSpherePreconditions`, read the [Java precondition rules](references/rules/java-preconditions.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance."]}, {source = "java-preconditions", statements = ["When a conditional branch does nothing except construct and throw an exception because a required condition is false, replace the branch with the equivalent `ShardingSpherePreconditions` call if the module can use `infra/exception` and the replacement preserves behavior.", "Replace `checkState(values.isEmpty(), supplier)` and `checkState(map.isEmpty(), supplier)` with the applicable `checkMustEmpty` overload.", "Replace `checkState(values.contains(element), supplier)` with `checkContains(values, element, supplier)`.", "Replace `checkState(!values.contains(element), supplier)` with `checkNotContains(values, element, supplier)`.", "Replace `checkState(map.containsKey(key), supplier)` with `checkContainsKey(map, key, supplier)`.", "Keep a direct throw for an unconditional failure, exception translation, exception wrapping, rethrowing, or a test double or fixture that deliberately simulates a failure."]}]
+critical = true
+
+[[cases]]
+id = "java_annotation_order_is_relative_and_declaration_scoped"
+group = "coding / regular"
+description = "Orders only recognized declaration annotations while preserving unrecognized and type-use annotations."
+phase = "coding-standards final check and ordinary completion loop"
+ordinary_loop = true
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Continue an authorized in-scope Java implementation. A changed type declares `@Slf4j`, `@JsonDeserialize`, `@HighFrequencyInvocation`, `@Getter`, and `@RequiredArgsConstructor` in that order; a changed field declares `@Setter`, `@JsonProperty`, `@HighFrequencyInvocation`, and `@Getter`; and a changed method declares `@Builder`, `@Transactional`, and `@HighFrequencyInvocation`. State the corrected recognized subsequence for each declaration, then correct only the covered declaration-annotation order, preserve the position of each unrecognized annotation, leave Java modifiers and `final @Nullable String` `TYPE_USE` placement to their own rules, run affected checks and Formal Review, and do not change annotation semantics or unrelated code."
+decision = "proceed"
+required_actions = ["edit_code", "run_local_checks", "run_pre_handoff_review"]
+allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
+forbidden_actions = ["edit_non_code", "edit_unrelated_changes", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["HighFrequencyInvocation", "RequiredArgsConstructor", "Getter", "Setter", "Builder", "Slf4j", "unrecognized", "TYPE_USE"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "coding-standards", statements = ["Before adding, changing, or reordering a covered declaration annotation, or when a Java declaration added or modified by the task contains at least two covered annotations, read the [Java declaration annotation order rules](references/rules/java-annotation-order.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable Java declaration annotation order rule against each declaration added or modified by the task."]}, {source = "java-annotation-order", statements = ["The canonical relative order is `org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation`, `lombok.AllArgsConstructor`, `lombok.RequiredArgsConstructor`, `lombok.NoArgsConstructor`, `lombok.Builder`, `lombok.Getter`, `lombok.Setter`, `lombok.EqualsAndHashCode`, `lombok.ToString`, and `lombok.extern.slf4j.Slf4j`.", "Filter the declaration's annotations to the recognized fully qualified types and report a violation only when that filtered sequence is not in canonical order.", "Annotations outside the canonical list may remain before, between, or after recognized annotations and do not need to be contiguous with them.", "A declaration annotation annotates the declaration itself, while a `TYPE_USE` annotation annotates a use of a type and does not participate in this rule.", "This rule governs only the position of `HighFrequencyInvocation`; do not infer, add, remove, or validate high-frequency scope, cacheability, or performance behavior from this file."]}]
+critical = true
+
+[[cases]]
+id = "standalone_coding_standards_audits_java_annotation_order"
+group = "policy routing"
+description = "Audits relative declaration-annotation order without treating unrelated annotations as ordering barriers."
+phase = "standalone coding-standards audit"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Audit the complete current-working-tree file `module-a/src/main/java/example/AnnotatedType.java` without editing it. Its type annotations are `@Slf4j`, `@JsonDeserialize`, `@HighFrequencyInvocation`, `@Getter`, and `@RequiredArgsConstructor`; its field has a valid `final @Nullable String` type-use annotation; and its test method has `@Test` and `@ParameterizedTest`. Report `Non-compliant`, give the minimum relative-order correction for only the four recognized type declaration annotations, allow `@JsonDeserialize` to remain between them, and do not report the type-use or test-framework annotations as part of this order. Do not generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["Non-compliant", "HighFrequencyInvocation", "RequiredArgsConstructor", "Getter", "Slf4j", "JsonDeserialize", "TYPE_USE", "Test", "ParameterizedTest"]
+forbidden_summary_terms = ["Strictly compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "coding-standards", statements = ["When the scope contains a Java declaration with at least two covered declaration annotations, read the [Java declaration annotation order rules](references/rules/java-annotation-order.md) through EOF.", "Remain read-only throughout the audit.", "Check every constrained file and every physical line in scope without sampling."]}, {source = "standalone-audit", statements = ["An existing-code violation of an applicable written standard is sufficient to report non-compliance."]}, {source = "java-annotation-order", statements = ["The canonical relative order is `org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation`, `lombok.AllArgsConstructor`, `lombok.RequiredArgsConstructor`, `lombok.NoArgsConstructor`, `lombok.Builder`, `lombok.Getter`, `lombok.Setter`, `lombok.EqualsAndHashCode`, `lombok.ToString`, and `lombok.extern.slf4j.Slf4j`.", "Filter the declaration's annotations to the recognized fully qualified types and report a violation only when that filtered sequence is not in canonical order.", "Test-framework, dependency-injection, framework, and serialization annotations are outside this order unless their fully qualified type appears in the canonical list.", "A declaration annotation annotates the declaration itself, while a `TYPE_USE` annotation annotates a use of a type and does not participate in this rule."]}]
 critical = true

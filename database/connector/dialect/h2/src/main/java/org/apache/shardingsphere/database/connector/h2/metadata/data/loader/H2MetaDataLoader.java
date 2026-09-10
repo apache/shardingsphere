@@ -56,33 +56,70 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
     private static final String INDEX_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES"
             + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN (%s)";
     
-    private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?"
-            + " AND INDEX_TYPE_NAME = 'PRIMARY KEY'";
+    private static final String PRIMARY_KEY_COLUMN_META_DATA_SQL = "SELECT KCU.TABLE_NAME, KCU.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU"
+            + " USING (CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, CONSTRAINT_NAME) WHERE KCU.TABLE_CATALOG=? AND KCU.TABLE_SCHEMA=? AND TC.CONSTRAINT_TYPE='PRIMARY KEY'";
     
-    private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND UPPER(TABLE_NAME) IN (%s)";
+    private static final String PRIMARY_KEY_COLUMN_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_COLUMN_META_DATA_SQL + " AND UPPER(KCU.TABLE_NAME) IN (%s)";
     
-    private static final String GENERATED_INFO_SQL = "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
-            + " RIGHT JOIN INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?";
+    private static final String GENERATED_INFO_SQL = "SELECT TABLE_NAME, COLUMN_NAME, IS_IDENTITY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
     
-    private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND UPPER(C.TABLE_NAME) IN (%s)";
+    private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND UPPER(TABLE_NAME) IN (%s)";
     
-    private static final String VIEW_META_DATA_SQL = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES"
-            + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_TYPE='VIEW' AND UPPER(TABLE_NAME) IN (%s)";
+    private static final String VIEW_META_DATA_SQL = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_TYPE='VIEW' AND UPPER(TABLE_NAME) IN (%s)";
     
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         try (Connection connection = material.getDataSource().getConnection()) {
-            Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, material.getActualTableNames());
+            Collection<String> tables = material.getActualTableNames();
+            Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, tables, loadTablePrimaryKeyColumns(connection, tables), loadTableGenerated(connection, tables));
             Collection<String> viewNames = columnMetaDataMap.isEmpty() ? Collections.emptySet() : loadViewNames(connection, columnMetaDataMap.keySet());
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
                 Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
-                tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList(),
-                        viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE));
+                tableMetaDataList.add(
+                        new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList(), viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE));
             }
         }
         return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaDataList));
+    }
+    
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables,
+                                                                          final Map<String, Collection<String>> tablePrimaryKeys,
+                                                                          final Map<String, Map<String, Boolean>> tableGenerated) throws SQLException {
+        Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
+            preparedStatement.setString(1, connection.getCatalog());
+            preparedStatement.setString(2, "PUBLIC");
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String tableName = resultSet.getString("TABLE_NAME");
+                    ColumnMetaData columnMetaData = getColumnMetaData(
+                            resultSet, tablePrimaryKeys.getOrDefault(tableName, Collections.emptyList()), tableGenerated.getOrDefault(tableName, new HashMap<>()));
+                    if (!result.containsKey(tableName)) {
+                        result.put(tableName, new LinkedList<>());
+                    }
+                    result.get(tableName).add(columnMetaData);
+                }
+            }
+        }
+        return result;
+    }
+    
+    private String getTableMetaDataSQL(final Collection<String> tables) {
+        return tables.isEmpty()
+                ? TABLE_META_DATA_SQL
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
+    }
+    
+    private ColumnMetaData getColumnMetaData(final ResultSet resultSet, final Collection<String> primaryKeys, final Map<String, Boolean> tableGenerated) throws SQLException {
+        String columnName = resultSet.getString("COLUMN_NAME");
+        Integer dataType = DataTypeRegistry.getDataType(getDatabaseType(), resultSet.getString("DATA_TYPE")).orElse(Types.OTHER);
+        boolean primaryKey = primaryKeys.contains(columnName);
+        boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
+        boolean isVisible = resultSet.getBoolean("IS_VISIBLE");
+        boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
+        return new ColumnMetaData(columnName, dataType, primaryKey, generated, false, isVisible, false, isNullable);
     }
     
     private Collection<String> loadViewNames(final Connection connection, final Collection<String> tableNames) throws SQLException {
@@ -101,43 +138,6 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
     
     private String getViewMetaDataSQL(final Collection<String> tableNames) {
         return String.format(VIEW_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
-    }
-    
-    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
-        Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
-            Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
-            Map<String, Map<String, Boolean>> tableGenerated = loadTableGenerated(connection, tables);
-            preparedStatement.setString(1, connection.getCatalog());
-            preparedStatement.setString(2, "PUBLIC");
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    String tableName = resultSet.getString("TABLE_NAME");
-                    ColumnMetaData columnMetaData =
-                            loadColumnMetaData(resultSet, tablePrimaryKeys.getOrDefault(tableName, Collections.emptyList()), tableGenerated.getOrDefault(tableName, new HashMap<>()));
-                    if (!result.containsKey(tableName)) {
-                        result.put(tableName, new LinkedList<>());
-                    }
-                    result.get(tableName).add(columnMetaData);
-                }
-            }
-        }
-        return result;
-    }
-    
-    private ColumnMetaData loadColumnMetaData(final ResultSet resultSet, final Collection<String> primaryKeys, final Map<String, Boolean> tableGenerated) throws SQLException {
-        String columnName = resultSet.getString("COLUMN_NAME");
-        String dataType = resultSet.getString("DATA_TYPE");
-        boolean primaryKey = primaryKeys.contains(columnName);
-        boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
-        boolean isVisible = resultSet.getBoolean("IS_VISIBLE");
-        boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, false, isVisible, false, isNullable);
-    }
-    
-    private String getTableMetaDataSQL(final Collection<String> tables) {
-        return tables.isEmpty() ? TABLE_META_DATA_SQL
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {
@@ -167,21 +167,22 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
     }
     
-    private String getPrimaryKeyMetaDataSQL(final Collection<String> tables) {
-        return tables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
-                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
+    private String getPrimaryKeyColumnMetaDataSQL(final Collection<String> tables) {
+        return tables.isEmpty()
+                ? PRIMARY_KEY_COLUMN_META_DATA_SQL
+                : String.format(PRIMARY_KEY_COLUMN_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
     }
     
-    private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
+    private Map<String, Collection<String>> loadTablePrimaryKeyColumns(final Connection connection, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyColumnMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    String indexName = resultSet.getString("INDEX_NAME");
+                    String columnName = resultSet.getString("COLUMN_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
-                    result.computeIfAbsent(tableName, key -> new LinkedList<>()).add(indexName);
+                    result.computeIfAbsent(tableName, key -> new LinkedList<>()).add(columnName);
                 }
             }
         }
@@ -189,7 +190,8 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
     }
     
     private String getGeneratedInfoSQL(final Collection<String> tables) {
-        return tables.isEmpty() ? GENERATED_INFO_SQL
+        return tables.isEmpty()
+                ? GENERATED_INFO_SQL
                 : String.format(GENERATED_INFO_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
     }
     
@@ -202,7 +204,7 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
                 while (resultSet.next()) {
                     String columnName = resultSet.getString("COLUMN_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
-                    boolean generated = resultSet.getBoolean("IS_GENERATED");
+                    boolean generated = "YES".equals(resultSet.getString("IS_IDENTITY"));
                     result.computeIfAbsent(tableName, key -> new HashMap<>()).put(columnName, generated);
                 }
             }

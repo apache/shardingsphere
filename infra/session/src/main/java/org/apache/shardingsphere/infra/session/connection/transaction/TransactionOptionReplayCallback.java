@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
+package org.apache.shardingsphere.infra.session.connection.transaction;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * Show dist variable statement test case.
+ * Transaction option replay callback.
  */
-@Getter
-@Setter
-public final class ShowDistVariableStatementTestCase extends SQLParserTestCase {
+@FunctionalInterface
+public interface TransactionOptionReplayCallback {
     
-    @XmlAttribute
-    private String name;
+    /**
+     * Replay transaction options on a newly acquired connection.
+     * ShardingSphere-controlled transaction enlistment must occur after replay.
+     *
+     * @param connection physical connection
+     * @throws SQLException SQL exception
+     */
+    void replay(Connection connection) throws SQLException;
 }

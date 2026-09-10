@@ -17,9 +17,8 @@
 
 # Evidence Access
 
-Read this reference when a Formal Review of a public PR or local candidate,
-or a PR Discussion Reply requires current GitHub facts, or when
-the selected review focus requires CI or Actions evidence.
+Read this reference when a Formal Review of a public PR or local candidate, or a PR Discussion Reply requires current GitHub facts, or when the selected review focus requires CI or Actions evidence.
+Read `Local Style Verification Evidence` for every Formal Review of a public PR or PR-backed local candidate, even when no CI or Actions evidence is requested.
 
 ## Public and Authorized Evidence Boundary
 
@@ -84,6 +83,43 @@ For discussion replies, record the latest public head and fetch the complete
 thread, relevant prior review, and affected paths. Fetch the authoritative
 changed-file list when scope is disputed or the reply changes a formal
 readiness conclusion.
+
+## Local Style Verification Evidence
+
+Use this section to satisfy the Mandatory Style Verification Gate independently of GitHub CI state.
+
+### Candidate Identity and Freshness
+
+- Prefer a local commit that exactly equals the latest public PR head, an accurate PR-backed local candidate, or a temporary read-only snapshot materialized from the exact public head.
+- For a PR-backed local candidate, verify that it contains the latest public head and only the authorized local delta used by the Formal Review.
+- Do not produce passing evidence from a stale checkout, a base-only workspace, or a workspace containing unattributed changes that can affect the checks.
+- Record the effective candidate SHA before each command and invalidate both Checkstyle and Spotless results when the public head or authorized local delta changes.
+- If the latest public head is unavailable locally, do not fetch, checkout, switch, merge, reset, or perform another Git write without exact user authorization.
+- Use an allowed read-only temporary snapshot route when it can materialize the exact head; return `Review Incomplete` when every allowed route fails to produce an accurate candidate.
+
+### Applicable Files and Verification Scope
+
+1. Start from the authoritative changed-file list and classify every PR-impact file as governed by Checkstyle, Spotless, both, or neither under the repository configuration.
+2. Resolve the owning Maven module for every applicable file and retain an explicit file-to-module inventory.
+3. Run `checkstyle:check` and `spotless:check` over the whole repository, every complete affected module, or a reliable exact-file scope that covers the inventory.
+4. Use an exact-file filter only when the Maven plugin supports it reliably and the command output plus the inventory prove that every intended file was selected.
+5. Expand to the complete affected rule scope, normally the whole repository, when a changed global style configuration, parent POM, or cross-module rule can govern files outside the directly changed modules.
+6. Treat a zero exit code without selection proof as inconclusive, including when a filter matches no intended file.
+7. Keep review read-only by using `spotless:check`; never run `spotless:apply` or another file-modifying formatter.
+
+### Failure Attribution
+
+- Attribute a Checkstyle or Spotless failure to the PR when the failing path is a PR-impact file governed by that check.
+- When a module check fails only on unchanged files, use a reliable narrower scope or compare the same scope on the exact base and effective candidate before classifying the PR.
+- If the exact base passes and the effective candidate fails, attribute the newly observed failure to the PR and identify the affected file.
+- If the exact base and effective candidate fail on the same unchanged file, record a pre-existing issue but still obtain separate passing evidence for every applicable PR-impact file.
+- If no allowed method can distinguish an unchanged-file failure from the PR-impact files, return `Review Incomplete` instead of a false blocker or a false pass.
+
+### Sanitized Verification Summary
+
+Record the effective candidate SHA, authoritative applicable-file inventory, verification scope, Maven module set, exact commands, exit codes, covered PR-impact files, decisive failure paths, and every not-applicable determination with its repository-configuration basis.
+Keep raw high-volume output in the local log required by the repository command-execution rules and expose only a sanitized summary.
+Passing GitHub Actions, required checks, commit statuses, PR comments, or results from an older candidate neither satisfy nor waive this local evidence requirement.
 
 ## CI and Actions
 

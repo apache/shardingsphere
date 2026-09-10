@@ -38,6 +38,9 @@ public final class PostgreSQLXAConnectionWrapper implements XAConnectionWrapper 
     
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        if (connection.getAutoCommit()) {
+            connection.setAutoCommit(false);
+        }
         return createXAConnection(connection.unwrap(jdbcConnectionClass));
     }
     

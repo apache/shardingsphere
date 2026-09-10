@@ -33,8 +33,8 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Tableless datasource unicast route engine.
  */
-@RequiredArgsConstructor
 @HighFrequencyInvocation
+@RequiredArgsConstructor
 public final class TablelessDataSourceUnicastRouteEngine implements TablelessRouteEngine {
     
     @Override

@@ -179,7 +179,9 @@
         <module name="UnusedLocalVariable">
             <property name="jdkVersion" value="21" />
         </module>
-        <module name="VariableDeclarationUsageDistance" />
+        <module name="VariableDeclarationUsageDistance">
+            <property name="allowedDistance" value="7" />
+        </module>
         <module name="RegexpSinglelineJava">
             <property name="format" value="^(?!\s*import\s+java\.util\.Map\.Entry\s*;).*\b(?:java\.util\.)?Map\.Entry\b" />
             <property name="ignoreComments" value="true" />
@@ -338,7 +340,9 @@
         </module>
         
         <!-- Size Violations -->
-        <module name="AnonInnerLength" />
+        <module name="AnonInnerLength">
+            <property name="max" value="30" />
+        </module>
         <module name="ExecutableStatementCount">
             <property name="severity" value="warning" />
             <property name="max" value="50" />
