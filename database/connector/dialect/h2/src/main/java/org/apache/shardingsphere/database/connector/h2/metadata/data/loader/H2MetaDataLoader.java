@@ -72,8 +72,7 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         try (Connection connection = material.getDataSource().getConnection()) {
             Collection<String> tables = material.getActualTableNames();
-            Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(
-                    connection, tables, loadTablePrimaryKeyColumns(connection, tables), loadTableGenerated(connection, tables));
+            Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, tables, loadTablePrimaryKeyColumns(connection, tables), loadTableGenerated(connection, tables));
             Collection<String> viewNames = columnMetaDataMap.isEmpty() ? Collections.emptySet() : loadViewNames(connection, columnMetaDataMap.keySet());
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
