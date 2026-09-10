@@ -34,6 +34,9 @@ import java.util.Collections;
 
 /**
  * Open blob command executor for Firebird.
+ *
+ * <p>A zero BLOB id is the NULL BLOB quad, which Firebird opens as an empty BLOB instead of rejecting it,
+ * so it is registered with empty content rather than reported as an invalid BLOB id.</p>
  */
 @RequiredArgsConstructor
 public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
@@ -44,10 +47,18 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        byte[] blobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), packet.getBlobId());
-        ShardingSpherePreconditions.checkNotNull(blobContent, () -> new InvalidSegstrIdException(packet.getBlobId()));
+        long blobId = packet.getBlobId();
+        if (0L == blobId) {
+            return registerBlob(blobId, new byte[0]);
+        }
+        byte[] blobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), blobId);
+        ShardingSpherePreconditions.checkNotNull(blobContent, () -> new InvalidSegstrIdException(blobId));
+        return registerBlob(blobId, blobContent);
+    }
+    
+    private Collection<DatabasePacket> registerBlob(final long blobId, final byte[] blobContent) {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
         FirebirdBlobReadCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobContent);
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(packet.getBlobId()));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(blobId));
     }
 }

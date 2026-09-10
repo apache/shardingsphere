@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
@@ -30,7 +28,6 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.gene
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 /**
@@ -48,9 +45,9 @@ public final class FirebirdBatchBlobSegmentsCommandExecutor implements CommandEx
     @Override
     public Collection<DatabasePacket> execute() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        FirebirdBlobWriteHandleValidator.validate(connectionSession.getConnectionId(), blobHandle);
         for (byte[] each : packet.getSegments()) {
-            OptionalInt appendResult = FirebirdBlobWriteCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, each);
-            ShardingSpherePreconditions.checkState(appendResult.isPresent(), () -> new InvalidSegstrHandleException(blobHandle));
+            FirebirdBlobWriteCache.getInstance().appendSegment(connectionSession.getConnectionId(), blobHandle, each);
         }
         OptionalLong blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;

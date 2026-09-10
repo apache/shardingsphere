@@ -93,6 +93,18 @@ class FirebirdOpenBlobCommandExecutorTest {
         assertThrows(InvalidSegstrIdException.class, executor::execute);
     }
     
+    @Test
+    void assertExecuteWithZeroBlobId() {
+        when(packet.getBlobId()).thenReturn(0L);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        DatabasePacket response = actual.iterator().next();
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
+        assertThat(((FirebirdGenericResponsePacket) response).getId(), is(0L));
+    }
+    
     private long registerBlobContent(final byte[] content) {
         ByteBuf byteBuf = Unpooled.buffer();
         FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);

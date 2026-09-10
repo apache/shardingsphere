@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExcept
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.CannotUpdateOldBlobException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
@@ -105,6 +106,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof InvalidSegstrIdException) {
             return toSQLException(FirebirdVendorError.INVALID_SEGSTR_ID);
+        }
+        if (sqlDialectException instanceof CannotUpdateOldBlobException) {
+            return toSQLException(FirebirdVendorError.CANNOT_UPDATE_OLD_BLOB);
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }
