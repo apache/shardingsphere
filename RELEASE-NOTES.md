@@ -128,6 +128,7 @@
 1. SQL Binder: Preserve parameter marker projection metadata in column binder - [#39709](https://github.com/apache/shardingsphere/pull/39709)
 1. Metadata: Support Oracle dictionary views by adding SYS default system schema and YAML definitions - [#38388](https://github.com/apache/shardingsphere/pull/38388)
 1. Metadata: Support parsing query properties from Oracle JDBC URLs - [#38901](https://github.com/apache/shardingsphere/pull/38901)
+1. Metadata:
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)
 1. JDBC: Support safe close statement manager - [#38473](https://github.com/apache/shardingsphere/pull/38473)
 1. JDBC: Bump the ClickHouse JDBC Driver used by optional modules to version `0.9.8` - [#38878](https://github.com/apache/shardingsphere/pull/38878)
@@ -143,6 +144,7 @@
 1. Encrypt: Support SqlServer update statement for Specifying a table alias as the target object when use encrypt feature - [#38733](https://github.com/apache/shardingsphere/pull/38733)
 1. Encrypt: Support SqlServer update statement for Specifying a view as the target object when use encrypt feature - [#38896](https://github.com/apache/shardingsphere/pull/38896)
 1. Encrypt: Support SqlServer for Using the UPDATE statement with information from another table  when use encrypt feature - [#38926](https://github.com/apache/shardingsphere/pull/38926)
+1. Kernel: Add linked-server infrastructure module for OPENQUERY encrypt rewrite - [#39786](https://github.com/apache/shardingsphere/pull/39786)
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
 1. SQL Parser: Support parsing SYSTEM_USER in SQL92 dialect and bind it as a niladic function instead of a column - [#39102](https://github.com/apache/shardingsphere/pull/39102)
 
