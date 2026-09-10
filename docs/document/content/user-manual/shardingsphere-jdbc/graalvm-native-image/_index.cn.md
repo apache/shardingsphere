@@ -15,7 +15,7 @@ CE 的 `native-image` 命令行工具的长篇大论的 shell 命令。
 ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 GraalVM Native Image。使用者可通过 SDKMAN! 快速切换 JDK。这同理
 适用于 https://sdkman.io/jdks#graal ， https://sdkman.io/jdks#nik 和 https://sdkman.io/jdks#mandrel 等 `GraalVM CE` 的下游发行版。
 
-- GraalVM CE For JDK 25.0.2，对应于 SDKMAN! 的 `25.0.2-graalce`
+- GraalVM CE 25.3.4.1，对应于 SDKMAN! 的 `25.3.4.1-graalce`
 
 用户依然可以使用 SDKMAN! 上的 `21.0.8-graal` 等旧版本的 Oracle GraalVM 来构建 ShardingSphere 的 GraalVM Native Image 产物。
 但这将导致集成部分第三方依赖时，构建 GraalVM Native Image 失败。
@@ -86,7 +86,6 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
                         <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
                         <buildArg>-H:+AddAllCharsets</buildArg>
                         <buildArg>-H:+IncludeAllLocales</buildArg>
-                        <buildArg>-H:+TreatAllTypeReachableConditionsAsTypeReached</buildArg>
                     </buildArgs>
                 </configuration>
                 <executions>
@@ -404,7 +403,3 @@ without it being registered as reachable. Add it to the resource metadata to sol
     且 Etcd 的 Cluster 模式会与 GraalVM Tracing Agent 产生冲突。
     若开发者需要在通过 Linux 编译的 GraalVM Native Image 下使用 Etcd 的 Cluster 模式，
     需要自行提供额外的 GraalVM Reachability Metadata 相关的 JSON。
-
-11. 受 https://github.com/apache/shardingsphere/issues/38943 影响，
-    通过 GraalVM CE For JDK 25.0.2 编译 GraalVM Native Image，
-    总是需要 `-H:+TreatAllTypeReachableConditionsAsTypeReached` 的 `buildArg`。

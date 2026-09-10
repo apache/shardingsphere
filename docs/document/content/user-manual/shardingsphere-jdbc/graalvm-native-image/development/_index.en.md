@@ -27,7 +27,7 @@ ShardingSphere defines,
 
 Developer must have installed on their devices,
 
-1. GraalVM CE 25.0.2, or a GraalVM downstream distribution compatible with GraalVM CE 25.0.2. Refer to [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image).
+1. GraalVM CE 25.3.4.1, or a GraalVM downstream distribution compatible with GraalVM CE 25.3.4.1. Refer to [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image).
 2. The native toolchain required to compile the GraalVM Native Image. Refer to https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites .
 3. Docker Engine that can run Linux Containers, or a Container Runtime compatible with testcontainers-java. Refer to https://java.testcontainers.org/supported_docker_environment/ .
 
@@ -43,8 +43,8 @@ GraalVM CE can be installed using `SDKMAN!` in bash using the following command.
 sudo apt install unzip zip -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 25.0.2-graalce
-sdk use java 25.0.2-graalce
+sdk install java 25.3.4.1-graalce
+sdk use java 25.3.4.1-graalce
 ```
 
 Developer can use the following command in bash to install the local toolchain required to compile GraalVM Native Image.
@@ -96,11 +96,11 @@ GraalVM CE can be installed using `version-fox/vfox` in Powershell 7 using the f
 winget install --id version-fox.vfox --source winget --exact
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 vfox add java
-vfox install java@25.0.2-graalce
-vfox use --global java@25.0.2-graalce
+vfox install java@25.3.4.1-graalce
+vfox use --global java@25.3.4.1-graalce
 ```
 
-When Windows pops up a window asking developer to allow an application with a path like `C:\users\shard\.version-fox\cache\java\v-25.0.2-graalce\java-25.0.2-graalce\bin\java.exe` to pass through Windows Firewall,
+When Windows pops up a window asking developer to allow an application with a path like `C:\users\shard\.version-fox\cache\java\v-25.3.4.1-graalce\java-25.3.4.1-graalce\bin\java.exe` to pass through Windows Firewall,
 developer should approve it.
 Background reference https://support.microsoft.com/en-us/windows/risks-of-allowing-apps-through-windows-firewall-654559af-3f54-3dcf-349f-71ccd90bcc5c .
 
@@ -295,14 +295,14 @@ org.graalvm.nativeimage.MissingReflectionRegistrationError: Cannot reflectively 
   }
 
 The 'reachability-metadata.json' file should be located in 'META-INF/native-image/<group-id>/<artifact-id>/' of your project. For further help, see https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection
-  java.base@25.0.2/java.lang.Class.getConstructors(DynamicHub.java:1277)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
-  java.management@25.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
-  java.management@25.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+  java.base@25.0.4.1/java.lang.Class.getConstructors(DynamicHub.java:1277)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@25.0.4.1/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@25.0.4.1/javax.management.StandardMBean.<init>(StandardMBean.java:268)
 org.graalvm.nativeimage.MissingReflectionRegistrationError: Cannot reflectively access the 'com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool'. To allow this operation, add the following to the 'reflection' section of 'reachability-metadata.json' and rebuild the native image:
 
   {
@@ -310,14 +310,14 @@ org.graalvm.nativeimage.MissingReflectionRegistrationError: Cannot reflectively 
   }
 
 The 'reachability-metadata.json' file should be located in 'META-INF/native-image/<group-id>/<artifact-id>/' of your project. For further help, see https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection
-  java.base@25.0.2/java.lang.Class.getConstructors(DynamicHub.java:1277)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
-  java.management@25.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
-  java.management@25.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
-  java.management@25.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+  java.base@25.0.4.1/java.lang.Class.getConstructors(DynamicHub.java:1277)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@25.0.4.1/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@25.0.4.1/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@25.0.4.1/javax.management.StandardMBean.<init>(StandardMBean.java:268)
 ```
 
 The related warnings cannot be avoided at this time.
