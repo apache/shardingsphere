@@ -17,9 +17,27 @@
 
 package org.apache.shardingsphere.test.it.sql.binder.dialect.postgresql;
 
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @SQLBinderITSettings("PostgreSQL")
 class PostgreSQLBinderIT extends SQLBinderIT {
+    
+    @Test
+    void assertBindDoesNotShadowSystemCatalogTableWithCurrentSchemaTable() {
+        String sql = "SELECT relname FROM pg_class";
+        SelectStatement actual = (SelectStatement) bindSQLStatement("PostgreSQL", sql);
+        ProjectionSegment actualProjection = actual.getProjections().getProjections().get(0);
+        ColumnSegmentBoundInfo actualColumnBoundInfo = ((ColumnProjectionSegment) actualProjection).getColumn().getColumnBoundInfo();
+        assertThat(actualColumnBoundInfo.getOriginalTable().getValue(), is("pg_class"));
+        assertThat(actualColumnBoundInfo.getOriginalSchema().getValue(), is("pg_catalog"));
+    }
 }

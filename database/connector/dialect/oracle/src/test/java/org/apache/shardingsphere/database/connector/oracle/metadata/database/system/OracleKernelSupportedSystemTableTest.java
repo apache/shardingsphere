@@ -17,36 +17,28 @@
 
 package org.apache.shardingsphere.database.connector.oracle.metadata.database.system;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectKernelSupportedSystemTable;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OracleSystemDatabaseTest {
+class OracleKernelSupportedSystemTableTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
     
-    private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, databaseType);
+    private final DialectKernelSupportedSystemTable kernelSupportedSystemTable = TypedSPILoader.getService(DialectKernelSupportedSystemTable.class, databaseType);
     
     @Test
-    void assertGetSystemDatabasesEmpty() {
-        assertTrue(systemDatabase.getSystemDatabases().isEmpty());
-    }
-    
-    @Test
-    void assertGetSystemSchemasWithDatabaseName() {
-        assertThat(systemDatabase.getSystemSchemas("foo_db"), is(Arrays.asList("SYS", "SYSTEM_LOBS")));
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertThat(systemDatabase.getSystemSchemas(), is(Arrays.asList("SYS", "SYSTEM_LOBS")));
+    void assertGetSchemaAndTablesMap() {
+        Map<String, Collection<String>> actual = kernelSupportedSystemTable.getSchemaAndTablesMap();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("SYS"), containsInAnyOrder("ALL_TABLES", "USER_TABLES", "ALL_SEQUENCES", "ALL_VIEWS", "ALL_SYNONYMS", "ALL_TAB_COLUMNS"));
     }
 }
