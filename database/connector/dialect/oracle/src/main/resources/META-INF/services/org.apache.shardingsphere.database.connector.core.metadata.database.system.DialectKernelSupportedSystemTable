@@ -15,40 +15,4 @@
 # limitations under the License.
 #
 
-name: ALL_SYNONYMS
-columns:
-  OWNER:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: OWNER
-    primaryKey: false
-    visible: true
-  SYNONYM_NAME:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SYNONYM_NAME
-    primaryKey: false
-    visible: true
-  TABLE_OWNER:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: TABLE_OWNER
-    primaryKey: false
-    visible: true
-  TABLE_NAME:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: TABLE_NAME
-    primaryKey: false
-    visible: true
-  DB_LINK:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DB_LINK
-    primaryKey: false
-    visible: true
+org.apache.shardingsphere.database.connector.oracle.metadata.database.system.OracleKernelSupportedSystemTable

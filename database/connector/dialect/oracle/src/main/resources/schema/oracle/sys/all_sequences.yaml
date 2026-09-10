@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: all_sequences
+name: ALL_SEQUENCES
 columns:
   SEQUENCE_OWNER:
     caseSensitive: false

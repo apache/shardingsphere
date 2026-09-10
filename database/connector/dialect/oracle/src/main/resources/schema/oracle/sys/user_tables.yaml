@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: user_tables
+name: USER_TABLES
 columns:
   TABLE_NAME:
     caseSensitive: false

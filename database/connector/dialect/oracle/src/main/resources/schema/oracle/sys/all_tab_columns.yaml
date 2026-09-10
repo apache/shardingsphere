@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: all_tab_columns
+name: ALL_TAB_COLUMNS
 columns:
   OWNER:
     caseSensitive: false

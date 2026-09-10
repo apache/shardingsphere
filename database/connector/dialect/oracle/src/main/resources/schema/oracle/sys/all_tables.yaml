@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: all_tables
+name: ALL_TABLES
 columns:
   OWNER:
     caseSensitive: false

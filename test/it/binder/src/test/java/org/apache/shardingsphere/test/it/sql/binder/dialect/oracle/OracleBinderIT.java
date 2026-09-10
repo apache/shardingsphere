@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.test.it.sql.binder.dialect.oracle;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -26,6 +30,7 @@ import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -81,6 +86,22 @@ class OracleBinderIT extends SQLBinderIT {
         String sql = "SELECT READ_ONLY FROM USER_TABLES";
         SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", sql);
         assertColumnBound(actual.getProjections().getProjections().get(0), "USER_TABLES", "READ_ONLY");
+    }
+    
+    @Test
+    void assertBindDictionaryViewUnderDatabaseIdentifierCaseSensitivity() {
+        String sql = "SELECT SEQUENCE_NAME FROM ALL_SEQUENCES";
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", sql, new ConfigurationProperties(new Properties()));
+        assertColumnBound(actual.getProjections().getProjections().get(0), "ALL_SEQUENCES", "SEQUENCE_NAME");
+    }
+    
+    @Test
+    void assertBindDictionaryViewWhenSystemSchemaMetadataAssemblyDisabled() {
+        ConfigurationProperties props = new ConfigurationProperties(
+                PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), Boolean.FALSE.toString())));
+        String sql = "SELECT SEQUENCE_NAME FROM ALL_SEQUENCES";
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", sql, props);
+        assertColumnBound(actual.getProjections().getProjections().get(0), "ALL_SEQUENCES", "SEQUENCE_NAME");
     }
     
     private void assertColumnBound(final ProjectionSegment actualProjection, final String expectedTable, final String expectedColumn) {
