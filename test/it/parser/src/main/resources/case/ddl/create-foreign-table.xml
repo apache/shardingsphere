@@ -20,4 +20,6 @@
     <create-foreign-table sql-case-id="create_foreign_table" />
     <create-foreign-table sql-case-id="create_foreign_table_server_options" />
     <create-foreign-table sql-case-id="create_foreign_table_without_table_elements" />
+    <create-foreign-table sql-case-id="create_foreign_table_without_server" />
+    <create-foreign-table sql-case-id="create_foreign_table_without_server_with_options" />
 </sql-parser-test-cases>

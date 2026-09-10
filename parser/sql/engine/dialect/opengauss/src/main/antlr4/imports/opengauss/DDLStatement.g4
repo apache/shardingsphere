@@ -1369,6 +1369,7 @@ createForeignTableClauses
       (INHERITS LP_ qualifiedNameList RP_)? SERVER name createGenericOptions?
     | ifNotExists? qualifiedName PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec
       SERVER name createGenericOptions?
+    | ifNotExists? qualifiedName LP_ tableElementList? RP_ createGenericOptions?
     ;
 
 tableElementList
