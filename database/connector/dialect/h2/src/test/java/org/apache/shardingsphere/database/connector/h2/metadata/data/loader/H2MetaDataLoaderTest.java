@@ -68,11 +68,13 @@ class H2MetaDataLoaderTest {
                 .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND INDEX_TYPE_NAME = 'PRIMARY KEY'").executeQuery()).thenReturn(primaryKeys);
+                "SELECT KCU.TABLE_NAME, KCU.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU"
+                        + " USING (CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, CONSTRAINT_NAME)"
+                        + " WHERE KCU.TABLE_CATALOG=? AND KCU.TABLE_SCHEMA=? AND TC.CONSTRAINT_TYPE='PRIMARY KEY'")
+                .executeQuery()).thenReturn(primaryKeys);
         ResultSet generatedInfo = mockGeneratedInfoResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C RIGHT JOIN"
-                        + " INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?")
+                "SELECT TABLE_NAME, COLUMN_NAME, IS_IDENTITY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?")
                 .executeQuery()).thenReturn(generatedInfo);
         DataTypeRegistry.load(dataSource, "H2");
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db")));
@@ -93,12 +95,13 @@ class H2MetaDataLoaderTest {
                 .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND INDEX_TYPE_NAME = 'PRIMARY KEY' AND UPPER(TABLE_NAME) IN ('TBL')")
+                "SELECT KCU.TABLE_NAME, KCU.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU"
+                        + " USING (CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, CONSTRAINT_NAME)"
+                        + " WHERE KCU.TABLE_CATALOG=? AND KCU.TABLE_SCHEMA=? AND TC.CONSTRAINT_TYPE='PRIMARY KEY' AND UPPER(KCU.TABLE_NAME) IN ('TBL')")
                 .executeQuery()).thenReturn(primaryKeys);
         ResultSet generatedInfo = mockGeneratedInfoResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
-                        + " RIGHT JOIN INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=? AND C.TABLE_NAME IN ('tbl')")
+                "SELECT TABLE_NAME, COLUMN_NAME, IS_IDENTITY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
                 .executeQuery()).thenReturn(generatedInfo);
         DataTypeRegistry.load(dataSource, "H2");
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db")));
@@ -180,7 +183,7 @@ class H2MetaDataLoaderTest {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("INDEX_NAME")).thenReturn("id");
+        when(result.getString("COLUMN_NAME")).thenReturn("id");
         return result;
     }
     
@@ -188,8 +191,8 @@ class H2MetaDataLoaderTest {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id");
-        when(result.getBoolean("IS_GENERATED")).thenReturn(false);
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
+        when(result.getString("IS_IDENTITY")).thenReturn("YES", "NO");
         return result;
     }
     
@@ -213,7 +216,7 @@ class H2MetaDataLoaderTest {
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false, false));
+        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, true, true, false, true, false, false));
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
