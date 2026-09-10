@@ -349,6 +349,11 @@ chapter = true
                 <b>马晨阳</b>
             </a>
         </td>
+        <td>
+            <a href="https://github.com/ClaireLytt" target="_blank">
+                <b>李妍彤</b>
+            </a>
+        </td>
     </tr>
 </table>
 
