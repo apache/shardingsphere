@@ -21,8 +21,6 @@
     <property name="severity" value="error" />
     <property name="fileExtensions" value="java, xml, properties" />
     
-    <module name="SeverityMatchFilter" />
-    
     <module name="Header">
         <property name="fileExtensions" value="java" />
     </module>
@@ -62,6 +60,10 @@
             <property name="allowSamelineMultipleAnnotations" value="true" />
         </module>
         <module name="AnnotationUseStyle" />
+        <module name="MatchXpath">
+            <property name="query" value="//MODIFIERS[FINAL/following-sibling::ANNOTATION]" />
+            <message key="matchxpath.match" value="Place annotations before the final modifier." />
+        </module>
         <module name="MissingDeprecated" />
         <module name="MissingOverride" />
         <module name="MissingOverrideOnRecordAccessor" />
