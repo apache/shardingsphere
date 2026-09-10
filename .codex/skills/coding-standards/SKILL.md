@@ -1,12 +1,10 @@
 ---
 name: coding-standards
 description: >-
-  Apply Apache ShardingSphere's written coding standards during implementation,
-  fixes, refactoring, and code review, or perform a standalone read-only
-  compliance audit of a user-specified scope. Uses CODE_OF_CONDUCT.md,
-  applicable AGENTS.md rules, Checkstyle, Spotless, and other repository-defined
-  standards, including naming and evidence-based defensive-code rules. Does not
-  independently audit architecture, runtime ownership, caches, or lifecycle.
+  Apply Apache ShardingSphere's written coding standards during implementation, fixes, refactoring, code review, or Maven POM modification and review.
+  Also perform a standalone read-only compliance audit of a user-specified scope.
+  Use CODE_OF_CONDUCT.md, applicable AGENTS.md rules, Checkstyle, Spotless, and other repository-defined standards, including naming and evidence-based defensive-code rules.
+  Do not independently audit architecture, runtime ownership, caches, or lifecycle.
 ---
 
 <!--
@@ -33,10 +31,12 @@ For routing purposes, covered declaration annotations are `HighFrequencyInvocati
 
 ## Implementation Guidance Mode
 
-Use this mode when implementing, fixing, refactoring, or reviewing code unless the user explicitly requests a standalone coding-standards compliance audit.
+Use this mode when implementing, fixing, refactoring, or reviewing code, or when modifying or reviewing a Maven POM, unless the user explicitly requests a standalone coding-standards compliance audit.
 
 - Before starting a read-only code review or making the first write in an implementation task, read the portions of `CODE_OF_CONDUCT.md`, repository-level and path-level `AGENTS.md`, Checkstyle, Spotless, and other written repository standards that actually apply to every affected file.
 - Before the first write, record a compact applicable-rule checklist; group files governed by the same rules instead of repeating the checklist.
+- Before modifying or reviewing a `pom.xml`, read the [Maven dependency version rules](references/rules/maven-dependencies.md) through EOF and add each applicable rule to the checklist.
+- In this mode, apply the Maven dependency version rules only to project dependency declarations added or modified by the current task.
 - For every affected Java file, read the [Java naming rules](references/rules/java-naming.md) through EOF and add each applicable rule to the checklist.
 - Before adding or changing a Java type declaration or its type-level annotations, read the [Java type rules](references/rules/java-types.md) through EOF and add each applicable rule to the checklist.
 - Before adding, changing, or reordering a covered declaration annotation, or when a Java declaration added or modified by the task contains at least two covered annotations, read the [Java declaration annotation order rules](references/rules/java-annotation-order.md) through EOF and add each applicable rule to the checklist.
@@ -83,6 +83,8 @@ Use this mode only when the user explicitly asks to audit, check, or report codi
 - Audit the current working tree rather than a pull request or diff.
 - Remain read-only throughout the audit. Do not edit code, generate patches, run formatting, or change Git or external state.
 - Read the [standalone compliance audit workflow](references/standalone-audit.md) through EOF.
+- When the scope contains a `pom.xml`, read the [Maven dependency version rules](references/rules/maven-dependencies.md) through EOF.
+- Check every target POM only within the exact user-specified Maven audit scope.
 - When the scope contains Java, read the [Java naming rules](references/rules/java-naming.md) through EOF.
 - When the scope contains Java, read the [Java type rules](references/rules/java-types.md) through EOF.
 - When the scope contains a Java declaration with at least two covered declaration annotations, read the [Java declaration annotation order rules](references/rules/java-annotation-order.md) through EOF.
