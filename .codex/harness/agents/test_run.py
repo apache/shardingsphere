@@ -130,6 +130,11 @@ class RunTest(unittest.TestCase):
         actual = run.partition_cases(b"policy", [self.case], "policy_sha256", {})
         self.assertEqual([[self.case]], actual)
 
+    def test_serialize_schema_uses_compact_equivalent_json(self) -> None:
+        actual = run.serialize_schema([self.case["id"]])
+        self.assertEqual(run.create_schema([self.case["id"]]), json.loads(actual))
+        self.assertNotIn("\n ", actual)
+
     def test_partition_cases_splits_full_catalog_under_input_limit(self) -> None:
         cases = run.load_cases(None)
         repo_root = Path(run.__file__).resolve().parents[3]
@@ -144,6 +149,16 @@ class RunTest(unittest.TestCase):
             run.evaluation_input_bytes(policy, each, "policy_sha256", assertions) <= run.MAX_EVALUATION_INPUT_BYTES
             for each in actual
         ))
+
+    def test_partition_cases_balances_two_concurrent_batches(self) -> None:
+        cases = []
+        for index in range(6):
+            case = copy.deepcopy(self.case)
+            case["id"] = f"test_case_{index}"
+            cases.append(case)
+        max_input_bytes = run.evaluation_input_bytes(b"policy", cases[:4], "policy_sha256", {})
+        actual = run.partition_cases(b"policy", cases, "policy_sha256", {}, max_input_bytes)
+        self.assertEqual([3, 3], [len(each) for each in actual])
 
     def test_partition_cases_rejects_oversized_case(self) -> None:
         self.case["prompt"] = "x" * run.MAX_EVALUATION_INPUT_BYTES
@@ -808,6 +823,15 @@ class RunTest(unittest.TestCase):
         self.assertIn("routing profile `code-write`", prompt)
         self.assertIn("root decision", prompt)
         self.assertIn("do not supply profile source contents", prompt)
+
+    def test_create_prompt_does_not_repeat_schema_catalogs(self) -> None:
+        prompt = run.create_prompt([self.case], "sha256")
+        self.assertNotIn(", ".join(run.ACTIONS), prompt)
+        self.assertNotIn(", ".join(run.REASONS), prompt)
+
+    def test_create_prompt_requires_preserving_explicit_terms_verbatim(self) -> None:
+        prompt = run.create_prompt([self.case], "sha256")
+        self.assertIn("do not replace it with a synonym or abbreviation", prompt)
 
     def test_create_prompt_supplies_bound_policy_only_to_selected_case(self) -> None:
         statement = "Remove unsupported defensive code before handoff."
