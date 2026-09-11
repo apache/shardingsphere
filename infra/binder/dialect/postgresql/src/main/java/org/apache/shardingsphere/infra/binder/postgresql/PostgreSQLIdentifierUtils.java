@@ -32,6 +32,10 @@ public final class PostgreSQLIdentifierUtils {
     
     private static final Pattern UESCAPE_CLAUSE_PATTERN = Pattern.compile("\\s*UESCAPE\\s*'(.)'\\s*", Pattern.CASE_INSENSITIVE);
     
+    private static final String UNICODE_QUOTE_PREFIX = "U&\"";
+    
+    private static final String LOWER_CASE_UNICODE_QUOTE_PREFIX = "u&\"";
+    
     private static final char DEFAULT_UNICODE_ESCAPE_CHARACTER = '\\';
     
     private static final int SHORT_UNICODE_ESCAPE_LENGTH = 4;
@@ -65,8 +69,7 @@ public final class PostgreSQLIdentifierUtils {
      * @return is Unicode quoted identifier or not
      */
     public static boolean isUnicodeQuoted(final String identifier) {
-        return identifier.length() > 3 && ('U' == identifier.charAt(0) || 'u' == identifier.charAt(0)) && '&' == identifier.charAt(1) && '"' == identifier.charAt(2)
-                && identifier.indexOf('"', 3) >= 0;
+        return (identifier.startsWith(UNICODE_QUOTE_PREFIX) || identifier.startsWith(LOWER_CASE_UNICODE_QUOTE_PREFIX)) && identifier.indexOf('"', UNICODE_QUOTE_PREFIX.length()) >= 0;
     }
     
     /**
@@ -76,8 +79,8 @@ public final class PostgreSQLIdentifierUtils {
      * @return unquoted identifier
      */
     public static String unquoteUnicode(final String identifier) {
-        int endQuoteIndex = identifier.indexOf('"', 3);
-        return decodeUnicodeEscapes(identifier.substring(3, endQuoteIndex), getUnicodeEscapeCharacter(identifier.substring(endQuoteIndex + 1)));
+        int endQuoteIndex = identifier.indexOf('"', UNICODE_QUOTE_PREFIX.length());
+        return decodeUnicodeEscapes(identifier.substring(UNICODE_QUOTE_PREFIX.length(), endQuoteIndex), getUnicodeEscapeCharacter(identifier.substring(endQuoteIndex + 1)));
     }
     
     private static char getUnicodeEscapeCharacter(final String uescapeClause) {
