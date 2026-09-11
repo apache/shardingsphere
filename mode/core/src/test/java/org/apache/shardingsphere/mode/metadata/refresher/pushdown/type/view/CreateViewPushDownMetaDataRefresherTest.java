@@ -247,15 +247,13 @@ class CreateViewPushDownMetaDataRefresherTest {
         }
     }
     
+    @Getter(AccessLevel.PRIVATE)
     private static final class RecordingMetaDataManagerPersistService implements MetaDataManagerPersistService {
         
-        @Getter(AccessLevel.PRIVATE)
         private boolean alterSingleRuleConfigurationCalled;
         
-        @Getter(AccessLevel.PRIVATE)
         private ShardingSphereDatabase alterSingleRuleConfigurationDatabase;
         
-        @Getter(AccessLevel.PRIVATE)
         private RuleMetaData alterSingleRuleConfigurationRuleMetaData;
         
         @Override
