@@ -320,7 +320,7 @@ class ContextManagerTest {
     }
     
     @Test
-    void assertReloadSchemaWithCanonicalSchemaName() throws SQLException {
+    void assertReloadSchemaWithCanonicalSchemaName() {
         DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         StorageUnit storageUnit = mock(StorageUnit.class);
