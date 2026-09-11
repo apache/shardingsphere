@@ -32,6 +32,7 @@ For routing purposes, covered declaration annotations are `HighFrequencyInvocati
 ## Implementation Guidance Mode
 
 Use this mode when implementing, fixing, refactoring, or reviewing code, or when modifying or reviewing a Maven POM, unless the user explicitly requests a standalone coding-standards compliance audit.
+Read only the references whose conditions below match the affected files and task delta.
 
 - Before starting a read-only code review or making the first write in an implementation task, read the portions of `CODE_OF_CONDUCT.md`, repository-level and path-level `AGENTS.md`, Checkstyle, Spotless, and other written repository standards that actually apply to every affected file.
 - Before the first write, record a compact applicable-rule checklist; group files governed by the same rules instead of repeating the checklist.
@@ -53,18 +54,13 @@ Use this mode when implementing, fixing, refactoring, or reviewing code, or when
 - Apply every applicable rule to each modified file within the task's authorized scope.
 - After the last write, manually recheck the effective task delta and only the surrounding declarations needed to evaluate every applicable checklist rule.
 - For Java, explicitly verify every applicable `CODE_OF_CONDUCT.md` coding rule, including declaration order; when a method uses private helpers, verify that those helpers immediately follow the caller and appear in the caller's call order, regardless of the caller's visibility.
-- For Java, explicitly verify every applicable Java naming rule against the effective task delta and the surrounding declarations needed to resolve semantic applicability.
-- For Java, explicitly verify every applicable Java type rule against each type declaration and type-level annotation added or modified by the task.
 - For Java, explicitly verify every applicable Java declaration annotation order rule against each declaration added or modified by the task.
-- For Java, explicitly verify every applicable Java constructor rule against each explicit or generated constructor added, modified, removed, or affected by an instance-field change in the task.
-- For Java, explicitly verify every applicable Java precondition rule against each added or modified exception-throwing condition and precondition call, including whether a specialized `ShardingSpherePreconditions` method can express the condition without changing exception or control-flow semantics.
 - For Java, explicitly verify every applicable Java exception handling rule against each added or modified `lombok.SneakyThrows` annotation and the method bodies, invoked signatures, rethrown values, and contracts needed to resolve its exception types.
 - For Java, explicitly verify every applicable Java collection declaration rule against the effective task delta and the operations, callers, callees, overrides, and contracts needed to determine the least-specific required declaration type.
 - For Java, explicitly verify every applicable mutable-collection construction rule against the effective task delta and the operations, aliases, callers, callees, and contracts needed to determine whether mutability is required.
-- For Java, explicitly verify every applicable Java expression rule against the effective task delta and the declarations needed to resolve named constants.
 - For Java, explicitly verify every applicable Java line-wrapping rule against each declaration header, statement, and expression added or modified by the task.
 - For Java tests, explicitly verify every applicable Java test code rule against the effective task delta and the declarations and member types needed to resolve semantic applicability.
-- Explicitly verify every applicable defensive-code rule against the effective task delta and the contracts, producers, consumers, and supported paths needed to determine whether each defensive construct has qualifying evidence.
+- Explicitly recheck every other selected rule against the effective task delta and only the declarations, contracts, producers, consumers, and supported paths needed to resolve its applicability.
 - Treat passing Checkstyle and Spotless as evidence only for the rules those tools enforce; neither result replaces the manual recheck.
 - A later write invalidates final-check evidence only for affected files and rules; recheck those portions before verification or handoff.
 - Do not create rules from personal preference, general clean-code principles, or nearby code.
