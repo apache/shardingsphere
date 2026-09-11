@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.view;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -163,7 +163,7 @@ class CreateViewPushDownMetaDataRefresherTest {
         }
     }
     
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class SingleTableMutableDataNodeRuleAttribute implements MutableDataNodeRuleAttribute {
         
         private final DataNode dataNode;
@@ -226,7 +226,7 @@ class CreateViewPushDownMetaDataRefresherTest {
         }
     }
     
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class DistributedTableMapperRuleAttribute implements TableMapperRuleAttribute {
         
         private final String distributedTableName;
