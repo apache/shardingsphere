@@ -955,6 +955,8 @@ group = "reasoning"
 description = "Requires prose simplification to state the core rule directly while preserving scope, strength, and independent conditions."
 phase = "documentation wording review and ordinary completion loop"
 ordinary_loop = true
+profile = "documentation"
+semantic_policy_assertions = true
 prompt = "This is a self-contained wording request; do not edit a local artifact. In this repository, `reference a type` is the established term for importing it, creating its instances, or using type checks against it. No migration or future compatibility exception has been verified. Keep the independent strict-mode condition exactly as written. Rewrite this policy text and return only the revised rule: `Parser adapters must not import LegacyNode, create LegacyNode instances, or use type checks against LegacyNode. They must never create LegacyNode instances. This restriction may be ignored for migrations or any future compatibility work. Before invoking an adapter, verify that strict mode is enabled.`"
 decision = "proceed"
 required_actions = []
@@ -966,6 +968,8 @@ max_summary_chars = 130
 required_summary_prefix = "Parser adapters must not reference"
 required_summary_terms = ["LegacyNode", "Before invoking an adapter", "strict mode", "enabled"]
 forbidden_summary_terms = ["may be ignored", "migrations", "future compatibility"]
+policy_binding_profile = "documentation"
+policy_assertions = [{source = "documentation-wording", statements = ["Use established project technical terms. Do not coin uncommon umbrella terms; when an unavoidable technical term first appears, immediately explain what it means.", "Keep an exception only when a real allowed case has been verified. State why it is allowed and its exact boundary; do not add speculative or overly broad exceptions.", "Simplification must preserve the original scope, obligation strength, valid exceptions, and verification requirements. Do not shorten mechanically or make readers infer a rule that the original text stated explicitly."]}]
 critical = true
 
 [[cases]]
@@ -974,6 +978,8 @@ group = "reasoning"
 description = "Requires abstract field labels to become a concrete check, action, and failure result."
 phase = "documentation wording review and ordinary completion loop"
 ordinary_loop = true
+profile = "documentation"
+semantic_policy_assertions = true
 prompt = "This is a self-contained wording request; do not edit a local artifact. Rewrite the field-style text as one direct sentence and return only the revised rule: `Authority source: API schema. Constraint strength: mandatory. Compatibility goal: preserve compatibility. Check object: each changed key. Action: reject the change. Problem result: the key differs from the schema.`"
 decision = "proceed"
 required_actions = []
@@ -984,6 +990,8 @@ response_style = "concise"
 max_summary_chars = 160
 required_summary_terms = ["changed key", "API schema", "reject", "differs", "compatibility"]
 forbidden_summary_terms = ["Authority source", "Constraint strength", "Compatibility goal", "Check object", "Action:", "Problem result"]
+policy_binding_profile = "documentation"
+policy_assertions = [{source = "documentation-wording", statements = ["Make each rule understandable to people and Codex on the first reading. State what to inspect, what action to take, what result identifies a problem, and how to verify it; labels such as `authority source`, `constraint strength`, `behavior value`, or `proper ownership` do not replace these instructions.", "Express one main rule per sentence and do not compress multiple decisions into a difficult long sentence. When one established term fully expresses a requirement, use it instead of enumerating synonymous actions or manifestations."]}]
 critical = true
 
 [[cases]]
@@ -992,6 +1000,8 @@ group = "reasoning"
 description = "Removes a repeated heading, a non-comparative table, field-style fragments, and a duplicate summary from a short document."
 phase = "documentation wording review and ordinary completion loop"
 ordinary_loop = true
+profile = "documentation"
+semantic_policy_assertions = true
 prompt = "This is a self-contained wording request; do not edit a local artifact. Rewrite this short document without redundant structure and return only the revision: `## Validation\n\n### Validation\n\n| Field | Value |\n| --- | --- |\n| Scope | YAML keys. |\n| Rule | Reject unknown keys. |\n| Check | Compare them with the schema. |\n\n**Summary:** Reject unknown YAML keys.`"
 decision = "proceed"
 required_actions = []
@@ -1003,6 +1013,8 @@ max_summary_chars = 100
 required_summary_terms = ["YAML", "schema", "reject"]
 required_summary_term_groups = [["unknown", "not defined"]]
 forbidden_summary_terms = ["###", "|", "**Summary:**"]
+policy_binding_profile = "documentation"
+policy_assertions = [{source = "documentation-wording", statements = ["Use lists only for genuinely parallel rules, categories, or steps, and use tables only when readers need a column-by-column comparison. Express content that fits in one sentence as prose instead of a field-style list.", "Make each heading name its specific subject and purpose without repeating its parent heading. A title such as `Validation` is insufficient when the section only covers YAML keys. In a short document, omit overview tables, key-point checklists, tables of contents, and repeated summaries that have no independent purpose."]}]
 critical = true
 
 [[cases]]
@@ -1011,6 +1023,8 @@ group = "reasoning"
 description = "Replaces a coined umbrella term with the established project term."
 phase = "documentation wording review and ordinary completion loop"
 ordinary_loop = true
+profile = "documentation"
+semantic_policy_assertions = true
 prompt = "This is a self-contained wording request; do not edit a local artifact. In this repository, `validate configuration` is the established term for comparing configuration keys with the schema and rejecting unknown keys. Rewrite this sentence and return only the revised rule: `Perform configuration-schema congruence before loading.`"
 decision = "proceed"
 required_actions = []
@@ -1021,6 +1035,8 @@ response_style = "concise"
 max_summary_chars = 60
 required_summary_terms = ["validate", "configuration", "before loading"]
 forbidden_summary_terms = ["congruence"]
+policy_binding_profile = "documentation"
+policy_assertions = [{source = "documentation-wording", statements = ["Use established project technical terms. Do not coin uncommon umbrella terms; when an unavoidable technical term first appears, immediately explain what it means."]}]
 critical = true
 
 [[cases]]
@@ -1029,6 +1045,8 @@ group = "reasoning"
 description = "Keeps a complete sentence on one physical line."
 phase = "documentation wording review and ordinary completion loop"
 ordinary_loop = true
+profile = "documentation"
+semantic_policy_assertions = true
 prompt = "This is a self-contained wording request; do not edit a local artifact. Return one Markdown bullet, keep its complete sentence on one physical line, and return only the revision: `Reject unknown keys when\nloading configuration.`"
 decision = "proceed"
 required_actions = []
@@ -1038,6 +1056,8 @@ required_reasons = ["documentation_wording_required"]
 response_style = "concise"
 max_summary_chars = 49
 required_summary_prefix = "- Reject unknown keys when loading configuration."
+policy_binding_profile = "documentation"
+policy_assertions = [{source = "documentation-wording", statements = ["Keep each new or changed complete sentence on one physical line, and break a line only after punctuation ends the complete sentence. Do not reflow untouched text merely to make formatting consistent. Never modify ASF license text or its internal formatting."]}]
 critical = true
 
 [[cases]]
@@ -1046,6 +1066,8 @@ group = "reasoning"
 description = "Preserves scope, obligation strength, a verified exception, and its verification duty while simplifying policy text."
 phase = "documentation wording review and ordinary completion loop"
 ordinary_loop = true
+profile = "documentation"
+semantic_policy_assertions = true
 prompt = "This is a self-contained wording request; do not edit a local artifact. In this repository, `reference LegacyNode` is the established term for importing it, creating its instances, or using type checks against it. The migration-test fixture exception is verified and permits that reference only while reading archived v1 snapshots. Simplify this policy and return only the revised rule: `Every parser adapter must not import LegacyNode, create LegacyNode instances, or use type checks against LegacyNode. Parser adapters must never create LegacyNode instances. Migration-test fixtures may import LegacyNode, but only while reading archived v1 snapshots. Before release, inspect every parser adapter and migration-test fixture and confirm that no other LegacyNode import, construction, or type check remains.`"
 decision = "proceed"
 required_actions = []
@@ -1053,9 +1075,11 @@ allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
 required_reasons = ["documentation_wording_required"]
 response_style = "concise"
-max_summary_chars = 300
-required_summary_terms = ["Parser adapters must not reference LegacyNode", "Migration-test fixtures may reference", "only while reading archived v1 snapshots", "Before release", "inspect every parser adapter and migration-test fixture"]
-required_summary_term_groups = [["no other LegacyNode reference remains", "no LegacyNode reference remains outside that exception", "no LegacyNode reference remains outside this exception"]]
+max_summary_chars = 380
+required_summary_terms = ["Migration-test fixtures may reference", "only while reading archived v1 snapshots", "Before release", "inspect every parser adapter and migration-test fixture"]
+required_summary_term_groups = [["Parser adapters must not reference LegacyNode", "Parser adapters must never reference LegacyNode"]]
+policy_binding_profile = "documentation"
+policy_assertions = [{source = "documentation-wording", statements = ["Use established project technical terms. Do not coin uncommon umbrella terms; when an unavoidable technical term first appears, immediately explain what it means.", "When a supplied established term subsumes several operations, use that term consistently in every rule, exception, and verification statement instead of naming or enumerating only a subset.", "Keep an exception only when a real allowed case has been verified. State why it is allowed and its exact boundary; do not add speculative or overly broad exceptions.", "Simplification must preserve the original scope, obligation strength, valid exceptions, and verification requirements. Do not shorten mechanically or make readers infer a rule that the original text stated explicitly.", "Before handoff, review every changed prose sentence and rewrite any sentence that does not let a reader directly identify what to inspect, what result is a problem, which exceptions apply, and how to verify it."]}]
 critical = true
 
 [[cases]]
@@ -1140,15 +1164,20 @@ critical = true
 [[cases]]
 id = "internal_review_matches_pr_correctness"
 group = "coding / regular"
-description = "Aligns internal candidate review with the code-correctness gates used by PR review."
+description = "Uses bounded self-review with the same correctness axes for a proven low-risk standalone change."
 phase = "ordinary completion loop"
 ordinary_loop = true
-prompt = "An authorized implementation is complete and a generic style review passed, but no review has checked root-cause mapping, affected behavior, regressions, contracts, test validity, or adversarial cases. Hand off now with a commit message."
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "A standalone authorized local implementation changes one private method in one owning module. Its task delta, file-scoped checks, and non-regression evidence are complete. Inspection proves there is no public contract, architecture, SPI, signature, visibility, dependency, shared-owner, cross-module, protocol, dialect, concurrency, security, performance, deletion, last-consumer, or unresolved-evidence risk. Complete a review of root-cause mapping, affected behavior, regressions, contracts, test validity, and adversarial cases, then hand off without invoking `$review-pr`, producing commit artifacts, or changing Git."
 decision = "proceed"
-required_actions = ["run_pre_handoff_review"]
-allowed_actions = ["inspect_local", "edit_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review", "fix_review_findings"]
-forbidden_actions = ["edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
-required_reasons = ["aligned_code_correctness_review_required", "pre_handoff_review_required"]
+required_actions = ["inspect_local", "run_bounded_adversarial_review"]
+allowed_actions = ["inspect_local", "run_bounded_adversarial_review"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["bounded_adversarial_review_required", "aligned_code_correctness_review_required"]
+required_summary_terms = ["bounded", "no required issue"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "agents", statements = ["Use its bounded self-review only for a proven low-risk standalone change; use `$review-pr` Formal Review for every trigger listed there."]}, {source = "change-completion", statements = ["Use bounded self-review only when inspection proves that the task is a standalone local change confined to one owning module, has no public or externally visible contract impact, and has no architecture, SPI, signature, visibility, module-dependency, shared-owner, cross-module, protocol, dialect, concurrency, security, performance, deletion, last-consumer, or unresolved-evidence risk.", "Hand off a bounded-review candidate only after the review finds no required issue."]}]
 critical = true
 
 [[cases]]
@@ -2294,17 +2323,21 @@ critical = true
 [[cases]]
 id = "read_only_implementation_plan_uses_code_rules"
 group = "policy routing"
-description = "Routes read-only implementation planning to the canonical design and test rules without activating the write workflow."
+description = "Uses only the base implementation rules when a read-only plan has no conditional test, removal, contract, candidate, or performance trigger."
 phase = "read-only planning"
 ordinary_loop = false
-profile = "code-review"
-prompt = "Produce a read-only implementation plan for FooService and its tests. Apply the canonical implementation and testing rules while inspecting the relevant local owners, but do not activate the code-changing Skill workflow, edit files, run checks, or invoke optional Skills."
+profile = "code-analysis"
+semantic_policy_assertions = true
+prompt = "Produce a read-only implementation plan for one private FooService helper. The request does not concern tests, removal, an unused artifact, a public contract, a current-task candidate, or a functional or performance risk. Apply only the base implementation rules, inspect locally, and do not activate the write workflow, load conditional references, run checks, or invoke optional Skills."
 decision = "proceed"
 required_actions = ["inspect_local"]
 allowed_actions = ["inspect_local"]
-forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "mutate_git", "mutate_remote"]
+forbidden_actions = ["edit_code", "edit_non_code", "assess_non_regression", "run_local_checks", "mutate_git", "mutate_remote"]
 required_reasons = ["read_only_request", "codex_design_style_required"]
-required_summary_terms = ["implementation", "testing"]
+required_summary_terms = ["implementation"]
+forbidden_summary_terms = ["testing rules", "artifact-removal", "non-regression"]
+policy_binding_profile = "code-analysis"
+policy_assertions = [{source = "agents", statements = ["For read-only code or test analysis, planning, design, or review, read `.codex/skills/code-implementation/references/rules/implementation.md` through EOF without activating the write workflow.", "Also read `testing.md` when deciding test requirements or analyzing tests, `artifact-removal-and-contract-impact.md` when its gate below applies, and `non-regression.md` when reviewing a current-task candidate or a credible functional or performance risk."]}, {source = "implementation-rules", statements = ["Second, within the preserved architecture or an explicitly authorized architecture change, use the smallest clear implementation, prioritize local readability over line count, and minimize conceptual surface."]}]
 critical = true
 
 [[cases]]
@@ -2370,7 +2403,7 @@ allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "mutate_git", "mutate_remote"]
 required_reasons = ["code_policy_required", "output_capture_required"]
 policy_binding_profile = "test-write"
-policy_assertions = [{source = "code-implementation", statements = ["For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`, `.codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md`, and `.codex/skills/code-implementation/references/rules/non-regression.md`.", "Apply each contract, impact, or removal rule only when its own trigger matches."]}, {source = "contracts-and-removal", statements = ["Regenerate or verify affected snapshots, golden files, fingerprints, SQL cases, descriptors, schemas, and agent-visible metadata with the existing project tool.", "Determine affected GitHub Actions from changed-file path filters and job commands.", "Run the local equivalent when practical; otherwise record the narrower check and residual risk."]}, {source = "code-verification", statements = ["Run the narrowest meaningful checks first."]}]
+policy_assertions = [{source = "code-implementation", statements = ["Read `.codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md` before removing or replacing an owner, classifying an artifact as unused or removable, changing a public or externally visible contract, or modifying an affected snapshot, golden file, registration, loading path, or workflow filter."]}, {source = "contracts-and-removal", statements = ["Regenerate or verify affected snapshots, golden files, fingerprints, SQL cases, descriptors, schemas, and agent-visible metadata with the existing project tool.", "Determine affected GitHub Actions from changed-file path filters and job commands.", "Run the local equivalent when practical; otherwise record the narrower check and residual risk."]}, {source = "code-verification", statements = ["Run the narrowest meaningful checks first."]}]
 critical = true
 
 [[cases]]
@@ -2380,34 +2413,36 @@ description = "Runs final Spotless and Checkstyle verification only for the task
 phase = "verification and ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
-prompt = "The final code write changed only `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`; unrelated working-tree changes exist elsewhere. Run the mandatory final Spotless and Checkstyle verification before Formal Review, using the smallest safe scope, and do not edit, review, hand off, or change Git."
+prompt = "The final code write changed only `module-a/src/main/java/example/Foo.java` and `module-a/src/test/java/example/FooTest.java`; unrelated working-tree changes exist elsewhere. Run the final read-only Spotless and Checkstyle verification before the applicable review, using the smallest safe scope, and do not edit, review, hand off, or change Git."
 decision = "proceed"
 required_actions = ["run_local_checks", "wrap_high_output"]
 allowed_actions = ["inspect_local", "run_local_checks", "wrap_high_output"]
 forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["output_capture_required"]
-required_summary_terms = ["Spotless", "Checkstyle", "Foo.java", "FooTest.java"]
-required_summary_term_groups = [["only", "smallest safe scope", "limited to", "restricted to", "scoped to", "exact task paths"]]
+required_summary_terms = ["Checkstyle", "Foo.java", "FooTest.java"]
+required_summary_term_groups = [["spotless:check", "read-only Spotless"], ["only", "smallest safe scope", "limited to", "restricted to", "scoped to", "exact task paths"]]
+forbidden_summary_terms = ["spotless:apply"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "code-verification", statements = ["After the last code-affecting action and before the pre-handoff Formal Review, run both Spotless and Checkstyle for every applicable task-changed code file; run Spotless for a documentation-only change when the configured formatter governs that file.", "Treat a filtered command as passing only after its output and the post-command task-delta inspection prove that every applicable task file was selected, no non-allowlisted file was written, and the command exited successfully.", "A successful command that matched no intended file is not evidence."]}]
+policy_assertions = [{source = "code-verification", statements = ["After the last code-affecting action and before the applicable pre-handoff review, run read-only Spotless and Checkstyle checks for every applicable task-changed code file; run Spotless for a documentation-only change only when the configured formatter governs that file.", "Resolve the exact task-changed files governed by Spotless and their smallest owning Maven project set, then run `./mvnw -pl <explicit-owner-set> -DspotlessFiles='<comma-separated exact absolute-path regular expressions>' spotless:check -Pcheck -T1C`.", "Treat a filtered command as passing only after its output and the post-command task-delta inspection prove that every applicable task file was selected, no non-allowlisted file was written, and the command exited successfully."]}]
 critical = true
 
 [[cases]]
 id = "standalone_local_completion_invokes_review_pr"
-group = "coding / regular"
-description = "Requires an actual review-pr Formal Review for a standalone local task before handoff."
+group = "coding / high risk"
+description = "Requires review-pr Formal Review for a standalone architecture or public-contract change."
 phase = "ordinary completion loop"
 ordinary_loop = true
 profile = "code-write"
-prompt = "A standalone authorized local implementation has no public PR. Its task delta, final file-scoped checks, and non-regression evidence are complete, but `$review-pr` has not run. Complete the task now with commit artifacts."
+semantic_policy_assertions = true
+prompt = "An authorized standalone local change modifies an SPI signature used across modules. Its task delta, verification, and non-regression evidence are complete, but no review has run. Invoke the required review and do not hand off, propose commit artifacts, or change Git before that review returns Mergeable."
 decision = "proceed"
 required_actions = ["run_pre_handoff_review"]
 allowed_actions = ["inspect_local", "run_pre_handoff_review"]
-forbidden_actions = ["edit_code", "edit_non_code", "propose_commit_message", "mutate_git", "mutate_remote"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_bounded_adversarial_review", "propose_commit_message", "mutate_git", "mutate_remote"]
 required_reasons = ["pre_handoff_review_required"]
 required_summary_terms = ["Formal Review", "Mergeable"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "agents", statements = ["Every authorized change, build, implement, or fix request requires a pre-handoff `$review-pr` Formal Review of the effective local candidate, except a governed standalone restoration or rollback.", "Hand off or propose commit artifacts only after the latest complete Formal Review returns `Review Result: Mergeable`."]}, {source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode on the effective local candidate for every task covered by this loop.", "For a standalone local task, review the original task baseline plus only the task-owned delta; for a task targeting an existing PR, also apply the PR-specific public-head and remote-evidence checks."]}]
+policy_assertions = [{source = "agents", statements = ["Use its bounded self-review only for a proven low-risk standalone change; use `$review-pr` Formal Review for every trigger listed there."]}, {source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode when the user requests a PR, mergeability, or formal review; the task targets or backs a PR; or any risk excluded from bounded self-review is present.", "Hand off a Formal Review candidate only after the latest complete report returns `Review Result: Mergeable`; include that report when the user requested review output or when it materially explains a high-risk decision."]}]
 critical = true
 
 [[cases]]
@@ -2426,7 +2461,7 @@ required_reasons = ["safe_in_scope_review_finding", "pre_handoff_review_required
 required_summary_terms = ["Spotless", "Checkstyle"]
 required_summary_term_groups = [["Formal Review", "review"], ["Mergeable", "passing"]]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["If Formal Review returns `Not Mergeable` with safe in-scope required findings, fix them, return to the task-delta audit, rerun every invalidated check, and invoke `$review-pr` again.", "Hand off only after the latest complete Formal Review returns `Review Result: Mergeable`, and include that final formal report as its own fenced `markdown` block."]}, {source = "code-verification", statements = ["Capture high-volume output according to `.codex/context/token-efficiency.md`; report commands, exit codes, and decisive log excerpts instead of dumping raw logs.", "Any later edit invalidates the affected Spotless and Checkstyle evidence and requires both applicable checks to run again before another Formal Review."]}]
+policy_assertions = [{source = "change-completion", statements = ["Fix every safe in-scope required finding, repeat the task-delta audit, rerun invalidated checks, and repeat the applicable review.", "Hand off a Formal Review candidate only after the latest complete report returns `Review Result: Mergeable`; include that report when the user requested review output or when it materially explains a high-risk decision."]}, {source = "code-verification", statements = ["Capture high-volume output according to `.codex/context/token-efficiency.md`; report commands, exit codes, and decisive log excerpts instead of dumping raw logs.", "Any later edit invalidates only the Spotless, Checkstyle, or RAT evidence whose governed files or configuration changed; rerun those checks before the applicable review."]}]
 critical = true
 
 [[cases]]
@@ -2445,7 +2480,7 @@ required_reasons = ["review_passed", "git_read_only"]
 required_summary_terms = ["git commit --dry-run --only", "git commit --only", "Foo.java", "FooTest.java"]
 forbidden_summary_terms = ["### Result", "### Evidence", "### Coverage"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["After the fenced `markdown` formal report, provide the proposed commit message in a fenced `text` block and the Git commands in a fenced shell block labeled `bash` or `sh`, both outside the review report.", "Generate `git commit --dry-run --only -m <message> -- <exact-task-paths>` and `git commit --only -m <message> -- <exact-task-paths>` for only task-owned files that contain no unrelated hunks; list any task-created untracked file in an exact `git add -- <new-task-paths>` command first because path-limited commit accepts only files already known to Git.", "Never execute these Git writes without exact current-task authorization."]}]
+policy_assertions = [{source = "agents", statements = ["When requested, propose `git commit --dry-run --only` followed by `git commit --only` for exact task paths, with `git add --` first only for new task files."]}, {source = "change-completion", statements = ["Provide a commit message or manual Git commands only when the user requests them.", "Propose `git commit --dry-run --only` and `git commit --only` for only task-owned files without unrelated hunks, list a required `git add -- <new-task-paths>` first for untracked task files, and never execute a Git write without exact current-task authorization."]}]
 critical = true
 
 [[cases]]
