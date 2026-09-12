@@ -30,7 +30,7 @@ cross-cutting = ["agents", "cross-cutting-skills"]
 documentation = ["agents", "documentation-wording"]
 gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
 review-pr = ["agents", "code-of-conduct", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
-policy-maintenance = ["agents", "policy-maintenance", "policy-source-manifest"]
+policy-maintenance = ["agents", "policy-maintenance", "semantic-verification", "policy-source-manifest"]
 
 [[sources]]
 id = "agents"
@@ -86,7 +86,14 @@ id = "policy-maintenance"
 path = ".codex/harness/agents/policy-maintenance.md"
 kind = "maintenance"
 semantic = true
-references = ["AGENTS.md", ".codex/harness/agents/run.py", ".codex/harness/agents/cases.toml", ".codex/harness/agents/policy-sources.toml", ".codex/context/change-completion.md"]
+references = ["AGENTS.md", ".codex/harness/agents/run.py", ".codex/harness/agents/cases.toml", ".codex/harness/agents/policy-sources.toml", ".codex/harness/agents/semantic-verification.md", ".codex/context/change-completion.md"]
+
+[[sources]]
+id = "semantic-verification"
+path = ".codex/harness/agents/semantic-verification.md"
+kind = "maintenance"
+semantic = true
+references = ["AGENTS.md", ".codex/harness/agents/cases.toml"]
 
 [[sources]]
 id = "harness-runner"
@@ -149,7 +156,7 @@ id = "standalone-audit"
 path = ".codex/skills/coding-standards/references/standalone-audit.md"
 kind = "reference"
 semantic = true
-references = ["AGENTS.md", "CODE_OF_CONDUCT.md"]
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/skills/coding-standards/references/rules/maven-dependencies.md", ".codex/skills/coding-standards/references/rules/java-naming.md", ".codex/skills/coding-standards/references/rules/java-types.md", ".codex/skills/coding-standards/references/rules/java-annotation-order.md", ".codex/skills/coding-standards/references/rules/java-constructors.md", ".codex/skills/coding-standards/references/rules/java-preconditions.md", ".codex/skills/coding-standards/references/rules/java-exceptions.md", ".codex/skills/coding-standards/references/rules/java-collections.md", ".codex/skills/coding-standards/references/rules/java-expressions.md", ".codex/skills/coding-standards/references/rules/java-line-wrapping.md", ".codex/skills/coding-standards/references/rules/java-testing.md", ".codex/skills/coding-standards/references/rules/defensive-code.md"]
 
 [[sources]]
 id = "maven-dependencies"

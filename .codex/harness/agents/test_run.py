@@ -135,7 +135,7 @@ class RunTest(unittest.TestCase):
         self.assertEqual(run.create_schema([self.case["id"]]), json.loads(actual))
         self.assertNotIn("\n ", actual)
 
-    def test_run_codex_pins_evaluator_model_and_reasoning_effort(self) -> None:
+    def test_run_codex_pins_evaluator_configuration(self) -> None:
         with tempfile.TemporaryDirectory() as codex_home_name, tempfile.TemporaryDirectory() as output_name:
             codex_home = Path(codex_home_name)
             output_dir = Path(output_name)
@@ -159,6 +159,12 @@ class RunTest(unittest.TestCase):
         self.assertIn(
             f'model_reasoning_effort="{run.EVALUATOR_REASONING_EFFORT}"', captured_command
         )
+        configured_values = [
+            captured_command[index + 1] for index, argument in enumerate(captured_command[:-1])
+            if argument == "--config"
+        ]
+        for each in run.EVALUATOR_FEATURE_OVERRIDES:
+            self.assertIn(each, configured_values)
 
     def test_partition_cases_splits_full_catalog_under_input_limit(self) -> None:
         cases = run.load_cases(None)
