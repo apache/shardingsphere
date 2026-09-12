@@ -20,24 +20,29 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-linked-server</artifactId>
         <version>5.5.4-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-kernel</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-linked-server-core</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>authority</module>
-        <module>single</module>
-        <module>sql-parser</module>
-        <module>sql-translator</module>
-        <module>sql-federation</module>
-        <module>transaction</module>
-        <module>time-service</module>
-        <module>global-clock</module>
-        <module>schedule</module>
-        <module>data-pipeline</module>
-        <module>linked-server</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-linked-server-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-mode-node</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-infra-fixture-database</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
